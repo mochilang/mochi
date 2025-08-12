@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,22 +19,11 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -57,7 +46,7 @@ let rec josephus_recursive (num_people: int) (step_size: int) =
         __ret
     with
         | Return -> __ret
-let rec find_winner (num_people: int) (step_size: int) =
+and find_winner (num_people: int) (step_size: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable num_people = num_people
     let mutable step_size = step_size
@@ -67,7 +56,7 @@ let rec find_winner (num_people: int) (step_size: int) =
         __ret
     with
         | Return -> __ret
-let rec remove_at (xs: int array) (idx: int) =
+and remove_at (xs: int array) (idx: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable xs = xs
     let mutable idx = idx
@@ -76,14 +65,14 @@ let rec remove_at (xs: int array) (idx: int) =
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
             if i <> idx then
-                res <- Array.append res [|(_idx xs (i))|]
+                res <- Array.append res [|(_idx xs (int i))|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec josephus_iterative (num_people: int) (step_size: int) =
+and josephus_iterative (num_people: int) (step_size: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable num_people = num_people
     let mutable step_size = step_size
@@ -99,7 +88,7 @@ let rec josephus_iterative (num_people: int) (step_size: int) =
         while (Seq.length (circle)) > 1 do
             current <- ((((current + step_size) - 1) % (Seq.length (circle)) + (Seq.length (circle))) % (Seq.length (circle)))
             circle <- remove_at (circle) (current)
-        __ret <- _idx circle (0)
+        __ret <- _idx circle (int 0)
         raise Return
         __ret
     with

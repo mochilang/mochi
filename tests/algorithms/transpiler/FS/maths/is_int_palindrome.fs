@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -45,7 +33,7 @@ let rec is_int_palindrome (num: int) =
         let mutable n: int = num
         let mutable rev: int = 0
         while n > 0 do
-            rev <- (rev * 10) + (((n % 10 + 10) % 10))
+            rev <- int (((int64 rev) * (int64 10)) + (int64 (((n % 10 + 10) % 10))))
             n <- _floordiv n 10
         __ret <- rev = num
         raise Return

@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,20 +19,9 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -45,7 +34,7 @@ let rec pow2 (p: int) =
         let mutable result: int = 1
         let mutable i: int = 0
         while i < p do
-            result <- result * 2
+            result <- int ((int64 result) * (int64 2))
             i <- i + 1
         __ret <- result
         raise Return
@@ -65,7 +54,7 @@ and lucas_lehmer_test (p: int) =
         let m: int = (pow2 (p)) - 1
         let mutable i: int = 0
         while i < (p - 2) do
-            s <- ((((s * s) - 2) % m + m) % m)
+            s <- int ((((((int64 s) * (int64 s)) - (int64 2)) % (int64 m) + (int64 m)) % (int64 m)))
             i <- i + 1
         __ret <- s = 0
         raise Return

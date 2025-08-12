@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,20 +19,9 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -57,7 +46,7 @@ let rec ln (x: float) =
         __ret
     with
         | Return -> __ret
-let rec log10 (x: float) =
+and log10 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -66,7 +55,7 @@ let rec log10 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec absf (x: float) =
+and absf (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -75,7 +64,7 @@ let rec absf (x: float) =
         __ret
     with
         | Return -> __ret
-let rec res (x: int) (y: int) =
+and res (x: int) (y: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable y = y
@@ -93,7 +82,7 @@ let rec res (x: int) (y: int) =
         __ret
     with
         | Return -> __ret
-let rec test_res () =
+and test_res () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         if (absf ((res (5) (7)) - 4.892790030352132)) > 0.0000001 then
@@ -105,7 +94,7 @@ let rec test_res () =
         __ret
     with
         | Return -> __ret
-let rec compare (x1: int) (y1: int) (x2: int) (y2: int) =
+and compare (x1: int) (y1: int) (x2: int) (y2: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable x1 = x1
     let mutable y1 = y1

@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:09 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec abs_val (x: float) =
@@ -89,7 +77,7 @@ and minkowski_distance (point_a: float array) (point_b: float array) (order: int
         let mutable total: float = 0.0
         let mutable idx: int = 0
         while idx < (Seq.length (point_a)) do
-            let diff: float = abs_val ((_idx point_a (idx)) - (_idx point_b (idx)))
+            let diff: float = abs_val ((_idx point_a (int idx)) - (_idx point_b (int idx)))
             total <- total + (pow_float (diff) (order))
             idx <- idx + 1
         __ret <- nth_root (total) (order)

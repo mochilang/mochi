@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec sqrt_newton (n: float) =
@@ -50,7 +38,7 @@ let rec sqrt_newton (n: float) =
         __ret
     with
         | Return -> __ret
-let rec hypot (a: float) (b: float) =
+and hypot (a: float) (b: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable a = a
     let mutable b = b
@@ -60,7 +48,7 @@ let rec hypot (a: float) (b: float) =
         __ret
     with
         | Return -> __ret
-let rec line_length (fnc: float -> float) (x_start: float) (x_end: float) (steps: int) =
+and line_length (fnc: float -> float) (x_start: float) (x_end: float) (steps: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable fnc = fnc
     let mutable x_start = x_start
@@ -84,7 +72,7 @@ let rec line_length (fnc: float -> float) (x_start: float) (x_end: float) (steps
         __ret
     with
         | Return -> __ret
-let rec f1 (x: float) =
+and f1 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -93,7 +81,7 @@ let rec f1 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec f2 (x: float) =
+and f2 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -102,7 +90,7 @@ let rec f2 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec f3 (x: float) =
+and f3 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try

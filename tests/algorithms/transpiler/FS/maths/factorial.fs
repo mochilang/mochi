@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec factorial (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
@@ -40,7 +28,7 @@ let rec factorial (n: int) =
         let mutable value: int = 1
         let mutable i: int = 1
         while i <= n do
-            value <- value * i
+            value <- int ((int64 value) * (int64 i))
             i <- i + 1
         __ret <- value
         raise Return
@@ -56,7 +44,7 @@ and factorial_recursive (n: int) =
         if n <= 1 then
             __ret <- 1
             raise Return
-        __ret <- n * (factorial_recursive (n - 1))
+        __ret <- int ((int64 n) * (int64 (factorial_recursive (n - 1))))
         raise Return
         __ret
     with

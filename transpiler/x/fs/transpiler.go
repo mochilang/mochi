@@ -1535,9 +1535,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			for _, ix := range indices {
 				io.WriteString(w, ".[")
 				ixT := inferType(ix)
-				if ixT == "int64" {
-					io.WriteString(w, "int64 ")
-				} else if ixT == "int" {
+				if ixT != "int" {
 					io.WriteString(w, "int ")
 				}
 				if needsParen(ix) {
@@ -2056,11 +2054,6 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else if rt == "bigint" && lt == "int" {
 		left = &CastExpr{Expr: left, Type: "bigint"}
 	}
-	if b.Op == "*" && lt == "int" && rt == "int" {
-		left = &CastExpr{Expr: left, Type: "int64"}
-		right = &CastExpr{Expr: right, Type: "int64"}
-		lt, rt = "int64", "int64"
-	}
 	if b.Op == "/" && lt == "int" && rt == "int" {
 		usesFloorDiv = true
 		io.WriteString(w, "_floordiv ")
@@ -2357,9 +2350,6 @@ func inferType(e Expr) string {
 				return "float"
 			}
 			if lt == rt {
-				if v.Op == "*" && lt == "int" {
-					return "int64"
-				}
 				return lt
 			}
 			if (lt == "int" && rt == "float") || (lt == "float" && rt == "int") {

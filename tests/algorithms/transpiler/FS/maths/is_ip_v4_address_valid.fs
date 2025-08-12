@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,22 +19,11 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -63,7 +52,7 @@ let rec split_by_dot (s: string) =
         __ret
     with
         | Return -> __ret
-let rec is_digit_str (s: string) =
+and is_digit_str (s: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable s = s
     try
@@ -82,7 +71,7 @@ let rec is_digit_str (s: string) =
         __ret
     with
         | Return -> __ret
-let rec parse_decimal (s: string) =
+and parse_decimal (s: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable s = s
     try
@@ -90,14 +79,14 @@ let rec parse_decimal (s: string) =
         let mutable i: int = 0
         while i < (String.length (s)) do
             let c: string = string (s.[i])
-            value <- (value * 10) + (int c)
+            value <- int (((int64 value) * (int64 10)) + (int64 (int c)))
             i <- i + 1
         __ret <- value
         raise Return
         __ret
     with
         | Return -> __ret
-let rec is_ip_v4_address_valid (ip: string) =
+and is_ip_v4_address_valid (ip: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable ip = ip
     try
@@ -107,7 +96,7 @@ let rec is_ip_v4_address_valid (ip: string) =
             raise Return
         let mutable i: int = 0
         while i < 4 do
-            let oct: string = _idx octets (i)
+            let oct: string = _idx octets (int i)
             if not (is_digit_str (oct)) then
                 __ret <- false
                 raise Return

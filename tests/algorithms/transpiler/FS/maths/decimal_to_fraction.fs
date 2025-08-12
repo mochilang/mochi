@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Break
 exception Continue
@@ -32,20 +32,9 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -66,7 +55,7 @@ let rec pow10 (n: int) =
         let mutable result: int = 1
         let mutable i: int = 0
         while i < n do
-            result <- result * 10
+            result <- int ((int64 result) * (int64 10))
             i <- i + 1
         __ret <- result
         raise Return
@@ -162,7 +151,7 @@ and parse_decimal (s: string) =
                     failwith ("invalid number")
             if (String.length (exp_str)) = 0 then
                 failwith ("invalid number")
-            exp <- exp_sign * (int (int (exp_str)))
+            exp <- int ((int64 exp_sign) * (int64 (int (int (exp_str)))))
         if idx <> (String.length (s)) then
             failwith ("invalid number")
         if (String.length (int_part)) = 0 then
@@ -173,10 +162,10 @@ and parse_decimal (s: string) =
             _numerator <- 0 - _numerator
         let mutable _denominator: int = pow10 (String.length (frac_part))
         if exp > 0 then
-            _numerator <- _numerator * (pow10 (exp))
+            _numerator <- int ((int64 _numerator) * (int64 (pow10 (exp))))
         else
             if exp < 0 then
-                _denominator <- _denominator * (pow10 (-exp))
+                _denominator <- int ((int64 _denominator) * (int64 (pow10 (-exp))))
         __ret <- { _numerator = _numerator; _denominator = _denominator }
         raise Return
         __ret

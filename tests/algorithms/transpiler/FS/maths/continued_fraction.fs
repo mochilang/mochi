@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Break
 exception Continue
@@ -22,22 +22,11 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -63,7 +52,7 @@ let rec floor_div (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-let rec continued_fraction (numerator: int) (denominator: int) =
+and continued_fraction (numerator: int) (denominator: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable numerator = numerator
     let mutable denominator = denominator
@@ -76,7 +65,7 @@ let rec continued_fraction (numerator: int) (denominator: int) =
                 try
                     let integer_part: int = floor_div (num) (den)
                     result <- Array.append result [|integer_part|]
-                    num <- num - (integer_part * den)
+                    num <- int ((int64 num) - ((int64 integer_part) * (int64 den)))
                     if num = 0 then
                         raise Break
                     let tmp: int = num
@@ -93,14 +82,14 @@ let rec continued_fraction (numerator: int) (denominator: int) =
         __ret
     with
         | Return -> __ret
-let rec list_to_string (lst: int array) =
+and list_to_string (lst: int array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable lst = lst
     try
         let mutable s: string = "["
         let mutable i: int = 0
         while i < (Seq.length (lst)) do
-            s <- s + (_str (_idx lst (i)))
+            s <- s + (_str (_idx lst (int i)))
             if i < ((Seq.length (lst)) - 1) then
                 s <- s + ", "
             i <- i + 1

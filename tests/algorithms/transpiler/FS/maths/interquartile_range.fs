@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -43,6 +31,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -59,17 +48,17 @@ let rec bubble_sort (nums: float array) =
         let mutable arr: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (nums)) do
-            arr <- Array.append arr [|(_idx nums (i))|]
+            arr <- Array.append arr [|(_idx nums (int i))|]
             i <- i + 1
         let mutable n: int = Seq.length (arr)
         let mutable a: int = 0
         while a < n do
             let mutable b: int = 0
             while b < ((n - a) - 1) do
-                if (_idx arr (b)) > (_idx arr (b + 1)) then
-                    let temp: float = _idx arr (b)
-                    arr.[b] <- _idx arr (b + 1)
-                    arr.[b + 1] <- temp
+                if (_idx arr (int b)) > (_idx arr (int (b + 1))) then
+                    let temp: float = _idx arr (int b)
+                    arr.[int b] <- _idx arr (int (b + 1))
+                    arr.[int (b + 1)] <- temp
                 b <- b + 1
             a <- a + 1
         __ret <- arr
@@ -85,9 +74,9 @@ and find_median (nums: float array) =
         let div: int = _floordiv length 2
         let ``mod``: int = ((length % 2 + 2) % 2)
         if ``mod`` <> 0 then
-            __ret <- _idx nums (div)
+            __ret <- _idx nums (int div)
             raise Return
-        __ret <- ((_idx nums (div)) + (_idx nums (div - 1))) / 2.0
+        __ret <- ((_idx nums (int div)) + (_idx nums (int (div - 1)))) / 2.0
         raise Return
         __ret
     with
@@ -105,12 +94,12 @@ and interquartile_range (nums: float array) =
         let mutable lower: float array = Array.empty<float>
         let mutable i: int = 0
         while i < div do
-            lower <- Array.append lower [|(_idx sorted (i))|]
+            lower <- Array.append lower [|(_idx sorted (int i))|]
             i <- i + 1
         let mutable upper: float array = Array.empty<float>
         let mutable j: int = div + ``mod``
         while j < length do
-            upper <- Array.append upper [|(_idx sorted (j))|]
+            upper <- Array.append upper [|(_idx sorted (int j))|]
             j <- j + 1
         let q1: float = find_median (lower)
         let q3: float = find_median (upper)

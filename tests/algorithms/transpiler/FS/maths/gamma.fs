@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let PI: float = 3.141592653589793
 let rec absf (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
@@ -69,7 +57,7 @@ and ln (x: float) =
         let mutable sum: float = 0.0
         let mutable k: int = 0
         while k < 10 do
-            let denom: float = float ((2 * k) + 1)
+            let denom: float = float (((int64 2) * (int64 k)) + (int64 1))
             sum <- sum + (term / denom)
             term <- term * y2
             k <- k + 1

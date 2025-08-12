@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,9 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -35,6 +32,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -64,8 +62,8 @@ and joint_probability_distribution (x_values: int array) (y_values: int array) (
         while i < (Seq.length (x_values)) do
             let mutable j: int = 0
             while j < (Seq.length (y_values)) do
-                let k: string = key (_idx x_values (i)) (_idx y_values (j))
-                result.[k] <- (_idx x_probabilities (i)) * (_idx y_probabilities (j))
+                let k: string = key (_idx x_values (int i)) (_idx y_values (int j))
+                result.[k] <- (_idx x_probabilities (int i)) * (_idx y_probabilities (int j))
                 j <- j + 1
             i <- i + 1
         __ret <- result
@@ -81,7 +79,7 @@ and expectation (values: int array) (probabilities: float array) =
         let mutable total: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (values)) do
-            total <- total + ((float (_idx values (i))) * (_idx probabilities (i)))
+            total <- total + ((float (_idx values (int i))) * (_idx probabilities (int i)))
             i <- i + 1
         __ret <- total
         raise Return
@@ -97,8 +95,8 @@ and variance (values: int array) (probabilities: float array) =
         let mutable total: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (values)) do
-            let diff: float = (float (_idx values (i))) - mean
-            total <- total + ((diff * diff) * (_idx probabilities (i)))
+            let diff: float = (float (_idx values (int i))) - mean
+            total <- total + ((diff * diff) * (_idx probabilities (int i)))
             i <- i + 1
         __ret <- total
         raise Return
@@ -119,9 +117,9 @@ and covariance (x_values: int array) (y_values: int array) (x_probabilities: flo
         while i < (Seq.length (x_values)) do
             let mutable j: int = 0
             while j < (Seq.length (y_values)) do
-                let diff_x: float = (float (_idx x_values (i))) - mean_x
-                let diff_y: float = (float (_idx y_values (j))) - mean_y
-                total <- total + (((diff_x * diff_y) * (_idx x_probabilities (i))) * (_idx y_probabilities (j)))
+                let diff_x: float = (float (_idx x_values (int i))) - mean_x
+                let diff_y: float = (float (_idx y_values (int j))) - mean_y
+                total <- total + (((diff_x * diff_y) * (_idx x_probabilities (int i))) * (_idx y_probabilities (int j)))
                 j <- j + 1
             i <- i + 1
         __ret <- total
@@ -169,7 +167,7 @@ and main () =
         while i < (Seq.length (x_values)) do
             let mutable j: int = 0
             while j < (Seq.length (y_values)) do
-                let k: string = key (_idx x_values (i)) (_idx y_values (j))
+                let k: string = key (_idx x_values (int i)) (_idx y_values (int j))
                 let prob: float = _dictGet jpd ((string (k)))
                 printfn "%s" ((k + "=") + (_str (prob)))
                 j <- j + 1

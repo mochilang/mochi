@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -67,11 +55,11 @@ and explicit_euler (ode_func: float -> float -> float) (y0: float) (x0: float) (
         while i <= n do
             y <- Array.append y [|0.0|]
             i <- i + 1
-        y.[0] <- y0
+        y.[int 0] <- y0
         let mutable x: float = x0
         let mutable k: int = 0
         while k < n do
-            y.[k + 1] <- (_idx y (k)) + (float (step_size * (float (ode_func (x) (_idx y (k))))))
+            y.[int (k + 1)] <- (_idx y (int k)) + (float (step_size * (float (ode_func (x) (_idx y (int k))))))
             x <- x + step_size
             k <- k + 1
         __ret <- y
@@ -93,7 +81,7 @@ and test_explicit_euler () =
     try
         let f: float -> float -> float =         fun (x: float) (y: float) -> y
         let ys: float array = explicit_euler (f) (1.0) (0.0) (0.01) (5.0)
-        let last: float = _idx ys ((Seq.length (ys)) - 1)
+        let last: float = _idx ys (int ((Seq.length (ys)) - 1))
         if (abs_float (last - 144.77277243257308)) > 0.001 then
             failwith ("explicit_euler failed")
         __ret
@@ -107,7 +95,7 @@ and main () =
         test_explicit_euler()
         let f: float -> float -> float =         fun (x: float) (y: float) -> y
         let ys: float array = explicit_euler (f) (1.0) (0.0) (0.01) (5.0)
-        printfn "%g" (_idx ys ((Seq.length (ys)) - 1))
+        printfn "%g" (_idx ys (int ((Seq.length (ys)) - 1)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

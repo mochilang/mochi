@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec ceil_float (x: float) =
@@ -75,10 +63,10 @@ and euler_modified (ode_func: float -> float -> float) (y0: float) (x0: float) (
         let mutable x: float = x0
         let mutable k: int = 0
         while k < n do
-            let y_predict: float = (_idx y (k)) + (float (step * (float (ode_func (x) (_idx y (k))))))
-            let slope1: float = ode_func (x) (_idx y (k))
+            let y_predict: float = (_idx y (int k)) + (float (step * (float (ode_func (x) (_idx y (int k))))))
+            let slope1: float = ode_func (x) (_idx y (int k))
             let slope2: float = ode_func (x + step) (y_predict)
-            let y_next: float = (_idx y (k)) + ((step / 2.0) * (slope1 + slope2))
+            let y_next: float = (_idx y (int k)) + ((step / 2.0) * (slope1 + slope2))
             y <- Array.append y [|y_next|]
             x <- x + step
             k <- k + 1
@@ -113,9 +101,9 @@ and main () =
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let y1: float array = euler_modified (unbox<float -> float -> float> f1) (1.0) (0.0) (0.2) (1.0)
-        printfn "%g" (_idx y1 ((Seq.length (y1)) - 1))
+        printfn "%g" (_idx y1 (int ((Seq.length (y1)) - 1)))
         let y2: float array = euler_modified (unbox<float -> float -> float> f2) (1.0) (0.0) (0.1) (0.3)
-        printfn "%g" (_idx y2 ((Seq.length (y2)) - 1))
+        printfn "%g" (_idx y2 (int ((Seq.length (y2)) - 1)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

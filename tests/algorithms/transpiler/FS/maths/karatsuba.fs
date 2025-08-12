@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,20 +19,9 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -50,7 +39,7 @@ let rec int_pow (``base``: int) (exp: int) =
         let mutable result: int = 1
         let mutable i: int = 0
         while i < exp do
-            result <- result * ``base``
+            result <- int ((int64 result) * (int64 ``base``))
             i <- i + 1
         __ret <- result
         raise Return
@@ -63,7 +52,7 @@ and karatsuba (a: int) (b: int) =
     let mutable b = b
     try
         if ((String.length (_str (a))) = 1) || ((String.length (_str (b))) = 1) then
-            __ret <- a * b
+            __ret <- int ((int64 a) * (int64 b))
             raise Return
         let mutable m1: int = String.length (_str (a))
         let lb: int = String.length (_str (b))
@@ -78,8 +67,8 @@ and karatsuba (a: int) (b: int) =
         let x: int = karatsuba (a2) (b2)
         let y: int = karatsuba (a1 + a2) (b1 + b2)
         let z: int = karatsuba (a1) (b1)
-        let mutable result: int = ((z * (int_pow (10) (2 * m2))) + (((y - z) - x) * power)) + x
-        __ret <- result
+        let mutable result: int64 = (((int64 z) * (int64 (int_pow (10) (int ((int64 2) * (int64 m2)))))) + ((int64 ((y - z) - x)) * (int64 power))) + (int64 x)
+        __ret <- int result
         raise Return
         __ret
     with

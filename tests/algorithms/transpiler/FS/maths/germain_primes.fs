@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -49,7 +37,7 @@ let rec is_prime (n: int) =
             __ret <- false
             raise Return
         let mutable i: int = 3
-        while (i * i) <= n do
+        while ((int64 i) * (int64 i)) <= (int64 n) do
             if (((n % i + i) % i)) = 0 then
                 __ret <- false
                 raise Return
@@ -65,7 +53,7 @@ and is_germain_prime (number: int) =
     try
         if number < 1 then
             failwith ("Input value must be a positive integer")
-        __ret <- (is_prime (number)) && (is_prime ((2 * number) + 1))
+        __ret <- (is_prime (number)) && (is_prime (int (((int64 2) * (int64 number)) + (int64 1))))
         raise Return
         __ret
     with
