@@ -2218,7 +2218,11 @@ func convertWhileStmt(n *parser.WhileStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	body, err := convertStatements(n.Body, env)
+	// Variables declared inside a while block should not leak into the
+	// surrounding scope. Use a child environment for the body so that
+	// declarations in one loop iteration do not affect outer statements.
+	child := types.NewEnv(env)
+	body, err := convertStatements(n.Body, child)
 	if err != nil {
 		return nil, err
 	}

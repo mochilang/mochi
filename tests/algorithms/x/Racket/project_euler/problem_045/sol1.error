@@ -1,0 +1,6 @@
+run: exit status 1
+330 should be pentagonal
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/project_euler/problem_045/sol1.rkt:177:2
+   /workspace/mochi/tests/algorithms/x/Racket/project_euler/problem_045/sol1.rkt:176:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/project_euler/problem_045/sol1.rkt"
