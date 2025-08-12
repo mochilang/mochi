@@ -1,0 +1,28 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/neural_network/input_data.pas
+input_data.pas(5,10) Error: Identifier not found "DataSet"
+input_data.pas(5,17) Error: Error in type definition
+input_data.pas(6,15) Error: Identifier not found "DataSet"
+input_data.pas(6,22) Error: Error in type definition
+input_data.pas(7,12) Error: Identifier not found "DataSet"
+input_data.pas(7,19) Error: Error in type definition
+input_data.pas(168,29) Error: Incompatible types: got "DataSet.{Dynamic} Array Of IntArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(169,29) Error: Incompatible types: got "DataSet.{Dynamic} Array Of IntArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(171,28) Error: Incompatible types: got "DataSet.{Dynamic} Array Of IntArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(172,28) Error: Incompatible types: got "DataSet.{Dynamic} Array Of IntArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(176,91) Error: Incompatible type for arg no. 3: Got "{Dynamic} Array Of LongInt", expected "IntArrayArray"
+input_data.pas(179,30) Error: Incompatible types: got "DataSet.{Dynamic} Array Of IntArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(180,30) Error: Incompatible types: got "DataSet.{Dynamic} Array Of IntArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(182,91) Error: Incompatible type for arg no. 3: Got "{Dynamic} Array Of LongInt", expected "IntArrayArray"
+input_data.pas(199,39) Error: Incompatible types: got "IntArrayArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(200,39) Error: Incompatible types: got "IntArrayArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(201,39) Error: Incompatible types: got "IntArrayArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(202,39) Error: Incompatible types: got "IntArrayArray" expected "{Dynamic} Array Of LongInt"
+input_data.pas(203,105) Error: Incompatible type for arg no. 2: Got "{Dynamic} Array Of LongInt", expected "IntArrayArray"
+input_data.pas(204,110) Error: Incompatible type for arg no. 2: Got "{Dynamic} Array Of LongInt", expected "IntArrayArray"
+input_data.pas(250) Fatal: There were 20 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

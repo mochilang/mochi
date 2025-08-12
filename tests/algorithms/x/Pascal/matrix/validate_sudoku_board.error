@@ -1,0 +1,11 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/matrix/validate_sudoku_board.pas
+validate_sudoku_board.pas(101,96) Error: Incompatible type for arg no. 2: Got "ShortString", expected "LongInt"
+validate_sudoku_board.pas(101,190) Error: Incompatible type for arg no. 2: Got "ShortString", expected "LongInt"
+validate_sudoku_board.pas(101,288) Error: Incompatible type for arg no. 2: Got "ShortString", expected "LongInt"
+validate_sudoku_board.pas(129) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

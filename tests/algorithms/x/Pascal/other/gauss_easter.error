@@ -1,0 +1,12 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/other/gauss_easter.pas
+gauss_easter.pas(84,175) Error: Operator is not overloaded: "Double" mod "ShortInt"
+gauss_easter.pas(85,130) Error: Operator is not overloaded: "Double" mod "ShortInt"
+gauss_easter.pas(86,109) Error: Operator is not overloaded: "Double" mod "ShortInt"
+gauss_easter.pas(87,207) Error: Operator is not overloaded: "Double" mod "ShortInt"
+gauss_easter.pas(138) Fatal: There were 4 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
