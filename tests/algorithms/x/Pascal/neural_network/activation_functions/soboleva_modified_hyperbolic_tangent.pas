@@ -42,9 +42,13 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
 function to_float(x: integer): real;
 begin
-  to_float := x;
+  to_float := _to_float(x);
 end;
 procedure json(xs: array of real);
 var i: integer;
@@ -61,30 +65,30 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  x: real;
   d_value: real;
-  a_value: real;
-  b_value: real;
+  x: real;
   vector: RealArray;
+  b_value: real;
+  a_value: real;
   c_value: real;
-function exp(x: real): real; forward;
+function exp_(x: real): real; forward;
 function soboleva_modified_hyperbolic_tangent(vector: RealArray; a_value: real; b_value: real; c_value: real; d_value: real): RealArray; forward;
 procedure main(); forward;
-function exp(x: real): real;
+function exp_(x: real): real;
 var
-  exp_term: real;
-  exp_sum: real;
-  exp_n: integer;
+  exp__term: real;
+  exp__sum: real;
+  exp__n: integer;
 begin
-  exp_term := 1;
-  exp_sum := 1;
-  exp_n := 1;
-  while exp_n < 20 do begin
-  exp_term := (exp_term * x) / to_float(exp_n);
-  exp_sum := exp_sum + exp_term;
-  exp_n := exp_n + 1;
+  exp__term := 1;
+  exp__sum := 1;
+  exp__n := 1;
+  while exp__n < 20 do begin
+  exp__term := (exp__term * x) / to_float(exp__n);
+  exp__sum := exp__sum + exp__term;
+  exp__n := exp__n + 1;
 end;
-  exit(exp_sum);
+  exit(exp__sum);
 end;
 function soboleva_modified_hyperbolic_tangent(vector: RealArray; a_value: real; b_value: real; c_value: real; d_value: real): RealArray;
 var
