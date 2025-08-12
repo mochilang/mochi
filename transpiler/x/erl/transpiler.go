@@ -183,6 +183,7 @@ mochi_not(X) ->
 `
 
 const helperSafeArith = `
+-compile({nowarn_unused_function, [mochi_safe_mul/2, mochi_safe_div/2]}).
 mochi_safe_mul(A, B) ->
     try A * B catch _:_ -> 1.0e308 end.
 
