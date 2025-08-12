@@ -4402,8 +4402,17 @@ func isBigIntType(t types.Type) bool {
 }
 
 func ensureBigIntExpr(e Expr, t types.Type) Expr {
-	if isBigIntType(t) {
-		return e
+	if _, ok := t.(types.BigIntType); ok {
+		switch ex := e.(type) {
+		case *CallExpr:
+			if ex.Func == "big.NewInt" {
+				return e
+			}
+		case *BigBinaryExpr:
+			return e
+		}
+		usesBigInt = true
+		return &CallExpr{Func: "big.NewInt", Args: []Expr{&CallExpr{Func: "int64", Args: []Expr{e}}}}
 	}
 	usesBigInt = true
 	return &CallExpr{Func: "big.NewInt", Args: []Expr{&CallExpr{Func: "int64", Args: []Expr{e}}}}
@@ -4735,7 +4744,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	if ret != "" {
 		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
 		if exprType == "" {
-			exprType = "any"
+			// When the type checker cannot determine the expression type
+			// (e.g. for struct values), assume it already matches the
+			// expected return type to avoid emitting invalid type
+			// assertions.
+			exprType = ret
 		}
 		if fromNull {
 			exprType = ret
@@ -5007,13 +5020,18 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 	typesList := []types.Type{firstType}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
-		expr, err := compileUnary(op.Right, env, base)
+		// Each right-hand operand is a PostfixExpr rather than a Unary.
+		// Using compileUnary here resulted in a type mismatch after parser
+		// changes and caused algorithms to fail to transpile. Compile the
+		// operand using compilePostfix and determine its type via
+		// TypeOfPostfix instead.
+		expr, err := compilePostfix(op.Right, env, base)
 		if err != nil {
 			return nil, err
 		}
 		ops[i] = op
 		operands = append(operands, expr)
-		typesList = append(typesList, types.TypeOfUnary(op.Right, env))
+		typesList = append(typesList, types.TypeOfPostfix(op.Right, env))
 	}
 
 	levels := [][]string{
@@ -5063,6 +5081,18 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 								left = &StringLit{Value: "false"}
 							}
 							typesList[i] = types.StringType{}
+						}
+					}
+					if lt, ok := typesList[i].(types.ListType); ok {
+						if ll, ok2 := right.(*ListLit); ok2 {
+							updateListLitType(ll, lt.Elem)
+							typesList[i+1] = lt
+						}
+					}
+					if rt, ok := typesList[i+1].(types.ListType); ok {
+						if ll, ok2 := left.(*ListLit); ok2 {
+							updateListLitType(ll, rt.Elem)
+							typesList[i] = rt
 						}
 					}
 				}
@@ -5855,8 +5885,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						usesStrconv = true
-						expr = &AtoiExpr{Expr: expr}
+						// Without a precise static type, assume a numeric
+						// value and use Go's int() conversion. Falling back
+						// to string parsing here caused incorrect results
+						// for numeric expressions in algorithms.
+						expr = &IntCastExpr{Expr: expr}
 					default:
 						if _, ok := expr.(*BigBinaryExpr); ok {
 							usesBigInt = true

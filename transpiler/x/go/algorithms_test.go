@@ -55,7 +55,11 @@ func TestGoTranspiler_Algorithms_Golden(t *testing.T) {
 		name := strings.ReplaceAll(rel, string(os.PathSeparator), "_")
 		testName := fmt.Sprintf("%03d_%s", i+1, name)
 		ok := t.Run(testName, func(t *testing.T) {
-			codePath := filepath.Join(outDir, rel+".go")
+			codeFile := rel + ".go"
+			if strings.HasSuffix(rel, "_test") {
+				codeFile = rel + ".prog.go"
+			}
+			codePath := filepath.Join(outDir, codeFile)
 			outPath := filepath.Join(outDir, rel+".out")
 			errPath := filepath.Join(outDir, rel+".error")
 			benchPath := filepath.Join(outDir, rel+".bench")
