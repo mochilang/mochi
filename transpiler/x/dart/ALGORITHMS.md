@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-12 11:55 GMT+7
+Last updated: 2025-08-12 12:47 GMT+7
 
-## Algorithms Golden Test Checklist (893/1077)
+## Algorithms Golden Test Checklist (894/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -899,7 +899,7 @@ Last updated: 2025-08-12 11:55 GMT+7
 | 890 | project_euler/problem_059/sol1 | ✓ | 356.145ms | 2.7 MB |
 | 891 | project_euler/problem_062/sol1 | ✓ | 88.37ms | 5.0 MB |
 | 892 | project_euler/problem_063/sol1 | ✓ | 10.706ms | 2.8 MB |
-| 893 | project_euler/problem_064/sol1 | error |  |  |
+| 893 | project_euler/problem_064/sol1 | ✓ |  |  |
 | 894 | project_euler/problem_065/sol1 | ✓ | 20.287ms | 9.6 MB |
 | 895 | project_euler/problem_067/sol1 | ✓ | 73.817ms | 4.3 MB |
 | 896 | project_euler/problem_067/sol2 | ✓ | 55.608ms | 9.8 MB |

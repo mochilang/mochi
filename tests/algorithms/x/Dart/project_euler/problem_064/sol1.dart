@@ -62,7 +62,7 @@ int solution(int n) {
 
 void _main() {
   String nStr = stdin.readLineSync() ?? '';
-  int n = int.parse(nStr);
+  int n = int.tryParse(nStr) ?? 0;
   print(solution(n));
 }
 

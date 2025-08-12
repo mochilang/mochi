@@ -2859,13 +2859,13 @@ func (c *CastExpr) emit(w io.Writer) error {
 	}
 
 	if c.Type == "int" && valType == "String" {
-		if _, err := io.WriteString(w, "int.parse("); err != nil {
+		if _, err := io.WriteString(w, "int.tryParse("); err != nil {
 			return err
 		}
 		if err := c.Value.emit(w); err != nil {
 			return err
 		}
-		_, err := io.WriteString(w, ")")
+		_, err := io.WriteString(w, ") ?? 0")
 		return err
 	}
 
@@ -5831,7 +5831,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "toInt"}}, nil
 			}
 			if vt == "String" || vt == "dynamic" {
-				return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
+				call := &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "tryParse"}, Args: []Expr{v}}
+				return &BinaryExpr{Left: call, Op: "??", Right: &IntLit{Value: 0}}, nil
 			}
 			return &CastExpr{Value: v, Type: "int"}, nil
 		}
