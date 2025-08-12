@@ -86,6 +86,9 @@ func sanitizeName(name string) string {
 		return "append_"
 	case "reverse":
 		return "reverse_"
+	case "exp":
+		// avoid shadowing Racket's math `exp` function
+		return "exp_"
 	default:
 		return name
 	}
@@ -2347,7 +2350,14 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	name := sanitizeName(fn.Name)
 	if name != fn.Name {
-		funcNameMap[fn.Name] = name
+		// For certain function names like "exp" we want to let the
+		// original Racket builtin handle calls rather than the user
+		// defined version. In those cases we avoid recording the
+		// sanitized mapping so call sites continue to use the builtin
+		// name and the renamed function becomes unused.
+		if fn.Name != "exp" {
+			funcNameMap[fn.Name] = name
+		}
 	}
 	return &FunDecl{Name: name, Params: params, Body: body}, nil
 }
@@ -3208,7 +3218,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			}
 		}
 		if _, ok := env.GetFunc(c.Func); ok {
-			return &CallExpr{Func: sanitizeName(c.Func), Args: args}, nil
+			// Allow calls to "exp" to use Racket's builtin even if a
+			// user-defined function of the same name exists.
+			if c.Func != "exp" {
+				return &CallExpr{Func: sanitizeName(c.Func), Args: args}, nil
+			}
 		}
 	}
 	switch c.Func {
