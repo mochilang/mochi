@@ -1,0 +1,13 @@
+exit status 1
+panic: capture_area failed
+
+goroutine 1 [running]:
+main.run_tests()
+	/workspace/mochi/tests/algorithms/transpiler/Go/physics/basic_orbital_capture.go:114 +0x147
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/physics/basic_orbital_capture.go:119 +0x17
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/physics/basic_orbital_capture.go:135
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/physics/basic_orbital_capture.go:142 +0xc5
+exit status 2
