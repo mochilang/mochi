@@ -38,11 +38,9 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function f($x) {
-  global $a, $b, $steps, $boundary, $y;
   return $x * $x;
 };
   function make_points($a, $b, $h) {
-  global $steps, $boundary, $y;
   $xs = [];
   $x = $a + $h;
   while ($x <= ($b - $h)) {

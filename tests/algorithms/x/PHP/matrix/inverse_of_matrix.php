@@ -18,7 +18,6 @@ function _now() {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function inverse_of_matrix($matrix) {
-  global $m2, $m3;
   if (count($matrix) == 2 && count($matrix[0]) == 2 && count($matrix[1]) == 2) {
   $det = $matrix[0][0] * $matrix[1][1] - $matrix[1][0] * $matrix[0][1];
   if ($det == 0.0) {

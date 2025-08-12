@@ -39,7 +39,6 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   $INF = 1000000000;
   function breadth_first_search($graph, $source, $sink, &$parent) {
-  global $INF;
   $visited = [];
   $i = 0;
   while ($i < count($graph)) {

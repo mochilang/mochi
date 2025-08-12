@@ -34,19 +34,15 @@ function _str($x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function encode($row, $col) {
-  global $matrix;
   return _str($row) . ',' . _str($col);
 };
   function is_safe($row, $col, $rows, $cols) {
-  global $matrix;
   return $row >= 0 && $row < $rows && $col >= 0 && $col < $cols;
 };
   function has($seen, $key) {
-  global $matrix;
   return array_key_exists($key, $seen);
 };
   function depth_first_search($row, $col, &$seen, $mat) {
-  global $matrix;
   $rows = count($mat);
   $cols = count($mat[0]);
   $key = encode($row, $col);
@@ -58,7 +54,6 @@ $__start = _now();
 }
 };
   function find_max_area($mat) {
-  global $matrix;
   $seen = [];
   $rows = count($mat);
   $max_area = 0;

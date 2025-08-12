@@ -38,14 +38,12 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function abs_int($n) {
-  global $mat, $r90, $r180, $r270;
   if ($n < 0) {
   return -$n;
 }
   return $n;
 };
   function make_matrix($row_size) {
-  global $r90, $r180, $r270;
   $size = abs_int($row_size);
   if ($size == 0) {
   $size = 4;
@@ -65,7 +63,6 @@ $__start = _now();
   return $mat;
 };
   function transpose($mat) {
-  global $r90, $r180, $r270;
   $n = count($mat);
   $result = [];
   $i = 0;
@@ -82,7 +79,6 @@ $__start = _now();
   return $result;
 };
   function reverse_row($mat) {
-  global $r90, $r180, $r270;
   $result = [];
   $i = count($mat) - 1;
   while ($i >= 0) {
@@ -92,7 +88,6 @@ $__start = _now();
   return $result;
 };
   function reverse_column($mat) {
-  global $r90, $r180, $r270;
   $result = [];
   $i = 0;
   while ($i < count($mat)) {
@@ -108,25 +103,21 @@ $__start = _now();
   return $result;
 };
   function rotate_90($mat) {
-  global $r90, $r180, $r270;
   $t = transpose($mat);
   $rr = reverse_row($t);
   return $rr;
 };
   function rotate_180($mat) {
-  global $r90, $r180, $r270;
   $rc = reverse_column($mat);
   $rr = reverse_row($rc);
   return $rr;
 };
   function rotate_270($mat) {
-  global $r90, $r180, $r270;
   $t = transpose($mat);
   $rc = reverse_column($t);
   return $rc;
 };
   function row_to_string($row) {
-  global $mat, $r90, $r180, $r270;
   $line = '';
   $i = 0;
   while ($i < count($row)) {
@@ -140,7 +131,6 @@ $__start = _now();
   return $line;
 };
   function print_matrix($mat) {
-  global $r90, $r180, $r270;
   $i = 0;
   while ($i < count($mat)) {
   echo rtrim(row_to_string($mat[$i])), PHP_EOL;

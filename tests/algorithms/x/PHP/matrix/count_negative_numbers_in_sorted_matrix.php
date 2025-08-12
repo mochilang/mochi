@@ -36,6 +36,9 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -46,7 +49,6 @@ function _intdiv($a, $b) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function generate_large_matrix() {
-  global $grid, $test_grids, $results_bin, $results_brute, $results_break;
   $result = [];
   $i = 0;
   while ($i < 1000) {
@@ -62,7 +64,6 @@ $__start = _now();
   return $result;
 };
   function find_negative_index($arr) {
-  global $grid, $test_grids, $results_bin, $i, $results_brute, $results_break;
   $left = 0;
   $right = count($arr) - 1;
   if (count($arr) == 0) {
@@ -89,13 +90,12 @@ $__start = _now();
   return count($arr);
 };
   function count_negatives_binary_search($grid) {
-  global $test_grids, $results_bin, $results_brute, $results_break;
   $total = 0;
   $bound = count($grid[0]);
   $i = 0;
   while ($i < count($grid)) {
   $row = $grid[$i];
-  $idx = find_negative_index(array_slice($row, 0, $bound - 0));
+  $idx = find_negative_index(array_slice($row, 0, $bound));
   $bound = $idx;
   $total = $total + $idx;
   $i = $i + 1;
@@ -103,7 +103,6 @@ $__start = _now();
   return (count($grid) * count($grid[0])) - $total;
 };
   function count_negatives_brute_force($grid) {
-  global $test_grids, $results_bin, $results_brute, $results_break;
   $count = 0;
   $i = 0;
   while ($i < count($grid)) {
@@ -120,7 +119,6 @@ $__start = _now();
   return $count;
 };
   function count_negatives_brute_force_with_break($grid) {
-  global $test_grids, $results_bin, $results_brute, $results_break;
   $total = 0;
   $i = 0;
   while ($i < count($grid)) {

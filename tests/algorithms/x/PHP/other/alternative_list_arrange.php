@@ -38,22 +38,23 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function from_int($x) {
-  global $example1, $example2, $example3, $example4;
   return ['__tag' => 'Int', 'value' => $x];
 };
   function from_string($s) {
-  global $example1, $example2, $example3, $example4;
   return ['__tag' => 'Str', 'value' => $s];
 };
   function item_to_string($it) {
-  global $example1, $example2, $example3, $example4;
-  return match($it) {
-    $Int($v) => _str($v),
-    $Str($s) => $s,
-};
+  return (function($__v) {
+  if ($__v['__tag'] === "Int") {
+    $v = $__v["value"];
+    return _str($v);
+  } elseif ($__v['__tag'] === "Str") {
+    $s = $__v["value"];
+    return $s;
+  }
+})($it);
 };
   function alternative_list_arrange($first, $second) {
-  global $example1, $example2, $example3, $example4;
   $len1 = count($first);
   $len2 = count($second);
   $abs_len = ($len1 > $len2 ? $len1 : $len2);
@@ -71,7 +72,6 @@ $__start = _now();
   return $result;
 };
   function list_to_string($xs) {
-  global $example1, $example2, $example3, $example4;
   $s = '[';
   $i = 0;
   while ($i < count($xs)) {

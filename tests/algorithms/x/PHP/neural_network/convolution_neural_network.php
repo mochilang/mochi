@@ -29,20 +29,16 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   $seed = 1;
   function random() {
-  global $seed;
   $seed = ($seed * 13 + 7) % 100;
   return (floatval($seed)) / 100.0;
 };
   function sigmoid($x) {
-  global $seed;
   return 1.0 / (1.0 + mochi_exp(-$x));
 };
   function to_float($x) {
-  global $seed;
   return $x * 1.0;
 };
   function mochi_exp($x) {
-  global $seed;
   $term = 1.0;
   $sum = 1.0;
   $n = 1;
@@ -54,7 +50,6 @@ $__start = _now();
   return $sum;
 };
   function convolve($data, $kernel, $step, $bias) {
-  global $seed;
   $size_data = count($data);
   $size_kernel = count($kernel);
   $out = [];
@@ -82,7 +77,6 @@ $__start = _now();
   return $out;
 };
   function average_pool($map, $size) {
-  global $seed;
   $out = [];
   $i = 0;
   while ($i < count($map)) {
@@ -108,7 +102,6 @@ $__start = _now();
   return $out;
 };
   function flatten($maps) {
-  global $seed;
   $out = [];
   $i = 0;
   while ($i < count($maps)) {
@@ -126,7 +119,6 @@ $__start = _now();
   return $out;
 };
   function vec_mul_mat($v, $m) {
-  global $seed;
   $cols = count($m[0]);
   $res = [];
   $j = 0;
@@ -143,7 +135,6 @@ $__start = _now();
   return $res;
 };
   function matT_vec_mul($m, $v) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($m)) {
@@ -159,7 +150,6 @@ $__start = _now();
   return $res;
 };
   function vec_add($a, $b) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($a)) {
@@ -169,7 +159,6 @@ $__start = _now();
   return $res;
 };
   function vec_sub($a, $b) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($a)) {
@@ -179,7 +168,6 @@ $__start = _now();
   return $res;
 };
   function vec_mul($a, $b) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($a)) {
@@ -189,7 +177,6 @@ $__start = _now();
   return $res;
 };
   function vec_map_sig($v) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($v)) {
@@ -199,7 +186,6 @@ $__start = _now();
   return $res;
 };
   function new_cnn() {
-  global $seed;
   $k1 = [[1.0, 0.0], [0.0, 1.0]];
   $k2 = [[0.0, 1.0], [1.0, 0.0]];
   $conv_kernels = [$k1, $k2];
@@ -238,7 +224,6 @@ $__start = _now();
   return ['conv_kernels' => $conv_kernels, 'conv_bias' => $conv_bias, 'conv_step' => $conv_step, 'pool_size' => $pool_size, 'w_hidden' => $w_hidden, 'w_out' => $w_out, 'b_hidden' => $b_hidden, 'b_out' => $b_out, 'rate_weight' => 0.2, 'rate_bias' => 0.2];
 };
   function forward($cnn, $data) {
-  global $seed;
   $maps = [];
   $i = 0;
   while ($i < _len($cnn['conv_kernels'])) {
@@ -255,7 +240,6 @@ $__start = _now();
   return $out;
 };
   function train($cnn, $samples, $epochs) {
-  global $seed;
   $w_out = $cnn['w_out'];
   $b_out = $cnn['b_out'];
   $w_hidden = $cnn['w_hidden'];
@@ -318,7 +302,6 @@ $__start = _now();
   return ['conv_kernels' => $cnn['conv_kernels'], 'conv_bias' => $cnn['conv_bias'], 'conv_step' => $cnn['conv_step'], 'pool_size' => $cnn['pool_size'], 'w_hidden' => $w_hidden, 'w_out' => $w_out, 'b_hidden' => $b_hidden, 'b_out' => $b_out, 'rate_weight' => $cnn['rate_weight'], 'rate_bias' => $cnn['rate_bias']];
 };
   function main() {
-  global $seed;
   $cnn = new_cnn();
   $image = [[1.0, 0.0, 1.0, 0.0], [0.0, 1.0, 0.0, 1.0], [1.0, 0.0, 1.0, 0.0], [0.0, 1.0, 0.0, 1.0]];
   $sample = ['image' => $image, 'target' => [1.0, 0.0]];

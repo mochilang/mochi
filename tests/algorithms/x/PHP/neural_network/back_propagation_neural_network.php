@@ -28,11 +28,9 @@ $__start = _now();
   return $seed;
 };
   function random() {
-  global $seed;
   return (1.0 * mochi_rand()) / 2147483648.0;
 };
   function expApprox($x) {
-  global $seed;
   $y = $x;
   $is_neg = false;
   if ($x < 0.0) {
@@ -53,11 +51,9 @@ $__start = _now();
   return $sum;
 };
   function sigmoid($z) {
-  global $seed;
   return 1.0 / (1.0 + expApprox(-$z));
 };
   function sigmoid_vec($v) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($v)) {
@@ -67,7 +63,6 @@ $__start = _now();
   return $res;
 };
   function sigmoid_derivative($out) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($out)) {
@@ -78,7 +73,6 @@ $__start = _now();
   return $res;
 };
   function random_vector($n) {
-  global $seed;
   $v = [];
   $i = 0;
   while ($i < $n) {
@@ -88,7 +82,6 @@ $__start = _now();
   return $v;
 };
   function random_matrix($r, $c) {
-  global $seed;
   $m = [];
   $i = 0;
   while ($i < $r) {
@@ -98,7 +91,6 @@ $__start = _now();
   return $m;
 };
   function matvec($mat, $vec) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($mat)) {
@@ -114,7 +106,6 @@ $__start = _now();
   return $res;
 };
   function matTvec($mat, $vec) {
-  global $seed;
   $cols = count($mat[0]);
   $res = [];
   $j = 0;
@@ -131,7 +122,6 @@ $__start = _now();
   return $res;
 };
   function vec_sub($a, $b) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($a)) {
@@ -141,7 +131,6 @@ $__start = _now();
   return $res;
 };
   function vec_mul($a, $b) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($a)) {
@@ -151,7 +140,6 @@ $__start = _now();
   return $res;
 };
   function vec_scalar_mul($v, $s) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($v)) {
@@ -161,7 +149,6 @@ $__start = _now();
   return $res;
 };
   function outer($a, $b) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($a)) {
@@ -177,7 +164,6 @@ $__start = _now();
   return $res;
 };
   function mat_scalar_mul($mat, $s) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($mat)) {
@@ -193,7 +179,6 @@ $__start = _now();
   return $res;
 };
   function mat_sub($a, $b) {
-  global $seed;
   $res = [];
   $i = 0;
   while ($i < count($a)) {
@@ -209,11 +194,9 @@ $__start = _now();
   return $res;
 };
   function init_layer($units, $back_units, $lr) {
-  global $seed;
   return ['units' => $units, 'weight' => random_matrix($units, $back_units), 'bias' => random_vector($units), 'output' => [], 'xdata' => [], 'learn_rate' => $lr];
 };
   function forward($layers, $x) {
-  global $seed;
   $data = $x;
   $i = 0;
   while ($i < count($layers)) {
@@ -232,7 +215,6 @@ $__start = _now();
   return $layers;
 };
   function backward($layers, $grad) {
-  global $seed;
   $g = $grad;
   $i = count($layers) - 1;
   while ($i > 0) {
@@ -249,7 +231,6 @@ $__start = _now();
   return $layers;
 };
   function calc_loss($y, $yhat) {
-  global $seed;
   $s = 0.0;
   $i = 0;
   while ($i < count($y)) {
@@ -260,7 +241,6 @@ $__start = _now();
   return $s;
 };
   function calc_gradient($y, $yhat) {
-  global $seed;
   $g = [];
   $i = 0;
   while ($i < count($y)) {
@@ -270,7 +250,6 @@ $__start = _now();
   return $g;
 };
   function train($layers, $xdata, $ydata, $rounds, $acc) {
-  global $seed;
   $r = 0;
   while ($r < $rounds) {
   $i = 0;
@@ -286,7 +265,6 @@ $__start = _now();
   return 0.0;
 };
   function create_data() {
-  global $seed;
   $x = [];
   $i = 0;
   while ($i < 10) {
@@ -297,7 +275,6 @@ $__start = _now();
   return ['x' => $x, 'y' => $y];
 };
   function main() {
-  global $seed;
   $data = create_data();
   $x = $data['x'];
   $y = $data['y'];

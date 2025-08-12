@@ -38,7 +38,6 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function processes_resource_summation($alloc) {
-  global $claim_vector, $allocated_resources_table, $maximum_claim_table;
   $resources = count($alloc[0]);
   $sums = [];
   $i = 0;
@@ -55,7 +54,6 @@ $__start = _now();
   return $sums;
 };
   function available_resources($claim, $alloc_sum) {
-  global $claim_vector, $allocated_resources_table, $maximum_claim_table;
   $avail = [];
   $i = 0;
   while ($i < count($claim)) {
@@ -65,7 +63,6 @@ $__start = _now();
   return $avail;
 };
   function need($max, $alloc) {
-  global $claim_vector, $allocated_resources_table, $maximum_claim_table;
   $needs = [];
   $i = 0;
   while ($i < count($max)) {
@@ -81,7 +78,6 @@ $__start = _now();
   return $needs;
 };
   function pretty_print($claim, $alloc, $max) {
-  global $claim_vector, $allocated_resources_table, $maximum_claim_table;
   echo rtrim('         Allocated Resource Table'), PHP_EOL;
   $i = 0;
   while ($i < count($alloc)) {
@@ -140,7 +136,6 @@ $__start = _now();
   echo rtrim('Initial Available Resources:       ' . $avail_str), PHP_EOL;
 };
   function bankers_algorithm($claim, $alloc, $max) {
-  global $claim_vector, $allocated_resources_table, $maximum_claim_table;
   $need_list = need($max, $alloc);
   $alloc_sum = processes_resource_summation($alloc);
   $avail = available_resources($claim, $alloc_sum);

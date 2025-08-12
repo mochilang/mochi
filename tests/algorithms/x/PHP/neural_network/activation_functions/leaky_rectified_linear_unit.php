@@ -38,7 +38,6 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function leaky_rectified_linear_unit($vector, $alpha) {
-  global $vector1, $result1, $vector2, $result2;
   $result = [];
   $i = 0;
   while ($i < count($vector)) {

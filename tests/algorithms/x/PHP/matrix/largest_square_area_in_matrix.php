@@ -22,7 +22,6 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function update_area_of_max_square($row, $col, $rows, $cols, $mat, &$largest_square_area) {
-  global $sample;
   if ($row >= $rows || $col >= $cols) {
   return 0;
 }
@@ -40,13 +39,11 @@ $__start = _now();
 }
 };
   function largest_square_area_in_matrix_top_down($rows, $cols, $mat) {
-  global $sample;
   $largest = [0];
   update_area_of_max_square(0, 0, $rows, $cols, $mat, $largest);
   return $largest[0];
 };
   function update_area_of_max_square_with_dp($row, $col, $rows, $cols, $mat, &$dp_array, &$largest_square_area) {
-  global $sample;
   if ($row >= $rows || $col >= $cols) {
   return 0;
 }
@@ -69,7 +66,6 @@ $__start = _now();
 }
 };
   function largest_square_area_in_matrix_top_down_with_dp($rows, $cols, $mat) {
-  global $sample;
   $largest = [0];
   $dp_array = [];
   $r = 0;
@@ -87,7 +83,6 @@ $__start = _now();
   return $largest[0];
 };
   function largest_square_area_in_matrix_bottom_up($rows, $cols, $mat) {
-  global $sample;
   $dp_array = [];
   $r = 0;
   while ($r <= $rows) {
@@ -124,7 +119,6 @@ $__start = _now();
   return $largest;
 };
   function largest_square_area_in_matrix_bottom_up_space_optimization($rows, $cols, $mat) {
-  global $sample;
   $current_row = [];
   $i = 0;
   while ($i <= $cols) {

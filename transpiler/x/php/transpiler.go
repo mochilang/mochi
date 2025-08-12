@@ -4123,8 +4123,9 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 			if transpileEnv != nil {
 				switch pe := pex.(type) {
 				case *CallExpr:
-					if ut, ok := transpileEnv.FindUnionByVariant(pe.Func); ok {
-						st := ut.Variants[pe.Func]
+					name := strings.TrimPrefix(pe.Func, "$")
+					if ut, ok := transpileEnv.FindUnionByVariant(name); ok {
+						st := ut.Variants[name]
 						vars := make([]string, len(pe.Args))
 						for j, a := range pe.Args {
 							if v, ok := a.(*Var); ok {
@@ -4135,15 +4136,16 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 						}
 						fields := make([]string, len(st.Order))
 						copy(fields, st.Order)
-						unionCases = append(unionCases, UnionMatchCase{Tag: pe.Func, Vars: vars, Fields: fields, Result: res})
+						unionCases = append(unionCases, UnionMatchCase{Tag: name, Vars: vars, Fields: fields, Result: res})
 						continue
 					}
 				case *Var:
-					if ut, ok := transpileEnv.FindUnionByVariant(pe.Name); ok {
-						st := ut.Variants[pe.Name]
+					name := strings.TrimPrefix(pe.Name, "$")
+					if ut, ok := transpileEnv.FindUnionByVariant(name); ok {
+						st := ut.Variants[name]
 						fields := make([]string, len(st.Order))
 						copy(fields, st.Order)
-						unionCases = append(unionCases, UnionMatchCase{Tag: pe.Name, Fields: fields, Result: res})
+						unionCases = append(unionCases, UnionMatchCase{Tag: name, Fields: fields, Result: res})
 						continue
 					}
 				case nil:

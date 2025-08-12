@@ -26,7 +26,6 @@ function _panic($msg) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function is_square($matrix) {
-  global $matrix_1_to_4, $matrix_5_to_8, $matrix_count_up, $matrix_unordered;
   $n = count($matrix);
   $i = 0;
   while ($i < $n) {
@@ -38,7 +37,6 @@ $__start = _now();
   return true;
 };
   function matrix_multiply($a, $b) {
-  global $matrix_1_to_4, $matrix_5_to_8, $matrix_count_up, $matrix_unordered;
   $rows = count($a);
   $cols = count($b[0]);
   $inner = count($b);
@@ -63,7 +61,6 @@ $__start = _now();
   return $result;
 };
   function multiply($i, $j, $k, $a, $b, &$result, $n, $m) {
-  global $matrix_1_to_4, $matrix_5_to_8, $matrix_count_up, $matrix_unordered;
   if ($i >= $n) {
   return;
 }
@@ -79,7 +76,6 @@ $__start = _now();
   multiply($i, $j, $k + 1, $a, $b, $result, $n, $m);
 };
   function matrix_multiply_recursive($a, $b) {
-  global $matrix_1_to_4, $matrix_5_to_8, $matrix_count_up, $matrix_unordered;
   if (count($a) == 0 || count($b) == 0) {
   return [];
 }

@@ -22,7 +22,6 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function exp_taylor($x) {
-  global $sample;
   $term = 1.0;
   $sum = 1.0;
   $i = 1.0;
@@ -34,7 +33,6 @@ $__start = _now();
   return $sum;
 };
   function sigmoid($vector) {
-  global $sample;
   $result = [];
   $i = 0;
   while ($i < count($vector)) {
@@ -46,7 +44,6 @@ $__start = _now();
   return $result;
 };
   function gaussian_error_linear_unit($vector) {
-  global $sample;
   $result = [];
   $i = 0;
   while ($i < count($vector)) {

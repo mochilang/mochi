@@ -38,7 +38,6 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function bubble_sort($a) {
-  global $matrix1, $matrix2;
   $arr = $a;
   $n = count($arr);
   $i = 0;
@@ -57,7 +56,6 @@ $__start = _now();
   return $arr;
 };
   function median($matrix) {
-  global $matrix1, $matrix2;
   $linear = [];
   $i = 0;
   while ($i < count($matrix)) {

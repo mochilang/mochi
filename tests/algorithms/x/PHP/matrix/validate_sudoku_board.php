@@ -35,7 +35,6 @@ $__start = _now();
   $NUM_SQUARES = 9;
   $EMPTY_CELL = '.';
   function is_valid_sudoku_board($board) {
-  global $NUM_SQUARES, $EMPTY_CELL, $valid_board, $invalid_board;
   if (count($board) != $NUM_SQUARES) {
   return false;
 }
