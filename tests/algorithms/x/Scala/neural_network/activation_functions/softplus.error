@@ -1,9 +1,9 @@
 exit status 1
 java.lang.RuntimeException: ln domain error
-	at Main$.ln(softplus.scala:35)
-	at Main$.softplus(softplus.scala:68)
-	at Main$.main(softplus.scala:79)
-	at Main$.main(softplus.scala:89)
+	at Main$.ln(softplus.scala:36)
+	at Main$.softplus(softplus.scala:69)
+	at Main$.main(softplus.scala:80)
+	at Main$.main(softplus.scala:90)
 	at Main.main(softplus.scala)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
