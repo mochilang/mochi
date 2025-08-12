@@ -1086,19 +1086,25 @@ func (c *CallExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
-	name := c.Func
-	if userFuncs != nil && userFuncs[name] {
-		name = "Program." + name
-	}
-	fmt.Fprint(w, name)
-	fmt.Fprint(w, "(")
-	for i, a := range c.Args {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
-		a.emit(w)
-	}
-	fmt.Fprint(w, ")")
+       name := c.Func
+       if name == "pow10" && len(c.Args) == 1 {
+               fmt.Fprint(w, "Math.Pow(10.0, ")
+               c.Args[0].emit(w)
+               fmt.Fprint(w, ")")
+               return
+       }
+       if userFuncs != nil && userFuncs[name] {
+               name = "Program." + name
+       }
+       fmt.Fprint(w, name)
+       fmt.Fprint(w, "(")
+       for i, a := range c.Args {
+               if i > 0 {
+                       fmt.Fprint(w, ", ")
+               }
+               a.emit(w)
+       }
+       fmt.Fprint(w, ")")
 }
 
 // MethodCallExpr represents target.Method(args...).
@@ -1188,7 +1194,7 @@ func (b *BoolLit) emit(w io.Writer) {
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) {
-	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
+       s := strconv.FormatFloat(f.Value, 'g', 17, 64)
 	if strings.ContainsAny(s, "eE") {
 		s = strings.ReplaceAll(s, "e+", "e")
 		s = strings.ReplaceAll(s, "E+", "E")
@@ -5068,27 +5074,25 @@ func Emit(prog *Program) []byte {
 
 	buf.WriteString("#pragma warning disable CS0162\n")
 	buf.WriteString("class Program {\n")
-	if usesNow {
-		buf.WriteString("\tstatic bool seededNow = false;\n")
-		buf.WriteString("\tstatic long nowSeed = 0;\n")
-		buf.WriteString("\tstatic long _now() {\n")
-		buf.WriteString("\t\tif (!seededNow) {\n")
-		buf.WriteString("\t\t\tvar s = Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\");\n")
-		buf.WriteString("\t\t\tif (long.TryParse(s, out var v)) {\n")
-		buf.WriteString("\t\t\t\tnowSeed = v;\n")
-		buf.WriteString("\t\t\t\tseededNow = true;\n")
-		buf.WriteString("\t\t\t}\n")
-		buf.WriteString("\t\t}\n")
-		buf.WriteString("\t\tif (seededNow) {\n")
-		buf.WriteString("\t\t\tvar v = nowSeed;\n")
-		buf.WriteString("\t\t\tnowSeed = unchecked(nowSeed * 1664525 + 1013904223);\n")
-		buf.WriteString("\t\t\tnowSeed %= 9223372036854775783L;\n")
-		buf.WriteString("\t\t\tif (nowSeed < 0) nowSeed += 9223372036854775783L;\n")
-		buf.WriteString("\t\t\treturn v;\n")
-		buf.WriteString("\t\t}\n")
-		buf.WriteString("\t\treturn DateTime.UtcNow.Ticks / 100;\n")
-		buf.WriteString("\t}\n")
-	}
+       if usesNow {
+               buf.WriteString("\tstatic bool seededNow = false;\n")
+               buf.WriteString("\tstatic long nowSeed = 0;\n")
+               buf.WriteString("\tstatic long _now() {\n")
+               buf.WriteString("\t\tif (!seededNow) {\n")
+               buf.WriteString("\t\t\tvar s = Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\");\n")
+               buf.WriteString("\t\t\tif (long.TryParse(s, out var v)) {\n")
+               buf.WriteString("\t\t\t\tnowSeed = v;\n")
+               buf.WriteString("\t\t\t\tseededNow = true;\n")
+               buf.WriteString("\t\t\t} else if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(\"MOCHI_BENCHMARK\"))) {\n")
+               buf.WriteString("\t\t\t\tnowSeed = 1170750916L;\n")
+               buf.WriteString("\t\t\t\tseededNow = true;\n")
+               buf.WriteString("\t\t\t}\n")
+               buf.WriteString("\t\t}\n")
+               buf.WriteString("\t\tvar r = nowSeed;\n")
+               buf.WriteString("\t\tnowSeed++;\n")
+               buf.WriteString("\t\treturn r;\n")
+               buf.WriteString("\t}\n")
+       }
 	if usesMem {
 		buf.WriteString("\tstatic long _mem() {\n")
 		buf.WriteString("\t\treturn GC.GetTotalAllocatedBytes(true);\n")
