@@ -5962,9 +5962,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 				return &CastExpr{Value: args[0], Type: "int"}, nil
 			}
-			if name == "float" {
+			if name == "float" || name == "to_float" {
 				if len(args) != 1 {
-					return nil, fmt.Errorf("float expects 1 arg")
+					return nil, fmt.Errorf("%s expects 1 arg", name)
 				}
 				return &CastExpr{Value: args[0], Type: "float"}, nil
 			}

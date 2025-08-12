@@ -31,7 +31,7 @@ fun exp(x: Double): Double {
     var sum: Double = 1.0
     var n: Int = (1).toInt()
     while (n < 20) {
-        term = (term * x) / to_float(n)
+        term = (term * x) / ((n.toDouble()))
         sum = sum + term
         n = n + 1
     }
