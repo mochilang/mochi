@@ -5453,11 +5453,14 @@ func formatCS(src []byte) []byte {
 			indent++
 		}
 	}
-	out := strings.Join(lines, "\n")
-	if !strings.HasSuffix(out, "\n") {
-		out += "\n"
-	}
-	return []byte(out)
+       out := strings.Join(lines, "\n")
+       if !strings.Contains(out, "BigInteger") {
+               out = strings.Replace(out, "using System.Numerics;\n", "", 1)
+       }
+       if !strings.HasSuffix(out, "\n") {
+               out += "\n"
+       }
+       return []byte(out)
 }
 
 func fieldNames(fs []StructField) []string {
