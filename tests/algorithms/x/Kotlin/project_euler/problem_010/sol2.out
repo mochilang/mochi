@@ -1,0 +1,4 @@
+Exception in thread "main" kotlin.TypeCastException: null cannot be cast to non-null type kotlin.Boolean
+	at Sol2Kt.solution(sol2.kt:6)
+	at Sol2Kt.main(sol2.kt:20)
+	at Sol2Kt.main(sol2.kt)

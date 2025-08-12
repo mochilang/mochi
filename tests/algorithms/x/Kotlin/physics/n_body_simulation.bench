@@ -2,4 +2,4 @@
 {"vx":0.01, "vy":0.0}
 {"x":-9.0, "y":0.0}
 {"vx":0.1, "vy":0.0}
-{"duration_us":45713, "memory_bytes":103456, "name":"main"}
+{"duration_us":44148, "memory_bytes":103456, "name":"main"}

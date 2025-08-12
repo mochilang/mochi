@@ -1,8 +1,0 @@
-run: exit status 1
-Exception in thread "main" java.lang.ClassCastException: class java.lang.Double cannot be cast to class java.lang.Integer (java.lang.Double and java.lang.Integer are in module java.base of loader 'bootstrap')
-	at Orbital_transfer_workKt.format_scientific_3(orbital_transfer_work.kt:78)
-	at Orbital_transfer_workKt.orbital_transfer_work(orbital_transfer_work.kt:109)
-	at Orbital_transfer_workKt.test_orbital_transfer_work(orbital_transfer_work.kt:113)
-	at Orbital_transfer_workKt.user_main(orbital_transfer_work.kt:125)
-	at Orbital_transfer_workKt.main(orbital_transfer_work.kt:134)
-	at Orbital_transfer_workKt.main(orbital_transfer_work.kt)

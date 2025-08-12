@@ -75,7 +75,7 @@ fun format_scientific_3(x: Double): String {
         exp = exp - 1
     }
     var temp = kotlin.math.floor((num * 1000.0) + 0.5)
-    var scaled: Int = ((temp as Int)).toInt()
+    var scaled: Int = ((temp.toInt())).toInt()
     if (scaled == 10000) {
         scaled = 1000
         exp = exp + 1

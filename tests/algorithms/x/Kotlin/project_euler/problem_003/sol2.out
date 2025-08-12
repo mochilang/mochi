@@ -1,0 +1,6 @@
+Exception in thread "main" java.lang.RuntimeException: Parameter n must be greater than or equal to one.
+	at Sol2Kt.panic(sol2.kt:1)
+	at Sol2Kt.largest_prime_factor(sol2.kt:5)
+	at Sol2Kt.user_main(sol2.kt:24)
+	at Sol2Kt.main(sol2.kt:28)
+	at Sol2Kt.main(sol2.kt)

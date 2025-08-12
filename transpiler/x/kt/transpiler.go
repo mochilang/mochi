@@ -1130,8 +1130,6 @@ func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "int", "Int":
 		switch t := guessType(c.Value); t {
-		case "Any", "Any?", "":
-			io.WriteString(w, " as Int")
 		case "String":
 			useHelper("importBigInt")
 			io.WriteString(w, ".toBigInteger().toInt()")
@@ -5707,7 +5705,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Call != nil:
 		switch p.Call.Func {
-		case "count", "sum", "avg", "len", "str":
+		case "count", "sum", "avg", "len", "str", "abs":
 			if len(p.Call.Args) != 1 {
 				return nil, fmt.Errorf("%s expects 1 arg", p.Call.Func)
 			}
@@ -5741,6 +5739,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return &LenExpr{Value: arg, IsString: isStr}, nil
 			case "str":
 				return &StrExpr{Value: arg}, nil
+			case "abs":
+				return &CallExpr{Func: "kotlin.math.abs", Args: []Expr{arg}}, nil
 			}
 			return nil, fmt.Errorf("unsupported builtin")
 		case "append":
