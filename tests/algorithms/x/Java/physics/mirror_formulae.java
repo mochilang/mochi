@@ -1,66 +1,66 @@
 public class Main {
 
     static double abs_float(double x) {
-        if (x < 0.0) {
+        if ((double)(x) < 0.0) {
             return -x;
         }
         return x;
     }
 
     static boolean isclose(double a, double b, double tolerance) {
-        return abs_float(a - b) < tolerance;
+        return (double)(abs_float((double)(a) - (double)(b))) < (double)(tolerance);
     }
 
     static double focal_length(double distance_of_object, double distance_of_image) {
-        if (distance_of_object == 0.0 || distance_of_image == 0.0) {
+        if ((double)(distance_of_object) == 0.0 || (double)(distance_of_image) == 0.0) {
             throw new RuntimeException(String.valueOf("Invalid inputs. Enter non zero values with respect to the sign convention."));
         }
-        return 1.0 / ((1.0 / distance_of_object) + (1.0 / distance_of_image));
+        return 1.0 / ((1.0 / (double)(distance_of_object)) + (1.0 / (double)(distance_of_image)));
     }
 
     static double object_distance(double focal_length, double distance_of_image) {
-        if (distance_of_image == 0.0 || focal_length == 0.0) {
+        if ((double)(distance_of_image) == 0.0 || (double)(focal_length) == 0.0) {
             throw new RuntimeException(String.valueOf("Invalid inputs. Enter non zero values with respect to the sign convention."));
         }
-        return 1.0 / ((1.0 / focal_length) - (1.0 / distance_of_image));
+        return 1.0 / ((1.0 / (double)(focal_length)) - (1.0 / (double)(distance_of_image)));
     }
 
     static double image_distance(double focal_length, double distance_of_object) {
-        if (distance_of_object == 0.0 || focal_length == 0.0) {
+        if ((double)(distance_of_object) == 0.0 || (double)(focal_length) == 0.0) {
             throw new RuntimeException(String.valueOf("Invalid inputs. Enter non zero values with respect to the sign convention."));
         }
-        return 1.0 / ((1.0 / focal_length) - (1.0 / distance_of_object));
+        return 1.0 / ((1.0 / (double)(focal_length)) - (1.0 / (double)(distance_of_object)));
     }
 
     static void test_focal_length() {
-        double f1 = focal_length(10.0, 20.0);
-        if (!(Boolean)isclose(f1, 6.66666666666666, 1e-08)) {
+        double f1 = (double)(focal_length(10.0, 20.0));
+        if (!(Boolean)isclose((double)(f1), 6.66666666666666, 1e-08)) {
             throw new RuntimeException(String.valueOf("focal_length test1 failed"));
         }
-        double f2 = focal_length(9.5, 6.7);
-        if (!(Boolean)isclose(f2, 3.929012346, 1e-08)) {
+        double f2_1 = (double)(focal_length(9.5, 6.7));
+        if (!(Boolean)isclose((double)(f2_1), 3.929012346, 1e-08)) {
             throw new RuntimeException(String.valueOf("focal_length test2 failed"));
         }
     }
 
     static void test_object_distance() {
-        double u1 = object_distance(30.0, 20.0);
-        if (!(Boolean)isclose(u1, -60.0, 1e-08)) {
+        double u1 = (double)(object_distance(30.0, 20.0));
+        if (!(Boolean)isclose((double)(u1), -60.0, 1e-08)) {
             throw new RuntimeException(String.valueOf("object_distance test1 failed"));
         }
-        double u2 = object_distance(10.5, 11.7);
-        if (!(Boolean)isclose(u2, 102.375, 1e-08)) {
+        double u2_1 = (double)(object_distance(10.5, 11.7));
+        if (!(Boolean)isclose((double)(u2_1), 102.375, 1e-08)) {
             throw new RuntimeException(String.valueOf("object_distance test2 failed"));
         }
     }
 
     static void test_image_distance() {
-        double v1 = image_distance(10.0, 40.0);
-        if (!(Boolean)isclose(v1, 13.33333333, 1e-08)) {
+        double v1 = (double)(image_distance(10.0, 40.0));
+        if (!(Boolean)isclose((double)(v1), 13.33333333, 1e-08)) {
             throw new RuntimeException(String.valueOf("image_distance test1 failed"));
         }
-        double v2 = image_distance(1.5, 6.7);
-        if (!(Boolean)isclose(v2, 1.932692308, 1e-08)) {
+        double v2_1 = (double)(image_distance(1.5, 6.7));
+        if (!(Boolean)isclose((double)(v2_1), 1.932692308, 1e-08)) {
             throw new RuntimeException(String.valueOf("image_distance test2 failed"));
         }
     }
@@ -74,7 +74,41 @@ public class Main {
         System.out.println(_p(image_distance(10.0, 40.0)));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -89,6 +123,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
