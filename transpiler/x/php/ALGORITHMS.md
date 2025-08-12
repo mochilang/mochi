@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-11 18:17 GMT+7
+Last updated: 2025-08-12 07:59 GMT+7
 
-## Algorithms Golden Test Checklist (947/1077)
+## Algorithms Golden Test Checklist (951/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -556,7 +556,7 @@ Last updated: 2025-08-11 18:17 GMT+7
 | 547 | maths/check_polygon | ✓ | 150µs | 41.4 KB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 187µs | 71.6 KB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 93µs | 42.8 KB |
-| 550 | maths/collatz_sequence | ✓ | 192µs | 39.1 KB |
+| 550 | maths/collatz_sequence | ✓ | 151µs | 36.9 KB |
 | 551 | maths/combinations | ✓ | 83µs | 38.5 KB |
 | 552 | maths/continued_fraction | ✓ | 137µs | 40.3 KB |
 | 553 | maths/decimal_isolate | ✓ | 88µs | 35.9 KB |
@@ -574,11 +574,11 @@ Last updated: 2025-08-11 18:17 GMT+7
 | 565 | maths/factors | ✓ | 195µs | 36.9 KB |
 | 566 | maths/fast_inverse_sqrt | ✓ | 951µs | 70.3 KB |
 | 567 | maths/fermat_little_theorem | ✓ | 133µs | 39.1 KB |
-| 568 | maths/fibonacci | error |  |  |
+| 568 | maths/fibonacci | ✓ | 418µs | 78.3 KB |
 | 569 | maths/find_max | ✓ | 128µs | 36.9 KB |
 | 570 | maths/find_min | ✓ | 134µs | 40.2 KB |
 | 571 | maths/floor | ✓ | 76µs | 36.1 KB |
-| 572 | maths/gamma | error |  |  |
+| 572 | maths/gamma | ✓ | 1.515259s | 71.2 KB |
 | 573 | maths/gaussian | ✓ | 62µs | 35.5 KB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 79µs | 39.2 KB |
 | 575 | maths/geometric_mean | error |  |  |
@@ -593,10 +593,10 @@ Last updated: 2025-08-11 18:17 GMT+7
 | 584 | maths/jaccard_similarity | ✓ | 156µs | 38.1 KB |
 | 585 | maths/joint_probability_distribution | ✓ | 151µs | 36.8 KB |
 | 586 | maths/josephus_problem | ✓ | 138µs | 39.2 KB |
-| 587 | maths/juggler_sequence | error |  |  |
+| 587 | maths/juggler_sequence | ✓ | 193µs | 40.0 KB |
 | 588 | maths/karatsuba | ✓ | 172µs | 39.6 KB |
 | 589 | maths/kth_lexicographic_permutation | ✓ | 204µs | 37.8 KB |
-| 590 | maths/largest_of_very_large_numbers | error |  |  |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 61µs | 40.9 KB |
 | 591 | maths/least_common_multiple | ✓ | 57µs | 35.1 KB |
 | 592 | maths/line_length | ✓ | 969µs | 38.6 KB |
 | 593 | maths/liouville_lambda | ✓ | 96µs | 38.8 KB |

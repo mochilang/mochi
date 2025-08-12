@@ -31,6 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function ln($x) {
@@ -45,7 +49,7 @@ $__start = _now();
 };
   return 2.0 * $sum;
 };
-  function log10($x) {
+  function mochi_log10($x) {
   return ln($x) / ln(10.0);
 };
   function absf($x) {
@@ -62,19 +66,19 @@ $__start = _now();
   return 1.0;
 }
   if ($x < 0) {
-  $panic('math domain error');
+  _panic('math domain error');
 }
-  return (floatval($y)) * log10(floatval($x));
+  return (floatval($y)) * mochi_log10(floatval($x));
 };
   function test_res() {
   if (absf(res(5, 7) - 4.892790030352132) > 0.0000001) {
-  $panic('res(5,7) failed');
+  _panic('res(5,7) failed');
 }
   if (res(0, 5) != 0.0) {
-  $panic('res(0,5) failed');
+  _panic('res(0,5) failed');
 }
   if (res(3, 0) != 1.0) {
-  $panic('res(3,0) failed');
+  _panic('res(3,0) failed');
 }
 };
   function compare($x1, $y1, $x2, $y2) {

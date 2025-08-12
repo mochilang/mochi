@@ -2603,7 +2603,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		strFlags = append(strFlags, false)
 	}
 	for _, p := range b.Right {
-		r, err := convertUnary(p.Right)
+		r, err := convertPostfix(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -2614,7 +2614,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		ops = append(ops, op)
 		operands = append(operands, r)
 		if transpileEnv != nil {
-			t := types.TypeOfUnary(p.Right, transpileEnv)
+			t := types.TypeOfPostfix(p.Right, transpileEnv)
 			_, ok := t.(types.StringType)
 			strFlags = append(strFlags, ok)
 		} else {
@@ -4953,16 +4953,6 @@ func isIntExpr(e Expr) bool {
 
 func isBigIntExpr(e Expr) bool {
 	switch v := e.(type) {
-	case *IntLit:
-		return true
-	case *Var:
-		if transpileEnv != nil {
-			if t, err := transpileEnv.GetVar(v.Name); err == nil {
-				if types.IsIntType(t) || types.IsBigIntType(t) {
-					return true
-				}
-			}
-		}
 	case *BinaryExpr:
 		switch v.Op {
 		case "+", "-", "*", "/", "%":
@@ -4980,7 +4970,7 @@ func isBigIntExpr(e Expr) bool {
 			return true
 		}
 	}
-	if t := exprType(e); types.IsIntType(t) || types.IsBigIntType(t) {
+	if t := exprType(e); types.IsBigIntType(t) {
 		return true
 	}
 	return false
