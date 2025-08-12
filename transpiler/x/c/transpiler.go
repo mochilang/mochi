@@ -108,6 +108,7 @@ var (
 	needInput               bool
 	needSubstring           bool
 	needAtoi                bool
+	needToFloat             bool
 	needCharAt              bool
 	needIndexOf             bool
 	needSliceInt            bool
@@ -1123,6 +1124,8 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	if typ == "" {
 		if vt, ok := varTypes[d.Name]; ok && vt != "" {
 			typ = vt
+		} else if t := inferExprType(currentEnv, d.Value); t != "" {
+			typ = t
 		}
 	}
 	if typ == "" || typ == "int" {
@@ -1347,6 +1350,12 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 			} else {
+				if base == "long long" {
+					if lst, ok := d.Value.(*ListLit); ok && len(lst.Elems) > 0 && exprIsFloat(lst.Elems[0]) {
+						base = "double"
+						typ = "double[]"
+					}
+				}
 				fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
@@ -3195,6 +3204,14 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if c.Func == "to_float" && len(c.Args) == 1 {
+		needToFloat = true
+		funcReturnTypes["to_float"] = "double"
+		io.WriteString(w, "to_float(")
+		c.Args[0].emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if c.Func == "upper" && len(c.Args) == 1 {
 		needUpper = true
 		io.WriteString(w, "str_upper(")
@@ -4427,6 +4444,11 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return atoi(s);\n")
 		buf.WriteString("}\n\n")
 	}
+	if needToFloat {
+		buf.WriteString("static double to_float(long long x) {\n")
+		buf.WriteString("    return (double)x;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needSHA256 {
 		buf.WriteString("static int* _sha256(const int *arr, size_t len) {\n")
 		buf.WriteString("    char tmpl[] = \"/tmp/mochi_sha256_XXXXXX\";\n")
@@ -4905,6 +4927,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needInput = false
 	needSubstring = false
 	needAtoi = false
+	needToFloat = false
 	needCharAt = false
 	needIndexOf = false
 	needSliceInt = false

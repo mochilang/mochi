@@ -2,129 +2,129 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (384/1077) - Last updated 2025-08-12 12:29 +0700:
+Checklist of programs that currently transpile and run (1/1077) - Last updated 2025-08-12 15:27 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
-| 2 | backtracking/all_permutations | ✓ | 919us | 1.6 MB |
-| 3 | backtracking/all_subsequences | ✓ | 731us | 1.5 MB |
-| 4 | backtracking/coloring | ✓ | 918us | 1.5 MB |
-| 5 | backtracking/combination_sum | ✓ | 697us | 1.4 MB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 858us | 1.5 MB |
-| 7 | backtracking/hamiltonian_cycle | ✓ |  |  |
-| 8 | backtracking/knight_tour | ✓ | 477us | 1.5 MB |
-| 9 | backtracking/match_word_pattern | ✓ | 957us | 1.6 MB |
-| 10 | backtracking/minimax | ✓ | 514us | 1.5 MB |
-| 11 | backtracking/n_queens | ✓ | 3.43ms | 1.5 MB |
+| 1 | backtracking/all_combinations |  |  |  |
+| 2 | backtracking/all_permutations |  |  |  |
+| 3 | backtracking/all_subsequences |  |  |  |
+| 4 | backtracking/coloring |  |  |  |
+| 5 | backtracking/combination_sum |  |  |  |
+| 6 | backtracking/crossword_puzzle_solver |  |  |  |
+| 7 | backtracking/hamiltonian_cycle |  |  |  |
+| 8 | backtracking/knight_tour |  |  |  |
+| 9 | backtracking/match_word_pattern |  |  |  |
+| 10 | backtracking/minimax |  |  |  |
+| 11 | backtracking/n_queens |  |  |  |
 | 12 | backtracking/n_queens_math |  |  |  |
-| 13 | backtracking/power_sum | ✓ | 488us | 1.5 MB |
-| 14 | backtracking/rat_in_maze | ✓ | 1.02ms | 1.6 MB |
+| 13 | backtracking/power_sum |  |  |  |
+| 14 | backtracking/rat_in_maze |  |  |  |
 | 15 | backtracking/sudoku |  |  |  |
-| 16 | backtracking/sum_of_subsets | ✓ | 528us | 1.5 MB |
-| 17 | backtracking/word_break | ✓ | 328us | 1.5 MB |
+| 16 | backtracking/sum_of_subsets |  |  |  |
+| 17 | backtracking/word_break |  |  |  |
 | 18 | backtracking/word_ladder |  |  |  |
 | 19 | backtracking/word_search |  |  |  |
 | 20 | bit_manipulation/binary_and_operator |  |  |  |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 490us | 1.5 MB |
-| 22 | bit_manipulation/binary_count_setbits | ✓ | 231us | 1.6 MB |
-| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 207us | 1.5 MB |
-| 24 | bit_manipulation/binary_or_operator | ✓ | 171us | 1.4 MB |
-| 25 | bit_manipulation/binary_shifts | ✓ | 425us | 1.6 MB |
-| 26 | bit_manipulation/binary_twos_complement | ✓ | 211us | 1.4 MB |
-| 27 | bit_manipulation/binary_xor_operator | ✓ | 625us | 1.5 MB |
-| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 383us | 1.5 MB |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 316us | 1.5 MB |
-| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 284us | 1.4 MB |
-| 31 | bit_manipulation/excess_3_code | ✓ | 230us | 1.6 MB |
-| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 834us | 1.5 MB |
-| 33 | bit_manipulation/find_unique_number | ✓ | 226us | 1.5 MB |
-| 34 | bit_manipulation/gray_code_sequence | ✓ | 283us | 1.5 MB |
-| 35 | bit_manipulation/highest_set_bit | ✓ | 264us | 1.5 MB |
-| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 299us | 1.4 MB |
-| 37 | bit_manipulation/is_even | ✓ | 397us | 1.5 MB |
-| 38 | bit_manipulation/is_power_of_two | ✓ |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 267us | 1.6 MB |
-| 40 | bit_manipulation/missing_number | ✓ | 149us | 1.4 MB |
-| 41 | bit_manipulation/numbers_different_signs | ✓ | 252us | 1.4 MB |
-| 42 | bit_manipulation/power_of_4 | ✓ | 281us | 1.6 MB |
-| 43 | bit_manipulation/reverse_bits | ✓ | 469us | 1.5 MB |
-| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 235us | 1.5 MB |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 264us | 1.4 MB |
-| 46 | blockchain/diophantine_equation | ✓ | 391us | 1.6 MB |
-| 47 | boolean_algebra/and_gate | ✓ | 262us | 1.6 MB |
-| 48 | boolean_algebra/imply_gate | ✓ | 371us | 1.5 MB |
-| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 397us | 1.5 MB |
-| 50 | boolean_algebra/multiplexer | ✓ | 184us | 1.6 MB |
-| 51 | boolean_algebra/nand_gate | ✓ | 260us | 1.4 MB |
-| 52 | boolean_algebra/nimply_gate | ✓ | 195us | 1.4 MB |
-| 53 | boolean_algebra/nor_gate | ✓ | 297us | 1.5 MB |
-| 54 | boolean_algebra/not_gate | ✓ | 446us | 1.6 MB |
-| 55 | boolean_algebra/or_gate | ✓ | 274us | 1.5 MB |
-| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 251us | 1.4 MB |
-| 57 | boolean_algebra/xnor_gate | ✓ | 599us | 1.5 MB |
-| 58 | boolean_algebra/xor_gate | ✓ | 237us | 1.6 MB |
+| 21 | bit_manipulation/binary_coded_decimal |  |  |  |
+| 22 | bit_manipulation/binary_count_setbits |  |  |  |
+| 23 | bit_manipulation/binary_count_trailing_zeros |  |  |  |
+| 24 | bit_manipulation/binary_or_operator |  |  |  |
+| 25 | bit_manipulation/binary_shifts |  |  |  |
+| 26 | bit_manipulation/binary_twos_complement |  |  |  |
+| 27 | bit_manipulation/binary_xor_operator |  |  |  |
+| 28 | bit_manipulation/bitwise_addition_recursive |  |  |  |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method |  |  |  |
+| 30 | bit_manipulation/count_number_of_one_bits |  |  |  |
+| 31 | bit_manipulation/excess_3_code |  |  |  |
+| 32 | bit_manipulation/find_previous_power_of_two |  |  |  |
+| 33 | bit_manipulation/find_unique_number |  |  |  |
+| 34 | bit_manipulation/gray_code_sequence |  |  |  |
+| 35 | bit_manipulation/highest_set_bit |  |  |  |
+| 36 | bit_manipulation/index_of_rightmost_set_bit |  |  |  |
+| 37 | bit_manipulation/is_even |  |  |  |
+| 38 | bit_manipulation/is_power_of_two |  |  |  |
+| 39 | bit_manipulation/largest_pow_of_two_le_num |  |  |  |
+| 40 | bit_manipulation/missing_number |  |  |  |
+| 41 | bit_manipulation/numbers_different_signs |  |  |  |
+| 42 | bit_manipulation/power_of_4 |  |  |  |
+| 43 | bit_manipulation/reverse_bits |  |  |  |
+| 44 | bit_manipulation/single_bit_manipulation_operations |  |  |  |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits |  |  |  |
+| 46 | blockchain/diophantine_equation |  |  |  |
+| 47 | boolean_algebra/and_gate |  |  |  |
+| 48 | boolean_algebra/imply_gate |  |  |  |
+| 49 | boolean_algebra/karnaugh_map_simplification |  |  |  |
+| 50 | boolean_algebra/multiplexer |  |  |  |
+| 51 | boolean_algebra/nand_gate |  |  |  |
+| 52 | boolean_algebra/nimply_gate |  |  |  |
+| 53 | boolean_algebra/nor_gate |  |  |  |
+| 54 | boolean_algebra/not_gate |  |  |  |
+| 55 | boolean_algebra/or_gate |  |  |  |
+| 56 | boolean_algebra/quine_mc_cluskey |  |  |  |
+| 57 | boolean_algebra/xnor_gate |  |  |  |
+| 58 | boolean_algebra/xor_gate |  |  |  |
 | 59 | cellular_automata/conways_game_of_life |  |  |  |
-| 60 | cellular_automata/game_of_life | ✓ | 278us | 1.5 MB |
-| 61 | cellular_automata/langtons_ant | ✓ |  |  |
-| 62 | cellular_automata/nagel_schrekenberg | ✓ | 206us | 1.4 MB |
+| 60 | cellular_automata/game_of_life |  |  |  |
+| 61 | cellular_automata/langtons_ant |  |  |  |
+| 62 | cellular_automata/nagel_schrekenberg |  |  |  |
 | 63 | cellular_automata/one_dimensional |  |  |  |
-| 64 | cellular_automata/wa_tor | ✓ | 1.53ms | 1.6 MB |
-| 65 | ciphers/a1z26 | ✓ | 371us | 1.5 MB |
-| 66 | ciphers/affine_cipher | ✓ | 360us | 1.5 MB |
-| 67 | ciphers/atbash | ✓ | 222us | 1.5 MB |
-| 68 | ciphers/autokey | ✓ | 335us | 1.4 MB |
-| 69 | ciphers/baconian_cipher | ✓ | 226us | 1.5 MB |
-| 70 | ciphers/base16 | ✓ | 448us | 1.6 MB |
-| 71 | ciphers/base32 | ✓ | 617us | 1.7 MB |
-| 72 | ciphers/base64_cipher | ✓ | 782us | 1.6 MB |
-| 73 | ciphers/base85 | ✓ | 797us | 1.7 MB |
-| 74 | ciphers/beaufort_cipher | ✓ | 192us | 1.6 MB |
-| 75 | ciphers/bifid | ✓ | 408us | 1.5 MB |
-| 76 | ciphers/brute_force_caesar_cipher | ✓ | 1.02ms | 1.6 MB |
-| 77 | ciphers/caesar_cipher | ✓ | 6.93ms | 3.3 MB |
-| 78 | ciphers/cryptomath_module | ✓ | 695us | 1.5 MB |
-| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 8.37ms | 3.6 MB |
-| 80 | ciphers/deterministic_miller_rabin | ✓ | 333us | 1.5 MB |
-| 81 | ciphers/diffie | ✓ | 322us | 1.5 MB |
-| 82 | ciphers/diffie_hellman | ✓ | 190us | 1.5 MB |
-| 83 | ciphers/elgamal_key_generator | ✓ | 480us | 1.6 MB |
-| 84 | ciphers/enigma_machine2 | ✓ | 2.73ms | 2.1 MB |
-| 85 | ciphers/fractionated_morse_cipher | ✓ | 306us | 1.6 MB |
-| 86 | ciphers/gronsfeld_cipher | ✓ | 728us | 1.8 MB |
-| 87 | ciphers/hill_cipher | ✓ | 233us | 1.6 MB |
-| 88 | ciphers/mixed_keyword_cypher | ✓ | 163us | 1.4 MB |
-| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 316us | 1.5 MB |
-| 90 | ciphers/morse_code | ✓ | 442us | 1.6 MB |
-| 91 | ciphers/onepad_cipher | ✓ | 309us | 1.4 MB |
+| 64 | cellular_automata/wa_tor |  |  |  |
+| 65 | ciphers/a1z26 |  |  |  |
+| 66 | ciphers/affine_cipher |  |  |  |
+| 67 | ciphers/atbash |  |  |  |
+| 68 | ciphers/autokey |  |  |  |
+| 69 | ciphers/baconian_cipher |  |  |  |
+| 70 | ciphers/base16 |  |  |  |
+| 71 | ciphers/base32 |  |  |  |
+| 72 | ciphers/base64_cipher |  |  |  |
+| 73 | ciphers/base85 |  |  |  |
+| 74 | ciphers/beaufort_cipher |  |  |  |
+| 75 | ciphers/bifid |  |  |  |
+| 76 | ciphers/brute_force_caesar_cipher |  |  |  |
+| 77 | ciphers/caesar_cipher |  |  |  |
+| 78 | ciphers/cryptomath_module |  |  |  |
+| 79 | ciphers/decrypt_caesar_with_chi_squared |  |  |  |
+| 80 | ciphers/deterministic_miller_rabin |  |  |  |
+| 81 | ciphers/diffie |  |  |  |
+| 82 | ciphers/diffie_hellman |  |  |  |
+| 83 | ciphers/elgamal_key_generator |  |  |  |
+| 84 | ciphers/enigma_machine2 |  |  |  |
+| 85 | ciphers/fractionated_morse_cipher |  |  |  |
+| 86 | ciphers/gronsfeld_cipher |  |  |  |
+| 87 | ciphers/hill_cipher |  |  |  |
+| 88 | ciphers/mixed_keyword_cypher |  |  |  |
+| 89 | ciphers/mono_alphabetic_ciphers |  |  |  |
+| 90 | ciphers/morse_code |  |  |  |
+| 91 | ciphers/onepad_cipher |  |  |  |
 | 92 | ciphers/permutation_cipher |  |  |  |
-| 93 | ciphers/playfair_cipher | ✓ | 411us | 1.5 MB |
-| 94 | ciphers/polybius | ✓ | 620us | 1.5 MB |
-| 95 | ciphers/porta_cipher | ✓ | 623us | 1.6 MB |
-| 96 | ciphers/rabin_miller | ✓ | 506us | 1.4 MB |
-| 97 | ciphers/rail_fence_cipher | ✓ | 341us | 1.5 MB |
-| 98 | ciphers/rot13 | ✓ | 1.68ms | 1.7 MB |
-| 99 | ciphers/rsa_cipher | ✓ | 428us | 1.4 MB |
-| 100 | ciphers/rsa_factorization | ✓ | 288us | 1.6 MB |
-| 101 | ciphers/rsa_key_generator | ✓ | 772us | 1.4 MB |
-| 102 | ciphers/running_key_cipher | ✓ | 556us | 1.6 MB |
-| 103 | ciphers/shuffled_shift_cipher | ✓ | 382us | 1.5 MB |
-| 104 | ciphers/simple_keyword_cypher | ✓ | 400us | 1.5 MB |
-| 105 | ciphers/simple_substitution_cipher | ✓ | 320us | 1.6 MB |
-| 106 | ciphers/transposition_cipher | ✓ | 471us | 1.5 MB |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 417us | 1.5 MB |
-| 108 | ciphers/trifid_cipher | ✓ | 676us | 1.5 MB |
-| 109 | ciphers/vernam_cipher | ✓ | 255us | 1.6 MB |
-| 110 | ciphers/vigenere_cipher | ✓ | 336us | 1.4 MB |
-| 111 | ciphers/xor_cipher | ✓ | 841us | 1.7 MB |
-| 112 | computer_vision/cnn_classification | ✓ | 613us | 1.6 MB |
-| 113 | computer_vision/flip_augmentation | ✓ | 581us | 1.6 MB |
+| 93 | ciphers/playfair_cipher |  |  |  |
+| 94 | ciphers/polybius |  |  |  |
+| 95 | ciphers/porta_cipher |  |  |  |
+| 96 | ciphers/rabin_miller |  |  |  |
+| 97 | ciphers/rail_fence_cipher |  |  |  |
+| 98 | ciphers/rot13 |  |  |  |
+| 99 | ciphers/rsa_cipher |  |  |  |
+| 100 | ciphers/rsa_factorization |  |  |  |
+| 101 | ciphers/rsa_key_generator |  |  |  |
+| 102 | ciphers/running_key_cipher |  |  |  |
+| 103 | ciphers/shuffled_shift_cipher |  |  |  |
+| 104 | ciphers/simple_keyword_cypher |  |  |  |
+| 105 | ciphers/simple_substitution_cipher |  |  |  |
+| 106 | ciphers/transposition_cipher |  |  |  |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |  |  |  |
+| 108 | ciphers/trifid_cipher |  |  |  |
+| 109 | ciphers/vernam_cipher |  |  |  |
+| 110 | ciphers/vigenere_cipher |  |  |  |
+| 111 | ciphers/xor_cipher |  |  |  |
+| 112 | computer_vision/cnn_classification |  |  |  |
+| 113 | computer_vision/flip_augmentation |  |  |  |
 | 114 | computer_vision/haralick_descriptors |  |  |  |
 | 115 | computer_vision/harris_corner |  |  |  |
 | 116 | computer_vision/horn_schunck |  |  |  |
-| 117 | computer_vision/intensity_based_segmentation | ✓ | 585us | 1.4 MB |
-| 118 | computer_vision/mean_threshold | ✓ | 424us | 1.4 MB |
-| 119 | computer_vision/mosaic_augmentation | ✓ | 900us | 1.6 MB |
-| 120 | computer_vision/pooling_functions | ✓ | 282us | 1.6 MB |
+| 117 | computer_vision/intensity_based_segmentation |  |  |  |
+| 118 | computer_vision/mean_threshold |  |  |  |
+| 119 | computer_vision/mosaic_augmentation |  |  |  |
+| 120 | computer_vision/pooling_functions |  |  |  |
 | 121 | conversions/astronomical_length_scale_conversion |  |  |  |
 | 122 | conversions/binary_to_decimal |  |  |  |
 | 123 | conversions/binary_to_hexadecimal |  |  |  |
@@ -145,77 +145,77 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 138 | conversions/octal_to_decimal |  |  |  |
 | 139 | conversions/octal_to_hexadecimal |  |  |  |
 | 140 | conversions/prefix_conversions |  |  |  |
-| 141 | conversions/prefix_conversions_string | ✓ | 521us | 1.6 MB |
+| 141 | conversions/prefix_conversions_string |  |  |  |
 | 142 | conversions/pressure_conversions |  |  |  |
-| 143 | conversions/rectangular_to_polar | ✓ | 561us | 1.6 MB |
-| 144 | conversions/rgb_cmyk_conversion | ✓ | 466us | 1.6 MB |
-| 145 | conversions/rgb_hsv_conversion | ✓ | 938us | 1.7 MB |
-| 146 | conversions/roman_numerals | ✓ |  |  |
-| 147 | conversions/speed_conversions | ✓ | 873us | 1.7 MB |
-| 148 | conversions/temperature_conversions | ✓ | 468us | 1.7 MB |
-| 149 | conversions/time_conversions | ✓ | 436us | 1.6 MB |
-| 150 | conversions/volume_conversions | ✓ | 500us | 1.5 MB |
-| 151 | conversions/weight_conversion | ✓ | 230us | 1.6 MB |
+| 143 | conversions/rectangular_to_polar |  |  |  |
+| 144 | conversions/rgb_cmyk_conversion |  |  |  |
+| 145 | conversions/rgb_hsv_conversion |  |  |  |
+| 146 | conversions/roman_numerals |  |  |  |
+| 147 | conversions/speed_conversions |  |  |  |
+| 148 | conversions/temperature_conversions |  |  |  |
+| 149 | conversions/time_conversions |  |  |  |
+| 150 | conversions/volume_conversions |  |  |  |
+| 151 | conversions/weight_conversion |  |  |  |
 | 152 | data_compression/burrows_wheeler |  |  |  |
 | 153 | data_compression/huffman |  |  |  |
-| 154 | data_compression/lempel_ziv | ✓ | 641us | 1.4 MB |
-| 155 | data_compression/lempel_ziv_decompress | ✓ | 436us | 1.5 MB |
-| 156 | data_compression/lz77 | ✓ | 723us | 1.4 MB |
-| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 4us | 1.4 MB |
-| 158 | data_compression/run_length_encoding | ✓ | 902us | 1.5 MB |
-| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 326us | 1.4 MB |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 262us | 1.5 MB |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 399us | 1.6 MB |
-| 162 | data_structures/arrays/kth_largest_element | ✓ | 684us | 1.6 MB |
-| 163 | data_structures/arrays/median_two_array | ✓ | 442us | 1.6 MB |
-| 164 | data_structures/arrays/monotonic_array | ✓ | 275us | 1.5 MB |
-| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 248us | 1.6 MB |
-| 166 | data_structures/arrays/permutations | ✓ | 707us | 1.5 MB |
-| 167 | data_structures/arrays/prefix_sum | ✓ | 459us | 1.6 MB |
+| 154 | data_compression/lempel_ziv |  |  |  |
+| 155 | data_compression/lempel_ziv_decompress |  |  |  |
+| 156 | data_compression/lz77 |  |  |  |
+| 157 | data_compression/peak_signal_to_noise_ratio |  |  |  |
+| 158 | data_compression/run_length_encoding |  |  |  |
+| 159 | data_structures/arrays/equilibrium_index_in_array |  |  |  |
+| 160 | data_structures/arrays/find_triplets_with_0_sum |  |  |  |
+| 161 | data_structures/arrays/index_2d_array_in_1d |  |  |  |
+| 162 | data_structures/arrays/kth_largest_element |  |  |  |
+| 163 | data_structures/arrays/median_two_array |  |  |  |
+| 164 | data_structures/arrays/monotonic_array |  |  |  |
+| 165 | data_structures/arrays/pairs_with_given_sum |  |  |  |
+| 166 | data_structures/arrays/permutations |  |  |  |
+| 167 | data_structures/arrays/prefix_sum |  |  |  |
 | 168 | data_structures/arrays/product_sum |  |  |  |
-| 169 | data_structures/arrays/sparse_table | ✓ | 316us | 1.5 MB |
-| 170 | data_structures/arrays/sudoku_solver | ✓ | 589us | 1.5 MB |
+| 169 | data_structures/arrays/sparse_table |  |  |  |
+| 170 | data_structures/arrays/sudoku_solver |  |  |  |
 | 171 | data_structures/binary_tree/avl_tree |  |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 334us | 1.5 MB |
+| 172 | data_structures/binary_tree/basic_binary_tree |  |  |  |
 | 173 | data_structures/binary_tree/binary_search_tree |  |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |  |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror |  |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 288us | 1.5 MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum |  |  |  |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |  |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 447us | 1.5 MB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 491us | 1.6 MB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 492us | 1.6 MB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree |  |  |  |
+| 179 | data_structures/binary_tree/distribute_coins |  |  |  |
+| 180 | data_structures/binary_tree/fenwick_tree |  |  |  |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |  |  |  |
 | 182 | data_structures/binary_tree/floor_and_ceiling |  |  |  |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |  |  |  |
 | 184 | data_structures/binary_tree/is_sorted |  |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree | ✓ |  |  |
+| 185 | data_structures/binary_tree/is_sum_tree |  |  |  |
 | 186 | data_structures/binary_tree/lazy_segment_tree |  |  |  |
 | 187 | data_structures/binary_tree/lowest_common_ancestor |  |  |  |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree |  |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 314us | 1.4 MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst |  |  |  |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |  |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |  |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |  |  |  |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 511us | 1.6 MB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees |  |  |  |
 | 194 | data_structures/binary_tree/red_black_tree |  |  |  |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 490us | 1.6 MB |
+| 195 | data_structures/binary_tree/segment_tree |  |  |  |
 | 196 | data_structures/binary_tree/segment_tree_other |  |  |  |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |  |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 464us | 1.5 MB |
+| 198 | data_structures/binary_tree/symmetric_tree |  |  |  |
 | 199 | data_structures/binary_tree/treap |  |  |  |
 | 200 | data_structures/binary_tree/wavelet_tree |  |  |  |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set |  |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 436us | 1.5 MB |
-| 203 | data_structures/hashing/bloom_filter | ✓ | 4.36ms | 2.2 MB |
+| 202 | data_structures/disjoint_set/disjoint_set |  |  |  |
+| 203 | data_structures/hashing/bloom_filter |  |  |  |
 | 204 | data_structures/hashing/double_hash |  |  |  |
 | 205 | data_structures/hashing/hash_map |  |  |  |
-| 206 | data_structures/hashing/hash_table | ✓ | 538us | 1.4 MB |
+| 206 | data_structures/hashing/hash_table |  |  |  |
 | 207 | data_structures/hashing/hash_table_with_linked_list |  |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 290us | 1.5 MB |
+| 208 | data_structures/hashing/number_theory/prime_numbers |  |  |  |
 | 209 | data_structures/hashing/quadratic_probing |  |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 337us | 1.6 MB |
-| 211 | data_structures/heap/binomial_heap | ✓ | 411us | 1.4 MB |
+| 210 | data_structures/hashing/tests/test_hash_map |  |  |  |
+| 211 | data_structures/heap/binomial_heap |  |  |  |
 | 212 | data_structures/heap/heap |  |  |  |
 | 213 | data_structures/heap/heap_generic |  |  |  |
 | 214 | data_structures/heap/max_heap |  |  |  |
@@ -223,30 +223,30 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 216 | data_structures/heap/randomized_heap |  |  |  |
 | 217 | data_structures/kd_tree/build_kdtree |  |  |  |
 | 218 | data_structures/kd_tree/example/example_usage |  |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 588us | 1.7 MB |
-| 220 | data_structures/kd_tree/kd_node | ✓ | 565us | 1.5 MB |
+| 219 | data_structures/kd_tree/example/hypercube_points |  |  |  |
+| 220 | data_structures/kd_tree/kd_node |  |  |  |
 | 221 | data_structures/kd_tree/nearest_neighbour_search |  |  |  |
 | 222 | data_structures/kd_tree/tests/test_kdtree |  |  |  |
-| 223 | data_structures/linked_list/circular_linked_list | ✓ | 343us | 1.5 MB |
+| 223 | data_structures/linked_list/circular_linked_list |  |  |  |
 | 224 | data_structures/linked_list/deque_doubly |  |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 482us | 1.6 MB |
+| 225 | data_structures/linked_list/doubly_linked_list |  |  |  |
 | 226 | data_structures/linked_list/doubly_linked_list_two |  |  |  |
 | 227 | data_structures/linked_list/floyds_cycle_detection |  |  |  |
-| 228 | data_structures/linked_list/from_sequence | ✓ | 446us | 1.5 MB |
-| 229 | data_structures/linked_list/has_loop | ✓ | 444us | 1.5 MB |
-| 230 | data_structures/linked_list/is_palindrome | ✓ | 398us | 1.5 MB |
-| 231 | data_structures/linked_list/merge_two_lists | ✓ | 428us | 1.6 MB |
-| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 632us | 1.4 MB |
-| 233 | data_structures/linked_list/print_reverse | ✓ | 339us | 1.4 MB |
-| 234 | data_structures/linked_list/reverse_k_group | ✓ | 276us | 1.5 MB |
+| 228 | data_structures/linked_list/from_sequence |  |  |  |
+| 229 | data_structures/linked_list/has_loop |  |  |  |
+| 230 | data_structures/linked_list/is_palindrome |  |  |  |
+| 231 | data_structures/linked_list/merge_two_lists |  |  |  |
+| 232 | data_structures/linked_list/middle_element_of_linked_list |  |  |  |
+| 233 | data_structures/linked_list/print_reverse |  |  |  |
+| 234 | data_structures/linked_list/reverse_k_group |  |  |  |
 | 235 | data_structures/linked_list/rotate_to_the_right |  |  |  |
-| 236 | data_structures/linked_list/singly_linked_list | ✓ | 641us | 1.5 MB |
-| 237 | data_structures/linked_list/skip_list | ✓ | 247us | 1.4 MB |
-| 238 | data_structures/linked_list/swap_nodes | ✓ | 443us | 1.6 MB |
-| 239 | data_structures/queues/circular_queue | ✓ | 573us | 1.4 MB |
-| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 917us | 1.5 MB |
-| 241 | data_structures/queues/double_ended_queue | ✓ | 363us | 1.5 MB |
-| 242 | data_structures/queues/linked_queue | ✓ | 424us | 1.5 MB |
+| 236 | data_structures/linked_list/singly_linked_list |  |  |  |
+| 237 | data_structures/linked_list/skip_list |  |  |  |
+| 238 | data_structures/linked_list/swap_nodes |  |  |  |
+| 239 | data_structures/queues/circular_queue |  |  |  |
+| 240 | data_structures/queues/circular_queue_linked_list |  |  |  |
+| 241 | data_structures/queues/double_ended_queue |  |  |  |
+| 242 | data_structures/queues/linked_queue |  |  |  |
 | 243 | data_structures/queues/priority_queue_using_list |  |  |  |
 | 244 | data_structures/queues/queue_by_list |  |  |  |
 | 245 | data_structures/queues/queue_by_two_stacks |  |  |  |
@@ -254,57 +254,57 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 247 | data_structures/stacks/balanced_parentheses |  |  |  |
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm |  |  |  |
 | 249 | data_structures/stacks/infix_to_postfix_conversion |  |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 522us | 1.4 MB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 502us | 1.5 MB |
-| 253 | data_structures/stacks/next_greater_element | ✓ | 544us | 1.6 MB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 480us | 1.6 MB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 682us | 1.6 MB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion |  |  |  |
+| 251 | data_structures/stacks/largest_rectangle_histogram |  |  |  |
+| 252 | data_structures/stacks/lexicographical_numbers |  |  |  |
+| 253 | data_structures/stacks/next_greater_element |  |  |  |
+| 254 | data_structures/stacks/postfix_evaluation |  |  |  |
+| 255 | data_structures/stacks/prefix_evaluation |  |  |  |
 | 256 | data_structures/stacks/stack |  |  |  |
 | 257 | data_structures/stacks/stack_using_two_queues |  |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 709us | 1.5 MB |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 523us | 1.4 MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 257us | 1.6 MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 436us | 1.5 MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list |  |  |  |
+| 259 | data_structures/stacks/stack_with_singly_linked_list |  |  |  |
+| 260 | data_structures/stacks/stock_span_problem |  |  |  |
+| 261 | data_structures/suffix_tree/example/example_usage |  |  |  |
 | 262 | data_structures/suffix_tree/suffix_tree |  |  |  |
 | 263 | data_structures/suffix_tree/suffix_tree_node |  |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 341us | 1.4 MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree |  |  |  |
 | 265 | data_structures/trie/radix_tree |  |  |  |
 | 266 | data_structures/trie/trie |  |  |  |
-| 267 | digital_image_processing/change_brightness | ✓ | 285us | 1.4 MB |
-| 268 | digital_image_processing/change_contrast | ✓ | 153us | 1.5 MB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 146us | 1.4 MB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 211us | 1.6 MB |
+| 267 | digital_image_processing/change_brightness |  |  |  |
+| 268 | digital_image_processing/change_contrast |  |  |  |
+| 269 | digital_image_processing/convert_to_negative |  |  |  |
+| 270 | digital_image_processing/dithering/burkes |  |  |  |
 | 271 | digital_image_processing/edge_detection/canny |  |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 847us | 1.6 MB |
-| 273 | digital_image_processing/filters/convolve | ✓ | 513us | 1.6 MB |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 386us | 1.6 MB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 226us | 1.6 MB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 220us | 1.4 MB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 534us | 1.4 MB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 231us | 1.5 MB |
+| 272 | digital_image_processing/filters/bilateral_filter |  |  |  |
+| 273 | digital_image_processing/filters/convolve |  |  |  |
+| 274 | digital_image_processing/filters/gabor_filter |  |  |  |
+| 275 | digital_image_processing/filters/gaussian_filter |  |  |  |
+| 276 | digital_image_processing/filters/laplacian_filter |  |  |  |
+| 277 | digital_image_processing/filters/local_binary_pattern |  |  |  |
+| 278 | digital_image_processing/filters/median_filter |  |  |  |
 | 279 | digital_image_processing/filters/sobel_filter |  |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 572us | 1.6 MB |
-| 281 | digital_image_processing/index_calculation | ✓ | 359us | 1.6 MB |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 311us | 1.6 MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch |  |  |  |
+| 281 | digital_image_processing/index_calculation |  |  |  |
+| 282 | digital_image_processing/morphological_operations/dilation_operation |  |  |  |
 | 283 | digital_image_processing/morphological_operations/erosion_operation |  |  |  |
 | 284 | digital_image_processing/resize/resize |  |  |  |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 340us | 1.5 MB |
-| 286 | digital_image_processing/sepia | ✓ | 422us | 1.4 MB |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 427us | 1.5 MB |
-| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 806us | 1.6 MB |
-| 289 | divide_and_conquer/convex_hull | ✓ |  |  |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 439us | 1.6 MB |
-| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 336us | 1.4 MB |
-| 292 | divide_and_conquer/inversions | ✓ | 366us | 1.5 MB |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 307us | 1.5 MB |
+| 285 | digital_image_processing/rotation/rotation |  |  |  |
+| 286 | digital_image_processing/sepia |  |  |  |
+| 287 | digital_image_processing/test_digital_image_processing |  |  |  |
+| 288 | divide_and_conquer/closest_pair_of_points |  |  |  |
+| 289 | divide_and_conquer/convex_hull |  |  |  |
+| 290 | divide_and_conquer/heaps_algorithm |  |  |  |
+| 291 | divide_and_conquer/heaps_algorithm_iterative |  |  |  |
+| 292 | divide_and_conquer/inversions |  |  |  |
+| 293 | divide_and_conquer/kth_order_statistic |  |  |  |
 | 294 | divide_and_conquer/max_difference_pair |  |  |  |
 | 295 | divide_and_conquer/max_subarray |  |  |  |
 | 296 | divide_and_conquer/mergesort |  |  |  |
 | 297 | divide_and_conquer/peak |  |  |  |
 | 298 | divide_and_conquer/power |  |  |  |
 | 299 | divide_and_conquer/strassen_matrix_multiplication |  |  |  |
-| 300 | docs/conf | ✓ | 125us | 1.4 MB |
+| 300 | docs/conf |  |  |  |
 | 301 | dynamic_programming/abbreviation |  |  |  |
 | 302 | dynamic_programming/all_construct |  |  |  |
 | 303 | dynamic_programming/bitmask |  |  |  |
@@ -454,25 +454,25 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 447 | graphs/multi_heuristic_astar |  |  |  |
 | 448 | graphs/page_rank |  |  |  |
 | 449 | graphs/prim |  |  |  |
-| 450 | graphs/random_graph_generator | ✓ | 227us | 1.5 MB |
-| 451 | graphs/scc_kosaraju | ✓ | 230us | 1.5 MB |
-| 452 | graphs/strongly_connected_components | ✓ | 569us | 1.4 MB |
+| 450 | graphs/random_graph_generator |  |  |  |
+| 451 | graphs/scc_kosaraju |  |  |  |
+| 452 | graphs/strongly_connected_components |  |  |  |
 | 453 | graphs/tarjans_scc |  |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 282us | 1.6 MB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal |  |  |  |
 | 455 | graphs/tests/test_min_spanning_tree_prim |  |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 154us | 1.4 MB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock |  |  |  |
 | 457 | greedy_methods/fractional_cover_problem |  |  |  |
-| 458 | greedy_methods/fractional_knapsack | ✓ | 708us | 1.5 MB |
-| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 355us | 1.5 MB |
-| 460 | greedy_methods/gas_station | ✓ | 485us | 1.5 MB |
-| 461 | greedy_methods/minimum_coin_change | ✓ | 263us | 1.4 MB |
-| 462 | greedy_methods/minimum_waiting_time | ✓ | 205us | 1.4 MB |
-| 463 | greedy_methods/optimal_merge_pattern | ✓ | 220us | 1.5 MB |
-| 464 | greedy_methods/smallest_range | ✓ | 303us | 1.5 MB |
-| 465 | hashes/adler32 | ✓ | 324us | 1.5 MB |
-| 466 | hashes/chaos_machine | ✓ | 261us | 1.6 MB |
-| 467 | hashes/djb2 | ✓ | 233us | 1.4 MB |
-| 468 | hashes/elf | ✓ | 301us | 1.7 MB |
+| 458 | greedy_methods/fractional_knapsack |  |  |  |
+| 459 | greedy_methods/fractional_knapsack_2 |  |  |  |
+| 460 | greedy_methods/gas_station |  |  |  |
+| 461 | greedy_methods/minimum_coin_change |  |  |  |
+| 462 | greedy_methods/minimum_waiting_time |  |  |  |
+| 463 | greedy_methods/optimal_merge_pattern |  |  |  |
+| 464 | greedy_methods/smallest_range |  |  |  |
+| 465 | hashes/adler32 |  |  |  |
+| 466 | hashes/chaos_machine |  |  |  |
+| 467 | hashes/djb2 |  |  |  |
+| 468 | hashes/elf |  |  |  |
 | 469 | hashes/enigma_machine |  |  |  |
 | 470 | hashes/fletcher16 |  |  |  |
 | 471 | hashes/hamming_code |  |  |  |
@@ -504,84 +504,84 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 497 | machine_learning/apriori_algorithm |  |  |  |
 | 498 | machine_learning/astar |  |  |  |
 | 499 | machine_learning/automatic_differentiation |  |  |  |
-| 500 | machine_learning/data_transformations | ✓ | 412us | 1.7 MB |
+| 500 | machine_learning/data_transformations |  |  |  |
 | 501 | machine_learning/decision_tree |  |  |  |
-| 502 | machine_learning/dimensionality_reduction | ✓ | 441us | 1.4 MB |
-| 503 | machine_learning/forecasting/run | ✓ | 385us | 1.7 MB |
+| 502 | machine_learning/dimensionality_reduction |  |  |  |
+| 503 | machine_learning/forecasting/run |  |  |  |
 | 504 | machine_learning/frequent_pattern_growth |  |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 485us | 1.5 MB |
-| 506 | machine_learning/gradient_descent | ✓ | 7.88ms | 1.9 MB |
-| 507 | machine_learning/k_means_clust | ✓ | 410us | 1.6 MB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 307us | 1.5 MB |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 504us | 1.6 MB |
-| 510 | machine_learning/linear_regression | ✓ | 332us | 1.6 MB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 530us | 1.5 MB |
-| 512 | machine_learning/logistic_regression | ✓ | 2.09ms | 1.7 MB |
+| 505 | machine_learning/gradient_boosting_classifier |  |  |  |
+| 506 | machine_learning/gradient_descent |  |  |  |
+| 507 | machine_learning/k_means_clust |  |  |  |
+| 508 | machine_learning/k_nearest_neighbours |  |  |  |
+| 509 | machine_learning/linear_discriminant_analysis |  |  |  |
+| 510 | machine_learning/linear_regression |  |  |  |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning |  |  |  |
+| 512 | machine_learning/logistic_regression |  |  |  |
 | 513 | machine_learning/loss_functions |  |  |  |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 669us | 1.7 MB |
-| 515 | machine_learning/mfcc | ✓ | 393us | 1.6 MB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 9.83ms | 1.5 MB |
-| 517 | machine_learning/polynomial_regression | ✓ | 286us | 1.5 MB |
+| 514 | machine_learning/lstm/lstm_prediction |  |  |  |
+| 515 | machine_learning/mfcc |  |  |  |
+| 516 | machine_learning/multilayer_perceptron_classifier |  |  |  |
+| 517 | machine_learning/polynomial_regression |  |  |  |
 | 518 | machine_learning/principle_component_analysis |  |  |  |
-| 519 | machine_learning/scoring_functions | ✓ | 711us | 1.6 MB |
-| 520 | machine_learning/self_organizing_map | ✓ | 512us | 1.6 MB |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 297us | 1.7 MB |
-| 522 | machine_learning/similarity_search | ✓ | 258us | 1.6 MB |
-| 523 | machine_learning/support_vector_machines | ✓ | 883us | 1.6 MB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 564us | 1.7 MB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 282us | 1.5 MB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 436us | 1.6 MB |
-| 527 | maths/abs | ✓ | 286us | 1.6 MB |
-| 528 | maths/addition_without_arithmetic | ✓ | 302us | 1.5 MB |
-| 529 | maths/aliquot_sum | ✓ | 456us | 1.4 MB |
-| 530 | maths/allocation_number | ✓ | 293us | 1.4 MB |
-| 531 | maths/arc_length | ✓ | 388us | 1.6 MB |
-| 532 | maths/area | ✓ | 376us | 1.5 MB |
-| 533 | maths/area_under_curve | ✓ | 1.25ms | 1.6 MB |
-| 534 | maths/average_absolute_deviation | ✓ | 359us | 1.7 MB |
-| 535 | maths/average_mean | ✓ | 482us | 1.6 MB |
-| 536 | maths/average_median | ✓ | 459us | 1.6 MB |
-| 537 | maths/average_mode | ✓ | 382us | 1.6 MB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 598.94ms | 1.4 MB |
+| 519 | machine_learning/scoring_functions |  |  |  |
+| 520 | machine_learning/self_organizing_map |  |  |  |
+| 521 | machine_learning/sequential_minimum_optimization |  |  |  |
+| 522 | machine_learning/similarity_search |  |  |  |
+| 523 | machine_learning/support_vector_machines |  |  |  |
+| 524 | machine_learning/word_frequency_functions |  |  |  |
+| 525 | machine_learning/xgboost_classifier |  |  |  |
+| 526 | machine_learning/xgboost_regressor |  |  |  |
+| 527 | maths/abs |  |  |  |
+| 528 | maths/addition_without_arithmetic |  |  |  |
+| 529 | maths/aliquot_sum |  |  |  |
+| 530 | maths/allocation_number |  |  |  |
+| 531 | maths/arc_length |  |  |  |
+| 532 | maths/area |  |  |  |
+| 533 | maths/area_under_curve |  |  |  |
+| 534 | maths/average_absolute_deviation |  |  |  |
+| 535 | maths/average_mean |  |  |  |
+| 536 | maths/average_median |  |  |  |
+| 537 | maths/average_mode |  |  |  |
+| 538 | maths/bailey_borwein_plouffe |  |  |  |
 | 539 | maths/base_neg2_conversion |  |  |  |
-| 540 | maths/basic_maths | ✓ | 388us | 1.4 MB |
-| 541 | maths/binary_exponentiation | ✓ | 438us | 1.7 MB |
-| 542 | maths/binary_multiplication | ✓ | 241us | 1.5 MB |
-| 543 | maths/binomial_coefficient | ✓ | 320us | 1.6 MB |
-| 544 | maths/binomial_distribution | ✓ |  |  |
-| 545 | maths/ceil | ✓ | 475us | 1.6 MB |
-| 546 | maths/chebyshev_distance | ✓ | 331us | 1.6 MB |
-| 547 | maths/check_polygon | ✓ | 315us | 1.6 MB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 285us | 1.5 MB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 432us | 1.7 MB |
-| 550 | maths/collatz_sequence | ✓ | 785us | 1.4 MB |
-| 551 | maths/combinations | ✓ | 428us | 1.4 MB |
-| 552 | maths/continued_fraction | ✓ | 591us | 1.5 MB |
-| 553 | maths/decimal_isolate | ✓ | 281us | 1.6 MB |
-| 554 | maths/decimal_to_fraction | ✓ | 907us | 1.5 MB |
-| 555 | maths/dodecahedron | ✓ | 699us | 1.7 MB |
-| 556 | maths/double_factorial | ✓ | 451us | 1.6 MB |
+| 540 | maths/basic_maths |  |  |  |
+| 541 | maths/binary_exponentiation |  |  |  |
+| 542 | maths/binary_multiplication |  |  |  |
+| 543 | maths/binomial_coefficient |  |  |  |
+| 544 | maths/binomial_distribution |  |  |  |
+| 545 | maths/ceil |  |  |  |
+| 546 | maths/chebyshev_distance |  |  |  |
+| 547 | maths/check_polygon |  |  |  |
+| 548 | maths/chinese_remainder_theorem |  |  |  |
+| 549 | maths/chudnovsky_algorithm |  |  |  |
+| 550 | maths/collatz_sequence |  |  |  |
+| 551 | maths/combinations |  |  |  |
+| 552 | maths/continued_fraction |  |  |  |
+| 553 | maths/decimal_isolate |  |  |  |
+| 554 | maths/decimal_to_fraction |  |  |  |
+| 555 | maths/dodecahedron |  |  |  |
+| 556 | maths/double_factorial |  |  |  |
 | 557 | maths/dual_number_automatic_differentiation |  |  |  |
 | 558 | maths/entropy |  |  |  |
-| 559 | maths/euclidean_distance | ✓ | 534us | 1.6 MB |
+| 559 | maths/euclidean_distance |  |  |  |
 | 560 | maths/euler_method |  |  |  |
-| 561 | maths/euler_modified | ✓ | 320us | 1.6 MB |
-| 562 | maths/eulers_totient | ✓ | 276us | 1.6 MB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 302us | 1.6 MB |
-| 564 | maths/factorial | ✓ | 177us | 1.4 MB |
+| 561 | maths/euler_modified |  |  |  |
+| 562 | maths/eulers_totient |  |  |  |
+| 563 | maths/extended_euclidean_algorithm |  |  |  |
+| 564 | maths/factorial |  |  |  |
 | 565 | maths/factors |  |  |  |
-| 566 | maths/fast_inverse_sqrt | ✓ | 502us | 1.7 MB |
-| 567 | maths/fermat_little_theorem | ✓ | 295us | 1.5 MB |
+| 566 | maths/fast_inverse_sqrt |  |  |  |
+| 567 | maths/fermat_little_theorem |  |  |  |
 | 568 | maths/fibonacci |  |  |  |
-| 569 | maths/find_max | ✓ | 536us | 1.6 MB |
-| 570 | maths/find_min | ✓ | 328us | 1.6 MB |
-| 571 | maths/floor | ✓ | 518us | 1.5 MB |
-| 572 | maths/gamma | ✓ | 28.51ms | 1.5 MB |
-| 573 | maths/gaussian | ✓ | 327us | 1.6 MB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 270us | 1.5 MB |
+| 569 | maths/find_max |  |  |  |
+| 570 | maths/find_min |  |  |  |
+| 571 | maths/floor |  |  |  |
+| 572 | maths/gamma |  |  |  |
+| 573 | maths/gaussian |  |  |  |
+| 574 | maths/gcd_of_n_numbers |  |  |  |
 | 575 | maths/geometric_mean |  |  |  |
-| 576 | maths/germain_primes | ✓ | 208us | 1.6 MB |
-| 577 | maths/greatest_common_divisor | ✓ | 289us | 1.5 MB |
+| 576 | maths/germain_primes |  |  |  |
+| 577 | maths/greatest_common_divisor |  |  |  |
 | 578 | maths/hardy_ramanujanalgo |  |  |  |
 | 579 | maths/integer_square_root |  |  |  |
 | 580 | maths/interquartile_range |  |  |  |
@@ -724,8 +724,8 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 717 | matrix/tests/test_matrix_operation |  |  |  |
 | 718 | matrix/validate_sudoku_board |  |  |  |
 | 719 | networking_flow/ford_fulkerson |  |  |  |
-| 720 | networking_flow/minimum_cut | ✓ | 313us | 1.6 MB |
-| 721 | neural_network/activation_functions/binary_step |  |  |  |
+| 720 | networking_flow/minimum_cut |  |  |  |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 287us | 1.4 MB |
 | 722 | neural_network/activation_functions/exponential_linear_unit |  |  |  |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit |  |  |  |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit |  |  |  |
@@ -754,11 +754,11 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 747 | other/least_recently_used |  |  |  |
 | 748 | other/lfu_cache |  |  |  |
 | 749 | other/linear_congruential_generator |  |  |  |
-| 750 | other/lru_cache | ✓ | 323us | 1.6 MB |
-| 751 | other/magicdiamondpattern | ✓ | 125us | 1.4 MB |
-| 752 | other/majority_vote_algorithm | ✓ | 252us | 1.6 MB |
-| 753 | other/maximum_subsequence | ✓ | 206us | 1.6 MB |
-| 754 | other/nested_brackets | ✓ | 391us | 1.6 MB |
+| 750 | other/lru_cache |  |  |  |
+| 751 | other/magicdiamondpattern |  |  |  |
+| 752 | other/majority_vote_algorithm |  |  |  |
+| 753 | other/maximum_subsequence |  |  |  |
+| 754 | other/nested_brackets |  |  |  |
 | 755 | other/number_container_system |  |  |  |
 | 756 | other/quine |  |  |  |
 | 757 | other/scoring_algorithm |  |  |  |
@@ -784,57 +784,57 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 777 | physics/lorentz_transformation_four_vector |  |  |  |
 | 778 | physics/malus_law |  |  |  |
 | 779 | physics/mass_energy_equivalence |  |  |  |
-| 780 | physics/mirror_formulae | ✓ | 410us | 1.7 MB |
-| 781 | physics/n_body_simulation | ✓ | 272us | 1.6 MB |
-| 782 | physics/newtons_law_of_gravitation | ✓ | 349us | 1.6 MB |
-| 783 | physics/newtons_second_law_of_motion | ✓ | 373us | 1.6 MB |
-| 784 | physics/orbital_transfer_work | ✓ | 257us | 1.4 MB |
-| 785 | physics/period_of_pendulum | ✓ | 376us | 1.6 MB |
-| 786 | physics/photoelectric_effect | ✓ | 360us | 1.5 MB |
-| 787 | physics/potential_energy | ✓ | 403us | 1.5 MB |
-| 788 | physics/rainfall_intensity | ✓ | 293us | 1.6 MB |
-| 789 | physics/reynolds_number | ✓ | 436us | 1.6 MB |
-| 790 | physics/rms_speed_of_molecule | ✓ | 319us | 1.6 MB |
-| 791 | physics/shear_stress | ✓ | 422us | 1.6 MB |
-| 792 | physics/speed_of_sound | ✓ | 414us | 1.5 MB |
-| 793 | physics/speeds_of_gas_molecules | ✓ | 385us | 1.5 MB |
-| 794 | physics/terminal_velocity | ✓ | 482us | 1.6 MB |
-| 795 | project_euler/problem_001/sol1 | ✓ | 294us | 1.4 MB |
-| 796 | project_euler/problem_001/sol2 | ✓ | 577us | 1.5 MB |
-| 797 | project_euler/problem_001/sol3 | ✓ | 250us | 1.6 MB |
-| 798 | project_euler/problem_001/sol4 | ✓ | 1.10ms | 1.5 MB |
-| 799 | project_euler/problem_001/sol5 | ✓ | 286us | 1.5 MB |
-| 800 | project_euler/problem_001/sol6 | ✓ | 371us | 1.4 MB |
-| 801 | project_euler/problem_001/sol7 | ✓ | 247us | 1.5 MB |
-| 802 | project_euler/problem_002/sol1 | ✓ | 911us | 1.5 MB |
-| 803 | project_euler/problem_002/sol2 | ✓ | 700us | 1.5 MB |
-| 804 | project_euler/problem_002/sol3 | ✓ | 280us | 1.5 MB |
-| 805 | project_euler/problem_002/sol4 | ✓ | 348us | 1.6 MB |
-| 806 | project_euler/problem_002/sol5 | ✓ | 410us | 1.5 MB |
-| 807 | project_euler/problem_003/sol1 | ✓ | 2.21ms | 1.4 MB |
-| 808 | project_euler/problem_003/sol2 | ✓ | 325us | 1.6 MB |
-| 809 | project_euler/problem_003/sol3 | ✓ | 238us | 1.6 MB |
-| 810 | project_euler/problem_004/sol1 | ✓ | 49.67ms | 10.5 MB |
-| 811 | project_euler/problem_004/sol2 | ✓ | 27.84ms | 1.4 MB |
-| 812 | project_euler/problem_005/sol1 | ✓ | 222us | 1.4 MB |
-| 813 | project_euler/problem_005/sol2 | ✓ | 234us | 1.4 MB |
-| 814 | project_euler/problem_006/sol1 | ✓ | 457us | 1.4 MB |
-| 815 | project_euler/problem_006/sol2 | ✓ | 403us | 1.6 MB |
-| 816 | project_euler/problem_006/sol3 | ✓ | 299us | 1.6 MB |
-| 817 | project_euler/problem_006/sol4 | ✓ | 191us | 1.5 MB |
-| 818 | project_euler/problem_007/sol1 | ✓ | 30.75ms | 1.4 MB |
-| 819 | project_euler/problem_007/sol2 | ✓ |  |  |
-| 820 | project_euler/problem_007/sol3 | ✓ | 5.20ms | 1.6 MB |
-| 821 | project_euler/problem_008/sol1 | ✓ | 2.48ms | 1.8 MB |
-| 822 | project_euler/problem_008/sol2 | ✓ | 231us | 1.5 MB |
-| 823 | project_euler/problem_008/sol3 | ✓ | 684us | 1.7 MB |
-| 824 | project_euler/problem_009/sol1 | ✓ | 748us | 1.6 MB |
-| 825 | project_euler/problem_009/sol2 | ✓ | 390us | 1.6 MB |
-| 826 | project_euler/problem_009/sol3 | ✓ | 937us | 1.4 MB |
-| 827 | project_euler/problem_010/sol1 | ✓ | 280us | 1.6 MB |
+| 780 | physics/mirror_formulae |  |  |  |
+| 781 | physics/n_body_simulation |  |  |  |
+| 782 | physics/newtons_law_of_gravitation |  |  |  |
+| 783 | physics/newtons_second_law_of_motion |  |  |  |
+| 784 | physics/orbital_transfer_work |  |  |  |
+| 785 | physics/period_of_pendulum |  |  |  |
+| 786 | physics/photoelectric_effect |  |  |  |
+| 787 | physics/potential_energy |  |  |  |
+| 788 | physics/rainfall_intensity |  |  |  |
+| 789 | physics/reynolds_number |  |  |  |
+| 790 | physics/rms_speed_of_molecule |  |  |  |
+| 791 | physics/shear_stress |  |  |  |
+| 792 | physics/speed_of_sound |  |  |  |
+| 793 | physics/speeds_of_gas_molecules |  |  |  |
+| 794 | physics/terminal_velocity |  |  |  |
+| 795 | project_euler/problem_001/sol1 |  |  |  |
+| 796 | project_euler/problem_001/sol2 |  |  |  |
+| 797 | project_euler/problem_001/sol3 |  |  |  |
+| 798 | project_euler/problem_001/sol4 |  |  |  |
+| 799 | project_euler/problem_001/sol5 |  |  |  |
+| 800 | project_euler/problem_001/sol6 |  |  |  |
+| 801 | project_euler/problem_001/sol7 |  |  |  |
+| 802 | project_euler/problem_002/sol1 |  |  |  |
+| 803 | project_euler/problem_002/sol2 |  |  |  |
+| 804 | project_euler/problem_002/sol3 |  |  |  |
+| 805 | project_euler/problem_002/sol4 |  |  |  |
+| 806 | project_euler/problem_002/sol5 |  |  |  |
+| 807 | project_euler/problem_003/sol1 |  |  |  |
+| 808 | project_euler/problem_003/sol2 |  |  |  |
+| 809 | project_euler/problem_003/sol3 |  |  |  |
+| 810 | project_euler/problem_004/sol1 |  |  |  |
+| 811 | project_euler/problem_004/sol2 |  |  |  |
+| 812 | project_euler/problem_005/sol1 |  |  |  |
+| 813 | project_euler/problem_005/sol2 |  |  |  |
+| 814 | project_euler/problem_006/sol1 |  |  |  |
+| 815 | project_euler/problem_006/sol2 |  |  |  |
+| 816 | project_euler/problem_006/sol3 |  |  |  |
+| 817 | project_euler/problem_006/sol4 |  |  |  |
+| 818 | project_euler/problem_007/sol1 |  |  |  |
+| 819 | project_euler/problem_007/sol2 |  |  |  |
+| 820 | project_euler/problem_007/sol3 |  |  |  |
+| 821 | project_euler/problem_008/sol1 |  |  |  |
+| 822 | project_euler/problem_008/sol2 |  |  |  |
+| 823 | project_euler/problem_008/sol3 |  |  |  |
+| 824 | project_euler/problem_009/sol1 |  |  |  |
+| 825 | project_euler/problem_009/sol2 |  |  |  |
+| 826 | project_euler/problem_009/sol3 |  |  |  |
+| 827 | project_euler/problem_010/sol1 |  |  |  |
 | 828 | project_euler/problem_010/sol2 |  |  |  |
-| 829 | project_euler/problem_010/sol3 | ✓ | 2.33ms | 1.8 MB |
-| 830 | project_euler/problem_011/sol1 | ✓ | 404us | 1.6 MB |
+| 829 | project_euler/problem_010/sol3 |  |  |  |
+| 830 | project_euler/problem_011/sol1 |  |  |  |
 | 831 | project_euler/problem_011/sol2 |  |  |  |
 | 832 | project_euler/problem_012/sol1 |  |  |  |
 | 833 | project_euler/problem_012/sol2 |  |  |  |
@@ -964,56 +964,56 @@ Checklist of programs that currently transpile and run (384/1077) - Last updated
 | 957 | sorts/insertion_sort |  |  |  |
 | 958 | sorts/intro_sort |  |  |  |
 | 959 | sorts/iterative_merge_sort |  |  |  |
-| 960 | sorts/merge_insertion_sort | ✓ | 398us | 1.4 MB |
-| 961 | sorts/merge_sort | ✓ | 502us | 1.4 MB |
-| 962 | sorts/msd_radix_sort | ✓ | 282us | 1.4 MB |
-| 963 | sorts/natural_sort | ✓ | 486us | 1.5 MB |
-| 964 | sorts/odd_even_sort | ✓ | 361us | 1.5 MB |
-| 965 | sorts/odd_even_transposition_parallel | ✓ | 589us | 1.5 MB |
-| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 329us | 1.6 MB |
-| 967 | sorts/pancake_sort | ✓ | 505us | 1.5 MB |
-| 968 | sorts/patience_sort | ✓ | 414us | 1.4 MB |
-| 969 | sorts/pigeon_sort | ✓ | 457us | 1.5 MB |
-| 970 | sorts/pigeonhole_sort | ✓ | 509us | 1.5 MB |
+| 960 | sorts/merge_insertion_sort |  |  |  |
+| 961 | sorts/merge_sort |  |  |  |
+| 962 | sorts/msd_radix_sort |  |  |  |
+| 963 | sorts/natural_sort |  |  |  |
+| 964 | sorts/odd_even_sort |  |  |  |
+| 965 | sorts/odd_even_transposition_parallel |  |  |  |
+| 966 | sorts/odd_even_transposition_single_threaded |  |  |  |
+| 967 | sorts/pancake_sort |  |  |  |
+| 968 | sorts/patience_sort |  |  |  |
+| 969 | sorts/pigeon_sort |  |  |  |
+| 970 | sorts/pigeonhole_sort |  |  |  |
 | 971 | sorts/quick_sort |  |  |  |
 | 972 | sorts/quick_sort_3_partition |  |  |  |
-| 973 | sorts/radix_sort | ✓ | 953us | 1.4 MB |
-| 974 | sorts/recursive_insertion_sort | ✓ | 436us | 1.5 MB |
-| 975 | sorts/recursive_mergesort_array | ✓ | 490us | 1.6 MB |
+| 973 | sorts/radix_sort |  |  |  |
+| 974 | sorts/recursive_insertion_sort |  |  |  |
+| 975 | sorts/recursive_mergesort_array |  |  |  |
 | 976 | sorts/recursive_quick_sort |  |  |  |
-| 977 | sorts/selection_sort | ✓ | 445us | 1.5 MB |
-| 978 | sorts/shell_sort | ✓ | 310us | 1.4 MB |
-| 979 | sorts/shrink_shell_sort | ✓ | 318us | 1.5 MB |
-| 980 | sorts/slowsort | ✓ | 375us | 1.5 MB |
-| 981 | sorts/stooge_sort | ✓ | 437us | 1.6 MB |
-| 982 | sorts/strand_sort | ✓ | 392us | 1.5 MB |
-| 983 | sorts/tim_sort | ✓ | 389us | 1.5 MB |
+| 977 | sorts/selection_sort |  |  |  |
+| 978 | sorts/shell_sort |  |  |  |
+| 979 | sorts/shrink_shell_sort |  |  |  |
+| 980 | sorts/slowsort |  |  |  |
+| 981 | sorts/stooge_sort |  |  |  |
+| 982 | sorts/strand_sort |  |  |  |
+| 983 | sorts/tim_sort |  |  |  |
 | 984 | sorts/topological_sort |  |  |  |
 | 985 | sorts/tree_sort |  |  |  |
 | 986 | sorts/unknown_sort |  |  |  |
 | 987 | sorts/wiggle_sort |  |  |  |
-| 988 | strings/aho_corasick | ✓ | 813us | 1.4 MB |
-| 989 | strings/alternative_string_arrange | ✓ | 233us | 1.4 MB |
+| 988 | strings/aho_corasick |  |  |  |
+| 989 | strings/alternative_string_arrange |  |  |  |
 | 990 | strings/anagrams |  |  |  |
-| 991 | strings/autocomplete_using_trie | ✓ | 269us | 1.4 MB |
-| 992 | strings/barcode_validator | ✓ | 307us | 1.4 MB |
-| 993 | strings/bitap_string_match | ✓ | 557us | 1.6 MB |
-| 994 | strings/boyer_moore_search | ✓ |  |  |
-| 995 | strings/camel_case_to_snake_case | ✓ | 684us | 1.4 MB |
-| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 445us | 1.5 MB |
-| 997 | strings/capitalize | ✓ | 277us | 1.6 MB |
-| 998 | strings/check_anagrams | ✓ | 418us | 1.6 MB |
-| 999 | strings/count_vowels | ✓ | 368us | 1.6 MB |
-| 1000 | strings/credit_card_validator | ✓ | 280us | 1.6 MB |
-| 1001 | strings/damerau_levenshtein_distance | ✓ | 567us | 1.6 MB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 1.26ms | 1.6 MB |
-| 1003 | strings/dna | ✓ | 254us | 1.4 MB |
-| 1004 | strings/edit_distance | ✓ | 24.34ms | 6.1 MB |
+| 991 | strings/autocomplete_using_trie |  |  |  |
+| 992 | strings/barcode_validator |  |  |  |
+| 993 | strings/bitap_string_match |  |  |  |
+| 994 | strings/boyer_moore_search |  |  |  |
+| 995 | strings/camel_case_to_snake_case |  |  |  |
+| 996 | strings/can_string_be_rearranged_as_palindrome |  |  |  |
+| 997 | strings/capitalize |  |  |  |
+| 998 | strings/check_anagrams |  |  |  |
+| 999 | strings/count_vowels |  |  |  |
+| 1000 | strings/credit_card_validator |  |  |  |
+| 1001 | strings/damerau_levenshtein_distance |  |  |  |
+| 1002 | strings/detecting_english_programmatically |  |  |  |
+| 1003 | strings/dna |  |  |  |
+| 1004 | strings/edit_distance |  |  |  |
 | 1005 | strings/frequency_finder |  |  |  |
-| 1006 | strings/hamming_distance | ✓ | 1.08ms | 1.4 MB |
-| 1007 | strings/indian_phone_validator | ✓ | 277us | 1.5 MB |
-| 1008 | strings/is_contains_unique_chars | ✓ | 778us | 1.6 MB |
-| 1009 | strings/is_isogram | ✓ | 391us | 1.6 MB |
+| 1006 | strings/hamming_distance |  |  |  |
+| 1007 | strings/indian_phone_validator |  |  |  |
+| 1008 | strings/is_contains_unique_chars |  |  |  |
+| 1009 | strings/is_isogram |  |  |  |
 | 1010 | strings/is_pangram |  |  |  |
 | 1011 | strings/is_polish_national_id |  |  |  |
 | 1012 | strings/is_spain_national_id |  |  |  |
