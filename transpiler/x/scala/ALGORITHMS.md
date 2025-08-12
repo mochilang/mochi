@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 904/1077
-Last updated: 2025-08-11 18:28 +0700
+Completed programs: 909/1077
+Last updated: 2025-08-12 07:47 +0700
 
 Checklist:
 
@@ -556,32 +556,32 @@ Checklist:
 | 547 | maths/check_polygon | ✓ | 5µs | 8.8 MB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 4µs | 8.7 MB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 8µs | 8.7 MB |
-| 550 | maths/collatz_sequence | ✓ | 6µs | 8.8 MB |
-| 551 | maths/combinations | ✓ | 5µs | 8.7 MB |
-| 552 | maths/continued_fraction | ✓ | 6µs | 8.7 MB |
-| 553 | maths/decimal_isolate | ✓ | 8µs | 8.7 MB |
-| 554 | maths/decimal_to_fraction | error |  |  |
-| 555 | maths/dodecahedron | ✓ | 9µs | 8.7 MB |
-| 556 | maths/double_factorial | ✓ | 6µs | 8.7 MB |
-| 557 | maths/dual_number_automatic_differentiation | error |  |  |
-| 558 | maths/entropy | ✓ | 39µs | 8.7 MB |
-| 559 | maths/euclidean_distance | ✓ | 5µs | 8.8 MB |
-| 560 | maths/euler_method | ✓ | 19µs | 8.8 MB |
-| 561 | maths/euler_modified | ✓ | 13µs | 8.7 MB |
-| 562 | maths/eulers_totient | ✓ | 8µs | 8.7 MB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 5µs | 8.7 MB |
-| 564 | maths/factorial | ✓ | 5µs | 8.7 MB |
-| 565 | maths/factors | ✓ | 7µs | 8.7 MB |
-| 566 | maths/fast_inverse_sqrt | error |  |  |
-| 567 | maths/fermat_little_theorem | ✓ | 4µs | 8.8 MB |
-| 568 | maths/fibonacci | ✓ | 10µs | 8.7 MB |
-| 569 | maths/find_max | ✓ | 6µs | 8.7 MB |
-| 570 | maths/find_min | ✓ | 6µs | 8.7 MB |
-| 571 | maths/floor | ✓ | 5µs | 8.7 MB |
-| 572 | maths/gamma | ✓ | 1.248ms | 8.7 MB |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
-| 575 | maths/geometric_mean |   |  |  |
+| 550 | maths/collatz_sequence | ✓ | 5µs | 3.4 MB |
+| 551 | maths/combinations | ✓ | 1µs | 3.4 MB |
+| 552 | maths/continued_fraction | ✓ | 4µs | 3.4 MB |
+| 553 | maths/decimal_isolate | ✓ | 2µs | 3.4 MB |
+| 554 | maths/decimal_to_fraction | ✓ | 5µs | 3.5 MB |
+| 555 | maths/dodecahedron | ✓ | 2µs | 3.4 MB |
+| 556 | maths/double_factorial | ✓ | 1µs | 3.4 MB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 10µs | 3.5 MB |
+| 558 | maths/entropy | ✓ | 16µs | 3.5 MB |
+| 559 | maths/euclidean_distance | ✓ | 4µs | 3.5 MB |
+| 560 | maths/euler_method | ✓ | 17µs | 3.5 MB |
+| 561 | maths/euler_modified | ✓ | 7µs | 3.5 MB |
+| 562 | maths/eulers_totient | ✓ | 9µs | 3.5 MB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 1µs | 3.4 MB |
+| 564 | maths/factorial | ✓ | 1µs | 3.4 MB |
+| 565 | maths/factors | ✓ | 6µs | 3.4 MB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 10µs | 3.5 MB |
+| 567 | maths/fermat_little_theorem | ✓ | 1µs | 3.5 MB |
+| 568 | maths/fibonacci | ✓ | 18µs | 3.5 MB |
+| 569 | maths/find_max | ✓ | 4µs | 3.5 MB |
+| 570 | maths/find_min | ✓ | 4µs | 3.4 MB |
+| 571 | maths/floor | ✓ | 6µs | 3.4 MB |
+| 572 | maths/gamma | ✓ | 280µs | 3.5 MB |
+| 573 | maths/gaussian | ✓ | 5µs | 3.4 MB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 3µs | 3.4 MB |
+| 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 4µs | 8.7 MB |
 | 577 | maths/greatest_common_divisor | ✓ | 4µs | 8.7 MB |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 7µs | 8.7 MB |

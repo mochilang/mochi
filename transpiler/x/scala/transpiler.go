@@ -1428,7 +1428,9 @@ func (c *CastExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 		}
 		if typ == "Any" || typ == "" {
-			fmt.Fprint(w, ".toString.head.asDigit")
+			// For unknown types, attempt a best-effort numeric
+			// conversion by parsing the value as a Double first.
+			fmt.Fprint(w, ".toString.toDouble.toInt")
 		} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 			fmt.Fprint(w, ".toInt")
 		}
@@ -1460,8 +1462,8 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, ")")
 			}
 			if typ == "Any" || typ == "" {
-				// Fallback for unknown types: convert to string and take first character's digit.
-				fmt.Fprint(w, ".toString.head.asDigit")
+				// Fallback for unknown types: parse as a Double then convert to an Int.
+				fmt.Fprint(w, ".toString.toDouble.toInt")
 			} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 				fmt.Fprint(w, ".toInt")
 			}
@@ -1472,7 +1474,7 @@ func (c *CastExpr) emit(w io.Writer) {
 	if strings.Contains(c.Type, "=>") {
 		switch c.Value.(type) {
 		case *Name:
-			fmt.Fprintf(w, "(%s _)", c.Value.(*Name).Name)
+			fmt.Fprint(w, escapeName(c.Value.(*Name).Name))
 		case *FieldExpr:
 			fmt.Fprint(w, "(")
 			c.Value.emit(w)
@@ -2603,7 +2605,15 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		td := &TypeDeclStmt{Name: st.Type.Name}
 		typeDecls = append(typeDecls, td)
 		if env != nil {
-			env.SetStruct(st.Type.Name, types.StructType{Name: st.Type.Name})
+			fieldMap := map[string]types.Type{}
+			var order []string
+			for _, m := range st.Type.Members {
+				if m.Field != nil {
+					fieldMap[m.Field.Name] = types.ResolveTypeRef(m.Field.Type, env)
+					order = append(order, m.Field.Name)
+				}
+			}
+			env.SetStruct(st.Type.Name, types.StructType{Name: st.Type.Name, Fields: fieldMap, Order: order})
 		}
 		if st.Type.Alias != nil {
 			td.Alias = toScalaType(st.Type.Alias)
@@ -3477,12 +3487,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	}
 	if len(pf.Ops) == 0 {
 		if n, ok := expr.(*Name); ok && env != nil {
-			if typ, err := env.GetVar(n.Name); err == nil {
-				if _, ok2 := typ.(types.FuncType); ok2 {
-					if _, ok3 := env.GetFunc(n.Name); ok3 {
-						return &FunRef{Name: n.Name}, nil
-					}
-				}
+			if _, ok3 := env.GetFunc(n.Name); ok3 {
+				return &FunRef{Name: n.Name}, nil
 			}
 		}
 	}
