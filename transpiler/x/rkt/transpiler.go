@@ -81,6 +81,8 @@ func sanitizeName(name string) string {
 		return "panic_"
 	case "append":
 		return "append_"
+	case "reverse":
+		return "reverse_"
 	default:
 		return name
 	}
