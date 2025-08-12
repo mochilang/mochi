@@ -1,3 +1,1471 @@
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 16:13 +0700)
+- zig: adapt to Zig 0.12 type info
+- Regenerated golden files - 93/105 vm valid programs passing
+
 ## Progress (2025-08-12 14:20 +0700)
 - scala: update mish benchmark
 - Regenerated golden files - 93/105 vm valid programs passing
