@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 720/1077
-Last updated: 2025-08-12 08:38 +0700
+Completed programs: 769/1077
+Last updated: 2025-08-12 10:04 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -756,56 +756,56 @@ Last updated: 2025-08-12 08:38 +0700
 | 747 | other/least_recently_used |   |  |  |
 | 748 | other/lfu_cache |   |  |  |
 | 749 | other/linear_congruential_generator |   |  |  |
-| 750 | other/lru_cache |   |  |  |
-| 751 | other/magicdiamondpattern |   |  |  |
-| 752 | other/majority_vote_algorithm |   |  |  |
-| 753 | other/maximum_subsequence |   |  |  |
-| 754 | other/nested_brackets |   |  |  |
-| 755 | other/number_container_system |   |  |  |
-| 756 | other/quine |   |  |  |
-| 757 | other/scoring_algorithm |   |  |  |
-| 758 | other/sdes |   |  |  |
-| 759 | other/tower_of_hanoi |   |  |  |
-| 760 | other/word_search |   |  |  |
-| 761 | physics/altitude_pressure |   |  |  |
-| 762 | physics/archimedes_principle_of_buoyant_force |   |  |  |
+| 750 | other/lru_cache | ✓ | 400µs | 3.3 MB |
+| 751 | other/magicdiamondpattern | ✓ | 200µs | 3.1 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 659µs | 3.5 MB |
+| 753 | other/maximum_subsequence | ✓ | 311µs | 2.9 MB |
+| 754 | other/nested_brackets | ✓ | 490µs | 3.2 MB |
+| 755 | other/number_container_system | ✓ | 307µs | 3.2 MB |
+| 756 | other/quine | ✓ | 157µs | 3.3 MB |
+| 757 | other/scoring_algorithm | ✓ | 1.06ms | 3.7 MB |
+| 758 | other/sdes | ✓ | 669µs | 3.4 MB |
+| 759 | other/tower_of_hanoi | ✓ | 161µs | 3.2 MB |
+| 760 | other/word_search | ✓ | 604µs | 3.2 MB |
+| 761 | physics/altitude_pressure | ✓ | 326µs | 3.2 MB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 112µs | 3.3 MB |
 | 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect |   |  |  |
-| 765 | physics/center_of_mass |   |  |  |
-| 766 | physics/centripetal_force |   |  |  |
-| 767 | physics/coulombs_law |   |  |  |
-| 768 | physics/doppler_frequency |   |  |  |
-| 769 | physics/escape_velocity |   |  |  |
-| 770 | physics/grahams_law |   |  |  |
-| 771 | physics/horizontal_projectile_motion |   |  |  |
-| 772 | physics/hubble_parameter |   |  |  |
-| 773 | physics/ideal_gas_law |   |  |  |
-| 774 | physics/in_static_equilibrium |   |  |  |
-| 775 | physics/kinetic_energy |   |  |  |
-| 776 | physics/lens_formulae |   |  |  |
-| 777 | physics/lorentz_transformation_four_vector |   |  |  |
-| 778 | physics/malus_law |   |  |  |
-| 779 | physics/mass_energy_equivalence |   |  |  |
-| 780 | physics/mirror_formulae |   |  |  |
-| 781 | physics/n_body_simulation |   |  |  |
-| 782 | physics/newtons_law_of_gravitation |   |  |  |
-| 783 | physics/newtons_second_law_of_motion |   |  |  |
-| 784 | physics/orbital_transfer_work |   |  |  |
-| 785 | physics/period_of_pendulum |   |  |  |
-| 786 | physics/photoelectric_effect |   |  |  |
-| 787 | physics/potential_energy |   |  |  |
-| 788 | physics/rainfall_intensity |   |  |  |
-| 789 | physics/reynolds_number |   |  |  |
-| 790 | physics/rms_speed_of_molecule |   |  |  |
-| 791 | physics/shear_stress |   |  |  |
-| 792 | physics/speed_of_sound |   |  |  |
-| 793 | physics/speeds_of_gas_molecules |   |  |  |
-| 794 | physics/terminal_velocity |   |  |  |
-| 795 | project_euler/problem_001/sol1 |   |  |  |
-| 796 | project_euler/problem_001/sol2 |   |  |  |
-| 797 | project_euler/problem_001/sol3 |   |  |  |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
+| 764 | physics/casimir_effect | ✓ | 394µs | 3.4 MB |
+| 765 | physics/center_of_mass | ✓ | 327µs | 3.3 MB |
+| 766 | physics/centripetal_force | ✓ | 304µs | 3.1 MB |
+| 767 | physics/coulombs_law | ✓ | 487µs | 3.4 MB |
+| 768 | physics/doppler_frequency | ✓ | 257µs | 3.3 MB |
+| 769 | physics/escape_velocity | ✓ | 268µs | 3.2 MB |
+| 770 | physics/grahams_law | ✓ | 306µs | 3.4 MB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 350µs | 3.2 MB |
+| 772 | physics/hubble_parameter | ✓ | 271µs | 2.9 MB |
+| 773 | physics/ideal_gas_law | ✓ | 252µs | 3.1 MB |
+| 774 | physics/in_static_equilibrium | ✓ | 320µs | 3.2 MB |
+| 775 | physics/kinetic_energy | ✓ | 254µs | 3.4 MB |
+| 776 | physics/lens_formulae | ✓ | 263µs | 3.3 MB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 1.105ms | 4.0 MB |
+| 778 | physics/malus_law | ✓ | 252µs | 3.1 MB |
+| 779 | physics/mass_energy_equivalence | ✓ | 284µs | 3.4 MB |
+| 780 | physics/mirror_formulae | ✓ | 265µs | 3.1 MB |
+| 781 | physics/n_body_simulation | ✓ | 3.332ms | 7.1 MB |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 298µs | 3.2 MB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 235µs | 3.4 MB |
+| 784 | physics/orbital_transfer_work | ✓ | 302µs | 3.3 MB |
+| 785 | physics/period_of_pendulum | ✓ | 333µs | 3.3 MB |
+| 786 | physics/photoelectric_effect | ✓ | 333µs | 3.4 MB |
+| 787 | physics/potential_energy | ✓ | 245µs | 3.3 MB |
+| 788 | physics/rainfall_intensity | ✓ | 298µs | 3.1 MB |
+| 789 | physics/reynolds_number | ✓ | 372µs | 3.3 MB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 272µs | 3.1 MB |
+| 791 | physics/shear_stress | ✓ | 283µs | 3.2 MB |
+| 792 | physics/speed_of_sound | ✓ | 262µs | 3.2 MB |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 277µs | 3.2 MB |
+| 794 | physics/terminal_velocity | ✓ | 327µs | 3.4 MB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 461µs | 3.2 MB |
+| 796 | project_euler/problem_001/sol2 | ✓ | 248µs | 3.2 MB |
+| 797 | project_euler/problem_001/sol3 | ✓ | 331µs | 3.1 MB |
+| 798 | project_euler/problem_001/sol4 | ✓ | 28.757ms | 3.2 MB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 325µs | 3.3 MB |
 | 800 | project_euler/problem_001/sol6 |   |  |  |
 | 801 | project_euler/problem_001/sol7 |   |  |  |
 | 802 | project_euler/problem_002/sol1 |   |  |  |

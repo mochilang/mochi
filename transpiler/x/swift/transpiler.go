@@ -4618,18 +4618,18 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					pt := swiftTypeOf(paramTypes[j])
 					if lit, ok := ae.(*LitExpr); ok && lit.Value == "nil" && pt == "Any" {
 						ae = &RawStmt{Code: "nil as Any?"}
-					} else if pt == "Int" {
-						srcT := swiftTypeOf(types.TypeOfExpr(a, env))
-						if srcT != "Int" {
-							ae = &CallExpr{Func: "_int", Args: []Expr{ae}}
-							usesInt = true
-						}
-					} else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
-						srcT := swiftTypeOf(types.TypeOfExpr(a, env))
-						if srcT != pt {
-							ae = &CastExpr{Expr: ae, Type: pt + "!"}
-						}
-					}
+                                       } else if pt == "Int" {
+                                               srcT := swiftTypeOf(types.TypeOfExpr(a, env))
+                                               if srcT != "" && srcT != "Int" {
+                                                       ae = &CallExpr{Func: "_int", Args: []Expr{ae}}
+                                                       usesInt = true
+                                               }
+                                       } else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
+                                               srcT := swiftTypeOf(types.TypeOfExpr(a, env))
+                                               if srcT != pt {
+                                                       ae = &CastExpr{Expr: ae, Type: pt + "!"}
+                                               }
+                                       }
 				}
 				ce.Args = append(ce.Args, ae)
 			}
