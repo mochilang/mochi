@@ -96,77 +96,32 @@ end
 __name__ = '__main__'
 start_mem = _mem()
 start = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
-  def to_float(x)
-    return x * 1.0
+  def ln(x)
+    return Math.log(x)
   end
-  def round6(x)
-    factor = 1000000.0
-    return ((_add(x * factor, 0.5)).to_i).to_f / factor
+  def exp(x)
+    return Math.exp(x)
   end
-  def sqrtApprox(x)
-    guess = x / 2.0
+  def softplus(vector)
+    result = []
     i = 0
-    while i < 20
-      guess = (_add(guess, x / guess)) / 2.0
+    while i < vector.length
+      x = (__tmp1 = vector; __tmp1.is_a?(Hash) ? __tmp1[i] : _idx(__tmp1, i))
+      value = ln(_add(1.0, exp(x)))
+      result = (result + [value])
       i = _add(i, 1)
     end
-    return guess
+    return result
   end
-  def validate(values)
-    if _eq(values.length, 0)
-      return false
-    end
-    i = 0
-    while i < values.length
-      if (__tmp1 = values; __tmp1.is_a?(Hash) ? __tmp1[i] : _idx(__tmp1, i)) <= 0.0
-        return false
-      end
-      i = _add(i, 1)
-    end
-    return true
+  def main()
+    v1 = [2.3, 0.6, -2.0, -3.8]
+    v2 = [-9.2, -0.3, 0.45, -4.56]
+    r1 = softplus(v1)
+    r2 = softplus(v2)
+    puts(((x = r1); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]") : x.to_s))
+    puts(((x = r2); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]") : x.to_s))
   end
-  def effusion_ratio(m1, m2)
-    if !validate([m1, m2])
-      puts("ValueError: Molar mass values must greater than 0.")
-      return 0.0
-    end
-    return round6(sqrtApprox(m2 / m1))
-  end
-  def first_effusion_rate(rate, m1, m2)
-    if !validate([rate, m1, m2])
-      puts("ValueError: Molar mass and effusion rate values must greater than 0.")
-      return 0.0
-    end
-    return round6(rate * sqrtApprox(m2 / m1))
-  end
-  def second_effusion_rate(rate, m1, m2)
-    if !validate([rate, m1, m2])
-      puts("ValueError: Molar mass and effusion rate values must greater than 0.")
-      return 0.0
-    end
-    return round6(rate / sqrtApprox(m2 / m1))
-  end
-  def first_molar_mass(mass, r1, r2)
-    if !validate([mass, r1, r2])
-      puts("ValueError: Molar mass and effusion rate values must greater than 0.")
-      return 0.0
-    end
-    ratio = r1 / r2
-    return round6(mass / (ratio * ratio))
-  end
-  def second_molar_mass(mass, r1, r2)
-    if !validate([mass, r1, r2])
-      puts("ValueError: Molar mass and effusion rate values must greater than 0.")
-      return 0.0
-    end
-    ratio = r1 / r2
-    return round6((ratio * ratio) / mass)
-  end
-  puts(effusion_ratio(2.016, 4.002))
-  puts(first_effusion_rate(1.0, 2.016, 4.002))
-  puts(second_effusion_rate(1.0, 2.016, 4.002))
-  puts(first_molar_mass(2.0, 1.408943, 0.709752))
-  puts(second_molar_mass(2.0, 1.408943, 0.709752))
+  main()
 end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

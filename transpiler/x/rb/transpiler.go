@@ -1760,6 +1760,21 @@ func (s *IndexAssignStmt) emit(e *emitter) {
 	s.Value.emit(e)
 }
 
+// FieldAssignStmt assigns to a struct field.
+type FieldAssignStmt struct {
+	Target Expr
+	Name   string
+	Value  Expr
+}
+
+func (s *FieldAssignStmt) emit(e *emitter) {
+	s.Target.emit(e)
+	io.WriteString(e.w, ".")
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, " = ")
+	s.Value.emit(e)
+}
+
 // UpdateStmt represents an update statement on a list of structs.
 type UpdateStmt struct {
 	Target string
@@ -3435,11 +3450,20 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) >= 1 {
 			target := Expr(&Ident{Name: identName(st.Assign.Name)})
-			for i := 0; i < len(st.Assign.Field)-1; i++ {
-				target = &IndexExpr{Target: target, Index: &StringLit{Value: fieldName(st.Assign.Field[i].Name)}}
+			var t types.Type
+			if currentEnv != nil {
+				if vt, err := currentEnv.GetVar(st.Assign.Name); err == nil {
+					t = vt
+				}
 			}
-			idx := &StringLit{Value: fieldName(st.Assign.Field[len(st.Assign.Field)-1].Name)}
-			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
+			for i := 0; i < len(st.Assign.Field)-1; i++ {
+				target, t = fieldAccess(target, t, st.Assign.Field[i].Name)
+			}
+			last := fieldName(st.Assign.Field[len(st.Assign.Field)-1].Name)
+			if _, ok := t.(types.StructType); ok {
+				return &FieldAssignStmt{Target: target, Name: last, Value: v}, nil
+			}
+			return &IndexAssignStmt{Target: target, Index: &StringLit{Value: last}, Value: v}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 			return &AssignStmt{Name: identName(st.Assign.Name), Value: v, Clone: clone}, nil
@@ -3508,9 +3532,15 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
-		if st.Fun.Name == "sqrt" && len(st.Fun.Params) == 1 && len(st.Fun.Body) == 0 {
+		if (st.Fun.Name == "ln" || st.Fun.Name == "exp" || st.Fun.Name == "sqrt") && len(st.Fun.Params) == 1 {
 			p := safeName(st.Fun.Params[0].Name)
-			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.sqrt", Args: []Expr{&Ident{Name: p}}}}}
+			call := "Math.log"
+			if st.Fun.Name == "exp" {
+				call = "Math.exp"
+			} else if st.Fun.Name == "sqrt" {
+				call = "Math.sqrt"
+			}
+			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: call, Args: []Expr{&Ident{Name: p}}}}}
 			return &FuncStmt{Name: st.Fun.Name, Params: []string{p}, Body: body}, nil
 		}
 		funcDepth++
@@ -3529,18 +3559,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		pushScope()
 		for _, p := range st.Fun.Params {
 			addVar(p.Name)
-		}
-		if (st.Fun.Name == "ln" || st.Fun.Name == "exp") && len(st.Fun.Params) == 1 && len(st.Fun.Body) == 0 {
-			popScope()
-			currentEnv = savedEnv
-			funcDepth--
-			p := safeName(st.Fun.Params[0].Name)
-			call := "Math.log"
-			if st.Fun.Name == "exp" {
-				call = "Math.exp"
-			}
-			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: call, Args: []Expr{&Ident{Name: p}}}}}
-			return &FuncStmt{Name: st.Fun.Name, Params: []string{p}, Body: body}, nil
 		}
 		body := make([]Stmt, len(st.Fun.Body))
 		for i, s := range st.Fun.Body {
@@ -5533,6 +5551,12 @@ func stmtNode(s Stmt) *ast.Node {
 		n := &ast.Node{Kind: "index_assign"}
 		n.Children = append(n.Children, exprNode(st.Target))
 		n.Children = append(n.Children, exprNode(st.Index))
+		n.Children = append(n.Children, exprNode(st.Value))
+		return n
+	case *FieldAssignStmt:
+		n := &ast.Node{Kind: "field_assign"}
+		n.Children = append(n.Children, exprNode(st.Target))
+		n.Children = append(n.Children, &ast.Node{Kind: "field", Value: st.Name})
 		n.Children = append(n.Children, exprNode(st.Value))
 		return n
 	case *UpdateStmt:
