@@ -76,8 +76,8 @@ fun next_batch(ds: DataSet, batch_size: Int): BatchResult {
         var new_index: Int = (batch_size - rest).toInt()
         var images_new: MutableList<MutableList<Int>> = _sliceList(ds.images, 0, new_index)
         var labels_new: MutableList<MutableList<Int>> = _sliceList(ds.labels, 0, new_index)
-        var batch_images: MutableList<Any?> = concat(images_rest, images_new)
-        var batch_labels: MutableList<Any?> = concat(labels_rest, labels_new)
+        var batch_images = concat(images_rest, images_new)
+        var batch_labels = concat(labels_rest, labels_new)
         var new_ds: DataSet = DataSet(images = ds.images, labels = ds.labels, num_examples = ds.num_examples, index_in_epoch = new_index, epochs_completed = ds.epochs_completed + 1)
         return BatchResult(dataset = new_ds, images = batch_images, labels = batch_labels)
     } else {
