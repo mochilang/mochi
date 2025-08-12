@@ -198,6 +198,19 @@ func isStringType(t string) bool {
 	return t == "[]const u8" || t == "[]u8"
 }
 
+func isMapExpr(e Expr) bool {
+	t := zigTypeFromExpr(e)
+	if strings.Contains(t, "HashMap") {
+		return true
+	}
+	if s, ok := exprToString(e); ok {
+		if t2, ok2 := varTypes[s]; ok2 && strings.Contains(t2, "HashMap") {
+			return true
+		}
+	}
+	return false
+}
+
 // zeroValue returns a Zig expression representing the zero value for the given type.
 // This is used to synthesize return statements when a Mochi function with a
 // non-void return type reaches the end of its body without an explicit return.
@@ -978,17 +991,21 @@ func zigTypeFromExpr(e Expr) string {
 		}
 		return "[]i64"
 	case *FieldExpr:
-		if fe := e.(*FieldExpr); fe != nil {
-			if vr, ok := fe.Target.(*VarRef); ok {
-				if stName, ok := varTypes[vr.Name]; ok {
-					stName = strings.TrimPrefix(stName, "*")
-					if sd, ok2 := structDefs[stName]; ok2 {
-						for _, f := range sd.Fields {
-							if f.Name == toSnakeCase(fe.Name) {
-								return f.Type
-							}
-						}
-					}
+		fe := e.(*FieldExpr)
+		var stName string
+		switch tgt := fe.Target.(type) {
+		case *VarRef:
+			if t, ok := varTypes[tgt.Name]; ok {
+				stName = strings.TrimPrefix(t, "*")
+			}
+		default:
+			stName = zigTypeFromExpr(fe.Target)
+			stName = strings.TrimPrefix(stName, "*")
+		}
+		if sd, ok := structDefs[stName]; ok {
+			for _, f := range sd.Fields {
+				if f.Name == toSnakeCase(fe.Name) {
+					return f.Type
 				}
 			}
 		}
@@ -2430,8 +2447,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 	}
 	if b.Op == "in" {
-		if vr, ok := b.Right.(*VarRef); ok && mapVars[vr.Name] {
-			vr.emit(w)
+		rt := zigTypeFromExpr(b.Right)
+		if isMapExpr(b.Right) {
+			b.Right.emit(w)
 			io.WriteString(w, ".contains(")
 			b.Left.emit(w)
 			io.WriteString(w, ")")
@@ -2449,7 +2467,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, ") != null")
 		} else {
 			elem := "i64"
-			if rt := zigTypeFromExpr(b.Right); strings.HasPrefix(rt, "[]") {
+			if strings.HasPrefix(rt, "[]") {
 				elem = rt[2:]
 			}
 			if elem == "[]const u8" || elem == "[]u8" {
@@ -3143,7 +3161,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		if len(c.Args) == 2 {
 			targetType := zigTypeFromExpr(c.Args[0])
-			if strings.HasPrefix(targetType, "std.StringHashMap(") || strings.HasPrefix(targetType, "std.AutoHashMap(") {
+			if isMapExpr(c.Args[0]) {
 				c.Args[0].emit(w)
 				io.WriteString(w, ".contains(")
 				c.Args[1].emit(w)
@@ -4392,7 +4410,9 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		thenStmts = append(thenStmts, st)
+		if st != nil {
+			thenStmts = append(thenStmts, st)
+		}
 	}
 	popAliasScope()
 	var elseStmts []Stmt
@@ -4409,7 +4429,9 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			elseStmts = append(elseStmts, st)
+			if st != nil {
+				elseStmts = append(elseStmts, st)
+			}
 		}
 		popAliasScope()
 	}
@@ -5002,10 +5024,13 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			if _, ok := expr.(*FieldExpr); ok {
 				if str, ok := exprToString(expr); ok {
 					t := zigTypeFromExpr(expr)
-					if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+					if strings.HasPrefix(t, "[]") || strings.Contains(t, "HashMap") {
 						aliasStack[len(aliasStack)-1][s.Let.Name] = str
 						varTypes[s.Let.Name] = t
 						varTypes[str] = t
+						if strings.Contains(t, "HashMap") {
+							mapVars[s.Let.Name] = true
+						}
 						return nil, nil
 					}
 				}
