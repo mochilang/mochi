@@ -1594,6 +1594,13 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 			return
 		}
+	case "to_float":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "Double(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 	case "input":
 		if len(c.Args) == 0 {
 			fmt.Fprint(w, "(readLine() ?? \"\")")
@@ -2948,13 +2955,19 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 			}
 			typ = swiftTypeOf(varT)
-			ut, okU := env.FindUnionByVariant(swiftTypeOf(varT))
+			ut, okU := env.FindUnionByVariant(typ)
+			if okU {
+				switch typ {
+				case "Int", "Int64", "Double", "Bool", "String":
+					okU = false
+				}
+			}
 			if okU {
 				env.SetVar(st.Var.Name, ut, true)
 			} else {
 				env.SetVar(st.Var.Name, varT, true)
 			}
-			swiftT := swiftTypeOf(varT)
+			swiftT := typ
 			if okU {
 				swiftT = ut.Name
 			}
@@ -6130,15 +6143,15 @@ func dataExprFromFile(env *types.Env, path, format string, typ *parser.TypeRef) 
 	if path == "" {
 		return &ArrayLit{}, nil
 	}
-       root := repoRoot()
-       if root != "" {
-               if strings.HasPrefix(path, "../") {
-                       clean := strings.TrimPrefix(path, "../")
-                       path = filepath.Join(root, "tests", clean)
-               } else if strings.HasPrefix(path, "tests/") {
-                       path = filepath.Join(root, path)
-               }
-       }
+	root := repoRoot()
+	if root != "" {
+		if strings.HasPrefix(path, "../") {
+			clean := strings.TrimPrefix(path, "../")
+			path = filepath.Join(root, "tests", clean)
+		} else if strings.HasPrefix(path, "tests/") {
+			path = filepath.Join(root, path)
+		}
+	}
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
