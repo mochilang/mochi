@@ -745,10 +745,14 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, " + \" \" + ")
 		}
 		if a != nil {
-			useStr = true
-			io.WriteString(w, "_str(")
-			a.emit(w)
-			io.WriteString(w, ")")
+			if call, ok := a.(*CallExpr); ok && call.Func == "_str" {
+				a.emit(w)
+			} else {
+				useStr = true
+				io.WriteString(w, "_str(")
+				a.emit(w)
+				io.WriteString(w, ")")
+			}
 		} else {
 			io.WriteString(w, "\"\"")
 		}
