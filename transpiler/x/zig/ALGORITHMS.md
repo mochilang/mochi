@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-12 07:47 +0700
+Last updated: 2025-08-12 08:38 +0700
 
-## Program Checklist (205/1077)
+## Program Checklist (186/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -456,9 +456,9 @@ Last updated: 2025-08-12 07:47 +0700
 | 447 | graphs/multi_heuristic_astar |   |  |  |
 | 448 | graphs/page_rank |   |  |  |
 | 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
-| 451 | graphs/scc_kosaraju |   |  |  |
-| 452 | graphs/strongly_connected_components |   |  |  |
+| 450 | graphs/random_graph_generator | ✓ | 1.275ms | 640.0 KB |
+| 451 | graphs/scc_kosaraju | ✓ | 895µs | 384.0 KB |
+| 452 | graphs/strongly_connected_components | ✓ | 2.171ms | 640.0 KB |
 | 453 | graphs/tarjans_scc |   |  |  |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
 | 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
@@ -567,42 +567,42 @@ Last updated: 2025-08-12 07:47 +0700
 | 558 | maths/entropy |   |  |  |
 | 559 | maths/euclidean_distance |   |  |  |
 | 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified | ✓ | 379µs | 384.0 KB |
-| 562 | maths/eulers_totient | ✓ | 1.503ms | 640.0 KB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 312µs | 384.0 KB |
-| 564 | maths/factorial | ✓ | 308µs | 256.0 KB |
+| 561 | maths/euler_modified |   |  |  |
+| 562 | maths/eulers_totient |   |  |  |
+| 563 | maths/extended_euclidean_algorithm |   |  |  |
+| 564 | maths/factorial |   |  |  |
 | 565 | maths/factors |   |  |  |
 | 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem | ✓ | 321µs | 128.0 KB |
+| 567 | maths/fermat_little_theorem |   |  |  |
 | 568 | maths/fibonacci |   |  |  |
 | 569 | maths/find_max |   |  |  |
 | 570 | maths/find_min |   |  |  |
 | 571 | maths/floor |   |  |  |
-| 572 | maths/gamma | ✓ | 24.699ms | 128.0 KB |
-| 573 | maths/gaussian | ✓ | 234µs | 128.0 KB |
+| 572 | maths/gamma |   |  |  |
+| 573 | maths/gaussian |   |  |  |
 | 574 | maths/gcd_of_n_numbers |   |  |  |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes | ✓ | 325µs | 256.0 KB |
-| 577 | maths/greatest_common_divisor | ✓ | 558µs | 384.0 KB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 489µs | 384.0 KB |
-| 579 | maths/integer_square_root | ✓ | 269µs | 256.0 KB |
+| 576 | maths/germain_primes |   |  |  |
+| 577 | maths/greatest_common_divisor |   |  |  |
+| 578 | maths/hardy_ramanujanalgo |   |  |  |
+| 579 | maths/integer_square_root |   |  |  |
 | 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome | ✓ | 354µs | 384.0 KB |
-| 582 | maths/is_ip_v4_address_valid | ✓ | 2.282ms | 896.0 KB |
+| 581 | maths/is_int_palindrome |   |  |  |
+| 582 | maths/is_ip_v4_address_valid |   |  |  |
 | 583 | maths/is_square_free |   |  |  |
 | 584 | maths/jaccard_similarity |   |  |  |
 | 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem | ✓ | 669µs | 256.0 KB |
+| 586 | maths/josephus_problem |   |  |  |
 | 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba | ✓ | 938µs | 384.0 KB |
+| 588 | maths/karatsuba |   |  |  |
 | 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers | ✓ | 296µs | 256.0 KB |
-| 591 | maths/least_common_multiple | ✓ | 322µs | 256.0 KB |
-| 592 | maths/line_length | ✓ | 375µs | 128.0 KB |
-| 593 | maths/liouville_lambda | ✓ | 316µs | 256.0 KB |
-| 594 | maths/lucas_lehmer_primality_test | ✓ | 281µs | 128.0 KB |
-| 595 | maths/lucas_series | ✓ | 472µs | 384.0 KB |
-| 596 | maths/maclaurin_series | ✓ | 449µs | 384.0 KB |
+| 590 | maths/largest_of_very_large_numbers |   |  |  |
+| 591 | maths/least_common_multiple |   |  |  |
+| 592 | maths/line_length |   |  |  |
+| 593 | maths/liouville_lambda |   |  |  |
+| 594 | maths/lucas_lehmer_primality_test |   |  |  |
+| 595 | maths/lucas_series |   |  |  |
+| 596 | maths/maclaurin_series |   |  |  |
 | 597 | maths/manhattan_distance |   |  |  |
 | 598 | maths/matrix_exponentiation |   |  |  |
 | 599 | maths/max_sum_sliding_window |   |  |  |

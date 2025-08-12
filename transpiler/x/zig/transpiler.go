@@ -612,10 +612,26 @@ func (ae *AppendExpr) emit(w io.Writer) {
 	ae.List.emit(w)
 	io.WriteString(w, ")) catch |err| handleError(err); _tmp.append(")
 	valType := zigTypeFromExpr(ae.Value)
-	if strings.HasPrefix(elem, "[]") && strings.HasPrefix(valType, "[]const ") {
-		io.WriteString(w, "@constCast(")
-		ae.Value.emit(w)
-		io.WriteString(w, ")")
+	if strings.HasPrefix(elem, "[]") {
+		if ll, ok := ae.Value.(*ListLit); ok {
+			inner := strings.TrimPrefix(elem, "[]")
+			ll.ElemType = inner
+			if len(ll.Elems) == 0 {
+				io.WriteString(w, "@constCast(")
+				ll.emit(w)
+				io.WriteString(w, ")[0..]")
+			} else {
+				io.WriteString(w, "@constCast(&(")
+				ll.emit(w)
+				io.WriteString(w, "))[0..]")
+			}
+		} else if strings.HasPrefix(valType, "[]const ") {
+			io.WriteString(w, "@constCast(")
+			ae.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			ae.Value.emit(w)
+		}
 	} else {
 		ae.Value.emit(w)
 	}
@@ -1069,25 +1085,25 @@ func zigTypeFromExpr(e Expr) string {
 			if strings.HasPrefix(ce.Func, "std.ascii.") {
 				return "[]const u8"
 			}
-                        if rt, ok := funcReturns[ce.Func]; ok {
-                                if rt == "" {
-                                        return "void"
-                                }
-                                return rt
-                        }
-                        if vt, ok := varTypes[ce.Func]; ok {
-                                if strings.HasPrefix(vt, "*const fn") || strings.HasPrefix(vt, "fn") {
-                                        if idx := strings.LastIndex(vt, ")"); idx >= 0 {
-                                                ret := strings.TrimSpace(vt[idx+1:])
-                                                if ret != "" {
-                                                        return ret
-                                                }
-                                        }
-                                }
-                        }
-                        return "i64"
-                }
-        case *AppendExpr:
+			if rt, ok := funcReturns[ce.Func]; ok {
+				if rt == "" {
+					return "void"
+				}
+				return rt
+			}
+			if vt, ok := varTypes[ce.Func]; ok {
+				if strings.HasPrefix(vt, "*const fn") || strings.HasPrefix(vt, "fn") {
+					if idx := strings.LastIndex(vt, ")"); idx >= 0 {
+						ret := strings.TrimSpace(vt[idx+1:])
+						if ret != "" {
+							return ret
+						}
+					}
+				}
+			}
+			return "i64"
+		}
+	case *AppendExpr:
 		ae := e.(*AppendExpr)
 		// Prefer explicitly tracked element type when available.
 		if ae.ElemType != "" {
@@ -1563,8 +1579,8 @@ func (p *Program) Emit() []byte {
 		}
 		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
 		buf.WriteString("    switch (info) {\n")
-                buf.WriteString("    .pointer => |p| {\n")
-                buf.WriteString("        if (p.size == .slice) {\n")
+		buf.WriteString("    .Pointer => |p| {\n")
+		buf.WriteString("        if (p.size == .Slice) {\n")
 		buf.WriteString("            var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
 		buf.WriteString("            defer out.deinit();\n")
 		buf.WriteString("            out.append('[') catch unreachable;\n")
@@ -1577,7 +1593,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("            return out.toOwnedSlice() catch unreachable;\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("    },\n")
-                buf.WriteString("    .@\"struct\" => |_| {\n")
+		buf.WriteString("    .Struct => |_| {\n")
 		buf.WriteString("        if (@hasDecl(@TypeOf(v), \"iterator\")) {\n")
 		buf.WriteString("            const KVPair = struct{ ks: []const u8, vs: []const u8 };\n")
 		buf.WriteString("            var pairs = std.ArrayList(KVPair).init(std.heap.page_allocator);\n")
@@ -1685,7 +1701,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-                buf.WriteString("        return pages * std.heap.pageSize();\n")
+		buf.WriteString("        return pages * std.mem.page_size;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -1845,8 +1861,8 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	if mut {
 		kw = "var"
 	}
-	if kw == "const" && strings.HasPrefix(targetType, "[]") && !strings.HasPrefix(targetType, "[]const ") {
-		targetType = "[]const " + targetType[2:]
+	if kw == "const" && targetType == "[]u8" {
+		targetType = "[]const u8"
 	}
 	if lit, ok := v.Value.(*ListLit); ok && mut && v.Type == "" {
 		elem := lit.ElemType
@@ -2536,6 +2552,33 @@ func (l *ListLit) emit(w io.Writer) {
 		if strings.HasPrefix(et, "const ") {
 			et = et[len("const "):]
 		}
+		if strings.HasPrefix(et, "[]") {
+			inner := strings.TrimPrefix(et, "[]")
+			if len(l.Elems) == 0 {
+				fmt.Fprintf(w, "&[_][]%s{}", inner)
+				return
+			}
+			fmt.Fprintf(w, "[%d][]%s{", len(l.Elems), inner)
+			for i, e := range l.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if ll, ok := e.(*ListLit); ok {
+					ll.ElemType = inner
+					if len(ll.Elems) == 0 {
+						ll.emit(w)
+					} else {
+						io.WriteString(w, "@constCast(&(")
+						ll.emit(w)
+						io.WriteString(w, "))[0..]")
+					}
+				} else {
+					e.emit(w)
+				}
+			}
+			io.WriteString(w, "}")
+			return
+		}
 		if len(l.Elems) == 0 {
 			// Use slice syntax for empty lists to avoid array
 			// literal coercion errors (e.g. returning `[]i64`).
@@ -2775,30 +2818,30 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 	tmp := fmt.Sprintf("__it%d", loopCounter)
 	loopCounter++
 	if f.Iterable != nil {
-                typ := zigTypeFromExpr(f.Iterable)
-                if typ == "i64" {
-                        if fe, ok := f.Iterable.(*FieldExpr); ok {
-                                if vr, ok2 := fe.Target.(*VarRef); ok2 {
-                                        if st, ok3 := varTypes[vr.Name]; ok3 {
-                                                if sd, ok4 := structDefs[st]; ok4 {
-                                                        for _, fld := range sd.Fields {
-                                                                if fld.Name == toSnakeCase(fe.Name) {
-                                                                        typ = fld.Type
-                                                                        break
-                                                                }
-                                                        }
-                                                }
-                                        }
-                                }
-                        } else if s, ok := exprToString(f.Iterable); ok {
-                                if t, ok2 := varTypes[s]; ok2 {
-                                        typ = t
-                                }
-                        }
-                }
-                typ = strings.TrimPrefix(typ, "*")
-                typ = strings.TrimPrefix(typ, "const ")
-                if strings.HasPrefix(typ, "std.AutoHashMap") || strings.HasPrefix(typ, "std.StringHashMap") || strings.HasPrefix(typ, "hash_map.HashMap(") || strings.Contains(typ, "HashMap(") {
+		typ := zigTypeFromExpr(f.Iterable)
+		if typ == "i64" {
+			if fe, ok := f.Iterable.(*FieldExpr); ok {
+				if vr, ok2 := fe.Target.(*VarRef); ok2 {
+					if st, ok3 := varTypes[vr.Name]; ok3 {
+						if sd, ok4 := structDefs[st]; ok4 {
+							for _, fld := range sd.Fields {
+								if fld.Name == toSnakeCase(fe.Name) {
+									typ = fld.Type
+									break
+								}
+							}
+						}
+					}
+				}
+			} else if s, ok := exprToString(f.Iterable); ok {
+				if t, ok2 := varTypes[s]; ok2 {
+					typ = t
+				}
+			}
+		}
+		typ = strings.TrimPrefix(typ, "*")
+		typ = strings.TrimPrefix(typ, "const ")
+		if strings.HasPrefix(typ, "std.AutoHashMap") || strings.HasPrefix(typ, "std.StringHashMap") || strings.HasPrefix(typ, "hash_map.HashMap(") || strings.Contains(typ, "HashMap(") {
 			iterVar := fmt.Sprintf("__mapit%d", loopCounter)
 			loopCounter++
 			io.WriteString(w, "var ")
@@ -3030,10 +3073,10 @@ func (c *CallExpr) emit(w io.Writer) {
 		if len(c.Args) == 1 {
 			arg := c.Args[0]
 			switch zigTypeFromExpr(arg) {
-                        case "[]const u8":
-                                io.WriteString(w, "(std.fmt.parseInt(i64, ")
-                                arg.emit(w)
-                                io.WriteString(w, ", 10) catch 0)")
+			case "[]const u8":
+				io.WriteString(w, "(std.fmt.parseInt(i64, ")
+				arg.emit(w)
+				io.WriteString(w, ", 10) catch 0)")
 			case "f64":
 				io.WriteString(w, "@as(i64, @intFromFloat(")
 				arg.emit(w)
@@ -4782,7 +4825,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	preStmts := []Stmt{}
 	paramTypes := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		mutable := mutables[p.Name] || varMut[fn.Name+":"+p.Name] || varMut[":"+p.Name]
+		mutable := true
 		typ := toZigType(p.Type)
 		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
 		if mutable {
@@ -4991,10 +5034,10 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			vd.Type = zigTypeFromExpr(expr)
 		}
-                varTypes[s.Let.Name] = vd.Type
-                varTypes[alias] = vd.Type
-                varDecls[s.Let.Name] = vd
-                varDecls[alias] = vd
+		varTypes[s.Let.Name] = vd.Type
+		varTypes[alias] = vd.Type
+		varDecls[s.Let.Name] = vd
+		varDecls[alias] = vd
 		if globalNames[s.Let.Name] {
 			globalNames[alias] = true
 		}
