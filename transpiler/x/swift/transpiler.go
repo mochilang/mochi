@@ -1947,7 +1947,9 @@ func _p(_ v: Any?) -> String {
     if let val = v {
         if let d = val as? Double {
             if d.rounded(.towardZero) == d {
-                return String(Int64(d))
+                if d <= Double(Int64.max) && d >= Double(Int64.min) {
+                    return String(Int64(d))
+                }
             }
         }
         return String(describing: val)
