@@ -201,13 +201,6 @@ warning: variable "n" is unused (there is a variable with the same name in the c
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:645:23: Main.train/3
 
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 589 │               {i, maps} = try do
-     │                ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:589:16: Main.train/3
-
      warning: variable "i_h" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
  676 │               {i_h, w_hidden} = try do
@@ -221,6 +214,13 @@ warning: variable "n" is unused (there is a variable with the same name in the c
      │                          ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:692:26: Main.train/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 589 │               {i, maps} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:589:16: Main.train/3
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
