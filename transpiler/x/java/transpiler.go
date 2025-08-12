@@ -6369,6 +6369,8 @@ func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
 func compileFunExpr(fn *parser.FunExpr, closure bool) (Expr, error) {
 	saved := varTypes
 	varTypes = copyMap(varTypes)
+	savedAlias := aliasCounts
+	aliasCounts = map[string]int{}
 	savedDecls := pushScope(closure)
 	savedRet := currentFuncReturn
 	currentFuncReturn = typeRefString(fn.Return)
@@ -6423,6 +6425,7 @@ func compileFunExpr(fn *parser.FunExpr, closure bool) (Expr, error) {
 		}
 	}
 	varTypes = saved
+	aliasCounts = savedAlias
 	popScope(savedDecls)
 	currentFuncReturn = savedRet
 	return lam, nil

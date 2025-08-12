@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-12 13:56 GMT+7
+Last updated: 2025-08-12 14:12 GMT+7
 
-## Algorithms Golden Test Checklist (938/1077)
+## Algorithms Golden Test Checklist (937/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -704,7 +704,7 @@ Last updated: 2025-08-12 13:56 GMT+7
 | 695 | maths/volume | ✓ | 53.0ms | 50.80KB |
 | 696 | maths/zellers_congruence | ✓ | 59.0ms | 78.27KB |
 | 697 | matrix/binary_search_matrix | ✓ | 33.0ms | 872B |
-| 698 | matrix/count_islands_in_matrix | ✓ |  |  |
+| 698 | matrix/count_islands_in_matrix | error |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 5.38s | 7.73MB |
 | 700 | matrix/count_paths | ✓ | 30.0ms | 992B |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 27.0ms | 496B |
@@ -731,7 +731,7 @@ Last updated: 2025-08-12 13:56 GMT+7
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 49.0ms | 56.82KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 47.0ms | 46.99KB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 49.0ms | 57.01KB |
-| 725 | neural_network/activation_functions/mish | ✓ | 66.0ms | 56.82KB |
+| 725 | neural_network/activation_functions/mish | ✓ | 18.0ms | 10.45KB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 71.0ms | 56.82KB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 47.0ms | 46.95KB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 21.0ms | 10.57KB |
