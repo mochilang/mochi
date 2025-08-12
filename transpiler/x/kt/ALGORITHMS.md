@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-11 18:51 GMT+7
+Last updated: 2025-08-12 08:46 GMT+7
 
-## Algorithms Golden Test Checklist (320/1077)
+## Algorithms Golden Test Checklist (321/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -456,7 +456,7 @@ Last updated: 2025-08-11 18:51 GMT+7
 | 447 | graphs/multi_heuristic_astar |   |  |  |
 | 448 | graphs/page_rank |   |  |  |
 | 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
+| 450 | graphs/random_graph_generator | ✓ | 24.36ms | 115.55KiB |
 | 451 | graphs/scc_kosaraju |   |  |  |
 | 452 | graphs/strongly_connected_components |   |  |  |
 | 453 | graphs/tarjans_scc |   |  |  |
