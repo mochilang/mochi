@@ -104,6 +104,13 @@ var (
 // benchmark block when emitting code.
 func SetBenchMain(v bool) { benchMain = v }
 
+func (p *Program) enableBench() {
+    p.UseTime = true
+    p.UseJSON = true
+    p.UsePrint = true
+    p.UseRuntime = true
+}
+
 func toPascalCase(s string) string {
 	parts := strings.Split(s, "_")
 	for i, p := range parts {
@@ -7078,11 +7085,9 @@ func identName(e *parser.Expr) (string, bool) {
 func Emit(prog *Program, bench bool) []byte {
 	bench = bench || benchMain || prog.BenchMain
 	if bench {
-		prog.UseTime = true
-		prog.UseJSON = true
-		prog.UsePrint = true
-		prog.UseRuntime = true
+		prog.enableBench()
 	}
+
 	var buf bytes.Buffer
 	globalVars := map[string]bool{}
 	for _, s := range prog.Stmts {
