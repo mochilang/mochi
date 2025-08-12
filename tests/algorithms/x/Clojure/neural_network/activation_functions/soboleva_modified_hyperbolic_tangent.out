@@ -1,0 +1,5 @@
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.clj:48:173).
+Unable to resolve symbol: to_float in this context
+
+Full report at:
+/tmp/clojure-7085445197919281966.edn
