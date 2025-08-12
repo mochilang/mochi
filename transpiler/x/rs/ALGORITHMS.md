@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-12 10:18 GMT+7
+Last updated: 2025-08-12 11:50 GMT+7
 
-## Algorithms Golden Test Checklist (613/1077)
+## Algorithms Golden Test Checklist (614/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -750,7 +750,7 @@ Last updated: 2025-08-12 10:18 GMT+7
 | 741 | other/doomsday | ✓ | 40µs | 2.0 MB |
 | 742 | other/fischer_yates_shuffle | ✓ | 85µs | 2.1 MB |
 | 743 | other/gauss_easter | ✓ | 52µs | 2.0 MB |
-| 744 | other/greedy | error |  |  |
+| 744 | other/greedy | ✓ | 154µs | 2.1 MB |
 | 745 | other/guess_the_number_search | ✓ | 88µs | 2.2 MB |
 | 746 | other/h_index | ✓ | 55µs | 2.0 MB |
 | 747 | other/least_recently_used | error |  |  |
