@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 619/1077
-Last updated: 2025-08-12 11:18 +0700
+Completed programs: 651/1077
+Last updated: 2025-08-12 12:29 +0700
 
 Checklist:
 
@@ -786,58 +786,58 @@ Checklist:
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 700.0µs | 2.27KB |
 | 778 | physics/malus_law |   |  |  |
 | 779 | physics/mass_energy_equivalence | ✓ | 304.0µs | 1.14KB |
-| 780 | physics/mirror_formulae | ✓ | 264.0µs | 1.07KB |
-| 781 | physics/n_body_simulation | ✓ | 888.0µs | 5.66KB |
-| 782 | physics/newtons_law_of_gravitation | ✓ | 335.0µs | 1.24KB |
-| 783 | physics/newtons_second_law_of_motion | ✓ | 322.0µs | 1016B |
-| 784 | physics/orbital_transfer_work | ✓ | 460.0µs | 1.05KB |
-| 785 | physics/period_of_pendulum | ✓ | 548.0µs | 1.08KB |
-| 786 | physics/photoelectric_effect | ✓ | 280.0µs | 1000B |
-| 787 | physics/potential_energy | ✓ | 417.0µs | 1.02KB |
-| 788 | physics/rainfall_intensity | ✓ | 476.0µs | 1.07KB |
-| 789 | physics/reynolds_number | ✓ | 447.0µs | 1.06KB |
-| 790 | physics/rms_speed_of_molecule | ✓ | 315.0µs | 1.32KB |
-| 791 | physics/shear_stress | ✓ | 275.0µs | 1.20KB |
-| 792 | physics/speed_of_sound | ✓ | 267.0µs | 1.02KB |
-| 793 | physics/speeds_of_gas_molecules | ✓ | 539.0µs | 1.11KB |
-| 794 | physics/terminal_velocity | ✓ | 324.0µs | 1.07KB |
-| 795 | project_euler/problem_001/sol1 | ✓ | 469.0µs | 1.04KB |
-| 796 | project_euler/problem_001/sol2 | ✓ | 269.0µs | 1016B |
-| 797 | project_euler/problem_001/sol3 | ✓ | 351.0µs | 968B |
-| 798 | project_euler/problem_001/sol4 | ✓ | 1.0ms | 35.07KB |
-| 799 | project_euler/problem_001/sol5 | ✓ | 346.0µs | 1016B |
-| 800 | project_euler/problem_001/sol6 |   |  |  |
-| 801 | project_euler/problem_001/sol7 |   |  |  |
-| 802 | project_euler/problem_002/sol1 |   |  |  |
-| 803 | project_euler/problem_002/sol2 |   |  |  |
-| 804 | project_euler/problem_002/sol3 |   |  |  |
-| 805 | project_euler/problem_002/sol4 |   |  |  |
-| 806 | project_euler/problem_002/sol5 |   |  |  |
-| 807 | project_euler/problem_003/sol1 |   |  |  |
-| 808 | project_euler/problem_003/sol2 |   |  |  |
-| 809 | project_euler/problem_003/sol3 |   |  |  |
-| 810 | project_euler/problem_004/sol1 |   |  |  |
-| 811 | project_euler/problem_004/sol2 |   |  |  |
-| 812 | project_euler/problem_005/sol1 |   |  |  |
-| 813 | project_euler/problem_005/sol2 |   |  |  |
-| 814 | project_euler/problem_006/sol1 |   |  |  |
-| 815 | project_euler/problem_006/sol2 |   |  |  |
-| 816 | project_euler/problem_006/sol3 |   |  |  |
-| 817 | project_euler/problem_006/sol4 |   |  |  |
-| 818 | project_euler/problem_007/sol1 |   |  |  |
-| 819 | project_euler/problem_007/sol2 |   |  |  |
-| 820 | project_euler/problem_007/sol3 |   |  |  |
-| 821 | project_euler/problem_008/sol1 |   |  |  |
-| 822 | project_euler/problem_008/sol2 |   |  |  |
-| 823 | project_euler/problem_008/sol3 |   |  |  |
-| 824 | project_euler/problem_009/sol1 |   |  |  |
-| 825 | project_euler/problem_009/sol2 |   |  |  |
-| 826 | project_euler/problem_009/sol3 |   |  |  |
-| 827 | project_euler/problem_010/sol1 |   |  |  |
-| 828 | project_euler/problem_010/sol2 |   |  |  |
-| 829 | project_euler/problem_010/sol3 |   |  |  |
-| 830 | project_euler/problem_011/sol1 |   |  |  |
-| 831 | project_euler/problem_011/sol2 |   |  |  |
+| 780 | physics/mirror_formulae | ✓ | 439.0µs | 1.07KB |
+| 781 | physics/n_body_simulation | ✓ | 503.0µs | 5.66KB |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 326.0µs | 1.26KB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 120.0µs | 1016B |
+| 784 | physics/orbital_transfer_work | ✓ | 245.0µs | 1.05KB |
+| 785 | physics/period_of_pendulum | ✓ | 221.0µs | 1.08KB |
+| 786 | physics/photoelectric_effect | ✓ | 218.0µs | 1000B |
+| 787 | physics/potential_energy | ✓ | 273.0µs | 1.02KB |
+| 788 | physics/rainfall_intensity | ✓ | 287.0µs | 1.07KB |
+| 789 | physics/reynolds_number | ✓ | 451.0µs | 1.06KB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 250.0µs | 1.32KB |
+| 791 | physics/shear_stress | ✓ | 213.0µs | 1.20KB |
+| 792 | physics/speed_of_sound | ✓ | 203.0µs | 1.02KB |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 319.0µs | 1.11KB |
+| 794 | physics/terminal_velocity | ✓ | 200.0µs | 1.07KB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 232.0µs | 1.04KB |
+| 796 | project_euler/problem_001/sol2 | ✓ | 283.0µs | 1016B |
+| 797 | project_euler/problem_001/sol3 | ✓ | 156.0µs | 968B |
+| 798 | project_euler/problem_001/sol4 | ✓ | 621.0µs | 35.07KB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 224.0µs | 1016B |
+| 800 | project_euler/problem_001/sol6 | ✓ | 213.0µs | 1016B |
+| 801 | project_euler/problem_001/sol7 | ✓ | 209.0µs | 968B |
+| 802 | project_euler/problem_002/sol1 | ✓ | 145.0µs | 1016B |
+| 803 | project_euler/problem_002/sol2 | ✓ | 202.0µs | 1016B |
+| 804 | project_euler/problem_002/sol3 | ✓ | 287.0µs | 1016B |
+| 805 | project_euler/problem_002/sol4 | ✓ | 194.0µs | 1016B |
+| 806 | project_euler/problem_002/sol5 | ✓ | 316.0µs | 1.02KB |
+| 807 | project_euler/problem_003/sol1 | ✓ | 1.0ms | 1016B |
+| 808 | project_euler/problem_003/sol2 | ✓ | 214.0µs | 968B |
+| 809 | project_euler/problem_003/sol3 | ✓ | 477.0µs | 3.01KB |
+| 810 | project_euler/problem_004/sol1 | ✓ | 16.0ms | 1.40MB |
+| 811 | project_euler/problem_004/sol2 | ✓ | 7.0ms | 968B |
+| 812 | project_euler/problem_005/sol1 | ✓ | 153.0µs | 984B |
+| 813 | project_euler/problem_005/sol2 | ✓ | 256.0µs | 984B |
+| 814 | project_euler/problem_006/sol1 | ✓ | 255.0µs | 984B |
+| 815 | project_euler/problem_006/sol2 | ✓ | 154.0µs | 1016B |
+| 816 | project_euler/problem_006/sol3 | ✓ | 148.0µs | 1016B |
+| 817 | project_euler/problem_006/sol4 | ✓ | 185.0µs | 984B |
+| 818 | project_euler/problem_007/sol1 | ✓ | 6.0ms | 1016B |
+| 819 | project_euler/problem_007/sol2 | ✓ | 4.0ms | 350.27KB |
+| 820 | project_euler/problem_007/sol3 | ✓ | 3.0ms | 1016B |
+| 821 | project_euler/problem_008/sol1 | ✓ | 46.0ms | 3.72MB |
+| 822 | project_euler/problem_008/sol2 | ✓ | 42.0ms | 3.04MB |
+| 823 | project_euler/problem_008/sol3 | ✓ | 4.0ms | 1.36MB |
+| 824 | project_euler/problem_009/sol1 | ✓ | 275.0µs | 984B |
+| 825 | project_euler/problem_009/sol2 | ✓ | 147.0µs | 1016B |
+| 826 | project_euler/problem_009/sol3 | ✓ | 417.0µs | 984B |
+| 827 | project_euler/problem_010/sol1 | ✓ | 189.0µs | 1016B |
+| 828 | project_euler/problem_010/sol2 | ✓ | 605.0ms | 68.55MB |
+| 829 | project_euler/problem_010/sol3 | ✓ | 875.0µs | 83.70KB |
+| 830 | project_euler/problem_011/sol1 | ✓ | 299.0µs | 984B |
+| 831 | project_euler/problem_011/sol2 | ✓ | 510.0µs | 4.55KB |
 | 832 | project_euler/problem_012/sol1 |   |  |  |
 | 833 | project_euler/problem_012/sol2 |   |  |  |
 | 834 | project_euler/problem_013/sol1 |   |  |  |
