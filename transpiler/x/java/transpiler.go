@@ -160,6 +160,15 @@ func resolveAlias(name string) string {
 	return name
 }
 
+func isSimpleLiteral(e Expr) bool {
+	switch e.(type) {
+	case *IntLit, *FloatLit, *StringLit, *BoolLit:
+		return true
+	default:
+		return false
+	}
+}
+
 func currentEnv() *types.Env {
 	if topEnv == nil {
 		return nil
@@ -6828,11 +6837,19 @@ func Emit(prog *Program) []byte {
 			buf.WriteByte('\n')
 		case *LetStmt:
 			saved := *v
-			saved.Expr = nil
+			if isSimpleLiteral(v.Expr) {
+				saved.Expr = v.Expr
+			} else {
+				saved.Expr = nil
+			}
 			saved.emit(&buf, "    ")
 		case *VarStmt:
 			saved := *v
-			saved.Expr = nil
+			if isSimpleLiteral(v.Expr) {
+				saved.Expr = v.Expr
+			} else {
+				saved.Expr = nil
+			}
 			saved.emit(&buf, "    ")
 		}
 	}
@@ -6948,11 +6965,11 @@ func Emit(prog *Program) []byte {
 		for _, st := range prog.Stmts {
 			switch v := st.(type) {
 			case *LetStmt:
-				if v.Expr != nil {
+				if v.Expr != nil && !isSimpleLiteral(v.Expr) {
 					body = append(body, &AssignStmt{Name: v.Name, Expr: v.Expr, Type: v.Type})
 				}
 			case *VarStmt:
-				if v.Expr != nil {
+				if v.Expr != nil && !isSimpleLiteral(v.Expr) {
 					body = append(body, &AssignStmt{Name: v.Name, Expr: v.Expr, Type: v.Type})
 				}
 			case *TypeDeclStmt, *InterfaceDeclStmt:
@@ -6967,11 +6984,11 @@ func Emit(prog *Program) []byte {
 		for _, st := range prog.Stmts {
 			switch v := st.(type) {
 			case *LetStmt:
-				if v.Expr != nil {
+				if v.Expr != nil && !isSimpleLiteral(v.Expr) {
 					(&AssignStmt{Name: v.Name, Expr: v.Expr, Type: v.Type}).emit(&buf, "        ")
 				}
 			case *VarStmt:
-				if v.Expr != nil {
+				if v.Expr != nil && !isSimpleLiteral(v.Expr) {
 					(&AssignStmt{Name: v.Name, Expr: v.Expr, Type: v.Type}).emit(&buf, "        ")
 				}
 			case *TypeDeclStmt, *InterfaceDeclStmt:
