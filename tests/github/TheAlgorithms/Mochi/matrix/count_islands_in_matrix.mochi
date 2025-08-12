@@ -14,10 +14,13 @@ Space complexity: O(rows * cols) for the visited matrix and recursion stack.
 fun is_safe(grid: list<list<int>>, visited: list<list<bool>>, row: int, col: int): bool {
   let rows = len(grid)
   let cols = len(grid[0])
-  let visited_cell = visited[row][col]
   let within_bounds = row >= 0 && row < rows && col >= 0 && col < cols
+  if !within_bounds {
+    return false
+  }
+  let visited_cell = visited[row][col]
   let not_visited = visited_cell == false
-  return within_bounds && not_visited && grid[row][col] == 1
+  return not_visited && grid[row][col] == 1
 }
 
 fun dfs(grid: list<list<int>>, visited: list<list<bool>>, row: int, col: int) {
