@@ -1,0 +1,10 @@
+run: exit status 1
+ln domain error
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/softplus.rkt:125:4
+   /workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/softplus.rkt:123:0
+   /workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/softplus.rkt:120:2
+   /workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/softplus.rkt:136:2
+   /workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/softplus.rkt:146:2
+   /workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/softplus.rkt:145:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/softplus.rkt"

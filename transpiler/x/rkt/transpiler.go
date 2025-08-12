@@ -39,7 +39,6 @@ var continueLabels []string
 // subsequent calls can use the sanitized version rather than clashing with
 // Racket builtins such as `list` or `length`.
 var funcNameMap = map[string]string{}
-var definedVars map[*types.Env]map[string]bool
 
 func pushContinue(label string) {
 	continueLabels = append(continueLabels, label)
@@ -1741,7 +1740,6 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	benchMain = bench
 	r := &Program{}
 	importedModules = map[string]string{}
-	definedVars = map[*types.Env]map[string]bool{}
 	if env != nil {
 		env.SetVar("input", types.FuncType{Return: types.StringType{}}, false)
 	}
@@ -1910,11 +1908,6 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		} else {
 			e = zeroValue(st.Var.Type, env)
 		}
-		if env != nil {
-			if m := definedVars[env]; m != nil && m[st.Var.Name] {
-				return &AssignStmt{Name: st.Var.Name, Expr: e}, nil
-			}
-		}
 		var t types.Type
 		if env != nil {
 			if st.Var.Type != nil {
@@ -1937,10 +1930,6 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			env.SetVar(st.Var.Name, t, true)
-			if definedVars[env] == nil {
-				definedVars[env] = map[string]bool{}
-			}
-			definedVars[env][st.Var.Name] = true
 		}
 		return &LetStmt{Name: st.Var.Name, Expr: e, Type: t}, nil
 	case st.Assign != nil:

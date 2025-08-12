@@ -1,0 +1,8 @@
+run: exit status 1
+ln domain error
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/physics/altitude_pressure.rkt:125:2
+   /workspace/mochi/tests/algorithms/x/Racket/physics/altitude_pressure.rkt:130:2
+   /workspace/mochi/tests/algorithms/x/Racket/physics/altitude_pressure.rkt:142:2
+   /workspace/mochi/tests/algorithms/x/Racket/physics/altitude_pressure.rkt:141:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/physics/altitude_pressure.rkt"
