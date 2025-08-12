@@ -3691,6 +3691,51 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			alias := ctx.newAlias(name)
 			return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: key, Value: val}}, nil
 		}
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) > 1 {
+			fields := st.Assign.Field
+			var stmts []Stmt
+			old := ctx.current(name)
+			if ctx.isGlobal(name) {
+				oldAlias := ctx.newAlias(name + "_old")
+				getCall := &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", name)}}}
+				stmts = append(stmts, &LetStmt{Name: oldAlias, Expr: getCall})
+				old = oldAlias
+			}
+			tmp := make([]string, len(fields)-1)
+			parent := old
+			for i := 0; i < len(fields)-1; i++ {
+				key := &StringLit{Value: fields[i].Name}
+				alias := ctx.newAlias(name + "_tmp")
+				idx := &IndexExpr{Target: &NameRef{Name: parent}, Index: key, Kind: "map"}
+				stmts = append(stmts, &LetStmt{Name: alias, Expr: idx})
+				tmp[i] = alias
+				parent = alias
+			}
+			lastKey := &StringLit{Value: fields[len(fields)-1].Name}
+			inner := ctx.newAlias(name + "_tmp")
+			stmts = append(stmts, &MapAssignStmt{Name: inner, Old: parent, Key: lastKey, Value: val})
+			updated := inner
+			for i := len(fields) - 2; i >= 0; i-- {
+				key := &StringLit{Value: fields[i].Name}
+				oldVar := old
+				if i > 0 {
+					oldVar = tmp[i-1]
+				}
+				var alias string
+				if i == 0 {
+					alias = ctx.newAlias(name)
+				} else {
+					alias = ctx.newAlias(name + "_tmp")
+				}
+				stmt := &MapAssignStmt{Name: alias, Old: oldVar, Key: key, Value: &NameRef{Name: updated}}
+				stmts = append(stmts, stmt)
+				updated = alias
+			}
+			if ctx.isGlobal(name) {
+				stmts = append(stmts, &PutStmt{Name: name, Expr: &NameRef{Name: updated}})
+			}
+			return stmts, nil
+		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 			if ctx.isGlobal(name) {
 				return []Stmt{&PutStmt{Name: name, Expr: val}}, nil
