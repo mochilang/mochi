@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-11 18:36 GMT+7
+Last updated: 2025-08-12 08:03 GMT+7
 
-## Algorithms Golden Test Checklist (267/1077)
+## Algorithms Golden Test Checklist (315/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -556,56 +556,56 @@ Last updated: 2025-08-11 18:36 GMT+7
 | 547 | maths/check_polygon |   |  |  |
 | 548 | maths/chinese_remainder_theorem |   |  |  |
 | 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
-| 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
-| 558 | maths/entropy |   |  |  |
-| 559 | maths/euclidean_distance |   |  |  |
-| 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
-| 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
-| 571 | maths/floor |   |  |  |
-| 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
-| 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
-| 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
-| 583 | maths/is_square_free |   |  |  |
-| 584 | maths/jaccard_similarity |   |  |  |
-| 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
-| 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
-| 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
+| 550 | maths/collatz_sequence | ✓ | 1.0µs | 0B |
+| 551 | maths/combinations | ✓ | 1.0µs | 384B |
+| 552 | maths/continued_fraction | ✓ | 0ns | 64B |
+| 553 | maths/decimal_isolate | ✓ | 0ns | 0B |
+| 554 | maths/decimal_to_fraction | ✓ | 0ns | 0B |
+| 555 | maths/dodecahedron | ✓ | 0ns | 0B |
+| 556 | maths/double_factorial | ✓ | 0ns | 0B |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 0ns | 0B |
+| 558 | maths/entropy | ✓ | 3.0µs | 87.75KB |
+| 559 | maths/euclidean_distance | ✓ | 0ns | 0B |
+| 560 | maths/euler_method | ✓ | 1.0µs | 7.94KB |
+| 561 | maths/euler_modified | ✓ | 0ns | 0B |
+| 562 | maths/eulers_totient | ✓ | 1.0µs | 0B |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 0ns | 0B |
+| 564 | maths/factorial | ✓ | 0ns | 0B |
+| 565 | maths/factors | ✓ | 0ns | 0B |
+| 566 | maths/fast_inverse_sqrt | ✓ | 0ns | 0B |
+| 567 | maths/fermat_little_theorem | ✓ | 0ns | 0B |
+| 568 | maths/fibonacci | ✓ | 0ns | 640B |
+| 569 | maths/find_max | ✓ | 0ns | 0B |
+| 570 | maths/find_min | ✓ | 1.0µs | 0B |
+| 571 | maths/floor | ✓ | 0ns | 0B |
+| 572 | maths/gamma | ✓ | 28.0µs | 0B |
+| 573 | maths/gaussian | ✓ | 0ns | 0B |
+| 574 | maths/gcd_of_n_numbers | ✓ | 0ns | 128B |
+| 575 | maths/geometric_mean | error |  |  |
+| 576 | maths/germain_primes | ✓ | 0ns | 0B |
+| 577 | maths/greatest_common_divisor | ✓ | 0ns | 128B |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 0ns | 0B |
+| 579 | maths/integer_square_root | error |  |  |
+| 580 | maths/interquartile_range | ✓ | 1.0µs | 0B |
+| 581 | maths/is_int_palindrome | ✓ | 0ns | 0B |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 2.0µs | 128B |
+| 583 | maths/is_square_free | ✓ | 0ns | 192B |
+| 584 | maths/jaccard_similarity | ✓ | 1.0µs | 0B |
+| 585 | maths/joint_probability_distribution | ✓ | 0ns | 3.50KB |
+| 586 | maths/josephus_problem | ✓ | 0ns | 64B |
+| 587 | maths/juggler_sequence | ✓ | 0ns | 128B |
+| 588 | maths/karatsuba | ✓ | 0ns | 0B |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 0ns | 0B |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 0ns | 0B |
+| 591 | maths/least_common_multiple | ✓ | 0ns | 64B |
+| 592 | maths/line_length | ✓ | 0ns | 0B |
+| 593 | maths/liouville_lambda | ✓ | 0ns | 0B |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 0ns | 64B |
+| 595 | maths/lucas_series | ✓ | 0ns | 64B |
+| 596 | maths/maclaurin_series | ✓ | 0ns | 64B |
+| 597 | maths/manhattan_distance | ✓ | 0ns | 192B |
+| 598 | maths/matrix_exponentiation | ✓ | 0ns | 64B |
+| 599 | maths/max_sum_sliding_window | ✓ | 0ns | 0B |
 | 600 | maths/minkowski_distance |   |  |  |
 | 601 | maths/mobius_function |   |  |  |
 | 602 | maths/modular_division |   |  |  |
