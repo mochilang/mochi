@@ -104,15 +104,7 @@ fn main() {
     return ((x as f64) * 1.0)
 };
         fn exp(mut x: f64) -> f64 {
-    let mut term: f64 = 1.0;
-    let mut sum: f64 = 1.0;
-    let mut n: i64 = 1;
-    while (n < 20) {
-        term = ((term * x) / (n as f64));
-        sum = (sum + term);
-        n = (n + 1);
-    }
-    return sum
+    return x.exp()
 };
         fn convolve(mut data: Vec<Vec<f64>>, mut kernel: Vec<Vec<f64>>, mut step: i64, mut bias: f64) -> Vec<Vec<f64>> {
     let size_data: i64 = (data.len() as i64);

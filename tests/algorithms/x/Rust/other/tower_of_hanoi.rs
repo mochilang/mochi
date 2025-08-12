@@ -38,17 +38,17 @@ static g_height: i64 = 3;
 fn main() {
     unsafe {
                 let _start: i64 = _now();
-        fn move_tower(mut height: i64, from_pole: &str, to_pole: &str, with_pole: &str) {
+        fn move_tower(mut height: i64, mut from_pole: String, mut to_pole: String, mut with_pole: String) {
     if (height >= 1) {
-        move_tower((height - 1), from_pole, with_pole, to_pole);
-        move_disk(&from_pole.clone(), &to_pole.clone());
-        move_tower((height - 1), with_pole, to_pole, from_pole);
+        move_tower((height - 1), from_pole.clone(), with_pole.clone(), to_pole.clone());
+        move_disk(from_pole.clone(), to_pole.clone());
+        move_tower((height - 1), with_pole.clone(), to_pole.clone(), from_pole.clone());
     }
 };
-        fn move_disk(fp: &str, tp: &str) {
+        fn move_disk(mut fp: String, mut tp: String) {
     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "moving disk from ", fp), " to "), tp));
 };
-        move_tower(unsafe { g_height.clone() }, &"A", &"B", &"C");
+        move_tower(unsafe { g_height.clone() }, String::from("A"), String::from("B"), String::from("C"));
         let _end: i64 = _now();
         let duration_us: i64 = ((_end - _start) / 1000);
         let memory_bytes: i64 = _mem();

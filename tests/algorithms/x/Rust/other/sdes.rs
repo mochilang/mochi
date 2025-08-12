@@ -36,7 +36,7 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn apply_table(inp: &str, mut table: Vec<i64>) -> String {
+    fn apply_table(mut inp: String, mut table: Vec<i64>) -> String {
     let mut res: String = String::from("").clone();
     let mut i: i64 = 0;
     while (i < (table.len() as i64)) {
@@ -49,10 +49,10 @@ fn main() {
     }
     return res.clone()
 };
-    fn left_shift(data: &str) -> String {
+    fn left_shift(mut data: String) -> String {
     return format!("{}{}", data.chars().skip(1 as usize).take(((data.len() as i64) - 1) as usize).collect::<String>(), data.chars().skip(0 as usize).take((1 - 0) as usize).collect::<String>()).clone()
 };
-    fn xor(a: &str, b: &str) -> String {
+    fn xor(mut a: String, mut b: String) -> String {
     let mut res: String = String::from("").clone();
     let mut i: i64 = 0;
     while ((i < (a.len() as i64)) && (i < (b.len() as i64))) {
@@ -77,14 +77,14 @@ fn main() {
     }
     return res.clone()
 };
-    fn pad_left(s: &str, mut width: i64) -> String {
-    let mut res: String = s.to_string().clone();
+    fn pad_left(mut s: String, mut width: i64) -> String {
+    let mut res: String = s.clone();
     while ((res.len() as i64) < width) {
         res = format!("{}{}", "0", res);
     }
     return res.clone()
 };
-    fn bin_to_int(s: &str) -> i64 {
+    fn bin_to_int(mut s: String) -> i64 {
     let mut result: i64 = 0;
     let mut i: i64 = 0;
     while (i < (s.len() as i64)) {
@@ -94,27 +94,27 @@ fn main() {
     }
     return result
 };
-    fn apply_sbox(mut s: Vec<Vec<i64>>, data: &str) -> String {
+    fn apply_sbox(mut s: Vec<Vec<i64>>, mut data: String) -> String {
     let row_bits: String = format!("{}{}", data.chars().skip(0 as usize).take((1 - 0) as usize).collect::<String>(), data.chars().skip(((data.len() as i64) - 1) as usize).take(((data.len() as i64) - ((data.len() as i64) - 1)) as usize).collect::<String>()).clone();
     let col_bits: String = data.chars().skip(1 as usize).take((3 - 1) as usize).collect::<String>().clone();
-    let row: i64 = bin_to_int(&row_bits);
-    let col: i64 = bin_to_int(&col_bits);
+    let row: i64 = bin_to_int(row_bits.clone());
+    let col: i64 = bin_to_int(col_bits.clone());
     let val: i64 = s[row as usize].clone()[col as usize];
     let out: String = int_to_binary(val).clone();
     return out.clone()
 };
     let p4_table: Vec<i64> = vec![2, 4, 3, 1];
-    let mut f = move |expansion: Vec<i64>, s0: Vec<Vec<i64>>, s1: Vec<Vec<i64>>, key: &str, message: &str| -> String {
+    let mut f = move |expansion: Vec<i64>, s0: Vec<Vec<i64>>, s1: Vec<Vec<i64>>, key: String, message: String| -> String {
     let left: String = message.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>().clone();
     let right: String = message.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>().clone();
-    let mut temp: String = apply_table(&right, expansion.clone()).clone();
-    temp = xor(&temp, &key);
-    let mut left_bin_str: String = apply_sbox(s0.clone(), &temp.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>()).clone();
-    let mut right_bin_str: String = apply_sbox(s1.clone(), &temp.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>()).clone();
-    left_bin_str = pad_left(&left_bin_str, 2);
-    right_bin_str = pad_left(&right_bin_str, 2);
-    temp = apply_table(&format!("{}{}", left_bin_str, right_bin_str), p4_table.clone());
-    temp = xor(&left, &temp);
+    let mut temp: String = apply_table(right.clone(), expansion.clone()).clone();
+    temp = xor(temp.clone(), key.clone());
+    let mut left_bin_str: String = apply_sbox(s0.clone(), temp.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>()).clone();
+    let mut right_bin_str: String = apply_sbox(s1.clone(), temp.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>()).clone();
+    left_bin_str = pad_left(left_bin_str.clone(), 2);
+    right_bin_str = pad_left(right_bin_str.clone(), 2);
+    temp = apply_table(format!("{}{}", left_bin_str, right_bin_str), p4_table.clone());
+    temp = xor(left.clone(), temp.clone());
     return format!("{}{}", temp, right).clone()
 };
     let key: String = String::from("1010000010").clone();
@@ -126,28 +126,28 @@ fn main() {
     let expansion: Vec<i64> = vec![4, 1, 2, 3, 2, 3, 4, 1];
     let s0: Vec<Vec<i64>> = vec![vec![1, 0, 3, 2].clone(), vec![3, 2, 1, 0].clone(), vec![0, 2, 1, 3].clone(), vec![3, 1, 3, 2].clone()];
     let s1: Vec<Vec<i64>> = vec![vec![0, 1, 2, 3].clone(), vec![2, 0, 1, 3].clone(), vec![3, 0, 1, 0].clone(), vec![2, 1, 0, 3].clone()];
-    let mut temp: String = apply_table(&key, p10_table.clone()).clone();
+    let mut temp: String = apply_table(key.clone(), p10_table.clone()).clone();
     let mut left: String = temp.chars().skip(0 as usize).take((5 - 0) as usize).collect::<String>().clone();
     let mut right: String = temp.chars().skip(5 as usize).take((10 - 5) as usize).collect::<String>().clone();
-    left = left_shift(&left);
-    right = left_shift(&right);
-    let key1: String = apply_table(&format!("{}{}", left, right), p8_table.clone()).clone();
-    left = left_shift(&left);
-    right = left_shift(&right);
-    left = left_shift(&left);
-    right = left_shift(&right);
-    let key2: String = apply_table(&format!("{}{}", left, right), p8_table.clone()).clone();
-    temp = apply_table(&message, IP.clone());
-    temp = f(expansion.clone(), s0.clone(), s1.clone(), &key1, &temp);
+    left = left_shift(left.clone());
+    right = left_shift(right.clone());
+    let key1: String = apply_table(format!("{}{}", left, right), p8_table.clone()).clone();
+    left = left_shift(left.clone());
+    right = left_shift(right.clone());
+    left = left_shift(left.clone());
+    right = left_shift(right.clone());
+    let key2: String = apply_table(format!("{}{}", left, right), p8_table.clone()).clone();
+    temp = apply_table(message.clone(), IP.clone());
+    temp = f(expansion.clone(), s0.clone(), s1.clone(), key1.clone(), temp.clone());
     temp = format!("{}{}", temp.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>(), temp.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>());
-    temp = f(expansion.clone(), s0.clone(), s1.clone(), &key2, &temp);
-    let CT: String = apply_table(&temp, IP_inv.clone()).clone();
+    temp = f(expansion.clone(), s0.clone(), s1.clone(), key2.clone(), temp.clone());
+    let CT: String = apply_table(temp.clone(), IP_inv.clone()).clone();
     println!("{}", format!("{}{}", "Cipher text is: ", CT));
-    temp = apply_table(&CT, IP.clone());
-    temp = f(expansion.clone(), s0.clone(), s1.clone(), &key2, &temp);
+    temp = apply_table(CT.clone(), IP.clone());
+    temp = f(expansion.clone(), s0.clone(), s1.clone(), key2.clone(), temp.clone());
     temp = format!("{}{}", temp.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>(), temp.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>());
-    temp = f(expansion.clone(), s0.clone(), s1.clone(), &key1, &temp);
-    let PT: String = apply_table(&temp, IP_inv.clone()).clone();
+    temp = f(expansion.clone(), s0.clone(), s1.clone(), key1.clone(), temp.clone());
+    let PT: String = apply_table(temp.clone(), IP_inv.clone()).clone();
     println!("{}", format!("{}{}", "Plain text after decypting is: ", PT));
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);

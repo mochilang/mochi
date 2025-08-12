@@ -40,32 +40,10 @@ fn main() {
     return ((x as f64) * 1.0)
 };
     fn ln(mut x: f64) -> f64 {
-    if (x <= 0.0) {
-        panic!("ln domain error");
-    }
-    let y: f64 = ((x - 1.0) / (x + 1.0));
-    let y2: f64 = (y * y);
-    let mut term: f64 = y;
-    let mut sum: f64 = 0.0;
-    let mut k: i64 = 0;
-    while (k < 10) {
-        let denom: f64 = (((2 * k) + 1) as f64);
-        sum = (sum + (term / denom));
-        term = (term * y2);
-        k = (k + 1);
-    }
-    return (2.0 * sum)
+    return x.ln()
 };
     fn exp(mut x: f64) -> f64 {
-    let mut term: f64 = 1.0;
-    let mut sum: f64 = 1.0;
-    let mut n: i64 = 1;
-    while (n < 20) {
-        term = ((term * x) / (n as f64));
-        sum = (sum + term);
-        n = (n + 1);
-    }
-    return sum
+    return x.exp()
 };
     fn pow_float(mut base: f64, mut exponent: f64) -> f64 {
     return exp((exponent * ln(base)))

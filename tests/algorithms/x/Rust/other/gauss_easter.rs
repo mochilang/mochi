@@ -78,7 +78,7 @@ fn main() {
     }
     return EasterDate {month: 3, day: total}
 };
-        fn format_date(mut year: i64, d: &EasterDate) -> String {
+        fn format_date(mut year: i64, mut d: EasterDate) -> String {
     let month: String = if (d.month < 10) { format!("{}{}", "0", d.month.to_string()) } else { d.month.to_string().to_string() }.clone();
     let day: String = if (d.day < 10) { format!("{}{}", "0", d.day.to_string()) } else { d.day.to_string().to_string() }.clone();
     return format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", year.to_string(), "-"), month), "-"), day).to_string().clone()
@@ -87,7 +87,7 @@ fn main() {
         while (unsafe { g_i.clone() } < (years.len() as i64)) {
             let y: i64 = years[unsafe { g_i.clone() } as usize];
             let e: EasterDate = gauss_easter(y);
-            println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Easter in ", y.to_string()), " is "), format_date(y, &e)));
+            println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Easter in ", y.to_string()), " is "), format_date(y, e.clone())));
             unsafe { g_i = (unsafe { g_i.clone() } + 1) };
         }
         let _end: i64 = _now();

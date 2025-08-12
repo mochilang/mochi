@@ -58,45 +58,45 @@ fn main() {
     let cap: i64 = if (n == 0) { 2147483647 } else { n };
     return LRUCache {max_capacity: cap, store: vec![]}
 };
-    fn remove_element(mut xs: Vec<String>, x: &str) -> Vec<String> {
+    fn remove_element(mut xs: Vec<String>, mut x: String) -> Vec<String> {
     let mut res: Vec<String> = vec![];
     let mut removed: bool = false;
     let mut i: i64 = 0;
     while (i < (xs.len() as i64)) {
         let v: String = xs[i as usize].clone().clone();
-        if ((removed == false) && (v == x)) {
+        if ((removed == false) && (v.as_str() == x.as_str())) {
             removed = true;
         } else {
-            res = { let mut v = res.clone(); v.extend(vec![v.clone()]); v };
+            res = { let mut _v = res.clone(); _v.extend(vec![v.clone()]); _v };
         }
         i = (i + 1);
     }
     return res
 };
-    fn refer(mut cache: LRUCache, x: &str) -> LRUCache {
+    fn refer(mut cache: LRUCache, mut x: String) -> LRUCache {
     let mut store: Vec<String> = cache.store.clone();
     let mut exists: bool = false;
     let mut i: i64 = 0;
     while (i < (store.len() as i64)) {
-        if (store[i as usize].clone() == x) {
+        if (store[i as usize].clone().as_str() == x.as_str()) {
             exists = true;
         }
         i = (i + 1);
     }
     if exists {
-        store = remove_element(store.clone(), x);
+        store = remove_element(store.clone(), x.clone());
     } else {
         if ((store.len() as i64) == cache.max_capacity) {
             let mut new_store: Vec<String> = vec![];
             let mut j: i64 = 0;
             while (j < ((store.len() as i64) - 1)) {
-                new_store = { let mut v = new_store.clone(); v.extend(vec![store[j as usize].clone().clone()]); v };
+                new_store = { let mut _v = new_store.clone(); _v.extend(vec![store[j as usize].clone().clone()]); _v };
                 j = (j + 1);
             }
             store = new_store.clone();
         }
     }
-    let mut store: Vec<&str> = (vec![x.clone()] + store);
+    store = { let mut _v = vec![x.clone()].clone(); _v.extend(store); _v };
     return LRUCache {max_capacity: cache.max_capacity, store: store.clone()}
 };
     fn display(mut cache: LRUCache) {
@@ -106,7 +106,7 @@ fn main() {
         i = (i + 1);
     }
 };
-    fn repr_item(s: &str) -> String {
+    fn repr_item(mut s: String) -> String {
     let mut all_digits: bool = true;
     let mut i: i64 = 0;
     while (i < (s.len() as i64)) {
@@ -117,7 +117,7 @@ fn main() {
         i = (i + 1);
     }
     if all_digits {
-        return s.to_string()
+        return s
     }
     return format!("{}{}", format!("{}{}", "'", s), "'").clone()
 };
@@ -125,7 +125,7 @@ fn main() {
     let mut res: String = format!("{}{}", format!("{}{}", "LRUCache(", cache.max_capacity.to_string()), ") => [").clone();
     let mut i: i64 = 0;
     while (i < (cache.store.clone().len() as i64)) {
-        res = format!("{}{}", res, repr_item(&cache.store.clone()[i as usize].clone()));
+        res = format!("{}{}", res, repr_item(cache.store.clone()[i as usize].clone()));
         if (i < ((cache.store.clone().len() as i64) - 1)) {
             res = format!("{}{}", res, ", ");
         }
@@ -135,12 +135,12 @@ fn main() {
     return res.clone()
 };
     let mut lru: LRUCache = new_cache(4);
-    lru = refer(lru.clone(), &"A");
-    lru = refer(lru.clone(), &"2");
-    lru = refer(lru.clone(), &"3");
-    lru = refer(lru.clone(), &"A");
-    lru = refer(lru.clone(), &"4");
-    lru = refer(lru.clone(), &"5");
+    lru = refer(lru.clone(), String::from("A"));
+    lru = refer(lru.clone(), String::from("2"));
+    lru = refer(lru.clone(), String::from("3"));
+    lru = refer(lru.clone(), String::from("A"));
+    lru = refer(lru.clone(), String::from("4"));
+    lru = refer(lru.clone(), String::from("5"));
     let mut r: String = cache_repr(lru.clone()).clone();
     println!("{}", r);
     if (r.as_str() != "LRUCache(4) => [5, 4, 'A', 3]") {

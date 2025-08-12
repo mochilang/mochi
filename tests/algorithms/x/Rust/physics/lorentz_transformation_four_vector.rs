@@ -74,7 +74,7 @@ fn main() {
     while (i < 4) {
         let row: Vec<f64> = mat[i as usize].clone();
         let value: f64 = ((((row[0 as usize] * vec[0 as usize]) + (row[1 as usize] * vec[1 as usize])) + (row[2 as usize] * vec[2 as usize])) + (row[3 as usize] * vec[3 as usize]));
-        res = { let mut v = res.clone(); v.extend(vec![value]); v };
+        res = { let mut _v = res.clone(); _v.extend(vec![value]); _v };
         i = (i + 1);
     }
     return res
