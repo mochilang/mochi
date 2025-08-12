@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -35,36 +20,34 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function get_value($t) {
-  global $food, $value, $weight, $foods, $res;
+function get_value($t) {
+  global $food, $foods, $res, $value, $weight;
   return $t['value'];
-};
-  function get_weight($t) {
-  global $food, $value, $weight, $foods, $res;
+}
+function get_weight($t) {
+  global $food, $foods, $res, $value, $weight;
   return $t['weight'];
-};
-  function get_name($t) {
-  global $food, $value, $weight, $foods, $res;
+}
+function get_name($t) {
+  global $food, $foods, $res, $value, $weight;
   return $t['name'];
-};
-  function value_weight($t) {
-  global $food, $value, $weight, $foods, $res;
+}
+function value_weight($t) {
+  global $food, $foods, $res, $value, $weight;
   return $t['value'] / $t['weight'];
-};
-  function build_menu($names, $values, $weights) {
-  global $food, $value, $weight, $foods, $res;
+}
+function build_menu($names, $values, $weights) {
+  global $food, $foods, $res, $value, $weight;
   $menu = [];
   $i = 0;
   while ($i < count($values) && $i < count($names) && $i < count($weights)) {
-  $menu = _append($menu, ['name' => $names[$i], $value => $values[$i], $weight => $weights[$i]]);
+  $menu = _append($menu, ['name' => $names[$i], 'value' => $values[$i], 'weight' => $weights[$i]]);
   $i = $i + 1;
 };
   return $menu;
-};
-  function sort_desc($items, $key_func) {
-  global $food, $value, $weight, $foods, $res;
+}
+function sort_desc($items, $key_func) {
+  global $food, $foods, $res, $value, $weight;
   $arr = [];
   $i = 0;
   while ($i < count($items)) {
@@ -84,9 +67,9 @@ $__start = _now();
   $j = $j + 1;
 };
   return $arr;
-};
-  function greedy($items, $max_cost, $key_func) {
-  global $food, $value, $weight, $foods, $res;
+}
+function greedy($items, $max_cost, $key_func) {
+  global $food, $foods, $res, $value, $weight;
   $items_copy = sort_desc($items, $key_func);
   $result = [];
   $total_value = 0.0;
@@ -103,13 +86,13 @@ $__start = _now();
   $i = $i + 1;
 };
   return ['items' => $result, 'total_value' => $total_value];
-};
-  function thing_to_string($t) {
-  global $food, $value, $weight, $foods, $res;
+}
+function thing_to_string($t) {
+  global $food, $foods, $res, $value, $weight;
   return 'Thing(' . $t['name'] . ', ' . _str($t['value']) . ', ' . _str($t['weight']) . ')';
-};
-  function list_to_string($ts) {
-  global $food, $value, $weight, $foods, $res;
+}
+function list_to_string($ts) {
+  global $food, $foods, $res, $value, $weight;
   $s = '[';
   $i = 0;
   while ($i < count($ts)) {
@@ -121,20 +104,12 @@ $__start = _now();
 };
   $s = $s . ']';
   return $s;
-};
-  $food = ['Burger', 'Pizza', 'Coca Cola', 'Rice', 'Sambhar', 'Chicken', 'Fries', 'Milk'];
-  $value = [80.0, 100.0, 60.0, 70.0, 50.0, 110.0, 90.0, 60.0];
-  $weight = [40.0, 60.0, 40.0, 70.0, 100.0, 85.0, 55.0, 70.0];
-  $foods = build_menu($food, $value, $weight);
-  echo rtrim(list_to_string($foods)), PHP_EOL;
-  $res = greedy($foods, 500.0, 'get_value');
-  echo rtrim(list_to_string($res['items'])), PHP_EOL;
-  echo rtrim(_str($res['total_value'])), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$food = ['Burger', 'Pizza', 'Coca Cola', 'Rice', 'Sambhar', 'Chicken', 'Fries', 'Milk'];
+$value = [80.0, 100.0, 60.0, 70.0, 50.0, 110.0, 90.0, 60.0];
+$weight = [40.0, 60.0, 40.0, 70.0, 100.0, 85.0, 55.0, 70.0];
+$foods = build_menu($food, $value, $weight);
+echo rtrim(list_to_string($foods)), PHP_EOL;
+$res = greedy($foods, 500.0, 'get_value');
+echo rtrim(list_to_string($res['items'])), PHP_EOL;
+echo rtrim(_str($res['total_value'])), PHP_EOL;

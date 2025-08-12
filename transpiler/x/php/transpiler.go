@@ -2347,7 +2347,11 @@ func (m *MapLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		it.Key.emit(w)
+		if v, ok := it.Key.(*Var); ok {
+			fmt.Fprintf(w, "'%s'", strings.TrimPrefix(v.Name, "$"))
+		} else {
+			it.Key.emit(w)
+		}
 		fmt.Fprint(w, " => ")
 		it.Value.emit(w)
 	}
@@ -3462,7 +3466,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			items[i] = MapEntry{Key: &StringLit{Value: f.Name}, Value: v}
+			key := strings.TrimPrefix(f.Name, "$")
+			items[i] = MapEntry{Key: &StringLit{Value: key}, Value: v}
 		}
 		return &MapLit{Items: items}, nil
 	case p.Map != nil:
@@ -4216,27 +4221,29 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 			if transpileEnv != nil {
 				switch pe := pex.(type) {
 				case *CallExpr:
-					if ut, ok := transpileEnv.FindUnionByVariant(pe.Func); ok {
-						st := ut.Variants[pe.Func]
+					name := strings.TrimPrefix(pe.Func, "$")
+					if ut, ok := transpileEnv.FindUnionByVariant(name); ok {
+						st := ut.Variants[name]
 						vars := make([]string, len(pe.Args))
 						for j, a := range pe.Args {
 							if v, ok := a.(*Var); ok {
-								vars[j] = v.Name
+								vars[j] = strings.TrimPrefix(v.Name, "$")
 							} else {
 								vars[j] = "_"
 							}
 						}
 						fields := make([]string, len(st.Order))
 						copy(fields, st.Order)
-						unionCases = append(unionCases, UnionMatchCase{Tag: pe.Func, Vars: vars, Fields: fields, Result: res})
+						unionCases = append(unionCases, UnionMatchCase{Tag: name, Vars: vars, Fields: fields, Result: res})
 						continue
 					}
 				case *Var:
-					if ut, ok := transpileEnv.FindUnionByVariant(pe.Name); ok {
-						st := ut.Variants[pe.Name]
+					name := strings.TrimPrefix(pe.Name, "$")
+					if ut, ok := transpileEnv.FindUnionByVariant(name); ok {
+						st := ut.Variants[name]
 						fields := make([]string, len(st.Order))
 						copy(fields, st.Order)
-						unionCases = append(unionCases, UnionMatchCase{Tag: pe.Name, Fields: fields, Result: res})
+						unionCases = append(unionCases, UnionMatchCase{Tag: name, Fields: fields, Result: res})
 						continue
 					}
 				case nil:
@@ -4743,6 +4750,9 @@ func isVarInScope(name string) bool {
 		}
 	}
 	if transpileEnv != nil {
+		if _, ok := transpileEnv.GetFunc(name); ok {
+			return false
+		}
 		if _, err := transpileEnv.GetVar(name); err == nil {
 			return true
 		}

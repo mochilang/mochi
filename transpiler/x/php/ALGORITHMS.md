@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-12 14:18 GMT+7
+Last updated: 2025-08-12 14:35 GMT+7
 
-## Algorithms Golden Test Checklist (972/1077)
+## Algorithms Golden Test Checklist (974/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -731,10 +731,10 @@ Last updated: 2025-08-12 14:18 GMT+7
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 105µs | 38.8 KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 104µs | 35.9 KB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 101µs | 38.6 KB |
-| 725 | neural_network/activation_functions/mish | ✓ | 122µs | 36.8 KB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 103µs | 39.3 KB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 92µs | 39.2 KB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 107µs | 35.7 KB |
+| 725 | neural_network/activation_functions/mish | ✓ | 116µs | 36.8 KB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 85µs | 39.3 KB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 81µs | 39.2 KB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 91µs | 35.7 KB |
 | 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 110µs | 36.1 KB |
 | 731 | neural_network/activation_functions/swish | ✓ | 140µs | 36.1 KB |
@@ -744,13 +744,13 @@ Last updated: 2025-08-12 14:18 GMT+7
 | 735 | neural_network/simple_neural_network | ✓ | 350.406ms | 39.3 KB |
 | 736 | neural_network/two_hidden_layers_neural_network | ✓ | 620µs | 69.4 KB |
 | 737 | other/activity_selection | ✓ | 56µs | 35.6 KB |
-| 738 | other/alternative_list_arrange | error |  |  |
+| 738 | other/alternative_list_arrange | ✓ | 136µs | 37.5 KB |
 | 739 | other/bankers_algorithm | ✓ | 169µs | 74.2 KB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 113µs | 73.3 KB |
 | 741 | other/doomsday | ✓ | 69µs | 35.7 KB |
 | 742 | other/fischer_yates_shuffle | ✓ | 158µs | 39.8 KB |
 | 743 | other/gauss_easter | ✓ | 112µs | 40.0 KB |
-| 744 | other/greedy | error |  |  |
+| 744 | other/greedy | ✓ | 96µs | 40.2 KB |
 | 745 | other/guess_the_number_search | ✓ | 205µs | 41.0 KB |
 | 746 | other/h_index | ✓ | 186µs | 39.5 KB |
 | 747 | other/least_recently_used | ✓ | 142µs | 41.0 KB |
