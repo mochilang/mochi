@@ -724,6 +724,17 @@ var currentProgram *Program
 var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
+
+// mutParam describes a parameter that may be mutated by a function call.
+type mutParam struct {
+	Index int
+	Name  string
+}
+
+// funcMutatedParams keeps track of functions that mutate their arguments.
+// The key is the function name and the value lists the mutated parameters
+// with their positions and corresponding transpiled variable names.
+var funcMutatedParams map[string][]mutParam
 var stringVars map[string]bool
 var stringListVars map[string]bool
 var mapVars map[string]bool
@@ -764,6 +775,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	structCount = 0
 	funParamsStack = nil
 	nestedFunArgs = make(map[string][]string)
+	funcMutatedParams = make(map[string][]mutParam)
 	stringVars = nil
 	stringListVars = nil
 	mapVars = nil
@@ -779,6 +791,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		groupVars = nil
 		currentProgram = nil
 		nestedFunArgs = nil
+		funcMutatedParams = nil
 		funParamsStack = nil
 		stringVars = nil
 		stringListVars = nil
@@ -1351,7 +1364,8 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 
 	params := []Node{}
 	names := []string{}
-	for _, p := range f.Params {
+	mutParams := []mutParam{}
+	for i, p := range f.Params {
 		newName := renameVar(p.Name)
 		if p.Name == "self" && currentStruct != nil {
 			currentSelf = newName
@@ -1359,8 +1373,7 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		if mutated[p.Name] {
 			initName := newName + "_p"
 			params = append(params, Symbol(initName))
-			// use set! instead of def to assign mutated params to their dynamic vars
-			paramInit = append(paramInit, &List{Elems: []Node{Symbol("set!"), Symbol(newName), Symbol(initName)}})
+			mutParams = append(mutParams, mutParam{Index: i, Name: newName})
 		} else {
 			params = append(params, Symbol(newName))
 		}
@@ -1380,6 +1393,9 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		}
 	}
 	funParamsStack = append(funParamsStack, names)
+	if funcMutatedParams != nil {
+		funcMutatedParams[f.Name] = mutParams
+	}
 	body := append([]Node{}, paramInit...)
 	hasReturn := containsReturn(f.Body)
 	for i := 0; i < len(f.Body); i++ {
@@ -1427,7 +1443,19 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 				&List{Elems: []Node{Symbol("throw"), Symbol("e")}},
 			}},
 		}}
-		bodyNode = &List{Elems: []Node{Symbol("try"), bodyNode, catchExpr}}
+		if len(mutParams) > 0 {
+			finallyElems := []Node{Symbol("finally")}
+			for _, mp := range mutParams {
+				finallyElems = append(finallyElems, &List{Elems: []Node{
+					Symbol("alter-var-root"),
+					&List{Elems: []Node{Symbol("var"), Symbol(mp.Name)}},
+					&List{Elems: []Node{Symbol("constantly"), Symbol(mp.Name)}},
+				}})
+			}
+			bodyNode = &List{Elems: []Node{Symbol("try"), bodyNode, catchExpr, &List{Elems: finallyElems}}}
+		} else {
+			bodyNode = &List{Elems: []Node{Symbol("try"), bodyNode, catchExpr}}
+		}
 	}
 	if !hasReturn && f.Return == nil && len(f.Params) > 0 {
 		sym := Symbol(renameVar(f.Params[0].Name))
@@ -1445,13 +1473,19 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 			bodyNode = &List{Elems: []Node{Symbol("do"), bodyNode, sym}}
 		}
 	}
-	if len(localVars) > 0 {
+	for _, mp := range mutParams {
+		delete(localVars, mp.Name)
+	}
+	if len(localVars) > 0 || len(mutParams) > 0 {
 		names := make([]string, 0, len(localVars))
 		for n := range localVars {
 			names = append(names, n)
 		}
 		sort.Strings(names)
 		bind := &Vector{}
+		for _, mp := range mutParams {
+			bind.Elems = append(bind.Elems, Symbol(mp.Name), Symbol(mp.Name+"_p"))
+		}
 		for _, n := range names {
 			bind.Elems = append(bind.Elems, Symbol(n), Symbol("nil"))
 		}
@@ -2777,16 +2811,31 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		}
 		elems = append(elems, a)
 	}
-	if sym, ok := elems[0].(Symbol); ok && transpileEnv != nil {
-		if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
-			callArity := len(elems) - 1
-			if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(ft.Params) > callArity {
-				elems = append([]Node{Symbol("partial"), sym}, elems[1:]...)
-				return &List{Elems: elems}, nil
+	callNode := &List{Elems: elems}
+	if sym, ok := elems[0].(Symbol); ok {
+		if mps, ok := funcMutatedParams[string(sym)]; ok && len(mps) > 0 {
+			bindings := &Vector{Elems: []Node{Symbol("__res"), callNode}}
+			bodyElems := []Node{}
+			for _, mp := range mps {
+				if mp.Index < len(c.Args) {
+					if argName, ok := identName(c.Args[mp.Index]); ok {
+						bodyElems = append(bodyElems, &List{Elems: []Node{Symbol("set!"), Symbol(argName), Symbol(mp.Name)}})
+					}
+				}
+			}
+			bodyElems = append(bodyElems, Symbol("__res"))
+			callNode = &List{Elems: []Node{Symbol("let"), bindings, &List{Elems: append([]Node{Symbol("do")}, bodyElems...)}}}
+		} else if transpileEnv != nil {
+			if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
+				callArity := len(elems) - 1
+				if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(ft.Params) > callArity {
+					elems = append([]Node{Symbol("partial"), sym}, elems[1:]...)
+					return &List{Elems: elems}, nil
+				}
 			}
 		}
 	}
-	return &List{Elems: elems}, nil
+	return callNode, nil
 }
 
 func transpileLiteral(l *parser.Literal) (Node, error) {
