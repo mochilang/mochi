@@ -146,6 +146,13 @@ def _split(s, sep = ' ')
 end
 `
 
+const helperIdx = `
+def _idx(arr, idx)
+  return nil if arr.nil? || !idx.is_a?(Numeric) || idx < 0 || idx >= arr.length
+  arr[idx]
+end
+`
+
 const helperSHA256 = `
 require 'digest'
 def _sha256(bs)
@@ -2070,10 +2077,22 @@ type IndexExpr struct {
 }
 
 func (ix *IndexExpr) emit(e *emitter) {
+	tmp := tmpVar()
+	io.WriteString(e.w, "(")
+	io.WriteString(e.w, tmp)
+	io.WriteString(e.w, " = ")
 	ix.Target.emit(e)
+	io.WriteString(e.w, "; ")
+	io.WriteString(e.w, tmp)
+	io.WriteString(e.w, ".is_a?(Hash) ? ")
+	io.WriteString(e.w, tmp)
 	io.WriteString(e.w, "[")
 	ix.Index.emit(e)
-	io.WriteString(e.w, "]")
+	io.WriteString(e.w, "] : _idx(")
+	io.WriteString(e.w, tmp)
+	io.WriteString(e.w, ", ")
+	ix.Index.emit(e)
+	io.WriteString(e.w, "))")
 }
 
 // MapGetExpr represents map.get(key, default).
@@ -3096,6 +3115,9 @@ func Emit(w io.Writer, p *Program) error {
 		if _, err := io.WriteString(w, helperMem+"\n"); err != nil {
 			return err
 		}
+	}
+	if _, err := io.WriteString(w, helperIdx+"\n"); err != nil {
+		return err
 	}
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
 		return err
