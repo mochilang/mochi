@@ -3486,7 +3486,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
-		if st.Fun.Name == "sqrt" && len(st.Fun.Params) == 1 {
+		if st.Fun.Name == "sqrt" && len(st.Fun.Params) == 1 && len(st.Fun.Body) == 0 {
 			p := safeName(st.Fun.Params[0].Name)
 			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.sqrt", Args: []Expr{&Ident{Name: p}}}}}
 			return &FuncStmt{Name: st.Fun.Name, Params: []string{p}, Body: body}, nil
@@ -3507,6 +3507,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		pushScope()
 		for _, p := range st.Fun.Params {
 			addVar(p.Name)
+		}
+		if (st.Fun.Name == "ln" || st.Fun.Name == "exp") && len(st.Fun.Params) == 1 {
+			popScope()
+			currentEnv = savedEnv
+			funcDepth--
+			p := safeName(st.Fun.Params[0].Name)
+			call := "Math.log"
+			if st.Fun.Name == "exp" {
+				call = "Math.exp"
+			}
+			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: call, Args: []Expr{&Ident{Name: p}}}}}
+			return &FuncStmt{Name: st.Fun.Name, Params: []string{p}, Body: body}, nil
 		}
 		body := make([]Stmt, len(st.Fun.Body))
 		for i, s := range st.Fun.Body {
@@ -3580,7 +3592,19 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 	for _, p := range fn.Params {
 		addVar(p.Name)
 	}
-	if fn.Name == "sqrt" && len(fn.Params) == 1 {
+	if (fn.Name == "ln" || fn.Name == "exp") && len(fn.Params) == 1 {
+		popScope()
+		currentEnv = savedEnv
+		funcDepth--
+		p := safeName(fn.Params[0].Name)
+		call := "Math.log"
+		if fn.Name == "exp" {
+			call = "Math.exp"
+		}
+		body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: call, Args: []Expr{&Ident{Name: p}}}}}
+		return &FuncStmt{Name: fn.Name, Params: []string{p}, Body: body}, nil
+	}
+	if fn.Name == "sqrt" && len(fn.Params) == 1 && len(fn.Body) == 0 {
 		popScope()
 		currentEnv = savedEnv
 		funcDepth--
