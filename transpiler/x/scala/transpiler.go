@@ -571,10 +571,18 @@ func (s *VarStmt) emit(w io.Writer) {
 	}
 	if s.Value != nil {
 		if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && typ != "" {
-			if idx := strings.Index(typ, "ArrayBuffer["); idx >= 0 {
-				elem := strings.TrimSuffix(typ[idx+len("ArrayBuffer["):], "]")
+			if strings.HasPrefix(typ, "ArrayBuffer[") && len(typ) > len("ArrayBuffer[")+1 {
+				elem := typ[len("ArrayBuffer[") : len(typ)-1]
 				fmt.Fprintf(w, " = ArrayBuffer[%s]()", elem)
 				return
+			}
+		} else if ce, ok := s.Value.(*CastExpr); ok {
+			if ll, ok2 := ce.Value.(*ListLit); ok2 && len(ll.Elems) == 0 && typ != "" {
+				if strings.HasPrefix(typ, "ArrayBuffer[") && len(typ) > len("ArrayBuffer[")+1 {
+					elem := typ[len("ArrayBuffer[") : len(typ)-1]
+					fmt.Fprintf(w, " = ArrayBuffer[%s]()", elem)
+					return
+				}
 			}
 		}
 		fmt.Fprint(w, " = ")
@@ -630,13 +638,15 @@ func (s *AssignStmt) emit(w io.Writer) {
 		if n, ok2 := s.Target.(*Name); ok2 {
 			if t, ok3 := localVarTypes[n.Name]; ok3 {
 				typ = t
+			} else if vs, ok3 := varDecls[n.Name]; ok3 && vs.Type != "" {
+				typ = vs.Type
 			}
 		}
 		if typ == "" {
 			typ = inferTypeWithEnv(s.Target, nil)
 		}
-		if idx := strings.Index(typ, "ArrayBuffer["); idx >= 0 {
-			elem := strings.TrimSuffix(typ[idx+len("ArrayBuffer["):], "]")
+		if strings.HasPrefix(typ, "ArrayBuffer[") && len(typ) > len("ArrayBuffer[")+1 {
+			elem := typ[len("ArrayBuffer[") : len(typ)-1]
 			fmt.Fprintf(w, "ArrayBuffer[%s]()", elem)
 			return
 		}
@@ -1202,8 +1212,21 @@ func (a *AppendExpr) emit(w io.Writer) {
 			}
 		}
 	}
+	elem := a.Elem
+	if ce, ok := elem.(*CastExpr); ok && ce.Type == "Any" {
+		if lt := inferTypeWithEnv(a.List, nil); strings.HasPrefix(lt, "ArrayBuffer[") {
+			et := strings.TrimSuffix(strings.TrimPrefix(lt, "ArrayBuffer["), "]")
+			if et != "" && et != "Any" {
+				elem = &CastExpr{Value: ce.Value, Type: et}
+			} else {
+				elem = ce.Value
+			}
+		} else {
+			elem = ce.Value
+		}
+	}
 	fmt.Fprint(w, "(")
-	a.Elem.emit(w)
+	elem.emit(w)
 	fmt.Fprint(w, ")")
 }
 
@@ -1255,6 +1278,16 @@ func (idx *IndexExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ").toInt")
 		} else {
 			idx.Index.emit(w)
+		}
+	}
+	if sl, ok := idx.Index.(*StringLit); ok {
+		if ft := fieldType(sl.Value); ft != "" {
+			idx.Value.emit(w)
+			fmt.Fprintf(w, ".%s", escapeName(sl.Value))
+			if idx.Type != "" && idx.Type != ft {
+				fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
+			}
+			return
 		}
 	}
 	if (strings.HasPrefix(container, "Map[") || strings.HasPrefix(container, "scala.collection.mutable.Map[")) && container != "Any" {
@@ -2665,6 +2698,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			} else {
 				if targetType != "Any" {
 					e = &CastExpr{Value: e, Type: targetType}
+					valType = targetType
 				}
 			}
 		} else if targetType == "Int" && valType == "BigInt" {
@@ -3487,7 +3521,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	}
 	if len(pf.Ops) == 0 {
 		if n, ok := expr.(*Name); ok && env != nil {
-			if _, ok3 := env.GetFunc(n.Name); ok3 {
+			if _, ok := localVarTypes[n.Name]; ok {
+				// prefer local variable over function reference
+			} else if _, ok3 := env.GetFunc(n.Name); ok3 {
 				return &FunRef{Name: n.Name}, nil
 			}
 		}
