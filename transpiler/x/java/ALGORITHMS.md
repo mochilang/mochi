@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-12 16:14 GMT+7
+Last updated: 2025-08-12 16:26 GMT+7
 
-## Algorithms Golden Test Checklist (935/1077)
+## Algorithms Golden Test Checklist (936/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -779,7 +779,7 @@ Last updated: 2025-08-12 16:14 GMT+7
 | 770 | physics/grahams_law | ✓ | 20.0ms | 10.36KB |
 | 771 | physics/horizontal_projectile_motion | ✓ | 16.0ms | 10.25KB |
 | 772 | physics/hubble_parameter | ✓ | 14.0ms | 10.25KB |
-| 773 | physics/ideal_gas_law | error |  |  |
+| 773 | physics/ideal_gas_law | ✓ | 27.0ms | 10.25KB |
 | 774 | physics/in_static_equilibrium | ✓ | 19.0ms | 1.74KB |
 | 775 | physics/kinetic_energy | ✓ | 16.0ms | 10.25KB |
 | 776 | physics/lens_formulae | ✓ | 16.0ms | 10.45KB |
