@@ -2097,7 +2097,16 @@ func Emit(p *Program) []byte {
 		buf.WriteString("  }\n\n")
 	}
 	if needsRepeat {
-		buf.WriteString("  private def _repeat(s: String, n: BigInt): String = s * n.toInt\n\n")
+		buf.WriteString("  private def _repeat(s: String, n: BigInt): String = {\n")
+		buf.WriteString("    if (n <= 0) \"\"\n")
+		buf.WriteString("    else if (n.isValidInt) s * n.toInt\n")
+		buf.WriteString("    else {\n")
+		buf.WriteString("      val sb = new StringBuilder\n")
+		buf.WriteString("      var i = BigInt(0)\n")
+		buf.WriteString("      while (i < n) { sb.append(s); i += 1 }\n")
+		buf.WriteString("      sb.toString\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("  }\n\n")
 	}
 	if needsStr {
 		buf.WriteString("  private def _str(x: Any): String = x match {\n")
