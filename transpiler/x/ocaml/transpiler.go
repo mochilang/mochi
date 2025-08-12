@@ -1130,9 +1130,9 @@ type StrBuiltin struct {
 func (s *StrBuiltin) emit(w io.Writer) {
 	switch {
 	case s.Typ == "float":
-		io.WriteString(w, "(Printf.sprintf \"%.16g\" (")
+		io.WriteString(w, "(Printf.sprintf \"%.16g\" (Obj.magic (")
 		s.Expr.emit(w)
-		io.WriteString(w, "))")
+		io.WriteString(w, ") : float))")
 	case s.Typ == "bigint":
 		usesBigInt = true
 		io.WriteString(w, "(Z.to_string (")
@@ -1144,9 +1144,9 @@ func (s *StrBuiltin) emit(w io.Writer) {
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
 	case s.Typ == "bool":
-		io.WriteString(w, "(string_of_bool (")
+		io.WriteString(w, "(string_of_bool (Obj.magic (")
 		s.Expr.emit(w)
-		io.WriteString(w, "))")
+		io.WriteString(w, ") : bool))")
 	case strings.HasPrefix(s.Typ, "list"):
 		io.WriteString(w, "(__str (Obj.magic (")
 		s.Expr.emit(w)
@@ -1156,9 +1156,9 @@ func (s *StrBuiltin) emit(w io.Writer) {
 		s.Expr.emit(w)
 		io.WriteString(w, ")")
 	default:
-		io.WriteString(w, "(string_of_int (")
+		io.WriteString(w, "(string_of_int (Obj.magic (")
 		s.Expr.emit(w)
-		io.WriteString(w, "))")
+		io.WriteString(w, ") : int))")
 	}
 }
 
@@ -2340,12 +2340,16 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, " in let __len = String.length __s in String.make 1 (String.get __s (if __i >= 0 then __i else __len + __i)))")
 	default:
 		if strings.HasPrefix(ix.ColTyp, "list") {
+			def := zeroValue(ix.Typ)
+			if def == "0" && ix.Typ != "int" && ix.Typ != "float" && ix.Typ != "string" && ix.Typ != "bool" {
+				def = "[]"
+			}
 			io.WriteString(w, "(let __l = ")
 			ix.Col.emit(w)
 			io.WriteString(w, " in let __i = ")
 			ix.Index.emit(w)
 			io.WriteString(w, " in if __i < 0 then ")
-			io.WriteString(w, zeroValue(ix.Typ))
+			io.WriteString(w, def)
 			io.WriteString(w, " else match List.nth_opt __l __i with Some v -> ")
 			if ix.Typ == "int" {
 				io.WriteString(w, "(Obj.magic v : int)")
@@ -2357,7 +2361,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, "v")
 			}
 			io.WriteString(w, " | None -> ")
-			io.WriteString(w, zeroValue(ix.Typ))
+			io.WriteString(w, def)
 			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, "()")
