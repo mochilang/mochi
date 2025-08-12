@@ -1,3 +1,7 @@
+## Progress (2025-08-12 08:38 +0700)
+- chore(lua): update algorithms progress
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-12 08:17 +0700)
 - fs: handle int math without int64 promotion
 - Generated F# for 103/105 programs (103 passing)

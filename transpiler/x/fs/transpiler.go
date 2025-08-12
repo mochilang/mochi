@@ -1468,14 +1468,23 @@ func (i *IfStmt) emit(w io.Writer) {
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) {
-	writeIndent(w)
-	if t := inferType(s.Expr); t != "" && t != "unit" {
-		io.WriteString(w, "ignore (")
-		s.Expr.emit(w)
-		io.WriteString(w, ")")
-	} else {
-		s.Expr.emit(w)
-	}
+        writeIndent(w)
+        if t := inferType(s.Expr); t != "unit" && (t != "" || isCallExpr(s.Expr)) {
+                io.WriteString(w, "ignore (")
+                s.Expr.emit(w)
+                io.WriteString(w, ")")
+        } else {
+                s.Expr.emit(w)
+        }
+}
+
+func isCallExpr(e Expr) bool {
+        switch e.(type) {
+        case *CallExpr, *MethodCallExpr:
+                return true
+        default:
+                return false
+        }
 }
 
 type AssignStmt struct {
