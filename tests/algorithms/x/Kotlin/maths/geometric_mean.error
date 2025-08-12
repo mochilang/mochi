@@ -1,0 +1,7 @@
+run: exit status 1
+Exception in thread "main" java.lang.RuntimeException: test4 failed
+	at Geometric_meanKt.panic(geometric_mean.kt:1)
+	at Geometric_meanKt.test_compute_geometric_mean(geometric_mean.kt:109)
+	at Geometric_meanKt.user_main(geometric_mean.kt:118)
+	at Geometric_meanKt.main(geometric_mean.kt:127)
+	at Geometric_meanKt.main(geometric_mean.kt)

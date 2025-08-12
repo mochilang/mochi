@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-11 18:51 GMT+7
+Last updated: 2025-08-12 08:30 GMT+7
 
-## Algorithms Golden Test Checklist (320/1077)
+## Algorithms Golden Test Checklist (345/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -556,32 +556,32 @@ Last updated: 2025-08-11 18:51 GMT+7
 | 547 | maths/check_polygon | ✓ | 27.86ms | 113.62KiB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 9.76ms | 134.11KiB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 9.56ms | 124.06KiB |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
-| 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
-| 558 | maths/entropy |   |  |  |
-| 559 | maths/euclidean_distance |   |  |  |
-| 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
-| 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
-| 571 | maths/floor |   |  |  |
-| 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
-| 575 | maths/geometric_mean |   |  |  |
+| 550 | maths/collatz_sequence | ✓ | 16.34ms | 122.38KiB |
+| 551 | maths/combinations | ✓ | 5.26ms | 133.18KiB |
+| 552 | maths/continued_fraction | ✓ | 15.79ms | 123.56KiB |
+| 553 | maths/decimal_isolate | ✓ | 7.65ms | 124.14KiB |
+| 554 | maths/decimal_to_fraction | ✓ | 9.46ms | 110.75KiB |
+| 555 | maths/dodecahedron | ✓ | 5.28ms | 124.14KiB |
+| 556 | maths/double_factorial | ✓ | 5.08ms | 133.95KiB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 20.90ms | 106.32KiB |
+| 558 | maths/entropy | ✓ | 13.67ms | 129.39KiB |
+| 559 | maths/euclidean_distance | ✓ | 16.58ms | 113.55KiB |
+| 560 | maths/euler_method | ✓ | 27.78ms | 123.45KiB |
+| 561 | maths/euler_modified | ✓ | 20.18ms | 108.68KiB |
+| 562 | maths/eulers_totient | ✓ | 15.86ms | 123.56KiB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 6.06ms | 133.81KiB |
+| 564 | maths/factorial | ✓ | 5.58ms | 133.95KiB |
+| 565 | maths/factors | ✓ | 17.23ms | 114.70KiB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 7.41ms | 124.03KiB |
+| 567 | maths/fermat_little_theorem | ✓ | 8.27ms | 130.54KiB |
+| 568 | maths/fibonacci | ✓ | 14.37ms | 125.98KiB |
+| 569 | maths/find_max | ✓ | 14.56ms | 113.59KiB |
+| 570 | maths/find_min | ✓ | 15.33ms | 113.59KiB |
+| 571 | maths/floor | ✓ | 14.70ms | 123.24KiB |
+| 572 | maths/gamma | ✓ | 17.59ms | 123.58KiB |
+| 573 | maths/gaussian | ✓ | 6.19ms | 124.14KiB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 15.13ms | 123.45KiB |
+| 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes |   |  |  |
 | 577 | maths/greatest_common_divisor |   |  |  |
 | 578 | maths/hardy_ramanujanalgo |   |  |  |
