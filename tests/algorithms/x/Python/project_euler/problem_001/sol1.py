@@ -15,10 +15,6 @@ if os.path.dirname(__file__) in sys.path:
     sys.path.remove(os.path.dirname(__file__))
 
 
-def panic(msg):
-    raise RuntimeError(msg)
-
-
 _now_seed = 0
 _now_seeded = False
 s = os.getenv("MOCHI_NOW_SEED")
@@ -36,22 +32,34 @@ def _now():
         return _now_seed
     return int(time.time_ns())
 
+
+def _str(v):
+    if isinstance(v, float):
+        if v.is_integer():
+            return str(int(v))
+        return format(v, ".17g")
+    return str(v)
+
 if resource:
     _bench_mem_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 else:
     _bench_mem_start = 0
 _bench_start = _now()
 try:
-    G = 9.80665
-    def potential_energy(mass, height):
-        if mass < 0.0:
-            panic("The mass of a body cannot be negative")
-        if height < 0.0:
-            panic("The height above the ground cannot be negative")
-        return mass * G * height
-    print(potential_energy(10.0, 10.0))
-    print(potential_energy(10.0, 5.0))
-    print(potential_energy(2.0, 8.0))
+    def solution(n):
+        total = 0
+        e = 3
+        while e < n:
+            if e % 3 == 0 or e % 5 == 0:
+                total = total + e
+            e = e + 1
+        return total
+    print(_str(solution(3)))
+    print(_str(solution(4)))
+    print(_str(solution(10)))
+    print(_str(solution(600)))
+    print(_str(solution(-7)))
+    print(_str(solution(1000)))
 finally:
     _bench_end = _now()
     if resource:
