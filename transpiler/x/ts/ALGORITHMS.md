@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-12 09:13 UTC
+Last updated: 2025-08-12 09:34 UTC
 
 ## Algorithms Golden Test Checklist (1052/1077)
 | Index | Name | Status | Duration | Memory |
@@ -738,14 +738,14 @@ Last updated: 2025-08-12 09:13 UTC
 | 729 | neural_network/activation_functions/softplus | ✓ | 571.223ms | 22.2 KB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 571.223ms | 284.6 KB |
 | 731 | neural_network/activation_functions/swish | ✓ | 571.223ms | 317.7 KB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 571.223ms | 1.6 MB |
-| 733 | neural_network/convolution_neural_network | ✓ | 571.223ms | 1.2 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 571.223ms | 1.0 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 571.223ms | 747.3 KB |
 | 734 | neural_network/input_data | ✓ | 571.223ms | 42.9 KB |
-| 735 | neural_network/simple_neural_network | ✓ | 571.223ms | 236.9 KB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 571.223ms | 957.4 KB |
+| 735 | neural_network/simple_neural_network | ✓ | 571.223ms | 269.3 KB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 571.223ms | 959.3 KB |
 | 737 | other/activity_selection | ✓ | 571.223ms | 18.5 KB |
 | 738 | other/alternative_list_arrange | ✓ | 571.223ms | 34.2 KB |
-| 739 | other/bankers_algorithm | ✓ | 571.223ms | 230.7 KB |
+| 739 | other/bankers_algorithm | ✓ | 571.223ms | 960.4 KB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 571.223ms | 33.4 KB |
 | 741 | other/doomsday | ✓ | 571.223ms | 29.1 KB |
 | 742 | other/fischer_yates_shuffle | ✓ | 571.223ms | 31.1 KB |
@@ -753,7 +753,7 @@ Last updated: 2025-08-12 09:13 UTC
 | 744 | other/greedy | ✓ | 571.223ms | 40.5 KB |
 | 745 | other/guess_the_number_search | ✓ | 571.223ms | 287.3 KB |
 | 746 | other/h_index | ✓ | 571.223ms | 549.0 KB |
-| 747 | other/least_recently_used | ✓ | 571.223ms | 537.3 KB |
+| 747 | other/least_recently_used | ✓ | 571.223ms | 281.2 KB |
 | 748 | other/lfu_cache | ✓ | 571.223ms | 41.4 KB |
 | 749 | other/linear_congruential_generator | ✓ |  | 26.8 KB |
 | 750 | other/lru_cache | ✓ | 571.223ms | 50.6 KB |
@@ -764,7 +764,7 @@ Last updated: 2025-08-12 09:13 UTC
 | 755 | other/number_container_system | ✓ | 571.223ms | 26.5 KB |
 | 756 | other/quine | ✓ | 571.223ms | 13.7 KB |
 | 757 | other/scoring_algorithm | ✓ | 571.223ms | 42.9 KB |
-| 758 | other/sdes | ✓ | 571.223ms | 44.0 KB |
+| 758 | other/sdes | ✓ | 571.223ms | 547.7 KB |
 | 759 | other/tower_of_hanoi | ✓ | 571.223ms | 31.0 KB |
 | 760 | other/word_search | ✓ | 571.223ms | 118.4 KB |
 | 761 | physics/altitude_pressure | ✓ | 571.223ms | 20.1 KB |

@@ -260,9 +260,9 @@ type BoolLit struct {
 // more closely matches Mochi's print output for floats.
 func formatFloat(f float64) string {
 	if math.Trunc(f) == f {
-		return fmt.Sprintf("%.1f", f)
+		return strconv.FormatFloat(f, 'f', 1, 64)
 	}
-	return fmt.Sprintf("%g", f)
+	return strconv.FormatFloat(f, 'g', -1, 64)
 }
 
 // NullLit is the `null` literal.
