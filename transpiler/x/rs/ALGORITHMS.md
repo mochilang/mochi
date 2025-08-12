@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-12 16:23 GMT+7
+Last updated: 2025-08-12 16:46 GMT+7
 
-## Algorithms Golden Test Checklist (647/1077)
+## Algorithms Golden Test Checklist (696/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -656,56 +656,56 @@ Last updated: 2025-08-12 16:23 GMT+7
 | 647 | maths/series/arithmetic |   |  |  |
 | 648 | maths/series/geometric |   |  |  |
 | 649 | maths/series/geometric_series |   |  |  |
-| 650 | maths/series/harmonic |   |  |  |
-| 651 | maths/series/harmonic_series |   |  |  |
-| 652 | maths/series/hexagonal_numbers |   |  |  |
-| 653 | maths/series/p_series |   |  |  |
-| 654 | maths/sieve_of_eratosthenes |   |  |  |
-| 655 | maths/sigmoid |   |  |  |
-| 656 | maths/signum |   |  |  |
-| 657 | maths/simultaneous_linear_equation_solver |   |  |  |
-| 658 | maths/sin |   |  |  |
-| 659 | maths/sock_merchant |   |  |  |
-| 660 | maths/softmax |   |  |  |
-| 661 | maths/solovay_strassen_primality_test |   |  |  |
-| 662 | maths/spearman_rank_correlation_coefficient |   |  |  |
-| 663 | maths/special_numbers/armstrong_numbers |   |  |  |
-| 664 | maths/special_numbers/automorphic_number |   |  |  |
-| 665 | maths/special_numbers/bell_numbers |   |  |  |
-| 666 | maths/special_numbers/carmichael_number |   |  |  |
-| 667 | maths/special_numbers/catalan_number |   |  |  |
-| 668 | maths/special_numbers/hamming_numbers |   |  |  |
-| 669 | maths/special_numbers/happy_number |   |  |  |
-| 670 | maths/special_numbers/harshad_numbers |   |  |  |
-| 671 | maths/special_numbers/hexagonal_number |   |  |  |
-| 672 | maths/special_numbers/krishnamurthy_number |   |  |  |
-| 673 | maths/special_numbers/perfect_number |   |  |  |
-| 674 | maths/special_numbers/polygonal_numbers |   |  |  |
-| 675 | maths/special_numbers/pronic_number |   |  |  |
-| 676 | maths/special_numbers/proth_number |   |  |  |
-| 677 | maths/special_numbers/triangular_numbers |   |  |  |
-| 678 | maths/special_numbers/ugly_numbers |   |  |  |
-| 679 | maths/special_numbers/weird_number |   |  |  |
-| 680 | maths/sum_of_arithmetic_series |   |  |  |
-| 681 | maths/sum_of_digits |   |  |  |
-| 682 | maths/sum_of_geometric_progression |   |  |  |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
-| 685 | maths/sylvester_sequence |   |  |  |
-| 686 | maths/tanh |   |  |  |
-| 687 | maths/test_factorial |   |  |  |
-| 688 | maths/test_prime_check |   |  |  |
-| 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule | ✓ | 29µs | 2.0 MB |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
-| 698 | matrix/count_islands_in_matrix |   |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
+| 650 | maths/series/harmonic | ✓ | 125µs | 2.0 MB |
+| 651 | maths/series/harmonic_series | ✓ | 104µs | 2.0 MB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 111µs | 2.1 MB |
+| 653 | maths/series/p_series | ✓ | 128µs | 2.1 MB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 139µs | 2.1 MB |
+| 655 | maths/sigmoid | ✓ | 113µs | 1.9 MB |
+| 656 | maths/signum | ✓ | 90µs | 2.0 MB |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 284µs | 2.2 MB |
+| 658 | maths/sin | ✓ | 105µs | 2.1 MB |
+| 659 | maths/sock_merchant | ✓ | 164µs | 2.1 MB |
+| 660 | maths/softmax | ✓ | 85µs | 2.1 MB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 45µs | 1.8 MB |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 157µs | 1.9 MB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 137µs | 2.1 MB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 52µs | 2.1 MB |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 408µs | 2.1 MB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 896µs | 1.9 MB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 50µs | 2.0 MB |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 141µs | 2.0 MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 80µs | 2.0 MB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 448µs | 2.0 MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 31µs | 1.8 MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 38µs | 1.8 MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 125µs | 2.1 MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 104µs | 2.0 MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 52µs | 2.1 MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 174µs | 2.1 MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 135µs | 2.1 MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 843µs | 2.1 MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 187µs | 1.9 MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 46µs | 2.0 MB |
+| 681 | maths/sum_of_digits | error |  |  |
+| 682 | maths/sum_of_geometric_progression | ✓ | 73µs | 2.0 MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 107µs | 2.0 MB |
+| 684 | maths/sumset | ✓ | 111µs | 2.1 MB |
+| 685 | maths/sylvester_sequence | ✓ | 60µs | 1.8 MB |
+| 686 | maths/tanh | ✓ | 271µs | 2.0 MB |
+| 687 | maths/test_factorial | ✓ | 61µs | 1.9 MB |
+| 688 | maths/test_prime_check | ✓ | 48µs | 2.0 MB |
+| 689 | maths/three_sum | ✓ | 88µs | 2.0 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 55µs | 2.1 MB |
+| 691 | maths/triplet_sum | ✓ | 92µs | 2.0 MB |
+| 692 | maths/twin_prime | ✓ | 135µs | 1.9 MB |
+| 693 | maths/two_pointer | ✓ | 49µs | 2.0 MB |
+| 694 | maths/two_sum | ✓ | 94µs | 2.0 MB |
+| 695 | maths/volume | ✓ | 157µs | 2.1 MB |
+| 696 | maths/zellers_congruence | ✓ | 202µs | 2.1 MB |
+| 697 | matrix/binary_search_matrix | ✓ | 137µs | 2.1 MB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 165µs | 1.8 MB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 4.241449s | 33.3 MB |
 | 700 | matrix/count_paths | ✓ | 116µs | 2.2 MB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 53µs | 2.1 MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 193µs | 2.2 MB |
@@ -769,7 +769,7 @@ Last updated: 2025-08-12 16:23 GMT+7
 | 760 | other/word_search | ✓ | 595µs | 2.0 MB |
 | 761 | physics/altitude_pressure | ✓ | 46µs | 2.0 MB |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ |  | 1.9 MB |
-| 763 | physics/basic_orbital_capture | error |  |  |
+| 763 | physics/basic_orbital_capture | ✓ |  |  |
 | 764 | physics/casimir_effect | ✓ | 126µs | 2.1 MB |
 | 765 | physics/center_of_mass | ✓ | 62µs | 2.0 MB |
 | 766 | physics/centripetal_force | ✓ | 52µs | 2.0 MB |
