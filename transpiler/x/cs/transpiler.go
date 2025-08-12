@@ -2426,22 +2426,18 @@ func (a *AppendExpr) emit(w io.Writer) {
 	} else if et := typeOfExpr(a.Item); et != "" && et != "object" {
 		elem = et
 	}
-	fmt.Fprintf(w, "(Enumerable.ToArray(Enumerable.Append<%s>(", elem)
-	a.List.emit(w)
-	fmt.Fprint(w, ", ")
+	listStr := exprString(a.List)
+	itemStr := exprString(a.Item)
 	tItem := typeOfExpr(a.Item)
 	if (tItem == "object" || tItem == "object[]") && elem != "object" {
 		if lit, ok := a.Item.(*ListLit); ok && len(lit.Elems) == 0 {
 			lit.ElemType = elem
-			a.Item.emit(w)
+			itemStr = exprString(a.Item)
 		} else {
-			fmt.Fprintf(w, "(%s)", elem)
-			a.Item.emit(w)
+			itemStr = fmt.Sprintf("(%s)%s", elem, itemStr)
 		}
-	} else {
-		a.Item.emit(w)
 	}
-	fmt.Fprint(w, ")))")
+	fmt.Fprintf(w, "((Func<%s[]>)(() => { var _tmp = %s.ToList(); _tmp.Add(%s); return _tmp.ToArray(); }))()", elem, listStr, itemStr)
 }
 
 type ConcatExpr struct {
@@ -5453,14 +5449,14 @@ func formatCS(src []byte) []byte {
 			indent++
 		}
 	}
-       out := strings.Join(lines, "\n")
-       if !strings.Contains(out, "BigInteger") {
-               out = strings.Replace(out, "using System.Numerics;\n", "", 1)
-       }
-       if !strings.HasSuffix(out, "\n") {
-               out += "\n"
-       }
-       return []byte(out)
+	out := strings.Join(lines, "\n")
+	if !strings.Contains(out, "BigInteger") {
+		out = strings.Replace(out, "using System.Numerics;\n", "", 1)
+	}
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
 }
 
 func fieldNames(fs []StructField) []string {
