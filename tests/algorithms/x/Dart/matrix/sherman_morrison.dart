@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class Matrix {
   List<List<double>> data;
@@ -55,7 +58,7 @@ Matrix make_matrix(int rows, int cols, double value) {
     row = [...row, value];
     c = c + 1;
   }
-    arr = ([...arr, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    arr = ([...arr, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     r = r + 1;
   }
   return Matrix(data: arr, rows: rows, cols: cols);
@@ -102,7 +105,7 @@ Matrix matrix_add(Matrix a, Matrix b) {
     row = [...row, a.data[i][j] + b.data[i][j]];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: res, rows: a.rows, cols: a.cols);
@@ -121,7 +124,7 @@ Matrix matrix_sub(Matrix a, Matrix b) {
     row = [...row, a.data[i][j] - b.data[i][j]];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: res, rows: a.rows, cols: a.cols);
@@ -137,7 +140,7 @@ Matrix matrix_mul_scalar(Matrix m, double k) {
     row = [...row, m.data[i][j] * k];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: res, rows: m.rows, cols: m.cols);
@@ -162,7 +165,7 @@ Matrix matrix_mul(Matrix a, Matrix b) {
     row = [...row, sum];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: res, rows: a.rows, cols: b.cols);
@@ -178,7 +181,7 @@ Matrix matrix_transpose(Matrix m) {
     row = [...row, m.data[r][c]];
     r = r + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     c = c + 1;
   }
   return Matrix(data: res, rows: m.cols, cols: m.rows);
