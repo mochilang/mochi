@@ -77,18 +77,21 @@ func declareName(name string) string {
 		return v
 	}
 	newName := name
-       switch strings.ToLower(name) {
-       case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
-               "array", "real", "integer", "string", "boolean", "char",
-               // Additional common Pascal keywords
-               "begin", "var", "procedure", "function", "unit", "uses", "const", "file":
-               // Avoid Pascal reserved keywords and built-in types (case-insensitive)
-               newName = name + "_"
-       }
+	switch strings.ToLower(name) {
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
+		"array", "real", "integer", "string", "boolean", "char",
+		// Additional common Pascal keywords
+		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out":
+		// Avoid Pascal reserved keywords and built-in types (case-insensitive)
+		newName = name + "_"
+	}
 	if currentFunc != "" {
 		newName = currentFunc + "_" + newName
 	}
+	// Avoid clashes with existing function names (original and prefixed)
 	if _, ok := funcNames[strings.ToLower(name)]; ok {
+		newName = newName + "_var"
+	} else if _, ok := funcNames[strings.ToLower(newName)]; ok {
 		newName = newName + "_var"
 	} else if hasVar(newName) {
 		newName = fmt.Sprintf("%s_%d", newName, len(currProg.Vars))
@@ -108,12 +111,12 @@ func declareName(name string) string {
 }
 
 func sanitizeField(name string) string {
-       switch strings.ToLower(name) {
-       case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
-               "begin", "var", "procedure", "function", "unit", "uses", "const", "file":
-               return name + "_"
-       }
-       return name
+	switch strings.ToLower(name) {
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
+		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out":
+		return name + "_"
+	}
+	return name
 }
 
 // Program is a minimal Pascal AST consisting of a sequence of statements.
@@ -201,6 +204,8 @@ type Program struct {
 	NeedShowList        bool
 	NeedShowList2       bool
 	NeedShowListInt64   bool
+	NeedShowListReal    bool
+	NeedShowListReal2   bool
 	NeedShowMap         bool
 	NeedShowMapIntArray bool
 	NeedMapIntIntStr    bool
@@ -1223,10 +1228,14 @@ func (p *PrintStmt) emit(w io.Writer) {
 			io.WriteString(w, "show_list_int64(")
 			p.Exprs[0].emit(w)
 			io.WriteString(w, ");")
-		} else if strings.HasPrefix(t, "array of real") {
-			io.WriteString(w, "writeln(list_real_to_str(")
+		} else if strings.HasPrefix(t, "array of RealArray") {
+			io.WriteString(w, "show_list_list_real(")
 			p.Exprs[0].emit(w)
-			io.WriteString(w, "));")
+			io.WriteString(w, ");")
+		} else if strings.HasPrefix(t, "array of real") {
+			io.WriteString(w, "show_list_real(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
 		} else if t == "array of Variant" {
 			currProg.NeedListStrVariant = true
 			currProg.UseSysUtils = true
@@ -1435,6 +1444,7 @@ func (p *Program) Emit() []byte {
 			fmt.Fprintf(&buf, "type %s = %s;\n", name, p.FuncAliasDefs[name])
 		}
 	}
+	var lateAliases []string
 	if len(p.ArrayAliases) > 0 {
 		keys := make([]string, 0, len(p.ArrayAliases))
 		for elem := range p.ArrayAliases {
@@ -1443,6 +1453,17 @@ func (p *Program) Emit() []byte {
 		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
 		for _, elem := range keys {
 			alias := p.ArrayAliases[elem]
+			isRecord := false
+			for _, r := range delayed {
+				if r.Name == elem {
+					isRecord = true
+					break
+				}
+			}
+			if isRecord {
+				lateAliases = append(lateAliases, elem)
+				continue
+			}
 			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
 		}
 	}
@@ -1452,6 +1473,10 @@ func (p *Program) Emit() []byte {
 			fmt.Fprintf(&buf, "  %s: %s;\n", f.Name, f.Type)
 		}
 		buf.WriteString("end;\n")
+	}
+	for _, elem := range lateAliases {
+		alias := p.ArrayAliases[elem]
+		fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
 	}
 	if p.UseNow {
 		buf.WriteString("var _nowSeed: int64 = 0;\n")
@@ -1469,6 +1494,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
 	}
 	buf.WriteString("procedure panic(msg: string);\nbegin\n  writeln(msg);\n  halt(1);\nend;\n")
+	buf.WriteString("procedure error(msg: string);\nbegin\n  panic(msg);\nend;\n")
+	buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := x;\nend;\n")
+	buf.WriteString("procedure json(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
 	if p.NeedJSON {
 		buf.WriteString("procedure json_intarray(xs: IntArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
 		if p.NeedJSONReal {
@@ -1509,6 +1537,7 @@ end;
 	}
 	if p.NeedContains {
 		buf.WriteString("function contains(xs: array of integer; v: integer): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
+		buf.WriteString("function contains(xs: array of string; v: string): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
 	}
 	if p.NeedAvg {
 		buf.WriteString("function avg(xs: array of integer): real;\nvar i, s: integer;\nbegin\n  if Length(xs) = 0 then begin avg := 0; exit; end;\n  s := 0;\n  for i := 0 to High(xs) do s := s + xs[i];\n  avg := s / Length(xs);\nend;\n")
@@ -1534,11 +1563,17 @@ end;
 	if p.NeedShowList || p.NeedShowList2 {
 		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
 	}
+	if p.NeedShowListReal {
+		buf.WriteString("procedure show_list_real(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
+	}
 	if p.NeedShowListInt64 {
 		buf.WriteString("procedure show_list_int64(xs: array of int64);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
 	}
 	if p.NeedShowList2 {
 		buf.WriteString("procedure show_list_list(xs: array of IntArray);\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    show_list(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  writeln('');\nend;\n")
+	}
+	if p.NeedShowListReal2 {
+		buf.WriteString("procedure show_list_list_real(xs: array of RealArray);\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    show_list_real(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  writeln('');\nend;\n")
 	}
 	if p.NeedListStr {
 		buf.WriteString(`function list_to_str(xs: array of string): string;
@@ -1818,6 +1853,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 								pr.NeedListStr = true
 							} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
 								pr.NeedShowList2 = true
+							} else if strings.HasPrefix(tt, "array of RealArray") {
+								pr.NeedShowListReal2 = true
+								pr.NeedShowListReal = true
+							} else if strings.HasPrefix(tt, "array of real") {
+								pr.NeedShowListReal = true
 							} else if strings.HasPrefix(tt, "array of int64") {
 								pr.NeedShowListInt64 = true
 							} else if strings.HasPrefix(tt, "array of Variant") {
@@ -2792,11 +2832,13 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 							currProg.NeedListStr = true
 						} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
 							currProg.NeedShowList2 = true
+						} else if strings.HasPrefix(tt, "array of RealArray") {
+							currProg.NeedShowListReal2 = true
+							currProg.NeedShowListReal = true
+						} else if strings.HasPrefix(tt, "array of real") {
+							currProg.NeedShowListReal = true
 						} else if strings.HasPrefix(tt, "array of int64") {
 							currProg.NeedShowListInt64 = true
-						} else if strings.HasPrefix(tt, "array of real") {
-							currProg.NeedListStrReal = true
-							needSys = true
 						} else if strings.HasPrefix(tt, "array of Variant") {
 							currProg.NeedListStrVariant = true
 							currProg.UseVariants = true
@@ -6049,6 +6091,7 @@ func formatParam(name, typ string) string {
 	// arrays when using recursion. Using "var" for array parameters caused
 	// access violations on some programs (e.g. Cramer's rule) so we no
 	// longer emit it here.
+	name = sanitize(name)
 	return fmt.Sprintf("%s: %s", name, pasType(typ))
 }
 
