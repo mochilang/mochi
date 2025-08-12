@@ -2722,9 +2722,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		name := safeName(s.Fun.Name)
 		fd := &FuncDecl{Name: name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}
-		if name == "ln" && len(params) == 1 {
+		if name == "ln" && len(params) == 1 && len(body) == 0 {
 			fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.log", Args: []Expr{&NameRef{Name: params[0]}}}}}
-		} else if name == "exp" && len(params) == 1 {
+		} else if name == "exp" && len(params) == 1 && len(body) == 0 {
 			fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.exp", Args: []Expr{&NameRef{Name: params[0]}}}}}
 		}
 		if fd.Async {
