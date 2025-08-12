@@ -1,3 +1,15 @@
+## Progress (2025-08-12 15:27 +0700)
+- php: support union patterns and map key strings
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-12 15:27 +0700)
+- php: support union patterns and map key strings
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-12 15:27 +0700)
+- php: support union patterns and map key strings
+- Regenerated golden files - 104/105 vm valid programs passing
+
 ## Progress (2025-08-11 17:23 +0700)
 - erl: update algorithm outputs 940-989
 - Regenerated golden files - 104/105 vm valid programs passing
