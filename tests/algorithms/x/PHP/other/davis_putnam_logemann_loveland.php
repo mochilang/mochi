@@ -40,13 +40,13 @@ $__start = _now();
 };
   return ['literals' => $m, 'names' => $names];
 };
-  function assign_clause(&$c, $model) {
+  function assign_clause($c, $model) {
   global $clause1, $clause2, $formula, $formula_str, $clauses, $symbols, $result;
   $lits = $c['literals'];
   $i = 0;
   while ($i < _len($c['names'])) {
   $lit = $c['names'][$i];
-  $symbol = substr($lit, 0, 2 - 0);
+  $symbol = substr($lit, 0, 2);
   if (array_key_exists($symbol, $model)) {
   $value = $model[$symbol];
   if (substr($lit, strlen($lit) - 1, strlen($lit) - (strlen($lit) - 1)) == '\'' && $value != 0 - 1) {
@@ -64,7 +64,7 @@ $__start = _now();
   $i = 0;
   while ($i < _len($c['names'])) {
   $lit = $c['names'][$i];
-  $sym = (substr($lit, strlen($lit) - 1, strlen($lit) - (strlen($lit) - 1)) == '\'' ? substr($lit, 0, 2 - 0) : $lit . '\'');
+  $sym = (substr($lit, strlen($lit) - 1, strlen($lit) - (strlen($lit) - 1)) == '\'' ? substr($lit, 0, 2) : $lit . '\'');
   if (isset($c['literals'][$sym])) {
   return ['value' => 1, 'clause' => $c];
 }

@@ -35,6 +35,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function unique($nums) {
@@ -60,7 +64,7 @@ $__start = _now();
 };
   function array_equalization($vector, $step_size) {
   if ($step_size <= 0) {
-  $error('Step size must be positive and non-zero.');
+  _panic('Step size must be positive and non-zero.');
 }
   $elems = unique($vector);
   $min_updates = count($vector);
