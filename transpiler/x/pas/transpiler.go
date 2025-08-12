@@ -77,12 +77,14 @@ func declareName(name string) string {
 		return v
 	}
 	newName := name
-	switch strings.ToLower(name) {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord", "array",
-		"real", "integer", "string", "boolean", "char":
-		// Avoid Pascal reserved keywords and built-in types (case-insensitive)
-		newName = name + "_"
-	}
+       switch strings.ToLower(name) {
+       case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
+               "array", "real", "integer", "string", "boolean", "char",
+               // Additional common Pascal keywords
+               "begin", "var", "procedure", "function", "unit", "uses", "const", "file":
+               // Avoid Pascal reserved keywords and built-in types (case-insensitive)
+               newName = name + "_"
+       }
 	if currentFunc != "" {
 		newName = currentFunc + "_" + newName
 	}
@@ -106,11 +108,12 @@ func declareName(name string) string {
 }
 
 func sanitizeField(name string) string {
-	switch strings.ToLower(name) {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord":
-		return name + "_"
-	}
-	return name
+       switch strings.ToLower(name) {
+       case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
+               "begin", "var", "procedure", "function", "unit", "uses", "const", "file":
+               return name + "_"
+       }
+       return name
 }
 
 // Program is a minimal Pascal AST consisting of a sequence of statements.
