@@ -39,6 +39,24 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 procedure show_list(xs: array of integer);
 var i: integer;
 begin
@@ -59,20 +77,20 @@ function binary_step(vector: RealArray): IntArray; forward;
 procedure main(); forward;
 function binary_step(vector: RealArray): IntArray;
 var
-  binary_step_out: array of integer;
+  binary_step_out_: array of integer;
   binary_step_i: integer;
 begin
-  binary_step_out := [];
+  binary_step_out_ := [];
   binary_step_i := 0;
   while binary_step_i < Length(vector) do begin
   if vector[binary_step_i] >= 0 then begin
-  binary_step_out := concat(binary_step_out, IntArray([1]));
+  binary_step_out_ := concat(binary_step_out_, IntArray([1]));
 end else begin
-  binary_step_out := concat(binary_step_out, IntArray([0]));
+  binary_step_out_ := concat(binary_step_out_, IntArray([0]));
 end;
   binary_step_i := binary_step_i + 1;
 end;
-  exit(binary_step_out);
+  exit(binary_step_out_);
 end;
 procedure main();
 var
