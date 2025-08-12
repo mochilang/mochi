@@ -1,1 +1,5 @@
-Fatal error: Cannot redeclare function log10() in /workspace/mochi/tests/algorithms/x/PHP/maths/largest_of_very_large_numbers.php on line 48
+{
+  "duration_us": 61,
+  "memory_bytes": 41864,
+  "name": "main"
+}

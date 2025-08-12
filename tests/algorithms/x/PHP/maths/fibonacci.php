@@ -36,6 +36,9 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -43,9 +46,48 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function sqrt($x) {
+  function mochi_sqrt($x) {
   global $fib_cache_global, $fib_memo_cache;
   if ($x <= 0.0) {
   return 0.0;
@@ -54,7 +96,7 @@ $__start = _now();
   $i = 0;
   while ($i < 10) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $guess;
 };
@@ -64,7 +106,7 @@ $__start = _now();
   $i = 0;
   while ($i < $n) {
   $res = $res * $x;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -78,7 +120,7 @@ $__start = _now();
   function fib_iterative($n) {
   global $fib_cache_global, $fib_memo_cache;
   if ($n < 0) {
-  $panic('n is negative');
+  _panic('n is negative');
 }
   if ($n == 0) {
   return [0];
@@ -86,31 +128,31 @@ $__start = _now();
   $fib = [0, 1];
   $i = 2;
   while ($i <= $n) {
-  $fib = _append($fib, $fib[$i - 1] + $fib[$i - 2]);
-  $i = $i + 1;
+  $fib = _append($fib, _iadd($fib[_isub($i, 1)], $fib[_isub($i, 2)]));
+  $i = _iadd($i, 1);
 };
   return $fib;
 };
   function fib_recursive_term($i) {
   global $fib_cache_global, $fib_memo_cache;
   if ($i < 0) {
-  $panic('n is negative');
+  _panic('n is negative');
 }
   if ($i < 2) {
   return $i;
 }
-  return fib_recursive_term($i - 1) + fib_recursive_term($i - 2);
+  return _iadd(fib_recursive_term(_isub($i, 1)), fib_recursive_term(_isub($i, 2)));
 };
   function fib_recursive($n) {
   global $fib_cache_global, $fib_memo_cache;
   if ($n < 0) {
-  $panic('n is negative');
+  _panic('n is negative');
 }
   $res = [];
   $i = 0;
   while ($i <= $n) {
   $res = _append($res, fib_recursive_term($i));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -118,7 +160,7 @@ $__start = _now();
   function fib_recursive_cached_term($i) {
   global $fib_cache_global, $fib_memo_cache;
   if ($i < 0) {
-  $panic('n is negative');
+  _panic('n is negative');
 }
   if ($i < 2) {
   return $i;
@@ -126,20 +168,20 @@ $__start = _now();
   if (array_key_exists($i, $fib_cache_global)) {
   return $fib_cache_global[$i];
 }
-  $val = fib_recursive_cached_term($i - 1) + fib_recursive_cached_term($i - 2);
+  $val = _iadd(fib_recursive_cached_term(_isub($i, 1)), fib_recursive_cached_term(_isub($i, 2)));
   $fib_cache_global[$i] = $val;
   return $val;
 };
   function fib_recursive_cached($n) {
   global $fib_cache_global, $fib_memo_cache;
   if ($n < 0) {
-  $panic('n is negative');
+  _panic('n is negative');
 }
   $res = [];
   $j = 0;
   while ($j <= $n) {
   $res = _append($res, fib_recursive_cached_term($j));
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   return $res;
 };
@@ -149,60 +191,60 @@ $__start = _now();
   if (array_key_exists($num, $fib_memo_cache)) {
   return $fib_memo_cache[$num];
 }
-  $value = fib_memoization_term($num - 1) + fib_memoization_term($num - 2);
+  $value = _iadd(fib_memoization_term(_isub($num, 1)), fib_memoization_term(_isub($num, 2)));
   $fib_memo_cache[$num] = $value;
   return $value;
 };
   function fib_memoization($n) {
   global $fib_cache_global, $fib_memo_cache;
   if ($n < 0) {
-  $panic('n is negative');
+  _panic('n is negative');
 }
   $out = [];
   $i = 0;
   while ($i <= $n) {
   $out = _append($out, fib_memoization_term($i));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $out;
 };
   function fib_binet($n) {
   global $fib_cache_global, $fib_memo_cache;
   if ($n < 0) {
-  $panic('n is negative');
+  _panic('n is negative');
 }
   if ($n >= 1475) {
-  $panic('n is too large');
+  _panic('n is too large');
 }
-  $sqrt5 = sqrt(5.0);
+  $sqrt5 = mochi_sqrt(5.0);
   $phi = (1.0 + $sqrt5) / 2.0;
   $res = [];
   $i = 0;
   while ($i <= $n) {
   $val = roundf(powf($phi, $i) / $sqrt5);
   $res = _append($res, $val);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
   function matrix_mul($a, $b) {
   global $fib_cache_global, $fib_memo_cache;
-  $a00 = $a[0][0] * $b[0][0] + $a[0][1] * $b[1][0];
-  $a01 = $a[0][0] * $b[0][1] + $a[0][1] * $b[1][1];
-  $a10 = $a[1][0] * $b[0][0] + $a[1][1] * $b[1][0];
-  $a11 = $a[1][0] * $b[0][1] + $a[1][1] * $b[1][1];
+  $a00 = _iadd(_imul($a[0][0], $b[0][0]), _imul($a[0][1], $b[1][0]));
+  $a01 = _iadd(_imul($a[0][0], $b[0][1]), _imul($a[0][1], $b[1][1]));
+  $a10 = _iadd(_imul($a[1][0], $b[0][0]), _imul($a[1][1], $b[1][0]));
+  $a11 = _iadd(_imul($a[1][0], $b[0][1]), _imul($a[1][1], $b[1][1]));
   return [[$a00, $a01], [$a10, $a11]];
 };
   function matrix_pow($m, $power) {
   global $fib_cache_global, $fib_memo_cache;
   if ($power < 0) {
-  $panic('power is negative');
+  _panic('power is negative');
 }
   $result = [[1, 0], [0, 1]];
   $base = $m;
   $p = $power;
   while ($p > 0) {
-  if ($p % 2 == 1) {
+  if (_imod($p, 2) == 1) {
   $result = matrix_mul($result, $base);
 }
   $base = matrix_mul($base, $base);
@@ -213,13 +255,13 @@ $__start = _now();
   function fib_matrix($n) {
   global $fib_cache_global, $fib_memo_cache;
   if ($n < 0) {
-  $panic('n is negative');
+  _panic('n is negative');
 }
   if ($n == 0) {
   return 0;
 }
   $m = [[1, 1], [1, 0]];
-  $res = matrix_pow($m, $n - 1);
+  $res = matrix_pow($m, _isub($n, 1));
   return $res[0][0];
 };
   function run_tests() {
@@ -232,22 +274,22 @@ $__start = _now();
   $bin = fib_binet(10);
   $m = fib_matrix(10);
   if ($it != $expected) {
-  $panic('iterative failed');
+  _panic('iterative failed');
 }
   if ($rec != $expected) {
-  $panic('recursive failed');
+  _panic('recursive failed');
 }
   if ($cache != $expected) {
-  $panic('cached failed');
+  _panic('cached failed');
 }
   if ($memo != $expected) {
-  $panic('memoization failed');
+  _panic('memoization failed');
 }
   if ($bin != $expected) {
-  $panic('binet failed');
+  _panic('binet failed');
 }
   if ($m != 55) {
-  $panic('matrix failed');
+  _panic('matrix failed');
 }
   return $m;
 };

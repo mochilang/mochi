@@ -35,12 +35,16 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function to_float($x) {
   return $x * 1.0;
 };
-  function sqrt($x) {
+  function mochi_sqrt($x) {
   if ($x <= 0.0) {
   return 0.0;
 }
@@ -63,15 +67,15 @@ $__start = _now();
 };
   function juggler_sequence($n) {
   if ($n < 1) {
-  $panic('number must be a positive integer');
+  _panic('number must be a positive integer');
 }
   $seq = [$n];
   $current = $n;
   while ($current != 1) {
   if ($current % 2 == 0) {
-  $current = mochi_floor(sqrt(to_float($current)));
+  $current = mochi_floor(mochi_sqrt(floatval($current)));
 } else {
-  $r = sqrt(to_float($current));
+  $r = mochi_sqrt(floatval($current));
   $current = mochi_floor($r * $r * $r);
 }
   $seq = _append($seq, $current);

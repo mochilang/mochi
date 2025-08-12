@@ -15,6 +15,45 @@ function _now() {
     }
     return hrtime(true);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   $PI = 3.141592653589793;
@@ -25,23 +64,23 @@ $__start = _now();
 }
   return $x;
 };
-  function sqrt($x) {
+  function mochi_sqrt($x) {
   global $PI;
   if ($x < 0.0) {
-  $panic('sqrt domain error');
+  _panic('sqrt domain error');
 }
   $guess = $x / 2.0;
   $i = 0;
   while ($i < 20) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $guess;
 };
   function ln($x) {
   global $PI;
   if ($x <= 0.0) {
-  $panic('ln domain error');
+  _panic('ln domain error');
 }
   $y = ($x - 1.0) / ($x + 1.0);
   $y2 = $y * $y;
@@ -49,10 +88,10 @@ $__start = _now();
   $sum = 0.0;
   $k = 0;
   while ($k < 10) {
-  $denom = floatval((2 * $k + 1));
+  $denom = floatval((_iadd(_imul(2, $k), 1)));
   $sum = $sum + $term / $denom;
   $term = $term * $y2;
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
   return 2.0 * $sum;
 };
@@ -64,7 +103,7 @@ $__start = _now();
   while ($n < 20) {
   $term = $term * $x / (floatval($n));
   $sum = $sum + $term;
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 };
   return $sum;
 };
@@ -82,7 +121,7 @@ $__start = _now();
   function gamma_iterative($num) {
   global $PI;
   if ($num <= 0.0) {
-  $panic('math domain error');
+  _panic('math domain error');
 }
   $step = 0.001;
   $limit = 100.0;
@@ -97,18 +136,18 @@ $__start = _now();
   function gamma_recursive($num) {
   global $PI;
   if ($num <= 0.0) {
-  $panic('math domain error');
+  _panic('math domain error');
 }
   if ($num > 171.5) {
-  $panic('math range error');
+  _panic('math range error');
 }
   $int_part = intval($num);
   $frac = $num - (floatval($int_part));
   if (!(absf($frac) < 0.000001 || absf($frac - 0.5) < 0.000001)) {
-  $panic('num must be an integer or a half-integer');
+  _panic('num must be an integer or a half-integer');
 }
   if (absf($num - 0.5) < 0.000001) {
-  return sqrt($PI);
+  return mochi_sqrt($PI);
 }
   if (absf($num - 1.0) < 0.000001) {
   return 1.0;
