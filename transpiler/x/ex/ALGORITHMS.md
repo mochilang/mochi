@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-12 16:09 GMT+7
+Last updated: 2025-08-12 16:20 GMT+7
 
 ## Algorithms Golden Test Checklist (823/1077)
 | Index | Name | Status | Duration | Memory |
@@ -784,7 +784,7 @@ Last updated: 2025-08-12 16:09 GMT+7
 | 775 | physics/kinetic_energy | ✓ | 5.55ms | 32.7 MB |
 | 776 | physics/lens_formulae | ✓ | 5.95ms | 32.7 MB |
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 8.02ms | 32.7 MB |
-| 778 | physics/malus_law | ✓ | 5.60ms | 25.0 MB |
+| 778 | physics/malus_law | ✓ | 5.94ms | 25.0 MB |
 | 779 | physics/mass_energy_equivalence | ✓ | 5.74ms | 32.7 MB |
 | 780 | physics/mirror_formulae | ✓ | 4.79ms | 25.0 MB |
 | 781 | physics/n_body_simulation | ✓ | 9.23ms | 20.2 MB |

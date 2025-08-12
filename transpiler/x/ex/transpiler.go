@@ -2011,14 +2011,16 @@ func Emit(p *Program, benchMain bool) []byte {
 		st.emit(&buf, 1)
 		buf.WriteString("\n")
 	}
-	for _, st := range globals {
-		if ls, ok := st.(*LetStmt); ok {
-			ls.emitGlobal(&buf, 1)
-		} else {
-			st.emit(&buf, 1)
-		}
-		buf.WriteString("\n")
-	}
+       if !(benchMain && hasMain) {
+               for _, st := range globals {
+                       if ls, ok := st.(*LetStmt); ok {
+                               ls.emitGlobal(&buf, 1)
+                       } else {
+                               st.emit(&buf, 1)
+                       }
+                       buf.WriteString("\n")
+               }
+       }
 	if !hasMain {
 		buf.WriteString("  def main() do\n")
 		if benchMain {
