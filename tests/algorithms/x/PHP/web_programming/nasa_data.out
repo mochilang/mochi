@@ -1,0 +1,19 @@
+Warning: file_get_contents(https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY): Failed to open stream: Network is unreachable in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 25
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 42
+null
+
+Warning: file_get_contents(https://images-api.nasa.gov/search?q=apollo%202011): Failed to open stream: Network is unreachable in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 25
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 44
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 44
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 45
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 46
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 46
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/nasa_data.php on line 47
+null

@@ -1,0 +1,16 @@
+Warning: file_get_contents(tests/github/TheAlgorithms/Mochi/web_programming/reddit_sample.json): Failed to open stream: No such file or directory in /workspace/mochi/tests/algorithms/x/PHP/web_programming/reddit.php on line 33
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/reddit.php on line 80
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/reddit.php on line 80
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/reddit.php on line 80
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/reddit.php on line 80
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/reddit.php on line 91
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/reddit.php on line 94
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/reddit.php on line 97
+[{'title': null, 'url': null, 'selftext': null}]
