@@ -2248,6 +2248,20 @@ func (v *VarRef) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Name == "_floor" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<cmath>")
+		}
+		io.WriteString(w, "std::floor(")
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	if fn := findFunc(c.Name); fn != nil {
 		needWrap := false
 		for i, a := range c.Args {

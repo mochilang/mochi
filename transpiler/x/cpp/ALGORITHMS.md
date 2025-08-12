@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 934/1077
-Last updated: 2025-08-12 09:13 +0700
+Completed programs: 946/1077
+Last updated: 2025-08-12 10:04 +0700
 
 Checklist:
 
@@ -756,56 +756,56 @@ Checklist:
 | 747 | other/least_recently_used | ✓ | 189.0µs | 3.63MB |
 | 748 | other/lfu_cache | ✓ | 228.0µs | 3.64MB |
 | 749 | other/linear_congruential_generator | ✓ | 219.0µs | 3.62MB |
-| 750 | other/lru_cache | ✓ | 410.0µs | 3.60MB |
-| 751 | other/magicdiamondpattern | ✓ | 271.0µs | 3.64MB |
-| 752 | other/majority_vote_algorithm | ✓ | 288.0µs | 3.77MB |
-| 753 | other/maximum_subsequence | ✓ | 204.0µs | 3.57MB |
-| 754 | other/nested_brackets | ✓ | 491.0µs | 3.64MB |
-| 755 | other/number_container_system | ✓ | 274.0µs | 3.59MB |
-| 756 | other/quine | ✓ | 158.0µs | 3.44MB |
-| 757 | other/scoring_algorithm | ✓ | 518.0µs | 3.83MB |
-| 758 | other/sdes | ✓ | 487.0µs | 3.55MB |
-| 759 | other/tower_of_hanoi | ✓ | 192.0µs | 3.46MB |
-| 760 | other/word_search | ✓ | 891.0µs | 3.52MB |
-| 761 | physics/altitude_pressure | ✓ | 574.0µs | 3.89MB |
-| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 1.0µs | 3.38MB |
+| 750 | other/lru_cache | ✓ | 318.0µs | 3.60MB |
+| 751 | other/magicdiamondpattern | ✓ | 130.0µs | 3.47MB |
+| 752 | other/majority_vote_algorithm | ✓ | 238.0µs | 3.64MB |
+| 753 | other/maximum_subsequence | ✓ | 128.0µs | 3.52MB |
+| 754 | other/nested_brackets | ✓ | 212.0µs | 3.39MB |
+| 755 | other/number_container_system | ✓ | 160.0µs | 3.52MB |
+| 756 | other/quine | ✓ | 103.0µs | 3.45MB |
+| 757 | other/scoring_algorithm | ✓ | 322.0µs | 3.82MB |
+| 758 | other/sdes | ✓ | 360.0µs | 3.55MB |
+| 759 | other/tower_of_hanoi | ✓ | 149.0µs | 3.58MB |
+| 760 | other/word_search | ✓ | 583.0µs | 3.68MB |
+| 761 | physics/altitude_pressure | ✓ | 436.0µs | 3.92MB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 1.0µs | 3.29MB |
 | 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect | ✓ | 684.0µs | 3.70MB |
-| 765 | physics/center_of_mass | ✓ | 510.0µs | 3.73MB |
-| 766 | physics/centripetal_force | ✓ | 444.0µs | 3.82MB |
-| 767 | physics/coulombs_law | ✓ | 250.0µs | 3.61MB |
-| 768 | physics/doppler_frequency | ✓ | 555.0µs | 3.73MB |
-| 769 | physics/escape_velocity | ✓ | 554.0µs | 3.80MB |
-| 770 | physics/grahams_law | ✓ | 492.0µs | 3.98MB |
-| 771 | physics/horizontal_projectile_motion | ✓ | 520.0µs | 3.80MB |
-| 772 | physics/hubble_parameter | ✓ | 456.0µs | 3.73MB |
-| 773 | physics/ideal_gas_law |   |  |  |
-| 774 | physics/in_static_equilibrium | ✓ | 267.0µs | 3.55MB |
-| 775 | physics/kinetic_energy | ✓ | 578.0µs | 3.79MB |
-| 776 | physics/lens_formulae | ✓ | 481.0µs | 3.72MB |
-| 777 | physics/lorentz_transformation_four_vector | ✓ | 499.0µs | 3.74MB |
-| 778 | physics/malus_law |   |  |  |
-| 779 | physics/mass_energy_equivalence |   |  |  |
-| 780 | physics/mirror_formulae |   |  |  |
-| 781 | physics/n_body_simulation |   |  |  |
-| 782 | physics/newtons_law_of_gravitation |   |  |  |
-| 783 | physics/newtons_second_law_of_motion |   |  |  |
-| 784 | physics/orbital_transfer_work |   |  |  |
-| 785 | physics/period_of_pendulum |   |  |  |
-| 786 | physics/photoelectric_effect |   |  |  |
-| 787 | physics/potential_energy |   |  |  |
-| 788 | physics/rainfall_intensity |   |  |  |
-| 789 | physics/reynolds_number | ✓ | 640.0µs | 3.74MB |
-| 790 | physics/rms_speed_of_molecule | ✓ | 543.0µs | 3.66MB |
-| 791 | physics/shear_stress | ✓ | 555.0µs | 3.75MB |
-| 792 | physics/speed_of_sound | ✓ | 556.0µs | 3.82MB |
-| 793 | physics/speeds_of_gas_molecules | ✓ | 345.0µs | 3.71MB |
-| 794 | physics/terminal_velocity | ✓ | 441.0µs | 3.64MB |
-| 795 | project_euler/problem_001/sol1 | ✓ | 280.0µs | 3.55MB |
-| 796 | project_euler/problem_001/sol2 | ✓ | 314.0µs | 3.80MB |
-| 797 | project_euler/problem_001/sol3 | ✓ | 149.0µs | 3.53MB |
+| 764 | physics/casimir_effect | ✓ | 353.0µs | 3.74MB |
+| 765 | physics/center_of_mass | ✓ | 331.0µs | 3.66MB |
+| 766 | physics/centripetal_force | ✓ | 337.0µs | 3.76MB |
+| 767 | physics/coulombs_law | ✓ | 199.0µs | 3.70MB |
+| 768 | physics/doppler_frequency | ✓ | 302.0µs | 3.72MB |
+| 769 | physics/escape_velocity | ✓ | 515.0µs | 3.73MB |
+| 770 | physics/grahams_law | ✓ | 544.0µs | 3.73MB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 313.0µs | 3.70MB |
+| 772 | physics/hubble_parameter | ✓ | 372.0µs | 3.80MB |
+| 773 | physics/ideal_gas_law | ✓ | 419.0µs | 3.85MB |
+| 774 | physics/in_static_equilibrium | ✓ | 230.0µs | 3.76MB |
+| 775 | physics/kinetic_energy | ✓ | 410.0µs | 3.79MB |
+| 776 | physics/lens_formulae | ✓ | 342.0µs | 3.73MB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 652.0µs | 3.75MB |
+| 778 | physics/malus_law | ✓ | 413.0µs | 3.78MB |
+| 779 | physics/mass_energy_equivalence | ✓ | 382.0µs | 3.82MB |
+| 780 | physics/mirror_formulae | ✓ | 477.0µs | 3.72MB |
+| 781 | physics/n_body_simulation | ✓ | 140.0µs | 3.38MB |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 295.0µs | 3.70MB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 316.0µs | 3.69MB |
+| 784 | physics/orbital_transfer_work | ✓ | 213.0µs | 3.67MB |
+| 785 | physics/period_of_pendulum | ✓ | 385.0µs | 3.82MB |
+| 786 | physics/photoelectric_effect | ✓ | 272.0µs | 3.75MB |
+| 787 | physics/potential_energy | ✓ | 322.0µs | 3.79MB |
+| 788 | physics/rainfall_intensity | ✓ | 411.0µs | 3.93MB |
+| 789 | physics/reynolds_number | ✓ | 352.0µs | 3.78MB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 359.0µs | 3.68MB |
+| 791 | physics/shear_stress | ✓ | 414.0µs | 3.77MB |
+| 792 | physics/speed_of_sound | ✓ | 391.0µs | 3.64MB |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 363.0µs | 3.77MB |
+| 794 | physics/terminal_velocity | ✓ | 397.0µs | 3.73MB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 248.0µs | 3.54MB |
+| 796 | project_euler/problem_001/sol2 | ✓ | 202.0µs | 3.80MB |
+| 797 | project_euler/problem_001/sol3 | ✓ | 243.0µs | 3.59MB |
 | 798 | project_euler/problem_001/sol4 | ✓ | 2.0ms | 3.93MB |
-| 799 | project_euler/problem_001/sol5 | ✓ | 287.0µs | 3.69MB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 143.0µs | 3.59MB |
 | 800 | project_euler/problem_001/sol6 | ✓ | 321.0µs | 3.62MB |
 | 801 | project_euler/problem_001/sol7 | ✓ | 234.0µs | 3.69MB |
 | 802 | project_euler/problem_002/sol1 | ✓ | 390.0µs | 3.46MB |
