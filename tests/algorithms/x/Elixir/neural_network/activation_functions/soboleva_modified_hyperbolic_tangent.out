@@ -19,11 +19,4 @@ warning: variable "n" is unused (there is a variable with the same name in the c
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.exs:52:8: Main.soboleva_modified_hyperbolic_tangent/5
 
-    error: undefined function to_float/1 (expected Main to define such a function or for it to be imported, but none are available)
-    │
- 17 │           term = term * x / to_float(n)
-    │                             ^^^^^^^^
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.exs:17:29: Main.exp/1
-
-** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.exs: cannot compile module Main (errors have been logged)
+[0.11075086031578181, -0.28236684713312954, 0.07861175393215222, -0.11800850130137092, 0.22999055832141352, 0.15660429853940047]

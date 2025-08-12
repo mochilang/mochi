@@ -3964,6 +3964,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: ":erlang.float", Args: []Expr{args[0]}}, nil
 			}
+		case "to_float":
+			if len(args) == 1 {
+				return &CallExpr{Func: ":erlang.float", Args: []Expr{args[0]}}, nil
+			}
 		case "abs":
 			if len(args) == 1 {
 				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil

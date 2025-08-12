@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-12 14:11 GMT+7
+Last updated: 2025-08-12 16:09 GMT+7
 
-## Algorithms Golden Test Checklist (822/1077)
+## Algorithms Golden Test Checklist (823/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -705,7 +705,7 @@ Last updated: 2025-08-12 14:11 GMT+7
 | 696 | maths/zellers_congruence | ✓ | 6.14ms | 25.0 MB |
 | 697 | matrix/binary_search_matrix | ✓ | 5.75ms | 25.0 MB |
 | 698 | matrix/count_islands_in_matrix | ✓ | 5.29ms | 12.5 MB |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ |  |  |
 | 700 | matrix/count_paths | ✓ | 4.52ms | 17.3 MB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 5.59ms | 17.3 MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 5.73ms | 33.5 MB |
@@ -725,8 +725,8 @@ Last updated: 2025-08-12 14:11 GMT+7
 | 716 | matrix/spiral_print | ✓ | 8.73ms | 17.3 MB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 11.92ms | 25.0 MB |
 | 718 | matrix/validate_sudoku_board | error |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut |   |  |  |
+| 719 | networking_flow/ford_fulkerson | ✓ |  |  |
+| 720 | networking_flow/minimum_cut | ✓ |  |  |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 5.03ms | 12.5 MB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 7.22ms | 34.7 MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 8.18ms | 7.7 MB |
@@ -734,7 +734,7 @@ Last updated: 2025-08-12 14:11 GMT+7
 | 725 | neural_network/activation_functions/mish | ✓ | 6.07ms | 26.4 MB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 6.57ms | 32.7 MB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 6.97ms | 17.3 MB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error |  |  |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 7.07ms | 25.0 MB |
 | 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 6.67ms | 25.2 MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 6.03ms | 25.6 MB |
