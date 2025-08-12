@@ -1,3 +1,15 @@
+## Progress (2025-08-12 12:36 +0700)
+- pas: generate list printer in function bodies (823c2a2b12)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-12 12:36 +0700)
+- pas: generate list printer in function bodies (823c2a2b12)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-12 12:36 +0700)
+- pas: generate list printer in function bodies (823c2a2b12)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-09 15:58 +0700)
 - zig: fix slice returns and mutable params (375502c276)
 - Regenerated golden files - 103/105 vm valid programs passing

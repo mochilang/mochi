@@ -5285,13 +5285,20 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			}
 			return &SubstringExpr{Str: strExpr, Start: startExpr, End: endExpr}, nil
 		}
-		if p.Call.Func == "now" && len(p.Call.Args) == 0 {
-			useNow = true
-			return &NowExpr{}, nil
-		}
-		if p.Call.Func == "int" && len(p.Call.Args) == 1 {
-			useToInt = true
-		}
+               if p.Call.Func == "now" && len(p.Call.Args) == 0 {
+                       useNow = true
+                       return &NowExpr{}, nil
+               }
+               if p.Call.Func == "to_float" && len(p.Call.Args) == 1 {
+                       arg, err := convertExpr(p.Call.Args[0], env, ctx)
+                       if err != nil {
+                               return nil, err
+                       }
+                       return &CallExpr{Func: "float", Args: []Expr{arg}}, nil
+               }
+               if p.Call.Func == "int" && len(p.Call.Args) == 1 {
+                       useToInt = true
+               }
 		name := p.Call.Func
 		nameLower := strings.ToLower(name)
 		var varCall bool
