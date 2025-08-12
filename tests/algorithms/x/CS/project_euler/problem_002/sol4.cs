@@ -35,6 +35,12 @@ class Program {
         if (i < 0 || i >= arr.Length) return default(T);
         return arr[(int)i];
     }
+    static long _mod(long a, long b) {
+        if (b == 0) return 0;
+        var r = a % b;
+        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
+        return r;
+    }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
         if (end < 0) end = 0;
@@ -99,78 +105,26 @@ class Program {
         return _fmt(v);
     }
     static string __name__ = "__main__";
-    public static double abs_float(double x_0) {
-        if ((x_0 < 0.0)) {
-            return -x_0;
+    public static long solution(long n_0) {
+        if ((n_0 <= 0)) {
+            throw new Exception("Parameter n must be greater than or equal to one.");
         };
-        return x_0;
-    }
-
-    public static bool isclose(double a_1, double b_2, double tolerance_3) {
-        return (Program.abs_float((a_1 - b_2)) < tolerance_3);
-    }
-
-    public static double focal_length(double distance_of_object_4, double distance_of_image_5) {
-        if (((distance_of_object_4 == 0.0) || (distance_of_image_5 == 0.0))) {
-            throw new Exception("Invalid inputs. Enter non zero values with respect to the sign convention.");
+        long a_1 = 1;
+        long b_2 = 2;
+        long total_3 = 0;
+        while ((a_1 <= n_0)) {
+            if ((_mod(a_1, 2) == 0)) {
+                total_3 = (total_3 + a_1);
+            }
+            long c_4 = (a_1 + b_2);
+            a_1 = b_2;
+            b_2 = c_4;
         };
-        return (1.0 / ((1.0 / distance_of_object_4) + (1.0 / distance_of_image_5)));
-    }
-
-    public static double object_distance(double focal_length_6, double distance_of_image_7) {
-        if (((distance_of_image_7 == 0.0) || (focal_length_6 == 0.0))) {
-            throw new Exception("Invalid inputs. Enter non zero values with respect to the sign convention.");
-        };
-        return (1.0 / ((1.0 / focal_length_6) - (1.0 / distance_of_image_7)));
-    }
-
-    public static double image_distance(double focal_length_8, double distance_of_object_9) {
-        if (((distance_of_object_9 == 0.0) || (focal_length_8 == 0.0))) {
-            throw new Exception("Invalid inputs. Enter non zero values with respect to the sign convention.");
-        };
-        return (1.0 / ((1.0 / focal_length_8) - (1.0 / distance_of_object_9)));
-    }
-
-    public static void test_focal_length() {
-        double f1_10 = Program.focal_length(10.0, 20.0);
-        if ((!Program.isclose(f1_10, 6.66666666666666, 1e-08))) {
-            throw new Exception("focal_length test1 failed");
-        };
-        double f2_11 = Program.focal_length(9.5, 6.7);
-        if ((!Program.isclose(f2_11, 3.929012346, 1e-08))) {
-            throw new Exception("focal_length test2 failed");
-        };
-    }
-
-    public static void test_object_distance() {
-        double u1_12 = Program.object_distance(30.0, 20.0);
-        if ((!Program.isclose(u1_12, -60.0, 1e-08))) {
-            throw new Exception("object_distance test1 failed");
-        };
-        double u2_13 = Program.object_distance(10.5, 11.7);
-        if ((!Program.isclose(u2_13, 102.375, 1e-08))) {
-            throw new Exception("object_distance test2 failed");
-        };
-    }
-
-    public static void test_image_distance() {
-        double v1_14 = Program.image_distance(10.0, 40.0);
-        if ((!Program.isclose(v1_14, 13.33333333, 1e-08))) {
-            throw new Exception("image_distance test1 failed");
-        };
-        double v2_15 = Program.image_distance(1.5, 6.7);
-        if ((!Program.isclose(v2_15, 1.932692308, 1e-08))) {
-            throw new Exception("image_distance test2 failed");
-        };
+        return total_3;
     }
 
     public static void main() {
-        Program.test_focal_length();
-        Program.test_object_distance();
-        Program.test_image_distance();
-        Console.WriteLine(Program._fmtTop(_fmtStr(Program.focal_length(10.0, 20.0))));
-        Console.WriteLine(Program._fmtTop(_fmtStr(Program.object_distance(30.0, 20.0))));
-        Console.WriteLine(Program._fmtTop(_fmtStr(Program.image_distance(10.0, 40.0))));
+        Console.WriteLine(Program._fmtTop(("solution() = " + _fmtStr(Program.solution(4000000)))));
     }
 
     static void Main() {
