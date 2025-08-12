@@ -100,6 +100,22 @@ Never _error(String msg) {
 }
 `
 
+const helperListEq = `
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+`
+
 // --- Struct tracking for generated classes ---
 type StructField struct {
 	Name string
@@ -136,6 +152,7 @@ var (
 	useStr            bool
 	useParseIntStr    bool
 	useFloor          bool
+	useListEq         bool
 	imports           []string
 	testpkgAliases    map[string]struct{}
 	netAliases        map[string]struct{}
@@ -1395,21 +1412,21 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 	}
 	if (b.Op == "==" || b.Op == "!=") && strings.HasPrefix(lt, "List<") && strings.HasPrefix(rt, "List<") {
-		usesJSON = true
-		if _, err := io.WriteString(w, "jsonEncode("); err != nil {
-			return err
+		useListEq = true
+		if b.Op == "==" {
+			if _, err := io.WriteString(w, "_listEq("); err != nil {
+				return err
+			}
+		} else {
+			if _, err := io.WriteString(w, "!_listEq("); err != nil {
+				return err
+			}
 		}
 		if err := b.Left.emit(w); err != nil {
 			return err
 		}
-		if b.Op == "==" {
-			if _, err := io.WriteString(w, ") == jsonEncode("); err != nil {
-				return err
-			}
-		} else {
-			if _, err := io.WriteString(w, ") != jsonEncode("); err != nil {
-				return err
-			}
+		if _, err := io.WriteString(w, ", "); err != nil {
+			return err
 		}
 		if err := b.Right.emit(w); err != nil {
 			return err
@@ -2714,8 +2731,8 @@ func (n *NowExpr) emit(w io.Writer) error {
 type InputExpr struct{}
 
 func (in *InputExpr) emit(w io.Writer) error {
-        _, err := io.WriteString(w, "stdin.readLineSync()?.trim() ?? ''")
-        return err
+	_, err := io.WriteString(w, "stdin.readLineSync()?.trim() ?? ''")
+	return err
 }
 
 func isMaybeString(e Expr) bool {
@@ -4503,6 +4520,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useListEq {
+		if _, err := io.WriteString(w, helperListEq+"\n"); err != nil {
+			return err
+		}
+	}
 	if useStr {
 		if _, err := io.WriteString(w, "String _str(dynamic v) {"+
 			" if (v is double && v == v.roundToDouble()) {"+
@@ -4749,6 +4771,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useStr = false
 	useParseIntStr = false
 	useFloor = false
+	useListEq = true
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
