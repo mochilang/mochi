@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-12 02:23 UTC
+Last updated: 2025-08-12 03:16 UTC
 
 ## Algorithms Golden Test Checklist (1053/1077)
 | Index | Name | Status | Duration | Memory |
@@ -794,7 +794,7 @@ Last updated: 2025-08-12 02:23 UTC
 | 785 | physics/period_of_pendulum | ✓ | 517µs | 24.3 KB |
 | 786 | physics/photoelectric_effect | ✓ | 684µs | 20.5 KB |
 | 787 | physics/potential_energy | ✓ | 1.861ms | 275.8 KB |
-| 788 | physics/rainfall_intensity | ✓ | 719µs | 36.4 KB |
+| 788 | physics/rainfall_intensity | ✓ | 571.223ms | 35.8 KB |
 | 789 | physics/reynolds_number | ✓ | 540µs | 20.1 KB |
 | 790 | physics/rms_speed_of_molecule | ✓ | 660µs | 22.0 KB |
 | 791 | physics/shear_stress | ✓ | 610µs | 21.4 KB |
