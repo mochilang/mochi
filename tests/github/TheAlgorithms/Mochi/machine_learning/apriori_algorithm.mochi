@@ -91,8 +91,8 @@ fun combinations_lists(xs: list<list<string>>, k: int): list<list<list<string>>>
   return result
 }
 
-fun prune(itemset: list<list<string>>, candidates: list<list<list<string>>>, length: int): list<list<list<string>>> {
-  var pruned: list<list<list<string>>> = []
+fun prune(itemset: list<list<string>>, candidates: list<list<list<string>>>, length: int): list<list<string>> {
+  var pruned: list<list<string>> = []
   for candidate in candidates {
     var is_subsequence = true
     for item in candidate {
@@ -102,7 +102,15 @@ fun prune(itemset: list<list<string>>, candidates: list<list<list<string>>>, len
       }
     }
     if is_subsequence {
-      pruned = append(pruned, candidate)
+      var merged: list<string> = []
+      for item in candidate {
+        for s in item {
+          if !contains_string(merged, s) {
+            merged = append(merged, s)
+          }
+        }
+      }
+      pruned = append(pruned, merged)
     }
   }
   return pruned
