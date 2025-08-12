@@ -1,29 +1,25 @@
-/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:39:1: Warning: function mochi_nth/2 is unused
-%   39| mochi_nth(I, L) ->
+/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:71:1: Warning: function mochi_safe_mul/2 is unused
+%   71| mochi_safe_mul(A, B) ->
 %     | ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:56:1: Warning: function mochi_safe_mul/2 is unused
-%   56| mochi_safe_mul(A, B) ->
-%     | ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:167:31: Warning: variable 'Sign_3' exported from 'case' (line 131, column 9)
-%  167| {First, Idx_7, Int_part_3, S, Sign_3} = Fun_3(First, Idx_5, Int_part, S, Sign_3),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:191:31: Warning: variable 'Sign_3' exported from 'case' (line 155, column 9)
+%  191| {First, Idx_7, Int_part_3, S, Sign_3} = Fun_3(First, Idx_5, Int_part, S, Sign_3),
 %     |                               ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:193:45: Warning: variable 'Sign_3' exported from 'case' (line 131, column 9)
-%  193| {First, Frac_part_3, Idx_10, Int_part_3, S, Sign_3} = Fun_4(First, Frac_part, Idx_8, Int_part_3, S, Sign_3),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:217:45: Warning: variable 'Sign_3' exported from 'case' (line 155, column 9)
+%  217| {First, Frac_part_3, Idx_10, Int_part_3, S, Sign_3} = Fun_4(First, Frac_part, Idx_8, Int_part_3, S, Sign_3),
 %     |                                             ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:236:7: Warning: variable 'Exp_sign_3' exported from 'case' (line 205, column 13)
-%  236| {Exp, Exp_sign_3, Exp_str_3, First, Frac_part_4, Idx_18, Int_part_3, S, Sign_3} = Fun_6(Exp, Exp_sign_3, Exp_str, First, Frac_part_4, Idx_16, Int_part_3, S, Sign_3),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:260:7: Warning: variable 'Exp_sign_3' exported from 'case' (line 229, column 13)
+%  260| {Exp, Exp_sign_3, Exp_str_3, First, Frac_part_4, Idx_18, Int_part_3, S, Sign_3} = Fun_6(Exp, Exp_sign_3, Exp_str, First, Frac_part_4, Idx_16, Int_part_3, S, Sign_3),
 %     |       ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:236:37: Warning: variable 'Frac_part_4' exported from 'case' (line 169, column 9)
-%  236| {Exp, Exp_sign_3, Exp_str_3, First, Frac_part_4, Idx_18, Int_part_3, S, Sign_3} = Fun_6(Exp, Exp_sign_3, Exp_str, First, Frac_part_4, Idx_16, Int_part_3, S, Sign_3),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:260:37: Warning: variable 'Frac_part_4' exported from 'case' (line 193, column 9)
+%  260| {Exp, Exp_sign_3, Exp_str_3, First, Frac_part_4, Idx_18, Int_part_3, S, Sign_3} = Fun_6(Exp, Exp_sign_3, Exp_str, First, Frac_part_4, Idx_16, Int_part_3, S, Sign_3),
 %     |                                     ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:236:73: Warning: variable 'Sign_3' exported from 'case' (line 131, column 9)
-%  236| {Exp, Exp_sign_3, Exp_str_3, First, Frac_part_4, Idx_18, Int_part_3, S, Sign_3} = Fun_6(Exp, Exp_sign_3, Exp_str, First, Frac_part_4, Idx_16, Int_part_3, S, Sign_3),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_to_fraction.erl:260:73: Warning: variable 'Sign_3' exported from 'case' (line 155, column 9)
+%  260| {Exp, Exp_sign_3, Exp_str_3, First, Frac_part_4, Idx_18, Int_part_3, S, Sign_3} = Fun_6(Exp, Exp_sign_3, Exp_str, First, Frac_part_4, Idx_16, Int_part_3, S, Sign_3),
 %     |                                                                         ^
 
-"3.0/2.0"
+"3/2"

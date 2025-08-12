@@ -1,29 +1,29 @@
-/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:49:1: Warning: function mochi_safe_div/2 is unused
-%   49| mochi_safe_div(A, B) ->
+/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:64:1: Warning: function mochi_safe_div/2 is unused
+%   64| mochi_safe_div(A, B) ->
 %     | ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:161:8: Warning: variable 'Diff_2' exported from 'case' (line 100, column 9)
-%  161| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:185:8: Warning: variable 'Diff_2' exported from 'case' (line 124, column 9)
+%  185| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
 %     |        ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:161:16: Warning: variable 'Diff2_3' exported from 'case' (line 100, column 9)
-%  161| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:185:16: Warning: variable 'Diff2_3' exported from 'case' (line 124, column 9)
+%  185| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
 %     |                ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:161:42: Warning: variable 'K_3' exported from 'case' (line 100, column 9)
-%  161| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:185:42: Warning: variable 'K_3' exported from 'case' (line 124, column 9)
+%  185| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
 %     |                                          ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:161:47: Warning: variable 'K2_4' exported from 'case' (line 100, column 9)
-%  161| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:185:47: Warning: variable 'K2_4' exported from 'case' (line 124, column 9)
+%  185| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
 %     |                                               ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:161:66: Warning: variable 'O_dual_4' exported from 'case' (line 100, column 9)
-%  161| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:185:66: Warning: variable 'O_dual_4' exported from 'case' (line 124, column 9)
+%  185| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
 %     |                                                                  ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:161:76: Warning: variable 'S_dual_5' exported from 'case' (line 100, column 9)
-%  161| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
+/workspace/mochi/tests/algorithms/x/Erlang/maths/dual_number_automatic_differentiation.erl:185:76: Warning: variable 'S_dual_5' exported from 'case' (line 124, column 9)
+%  185| {A, B, Diff_2, Diff2_3, I_4, Idx_2, J_2, K_3, K2_4, New_duals_2, O_dual_4, S_dual_5} = Fun_8(A, B, Diff_2, Diff2_3, I_4, Idx, J_2, K_3, K2_4, New_duals, O_dual_4, S_dual_5),
 %     |                                                                            ^
 
 196830.0
