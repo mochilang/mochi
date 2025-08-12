@@ -1,0 +1,8 @@
+error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/project_euler/problem_055/sol1.mochi:46:28: unexpected token "!" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/project_euler/problem_055/sol1.mochi:46:28
+
+ 46 |     if iterations == 50 && !is_palindrome(current) {
+    |                            ^
+
+help:
+  Parse error occurred. Check syntax near this location.
