@@ -2052,7 +2052,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, " ")
 		io.WriteString(w, op)
 		io.WriteString(w, " ")
-		b.Right.emit(w)
+		// Wrap unary negative operands so expressions like `a % -2`
+		// are emitted as `a % (-2)`, matching the source semantics and
+		// avoiding Lua parsing quirks.
+		if u, ok := b.Right.(*UnaryExpr); ok && u.Op == "-" {
+			io.WriteString(w, "(")
+			u.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emit(w)
+		}
 	}
 	io.WriteString(w, ")")
 }

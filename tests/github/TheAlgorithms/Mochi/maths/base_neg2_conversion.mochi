@@ -21,8 +21,11 @@ fun decimal_to_negative_base_2(num: int): int {
   var n = num
   var ans = ""
   while n != 0 {
-    var rem = n % -2
-    n = n / -2
+    // Parenthesize the negative divisor so the parser treats it as a unary
+    // expression rather than a misplaced binary operator. This ensures the
+    // program parses correctly and matches the intended algorithm.
+    var rem = n % (-2)
+    n = n / (-2)
     if rem < 0 {
       rem = rem + 2
       n = n + 1
