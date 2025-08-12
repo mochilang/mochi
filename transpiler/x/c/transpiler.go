@@ -5338,11 +5338,36 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return &PrintStmt{Args: args, Types: typesList}, nil
 		}
 		if call != nil && call.Func == "json" && len(call.Args) == 1 {
-			arg := convertExpr(call.Args[0])
-			if str, ok := evalString(&CallExpr{Func: "json", Args: []Expr{arg}}); ok {
-				return &PrintStmt{Args: []Expr{&StringLit{Value: str}}, Types: []string{"string"}}, nil
+			if ml := mapLiteral(call.Args[0]); ml != nil {
+				var fmtBuf strings.Builder
+				fmtBuf.WriteString("{")
+				var args []Expr
+				for i, it := range ml.Items {
+					key, ok := evalString(convertExpr(it.Key))
+					if !ok {
+						return nil, fmt.Errorf("unsupported json argument")
+					}
+					if i > 0 {
+						fmtBuf.WriteString(", ")
+					}
+					fmtBuf.WriteString("\\\"")
+					fmtBuf.WriteString(key)
+					fmtBuf.WriteString("\\\": %s")
+					val := convertExpr(it.Value)
+					if val == nil {
+						return nil, fmt.Errorf("unsupported json argument")
+					}
+					args = append(args, &CallExpr{Func: "str", Args: []Expr{val}})
+				}
+				fmtBuf.WriteString("}\\n")
+				return &CallStmt{Func: "printf", Args: append([]Expr{&StringLit{Value: fmtBuf.String()}}, args...)}, nil
 			}
+			arg := convertExpr(call.Args[0])
 			typ := inferExprType(currentEnv, arg)
+			switch typ {
+			case "long long", "double", "const char*", "int", "float":
+				return &CallStmt{Func: "printf", Args: []Expr{&StringLit{Value: "%s\\n"}, &CallExpr{Func: "str", Args: []Expr{arg}}}}, nil
+			}
 			if strings.HasPrefix(typ, "long long") && strings.HasSuffix(typ, "[][]") {
 				needJSONListListInt = true
 				return &JSONCall{Arg: arg}, nil
@@ -8123,6 +8148,13 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 			return &UnaryExpr{Op: "(int)", Expr: arg}
 		}
+		if (call.Func == "pow10" || call.Func == "user_pow10") && len(call.Args) == 1 {
+			if n, ok := evalInt(convertExpr(call.Args[0])); ok {
+				return &FloatLit{Value: math.Pow10(int(n))}
+			}
+			arg := convertExpr(call.Args[0])
+			return &CallExpr{Func: "user_pow10", Args: []Expr{arg}}
+		}
 		if call.Func == "str" && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
 			if lit, ok := arg.(*IntLit); ok {
@@ -8139,6 +8171,37 @@ func convertUnary(u *parser.Unary) Expr {
 				needStrInt = true
 			}
 			return &CallExpr{Func: "str", Args: []Expr{arg}}
+		}
+		if call.Func == "json" && len(call.Args) == 1 {
+			if ml := mapLiteral(call.Args[0]); ml != nil {
+				var fmtBuf strings.Builder
+				fmtBuf.WriteString("{")
+				var args []Expr
+				for i, it := range ml.Items {
+					key, ok := evalString(convertExpr(it.Key))
+					if !ok {
+						return nil
+					}
+					if i > 0 {
+						fmtBuf.WriteString(", ")
+					}
+					fmtBuf.WriteString("\\\"")
+					fmtBuf.WriteString(key)
+					fmtBuf.WriteString("\\\": %s")
+					val := convertExpr(it.Value)
+					if val == nil {
+						return nil
+					}
+					args = append(args, &CallExpr{Func: "str", Args: []Expr{val}})
+				}
+				fmtBuf.WriteString("}\\n")
+				return &CallExpr{Func: "printf", Args: append([]Expr{&StringLit{Value: fmtBuf.String()}}, args...)}
+			}
+			arg := convertExpr(call.Args[0])
+			if arg == nil {
+				return nil
+			}
+			return &CallExpr{Func: "printf", Args: []Expr{&StringLit{Value: "%s\\n"}, &CallExpr{Func: "str", Args: []Expr{arg}}}}
 		}
 		if (call.Func == "num" || call.Func == "denom") && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
