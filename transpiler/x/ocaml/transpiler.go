@@ -2205,16 +2205,16 @@ func (in *InExpr) emit(w io.Writer) {
 	case "string":
 		(&StringContainsBuiltin{Str: in.Coll, Sub: in.Item}).emit(w)
 	case "map":
-		io.WriteString(w, "(List.mem_assoc ")
+		io.WriteString(w, "(List.mem_assoc (__str (")
 		in.Item.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, ")) ")
 		in.Coll.emit(w)
 		io.WriteString(w, ")")
 	default: // list
 		if strings.HasPrefix(in.Typ, "map-") || strings.HasPrefix(in.Typ, "map{") || strings.HasPrefix(in.Typ, "map-dyn{") {
-			io.WriteString(w, "(List.mem_assoc ")
+			io.WriteString(w, "(List.mem_assoc (__str (")
 			in.Item.emit(w)
-			io.WriteString(w, " ")
+			io.WriteString(w, ")) ")
 			in.Coll.emit(w)
 			io.WriteString(w, ")")
 			return
@@ -4148,28 +4148,28 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				// (none for this case)
 			}
 		}
-               // Local functions should always end with an `in` clause so they can
-               // be followed by additional expressions. Previously we only marked
-               // functions as local when they captured variables, which omitted
-               // the `in` for simple nested functions and led to invalid OCaml
-               // syntax (missing `in` before subsequent statements). The
-               // `dual_number_automatic_differentiation` algorithm defines
-               // helper functions without captured variables, triggering this
-               // bug. Always treat functions defined outside the root scope as
-               // local so the emitter appends the required `in`.
-               local := env != rootEnv
-               // Record the function's type so that later references know its
-               // parameter and return types. Without this, arguments expecting a
-               // function would treat the identifier as untyped and emit casts
-               // like `(Obj.magic f : Obj.t -> ...)`, leading to incorrect
-               // OCaml signatures. Store a "func-" prefixed chain describing the
-               // arity followed by the return type.
-               typStr := typeString(retTyp)
-               for i := 0; i < len(st.Fun.Params); i++ {
-                       typStr = "func-" + typStr
-               }
-               vars[st.Fun.Name] = VarInfo{typ: typStr, ret: typeString(retTyp)}
-               return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp), Local: local, EndsWithReturn: endsWithReturn}, nil
+		// Local functions should always end with an `in` clause so they can
+		// be followed by additional expressions. Previously we only marked
+		// functions as local when they captured variables, which omitted
+		// the `in` for simple nested functions and led to invalid OCaml
+		// syntax (missing `in` before subsequent statements). The
+		// `dual_number_automatic_differentiation` algorithm defines
+		// helper functions without captured variables, triggering this
+		// bug. Always treat functions defined outside the root scope as
+		// local so the emitter appends the required `in`.
+		local := env != rootEnv
+		// Record the function's type so that later references know its
+		// parameter and return types. Without this, arguments expecting a
+		// function would treat the identifier as untyped and emit casts
+		// like `(Obj.magic f : Obj.t -> ...)`, leading to incorrect
+		// OCaml signatures. Store a "func-" prefixed chain describing the
+		// arity followed by the return type.
+		typStr := typeString(retTyp)
+		for i := 0; i < len(st.Fun.Params); i++ {
+			typStr = "func-" + typStr
+		}
+		vars[st.Fun.Name] = VarInfo{typ: typStr, ret: typeString(retTyp)}
+		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp), Local: local, EndsWithReturn: endsWithReturn}, nil
 	case st.Type != nil:
 		var methodStmts []Stmt
 		if len(st.Type.Members) > 0 {
@@ -5165,6 +5165,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &CastExpr{Expr: expr, Type: "int_to_rat"}
 			} else if typ == "bigint" && target == "bigrat" {
 				expr = &CastExpr{Expr: expr, Type: "big_to_rat"}
+			} else if typ == "float" && target == "int" {
+				expr = &CastExpr{Expr: expr, Type: "float_to_int"}
 			} else if target == "int" && typ != "int" {
 				expr = &CastExpr{Expr: expr, Type: "obj_to_int"}
 			} else if target == "float" && typ != "float" && typ != "int" {
@@ -5173,8 +5175,6 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &CastExpr{Expr: expr, Type: "obj_to_bool"}
 			} else if typ == "int" && target == "float" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_float"}
-			} else if typ == "float" && target == "int" {
-				expr = &CastExpr{Expr: expr, Type: "float_to_int"}
 			} else if target == "string" && typ != "string" {
 				expr = &CastExpr{Expr: expr, Type: "obj_to_string"}
 			} else if strings.HasPrefix(target, "list") || strings.HasPrefix(target, "map") || structFields[target] != nil {
