@@ -8,12 +8,14 @@ import (
 	"io"
 	"math"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
 
 	"mochi/parser"
+	meta "mochi/transpiler/meta"
 	"mochi/types"
 )
 
@@ -1104,6 +1106,17 @@ func (l *LoadJSONLExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "(File.ReadLines(%q) |> Seq.map (fun line -> JsonSerializer.Deserialize<%s>(line)) |> Seq.toList)", l.Path, l.Type)
 }
 
+// LoadDelimitedExpr represents loading a delimiter-separated file without header.
+type LoadDelimitedExpr struct {
+	Path     string
+	Delim    string
+	ElemType string
+}
+
+func (l *LoadDelimitedExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "(File.ReadAllLines(%q) |> Array.map (fun line ->\n        let cols = line.Split(%q)\n        let d = System.Collections.Generic.Dictionary<string,string>()\n        for i in 0 .. cols.Length - 1 do\n            d.Add(sprintf \"c%%d\" i, cols.[i])\n        upcast d : System.Collections.Generic.IDictionary<string,string>))", l.Path, l.Delim)
+}
+
 // SaveJSONLExpr writes a list of records to stdout as JSON lines.
 type SaveJSONLExpr struct{ Src Expr }
 
@@ -1745,7 +1758,12 @@ func (fst *ForStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "for ")
 	if fst.End == nil {
-		if ix, ok := fst.Start.(*IndexExpr); ok {
+		if strings.HasSuffix(inferType(fst.Start), " array") {
+			io.WriteString(w, fsIdent(fst.Name))
+			io.WriteString(w, " in ")
+			fst.Start.emit(w)
+			io.WriteString(w, " do\n")
+		} else if ix, ok := fst.Start.(*IndexExpr); ok {
 			if isMapType(inferType(ix)) {
 				io.WriteString(w, fsIdent(fst.Name))
 				io.WriteString(w, " in (")
@@ -2335,6 +2353,13 @@ func inferType(e Expr) string {
 		}
 		return ""
 	case *QueryExpr, *GroupQueryExpr:
+		return "array"
+	case *LoadYamlExpr, *LoadJSONLExpr:
+		return "array"
+	case *LoadDelimitedExpr:
+		if v.ElemType != "" {
+			return v.ElemType + " array"
+		}
 		return "array"
 	case *IdentExpr:
 		if t := v.Type; t != "" {
@@ -3623,6 +3648,21 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func literalBool(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Bool == nil {
+		return false, false
+	}
+	return bool(*p.Target.Lit.Bool), true
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -3641,6 +3681,37 @@ func parseFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func parseLoadOptions(e *parser.Expr) (format, delim string, header bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return
+	}
+	ml := e.Binary.Left.Value.Target.Map
+	if ml == nil {
+		return
+	}
+	for _, it := range ml.Items {
+		key, ok := literalString(it.Key)
+		if !ok {
+			continue
+		}
+		switch key {
+		case "format":
+			if s, ok := literalString(it.Value); ok {
+				format = s
+			}
+		case "delimiter":
+			if s, ok := literalString(it.Value); ok {
+				delim = s
+			}
+		case "header":
+			if b, ok := literalBool(it.Value); ok {
+				header = b
+			}
+		}
+	}
+	return
 }
 
 func convertStmt(st *parser.Statement) (Stmt, error) {
@@ -3767,6 +3838,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 				ml.Types[i] = vtyp
 			}
+		}
+		if declared == "" {
+			declared = inferType(e)
 		}
 		varTypes[st.Let.Name] = declared
 		typ := fsDecl
@@ -4220,7 +4294,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		} else {
 			elemType = elemTypeOf(start)
 			srcT := inferType(start)
-			if strings.HasPrefix(srcT, "System.Collections.Generic.IDictionary<") {
+			if strings.HasPrefix(srcT, "System.Collections.Generic.IDictionary<") && !strings.HasSuffix(srcT, " array") && !strings.HasSuffix(srcT, " list") {
 				start = &FieldExpr{Target: start, Name: "Keys"}
 				elemType = mapKeyType(srcT)
 			} else if elemType == "string" {
@@ -5071,28 +5145,33 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertExpr(p.Group)
 	case p.Load != nil:
 		if p.Load.Path != nil && p.Load.Type != nil && p.Load.With != nil {
-			format := parseFormat(p.Load.With)
+			format, delim, header := parseLoadOptions(p.Load.With)
+			path := strings.Trim(*p.Load.Path, "\"")
+			if root := meta.RepoRoot(); root != "" && !filepath.IsAbs(path) {
+				path = filepath.ToSlash(filepath.Join(root, path))
+			}
+			typ := "obj"
+			if p.Load.Type.Simple != nil {
+				typ = *p.Load.Type.Simple
+			}
 			if format == "yaml" {
 				neededOpens["System"] = true
 				neededOpens["System.IO"] = true
 				neededOpens["YamlDotNet.Serialization"] = true
-				path := strings.Trim(*p.Load.Path, "\"")
-				typ := "obj"
-				if p.Load.Type.Simple != nil {
-					typ = *p.Load.Type.Simple
-				}
 				return &LoadYamlExpr{Path: path, Type: typ}, nil
 			}
 			if format == "jsonl" {
 				neededOpens["System"] = true
 				neededOpens["System.IO"] = true
 				neededOpens["System.Text.Json"] = true
-				path := strings.Trim(*p.Load.Path, "\"")
-				typ := "obj"
-				if p.Load.Type.Simple != nil {
-					typ = *p.Load.Type.Simple
-				}
 				return &LoadJSONLExpr{Path: path, Type: typ}, nil
+			}
+			if delim != "" && !header {
+				neededOpens["System"] = true
+				neededOpens["System.IO"] = true
+				neededOpens["System.Collections.Generic"] = true
+				elem := fsTypeFromString(typeRefString(p.Load.Type))
+				return &LoadDelimitedExpr{Path: path, Delim: delim, ElemType: elem}, nil
 			}
 		}
 	case p.Save != nil:

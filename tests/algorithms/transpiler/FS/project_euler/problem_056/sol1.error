@@ -1,0 +1,16 @@
+exit status 1
+Unhandled Exception:
+System.FormatException: Input string was not in a correct format.
+  at Microsoft.FSharp.Core.LanguagePrimitives.ParseInt32 (System.String s) [0x00053] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Sol1.digital_sum (System.Int32 n) [0x000ac] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+  at Sol1.solution (System.Int32 a, System.Int32 b) [0x0007a] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+  at Sol1.test_solution () [0x00097] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+  at Sol1.main () [0x000a0] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+  at <StartupCode$sol1>.$Sol1.main@ () [0x00019] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.FormatException: Input string was not in a correct format.
+  at Microsoft.FSharp.Core.LanguagePrimitives.ParseInt32 (System.String s) [0x00053] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Sol1.digital_sum (System.Int32 n) [0x000ac] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+  at Sol1.solution (System.Int32 a, System.Int32 b) [0x0007a] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+  at Sol1.test_solution () [0x00097] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+  at Sol1.main () [0x000a0] in <689ae9c19e02ff62a7450383c1e99a68>:0 
+  at <StartupCode$sol1>.$Sol1.main@ () [0x00019] in <689ae9c19e02ff62a7450383c1e99a68>:0
