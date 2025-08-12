@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 749/1077
-Last updated: 2025-08-12 10:04 +0700
+Completed programs: 751/1077
+Last updated: 2025-08-12 12:29 +0700
 
 Checklist:
 
@@ -786,8 +786,8 @@ Checklist:
 | 777 | physics/lorentz_transformation_four_vector |   |  |  |
 | 778 | physics/malus_law |   |  |  |
 | 779 | physics/mass_energy_equivalence |   |  |  |
-| 780 | physics/mirror_formulae |   |  |  |
-| 781 | physics/n_body_simulation |   |  |  |
+| 780 | physics/mirror_formulae | ✓ | 266.0µs | 2.46KB |
+| 781 | physics/n_body_simulation | ✓ | 467.0µs | 14.16KB |
 | 782 | physics/newtons_law_of_gravitation |   |  |  |
 | 783 | physics/newtons_second_law_of_motion |   |  |  |
 | 784 | physics/orbital_transfer_work |   |  |  |

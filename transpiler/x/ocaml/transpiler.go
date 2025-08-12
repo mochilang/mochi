@@ -814,9 +814,9 @@ func (p *PrintExpr) emitPrint(w io.Writer) { p.emit(w) }
 type JSONStmt struct{ Expr Expr }
 
 func (j *JSONStmt) emit(w io.Writer) {
-	io.WriteString(w, "  print_endline (")
-	j.Expr.emitPrint(w)
-	io.WriteString(w, ");\n")
+	io.WriteString(w, "  print_endline (__str (Obj.repr (")
+	j.Expr.emit(w)
+	io.WriteString(w, ")));\n")
 }
 
 // IfStmt represents a basic if/else statement.
