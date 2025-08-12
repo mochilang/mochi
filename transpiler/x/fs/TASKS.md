@@ -1,3 +1,7 @@
+## Progress (2025-08-12 12:29 +0700)
+- zig: support slice literals and to_float
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-12 09:13 +0700)
 - scala: handle struct indexing and list types
 - Generated F# for 103/105 programs (103 passing)
