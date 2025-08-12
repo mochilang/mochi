@@ -2344,18 +2344,21 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			ix.Col.emit(w)
 			io.WriteString(w, " in let __i = ")
 			ix.Index.emit(w)
-			io.WriteString(w, " in match List.nth_opt __l __i with Some v -> ")
+			io.WriteString(w, " in if __i < 0 then ")
+			io.WriteString(w, zeroValue(ix.Typ))
+			io.WriteString(w, " else match List.nth_opt __l __i with Some v -> ")
 			if ix.Typ == "int" {
-				io.WriteString(w, "(Obj.magic v : int) | None -> 0)")
+				io.WriteString(w, "(Obj.magic v : int)")
 			} else if ix.Typ == "float" {
-				io.WriteString(w, "(Obj.magic v : float) | None -> 0.)")
+				io.WriteString(w, "(Obj.magic v : float)")
 			} else if ix.Typ == "string" {
-				io.WriteString(w, "(Obj.magic v : string) | None -> \"\")")
+				io.WriteString(w, "(Obj.magic v : string)")
 			} else {
-				io.WriteString(w, "v | None -> ")
-				io.WriteString(w, zeroValue(ix.Typ))
-				io.WriteString(w, ")")
+				io.WriteString(w, "v")
 			}
+			io.WriteString(w, " | None -> ")
+			io.WriteString(w, zeroValue(ix.Typ))
+			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, "()")
 		}
