@@ -1,0 +1,9 @@
+/*
+Quine:
+
+A quine is a program that outputs its own source code using string substitution.
+*/
+let code: string = %s
+print(code)
+
+{"duration_us":5625, "memory_bytes":137408, "name":"main"}
