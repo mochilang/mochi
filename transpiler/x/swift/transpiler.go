@@ -45,12 +45,14 @@ var usesSlice bool
 var usesFetch bool
 var usesJSON bool
 var usesExists bool
+var usesReadFile bool
 var fetchStructs map[string]bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 var funcParamTypes map[string][]string
 var currentUpdated map[string]bool
 var currentAnyUpdated map[string]bool
+var currentVars map[string]bool
 var classStructs map[string]bool
 var nonCodableStructs map[string]bool
 var tmpVarCounter int
@@ -95,7 +97,9 @@ type Program struct {
 	UseFetch      bool
 	UseJSON       bool
 	UseExists     bool
+	UseReadFile   bool
 	FetchStructs  map[string]bool
+	DataDir       string
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -121,6 +125,14 @@ type ReturnStmt struct{ Expr Expr }
 type CallExpr struct {
 	Func string
 	Args []Expr
+}
+
+type NotExpr struct{ Val Expr }
+
+func (n *NotExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "!(")
+	n.Val.emit(w)
+	fmt.Fprint(w, ")")
 }
 
 type WhileStmt struct {
@@ -1609,6 +1621,13 @@ func (c *CallExpr) emit(w io.Writer) {
 			usesRepeat = true
 			return
 		}
+	case "read_file":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "_read_file(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 	case "num":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "_rat_num(")
@@ -2043,6 +2062,9 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("extension Double { init(_ v: Any) { if let d = v as? Double { self = d } else if let i = v as? Int { self = Double(i) } else if let i = v as? Int64 { self = Double(i) } else if let s = v as? String { self = Double(s) ?? 0 } else { self = 0 } } }\n")
+	if p.UseReadFile && p.DataDir != "" {
+		fmt.Fprintf(&buf, "let _dataDir = %q\n", p.DataDir)
+	}
 	if p.UseNow {
 		buf.WriteString("var _nowSeed = 0\n")
 		buf.WriteString("var _nowSeeded = false\n")
@@ -2101,6 +2123,16 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("func _repeat(_ s: String, _ n: Int) -> String {\n")
 		buf.WriteString("    if n <= 0 { return \"\" }\n")
 		buf.WriteString("    return String(repeating: s, count: n)\n")
+		buf.WriteString("}\n")
+	}
+	if p.UseReadFile {
+		buf.WriteString("func _read_file(_ path: String) -> String {\n")
+		buf.WriteString("    let fm = FileManager.default\n")
+		buf.WriteString("    var p = path\n")
+		buf.WriteString("    if !fm.fileExists(atPath: p) {\n")
+		buf.WriteString("        p = URL(fileURLWithPath: _dataDir).appendingPathComponent(path).path\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return (try? String(contentsOfFile: p)) ?? \"\"\n")
 		buf.WriteString("}\n")
 	}
 	if p.UseJSON {
@@ -2393,6 +2425,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesFetch = false
 	usesJSON = false
 	usesExists = false
+	usesReadFile = false
 	fetchStructs = map[string]bool{}
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
@@ -2438,7 +2471,11 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseFetch = usesFetch
 	p.UseJSON = usesJSON
 	p.UseExists = usesExists
+	p.UseReadFile = usesReadFile
 	p.FetchStructs = fetchStructs
+	if prog.Pos.Filename != "" {
+		p.DataDir = filepath.Dir(prog.Pos.Filename)
+	}
 	return p, nil
 }
 
@@ -2684,9 +2721,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 	findUpdatedVars(env, list, updated, anyUpdated)
 	prev := currentUpdated
 	prevAny := currentAnyUpdated
+	prevVars := currentVars
 	currentUpdated = updated
 	currentAnyUpdated = anyUpdated
-	defer func() { currentUpdated = prev; currentAnyUpdated = prevAny }()
+	currentVars = map[string]bool{}
+	defer func() { currentUpdated = prev; currentAnyUpdated = prevAny; currentVars = prevVars }()
 	var out []Stmt
 	for _, st := range list {
 		cs, err := convertStmt(env, st)
@@ -2832,6 +2871,20 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		}
 		return &VarDecl{Name: st.Let.Name, Const: true, Type: typ, Expr: ex}, nil
 	case st.Var != nil:
+		if currentVars != nil && currentVars[st.Var.Name] {
+			// Variable already declared in this scope; treat as assignment.
+			var ex Expr
+			var err2 error
+			if st.Var.Value != nil {
+				ex, err2 = convertExpr(env, st.Var.Value)
+				if err2 != nil {
+					return nil, err2
+				}
+			} else {
+				ex = &LitExpr{Value: "", IsString: true}
+			}
+			return &AssignStmt{Name: st.Var.Name, Expr: ex}, nil
+		}
 		var ex Expr
 		var err error
 		var typ string
@@ -2921,6 +2974,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		}
 		if st.Var.Type == nil {
 			typ = ""
+		}
+		if currentVars != nil {
+			currentVars[st.Var.Name] = true
 		}
 		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
 	case st.Type != nil:
@@ -5187,6 +5243,13 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		if pr.Call.Func == "input" && len(pr.Call.Args) == 0 {
 			return &CallExpr{Func: "input"}, nil
 		}
+		if pr.Call.Func == "not" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &NotExpr{Val: arg}, nil
+		}
 		if pr.Call.Func == "append" && len(pr.Call.Args) == 2 {
 			left, err := convertExpr(env, pr.Call.Args[0])
 			if err != nil {
@@ -5363,6 +5426,14 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesSplit = true
 			return &CallExpr{Func: "_split", Args: []Expr{a0, a1}}, nil
+		}
+		if pr.Call.Func == "read_file" && len(pr.Call.Args) == 1 {
+			a0, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesReadFile = true
+			return &CallExpr{Func: "_read_file", Args: []Expr{a0}}, nil
 		}
 		if pr.Call.Func == "sha256" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
