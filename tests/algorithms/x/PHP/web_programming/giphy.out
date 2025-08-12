@@ -1,0 +1,4 @@
+Warning: file_get_contents(tests/github/TheAlgorithms/Mochi/web_programming/giphy.json): Failed to open stream: No such file or directory in /workspace/mochi/tests/algorithms/x/PHP/web_programming/giphy.php on line 35
+
+Warning: foreach() argument must be of type array|object, null given in /workspace/mochi/tests/algorithms/x/PHP/web_programming/giphy.php on line 37
+""

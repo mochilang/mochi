@@ -25,7 +25,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "first": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {},
 	"concat": {}, "panic": {}, "error": {}, "ceil": {}, "floor": {},
 }
 
@@ -3155,6 +3155,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: "array_key_exists", Args: []Expr{args[1], args[0]}}, nil
 			}
 			return nil, fmt.Errorf("contains on unsupported type")
+		} else if name == "first" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("first expects 1 arg")
+			}
+			return &IndexExpr{X: args[0], Index: &IntLit{Value: 0}}, nil
 		} else if name == "int" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("int expects 1 arg")

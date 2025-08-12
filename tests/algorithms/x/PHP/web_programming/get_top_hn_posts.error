@@ -1,0 +1,11 @@
+run: exit status 255
+
+Warning: file_get_contents(https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty): Failed to open stream: Network is unreachable in /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_hn_posts.php on line 45
+
+Fatal error: Uncaught TypeError: array_slice(): Argument #1 ($array) must be of type array, null given in /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_hn_posts.php:59
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_hn_posts.php(59): array_slice(NULL, 0, 5)
+#1 /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_hn_posts.php(69): hackernews_top_stories(5)
+#2 /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_hn_posts.php(85): hackernews_top_stories_as_markdown(5)
+#3 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_hn_posts.php on line 59

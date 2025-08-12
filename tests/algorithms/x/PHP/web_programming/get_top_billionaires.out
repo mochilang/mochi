@@ -1,0 +1,7 @@
+Warning: file_get_contents(https://www.forbes.com/forbesapi/person/rtb/0/position/true.json?fields=personName,gender,source,countryOfCitizenship,birthDate,finalWorth&limit=10): Failed to open stream: Network is unreachable in /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_billionaires.php on line 45
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_billionaires.php on line 67
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_billionaires.php on line 67
+
+Warning: foreach() argument must be of type array|object, null given in /workspace/mochi/tests/algorithms/x/PHP/web_programming/get_top_billionaires.php on line 67

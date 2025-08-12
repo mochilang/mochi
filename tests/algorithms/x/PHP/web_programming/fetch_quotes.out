@@ -1,0 +1,2 @@
+Warning: file_get_contents(https://zenquotes.io/api/random): Failed to open stream: Network is unreachable in /workspace/mochi/tests/algorithms/x/PHP/web_programming/fetch_quotes.php on line 25
+null
