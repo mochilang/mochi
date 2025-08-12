@@ -1,0 +1,34 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       {i, stations} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/gas_station.exs:29:8: Main.get_gas_stations/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {i, total_cost, total_gas} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/gas_station.exs:55:8: Main.can_complete_journey/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │       {i, net, start} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/gas_station.exs:84:8: Main.can_complete_journey/1
+
+    warning: variable "net" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │       {i, net, start} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/gas_station.exs:84:11: Main.can_complete_journey/1
+
+** (ArithmeticError) bad argument in arithmetic expression: 0 + nil
+    :erlang.+(0, nil)
+    /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/gas_station.exs:47: anonymous fn/5 in Main.can_complete_journey/1
+    /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/gas_station.exs:56: Main.can_complete_journey/1
+    /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/gas_station.exs:100: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/gas_station.exs:110: (file)

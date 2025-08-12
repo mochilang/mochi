@@ -1,0 +1,20 @@
+warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {idx, remaining, total} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/fractional_cover_problem.exs:55:8: Main.fractional_cover/2
+
+    warning: variable "remaining" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {idx, remaining, total} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/fractional_cover_problem.exs:55:13: Main.fractional_cover/2
+
+240.0
+135.0
+0.0
+30.0
+6.0
+0.0

@@ -1,0 +1,45 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {i, max_profit, min_price} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:40:8: Main.max_profit/1
+
+    warning: variable "max_profit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {i, max_profit, min_price} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:40:11: Main.max_profit/1
+
+    warning: variable "min_price" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {i, max_profit, min_price} = try do
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:40:23: Main.max_profit/1
+
+#Function<1.43427723/1 in Main.max_profit>
+#Function<1.43427723/1 in Main.max_profit>
+    warning: comparison between distinct types found:
+
+        profit > (&max_profit/1)
+
+    given types:
+
+        dynamic(float() or integer()) > fun()
+
+    where "profit" was given the type:
+
+        # type: dynamic(float() or integer())
+        # from: /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:27:18
+        profit = price - min_price
+
+    While Elixir can compare across all types, you are comparing across types which are always disjoint, and the result is either always true or always false
+
+    typing violation found at:
+    │
+ 28 │           {max_profit} = if profit > &max_profit/1 do
+    │                                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:28:36: Main.max_profit/1

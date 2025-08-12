@@ -1,0 +1,57 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │           i = i + 1
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:23:11: Main.round_dec/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 64 │           i = i + 1
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:64:11: Main.push/2
+
+    warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │             res = res + bit
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:92:13: Main.xor/2
+
+     warning: variable "aa" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │       {aa, bb, bit} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:102:8: Main.xor/2
+
+     warning: variable "bb" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │       {aa, bb, bit} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:102:12: Main.xor/2
+
+     warning: variable "bit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │       {aa, bb, bit} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:102:16: Main.xor/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 139 │           i = i + 1
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:139:11: Main.pull/1
+
+** (ArithmeticError) bad argument in arithmetic expression
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:22: anonymous fn/3 in Main.round_dec/2
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:30: Main.round_dec/2
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:62: anonymous fn/4 in Main.push/2
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:71: Main.push/2
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:171: anonymous fn/1 in Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:179: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/chaos_machine.exs:195: (file)

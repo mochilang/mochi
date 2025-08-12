@@ -1,107 +1,107 @@
 warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 44 │       i = try do
+ 45 │       i = try do
     │       ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:44:7: Main.contains_int/2
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:45:7: Main.contains_int/2
 
     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 77 │       {current, i, res} = try do
+ 78 │       {current, i, res} = try do
     │                 ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:77:17: Main.split/2
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:78:17: Main.split/2
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 102 │       {i, result} = try do
+ 103 │       {i, result} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:102:8: Main.pow_int_float/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:103:8: Main.pow_int_float/2
 
      warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 151 │           k = try do
+ 152 │           k = try do
      │           ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:151:11: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:152:11: Main.points_to_polynomial/1
 
      warning: variable "col" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 215 │           {col, line} = try do
+ 216 │           {col, line} = try do
      │            ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:215:12: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:216:12: Main.points_to_polynomial/1
 
      warning: variable "cc" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 269 │                 {cc, matrix} = try do
+ 270 │                 {cc, matrix} = try do
      │                  ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:269:18: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:270:18: Main.points_to_polynomial/1
 
      warning: variable "number" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 286 │           {matrix, number, vector} = try do
+ 287 │           {matrix, number, vector} = try do
      │                    ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:286:20: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:287:20: Main.points_to_polynomial/1
 
      warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 316 │       {count, solution} = try do
+ 317 │       {count, solution} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:316:8: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:317:8: Main.points_to_polynomial/1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 130 │       i = try do
+ 131 │       i = try do
      │       ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:130:7: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:131:7: Main.points_to_polynomial/1
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 163 │       j = try do
+ 164 │       j = try do
      │       ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:163:7: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:164:7: Main.points_to_polynomial/1
+
+     warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 246 │       {row, vector} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:246:8: Main.points_to_polynomial/1
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 299 │       {count, matrix, vector} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:299:8: Main.points_to_polynomial/1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 186 │       {i, set_x} = try do
+ 187 │       {i, set_x} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:186:8: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:187:8: Main.points_to_polynomial/1
 
      warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 245 │       {row, vector} = try do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:245:8: Main.points_to_polynomial/1
-
-     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 298 │       {count, matrix, vector} = try do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:298:8: Main.points_to_polynomial/1
-
-     warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 228 │       {matrix, row} = try do
+ 229 │       {matrix, row} = try do
      │                ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:228:16: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:229:16: Main.points_to_polynomial/1
 
      warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 347 │       {count, solved} = try do
+ 348 │       {count, solved} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:347:8: Main.points_to_polynomial/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/polynom_for_points.exs:348:8: Main.points_to_polynomial/1
 
 "f(x)=x^2*0.0+x^1*-0.0+x^0*0.0"
 "f(x)=x^2*0.0+x^1*-0.0+x^0*1.0"

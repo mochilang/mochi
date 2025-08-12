@@ -1,0 +1,66 @@
+run: exit status 1
+     warning: variable "w" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 113 │       {component, on_stack, stack, w} = try do
+     │                                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:113:36: Main.tarjan/1
+
+    warning: variable "components" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │     {components, on_stack, stack} = if Enum.at(lowlink_of, v, []) == Enum.at(index_of, v, []) do
+    │      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:96:6: Main.tarjan/1
+
+    warning: variable "on_stack" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │     {components, on_stack, stack} = if Enum.at(lowlink_of, v, []) == Enum.at(index_of, v, []) do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:96:18: Main.tarjan/1
+
+    warning: variable "stack" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │     {components, on_stack, stack} = if Enum.at(lowlink_of, v, []) == Enum.at(index_of, v, []) do
+    │                            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:96:28: Main.tarjan/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 56 │       {i, index_of, lowlink_of, on_stack} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:56:8: Main.tarjan/1
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 141 │       v = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:141:7: Main.tarjan/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 165 │       {g, i} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:165:11: Main.create_graph/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │       {edges, i} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:198:15: Main.main/0
+
+    error: undefined function strong_connect/2 (expected Main to define such a function or for it to be imported, but none are available)
+    │
+ 72 │         current_index = strong_connect(w, current_index)
+    │                         ^^^^^^^^^^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs:72:25: Main.tarjan/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/graphs/tarjans_scc.exs: cannot compile module Main (errors have been logged)
+

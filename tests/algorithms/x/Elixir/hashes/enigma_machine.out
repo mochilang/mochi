@@ -1,0 +1,92 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:44:8: Main.build_alphabet/0
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 68 │       {i, lst} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:68:8: Main.range_list/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │       {i, lst} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:92:8: Main.reversed_range_list/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 117 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:117:7: Main.index_of_char/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:142:7: Main.index_of_int/2
+
+     warning: variable "gear_one" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 167 │   gear_one = (gear_one ++ [i])
+     │   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:167:3: Main.enigma_encrypt/2
+
+     warning: variable "gear_three" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │   {gear_three, gear_three_pos, gear_two, gear_two_pos, i} = if rem(gear_one_pos, n) == 0 do
+     │    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:169:4: Main.enigma_encrypt/2
+
+     warning: variable "gear_three_pos" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │   {gear_three, gear_three_pos, gear_two, gear_two_pos, i} = if rem(gear_one_pos, n) == 0 do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:169:16: Main.enigma_encrypt/2
+
+     warning: variable "gear_two" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │   {gear_three, gear_three_pos, gear_two, gear_two_pos, i} = if rem(gear_one_pos, n) == 0 do
+     │                                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:169:32: Main.enigma_encrypt/2
+
+     warning: variable "gear_two_pos" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │   {gear_three, gear_three_pos, gear_two, gear_two_pos, i} = if rem(gear_one_pos, n) == 0 do
+     │                                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:169:42: Main.enigma_encrypt/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │   {gear_three, gear_three_pos, gear_two, gear_two_pos, i} = if rem(gear_one_pos, n) == 0 do
+     │                                                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:169:56: Main.enigma_encrypt/2
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {idx, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:231:8: Main.enigma_encrypt/2
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 214 │       t = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:214:7: Main.enigma_encrypt/2
+
+UXQQN}FNKQY

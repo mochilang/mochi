@@ -1,0 +1,23 @@
+run: exit status 1
+    warning: variable "even" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │       {check_digit, even, i} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/luhn.exs:70:21: Main.is_luhn/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │       {check_digit, even, i} = try do
+    │                           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/luhn.exs:70:27: Main.is_luhn/1
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a number
+
+    :erlang.trunc("3")
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/luhn.exs:43: Main.is_luhn/1
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/luhn.exs:85: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/hashes/luhn.exs:94: (file)

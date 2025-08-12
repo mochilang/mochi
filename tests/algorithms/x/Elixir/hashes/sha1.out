@@ -1,183 +1,183 @@
 warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 44 │       i = try do
+ 45 │       i = try do
     │       ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:44:7: Main.ord/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:45:7: Main.ord/1
 
     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 68 │       {i, res} = try do
+ 69 │       {i, res} = try do
     │        ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:68:8: Main.pow2/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:69:8: Main.pow2/1
 
      warning: variable "bit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 103 │       {bit, i, res, x, y} = try do
+ 104 │       {bit, i, res, x, y} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:103:8: Main.bit_and/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:104:8: Main.bit_and/2
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 103 │       {bit, i, res, x, y} = try do
+ 104 │       {bit, i, res, x, y} = try do
      │             ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:103:13: Main.bit_and/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:104:13: Main.bit_and/2
 
      warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 103 │       {bit, i, res, x, y} = try do
+ 104 │       {bit, i, res, x, y} = try do
      │                     ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:103:21: Main.bit_and/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:104:21: Main.bit_and/2
 
      warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 103 │       {bit, i, res, x, y} = try do
+ 104 │       {bit, i, res, x, y} = try do
      │                        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:103:24: Main.bit_and/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:104:24: Main.bit_and/2
 
      warning: variable "bit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 140 │       {bit, i, res, x, y} = try do
+ 141 │       {bit, i, res, x, y} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:140:8: Main.bit_or/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:141:8: Main.bit_or/2
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 140 │       {bit, i, res, x, y} = try do
+ 141 │       {bit, i, res, x, y} = try do
      │             ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:140:13: Main.bit_or/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:141:13: Main.bit_or/2
 
      warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 140 │       {bit, i, res, x, y} = try do
+ 141 │       {bit, i, res, x, y} = try do
      │                     ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:140:21: Main.bit_or/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:141:21: Main.bit_or/2
 
      warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 140 │       {bit, i, res, x, y} = try do
+ 141 │       {bit, i, res, x, y} = try do
      │                        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:140:24: Main.bit_or/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:141:24: Main.bit_or/2
 
      warning: variable "bit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 177 │       {bit, i, res, x, y} = try do
+ 178 │       {bit, i, res, x, y} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:177:8: Main.bit_xor/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:178:8: Main.bit_xor/2
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 177 │       {bit, i, res, x, y} = try do
+ 178 │       {bit, i, res, x, y} = try do
      │             ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:177:13: Main.bit_xor/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:178:13: Main.bit_xor/2
 
      warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 177 │       {bit, i, res, x, y} = try do
+ 178 │       {bit, i, res, x, y} = try do
      │                     ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:177:21: Main.bit_xor/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:178:21: Main.bit_xor/2
 
      warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 177 │       {bit, i, res, x, y} = try do
+ 178 │       {bit, i, res, x, y} = try do
      │                        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:177:24: Main.bit_xor/2
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:178:24: Main.bit_xor/2
 
      warning: variable "num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 225 │       {num, s} = try do
+ 226 │       {num, s} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:225:8: Main.to_hex32/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:226:8: Main.to_hex32/1
 
      warning: variable "j2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 341 │           {block, j2} = try do
+ 342 │           {block, j2} = try do
      │                   ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:341:19: Main.sha1/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:342:19: Main.sha1/1
 
      warning: variable "f" is unused (if the variable is not meant to be used, prefix it with an underscore)
      │
- 412 │               f = 0
-     │               ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:412:15: Main.sha1/1
-
-     warning: variable "kconst" is unused (if the variable is not meant to be used, prefix it with an underscore)
-     │
- 413 │               kconst = 0
+ 413 │               f = 0
      │               ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:413:15: Main.sha1/1
 
+     warning: variable "kconst" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 414 │               kconst = 0
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:414:15: Main.sha1/1
+
      warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 398 │           {t, w} = try do
+ 399 │           {t, w} = try do
      │            ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:398:12: Main.sha1/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:399:12: Main.sha1/1
 
      warning: variable "i2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 449 │           {a, b, c, d, e, i2} = try do
+ 450 │           {a, b, c, d, e, i2} = try do
      │                           ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:449:27: Main.sha1/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:450:27: Main.sha1/1
 
      warning: variable "pos" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 354 │       {blocks, pos} = try do
+ 355 │       {blocks, pos} = try do
      │                ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:354:16: Main.sha1/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:355:16: Main.sha1/1
 
      warning: variable "bl" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 304 │       {bl, k, len_bytes} = try do
+ 305 │       {bl, k, len_bytes} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:304:8: Main.sha1/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:305:8: Main.sha1/1
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 320 │       {bytes, j} = try do
+ 321 │       {bytes, j} = try do
      │               ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:320:15: Main.sha1/1
-
-     warning: variable "bindex" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 466 │       {bindex, h0, h1, h2, h3, h4} = try do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:466:8: Main.sha1/1
-
-     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 304 │       {bl, k, len_bytes} = try do
-     │            ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:304:12: Main.sha1/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:321:15: Main.sha1/1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 269 │       {bytes, i} = try do
+ 270 │       {bytes, i} = try do
      │               ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:269:15: Main.sha1/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:270:15: Main.sha1/1
+
+     warning: variable "bindex" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 467 │       {bindex, h0, h1, h2, h3, h4} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:467:8: Main.sha1/1
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 305 │       {bl, k, len_bytes} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sha1.exs:305:12: Main.sha1/1
 
 "a5103f9c0b7d5ff69ddc38607c74e53d4ac120f2"
