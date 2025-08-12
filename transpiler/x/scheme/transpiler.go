@@ -768,6 +768,12 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 			iter = &List{Elems: []Node{Symbol("string->list"), iter}}
 			isString = true
 		}
+		if list, ok := iter.(*List); ok {
+			if sym, ok := list.Elems[0].(Symbol); ok && sym == "hash-table-ref" {
+				needHash = true
+				iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+			}
+		}
 	}
 	loopVar := Symbol("xs")
 	loopSym := gensym("loop")
