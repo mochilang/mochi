@@ -106,7 +106,7 @@ fn main() {
     }
     return Clause {literals: m.clone(), names: names.clone()}
 };
-    fn assign_clause(mut c: Clause, model: &HashMap<String, i64>) -> Clause {
+    fn assign_clause(mut c: Clause, mut model: HashMap<String, i64>) -> Clause {
     let mut lits: HashMap<String, i64> = c.literals.clone();
     let mut i: i64 = 0;
     while (i < (c.names.clone().len() as i64)) {
@@ -124,7 +124,7 @@ fn main() {
     c.literals = lits.clone();
     return c
 };
-    fn evaluate_clause(mut c: Clause, model: &HashMap<String, i64>) -> EvalResult {
+    fn evaluate_clause(mut c: Clause, mut model: HashMap<String, i64>) -> EvalResult {
     let mut i: i64 = 0;
     while (i < (c.names.clone().len() as i64)) {
         let lit: String = c.names.clone()[i as usize].clone().clone();
@@ -134,7 +134,7 @@ fn main() {
         }
         i = (i + 1);
     }
-    c = assign_clause(c, model);
+    c = assign_clause(c.clone(), model.clone());
     i = 0;
     while (i < (c.names.clone().len() as i64)) {
         let lit: String = c.names.clone()[i as usize].clone().clone();
@@ -161,22 +161,22 @@ fn main() {
     fn new_formula(mut cs: Vec<Clause>) -> Formula {
     return Formula {clauses: cs.clone()}
 };
-    fn remove_symbol(mut symbols: Vec<String>, s: &str) -> Vec<String> {
+    fn remove_symbol(mut symbols: Vec<String>, mut s: String) -> Vec<String> {
     let mut res: Vec<String> = vec![];
     let mut i: i64 = 0;
     while (i < (symbols.len() as i64)) {
-        if (symbols[i as usize].clone() != s) {
+        if (symbols[i as usize].clone().as_str() != s.as_str()) {
             res = { let mut _v = res.clone(); _v.push(symbols[i as usize].clone()); _v };
         }
         i = (i + 1);
     }
     return res
 };
-    fn dpll_algorithm(clauses: &mut Vec<Clause>, mut symbols: Vec<String>, model: &HashMap<String, i64>) -> DPLLResult {
+    fn dpll_algorithm(clauses: &mut Vec<Clause>, mut symbols: Vec<String>, mut model: HashMap<String, i64>) -> DPLLResult {
     let mut all_true: bool = true;
     let mut i: i64 = 0;
     while (i < (clauses.len() as i64)) {
-        let ev: EvalResult = evaluate_clause(clauses[i as usize].clone(), model);
+        let ev: EvalResult = evaluate_clause(clauses[i as usize].clone(), model.clone());
         (*clauses)[i as usize] = ev.clause.clone();
         if (ev.value == 0) {
             return DPLLResult {sat: false, model: HashMap::new()}
@@ -189,18 +189,18 @@ fn main() {
         return DPLLResult {sat: true, model: model.clone()}
     }
     let p: String = symbols[0 as usize].clone().clone();
-    let rest: Vec<String> = remove_symbol(symbols.clone(), &p);
+    let rest: Vec<String> = remove_symbol(symbols.clone(), p.clone());
     let mut tmp1: HashMap<String, i64> = model.clone();
     let mut tmp2: HashMap<String, i64> = model.clone();
     tmp1.insert(p.clone(), 1);
     tmp2.insert(p.clone(), 0);
-    let res1: DPLLResult = dpll_algorithm(clauses, rest.clone(), &tmp1);
+    let res1: DPLLResult = dpll_algorithm(clauses, rest.clone(), tmp1.clone());
     if res1.sat {
         return res1
     }
-    return dpll_algorithm(clauses, rest.clone(), &tmp2)
+    return dpll_algorithm(clauses, rest.clone(), tmp2.clone())
 };
-    fn str_clause(c: &Clause) -> String {
+    fn str_clause(mut c: Clause) -> String {
     let mut line: String = String::from("{").clone();
     let mut first: bool = true;
     let mut i: i64 = 0;
@@ -217,11 +217,11 @@ fn main() {
     line = format!("{}{}", line, "}");
     return line.clone()
 };
-    fn str_formula(f: &Formula) -> String {
+    fn str_formula(mut f: Formula) -> String {
     let mut line: String = String::from("{").clone();
     let mut i: i64 = 0;
     while (i < (f.clauses.clone().len() as i64)) {
-        line = format!("{}{}", line, str_clause(&f.clauses.clone()[i as usize].clone()));
+        line = format!("{}{}", line, str_clause(f.clauses.clone()[i as usize].clone()));
         if (i < ((f.clauses.clone().len() as i64) - 1)) {
             line = format!("{}{}", line, " , ");
         }
@@ -233,11 +233,11 @@ fn main() {
     let clause1: Clause = new_clause(vec![String::from("A4").clone(), String::from("A3").clone(), String::from("A5'").clone(), String::from("A1").clone(), String::from("A3'").clone()]);
     let clause2: Clause = new_clause(vec![String::from("A4").clone()]);
     let formula: Formula = new_formula(vec![clause1.clone(), clause2.clone()]);
-    let formula_str: String = str_formula(&formula).clone();
+    let formula_str: String = str_formula(formula.clone()).clone();
     let mut clauses: Vec<Clause> = vec![clause1.clone(), clause2.clone()];
     let symbols: Vec<String> = vec![String::from("A4").clone().clone(), String::from("A3").clone().clone(), String::from("A5").clone().clone(), String::from("A1").clone().clone()];
     let mut model: HashMap<String, i64> = HashMap::new();
-    let result: DPLLResult = dpll_algorithm(&mut clauses, symbols.clone(), &model);
+    let result: DPLLResult = dpll_algorithm(&mut clauses, symbols.clone(), model.clone());
     if result.sat {
         println!("{}", format!("{}{}", format!("{}{}", "The formula ", formula_str), " is satisfiable."));
     } else {

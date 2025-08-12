@@ -1,5 +1,0 @@
-run: exit status 101
-
-thread 'main' panicked at /workspace/mochi/tests/algorithms/x/Rust/neural_network/activation_functions/softplus.rs:41:9:
-ln domain error
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

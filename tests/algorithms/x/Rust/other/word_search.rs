@@ -98,7 +98,7 @@ fn main() {
     }
     return WordSearch {words: words.clone(), width: width, height: height, board: board.clone()}
 };
-        fn insert_dir(mut ws: WordSearch, word: &str, mut dr: i64, mut dc: i64, mut rows: Vec<i64>, mut cols: Vec<i64>) -> bool {
+        fn insert_dir(mut ws: WordSearch, mut word: String, mut dr: i64, mut dc: i64, mut rows: Vec<i64>, mut cols: Vec<i64>) -> bool {
     let word_len: i64 = (word.len() as i64);
     let mut ri: i64 = 0;
     while (ri < (rows.len() as i64)) {
@@ -161,7 +161,7 @@ fn main() {
         rows = shuffle(rows.clone());
         cols = shuffle(cols.clone());
         let d: i64 = rand_range(8);
-        insert_dir(ws.clone(), &word, dirs_r[d as usize], dirs_c[d as usize], rows.clone(), cols.clone());
+        insert_dir(ws.clone(), word.clone(), dirs_r[d as usize], dirs_c[d as usize], rows.clone(), cols.clone());
         i = (i + 1);
     }
 };

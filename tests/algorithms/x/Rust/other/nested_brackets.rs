@@ -47,7 +47,7 @@ fn main() {
     }
     return res
 };
-    let mut is_balanced = move |s: &str| -> bool {
+    let mut is_balanced = move |s: String| -> bool {
     let mut stack: Vec<String> = vec![];
     let mut i: i64 = 0;
     while (i < (s.len() as i64)) {
@@ -69,22 +69,22 @@ fn main() {
     return ((stack.len() as i64) == 0)
 };
     let mut mochi_main = move || {
-    println!("{}", if is_balanced(&"") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"()") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"[]") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"{}") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"()[]{}") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"(())") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"[[") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"([{}])") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"(()[)]") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"([)]") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"[[()]]") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"(()(()))") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"]") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"Life is a bowl of cherries.") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"Life is a bowl of che{}ies.") { 1 } else { 0 });
-    println!("{}", if is_balanced(&"Life is a bowl of che}{ies.") { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("()")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("[]")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("{}")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("()[]{}")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("(())")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("[[")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("([{}])")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("(()[)]")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("([)]")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("[[()]]")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("(()(()))")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("]")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("Life is a bowl of cherries.")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("Life is a bowl of che{}ies.")) { 1 } else { 0 });
+    println!("{}", if is_balanced(String::from("Life is a bowl of che}{ies.")) { 1 } else { 0 });
 };
     mochi_main();
     let _end: i64 = _now();

@@ -45,7 +45,7 @@ fn main() {
     fn from_int(mut x: i64) -> Item {
     return Item::Int { value: x }
 };
-    fn from_string(s: &str) -> Item {
+    fn from_string(mut s: String) -> Item {
     return Item::Str { value: s.clone() }
 };
     fn item_to_string(mut it: Item) -> String {
@@ -81,11 +81,11 @@ fn main() {
     s = format!("{}{}", s, "]");
     return s.clone()
 };
-    let example1: Vec<Item> = alternative_list_arrange(vec![from_int(1).clone(), from_int(2).clone(), from_int(3).clone(), from_int(4).clone(), from_int(5).clone()], vec![from_string(&"A").clone(), from_string(&"B").clone(), from_string(&"C").clone()]);
+    let example1: Vec<Item> = alternative_list_arrange(vec![from_int(1).clone(), from_int(2).clone(), from_int(3).clone(), from_int(4).clone(), from_int(5).clone()], vec![from_string(String::from("A")).clone(), from_string(String::from("B")).clone(), from_string(String::from("C")).clone()]);
     println!("{}", list_to_string(example1.clone()));
-    let example2: Vec<Item> = alternative_list_arrange(vec![from_string(&"A").clone(), from_string(&"B").clone(), from_string(&"C").clone()], vec![from_int(1).clone(), from_int(2).clone(), from_int(3).clone(), from_int(4).clone(), from_int(5).clone()]);
+    let example2: Vec<Item> = alternative_list_arrange(vec![from_string(String::from("A")).clone(), from_string(String::from("B")).clone(), from_string(String::from("C")).clone()], vec![from_int(1).clone(), from_int(2).clone(), from_int(3).clone(), from_int(4).clone(), from_int(5).clone()]);
     println!("{}", list_to_string(example2.clone()));
-    let example3: Vec<Item> = alternative_list_arrange(vec![from_string(&"X").clone(), from_string(&"Y").clone(), from_string(&"Z").clone()], vec![from_int(9).clone(), from_int(8).clone(), from_int(7).clone(), from_int(6).clone()]);
+    let example3: Vec<Item> = alternative_list_arrange(vec![from_string(String::from("X")).clone(), from_string(String::from("Y")).clone(), from_string(String::from("Z")).clone()], vec![from_int(9).clone(), from_int(8).clone(), from_int(7).clone(), from_int(6).clone()]);
     println!("{}", list_to_string(example3.clone()));
     let example4: Vec<Item> = alternative_list_arrange(vec![from_int(1).clone(), from_int(2).clone(), from_int(3).clone(), from_int(4).clone(), from_int(5).clone()], vec![]);
     println!("{}", list_to_string(example4.clone()));

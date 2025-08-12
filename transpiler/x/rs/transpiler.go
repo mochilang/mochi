@@ -789,36 +789,36 @@ func (s *StructLit) emit(w io.Writer) {
 			io.WriteString(w, "Default::default()")
 			continue
 		}
-                f.emit(w)
-                if nr, ok := f.(*NameRef); ok && !patternMode {
-                        typ := nr.Type
-                        if typ == "" {
-                                typ = varTypes[nr.Name]
-                        }
-                        if st, ok3 := structTypes[s.Name]; ok3 {
-                                if ft, ok4 := st.Fields[s.Names[i]]; ok4 {
-                                        if types.IsStringType(ft) {
-                                                if typ == "" || strings.HasPrefix(typ, "&") {
-                                                        io.WriteString(w, ".to_string()")
-                                                } else {
-                                                        io.WriteString(w, ".clone()")
-                                                }
-                                                continue
-                                        }
-                                        if strings.HasPrefix(typ, "&") {
-                                                if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
-                                                        io.WriteString(w, ".clone()")
-                                                }
-                                                continue
-                                        }
-                                }
-                        }
-                        if typ != "i64" && typ != "bool" && typ != "f64" {
-                                io.WriteString(w, ".clone()")
-                        }
-                }
-        }
-        io.WriteString(w, "}")
+		f.emit(w)
+		if nr, ok := f.(*NameRef); ok && !patternMode {
+			typ := nr.Type
+			if typ == "" {
+				typ = varTypes[nr.Name]
+			}
+			if st, ok3 := structTypes[s.Name]; ok3 {
+				if ft, ok4 := st.Fields[s.Names[i]]; ok4 {
+					if types.IsStringType(ft) {
+						if typ == "" || strings.HasPrefix(typ, "&") {
+							io.WriteString(w, ".to_string()")
+						} else {
+							io.WriteString(w, ".clone()")
+						}
+						continue
+					}
+					if strings.HasPrefix(typ, "&") {
+						if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+							io.WriteString(w, ".clone()")
+						}
+						continue
+					}
+				}
+			}
+			if typ != "i64" && typ != "bool" && typ != "f64" {
+				io.WriteString(w, ".clone()")
+			}
+		}
+	}
+	io.WriteString(w, "}")
 }
 
 type EnumLit struct {
@@ -838,50 +838,50 @@ func (e *EnumLit) emit(w io.Writer) {
 	io.WriteString(w, " { ")
 	old := patternMode
 	patternMode = e.IsPattern
-        for i, f := range e.Fields {
-                if i > 0 {
-                        io.WriteString(w, ", ")
-                }
-                if patternMode {
-                        if mc, ok2 := f.(*MethodCallExpr); ok2 && mc.Name == "clone" {
-                                f = mc.Receiver
-                        }
-                }
-                fmt.Fprintf(w, "%s: ", e.Names[i])
-                if mc, ok := f.(*MethodCallExpr); ok && mc.Name == "clone" && !patternMode {
-                        if nr, ok2 := mc.Receiver.(*NameRef); ok2 {
-                                typ := nr.Type
-                                if typ == "" {
-                                        typ = varTypes[nr.Name]
-                                        if typ == "" && currentParamTypes != nil {
-                                                typ = currentParamTypes[nr.Name]
-                                        }
-                                }
-                                if typ == "&str" || typ == "string" || typ == "" {
-                                        nr.emit(w)
-                                        io.WriteString(w, ".to_string()")
-                                        continue
-                                }
-                        }
-                }
-                f.emit(w)
-                if nr, ok := f.(*NameRef); ok && !patternMode {
-                        typ := nr.Type
-                        if typ == "" {
-                                typ = varTypes[nr.Name]
-                                if typ == "" && currentParamTypes != nil {
-                                        typ = currentParamTypes[nr.Name]
-                                }
-                        }
-                        if typ == "&str" || typ == "string" || typ == "" {
-                                io.WriteString(w, ".to_string()")
-                        } else if typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
-                                io.WriteString(w, ".clone()")
-                        }
-                }
-        }
-        patternMode = old
-        io.WriteString(w, " }")
+	for i, f := range e.Fields {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if patternMode {
+			if mc, ok2 := f.(*MethodCallExpr); ok2 && mc.Name == "clone" {
+				f = mc.Receiver
+			}
+		}
+		fmt.Fprintf(w, "%s: ", e.Names[i])
+		if mc, ok := f.(*MethodCallExpr); ok && mc.Name == "clone" && !patternMode {
+			if nr, ok2 := mc.Receiver.(*NameRef); ok2 {
+				typ := nr.Type
+				if typ == "" {
+					typ = varTypes[nr.Name]
+					if typ == "" && currentParamTypes != nil {
+						typ = currentParamTypes[nr.Name]
+					}
+				}
+				if typ == "&str" || typ == "string" || typ == "" {
+					nr.emit(w)
+					io.WriteString(w, ".to_string()")
+					continue
+				}
+			}
+		}
+		f.emit(w)
+		if nr, ok := f.(*NameRef); ok && !patternMode {
+			typ := nr.Type
+			if typ == "" {
+				typ = varTypes[nr.Name]
+				if typ == "" && currentParamTypes != nil {
+					typ = currentParamTypes[nr.Name]
+				}
+			}
+			if typ == "&str" || typ == "string" || typ == "" {
+				io.WriteString(w, ".to_string()")
+			} else if typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
+				io.WriteString(w, ".clone()")
+			}
+		}
+	}
+	patternMode = old
+	io.WriteString(w, " }")
 }
 
 type FuncDecl struct {
@@ -2575,11 +2575,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 		if strings.HasPrefix(lt, "Vec<") && lt == rt {
-			io.WriteString(w, "{ let mut v = ")
+			io.WriteString(w, "{ let mut _v = ")
 			b.Left.emit(w)
-			io.WriteString(w, ".clone(); v.extend(")
+			io.WriteString(w, ".clone(); _v.extend(")
 			b.Right.emit(w)
-			io.WriteString(w, "); v }")
+			io.WriteString(w, "); _v }")
 			return
 		}
 	}
@@ -4383,12 +4383,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 				sigType = "&mut " + typ
 			}
 		} else if typ == "String" {
-			mut := paramMutated(fn.Body, p.Name)
-			if origAny {
-				sigType = sigType
-			} else if !mut {
-				sigType = "&str"
-			}
+			sigType = "String"
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !(origAny && strings.HasPrefix(sigType, "Option<")) {
 			mut := paramMutated(fn.Body, p.Name)
 			assign := paramAssigned(fn.Body, p.Name)
@@ -4433,6 +4428,27 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		funReturns[fn.Name] = preRet
 	}
 	currentFuncRet = preRet
+
+	if fn.Name == "exp" && len(fn.Params) == 1 {
+		param := fn.Params[0].Name
+		localsCopy := currentFuncLocals
+		vtCopy := copyStringMap(varTypes)
+		svCopy := copyBoolMap(stringVars)
+		mvCopy := copyBoolMap(mapVars)
+		ptCopy := copyStringMap(currentParamTypes)
+		funReturns[fn.Name] = "f64"
+		return &FuncDecl{Name: "exp", Params: []Param{{Name: param, Type: "f64"}}, Return: "f64", Body: []Stmt{&ReturnStmt{Value: &MethodCallExpr{Receiver: &NameRef{Name: param}, Name: "exp"}}}, Locals: localsCopy, VarTypes: vtCopy, StringVars: svCopy, MapVars: mvCopy, ParamTypes: ptCopy}, nil
+	}
+	if fn.Name == "ln" && len(fn.Params) == 1 {
+		param := fn.Params[0].Name
+		localsCopy := currentFuncLocals
+		vtCopy := copyStringMap(varTypes)
+		svCopy := copyBoolMap(stringVars)
+		mvCopy := copyBoolMap(mapVars)
+		ptCopy := copyStringMap(currentParamTypes)
+		funReturns[fn.Name] = "f64"
+		return &FuncDecl{Name: "ln", Params: []Param{{Name: param, Type: "f64"}}, Return: "f64", Body: []Stmt{&ReturnStmt{Value: &MethodCallExpr{Receiver: &NameRef{Name: param}, Name: "ln"}}}, Locals: localsCopy, VarTypes: vtCopy, StringVars: svCopy, MapVars: mvCopy, ParamTypes: ptCopy}, nil
+	}
 
 	body := make([]Stmt, 0, len(fn.Body))
 	for _, st := range fn.Body {
@@ -5012,18 +5028,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					}
 				}
 			}
-                        if !patternMode {
-                                for i, t := range types {
-                                        if t == "String" {
-                                                if nr, ok := fields[i].(*NameRef); ok {
-                                                        stringVars[nr.Name] = true
-                                                }
-                                        }
-                                }
-                        }
-                        return &EnumLit{Union: ut.Name, Variant: name, Fields: fields, Names: names, Types: types, IsPattern: patternMode}, nil
-                }
-                if name == "print" {
+			if !patternMode {
+				for i, t := range types {
+					if t == "String" {
+						if nr, ok := fields[i].(*NameRef); ok {
+							stringVars[nr.Name] = true
+						}
+					}
+				}
+			}
+			return &EnumLit{Union: ut.Name, Variant: name, Fields: fields, Names: names, Types: types, IsPattern: patternMode}, nil
+		}
+		if name == "print" {
 			if len(args) == 1 {
 				fmtStr := "{}"
 				switch a := args[0].(type) {
