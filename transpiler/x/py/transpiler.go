@@ -150,7 +150,7 @@ def _str(v):
     if isinstance(v, float):
         if v.is_integer():
             return str(int(v))
-        return format(v, ".15g")
+        return format(v, ".17g")
     return str(v)
 `
 
@@ -900,6 +900,12 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 			}
 		}
 		op := b.Op
+		if op == "/" {
+			if (isIntOnlyExpr(b.Left, currentEnv) && isIntOnlyExpr(b.Right, currentEnv)) ||
+				(isLikelyIntExpr(b.Left) && isLikelyIntExpr(b.Right)) {
+				op = "//"
+			}
+		}
 		switch op {
 		case "&&":
 			op = "and"
