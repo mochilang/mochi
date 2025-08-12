@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (312/1077) - Last updated 2025-08-12 08:11 +0700:
+Checklist of programs that currently transpile and run (328/1077) - Last updated 2025-08-12 09:08 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -454,25 +454,25 @@ Checklist of programs that currently transpile and run (312/1077) - Last updated
 | 447 | graphs/multi_heuristic_astar |  |  |  |
 | 448 | graphs/page_rank |  |  |  |
 | 449 | graphs/prim |  |  |  |
-| 450 | graphs/random_graph_generator |  |  |  |
-| 451 | graphs/scc_kosaraju |  |  |  |
-| 452 | graphs/strongly_connected_components |  |  |  |
+| 450 | graphs/random_graph_generator | ✓ | 227us | 1.5 MB |
+| 451 | graphs/scc_kosaraju | ✓ | 230us | 1.5 MB |
+| 452 | graphs/strongly_connected_components | ✓ | 569us | 1.4 MB |
 | 453 | graphs/tarjans_scc |  |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |  |  |  |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 282us | 1.6 MB |
 | 455 | graphs/tests/test_min_spanning_tree_prim |  |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |  |  |  |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 154us | 1.4 MB |
 | 457 | greedy_methods/fractional_cover_problem |  |  |  |
-| 458 | greedy_methods/fractional_knapsack |  |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |  |  |  |
-| 460 | greedy_methods/gas_station |  |  |  |
-| 461 | greedy_methods/minimum_coin_change |  |  |  |
-| 462 | greedy_methods/minimum_waiting_time |  |  |  |
-| 463 | greedy_methods/optimal_merge_pattern |  |  |  |
-| 464 | greedy_methods/smallest_range |  |  |  |
-| 465 | hashes/adler32 |  |  |  |
-| 466 | hashes/chaos_machine |  |  |  |
-| 467 | hashes/djb2 |  |  |  |
-| 468 | hashes/elf |  |  |  |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 708us | 1.5 MB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 355us | 1.5 MB |
+| 460 | greedy_methods/gas_station | ✓ | 485us | 1.5 MB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 263us | 1.4 MB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 205us | 1.4 MB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 220us | 1.5 MB |
+| 464 | greedy_methods/smallest_range | ✓ | 303us | 1.5 MB |
+| 465 | hashes/adler32 | ✓ | 324us | 1.5 MB |
+| 466 | hashes/chaos_machine | ✓ | 261us | 1.6 MB |
+| 467 | hashes/djb2 | ✓ | 233us | 1.4 MB |
+| 468 | hashes/elf | ✓ | 301us | 1.7 MB |
 | 469 | hashes/enigma_machine |  |  |  |
 | 470 | hashes/fletcher16 |  |  |  |
 | 471 | hashes/hamming_code |  |  |  |
