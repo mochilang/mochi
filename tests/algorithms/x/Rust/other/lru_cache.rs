@@ -174,7 +174,7 @@ fn main() {
     let mut cache: LRUCache = c.clone();
     let key_str = key.to_string();
     if cache.cache.clone().contains_key(&key_str) {
-        let idx: i64 = cache.cache.clone()[key_str];
+        let idx: i64 = cache.cache.clone()[&key_str];
         if (idx != (0 - 1)) {
             cache.hits = (cache.hits + 1);
             let node: Node = cache.list.clone().nodes.clone()[idx as usize].clone();

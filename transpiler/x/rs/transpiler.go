@@ -49,6 +49,7 @@ var funcDepth int
 var usesInput bool
 var usesInt bool
 var useAbs bool
+var useFloor bool
 var useSHA256 bool
 var usePad bool
 var useMD5 bool
@@ -285,6 +286,7 @@ type Program struct {
 	UseInput    bool
 	UseInt      bool
 	UseAbs      bool
+	UseFloor    bool
 	UseSHA256   bool
 	UsePad      bool
 	UseLazy     bool
@@ -1188,7 +1190,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 						io.WriteString(w, ".as_str()")
 					}
 				case "&str":
-					i.Index.emit(w)
+					if nr, ok := i.Index.(*NameRef); ok {
+						if t, ok2 := varTypes[nr.Name]; !ok2 || t == "String" {
+							i.Index.emit(w)
+							io.WriteString(w, ".as_str()")
+						} else {
+							i.Index.emit(w)
+						}
+					} else {
+						i.Index.emit(w)
+					}
 				default:
 					io.WriteString(w, "&")
 					i.Index.emit(w)
@@ -1210,7 +1221,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 					io.WriteString(w, ".as_str()")
 				}
 			case "&str":
-				i.Index.emit(w)
+				if nr, ok := i.Index.(*NameRef); ok {
+					if t, ok2 := varTypes[nr.Name]; !ok2 || t == "String" {
+						i.Index.emit(w)
+						io.WriteString(w, ".as_str()")
+					} else {
+						i.Index.emit(w)
+					}
+				} else {
+					i.Index.emit(w)
+				}
 			default:
 				io.WriteString(w, "&")
 				i.Index.emit(w)
@@ -1304,8 +1324,18 @@ func (i *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, ".as_str()")
 			}
 		case "&str":
-			i.Index.emit(w)
+			if nr, ok := i.Index.(*NameRef); ok {
+				if t, ok2 := varTypes[nr.Name]; !ok2 || t == "String" {
+					i.Index.emit(w)
+					io.WriteString(w, ".as_str()")
+				} else {
+					i.Index.emit(w)
+				}
+			} else {
+				i.Index.emit(w)
+			}
 		default:
+			io.WriteString(w, "&")
 			i.Index.emit(w)
 		}
 		io.WriteString(w, "]")
@@ -3237,6 +3267,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.UseInput = usesInput
 	prog.UseInt = usesInt
 	prog.UseAbs = useAbs
+	prog.UseFloor = useFloor
 	prog.UseSHA256 = useSHA256
 	prog.UsePad = usePad
 	prog.UseLazy = useLazy
@@ -4877,6 +4908,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					args[0] = &FloatCastExpr{Expr: args[0]}
 				}
 				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
+			}
+		}
+		if name == "floor" && len(args) == 1 {
+			if _, ok := funReturns["floor"]; ok {
+				// user-defined floor; treat as normal function
+			} else {
+				useFloor = true
+				funReturns[name] = "f64"
+				if inferType(args[0]) != "f64" {
+					args[0] = &FloatCastExpr{Expr: args[0]}
+				}
+				return &CallExpr{Func: "floor", Args: []Expr{args[0]}}, nil
 			}
 		}
 		if name == "sha256" && len(args) == 1 {
@@ -7352,6 +7395,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseAbs {
 		buf.WriteString("fn abs(x: f64) -> f64 { x.abs() }\n")
+	}
+	if prog.UseFloor {
+		buf.WriteString("fn floor(x: f64) -> f64 { x.floor() }\n")
 	}
 	if prog.UsePad {
 		buf.WriteString("fn _pad_start(mut s: String, w: i64, p: String) -> String {\n")
