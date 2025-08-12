@@ -608,6 +608,15 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		fmt.Fprint(w, "))")
 		return
 	}
+	if jt == "long" || jt == "int" || jt == "double" || jt == "float" {
+		it := inferType(e)
+		if it != "" && it != jt {
+			fmt.Fprintf(w, "(%s)(", jt)
+			e.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
 	e.emit(w)
 }
 
@@ -4884,7 +4893,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				base = &IndexExpr{Target: base, Index: ix}
 			}
 			for i := 0; i < len(s.Assign.Field)-1; i++ {
-				base = &IndexExpr{Target: base, Index: &StringLit{Value: s.Assign.Field[i].Name}}
+				base = &FieldExpr{Target: base, Name: s.Assign.Field[i].Name}
 			}
 			fieldName := s.Assign.Field[len(s.Assign.Field)-1].Name
 			key := &StringLit{Value: fieldName}
@@ -4897,7 +4906,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			base := Expr(&VarExpr{Name: alias, Type: baseType})
 			for i := 0; i < len(s.Assign.Field)-1; i++ {
-				base = &IndexExpr{Target: base, Index: &StringLit{Value: s.Assign.Field[i].Name}}
+				base = &FieldExpr{Target: base, Name: s.Assign.Field[i].Name}
 			}
 			fieldName := s.Assign.Field[len(s.Assign.Field)-1].Name
 			key := &StringLit{Value: fieldName}
