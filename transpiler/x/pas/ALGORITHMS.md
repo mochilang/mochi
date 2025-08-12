@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-12 08:03 GMT+7
+Last updated: 2025-08-12 08:47 GMT+7
 
-## Algorithms Golden Test Checklist (315/1077)
+## Algorithms Golden Test Checklist (318/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -456,7 +456,7 @@ Last updated: 2025-08-12 08:03 GMT+7
 | 447 | graphs/multi_heuristic_astar |   |  |  |
 | 448 | graphs/page_rank |   |  |  |
 | 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
+| 450 | graphs/random_graph_generator | ✓ | 1.0µs | 608B |
 | 451 | graphs/scc_kosaraju |   |  |  |
 | 452 | graphs/strongly_connected_components |   |  |  |
 | 453 | graphs/tarjans_scc |   |  |  |
@@ -581,11 +581,11 @@ Last updated: 2025-08-12 08:03 GMT+7
 | 572 | maths/gamma | ✓ | 28.0µs | 0B |
 | 573 | maths/gaussian | ✓ | 0ns | 0B |
 | 574 | maths/gcd_of_n_numbers | ✓ | 0ns | 128B |
-| 575 | maths/geometric_mean | error |  |  |
+| 575 | maths/geometric_mean | ✓ |  |  |
 | 576 | maths/germain_primes | ✓ | 0ns | 0B |
 | 577 | maths/greatest_common_divisor | ✓ | 0ns | 128B |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 0ns | 0B |
-| 579 | maths/integer_square_root | error |  |  |
+| 579 | maths/integer_square_root | ✓ |  |  |
 | 580 | maths/interquartile_range | ✓ | 1.0µs | 0B |
 | 581 | maths/is_int_palindrome | ✓ | 0ns | 0B |
 | 582 | maths/is_ip_v4_address_valid | ✓ | 2.0µs | 128B |
