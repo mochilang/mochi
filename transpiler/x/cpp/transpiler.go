@@ -6258,17 +6258,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		if paramNames != nil {
-			if fn := findFunc(p.Call.Func); fn != nil {
-				for i, a := range args {
-					if i < len(fn.Params) && fn.Params[i].ByVal {
-						if vr, ok := a.(*VarRef); ok {
-							if paramNames[vr.Name] {
-								mutatedParams[vr.Name] = true
+		candidates := []string{p.Call.Func, safeName(p.Call.Func), "_" + safeName(p.Call.Func)}
+		for _, cname := range candidates {
+			if fn := findFunc(cname); fn != nil {
+				if paramNames != nil {
+					for i, a := range args {
+						if i < len(fn.Params) && fn.Params[i].ByVal {
+							if vr, ok := a.(*VarRef); ok {
+								if paramNames[vr.Name] {
+									mutatedParams[vr.Name] = true
+								}
 							}
 						}
 					}
 				}
+				return &CallExpr{Name: safeName(fn.Name), Args: args}, nil
 			}
 		}
 		if p.Call.Func == "panic" || p.Call.Func == "error" {
