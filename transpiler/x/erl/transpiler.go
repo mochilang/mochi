@@ -2074,6 +2074,15 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 		return
+	case "floor", "Floor":
+		io.WriteString(w, "math:floor(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ")")
+		return
 	case "int":
 		useToInt = true
 		io.WriteString(w, "mochi_to_int(")
