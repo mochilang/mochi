@@ -1,0 +1,27 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:573:5: Warning: variable 'Count_6' exported from 'case' (line 543, column 9)
+%  573| {C, Count_6, G_23, I_23} = Fun_20(C, Count_6, G_23, I_22),
+%     |     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:708:2: Warning: variable 'Edges_19' exported from 'case' (line 657, column 9)
+%  708| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:708:22: Warning: variable 'G_37' exported from 'case' (line 657, column 9)
+%  708| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:708:28: Warning: variable 'I_26' exported from 'case' (line 657, column 9)
+%  708| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:708:39: Warning: variable 'M_15' exported from 'case' (line 657, column 9)
+%  708| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |                                       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:708:45: Warning: variable 'New_edges_8' exported from 'case' (line 657, column 9)
+%  708| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |                                             ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:986:7: Warning: variable 'Count_9' exported from 'case' (line 956, column 9)
+%  986| {C_2, Count_9, G_49, I_36} = Fun_34(C_2, Count_9, G_49, I_35),
+%     |       ^

@@ -1,0 +1,253 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:2: Warning: variable 'G_6' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:24: Warning: variable 'Last_row_3' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:36: Warning: variable 'Max_input_flow_3' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:57: Warning: variable 'New_graph_7' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:81: Warning: variable 'R_5' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:86: Warning: variable 'Sink_index_3' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:107: Warning: variable 'Size_3' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:115: Warning: variable 'Source_index_3' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:228:140: Warning: variable 'Zero_row_3' exported from 'case' (line 64, column 9)
+%  228| {G_6, Graph, I_9, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_12(G_6, Graph, I_8, J_7, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:2: Warning: variable 'G_6' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:36: Warning: variable 'Last_row_3' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:48: Warning: variable 'Max_input_flow_3' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:69: Warning: variable 'New_graph_7' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:93: Warning: variable 'R_5' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                             ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:98: Warning: variable 'Sink_index_3' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:119: Warning: variable 'Size_3' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:127: Warning: variable 'Source_index_3' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                               ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:240:152: Warning: variable 'Zero_row_3' exported from 'case' (line 64, column 9)
+%  240| {G_6, Graph, Heights_2, I_11, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_13(G_6, Graph, Heights, I_10, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                                                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:14: Warning: variable 'G_6' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:48: Warning: variable 'Last_row_3' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:60: Warning: variable 'Max_input_flow_3' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:81: Warning: variable 'New_graph_7' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:105: Warning: variable 'R_5' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:110: Warning: variable 'Sink_index_3' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:131: Warning: variable 'Size_3' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:139: Warning: variable 'Source_index_3' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:252:164: Warning: variable 'Zero_row_3' exported from 'case' (line 64, column 9)
+%  252| {Excesses_2, G_6, Graph, Heights_2, I_13, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_14(Excesses, G_6, Graph, Heights_2, I_12, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                                                                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:14: Warning: variable 'G_6' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:48: Warning: variable 'Last_row_3' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:60: Warning: variable 'Max_input_flow_3' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:81: Warning: variable 'New_graph_7' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:105: Warning: variable 'R_5' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:110: Warning: variable 'Sink_index_3' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:131: Warning: variable 'Size_3' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:139: Warning: variable 'Source_index_3' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:267:164: Warning: variable 'Zero_row_3' exported from 'case' (line 64, column 9)
+%  267| {Excesses_3, G_6, Graph, Heights_3, I_15, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3} = Fun_15(Excesses_2, G_6, Graph, Heights_3, I_14, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_2, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Zero_row_3),
+%     |                                                                                                                                                                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:14: Warning: variable 'G_6' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:48: Warning: variable 'Last_row_3' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |                                                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:60: Warning: variable 'Max_input_flow_3' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |                                                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:81: Warning: variable 'New_graph_7' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |                                                                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:105: Warning: variable 'R_5' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |                                                                                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:110: Warning: variable 'Sink_index_3' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |                                                                                                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:131: Warning: variable 'Size_3' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |                                                                                                                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:139: Warning: variable 'Source_index_3' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |                                                                                                                                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:283:181: Warning: variable 'Zero_row_3' exported from 'case' (line 64, column 9)
+%  283| {Excesses_3, G_6, Graph, Heights_3, I_17, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3} = Fun_16(Excesses_3, G_6, Graph, Heights_3, I_16, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list, Zero_row_3),
+%     |                                                                                                                                                                                     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:14: Warning: variable 'G_6' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:56: Warning: variable 'Last_row_3' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |                                                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:68: Warning: variable 'Max_input_flow_3' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |                                                                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:89: Warning: variable 'New_graph_7' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |                                                                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:113: Warning: variable 'R_5' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |                                                                                                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:118: Warning: variable 'Sink_index_3' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |                                                                                                                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:139: Warning: variable 'Size_3' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |                                                                                                                                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:147: Warning: variable 'Source_index_3' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |                                                                                                                                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:396:189: Warning: variable 'Zero_row_3' exported from 'case' (line 64, column 9)
+%  396| {Excesses_6, G_6, Graph, Heights_5, I_17, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_22(Excesses_3, G_6, Graph, Heights_3, I_17, Idx, J_9, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_4, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_3, Zero_row_3),
+%     |                                                                                                                                                                                             ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:22: Warning: variable 'G_6' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:64: Warning: variable 'Last_row_3' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                                                                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:76: Warning: variable 'Max_input_flow_3' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                                                                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:97: Warning: variable 'New_graph_7' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                                                                                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:121: Warning: variable 'R_5' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                                                                                                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:126: Warning: variable 'Sink_index_3' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                                                                                                                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:147: Warning: variable 'Size_3' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                                                                                                                                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:155: Warning: variable 'Source_index_3' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                                                                                                                                                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/edmonds_karp_multiple_source_and_sink.erl:408:197: Warning: variable 'Zero_row_3' exported from 'case' (line 64, column 9)
+%  408| {Excesses_6, Flow_2, G_6, Graph, Heights_5, I_19, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3} = Fun_23(Excesses_6, Flow, G_6, Graph, Heights_5, I_18, Idx_4, J_12, Last_row_3, Max_input_flow_3, N, New_graph_7, Preflow_7, R_5, Sink_index_3, Sinks, Size_3, Source_index_3, Sources, Vertices_list_6, Zero_row_3),
+%     |                                                                                                                                                                                                     ^
+
+"maximum flow is 6"
