@@ -97,6 +97,7 @@ var (
 	needListAppendStructPtr map[string]bool
 	needSliceStruct         map[string]bool
 	needListAppendSizeT     bool
+	needListAppendSizeTPtr  bool
 	needListMin             bool
 	needListMax             bool
 	needListMinDouble       bool
@@ -1132,8 +1133,11 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		typ = "long long"
 	}
 	writeIndent(w, indent)
-	if strings.HasSuffix(typ, "[][][]") {
+	if strings.HasSuffix(typ, "[][][]") || strings.HasSuffix(typ, "***") {
 		base := strings.TrimSuffix(typ, "[][][]")
+		if strings.HasSuffix(typ, "***") {
+			base = strings.TrimSuffix(typ, "***")
+		}
 		if lst, ok := d.Value.(*ListLit); ok {
 			for i, e := range lst.Elems {
 				if ll, ok2 := e.(*ListLit); ok2 {
@@ -1199,6 +1203,10 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		fmt.Fprintf(w, "size_t *%s_lens = NULL;\n", d.Name)
 		writeIndent(w, indent)
 		fmt.Fprintf(w, "size_t %s_lens_len = 0;\n", d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t **%s_lens_lens = NULL;\n", d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t %s_lens_lens_len = 0;\n", d.Name)
 		return
 	} else if strings.HasSuffix(typ, "[][]") {
 		dims := strings.Count(typ, "[]")
@@ -1753,6 +1761,11 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 					fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, ", a.Name, a.Name, a.Name)
 					emitLenExpr(w, call.Args[1])
 					io.WriteString(w, ");\n")
+					if strings.HasSuffix(elemBase, "[]") {
+						needListAppendSizeTPtr = true
+						writeIndent(w, indent)
+						fmt.Fprintf(w, "%s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL);\n", a.Name, a.Name, a.Name)
+					}
 					return
 				}
 			}
@@ -1840,6 +1853,40 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		currentVarName = prevVar
 	}
 	io.WriteString(w, ";\n")
+
+	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(a.Indexes) == 1 && len(a.Fields) == 0 {
+		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[][][]") {
+			needListAppendSizeT = true
+			writeIndent(w, indent)
+			io.WriteString(w, "{size_t __tmp = ")
+			fmt.Fprintf(w, "%s_lens[(int)(", a.Name)
+			a.Indexes[0].emitExpr(w)
+			io.WriteString(w, ")]; ")
+			fmt.Fprintf(w, "%s_lens_lens[(int)(", a.Name)
+			a.Indexes[0].emitExpr(w)
+			io.WriteString(w, ")] = list_append_szt(")
+			fmt.Fprintf(w, "%s_lens_lens[(int)(", a.Name)
+			a.Indexes[0].emitExpr(w)
+			io.WriteString(w, ")], &__tmp, ")
+			emitLenExpr(w, call.Args[1])
+			io.WriteString(w, "); ")
+			fmt.Fprintf(w, "%s_lens[(int)(", a.Name)
+			a.Indexes[0].emitExpr(w)
+			io.WriteString(w, ")] = __tmp;}")
+			io.WriteString(w, "\n")
+		}
+	}
+
+	if ie, ok := a.Value.(*IndexExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+		if vr, ok2 := ie.Target.(*VarRef); ok2 {
+			if vt, ok3 := varTypes[vr.Name]; ok3 && strings.HasSuffix(vt, "[][][]") {
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t *%s_lens = %s_lens_lens[(int)(", a.Name, vr.Name)
+				ie.Index.emitExpr(w)
+				io.WriteString(w, ")];\n")
+			}
+		}
+	}
 
 	if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
 		if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
@@ -2724,7 +2771,12 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				}
 				fmt.Fprintf(w, "), %s_lens = list_append_szt(%s_lens, &%s_lens_len, ", vr.Name, vr.Name, vr.Name)
 				emitLenExpr(w, c.Args[1])
-				fmt.Fprintf(w, "), %s_lens = %s_lens, %s)", currentFuncName, vr.Name, vr.Name)
+				if strings.HasSuffix(elemBase, "[]") {
+					needListAppendSizeTPtr = true
+					fmt.Fprintf(w, "), %s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL), %s_lens = %s_lens, %s)", vr.Name, vr.Name, vr.Name, currentFuncName, vr.Name, vr.Name)
+				} else {
+					fmt.Fprintf(w, "), %s_lens = %s_lens, %s)", currentFuncName, vr.Name, vr.Name)
+				}
 				return
 			default:
 				switch base {
@@ -2765,11 +2817,35 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		}
 		if ie, ok := c.Args[0].(*IndexExpr); ok {
 			if vr, ok2 := ie.Target.(*VarRef); ok2 {
-				switch inferExprType(currentEnv, c.Args[1]) {
-				case "double":
+				elemType := inferExprType(currentEnv, c.Args[1])
+				switch {
+				case strings.HasSuffix(elemType, "*"):
+					base := strings.TrimSuffix(elemType, "*")
+					switch base {
+					case "double":
+						needListAppendDoublePtr = true
+						io.WriteString(w, "list_append_doubleptr(")
+					case "const char*":
+						needListAppendStrPtr = true
+						io.WriteString(w, "list_append_strptr(")
+					default:
+						needListAppendPtr = true
+						io.WriteString(w, "list_append_intptr(")
+					}
+					c.Args[0].emitExpr(w)
+					io.WriteString(w, ", &")
+					fmt.Fprintf(w, "%s_lens[(int)(", vr.Name)
+					ie.Index.emitExpr(w)
+					io.WriteString(w, ")], ")
+					if len(c.Args) > 1 && c.Args[1] != nil {
+						c.Args[1].emitExpr(w)
+					}
+					io.WriteString(w, ")")
+					return
+				case elemType == "double":
 					needListAppendDoubleNew = true
 					io.WriteString(w, "list_append_double_new(")
-				case "const char*":
+				case elemType == "const char*":
 					needListAppendStrNew = true
 					io.WriteString(w, "list_append_str_new(")
 				default:
@@ -4376,6 +4452,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    arr[*len] = val;\n")
 		buf.WriteString("    (*len)++;\n")
 		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListAppendSizeTPtr {
+		buf.WriteString("static size_t** list_append_szptr(size_t **arr, size_t *len, size_t *val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(size_t*));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+
 		buf.WriteString("}\n\n")
 	}
 	if needConcatStrPtr {
