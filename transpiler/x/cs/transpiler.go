@@ -1075,8 +1075,9 @@ type CallExpr struct {
 
 func (c *CallExpr) emit(w io.Writer) {
 	if c.Func == "keys" && len(c.Args) == 1 {
+                usesLinq = true
 		c.Args[0].emit(w)
-		fmt.Fprint(w, ".Keys")
+		fmt.Fprint(w, ".Keys.ToArray()")
 		return
 	}
 	// Special case conversions to int for BigInteger arguments
@@ -1138,8 +1139,9 @@ func (m *MapGetExpr) emit(w io.Writer) {
 
 func (m *MethodCallExpr) emit(w io.Writer) {
 	if m.Name == "keys" && len(m.Args) == 0 && (isMapExpr(m.Target) || strings.HasPrefix(typeOfExpr(m.Target), "Dictionary<")) {
+                usesLinq = true
 		m.Target.emit(w)
-		fmt.Fprint(w, ".Keys")
+		fmt.Fprint(w, ".Keys.ToArray()")
 		return
 	}
 	if vr, ok := m.Target.(*VarRef); ok {
