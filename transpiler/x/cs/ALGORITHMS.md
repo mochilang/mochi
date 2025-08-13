@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-12 16:24 GMT+7
+Last updated: 2025-08-13 07:22 GMT+7
 
-## Algorithms Golden Test Checklist (1013/1077)
+## Algorithms Golden Test Checklist (1014/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -316,13 +316,13 @@ Last updated: 2025-08-12 16:24 GMT+7
 | 307 | dynamic_programming/edit_distance | ✓ | 6.0ms | 51.69KB |
 | 308 | dynamic_programming/factorial | ✓ | 5.0ms | 19.87KB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 4.0ms | 18.49KB |
-| 310 | dynamic_programming/fibonacci | ✓ | 6.0ms | 20.79KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 1.0µs | 25.27KB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 4.0ms | 19.84KB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 4.0ms | 19.86KB |
 | 313 | dynamic_programming/integer_partition | ✓ | 8.0ms | 4.82MB |
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 4.0ms | 21.18KB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 6.0ms | 25.69KB |
-| 316 | dynamic_programming/knapsack | error |  |  |
+| 316 | dynamic_programming/knapsack | ✓ | 1.0µs | 49.98KB |
 | 317 | dynamic_programming/largest_divisible_subset | ✓ | 3.0ms | 18.98KB |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 2.0ms | 26.77KB |
 | 319 | dynamic_programming/longest_common_substring | ✓ | 3.0ms | 39.59KB |
