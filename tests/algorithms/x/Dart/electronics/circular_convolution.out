@@ -1,10 +1,4 @@
-Unhandled exception:
-type 'double' is not a subtype of type 'int' in type cast
-#0      floor (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/circular_convolution.dart:17:13)
-#1      roundn (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/circular_convolution.dart:36:10)
-#2      circular_convolution (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/circular_convolution.dart:64:20)
-#3      example1 (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/circular_convolution.dart:70:25)
-#4      example1 (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/circular_convolution.dart)
-#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/circular_convolution.dart:75:10)
-#6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+[10.0, 10.0, 6.0, 14.0]
+[5.2, 6.0, 6.48, 6.64, 6.48, 6.0, 5.2, 4.08]
+[6.25, -3.0, 1.5, -2.0, -2.75]
+[8.0, -2.0, 3.0, 4.0, 11.0]

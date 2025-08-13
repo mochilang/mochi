@@ -1587,10 +1587,7 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	}
 	op := b.Op
 	if b.Op == "/" {
-		if (lt == "int" && rt == "int") || lt == "BigInt" || rt == "BigInt" ||
-			(lt == "dynamic" && rt != "num") || (rt == "dynamic" && lt != "num") {
-			// Use integer division when operands are integers or dynamic values
-			// that are likely integers.
+		if (lt == "int" && rt == "int") || lt == "BigInt" || rt == "BigInt" {
 			op = "~/"
 		}
 	}
