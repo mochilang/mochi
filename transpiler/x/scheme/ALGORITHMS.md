@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-13 16:15 GMT+7
+Last updated: 2025-08-13 16:41 GMT+7
 
-## Algorithms Golden Test Checklist (863/1077)
+## Algorithms Golden Test Checklist (865/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -428,10 +428,10 @@ Last updated: 2025-08-13 16:15 GMT+7
 | 419 | graphs/dijkstra_binary_grid | ✓ | 2ms | 13.7 MB |
 | 420 | graphs/dinic | ✓ | 11ms | 14.1 MB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 4ms | 16.6 MB |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 0s | 14.3 MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1ms | 13.4 MB |
 | 424 | graphs/even_tree | ✓ | 1ms | 12.2 MB |
-| 425 | graphs/finding_bridges |   |  |  |
+| 425 | graphs/finding_bridges | ✓ | 2ms | 13.6 MB |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |
 | 427 | graphs/g_topological_sort | ✓ | 0s | 13.4 MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 1ms | 13.3 MB |
