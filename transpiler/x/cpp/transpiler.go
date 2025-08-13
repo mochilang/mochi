@@ -8009,6 +8009,11 @@ func exprType(e Expr) string {
 			if fn, ok := currentEnv.GetFunc(v.Name); ok {
 				return cppTypeFrom(types.ResolveTypeRef(fn.Return, currentEnv))
 			}
+			if strings.HasPrefix(v.Name, "_") {
+				if fn, ok := currentEnv.GetFunc(strings.TrimPrefix(v.Name, "_")); ok {
+					return cppTypeFrom(types.ResolveTypeRef(fn.Return, currentEnv))
+				}
+			}
 		}
 		if currentProgram != nil {
 			for _, fn := range currentProgram.Functions {
