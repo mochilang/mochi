@@ -1,67 +1,67 @@
 public class Main {
 
-    static int[] make_list(int len, int value) {
-        int[] arr = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < len) {
-            arr = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(arr), java.util.stream.IntStream.of(value)).toArray()));
-            i = i + 1;
+    static long[] make_list(long len, long value) {
+        long[] arr = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < len) {
+            arr = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(arr), java.util.stream.LongStream.of(value)).toArray()));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return arr;
     }
 
-    static int trapped_rainwater(int[] heights) {
-        if (heights.length == 0) {
+    static long trapped_rainwater(long[] heights) {
+        if ((long)(heights.length) == (long)(0)) {
             return 0;
         }
-        int i_1 = 0;
-        while (i_1 < heights.length) {
-            if (heights[i_1] < 0) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(heights.length)) {
+            if (heights[(int)((long)(i_3))] < (long)(0)) {
                 throw new RuntimeException(String.valueOf("No height can be negative"));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        int length = heights.length;
-        int[] left_max = ((int[])(make_list(length, 0)));
-left_max[0] = heights[0];
-        i_1 = 1;
-        while (i_1 < length) {
-            if (heights[i_1] > left_max[i_1 - 1]) {
-left_max[i_1] = heights[i_1];
+        long length_1 = (long)(heights.length);
+        long[] left_max_1 = ((long[])(make_list(length_1, 0L)));
+left_max_1[(int)((long)(0))] = heights[(int)((long)(0))];
+        i_3 = (long)(1);
+        while ((long)(i_3) < length_1) {
+            if (heights[(int)((long)(i_3))] > (long)(left_max_1[(int)((long)((long)(i_3) - (long)(1)))])) {
+left_max_1[(int)((long)(i_3))] = heights[(int)((long)(i_3))];
             } else {
-left_max[i_1] = left_max[i_1 - 1];
+left_max_1[(int)((long)(i_3))] = (long)(left_max_1[(int)((long)((long)(i_3) - (long)(1)))]);
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        int[] right_max = ((int[])(make_list(length, 0)));
-        int last = length - 1;
-right_max[last] = heights[last];
-        i_1 = last - 1;
-        while (i_1 >= 0) {
-            if (heights[i_1] > right_max[i_1 + 1]) {
-right_max[i_1] = heights[i_1];
+        long[] right_max_1 = ((long[])(make_list(length_1, 0L)));
+        long last_1 = length_1 - (long)(1);
+right_max_1[(int)((long)(last_1))] = heights[(int)((long)(last_1))];
+        i_3 = last_1 - (long)(1);
+        while ((long)(i_3) >= (long)(0)) {
+            if (heights[(int)((long)(i_3))] > (long)(right_max_1[(int)((long)((long)(i_3) + (long)(1)))])) {
+right_max_1[(int)((long)(i_3))] = heights[(int)((long)(i_3))];
             } else {
-right_max[i_1] = right_max[i_1 + 1];
+right_max_1[(int)((long)(i_3))] = (long)(right_max_1[(int)((long)((long)(i_3) + (long)(1)))]);
             }
-            i_1 = i_1 - 1;
+            i_3 = (long)((long)(i_3) - (long)(1));
         }
-        int total = 0;
-        i_1 = 0;
-        while (i_1 < length) {
-            int left = left_max[i_1];
-            int right = right_max[i_1];
-            int smaller = left < right ? left : right;
-            total = total + (smaller - heights[i_1]);
-            i_1 = i_1 + 1;
+        long total_1 = 0L;
+        i_3 = (long)(0);
+        while ((long)(i_3) < length_1) {
+            long left_1 = (long)(left_max_1[(int)((long)(i_3))]);
+            long right_1 = (long)(right_max_1[(int)((long)(i_3))]);
+            long smaller_1 = (long)((long)(left_1) < (long)(right_1) ? left_1 : right_1);
+            total_1 = (long)(total_1) + ((long)(smaller_1) - heights[(int)((long)(i_3))]);
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        return total;
+        return total_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(trapped_rainwater(((int[])(new int[]{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1})))));
-            System.out.println(_p(trapped_rainwater(((int[])(new int[]{7, 1, 5, 3, 6, 4})))));
+            System.out.println(_p(trapped_rainwater(((long[])(new long[]{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1})))));
+            System.out.println(_p(trapped_rainwater(((long[])(new long[]{7, 1, 5, 3, 6, 4})))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -107,6 +107,11 @@ right_max[i_1] = right_max[i_1 + 1];
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,4 +1,8 @@
-## Progress (2025-08-11 22:40 +0700)
+## Progress (2025-08-13 16:02 +0700)
+- feat(java): support array append and floor (e08be4cefe)
+
+- feat(java): support array append and floor (e08be4cefe)
+
 - java: improve expression and append handling (17a8038da6)
 
 - java: improve expression and append handling (17a8038da6)
