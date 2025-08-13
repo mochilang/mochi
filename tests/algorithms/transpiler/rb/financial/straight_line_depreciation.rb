@@ -122,38 +122,38 @@ end
 __name__ = '__main__'
 start_mem = _mem()
 start = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
-  def resistor_parallel(resistors)
-    sum = 0.0
-    i = 0
-    while i < _len(resistors)
-      r = (__tmp1 = resistors; __tmp1.is_a?(Hash) ? __tmp1[i] : _idx(__tmp1, i))
-      if r <= 0.0
-        panic(_add(_add("Resistor at index ", _str(i)), " has a negative or zero value!"))
-      end
-      sum = _add(sum, 1.0 / r)
-      i = _add(i, 1)
+  def straight_line_depreciation(useful_years, purchase_value, residual_value)
+    if useful_years < 1
+      panic("Useful years cannot be less than 1")
     end
-    return 1.0 / sum
-  end
-  def resistor_series(resistors)
-    sum = 0.0
-    i = 0
-    while i < _len(resistors)
-      r = (__tmp2 = resistors; __tmp2.is_a?(Hash) ? __tmp2[i] : _idx(__tmp2, i))
-      if r < 0.0
-        panic(_add(_add("Resistor at index ", _str(i)), " has a negative value!"))
-      end
-      sum = _add(sum, r)
-      i = _add(i, 1)
+    if purchase_value < 0.0
+      panic("Purchase value cannot be less than zero")
     end
-    return sum
+    if purchase_value < residual_value
+      panic("Purchase value cannot be less than residual value")
+    end
+    depreciable_cost = purchase_value - residual_value
+    annual_expense = depreciable_cost / (1.0 * useful_years)
+    expenses = []
+    accumulated = 0.0
+    period = 0
+    while period < useful_years
+      if !_eq(period, useful_years - 1)
+        accumulated = _add(accumulated, annual_expense)
+        expenses = (expenses + [annual_expense])
+      else
+        end_year_expense = depreciable_cost - accumulated
+        expenses = (expenses + [end_year_expense])
+      end
+      period = _add(period, 1)
+    end
+    return expenses
   end
-  def main()
-    resistors = [3.21389, 2.0, 3.0]
-    puts(_add("Parallel: ", _str(resistor_parallel(resistors))))
-    puts(_add("Series: ", _str(resistor_series(resistors))))
-  end
-  main()
+  puts(((x = straight_line_depreciation(10, 1100.0, 100.0)); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s))
+  puts(((x = straight_line_depreciation(6, 1250.0, 50.0)); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s))
+  puts(((x = straight_line_depreciation(4, 1001.0, 0.0)); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s))
+  puts(((x = straight_line_depreciation(11, 380.0, 50.0)); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s))
+  puts(((x = straight_line_depreciation(1, 4985.0, 100.0)); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s))
 end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

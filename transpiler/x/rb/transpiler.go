@@ -100,6 +100,15 @@ const helperStr = `
 def _str(x)
   if x.is_a?(Array)
     x.map { |e| _str(e) }.join(' ')
+  elsif x.is_a?(Float)
+    s = x.to_s
+    if s.include?('e') || s.include?('E')
+      s
+    elsif x == x.to_i
+      x.to_i.to_s
+    else
+      s
+    end
   else
     x.to_s
   end
