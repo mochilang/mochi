@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-13 07:38 GMT+7
+Last updated: 2025-08-13 13:12 GMT+7
 
-## Algorithms Golden Test Checklist (514/1077)
+## Algorithms Golden Test Checklist (547/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -366,39 +366,39 @@ Last updated: 2025-08-13 07:38 GMT+7
 | 357 | electronics/coulombs_law | ✓ | 15.99ms | 117.49KiB |
 | 358 | electronics/electric_conductivity | ✓ | 8.61ms | 124.19KiB |
 | 359 | electronics/electric_power | ✓ | 7.64ms | 123.89KiB |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
+| 360 | electronics/electrical_impedance | ✓ | 16.61ms | 116.41KiB |
+| 361 | electronics/ic_555_timer | ✓ | 8.40ms | 124.30KiB |
+| 362 | electronics/ind_reactance | ✓ | 16.58ms | 116.41KiB |
+| 363 | electronics/ohms_law | ✓ | 62.28ms | 102.19KiB |
+| 364 | electronics/real_and_reactive_power | ✓ | 7.66ms | 124.23KiB |
+| 365 | electronics/resistor_color_code | ✓ | 11.12ms | 122.70KiB |
+| 366 | electronics/resistor_equivalence | ✓ | 24.18ms | 113.53KiB |
+| 367 | electronics/resonant_frequency | ✓ | 7.78ms | 124.30KiB |
+| 368 | electronics/wheatstone_bridge | ✓ | 7.75ms | 124.30KiB |
+| 369 | file_transfer/receive_file | ✓ | 22.22ms | 123.38KiB |
+| 370 | file_transfer/send_file | ✓ | 10.79ms | 130.32KiB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 21.02ms | 123.32KiB |
+| 372 | financial/equated_monthly_installments | ✓ | 7.14ms | 124.23KiB |
+| 373 | financial/exponential_moving_average | ✓ | 6.83ms | 124.20KiB |
+| 374 | financial/interest | ✓ | 8.89ms | 124.30KiB |
+| 375 | financial/present_value | ✓ | 20.14ms | 113.69KiB |
+| 376 | financial/price_plus_tax | ✓ | 7.73ms | 123.97KiB |
+| 377 | financial/simple_moving_average | ✓ | 9.04ms | 124.07KiB |
+| 378 | financial/straight_line_depreciation | ✓ | 21.58ms | 114.30KiB |
+| 379 | financial/time_and_half_pay | ✓ | 8.66ms | 124.30KiB |
+| 380 | fractals/julia_sets | ✓ | 28.79ms | 119.45KiB |
+| 381 | fractals/koch_snowflake | ✓ | 8.00ms | 123.98KiB |
+| 382 | fractals/mandelbrot | ✓ | 10.04ms | 129.65KiB |
+| 383 | fractals/sierpinski_triangle | ✓ | 11.08ms | 130.20KiB |
+| 384 | fractals/vicsek | ✓ | 25.20ms | 122.80KiB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 9.29ms | 123.43KiB |
+| 386 | genetic_algorithm/basic_string | ✓ | 21.03ms | 122.99KiB |
+| 387 | geodesy/haversine_distance | ✓ | 7.75ms | 124.13KiB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 7.97ms | 124.30KiB |
+| 389 | geometry/geometry | ✓ | 25.03ms | 113.79KiB |
+| 390 | graphics/bezier_curve | ✓ | 13.92ms | 122.67KiB |
+| 391 | graphics/butterfly_pattern | ✓ | 20.82ms | 123.89KiB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 21.32ms | 123.92KiB |
 | 393 | graphics/vector3_for_2d_rendering |   |  |  |
 | 394 | graphs/a_star |   |  |  |
 | 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
