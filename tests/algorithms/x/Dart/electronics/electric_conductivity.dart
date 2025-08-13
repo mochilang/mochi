@@ -54,7 +54,7 @@ bool _listEq(List a, List b) {
   return true;
 }
 
-String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 
 Never _error(String msg) {

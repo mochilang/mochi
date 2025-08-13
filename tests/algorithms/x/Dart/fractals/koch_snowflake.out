@@ -1,3 +1,1 @@
-../../../tests/algorithms/x/Dart/fractals/koch_snowflake.dart:25:28: Error: Unexpected token 'as'.
-  return x - (x / m as int as double) * m;
-                           ^^
+[(0.0, 0.0), (0.3333333333333333, 0.0), (0.49998818844297094, 0.2886737572187908), (0.6666666666666666, 0.0), (1.0, 0.0)]

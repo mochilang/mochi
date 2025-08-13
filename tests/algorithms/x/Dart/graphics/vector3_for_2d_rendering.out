@@ -1,6 +1,2 @@
-../../../tests/algorithms/x/Dart/graphics/vector3_for_2d_rendering.dart:64:23: Error: Local variable 'angle' can't be referenced before it is declared.
-  double angle = modf(angle, 360.0) / 450.0 * 180.0 / PI;
-                      ^^^^^
-../../../tests/algorithms/x/Dart/graphics/vector3_for_2d_rendering.dart:64:10: Context: This is the declaration of the variable 'angle'.
-  double angle = modf(angle, 360.0) / 450.0 * 180.0 / PI;
-         ^^^^^
+[7.6923076923076925, 15.384615384615385]
+[3.1305246750737585, 2.0, 0.4470070007889573]
