@@ -143,7 +143,7 @@ var reserved = map[string]bool{
 }
 
 func safeName(n string) string {
-	if reserved[n] {
+	if reserved[n] || !validIdent(n) {
 		return "_" + n
 	}
 	return n
