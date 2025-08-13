@@ -42,6 +42,7 @@ var funcParamTypes map[string][]string
 var builtinAliases map[string]string
 var transEnv *types.Env
 var loopCounter int
+var labelCounter int
 var mainFuncName string
 var useNow bool
 var useStr bool
@@ -122,6 +123,12 @@ func uniqueName(name string) string {
 		return zigIdent(name)
 	}
 	return fmt.Sprintf("%s_%d", zigIdent(name), cnt)
+}
+
+func newLabel() string {
+	name := fmt.Sprintf("blk%d", labelCounter)
+	labelCounter++
+	return name
 }
 
 func toSnakeCase(s string) string {
@@ -1109,6 +1116,8 @@ func zigTypeFromExpr(e Expr) string {
 			return "i64"
 		case "_input":
 			return "[]const u8"
+		case "floor", "std.math.floor":
+			return "f64"
 		default:
 			if strings.HasPrefix(ce.Func, "std.math.") {
 				return "f64"
@@ -1228,6 +1237,14 @@ func (m *MapLit) emit(w io.Writer) {
 									}
 									goto emitted
 								}
+							} else {
+								exprType := zigTypeFromExpr(e.Value)
+								if strings.HasPrefix(exprType, "*") && !strings.HasPrefix(f.Type, "*") {
+									io.WriteString(w, "(")
+									e.Value.emit(w)
+									io.WriteString(w, ").*")
+									goto emitted
+								}
 							}
 						}
 					}
@@ -1257,9 +1274,11 @@ func (m *MapLit) emit(w io.Writer) {
 		fmt.Fprintf(w, "%s.init(std.heap.page_allocator)", mapType)
 		return
 	}
-	fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
+	lbl := newLabel()
+	mvar := uniqueName("m")
+	fmt.Fprintf(w, "%s: { var %s = %s.init(std.heap.page_allocator);", lbl, mvar, mapType)
 	for _, e := range m.Entries {
-		io.WriteString(w, " m.put(")
+		fmt.Fprintf(w, " %s.put(", mvar)
 		e.Key.emit(w)
 		io.WriteString(w, ", ")
 		if valType == "Value" && zigTypeFromExpr(e.Value) != "Value" {
@@ -1289,7 +1308,7 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		io.WriteString(w, ") catch unreachable;")
 	}
-	io.WriteString(w, " break :blk m; }")
+	fmt.Fprintf(w, " break :%s %s; }", lbl, mvar)
 }
 
 // IndexExpr represents list indexing like `xs[i]`.
@@ -1529,6 +1548,13 @@ func (p *Program) Emit() []byte {
 						varTypes[prm.Name] = fn.Params[i].Type
 						params[i] = fn.Params[i].Type
 					}
+				} else {
+					t := strings.TrimPrefix(prm.Type, "*")
+					if strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+						fn.Params[i].Type = "*const " + t
+						varTypes[prm.Name] = fn.Params[i].Type
+						params[i] = fn.Params[i].Type
+					}
 				}
 			}
 		}
@@ -1760,7 +1786,7 @@ func (f *Func) emit(w io.Writer) {
 		}
 		name := p.Name
 		key := f.Name + ":" + p.Name
-		if varUses[key] == 0 {
+		if varUses[key] == 0 && !varMut[key] {
 			name = "_"
 		}
 		fmt.Fprintf(w, "%s: %s", name, p.Type)
@@ -1980,6 +2006,10 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 func (a *AssignStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "%s = ", a.Name)
+	if a.Value == nil {
+		io.WriteString(w, "undefined;\n")
+		return
+	}
 	if ll, ok := a.Value.(*ListLit); ok && ll.ElemType == "" {
 		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasPrefix(vt, "[]") {
 			ll.ElemType = vt[2:]
@@ -3292,7 +3322,11 @@ func (c *CallExpr) emit(w io.Writer) {
 			io.WriteString(w, "[]i64{}")
 		}
 	default:
-		io.WriteString(w, c.Func)
+		name := c.Func
+		if name == "floor" {
+			name = "std.math.floor"
+		}
+		io.WriteString(w, name)
 		io.WriteString(w, "(")
 		for i, a := range c.Args {
 			if i > 0 {
@@ -3891,7 +3925,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				continue
 			}
 			if name, ok := exprToString(expr); ok {
-				expr = &CallExpr{Func: name, Args: args}
+				if name == "floor" {
+					expr = &CallExpr{Func: "std.math.floor", Args: args}
+				} else {
+					expr = &CallExpr{Func: name, Args: args}
+				}
 				continue
 			}
 			return nil, fmt.Errorf("unsupported call target")
@@ -4499,6 +4537,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 		}
 	}
 	popAliasScope()
+	thenStmts = removeTrailingReturnAfterPanic(thenStmts)
 	var elseStmts []Stmt
 	if is.ElseIf != nil {
 		st, err := compileIfStmt(is.ElseIf, prog)
@@ -4519,7 +4558,21 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 		}
 		popAliasScope()
 	}
+	elseStmts = removeTrailingReturnAfterPanic(elseStmts)
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func removeTrailingReturnAfterPanic(stmts []Stmt) []Stmt {
+	if len(stmts) >= 2 {
+		if _, ok := stmts[len(stmts)-1].(*ReturnStmt); ok {
+			if exprStmt, ok2 := stmts[len(stmts)-2].(*ExprStmt); ok2 {
+				if call, ok3 := exprStmt.Expr.(*CallExpr); ok3 && call.Func == "@panic" {
+					return stmts[:len(stmts)-1]
+				}
+			}
+		}
+	}
+	return stmts
 }
 
 func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) {
@@ -5814,10 +5867,13 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			}
 			if idx := strings.IndexByte(t.Func, '.'); idx >= 0 {
 				base := t.Func[:idx]
-				key := scope + ":" + base
-				muts[key] = true
-				if globalNames[base] {
-					muts[":"+base] = true
+				method := t.Func[idx+1:]
+				if method != "get" && method != "keyIterator" {
+					key := scope + ":" + base
+					muts[key] = true
+					if globalNames[base] {
+						muts[":"+base] = true
+					}
 				}
 			}
 		case *IfExpr:
