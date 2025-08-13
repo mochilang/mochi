@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,7 +31,13 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function sqrtApprox($x) {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function sqrtApprox($x) {
   global $r1, $r2, $r3;
   $guess = $x / 2.0;
   $i = 0;
@@ -25,8 +46,8 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function carrier_concentration($electron_conc, $hole_conc, $intrinsic_conc) {
+};
+  function carrier_concentration($electron_conc, $hole_conc, $intrinsic_conc) {
   global $r1, $r2, $r3;
   $zero_count = 0;
   if ($electron_conc == 0.0) {
@@ -39,16 +60,16 @@ function carrier_concentration($electron_conc, $hole_conc, $intrinsic_conc) {
   $zero_count = $zero_count + 1;
 }
   if ($zero_count != 1) {
-  $panic('You cannot supply more or less than 2 values');
+  _panic('You cannot supply more or less than 2 values');
 }
   if ($electron_conc < 0.0) {
-  $panic('Electron concentration cannot be negative in a semiconductor');
+  _panic('Electron concentration cannot be negative in a semiconductor');
 }
   if ($hole_conc < 0.0) {
-  $panic('Hole concentration cannot be negative in a semiconductor');
+  _panic('Hole concentration cannot be negative in a semiconductor');
 }
   if ($intrinsic_conc < 0.0) {
-  $panic('Intrinsic concentration cannot be negative in a semiconductor');
+  _panic('Intrinsic concentration cannot be negative in a semiconductor');
 }
   if ($electron_conc == 0.0) {
   return ['name' => 'electron_conc', 'value' => ($intrinsic_conc * $intrinsic_conc) / $hole_conc];
@@ -60,10 +81,18 @@ function carrier_concentration($electron_conc, $hole_conc, $intrinsic_conc) {
   return ['name' => 'intrinsic_conc', 'value' => sqrtApprox($electron_conc * $hole_conc)];
 }
   return ['name' => '', 'value' => -1.0];
-}
-$r1 = carrier_concentration(25.0, 100.0, 0.0);
-echo rtrim($r1['name'] . ', ' . _str($r1['value'])), PHP_EOL;
-$r2 = carrier_concentration(0.0, 1600.0, 200.0);
-echo rtrim($r2['name'] . ', ' . _str($r2['value'])), PHP_EOL;
-$r3 = carrier_concentration(1000.0, 0.0, 1200.0);
-echo rtrim($r3['name'] . ', ' . _str($r3['value'])), PHP_EOL;
+};
+  $r1 = carrier_concentration(25.0, 100.0, 0.0);
+  echo rtrim($r1['name'] . ', ' . _str($r1['value'])), PHP_EOL;
+  $r2 = carrier_concentration(0.0, 1600.0, 200.0);
+  echo rtrim($r2['name'] . ', ' . _str($r2['value'])), PHP_EOL;
+  $r3 = carrier_concentration(1000.0, 0.0, 1200.0);
+  echo rtrim($r3['name'] . ', ' . _str($r3['value'])), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

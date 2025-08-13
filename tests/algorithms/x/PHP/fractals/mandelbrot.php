@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,11 +35,13 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function round_int($x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function round_int($x) {
   global $img1, $img2;
   return intval(($x + 0.5));
-}
-function hsv_to_rgb($h, $s, $v) {
+};
+  function hsv_to_rgb($h, $s, $v) {
   global $img1, $img2;
   $i = intval(($h * 6.0));
   $f = $h * 6.0 - (floatval($i));
@@ -69,8 +86,8 @@ function hsv_to_rgb($h, $s, $v) {
 };
 }
   return ['r' => round_int($r * 255.0), 'g' => round_int($g * 255.0), 'b' => round_int($b * 255.0)];
-}
-function get_distance($x, $y, $max_step) {
+};
+  function get_distance($x, $y, $max_step) {
   global $img1, $img2;
   $a = $x;
   $b = $y;
@@ -85,24 +102,24 @@ function get_distance($x, $y, $max_step) {
 }
 };
   return (floatval($step)) / (floatval(($max_step - 1)));
-}
-function get_black_and_white_rgb($distance) {
+};
+  function get_black_and_white_rgb($distance) {
   global $img1, $img2;
   if ($distance == 1.0) {
   return ['r' => 0, 'g' => 0, 'b' => 0];
 } else {
   return ['r' => 255, 'g' => 255, 'b' => 255];
 }
-}
-function get_color_coded_rgb($distance) {
+};
+  function get_color_coded_rgb($distance) {
   global $img1, $img2;
   if ($distance == 1.0) {
   return ['r' => 0, 'g' => 0, 'b' => 0];
 } else {
   return hsv_to_rgb($distance, 1.0, 1.0);
 }
-}
-function get_image($image_width, $image_height, $figure_center_x, $figure_center_y, $figure_width, $max_step, $use_distance_color_coding) {
+};
+  function get_image($image_width, $image_height, $figure_center_x, $figure_center_y, $figure_width, $max_step, $use_distance_color_coding) {
   global $img1, $img2;
   $img = [];
   $figure_height = $figure_width / (floatval($image_width)) * (floatval($image_height));
@@ -127,12 +144,20 @@ function get_image($image_width, $image_height, $figure_center_x, $figure_center
   $image_y = $image_y + 1;
 };
   return $img;
-}
-function rgb_to_string($c) {
+};
+  function rgb_to_string($c) {
   global $img1, $img2;
   return '(' . _str($c['r']) . ', ' . _str($c['g']) . ', ' . _str($c['b']) . ')';
-}
-$img1 = get_image(10, 10, -0.6, 0.0, 3.2, 50, true);
-echo rtrim(rgb_to_string($img1[0][0])), PHP_EOL;
-$img2 = get_image(10, 10, -0.6, 0.0, 3.2, 50, false);
-echo rtrim(rgb_to_string($img2[0][0])), PHP_EOL;
+};
+  $img1 = get_image(10, 10, -0.6, 0.0, 3.2, 50, true);
+  echo rtrim(rgb_to_string($img1[0][0])), PHP_EOL;
+  $img2 = get_image(10, 10, -0.6, 0.0, 3.2, 50, false);
+  echo rtrim(rgb_to_string($img2[0][0])), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

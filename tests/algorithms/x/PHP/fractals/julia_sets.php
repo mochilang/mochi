@@ -1,18 +1,35 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function complex_add($a, $b) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function complex_add($a, $b) {
   return ['re' => $a['re'] + $b['re'], 'im' => $a['im'] + $b['im']];
-}
-function complex_mul($a, $b) {
+};
+  function complex_mul($a, $b) {
   $real = $a['re'] * $b['re'] - $a['im'] * $b['im'];
   $imag = $a['re'] * $b['im'] + $a['im'] * $b['re'];
   return ['re' => $real, 'im' => $imag];
-}
-function sqrtApprox($x) {
+};
+  function sqrtApprox($x) {
   $guess = $x / 2.0;
   $i = 0;
   while ($i < 20) {
@@ -20,11 +37,11 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function complex_abs($a) {
+};
+  function complex_abs($a) {
   return sqrtApprox($a['re'] * $a['re'] + $a['im'] * $a['im']);
-}
-function sin_taylor($x) {
+};
+  function sin_taylor($x) {
   $term = $x;
   $sum = $x;
   $i = 1;
@@ -36,8 +53,8 @@ function sin_taylor($x) {
   $i = $i + 1;
 };
   return $sum;
-}
-function cos_taylor($x) {
+};
+  function cos_taylor($x) {
   $term = 1.0;
   $sum = 1.0;
   $i = 1;
@@ -49,8 +66,8 @@ function cos_taylor($x) {
   $i = $i + 1;
 };
   return $sum;
-}
-function exp_taylor($x) {
+};
+  function exp_taylor($x) {
   $term = 1.0;
   $sum = 1.0;
   $i = 1.0;
@@ -60,18 +77,18 @@ function exp_taylor($x) {
   $i = $i + 1.0;
 };
   return $sum;
-}
-function complex_exp($z) {
+};
+  function complex_exp($z) {
   $e = exp_taylor($z['re']);
   return ['re' => $e * cos_taylor($z['im']), 'im' => $e * sin_taylor($z['im'])];
-}
-function eval_quadratic($c, $z) {
+};
+  function eval_quadratic($c, $z) {
   return complex_add(complex_mul($z, $z), $c);
-}
-function eval_exponential($c, $z) {
+};
+  function eval_exponential($c, $z) {
   return complex_add(complex_exp($z), $c);
-}
-function iterate_function($eval_function, $c, $nb_iterations, $z0, $infinity) {
+};
+  function iterate_function($eval_function, $c, $nb_iterations, $z0, $infinity) {
   $z_n = $z0;
   $i = 0;
   while ($i < $nb_iterations) {
@@ -82,8 +99,8 @@ function iterate_function($eval_function, $c, $nb_iterations, $z0, $infinity) {
   $i = $i + 1;
 };
   return $z_n;
-}
-function prepare_grid($window_size, $nb_pixels) {
+};
+  function prepare_grid($window_size, $nb_pixels) {
   $grid = [];
   $i = 0;
   while ($i < $nb_pixels) {
@@ -99,8 +116,8 @@ function prepare_grid($window_size, $nb_pixels) {
   $i = $i + 1;
 };
   return $grid;
-}
-function julia_demo() {
+};
+  function julia_demo() {
   $grid = prepare_grid(1.0, 5);
   $c_poly = ['re' => -0.4, 'im' => 0.6];
   $c_exp = ['re' => -2.0, 'im' => 0.0];
@@ -125,5 +142,13 @@ function julia_demo() {
 };
   echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($poly_result, 1344)))))), PHP_EOL;
   echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($exp_result, 1344)))))), PHP_EOL;
-}
-julia_demo();
+};
+  julia_demo();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

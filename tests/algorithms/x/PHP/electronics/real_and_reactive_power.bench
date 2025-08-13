@@ -1,1 +1,5 @@
-Fatal error: Cannot redeclare function sqrt() in /workspace/mochi/tests/algorithms/x/PHP/electronics/real_and_reactive_power.php on line 36
+{
+  "duration_us": 48,
+  "memory_bytes": 36568,
+  "name": "main"
+}

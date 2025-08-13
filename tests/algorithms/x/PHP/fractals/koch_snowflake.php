@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,38 +35,40 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$PI = 3.141592653589793;
-$TWO_PI = 6.283185307179586;
-function _mod($x, $m) {
-  global $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $INITIAL_VECTORS, $example;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $PI = 3.141592653589793;
+  $TWO_PI = 6.283185307179586;
+  function _mod($x, $m) {
+  global $INITIAL_VECTORS, $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $example;
   return $x - (floatval(intval($x / $m))) * $m;
-}
-function sin($x) {
-  global $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $INITIAL_VECTORS, $example;
+};
+  function mochi_sin($x) {
+  global $INITIAL_VECTORS, $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $example;
   $y = _mod($x + $PI, $TWO_PI) - $PI;
   $y2 = $y * $y;
   $y3 = $y2 * $y;
   $y5 = $y3 * $y2;
   $y7 = $y5 * $y2;
   return $y - $y3 / 6.0 + $y5 / 120.0 - $y7 / 5040.0;
-}
-function cos($x) {
-  global $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $INITIAL_VECTORS, $example;
+};
+  function mochi_cos($x) {
+  global $INITIAL_VECTORS, $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $example;
   $y = _mod($x + $PI, $TWO_PI) - $PI;
   $y2 = $y * $y;
   $y4 = $y2 * $y2;
   $y6 = $y4 * $y2;
   return 1.0 - $y2 / 2.0 + $y4 / 24.0 - $y6 / 720.0;
-}
-function rotate($v, $angle_deg) {
-  global $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $INITIAL_VECTORS, $example;
+};
+  function rotate($v, $angle_deg) {
+  global $INITIAL_VECTORS, $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $example;
   $theta = $angle_deg * $PI / 180.0;
-  $c = cos($theta);
-  $s = sin($theta);
+  $c = mochi_cos($theta);
+  $s = mochi_sin($theta);
   return ['x' => $v['x'] * $c - $v['y'] * $s, 'y' => $v['x'] * $s + $v['y'] * $c];
-}
-function iteration_step($vectors) {
-  global $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $INITIAL_VECTORS, $example;
+};
+  function iteration_step($vectors) {
+  global $INITIAL_VECTORS, $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $example;
   $new_vectors = [];
   $i = 0;
   while ($i < count($vectors) - 1) {
@@ -71,9 +88,9 @@ function iteration_step($vectors) {
 };
   $new_vectors = _append($new_vectors, $vectors[count($vectors) - 1]);
   return $new_vectors;
-}
-function iterate($initial, $steps) {
-  global $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $INITIAL_VECTORS, $example;
+};
+  function iterate($initial, $steps) {
+  global $INITIAL_VECTORS, $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $example;
   $vectors = $initial;
   $i = 0;
   while ($i < $steps) {
@@ -81,13 +98,13 @@ function iterate($initial, $steps) {
   $i = $i + 1;
 };
   return $vectors;
-}
-function vec_to_string($v) {
-  global $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $INITIAL_VECTORS, $example;
+};
+  function vec_to_string($v) {
+  global $INITIAL_VECTORS, $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $example;
   return '(' . _str($v['x']) . ', ' . _str($v['y']) . ')';
-}
-function vec_list_to_string($lst) {
-  global $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $INITIAL_VECTORS, $example;
+};
+  function vec_list_to_string($lst) {
+  global $INITIAL_VECTORS, $PI, $TWO_PI, $VECTOR_1, $VECTOR_2, $VECTOR_3, $example;
   $res = '[';
   $i = 0;
   while ($i < count($lst)) {
@@ -99,10 +116,18 @@ function vec_list_to_string($lst) {
 };
   $res = $res . ']';
   return $res;
-}
-$VECTOR_1 = ['x' => 0.0, 'y' => 0.0];
-$VECTOR_2 = ['x' => 0.5, 'y' => 0.8660254];
-$VECTOR_3 = ['x' => 1.0, 'y' => 0.0];
-$INITIAL_VECTORS = [$VECTOR_1, $VECTOR_2, $VECTOR_3, $VECTOR_1];
-$example = iterate([$VECTOR_1, $VECTOR_3], 1);
-echo rtrim(vec_list_to_string($example)), PHP_EOL;
+};
+  $VECTOR_1 = ['x' => 0.0, 'y' => 0.0];
+  $VECTOR_2 = ['x' => 0.5, 'y' => 0.8660254];
+  $VECTOR_3 = ['x' => 1.0, 'y' => 0.0];
+  $INITIAL_VECTORS = [$VECTOR_1, $VECTOR_2, $VECTOR_3, $VECTOR_1];
+  $example = iterate([$VECTOR_1, $VECTOR_3], 1);
+  echo rtrim(vec_list_to_string($example)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
