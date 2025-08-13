@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-12 16:15 GMT+7
+Last updated: 2025-08-13 07:35 GMT+7
 
-## Algorithms Golden Test Checklist (1021/1077)
+## Algorithms Golden Test Checklist (1028/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -322,7 +322,7 @@ Last updated: 2025-08-12 16:15 GMT+7
 | 313 | dynamic_programming/integer_partition | ✓ | 21.984ms | 2.0 KB |
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 389µs | 840 B |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 552µs | 1.0 KB |
-| 316 | dynamic_programming/knapsack | error |  |  |
+| 316 | dynamic_programming/knapsack | ✓ | 210µs | 3.8 KB |
 | 317 | dynamic_programming/largest_divisible_subset | ✓ | 219µs | 1016 B |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 335µs | 1.0 KB |
 | 319 | dynamic_programming/longest_common_substring | ✓ | 795µs | 856 B |
@@ -430,19 +430,19 @@ Last updated: 2025-08-12 16:15 GMT+7
 | 421 | graphs/directed_and_undirected_weighted_graph | error |  |  |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | error |  |  |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 486µs | 3.9 KB |
-| 424 | graphs/even_tree | error |  |  |
-| 425 | graphs/finding_bridges | error |  |  |
-| 426 | graphs/frequent_pattern_graph_miner | error |  |  |
-| 427 | graphs/g_topological_sort | error |  |  |
+| 424 | graphs/even_tree | ✓ | 185µs | 3.6 KB |
+| 425 | graphs/finding_bridges | ✓ | 347µs | 5.0 KB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 1.523ms | 9.2 KB |
+| 427 | graphs/g_topological_sort | ✓ | 282µs | 2.6 KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 186µs | 2.1 KB |
 | 429 | graphs/graph_adjacency_list | ✓ | 96µs | 1.3 KB |
-| 430 | graphs/graph_adjacency_matrix | error |  |  |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 207µs | 1.8 KB |
 | 431 | graphs/graph_list | ✓ | 243µs | 2.0 KB |
 | 432 | graphs/graphs_floyd_warshall | ✓ | 94µs | 2.0 KB |
 | 433 | graphs/greedy_best_first | ✓ | 2.271ms | 5.2 KB |
 | 434 | graphs/greedy_min_vertex_cover | ✓ | 135µs | 1.5 KB |
-| 435 | graphs/kahns_algorithm_long | ✓ | 85µs | 1.6 KB |
-| 436 | graphs/kahns_algorithm_topo | error |  |  |
+| 435 | graphs/kahns_algorithm_long | ✓ | 140µs | 1.6 KB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 207µs | 1.0 KB |
 | 437 | graphs/karger | ✓ | 491µs | 3.6 KB |
 | 438 | graphs/lanczos_eigenvectors | ✓ | 226µs | 2.5 KB |
 | 439 | graphs/markov_chain | ✓ | 1.34ms | 1.2 KB |
