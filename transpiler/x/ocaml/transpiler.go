@@ -666,7 +666,7 @@ func zeroValue(t string) string {
 var ocamlReserved = map[string]bool{
 	"and": true, "as": true, "assert": true, "begin": true, "class": true,
 	"end": true, "exception": true, "external": true, "fun": true, "function": true,
-	"let": true, "in": true, "match": true, "mod": true, "module": true, "open": true,
+	"include": true, "let": true, "in": true, "match": true, "mod": true, "module": true, "open": true,
 	"rec": true, "try": true, "type": true, "val": true, "when": true, "with": true,
 	"lazy": true,
 	"new":  true,
