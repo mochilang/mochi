@@ -1509,7 +1509,7 @@ func header() string {
 	hdr += "(define (float x)\n  (cond\n    [(number? x) (exact->inexact x)]\n    [(string? x) (let ([n (string->number x)]) (if n (exact->inexact n) 0.0))]\n    [else 0.0]))\n"
 	hdr += "(define (to-string x)\n"
 	hdr += "  (cond\n"
-	hdr += "    [(number? x) (let* ([s (format \"~a\" x)]) (if (regexp-match? #rx\"[.]0$\" s) (substring s 0 (- (string-length s) 2)) s))]\n"
+	hdr += "    [(number? x) (number->string x)]\n"
 	hdr += "    [else (format \"~a\" x)]))\n"
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
