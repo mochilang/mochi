@@ -1,7 +1,7 @@
 public class Main {
     static class Fibonacci {
-        int[] sequence;
-        Fibonacci(int[] sequence) {
+        long[] sequence;
+        Fibonacci(long[] sequence) {
             this.sequence = sequence;
         }
         Fibonacci() {}
@@ -12,8 +12,8 @@ public class Main {
 
     static class FibGetResult {
         Fibonacci fib;
-        int[] values;
-        FibGetResult(Fibonacci fib, int[] values) {
+        long[] values;
+        FibGetResult(Fibonacci fib, long[] values) {
             this.fib = fib;
             this.values = values;
         }
@@ -25,36 +25,70 @@ public class Main {
 
 
     static Fibonacci create_fibonacci() {
-        return new Fibonacci(new int[]{0, 1});
+        return new Fibonacci(new long[]{0, 1});
     }
 
-    static FibGetResult fib_get(Fibonacci f, int index) {
-        int[] seq = ((int[])(f.sequence));
-        while (seq.length < index) {
-            int next = seq[seq.length - 1] + seq[seq.length - 2];
-            seq = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(seq), java.util.stream.IntStream.of(next)).toArray()));
+    static FibGetResult fib_get(Fibonacci f, long index) {
+        long[] seq = ((long[])(f.sequence));
+        while ((long)(seq.length) < index) {
+            long next_1 = (long)((long)(seq[(int)((long)((long)(seq.length) - (long)(1)))]) + (long)(seq[(int)((long)((long)(seq.length) - (long)(2)))]));
+            seq = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(seq), java.util.stream.LongStream.of((long)(next_1))).toArray()));
         }
 f.sequence = seq;
-        int[] result = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < index) {
-            result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(seq[i])).toArray()));
-            i = i + 1;
+        long[] result_1 = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < index) {
+            result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(seq[(int)((long)(i_1))]))).toArray()));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return new FibGetResult(f, result);
+        return new FibGetResult(f, result_1);
     }
 
     static void main() {
         Fibonacci fib = create_fibonacci();
-        FibGetResult res = fib_get(fib, 10);
-        fib = res.fib;
-        System.out.println(_p(res.values));
-        res = fib_get(fib, 5);
-        fib = res.fib;
-        System.out.println(_p(res.values));
+        FibGetResult res_1 = fib_get(fib, 10L);
+        fib = res_1.fib;
+        System.out.println(_p(res_1.values));
+        res_1 = fib_get(fib, 5L);
+        fib = res_1.fib;
+        System.out.println(_p(res_1.values));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -69,6 +103,11 @@ f.sequence = seq;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
