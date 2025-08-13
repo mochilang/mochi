@@ -42,6 +42,7 @@ var usesSubprocess bool
 var usesFetch bool
 var needMD5Hex bool
 var needSHA256 bool
+var needToi bool
 var benchMain bool
 var returnStack []Symbol
 var unionConsts map[string]int
@@ -436,6 +437,9 @@ func header() []byte {
 	if usesFetch {
 		prelude += "(define (_fetch url) (let ((d (string->json (process->string (string-append \"curl -s \" url))))) (if (and (list? d) (pair? d) (pair? (car d))) (alist->hash-table (map (lambda (p) (cons (symbol->string (car p)) (cdr p))) d)) d)))\n"
 	}
+	if needToi {
+		prelude += "(define (toi s) (let ((n (string->number s))) (if n (inexact->exact n) 0)))\n"
+	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -765,7 +769,8 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 			currentEnv = prevEnv
 			return nil, err
 		}
-		switch types.ExprType(fs.Source, prevEnv).(type) {
+		srcType := types.ExprType(fs.Source, prevEnv)
+		switch srcType.(type) {
 		case types.MapType:
 			needHash = true
 			iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
@@ -775,8 +780,10 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 		}
 		if list, ok := iter.(*List); ok {
 			if sym, ok := list.Elems[0].(Symbol); ok && sym == "hash-table-ref" {
-				needHash = true
-				iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+				if _, ok := srcType.(types.MapType); ok {
+					needHash = true
+					iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+				}
 			}
 		}
 	}
@@ -1288,6 +1295,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSubprocess = false
 	usesFetch = false
 	needMD5Hex = false
+	needSHA256 = false
+	needToi = false
 	unionConsts = map[string]int{}
 	unionConstOrder = nil
 	methodNames = map[string]struct{}{}
@@ -3329,6 +3338,12 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			}
 			needHash = true
 			return &List{Elems: []Node{Symbol("hash-table-keys"), args[0]}}, nil
+		case "values":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("values expects 1 arg")
+			}
+			needHash = true
+			return &List{Elems: []Node{Symbol("hash-table-values"), args[0]}}, nil
 		case "sum":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sum expects 1 arg")
@@ -3368,6 +3383,12 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				return nil, fmt.Errorf("exp expects 1 arg")
 			}
 			return &List{Elems: []Node{Symbol("exp"), args[0]}}, nil
+		case "toi":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("toi expects 1 arg")
+			}
+			needToi = true
+			return &List{Elems: []Node{Symbol("toi"), args[0]}}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects 1 arg")
