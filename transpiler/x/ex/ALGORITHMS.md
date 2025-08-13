@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-12 16:20 GMT+7
+Last updated: 2025-08-13 07:28 GMT+7
 
-## Algorithms Golden Test Checklist (823/1077)
+## Algorithms Golden Test Checklist (824/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -322,7 +322,7 @@ Last updated: 2025-08-12 16:20 GMT+7
 | 313 | dynamic_programming/integer_partition | ✓ | 43.12ms | 664.7 MB |
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 17.32ms | 25.0 MB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | error |  |  |
-| 316 | dynamic_programming/knapsack | error |  |  |
+| 316 | dynamic_programming/knapsack | ✓ | 6.68ms | 12.6 MB |
 | 317 | dynamic_programming/largest_divisible_subset | ✓ | 229us | 12.7 MB |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 398us | 17.7 MB |
 | 319 | dynamic_programming/longest_common_substring | ✓ | 12.30ms | 25.0 MB |

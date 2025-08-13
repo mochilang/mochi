@@ -2011,16 +2011,16 @@ func Emit(p *Program, benchMain bool) []byte {
 		st.emit(&buf, 1)
 		buf.WriteString("\n")
 	}
-       if !(benchMain && hasMain) {
-               for _, st := range globals {
-                       if ls, ok := st.(*LetStmt); ok {
-                               ls.emitGlobal(&buf, 1)
-                       } else {
-                               st.emit(&buf, 1)
-                       }
-                       buf.WriteString("\n")
-               }
-       }
+	if !(benchMain && hasMain) {
+		for _, st := range globals {
+			if ls, ok := st.(*LetStmt); ok {
+				ls.emitGlobal(&buf, 1)
+			} else {
+				st.emit(&buf, 1)
+			}
+			buf.WriteString("\n")
+		}
+	}
 	if !hasMain {
 		buf.WriteString("  def main() do\n")
 		if benchMain {
@@ -2291,17 +2291,17 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else if st.Var.Type != nil && st.Var.Type.Simple != nil {
-			switch *st.Var.Type.Simple {
-			case "int":
+		} else if st.Var.Type != nil {
+			switch types.ResolveTypeRef(st.Var.Type, env).(type) {
+			case types.IntType:
 				val = &NumberLit{Value: "0"}
-			case "string":
+			case types.StringType:
 				val = &StringLit{Value: ""}
-			case "bool":
+			case types.BoolType:
 				val = &BoolLit{Value: false}
-			case "list":
+			case types.ListType:
 				val = &ListLit{}
-			case "map":
+			case types.MapType:
 				val = &MapLit{}
 			}
 		}
