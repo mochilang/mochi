@@ -1839,12 +1839,10 @@ func isIntOnlyExpr(e Expr, env *types.Env) bool {
 				return isIntLike(t)
 			}
 		}
-		// Assume integers when type information is missing.
-		// This helps choose integer division for expressions
-		// like "(a - b) / 10" where "a" and "b" are local
-		// variables whose types are not tracked in the global
-		// environment during emission.
-		return true
+		// Without type information, assume non-integer to avoid
+		// forcing floor division on expressions that may involve
+		// floats.
+		return false
 	case *BinaryExpr:
 		if ex.Op == "/" {
 			return isIntOnlyExpr(ex.Left, env) && isIntOnlyExpr(ex.Right, env)
@@ -5009,6 +5007,16 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					} else {
 						expr = &CallExpr{Func: expr, Args: args}
 					}
+				case "floor":
+					if len(args) == 1 {
+						if currentImports != nil {
+							currentImports["math"] = true
+						}
+						expr = &CallExpr{Func: &FieldExpr{Target: &Name{Name: "math"}, Name: "floor"}, Args: args}
+						replaced = true
+					} else {
+						expr = &CallExpr{Func: expr, Args: args}
+					}
 				default:
 					expr = &CallExpr{Func: expr, Args: args}
 				}
@@ -5228,6 +5236,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "to_float":
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: "float"}, Args: args}, nil
+			}
+		case "floor":
+			if len(args) == 1 {
+				if currentImports != nil {
+					currentImports["math"] = true
+				}
+				return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "math"}, Name: "floor"}, Args: args}, nil
 			}
 		case "sha256":
 			if len(args) == 1 {
