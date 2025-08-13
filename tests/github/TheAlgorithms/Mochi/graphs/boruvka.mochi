@@ -36,8 +36,10 @@ fun find_component(g: Graph, node: int): int {
 fun set_component(g: Graph, node: int): Graph {
   if g.component[node] != node {
     var comp = g.component
-    for k in keys(comp) {
+    var k = 0
+    while k < g.num_nodes {
       comp[k] = find_component(g, k)
+      k = k + 1
     }
     g = Graph{ num_nodes: g.num_nodes, edges: g.edges, component: comp }
   }
@@ -65,7 +67,7 @@ fun create_empty_edges(n: int): list<Edge> {
   var res: list<Edge> = []
   var i = 0
   while i < n {
-    res = append(res, Edge{ u: -1, v: -1, w: -1 })
+    res = append(res, Edge{ u: 0 - 1, v: 0 - 1, w: 0 - 1 })
     i = i + 1
   }
   return res
@@ -76,7 +78,9 @@ fun boruvka(g: Graph): int {
   var i = 0
   while i < g.num_nodes {
     component_size = append(component_size, 1)
-    g.component[i] = i
+    var comp = g.component
+    comp[i] = i
+    g = Graph{ num_nodes: g.num_nodes, edges: g.edges, component: comp }
     i = i + 1
   }
   var mst_weight = 0
@@ -92,18 +96,18 @@ fun boruvka(g: Graph): int {
       let v_comp = g.component[v]
       if u_comp != v_comp {
         let current_u = minimum_weight_edge[u_comp]
-        if current_u.u == -1 || current_u.w > w {
+        if current_u.u == 0 - 1 || current_u.w > w {
           minimum_weight_edge[u_comp] = Edge{ u: u, v: v, w: w }
         }
         let current_v = minimum_weight_edge[v_comp]
-        if current_v.u == -1 || current_v.w > w {
+        if current_v.u == 0 - 1 || current_v.w > w {
           minimum_weight_edge[v_comp] = Edge{ u: u, v: v, w: w }
         }
       }
     }
 
     for e in minimum_weight_edge {
-      if e.u != -1 {
+      if e.u != 0 - 1 {
         let u = e.u
         let v = e.v
         let w = e.w
