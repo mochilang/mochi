@@ -1171,6 +1171,20 @@ func zigTypeFromExpr(e Expr) string {
 			return ix.ElemType
 		}
 		t := zigTypeFromExpr(ix.Target)
+		for {
+			switch {
+			case strings.HasPrefix(t, "*const "):
+				t = strings.TrimPrefix(t, "*const ")
+				continue
+			case strings.HasPrefix(t, "*"):
+				t = strings.TrimPrefix(t, "*")
+				continue
+			case strings.HasPrefix(t, "const "):
+				t = strings.TrimPrefix(t, "const ")
+				continue
+			}
+			break
+		}
 		if ix.Map {
 			if strings.HasPrefix(t, "std.StringHashMap(") {
 				return strings.TrimSuffix(strings.TrimPrefix(t, "std.StringHashMap("), ")")
