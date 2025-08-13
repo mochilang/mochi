@@ -1,0 +1,5 @@
+8
+8
+optimal_value = 8
+An optimal subset corresponding to the optimal value {3, 4}
+{"duration_us":9494, "memory_bytes":134040, "name":"main"}
