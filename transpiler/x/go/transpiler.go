@@ -3005,19 +3005,25 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Var != nil:
 		var typ string
 		var declaredType types.Type
-		if _, ok := env.Types()[st.Var.Name]; ok {
+		if vd, ok := varDecls[st.Var.Name]; ok && vd.Global {
 			if st.Var.Value != nil {
 				e, err := compileExpr(st.Var.Value, env, st.Var.Name)
 				if err != nil {
 					return nil, err
 				}
-				name := st.Var.Name
+				name := vd.Name
 				if rn, ok := varNameMap[name]; ok {
 					name = rn
 				}
 				return &AssignStmt{Name: name, Value: e}, nil
 			}
 			return nil, nil
+		}
+		if t, ok := env.Types()[st.Var.Name]; ok {
+			if !types.IsAnyType(t) {
+				typ = toGoTypeFromType(t)
+				declaredType = t
+			}
 		}
 		if st.Var.Type != nil {
 			typ = toGoType(st.Var.Type, env)
