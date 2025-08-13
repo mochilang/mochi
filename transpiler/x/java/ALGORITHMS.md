@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-13 01:40 GMT+7
+Last updated: 2025-08-13 07:32 GMT+7
 
 ## Algorithms Golden Test Checklist (937/1077)
 | Index | Name | Status | Duration | Memory |
@@ -316,7 +316,7 @@ Last updated: 2025-08-13 01:40 GMT+7
 | 307 | dynamic_programming/edit_distance | ✓ | 33.0ms | 46.36KB |
 | 308 | dynamic_programming/factorial | ✓ | 27.0ms | 46.40KB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 16.0ms | 1.09KB |
-| 310 | dynamic_programming/fibonacci | ✓ | 29.0ms | 46.84KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 35.0ms | 47.57KB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 26.0ms | 38.66KB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 26.0ms | 46.84KB |
 | 313 | dynamic_programming/integer_partition | ✓ | 60.0ms | 46.11KB |

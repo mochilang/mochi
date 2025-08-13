@@ -737,7 +737,7 @@ func inferType(e Expr) string {
 	case *IntLit:
 		return "int"
 	case *LongLit:
-		return "int"
+		return "long"
 	case *FloatLit:
 		return "double"
 	case *BoolLit:
@@ -864,6 +864,9 @@ func inferType(e Expr) string {
 			if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
 				return "double"
 			}
+			if lt == "long" || rt == "long" {
+				return "long"
+			}
 			return "int"
 		case "-", "*", "/", "%":
 			lt := inferType(ex.Left)
@@ -876,6 +879,9 @@ func inferType(e Expr) string {
 			}
 			if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
 				return "double"
+			}
+			if lt == "long" || rt == "long" {
+				return "long"
 			}
 			return "int"
 		case "==", "!=", "<", "<=", ">", ">=":
@@ -3011,19 +3017,19 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
-	if elem == "int" {
-		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
-		a.List.emit(w)
-		fmt.Fprint(w, "), java.util.stream.IntStream.of(")
-		emitCastExpr(w, a.Value, "int")
-		fmt.Fprint(w, ")).toArray()")
-		return
-	}
-	if elem == "long" {
+	if jt == "long" {
 		fmt.Fprint(w, "java.util.stream.LongStream.concat(java.util.Arrays.stream(")
 		a.List.emit(w)
 		fmt.Fprint(w, "), java.util.stream.LongStream.of(")
 		emitCastExpr(w, a.Value, "long")
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
+	if jt == "int" {
+		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		a.List.emit(w)
+		fmt.Fprint(w, "), java.util.stream.IntStream.of(")
+		emitCastExpr(w, a.Value, "int")
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
@@ -3925,18 +3931,22 @@ func arrayElemType(e Expr) string {
 		if ex.ResultType != "" {
 			t := ex.ResultType
 			if strings.HasSuffix(t, "[]") {
-				return strings.TrimSuffix(t, "[]")
+				elem := strings.TrimSuffix(t, "[]")
+				return javaType(elem)
 			}
 			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
-				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+				inner := strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+				return javaType(inner)
 			}
 		}
 		t := arrayElemType(ex.Target)
 		if strings.HasSuffix(t, "[]") {
-			return strings.TrimSuffix(t, "[]")
+			elem := strings.TrimSuffix(t, "[]")
+			return javaType(elem)
 		}
 		if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
-			return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+			inner := strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+			return javaType(inner)
 		}
 		return ""
 	case *CallExpr:
