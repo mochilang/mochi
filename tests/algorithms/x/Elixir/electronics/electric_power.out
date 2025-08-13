@@ -5,11 +5,8 @@ warning: variable "i" is unused (there is a variable with the same name in the c
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/electronics/electric_power.exs:23:8: Main.pow10/1
 
-    error: undefined variable "floor"
-    │
- 37 │       throw {:return, floor.(x * m + 0.5) / m}
-    │                       ^^^^^
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/electronics/electric_power.exs:37:23: Main.round_to/2
-
-** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/electronics/electric_power.exs: cannot compile module Main (errors have been logged)
+"Result(name='voltage', value=2.5)"
+"Result(name='power', value=4.0)"
+"Result(name='power', value=6.0)"
+"Result(name='power', value=4.84)"
+"Result(name='current', value=3.0)"

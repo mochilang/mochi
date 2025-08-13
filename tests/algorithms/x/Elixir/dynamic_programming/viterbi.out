@@ -12,19 +12,19 @@ warning: variable "k" is unused (there is a variable with the same name in the c
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/viterbi.exs:87:12: Main.viterbi/5
 
-     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 143 │       {last_state, m, max_final} = try do
-     │                    ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/viterbi.exs:143:20: Main.viterbi/5
-
      warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
  116 │       {n, path} = try do
      │        ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/viterbi.exs:116:8: Main.viterbi/5
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 143 │       {last_state, m, max_final} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/viterbi.exs:143:20: Main.viterbi/5
 
     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
