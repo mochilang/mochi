@@ -17,6 +17,12 @@
 (defn indexOf [s sub]
   (let [idx (clojure.string/index-of s sub)] (if (nil? idx) -1 idx)))
 
+(defn split [s sep]
+  (clojure.string/split s (re-pattern sep)))
+
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
 (def ^:dynamic join_words_i nil)
 
 (def ^:dynamic join_words_res nil)
@@ -69,8 +75,8 @@
 
 (def ^:dynamic viterbi_t nil)
 
-(defn split [s sep]
-  (clojure.string/split s (re-pattern sep)))
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
@@ -95,12 +101,13 @@
 
 (def ^:dynamic main_emit_p {"Fever" {"cold" 0.3 "dizzy" 0.6 "normal" 0.1} "Healthy" {"cold" 0.4 "dizzy" 0.1 "normal" 0.5}})
 
-(def ^:dynamic main_result (viterbi main_observations main_states main_start_p main_trans_p main_emit_p))
+(def ^:dynamic main_result nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_result) (constantly (viterbi main_observations main_states main_start_p main_trans_p main_emit_p)))
       (println (join_words main_result))
       (System/gc)
       (let [end (System/nanoTime)

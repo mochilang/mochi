@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare send_file)
@@ -27,7 +33,7 @@
 (def ^:dynamic send_file_start nil)
 
 (defn send_file [send_file_content send_file_chunk_size]
-  (binding [send_file_chunk nil send_file_end nil send_file_n nil send_file_start nil] (do (set! send_file_start 0) (set! send_file_n (count send_file_content)) (while (< send_file_start send_file_n) (do (set! send_file_end (+ send_file_start send_file_chunk_size)) (when (> send_file_end send_file_n) (set! send_file_end send_file_n)) (set! send_file_chunk (subs send_file_content send_file_start (min send_file_end (count send_file_content)))) (println send_file_chunk) (set! send_file_start send_file_end))))))
+  (binding [send_file_chunk nil send_file_end nil send_file_n nil send_file_start nil] (do (set! send_file_start 0) (set! send_file_n (count send_file_content)) (while (< send_file_start send_file_n) (do (set! send_file_end (+ send_file_start send_file_chunk_size)) (when (> send_file_end send_file_n) (set! send_file_end send_file_n)) (set! send_file_chunk (subs send_file_content send_file_start (min send_file_end (count send_file_content)))) (println send_file_chunk) (set! send_file_start send_file_end))) send_file_content)))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

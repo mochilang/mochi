@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare powf round2 present_value)
@@ -39,7 +45,7 @@
   (binding [round2_scaled nil] (try (do (when (>= round2_value 0.0) (do (set! round2_scaled (long (+ (* round2_value 100.0) 0.5))) (throw (ex-info "return" {:v (/ (double round2_scaled) 100.0)})))) (set! round2_scaled (long (- (* round2_value 100.0) 0.5))) (throw (ex-info "return" {:v (/ (double round2_scaled) 100.0)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn present_value [present_value_discount_rate present_value_cash_flows]
-  (binding [present_value_cf nil present_value_factor nil present_value_i nil present_value_pv nil] (try (do (when (< present_value_discount_rate 0.0) (throw (Exception. "Discount rate cannot be negative"))) (when (= (count present_value_cash_flows) 0) (throw (Exception. "Cash flows list cannot be empty"))) (set! present_value_pv 0.0) (set! present_value_i 0) (set! present_value_factor (+ 1.0 present_value_discount_rate)) (while (< present_value_i (count present_value_cash_flows)) (do (set! present_value_cf (nth present_value_cash_flows present_value_i)) (set! present_value_pv (+ present_value_pv (quot present_value_cf (powf present_value_factor present_value_i)))) (set! present_value_i (+ present_value_i 1)))) (throw (ex-info "return" {:v (round2 present_value_pv)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [present_value_cf nil present_value_factor nil present_value_i nil present_value_pv nil] (try (do (when (< present_value_discount_rate 0.0) (throw (Exception. "Discount rate cannot be negative"))) (when (= (count present_value_cash_flows) 0) (throw (Exception. "Cash flows list cannot be empty"))) (set! present_value_pv 0.0) (set! present_value_i 0) (set! present_value_factor (+ 1.0 present_value_discount_rate)) (while (< present_value_i (count present_value_cash_flows)) (do (set! present_value_cf (nth present_value_cash_flows present_value_i)) (set! present_value_pv (+ present_value_pv (/ present_value_cf (powf present_value_factor present_value_i)))) (set! present_value_i (+ present_value_i 1)))) (throw (ex-info "return" {:v (round2 present_value_pv)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

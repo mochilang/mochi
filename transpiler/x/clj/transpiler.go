@@ -1733,12 +1733,17 @@ func isStringNode(n Node) bool {
 				}
 			}
 		}
-	case Symbol:
-		if stringVars != nil {
-			if stringVars[string(t)] {
-				return true
-			}
-		}
+        case Symbol:
+                if stringListVars != nil {
+                        if stringListVars[string(t)] {
+                                return false
+                        }
+                }
+                if stringVars != nil {
+                        if stringVars[string(t)] {
+                                return true
+                        }
+                }
 		if transpileEnv != nil {
 			name := string(t)
 			if typ, err := transpileEnv.GetVar(name); err == nil {
@@ -1843,15 +1848,22 @@ func isMapNode(n Node) bool {
 	switch t := n.(type) {
 	case *Map:
 		return true
-	case *List:
-		if len(t.Elems) > 0 {
-			if sym, ok := t.Elems[0].(Symbol); ok && sym == "hash-map" {
-				return true
-			}
-			if _, ok := t.Elems[0].(Keyword); ok {
-				return true
-			}
-		}
+        case *List:
+                if len(t.Elems) > 0 {
+                        if sym, ok := t.Elems[0].(Symbol); ok {
+                                if sym == "hash-map" {
+                                        return true
+                                }
+                                if sym == "get" && len(t.Elems) >= 2 {
+                                        if isMapNode(t.Elems[1]) {
+                                                return true
+                                        }
+                                }
+                        }
+                        if _, ok := t.Elems[0].(Keyword); ok {
+                                return true
+                        }
+                }
 	case Symbol:
 		if mapVars != nil {
 			if mapVars[string(t)] {
@@ -2744,15 +2756,24 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 				return nil, fmt.Errorf("input expects no args")
 			}
 			return &List{Elems: []Node{Symbol("read-line")}}, nil
-		case "abs":
-			if len(c.Args) != 1 {
-				return nil, fmt.Errorf("abs expects 1 arg")
-			}
-			arg, err := transpileExpr(c.Args[0])
-			if err != nil {
-				return nil, err
-			}
-			return &List{Elems: []Node{Symbol("Math/abs"), arg}}, nil
+                case "abs":
+                        if len(c.Args) != 1 {
+                                return nil, fmt.Errorf("abs expects 1 arg")
+                        }
+                        arg, err := transpileExpr(c.Args[0])
+                        if err != nil {
+                                return nil, err
+                        }
+                        return &List{Elems: []Node{Symbol("Math/abs"), arg}}, nil
+                case "floor":
+                        if len(c.Args) != 1 {
+                                return nil, fmt.Errorf("floor expects 1 arg")
+                        }
+                        arg, err := transpileExpr(c.Args[0])
+                        if err != nil {
+                                return nil, err
+                        }
+                        return &List{Elems: []Node{Symbol("Math/floor"), arg}}, nil
 		case "append":
 			elems = append(elems, Symbol("conj"))
 		case "slice":

@@ -70,13 +70,15 @@ func runAlgorithmCase(t *testing.T, file string) {
 		t.Fatalf("write code: %v", err)
 	}
 
-	cmd := exec.Command("clojure", codePath)
+        cmd := exec.Command("clojure", codePath)
 	cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
 	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
+        got := bytes.TrimSpace(out)
+        warn := []byte("WARNING: Implicit use of clojure.main with options is deprecated, use -M\n")
+        got = bytes.TrimPrefix(got, warn)
 	if err != nil {
 		if algUpdateEnabled() {
 			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)

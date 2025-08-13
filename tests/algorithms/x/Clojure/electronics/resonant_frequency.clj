@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare sqrtApprox resonant_frequency)
@@ -24,10 +30,10 @@
 
 (def ^:dynamic sqrtApprox_i nil)
 
-(def ^:dynamic main_PI 3.141592653589793)
+(def ^:dynamic main_PI nil)
 
 (defn sqrtApprox [sqrtApprox_x]
-  (binding [sqrtApprox_guess nil sqrtApprox_i nil] (try (do (set! sqrtApprox_guess (/ sqrtApprox_x 2.0)) (set! sqrtApprox_i 0) (while (< sqrtApprox_i 20) (do (set! sqrtApprox_guess (/ (+ sqrtApprox_guess (quot sqrtApprox_x sqrtApprox_guess)) 2.0)) (set! sqrtApprox_i (+ sqrtApprox_i 1)))) (throw (ex-info "return" {:v sqrtApprox_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrtApprox_guess nil sqrtApprox_i nil] (try (do (set! sqrtApprox_guess (/ sqrtApprox_x 2.0)) (set! sqrtApprox_i 0) (while (< sqrtApprox_i 20) (do (set! sqrtApprox_guess (/ (+ sqrtApprox_guess (/ sqrtApprox_x sqrtApprox_guess)) 2.0)) (set! sqrtApprox_i (+ sqrtApprox_i 1)))) (throw (ex-info "return" {:v sqrtApprox_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn resonant_frequency [resonant_frequency_inductance resonant_frequency_capacitance]
   (binding [resonant_frequency_denom nil] (try (do (when (<= resonant_frequency_inductance 0.0) (throw (Exception. "Inductance cannot be 0 or negative"))) (when (<= resonant_frequency_capacitance 0.0) (throw (Exception. "Capacitance cannot be 0 or negative"))) (set! resonant_frequency_denom (* (* 2.0 main_PI) (sqrtApprox (* resonant_frequency_inductance resonant_frequency_capacitance)))) (throw (ex-info "return" {:v (/ 1.0 resonant_frequency_denom)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -36,6 +42,7 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_PI) (constantly 3.141592653589793))
       (println (resonant_frequency 10.0 5.0))
       (System/gc)
       (let [end (System/nanoTime)

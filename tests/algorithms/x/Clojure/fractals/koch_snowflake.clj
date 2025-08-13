@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare _mod sin cos rotate iteration_step iterate vec_to_string vec_list_to_string)
@@ -70,12 +76,12 @@
 
 (def ^:dynamic vec_list_to_string_res nil)
 
-(def ^:dynamic main_PI 3.141592653589793)
+(def ^:dynamic main_PI nil)
 
-(def ^:dynamic main_TWO_PI 6.283185307179586)
+(def ^:dynamic main_TWO_PI nil)
 
 (defn _mod [_mod_x _mod_m]
-  (try (throw (ex-info "return" {:v (- _mod_x (* (double (Integer/parseInt (quot _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (/ _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sin [sin_x]
   (binding [sin_y nil sin_y2 nil sin_y3 nil sin_y5 nil sin_y7 nil] (try (do (set! sin_y (- (_mod (+ sin_x main_PI) main_TWO_PI) main_PI)) (set! sin_y2 (* sin_y sin_y)) (set! sin_y3 (* sin_y2 sin_y)) (set! sin_y5 (* sin_y3 sin_y2)) (set! sin_y7 (* sin_y5 sin_y2)) (throw (ex-info "return" {:v (- (+ (- sin_y (/ sin_y3 6.0)) (/ sin_y5 120.0)) (/ sin_y7 5040.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -98,20 +104,27 @@
 (defn vec_list_to_string [vec_list_to_string_lst]
   (binding [vec_list_to_string_i nil vec_list_to_string_res nil] (try (do (set! vec_list_to_string_res "[") (set! vec_list_to_string_i 0) (while (< vec_list_to_string_i (count vec_list_to_string_lst)) (do (set! vec_list_to_string_res (str vec_list_to_string_res (vec_to_string (nth vec_list_to_string_lst vec_list_to_string_i)))) (when (< vec_list_to_string_i (- (count vec_list_to_string_lst) 1)) (set! vec_list_to_string_res (str vec_list_to_string_res ", "))) (set! vec_list_to_string_i (+ vec_list_to_string_i 1)))) (set! vec_list_to_string_res (str vec_list_to_string_res "]")) (throw (ex-info "return" {:v vec_list_to_string_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_VECTOR_1 {:x 0.0 :y 0.0})
+(def ^:dynamic main_VECTOR_1 nil)
 
-(def ^:dynamic main_VECTOR_2 {:x 0.5 :y 0.8660254})
+(def ^:dynamic main_VECTOR_2 nil)
 
-(def ^:dynamic main_VECTOR_3 {:x 1.0 :y 0.0})
+(def ^:dynamic main_VECTOR_3 nil)
 
-(def ^:dynamic main_INITIAL_VECTORS [main_VECTOR_1 main_VECTOR_2 main_VECTOR_3 main_VECTOR_1])
+(def ^:dynamic main_INITIAL_VECTORS nil)
 
-(def ^:dynamic main_example (iterate [main_VECTOR_1 main_VECTOR_3] 1))
+(def ^:dynamic main_example nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_PI) (constantly 3.141592653589793))
+      (alter-var-root (var main_TWO_PI) (constantly 6.283185307179586))
+      (alter-var-root (var main_VECTOR_1) (constantly {:x 0.0 :y 0.0}))
+      (alter-var-root (var main_VECTOR_2) (constantly {:x 0.5 :y 0.8660254}))
+      (alter-var-root (var main_VECTOR_3) (constantly {:x 1.0 :y 0.0}))
+      (alter-var-root (var main_INITIAL_VECTORS) (constantly [main_VECTOR_1 main_VECTOR_2 main_VECTOR_3 main_VECTOR_1]))
+      (alter-var-root (var main_example) (constantly (iterate [main_VECTOR_1 main_VECTOR_3] 1)))
       (println (vec_list_to_string main_example))
       (System/gc)
       (let [end (System/nanoTime)
