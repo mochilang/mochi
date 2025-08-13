@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
 Completed programs: 762/1077
-Last updated: 2025-08-13 07:12 +0700
+Last updated: 2025-08-13 12:32 +0700
 
 Checklist:
 
@@ -349,7 +349,7 @@ Checklist:
 | 340 | dynamic_programming/regex_match | ✓ | 190.0µs | 26.34KB |
 | 341 | dynamic_programming/rod_cutting | ✓ | 161.0µs | 9.02KB |
 | 342 | dynamic_programming/smith_waterman | ✓ | 44.0µs | 5.27KB |
-| 343 | dynamic_programming/subset_generation | ✓ | 121.0µs | 8.46KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 181.0µs | 9.62KB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 368.0µs | 80.39KB |
 | 345 | dynamic_programming/trapped_water | ✓ | 196.0µs | 18.83KB |
 | 346 | dynamic_programming/tribonacci | ✓ | 124.0µs | 1.73KB |
