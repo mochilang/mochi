@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-13 16:04 GMT+7
+Last updated: 2025-08-13 16:13 GMT+7
 
 ## Algorithms Golden Test Checklist (828/1077)
 | Index | Name | Status | Duration | Memory |
@@ -352,7 +352,7 @@ Last updated: 2025-08-13 16:04 GMT+7
 | 343 | dynamic_programming/subset_generation | ✓ | 9.29ms | 25.0 MB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 7.53ms | 25.0 MB |
 | 345 | dynamic_programming/trapped_water | ✓ | 6.74ms | 12.5 MB |
-| 346 | dynamic_programming/tribonacci | ✓ | 7.87ms | 12.5 MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 8.04ms | 12.5 MB |
 | 347 | dynamic_programming/viterbi | ✓ | 6.92ms | 25.0 MB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 2.44ms | 25.0 MB |
 | 349 | dynamic_programming/word_break | ✓ | 2.19ms | 12.5 MB |
