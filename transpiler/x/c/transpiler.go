@@ -1693,7 +1693,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 						// support appending list pointers (e.g. list<list<int>>)
 						elemElemBase := strings.TrimSuffix(elemBase, "[]")
 						switch elemElemBase {
-						case "int":
+						case "int", "long long":
 							needListAppendPtrPtr = true
 							fmt.Fprintf(w, "%s = list_append_intptrptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
 						case "double":
@@ -1713,7 +1713,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 						}
 					} else {
 						switch elemBase {
-						case "int":
+						case "int", "long long":
 							needListAppendPtr = true
 							fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
 						case "double":
@@ -1733,7 +1733,11 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 						}
 					}
 					if lit, ok := call.Args[1].(*ListLit); ok {
-						fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", elemBase, len(lit.Elems), elemBase)
+						ptrs := strings.Count(elemBase, "[]")
+						baseType := strings.TrimSuffix(elemBase, strings.Repeat("[]", ptrs))
+						elemType := baseType + strings.Repeat("*", ptrs)
+						tmpType := elemType + "*"
+						fmt.Fprintf(w, "({%s tmp = malloc(%d * sizeof(%s)); ", tmpType, len(lit.Elems), elemType)
 						for i, e := range lit.Elems {
 							fmt.Fprintf(w, "tmp[%d] = ", i)
 							e.emitExpr(w)
@@ -5109,7 +5113,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				} else if st.Var != nil {
 					val = convertExpr(st.Var.Value)
 				}
-				if isConstExpr(val) {
+				if val == nil || isConstExpr(val) {
 					globals = append(globals, stmt)
 				} else {
 					if ds, ok := stmt.(*DeclStmt); ok {
