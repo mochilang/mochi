@@ -344,7 +344,11 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	if len(s.Vars) > 0 {
+	if len(s.Vars) == 1 {
+		// Avoid pattern matching for a single mutated variable to reduce warnings
+		io.WriteString(w, sanitizeIdent(s.Vars[0]))
+		io.WriteString(w, " = if ")
+	} else if len(s.Vars) > 1 {
 		io.WriteString(w, "{")
 		for i, v := range s.Vars {
 			if i > 0 {
@@ -362,7 +366,13 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 		st.emit(w, indent+1)
 		io.WriteString(w, "\n")
 	}
-	if len(s.Vars) > 0 {
+	if len(s.Vars) == 1 {
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, sanitizeIdent(s.Vars[0]))
+		io.WriteString(w, "\n")
+	} else if len(s.Vars) > 1 {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -384,7 +394,13 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 			st.emit(w, indent+1)
 			io.WriteString(w, "\n")
 		}
-		if len(s.Vars) > 0 {
+		if len(s.Vars) == 1 {
+			for i := 0; i < indent+1; i++ {
+				io.WriteString(w, "  ")
+			}
+			io.WriteString(w, sanitizeIdent(s.Vars[0]))
+			io.WriteString(w, "\n")
+		} else if len(s.Vars) > 1 {
 			for i := 0; i < indent+1; i++ {
 				io.WriteString(w, "  ")
 			}
@@ -3867,8 +3883,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			typ = types.AnyType{}
 			i++
-               } else if op.Field != nil {
-                       expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: ":" + op.Field.Name}, UseMapSyntax: true}
+		} else if op.Field != nil {
+			expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: ":" + op.Field.Name}, UseMapSyntax: true}
 			switch tt := typ.(type) {
 			case types.StructType:
 				if t, ok := tt.Fields[op.Field.Name]; ok {

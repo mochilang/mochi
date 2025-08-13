@@ -1,0 +1,22 @@
+warning: variable "sol" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 22 │       sol = if lower_flag && upper_flag do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/rat_in_maze.exs:22:7: Main.run_maze/6
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/rat_in_maze.exs:65:12: Main.solve_maze/5
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │       {i, sol} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/rat_in_maze.exs:78:8: Main.solve_maze/5
+
+[[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
