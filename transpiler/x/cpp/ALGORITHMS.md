@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 968/1077
-Last updated: 2025-08-13 15:57 +0700
+Completed programs: 969/1077
+Last updated: 2025-08-13 16:25 +0700
 
 Checklist:
 
@@ -353,7 +353,7 @@ Checklist:
 | 344 | dynamic_programming/sum_of_subset | ✓ | 441.0µs | 3.43MB |
 | 345 | dynamic_programming/trapped_water | ✓ | 395.0µs | 3.60MB |
 | 346 | dynamic_programming/tribonacci | ✓ | 193.0µs | 3.69MB |
-| 347 | dynamic_programming/viterbi | ✓ | 145.0µs | 3.48MB |
+| 347 | dynamic_programming/viterbi | ✓ | 353.0µs | 3.62MB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 373.0µs | 3.65MB |
 | 349 | dynamic_programming/word_break | ✓ | 232.0µs | 3.45MB |
 | 350 | electronics/apparent_power | ✓ | 1.0µs | 3.52MB |
@@ -400,7 +400,7 @@ Checklist:
 | 391 | graphics/butterfly_pattern | ✓ | 380.0µs | 3.48MB |
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 246.0µs | 3.70MB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 598.0µs | 3.66MB |
-| 394 | graphs/a_star |   | 591.0µs | 3.59MB |
+| 394 | graphs/a_star | ✓ | 591.0µs | 3.59MB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 18.0ms | 3.66MB |
 | 396 | graphs/articulation_points | ✓ | 347.0µs | 3.64MB |
 | 397 | graphs/basic_graphs | ✓ | 544.0µs | 3.55MB |
