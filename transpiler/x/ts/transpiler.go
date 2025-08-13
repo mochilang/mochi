@@ -815,6 +815,12 @@ func (m *MapLit) emit(w io.Writer) {
 				io.WriteString(w, k.Value)
 				continue
 			}
+			if isIdent(k.Value) {
+				io.WriteString(w, k.Value)
+				io.WriteString(w, ": ")
+				e.Value.emit(w)
+				continue
+			}
 			fmt.Fprintf(w, "%q: ", k.Value)
 			e.Value.emit(w)
 		case *NameRef:
