@@ -2298,7 +2298,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						typ = currProg.addArrayAlias(elem)
 					}
 					name := paramNames[p.Name]
-					params = append(params, formatParam(name, typ))
+					params = append(params, fmt.Sprintf("%s: %s", name, pasType(typ)))
 				}
 				if rt == "" {
 					for _, st := range fnBody {
