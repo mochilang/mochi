@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -63,17 +63,17 @@ let rec recursive_match (text: string) (pattern: string) =
         __ret
     with
         | Return -> __ret
-let rec dp_match (text: string) (pattern: string) =
+and dp_match (text: string) (pattern: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable text = text
     let mutable pattern = pattern
     try
         let m: int = String.length (text)
         let n: int = String.length (pattern)
-        let mutable dp: bool array array = [||]
+        let mutable dp: bool array array = Array.empty<bool array>
         let mutable i: int = 0
         while i <= m do
-            let mutable row: bool array = [||]
+            let mutable row: bool array = Array.empty<bool>
             let mutable j: int = 0
             while j <= n do
                 row <- Array.append row [|false|]
@@ -84,7 +84,7 @@ let rec dp_match (text: string) (pattern: string) =
         let mutable j: int = 1
         while j <= n do
             if ((_substring pattern (j - 1) j) = "*") && (j >= 2) then
-                if _idx (_idx dp (0)) (j - 2) then
+                if _idx (_idx dp (int 0)) (int (j - 2)) then
                     dp.[0].[j] <- true
             j <- j + 1
         i <- 1
@@ -94,34 +94,34 @@ let rec dp_match (text: string) (pattern: string) =
                 let p_char: string = _substring pattern (j - 1) j
                 let t_char: string = _substring text (i - 1) i
                 if (p_char = ".") || (p_char = t_char) then
-                    if _idx (_idx dp (i - 1)) (j - 1) then
+                    if _idx (_idx dp (int (i - 1))) (int (j - 1)) then
                         dp.[i].[j] <- true
                 else
                     if p_char = "*" then
                         if j >= 2 then
-                            if _idx (_idx dp (i)) (j - 2) then
+                            if _idx (_idx dp (int i)) (int (j - 2)) then
                                 dp.[i].[j] <- true
                             let prev_p: string = _substring pattern (j - 2) (j - 1)
                             if (prev_p = ".") || (prev_p = t_char) then
-                                if _idx (_idx dp (i - 1)) (j) then
+                                if _idx (_idx dp (int (i - 1))) (int j) then
                                     dp.[i].[j] <- true
                     else
                         dp.[i].[j] <- false
                 j <- j + 1
             i <- i + 1
-        __ret <- _idx (_idx dp (m)) (n)
+        __ret <- _idx (_idx dp (int m)) (int n)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec print_bool (b: bool) =
+and print_bool (b: bool) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     try
         if b then
-            printfn "%b" (true)
+            ignore (printfn "%b" (true))
         else
-            printfn "%b" (false)
+            ignore (printfn "%b" (false))
         __ret
     with
         | Return -> __ret

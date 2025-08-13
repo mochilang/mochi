@@ -594,9 +594,20 @@ func simpleListType(l *ListLit) string {
 func mapValueType(s string) string {
 	if strings.HasPrefix(s, "System.Collections.Generic.IDictionary<") && strings.HasSuffix(s, ">") {
 		parts := strings.TrimSuffix(strings.TrimPrefix(s, "System.Collections.Generic.IDictionary<"), ">")
-		idx := strings.LastIndex(parts, ",")
-		if idx >= 0 {
-			return strings.TrimSpace(parts[idx+1:])
+		depth := 0
+		for i := len(parts) - 1; i >= 0; i-- {
+			switch parts[i] {
+			case '>':
+				depth++
+			case '<':
+				if depth > 0 {
+					depth--
+				}
+			case ',':
+				if depth == 0 {
+					return strings.TrimSpace(parts[i+1:])
+				}
+			}
 		}
 	}
 	return "obj"
@@ -605,9 +616,20 @@ func mapValueType(s string) string {
 func mapKeyType(s string) string {
 	if strings.HasPrefix(s, "System.Collections.Generic.IDictionary<") && strings.HasSuffix(s, ">") {
 		parts := strings.TrimSuffix(strings.TrimPrefix(s, "System.Collections.Generic.IDictionary<"), ">")
-		idx := strings.LastIndex(parts, ",")
-		if idx >= 0 {
-			return strings.TrimSpace(parts[:idx])
+		depth := 0
+		for i := 0; i < len(parts); i++ {
+			switch parts[i] {
+			case '<':
+				depth++
+			case '>':
+				if depth > 0 {
+					depth--
+				}
+			case ',':
+				if depth == 0 {
+					return strings.TrimSpace(parts[:i])
+				}
+			}
 		}
 	}
 	return "obj"

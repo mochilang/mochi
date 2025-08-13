@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -32,10 +32,10 @@ let rec matrix_chain_multiply (arr: int array) =
             __ret <- 0
             raise Return
         let n: int = Seq.length (arr)
-        let mutable dp: int array array = [||]
+        let mutable dp: int array array = Array.empty<int array>
         let mutable i: int = 0
         while i < n do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             let mutable j: int = 0
             while j < n do
                 row <- Array.append row [|INF|]
@@ -51,13 +51,13 @@ let rec matrix_chain_multiply (arr: int array) =
                 else
                     let mutable k: int = i
                     while k < j do
-                        let cost: int = ((_idx (_idx dp (i)) (k)) + (_idx (_idx dp (k + 1)) (j))) + (((_idx arr (i - 1)) * (_idx arr (k))) * (_idx arr (j)))
-                        if cost < (_idx (_idx dp (i)) (j)) then
+                        let cost: int = ((_idx (_idx dp (int i)) (int k)) + (_idx (_idx dp (int (k + 1))) (int j))) + (((_idx arr (int (i - 1))) * (_idx arr (int k))) * (_idx arr (int j)))
+                        if cost < (_idx (_idx dp (int i)) (int j)) then
                             dp.[i].[j] <- cost
                         k <- k + 1
                 j <- j + 1
             i <- i - 1
-        __ret <- _idx (_idx dp (1)) (n - 1)
+        __ret <- _idx (_idx dp (int 1)) (int (n - 1))
         raise Return
         __ret
     with

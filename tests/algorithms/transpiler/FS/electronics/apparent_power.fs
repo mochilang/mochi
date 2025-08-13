@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -33,7 +33,7 @@ let rec abs (x: float) =
         __ret
     with
         | Return -> __ret
-let rec to_radians (deg: float) =
+and to_radians (deg: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable deg = deg
     try
@@ -42,7 +42,7 @@ let rec to_radians (deg: float) =
         __ret
     with
         | Return -> __ret
-let rec sin_taylor (x: float) =
+and sin_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -60,7 +60,7 @@ let rec sin_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec cos_taylor (x: float) =
+and cos_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -78,7 +78,7 @@ let rec cos_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec rect (mag: float) (angle: float) =
+and rect (mag: float) (angle: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable mag = mag
     let mutable angle = angle
@@ -90,17 +90,17 @@ let rec rect (mag: float) (angle: float) =
         __ret
     with
         | Return -> __ret
-let rec multiply (a: float array) (b: float array) =
+and multiply (a: float array) (b: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable a = a
     let mutable b = b
     try
-        __ret <- unbox<float array> [|((_idx a (0)) * (_idx b (0))) - ((_idx a (1)) * (_idx b (1))); ((_idx a (0)) * (_idx b (1))) + ((_idx a (1)) * (_idx b (0)))|]
+        __ret <- unbox<float array> [|((_idx a (int 0)) * (_idx b (int 0))) - ((_idx a (int 1)) * (_idx b (int 1))); ((_idx a (int 0)) * (_idx b (int 1))) + ((_idx a (int 1)) * (_idx b (int 0)))|]
         raise Return
         __ret
     with
         | Return -> __ret
-let rec apparent_power (voltage: float) (current: float) (voltage_angle: float) (current_angle: float) =
+and apparent_power (voltage: float) (current: float) (voltage_angle: float) (current_angle: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable voltage = voltage
     let mutable current = current
@@ -117,13 +117,13 @@ let rec apparent_power (voltage: float) (current: float) (voltage_angle: float) 
         __ret
     with
         | Return -> __ret
-let rec approx_equal (a: float array) (b: float array) (eps: float) =
+and approx_equal (a: float array) (b: float array) (eps: float) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable a = a
     let mutable b = b
     let mutable eps = eps
     try
-        __ret <- ((abs ((_idx a (0)) - (_idx b (0)))) < eps) && ((abs ((_idx a (1)) - (_idx b (1)))) < eps)
+        __ret <- ((abs ((_idx a (int 0)) - (_idx b (int 0)))) < eps) && ((abs ((_idx a (int 1)) - (_idx b (int 1)))) < eps)
         raise Return
         __ret
     with

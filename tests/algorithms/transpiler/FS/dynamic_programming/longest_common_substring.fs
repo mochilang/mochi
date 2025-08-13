@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -43,10 +43,10 @@ let rec longest_common_substring (text1: string) (text2: string) =
             raise Return
         let m: int = String.length (text1)
         let n: int = String.length (text2)
-        let mutable dp: int array array = [||]
+        let mutable dp: int array array = Array.empty<int array>
         let mutable i: int = 0
         while i < (m + 1) do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             let mutable j: int = 0
             while j < (n + 1) do
                 row <- Array.append row [|0|]
@@ -60,9 +60,9 @@ let rec longest_common_substring (text1: string) (text2: string) =
             let mutable jj: int = 1
             while jj <= n do
                 if (_substring text1 (ii - 1) ii) = (_substring text2 (jj - 1) jj) then
-                    dp.[ii].[jj] <- 1 + (_idx (_idx dp (ii - 1)) (jj - 1))
-                    if (_idx (_idx dp (ii)) (jj)) > max_len then
-                        max_len <- _idx (_idx dp (ii)) (jj)
+                    dp.[ii].[jj] <- 1 + (_idx (_idx dp (int (ii - 1))) (int (jj - 1)))
+                    if (_idx (_idx dp (int ii)) (int jj)) > max_len then
+                        max_len <- _idx (_idx dp (int ii)) (int jj)
                         end_pos <- ii
                 jj <- jj + 1
             ii <- ii + 1
@@ -71,9 +71,9 @@ let rec longest_common_substring (text1: string) (text2: string) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (longest_common_substring ("abcdef") ("xabded"))
-printfn "%s" ("\n")
-printfn "%s" (longest_common_substring ("zxabcdezy") ("yzabcdezx"))
+ignore (printfn "%s" (longest_common_substring ("abcdef") ("xabded")))
+ignore (printfn "%s" ("\n"))
+ignore (printfn "%s" (longest_common_substring ("zxabcdezy") ("yzabcdezx")))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

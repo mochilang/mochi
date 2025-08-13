@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -33,6 +33,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -56,7 +57,7 @@ let rec min3 (a: int) (b: int) (c: int) =
         __ret
     with
         | Return -> __ret
-let rec helper (word1: string) (word2: string) (cache: int array array) (i: int) (j: int) (len1: int) (len2: int) =
+and helper (word1: string) (word2: string) (cache: int array array) (i: int) (j: int) (len1: int) (len2: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable word1 = word1
     let mutable word2 = word2
@@ -72,8 +73,8 @@ let rec helper (word1: string) (word2: string) (cache: int array array) (i: int)
         if j >= len2 then
             __ret <- len1 - i
             raise Return
-        if (_idx (_idx cache (i)) (j)) <> (0 - 1) then
-            __ret <- _idx (_idx cache (i)) (j)
+        if (_idx (_idx cache (int i)) (int j)) <> (0 - 1) then
+            __ret <- _idx (_idx cache (int i)) (int j)
             raise Return
         let mutable diff: int = 0
         if (_substring word1 i (i + 1)) <> (_substring word2 j (j + 1)) then
@@ -82,33 +83,33 @@ let rec helper (word1: string) (word2: string) (cache: int array array) (i: int)
         let insert_cost: int = 1 + (helper (word1) (word2) (cache) (i) (j + 1) (len1) (len2))
         let replace_cost: int = diff + (helper (word1) (word2) (cache) (i + 1) (j + 1) (len1) (len2))
         cache.[i].[j] <- min3 (delete_cost) (insert_cost) (replace_cost)
-        __ret <- _idx (_idx cache (i)) (j)
+        __ret <- _idx (_idx cache (int i)) (int j)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec min_distance_up_bottom (word1: string) (word2: string) =
+and min_distance_up_bottom (word1: string) (word2: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable word1 = word1
     let mutable word2 = word2
     try
         let len1: int = String.length (word1)
         let len2: int = String.length (word2)
-        let mutable cache: int array array = [||]
+        let mutable cache: int array array = Array.empty<int array>
         for _ in 0 .. (len1 - 1) do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             for _2 in 0 .. (len2 - 1) do
-                row <- Array.append row [|0 - 1|]
+                row <- Array.append row [|(0 - 1)|]
             cache <- Array.append cache [|row|]
         __ret <- helper (word1) (word2) (cache) (0) (0) (len1) (len2)
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (min_distance_up_bottom ("intention") ("execution")))
-printfn "%s" (_str (min_distance_up_bottom ("intention") ("")))
-printfn "%s" (_str (min_distance_up_bottom ("") ("")))
-printfn "%s" (_str (min_distance_up_bottom ("zooicoarchaeologist") ("zoologist")))
+ignore (printfn "%s" (_str (min_distance_up_bottom ("intention") ("execution"))))
+ignore (printfn "%s" (_str (min_distance_up_bottom ("intention") (""))))
+ignore (printfn "%s" (_str (min_distance_up_bottom ("") (""))))
+ignore (printfn "%s" (_str (min_distance_up_bottom ("zooicoarchaeologist") ("zoologist"))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

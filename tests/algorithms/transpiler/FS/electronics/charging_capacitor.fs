@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -45,7 +45,7 @@ let rec expApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec round3 (x: float) =
+and round3 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -60,7 +60,7 @@ let rec round3 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec charging_capacitor (source_voltage: float) (resistance: float) (capacitance: float) (time_sec: float) =
+and charging_capacitor (source_voltage: float) (resistance: float) (capacitance: float) (time_sec: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable source_voltage = source_voltage
     let mutable resistance = resistance
@@ -68,11 +68,11 @@ let rec charging_capacitor (source_voltage: float) (resistance: float) (capacita
     let mutable time_sec = time_sec
     try
         if source_voltage <= 0.0 then
-            failwith ("Source voltage must be positive.")
+            ignore (failwith ("Source voltage must be positive."))
         if resistance <= 0.0 then
-            failwith ("Resistance must be positive.")
+            ignore (failwith ("Resistance must be positive."))
         if capacitance <= 0.0 then
-            failwith ("Capacitance must be positive.")
+            ignore (failwith ("Capacitance must be positive."))
         let exponent: float = (-time_sec) / (resistance * capacitance)
         let voltage: float = source_voltage * (1.0 - (expApprox (exponent)))
         __ret <- round3 (voltage)
@@ -80,10 +80,10 @@ let rec charging_capacitor (source_voltage: float) (resistance: float) (capacita
         __ret
     with
         | Return -> __ret
-printfn "%g" (charging_capacitor (0.2) (0.9) (8.4) (0.5))
-printfn "%g" (charging_capacitor (2.2) (3.5) (2.4) (9.0))
-printfn "%g" (charging_capacitor (15.0) (200.0) (20.0) (2.0))
-printfn "%g" (charging_capacitor (20.0) (2000.0) (0.0003) (4.0))
+ignore (printfn "%g" (charging_capacitor (0.2) (0.9) (8.4) (0.5)))
+ignore (printfn "%g" (charging_capacitor (2.2) (3.5) (2.4) (9.0)))
+ignore (printfn "%g" (charging_capacitor (15.0) (200.0) (20.0) (2.0)))
+ignore (printfn "%g" (charging_capacitor (20.0) (2000.0) (0.0003) (4.0)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

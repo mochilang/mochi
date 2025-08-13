@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Break
 exception Continue
@@ -26,11 +26,16 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec find_min (numbers: int array) =
@@ -41,12 +46,12 @@ let rec find_min (numbers: int array) =
         let mutable s: int = 0
         let mutable idx: int = 0
         while idx < n do
-            s <- s + (_idx numbers (idx))
+            s <- s + (_idx numbers (int idx))
             idx <- idx + 1
-        let mutable dp: bool array array = [||]
+        let mutable dp: bool array array = Array.empty<bool array>
         let mutable i: int = 0
         while i <= n do
-            let mutable row: bool array = [||]
+            let mutable row: bool array = Array.empty<bool>
             let mutable j: int = 0
             while j <= s do
                 row <- Array.append row [|false|]
@@ -65,18 +70,18 @@ let rec find_min (numbers: int array) =
         while i <= n do
             j <- 1
             while j <= s do
-                dp.[i].[j] <- _idx (_idx dp (i - 1)) (j)
-                if (_idx numbers (i - 1)) <= j then
-                    if _idx (_idx dp (i - 1)) (j - (_idx numbers (i - 1))) then
+                dp.[i].[j] <- _idx (_idx dp (int (i - 1))) (int j)
+                if (_idx numbers (int (i - 1))) <= j then
+                    if _idx (_idx dp (int (i - 1))) (int (j - (_idx numbers (int (i - 1))))) then
                         dp.[i].[j] <- true
                 j <- j + 1
             i <- i + 1
         let mutable diff: int = 0
-        j <- s / 2
+        j <- _floordiv s 2
         try
             while j >= 0 do
                 try
-                    if _idx (_idx dp (n)) (j) then
+                    if _idx (_idx dp (int n)) (int j) then
                         diff <- s - (2 * j)
                         raise Break
                     j <- j - 1
@@ -91,18 +96,18 @@ let rec find_min (numbers: int array) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (find_min (unbox<int array> [|1; 2; 3; 4; 5|])))
-printfn "%s" (_str (find_min (unbox<int array> [|5; 5; 5; 5; 5|])))
-printfn "%s" (_str (find_min (unbox<int array> [|5; 5; 5; 5|])))
-printfn "%s" (_str (find_min (unbox<int array> [|3|])))
-printfn "%s" (_str (find_min (Array.empty<int>)))
-printfn "%s" (_str (find_min (unbox<int array> [|1; 2; 3; 4|])))
-printfn "%s" (_str (find_min (unbox<int array> [|0; 0; 0; 0|])))
-printfn "%s" (_str (find_min (unbox<int array> [|-1; -5; 5; 1|])))
-printfn "%s" (_str (find_min (unbox<int array> [|9; 9; 9; 9; 9|])))
-printfn "%s" (_str (find_min (unbox<int array> [|1; 5; 10; 3|])))
-printfn "%s" (_str (find_min (unbox<int array> [|-1; 0; 1|])))
-printfn "%s" (_str (find_min (unbox<int array> [|10; 9; 8; 7; 6; 5; 4; 3; 2; 1|])))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|1; 2; 3; 4; 5|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|5; 5; 5; 5; 5|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|5; 5; 5; 5|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|3|]))))
+ignore (printfn "%s" (_str (find_min (Array.empty<int>))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|1; 2; 3; 4|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|0; 0; 0; 0|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|-1; -5; 5; 1|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|9; 9; 9; 9; 9|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|1; 5; 10; 3|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|-1; 0; 1|]))))
+ignore (printfn "%s" (_str (find_min (unbox<int array> [|10; 9; 8; 7; 6; 5; 4; 3; 2; 1|]))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

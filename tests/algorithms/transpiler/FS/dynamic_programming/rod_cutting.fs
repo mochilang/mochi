@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -37,13 +37,13 @@ let rec enforce_args (n: int) (prices: int array) =
     let mutable prices = prices
     try
         if n < 0 then
-            failwith ("n must be non-negative")
+            ignore (failwith ("n must be non-negative"))
         if n > (Seq.length (prices)) then
-            failwith ("price list is shorter than n")
+            ignore (failwith ("price list is shorter than n"))
         __ret
     with
         | Return -> __ret
-let rec bottom_up_cut_rod (n: int) (prices: int array) =
+and bottom_up_cut_rod (n: int) (prices: int array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     let mutable prices = prices
@@ -55,27 +55,27 @@ let rec bottom_up_cut_rod (n: int) (prices: int array) =
             if i = 0 then
                 max_rev <- Array.append max_rev [|0|]
             else
-                max_rev <- Array.append max_rev [|-2147483648L|]
+                max_rev <- Array.append max_rev [|int (-2147483648L)|]
             i <- i + 1
         let mutable length: int = 1
         while length <= n do
-            let mutable best: int = _idx max_rev (length)
+            let mutable best: int = _idx max_rev (int length)
             let mutable j: int = 1
             while j <= length do
-                let candidate: int = (_idx prices (j - 1)) + (_idx max_rev (length - j))
+                let candidate: int = (_idx prices (int (j - 1))) + (_idx max_rev (int (length - j)))
                 if candidate > best then
                     best <- candidate
                 j <- j + 1
             max_rev.[length] <- best
             length <- length + 1
-        __ret <- _idx max_rev (n)
+        __ret <- _idx max_rev (int n)
         raise Return
         __ret
     with
         | Return -> __ret
-let prices: int array = [|1; 5; 8; 9; 10; 17; 17; 20; 24; 30|]
-printfn "%d" (bottom_up_cut_rod (4) (prices))
-printfn "%d" (bottom_up_cut_rod (10) (prices))
+let prices: int array = unbox<int array> [|1; 5; 8; 9; 10; 17; 17; 20; 24; 30|]
+ignore (printfn "%d" (bottom_up_cut_rod (4) (prices)))
+ignore (printfn "%d" (bottom_up_cut_rod (10) (prices)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

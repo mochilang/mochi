@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -36,7 +36,7 @@ let rec make_list (len: int) (value: int) =
     let mutable len = len
     let mutable value = value
     try
-        let mutable arr: int array = [||]
+        let mutable arr: int array = Array.empty<int>
         let mutable i: int = 0
         while i < len do
             arr <- Array.append arr [|value|]
@@ -46,7 +46,7 @@ let rec make_list (len: int) (value: int) =
         __ret
     with
         | Return -> __ret
-let rec int_sqrt (n: int) =
+and int_sqrt (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     try
@@ -58,12 +58,12 @@ let rec int_sqrt (n: int) =
         __ret
     with
         | Return -> __ret
-let rec minimum_squares_to_represent_a_number (number: int) =
+and minimum_squares_to_represent_a_number (number: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable number = number
     try
         if number < 0 then
-            failwith ("the value of input must not be a negative number")
+            ignore (failwith ("the value of input must not be a negative number"))
         if number = 0 then
             __ret <- 1
             raise Return
@@ -75,19 +75,19 @@ let rec minimum_squares_to_represent_a_number (number: int) =
             let root: int = int_sqrt (i)
             let mutable j: int = 1
             while j <= root do
-                let current_answer: int = 1 + (_idx answers (i - (j * j)))
+                let current_answer: int = 1 + (_idx answers (int (i - (j * j))))
                 if current_answer < answer then
                     answer <- current_answer
                 j <- j + 1
             answers.[i] <- answer
             i <- i + 1
-        __ret <- _idx answers (number)
+        __ret <- _idx answers (int number)
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%d" (minimum_squares_to_represent_a_number (25))
-printfn "%d" (minimum_squares_to_represent_a_number (21))
+ignore (printfn "%d" (minimum_squares_to_represent_a_number (25)))
+ignore (printfn "%d" (minimum_squares_to_represent_a_number (21)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

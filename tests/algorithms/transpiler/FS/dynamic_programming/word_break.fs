@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -57,20 +57,20 @@ let rec build_set (words: string array) =
     try
         let mutable m: System.Collections.Generic.IDictionary<string, bool> = _dictCreate []
         for w in Seq.map string (words) do
-            m.[w] <- true
+            m <- _dictAdd (m) (string (w)) (true)
         __ret <- m
         raise Return
         __ret
     with
         | Return -> __ret
-let rec word_break (s: string) (words: string array) =
+and word_break (s: string) (words: string array) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable s = s
     let mutable words = words
     try
         let n: int = String.length (s)
         let dict: System.Collections.Generic.IDictionary<string, bool> = build_set (words)
-        let mutable dp: bool array = [||]
+        let mutable dp: bool array = Array.empty<bool>
         let mutable i: int = 0
         while i <= n do
             dp <- Array.append dp [|false|]
@@ -80,26 +80,26 @@ let rec word_break (s: string) (words: string array) =
         while i <= n do
             let mutable j: int = 0
             while j < i do
-                if _idx dp (j) then
+                if _idx dp (int j) then
                     let sub: string = _substring s (j) (i)
                     if dict.ContainsKey(sub) then
                         dp.[i] <- true
                         j <- i
                 j <- j + 1
             i <- i + 1
-        __ret <- _idx dp (n)
+        __ret <- _idx dp (int n)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec print_bool (b: bool) =
+and print_bool (b: bool) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     try
         if b then
-            printfn "%b" (true)
+            ignore (printfn "%b" (true))
         else
-            printfn "%b" (false)
+            ignore (printfn "%b" (false))
         __ret
     with
         | Return -> __ret

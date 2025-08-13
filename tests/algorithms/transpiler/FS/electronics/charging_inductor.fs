@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -44,7 +44,7 @@ let rec expApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec floor (x: float) =
+and floor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -56,7 +56,7 @@ let rec floor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec pow10 (n: int) =
+and pow10 (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable n = n
     try
@@ -70,7 +70,7 @@ let rec pow10 (n: int) =
         __ret
     with
         | Return -> __ret
-let rec round (x: float) (n: int) =
+and round (x: float) (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable n = n
@@ -81,7 +81,7 @@ let rec round (x: float) (n: int) =
         __ret
     with
         | Return -> __ret
-let rec charging_inductor (source_voltage: float) (resistance: float) (inductance: float) (time: float) =
+and charging_inductor (source_voltage: float) (resistance: float) (inductance: float) (time: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable source_voltage = source_voltage
     let mutable resistance = resistance
@@ -89,11 +89,11 @@ let rec charging_inductor (source_voltage: float) (resistance: float) (inductanc
     let mutable time = time
     try
         if source_voltage <= 0.0 then
-            failwith ("Source voltage must be positive.")
+            ignore (failwith ("Source voltage must be positive."))
         if resistance <= 0.0 then
-            failwith ("Resistance must be positive.")
+            ignore (failwith ("Resistance must be positive."))
         if inductance <= 0.0 then
-            failwith ("Inductance must be positive.")
+            ignore (failwith ("Inductance must be positive."))
         let exponent: float = ((-time) * resistance) / inductance
         let current: float = (source_voltage / resistance) * (1.0 - (expApprox (exponent)))
         __ret <- round (current) (3)
@@ -101,9 +101,9 @@ let rec charging_inductor (source_voltage: float) (resistance: float) (inductanc
         __ret
     with
         | Return -> __ret
-printfn "%g" (charging_inductor (5.8) (1.5) (2.3) (2.0))
-printfn "%g" (charging_inductor (8.0) (5.0) (3.0) (2.0))
-printfn "%g" (charging_inductor (8.0) (5.0 * (pow10 (2))) (3.0) (2.0))
+ignore (printfn "%g" (charging_inductor (5.8) (1.5) (2.3) (2.0)))
+ignore (printfn "%g" (charging_inductor (8.0) (5.0) (3.0) (2.0)))
+ignore (printfn "%g" (charging_inductor (8.0) (5.0 * (pow10 (2))) (3.0) (2.0)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
