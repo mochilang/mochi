@@ -1138,7 +1138,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		if strings.HasSuffix(typ, "***") {
 			base = strings.TrimSuffix(typ, "***")
 		}
-		if lst, ok := d.Value.(*ListLit); ok {
+		if lst, ok := d.Value.(*ListLit); ok && len(lst.Elems) > 0 {
 			for i, e := range lst.Elems {
 				if ll, ok2 := e.(*ListLit); ok2 {
 					for j, e2 := range ll.Elems {
@@ -1313,7 +1313,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t %s_lens_len = 0;\n", d.Name)
 			return
 		}
-		if _, ok := d.Value.(*IndexExpr); ok {
+		if ie, ok := d.Value.(*IndexExpr); ok {
 			fmt.Fprintf(w, "%s %s%s = ", base, stars, d.Name)
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
@@ -1321,6 +1321,16 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
 			emitLenExpr(w, d.Value)
 			io.WriteString(w, ";\n")
+			if vr, ok2 := ie.Target.(*VarRef); ok2 {
+				if vt, ok3 := varTypes[vr.Name]; ok3 && strings.HasSuffix(vt, "[][][]") {
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "size_t *%s_lens = %s_lens_lens[(int)(", d.Name, vr.Name)
+					ie.Index.emitExpr(w)
+					io.WriteString(w, ")];\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, d.Name)
+				}
+			}
 			return
 		}
 		fmt.Fprintf(w, "%s %s%s = NULL;\n", base, stars, d.Name)
