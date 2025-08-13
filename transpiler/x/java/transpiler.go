@@ -1001,6 +1001,9 @@ func inferType(e Expr) string {
 		if t, ok := varTypes[ex.Name]; ok {
 			return t
 		}
+		if v, ok := varDecls[ex.Name]; ok {
+			return v.Type
+		}
 	}
 	return ""
 }
@@ -2217,23 +2220,34 @@ func (l *ListLit) emit(w io.Writer) {
 	// `new int[]{...}` cast to Object[], leading to `int[] cannot be converted
 	// to Object[]` compilation errors. Only attempt to refine the type when
 	// the element type was not explicitly provided.
-	if arrType == "Object" && l.ElemType == "" {
+	if arrType == "Object" && (l.ElemType == "" || l.ElemType == "Object") {
 		t := ""
 		same := true
+		numeric := true
 		for _, el := range l.Elems {
 			et := inferType(el)
 			if et == "" {
 				continue
 			}
+			if et != "double" && et != "float" && et != "int" && et != "long" {
+				numeric = false
+			}
 			if t == "" {
 				t = et
 			} else if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
 				same = false
-				break
 			}
 		}
 		if same && t != "" {
 			arrType = javaType(t)
+			if l.ElemType == "Object" {
+				l.ElemType = t
+			}
+		} else if numeric {
+			arrType = "double"
+			if l.ElemType == "Object" {
+				l.ElemType = "double"
+			}
 		}
 	}
 	raw := arrType
