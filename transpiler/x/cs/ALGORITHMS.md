@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-13 07:22 GMT+7
+Last updated: 2025-08-13 16:42 GMT+7
 
 ## Algorithms Golden Test Checklist (1014/1077)
 | Index | Name | Status | Duration | Memory |
@@ -353,7 +353,7 @@ Last updated: 2025-08-13 07:22 GMT+7
 | 344 | dynamic_programming/sum_of_subset | ✓ | 3.0ms | 23.80KB |
 | 345 | dynamic_programming/trapped_water | ✓ | 3.0ms | 21.44KB |
 | 346 | dynamic_programming/tribonacci | ✓ | 3.0ms | 18.02KB |
-| 347 | dynamic_programming/viterbi | ✓ | 2.0ms | 17.59KB |
+| 347 | dynamic_programming/viterbi | ✓ | 1.0µs | 13.09KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 3.0ms | 34.59KB |
 | 349 | dynamic_programming/word_break | ✓ | 3.0ms | 18.15KB |
 | 350 | electronics/apparent_power | ✓ | 1.0µs | 43.72KB |
