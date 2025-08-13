@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare create_fibonacci fib_get main)
@@ -39,10 +42,10 @@
   (try (throw (ex-info "return" {:v {:sequence [0 1]}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn fib_get [fib_get_f_p fib_get_index]
-  (binding [fib_get_f nil fib_get_i nil fib_get_result nil fib_get_seq nil next_v nil] (try (do (set! fib_get_f fib_get_f_p) (set! fib_get_seq (:sequence fib_get_f)) (while (< (count fib_get_seq) fib_get_index) (do (set! next_v (+ (get fib_get_seq (- (count fib_get_seq) 1)) (get fib_get_seq (- (count fib_get_seq) 2)))) (set! fib_get_seq (conj fib_get_seq next_v)))) (set! fib_get_f (assoc fib_get_f :sequence fib_get_seq)) (set! fib_get_result []) (set! fib_get_i 0) (while (< fib_get_i fib_get_index) (do (set! fib_get_result (conj fib_get_result (get fib_get_seq fib_get_i))) (set! fib_get_i (+ fib_get_i 1)))) (throw (ex-info "return" {:v {:fib fib_get_f :values fib_get_result}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [fib_get_f fib_get_f_p fib_get_i nil fib_get_result nil fib_get_seq nil next_v nil] (try (do (set! fib_get_seq (:sequence fib_get_f)) (while (< (count fib_get_seq) fib_get_index) (do (set! next_v (+ (get fib_get_seq (- (count fib_get_seq) 1)) (get fib_get_seq (- (count fib_get_seq) 2)))) (set! fib_get_seq (conj fib_get_seq next_v)))) (set! fib_get_f (assoc fib_get_f :sequence fib_get_seq)) (set! fib_get_result []) (set! fib_get_i 0) (while (< fib_get_i fib_get_index) (do (set! fib_get_result (conj fib_get_result (get fib_get_seq fib_get_i))) (set! fib_get_i (+ fib_get_i 1)))) (throw (ex-info "return" {:v {:fib fib_get_f :values fib_get_result}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var fib_get_f) (constantly fib_get_f))))))
 
 (defn main []
-  (binding [main_fib nil main_res nil] (do (set! main_fib (create_fibonacci)) (set! main_res (fib_get main_fib 10)) (set! main_fib (:fib main_res)) (println (str (:values main_res))) (set! main_res (fib_get main_fib 5)) (set! main_fib (:fib main_res)) (println (str (:values main_res))))))
+  (binding [main_fib nil main_res nil] (do (set! main_fib (create_fibonacci)) (set! main_res (let [__res (fib_get main_fib 10)] (do (set! main_fib fib_get_f) __res))) (set! main_fib (:fib main_res)) (println (str (:values main_res))) (set! main_res (let [__res (fib_get main_fib 5)] (do (set! main_fib fib_get_f) __res))) (set! main_fib (:fib main_res)) (println (str (:values main_res))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
