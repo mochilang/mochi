@@ -6531,8 +6531,8 @@ func (p *Program) Emit() []byte {
 		if (f.Name == "put" && len(f.Params) == 2) || (f.Name == "get" && len(f.Params) == 1) {
 			noAuto = append(noAuto, fmt.Sprintf("%s/%d", f.Name, len(f.Params)))
 		}
-		if f.Name == "floor" && len(f.Params) == 1 {
-			noAuto = append(noAuto, "floor/1")
+		if (f.Name == "floor" || f.Name == "ceil") && len(f.Params) == 1 {
+			noAuto = append(noAuto, fmt.Sprintf("%s/1", f.Name))
 		}
 	}
 	if len(noAuto) > 0 {
