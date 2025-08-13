@@ -2097,6 +2097,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	lt := inferType(b.Left)
 	rt := inferType(b.Right)
+	resT := inferType(b)
 	left := b.Left
 	right := b.Right
 	castIf := func(expr Expr, targetType string) Expr {
@@ -2126,8 +2127,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else if rt == "bigint" && lt == "int" {
 		left = &CastExpr{Expr: left, Type: "bigint"}
 	}
-	if b.Op == "/" && lt == "int" && rt == "int" {
+	if b.Op == "/" && resT == "int" {
 		usesFloorDiv = true
+		left = &CastExpr{Expr: left, Type: "int"}
+		right = &CastExpr{Expr: right, Type: "int"}
 		io.WriteString(w, "_floordiv ")
 		if needsParen(left) {
 			io.WriteString(w, "(")
