@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,11 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -35,14 +40,14 @@ let rec straight_line_depreciation (useful_years: int) (purchase_value: float) (
     let mutable residual_value = residual_value
     try
         if useful_years < 1 then
-            failwith ("Useful years cannot be less than 1")
+            ignore (failwith ("Useful years cannot be less than 1"))
         if purchase_value < 0.0 then
-            failwith ("Purchase value cannot be less than zero")
+            ignore (failwith ("Purchase value cannot be less than zero"))
         if purchase_value < residual_value then
-            failwith ("Purchase value cannot be less than residual value")
+            ignore (failwith ("Purchase value cannot be less than residual value"))
         let depreciable_cost: float = purchase_value - residual_value
         let annual_expense: float = depreciable_cost / (1.0 * (float useful_years))
-        let mutable expenses: float array = [||]
+        let mutable expenses: float array = Array.empty<float>
         let mutable accumulated: float = 0.0
         let mutable period: int = 0
         while period < useful_years do
@@ -58,11 +63,11 @@ let rec straight_line_depreciation (useful_years: int) (purchase_value: float) (
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (straight_line_depreciation (10) (1100.0) (100.0)))
-printfn "%s" (_str (straight_line_depreciation (6) (1250.0) (50.0)))
-printfn "%s" (_str (straight_line_depreciation (4) (1001.0) (0.0)))
-printfn "%s" (_str (straight_line_depreciation (11) (380.0) (50.0)))
-printfn "%s" (_str (straight_line_depreciation (1) (4985.0) (100.0)))
+ignore (printfn "%s" (_str (straight_line_depreciation (10) (1100.0) (100.0))))
+ignore (printfn "%s" (_str (straight_line_depreciation (6) (1250.0) (50.0))))
+ignore (printfn "%s" (_str (straight_line_depreciation (4) (1001.0) (0.0))))
+ignore (printfn "%s" (_str (straight_line_depreciation (11) (380.0) (50.0))))
+ignore (printfn "%s" (_str (straight_line_depreciation (1) (4985.0) (100.0))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

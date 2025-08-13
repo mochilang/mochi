@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -25,8 +25,8 @@ let _repr v =
      .Replace("|]", "]")
      .Replace("; ", ", ")
 type Point = {
-    x: int
-    y: int
+    mutable x: int
+    mutable y: int
 }
 let rec abs_int (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
@@ -58,7 +58,7 @@ and digital_differential_analyzer_line (p1: Point) (p2: Point) =
         let steps: int = if abs_dx > abs_dy then abs_dx else abs_dy
         let x_increment: float = (float dx) / (float steps)
         let y_increment: float = (float dy) / (float steps)
-        let mutable coordinates: Point array = [||]
+        let mutable coordinates: Point array = Array.empty<Point>
         let mutable x: float = float (p1.x)
         let mutable y: float = float (p1.y)
         let mutable i: int = 0
@@ -79,7 +79,7 @@ and main () =
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let result: Point array = digital_differential_analyzer_line ({ x = 1; y = 1 }) ({ x = 4; y = 4 })
-        printfn "%s" (_repr (result))
+        ignore (printfn "%s" (_repr (result)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

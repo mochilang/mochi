@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -30,31 +30,31 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 type Angle = {
-    degrees: float
+    mutable degrees: float
 }
 type Side = {
-    length: float
-    angle: Angle
-    next: int
+    mutable length: float
+    mutable angle: Angle
+    mutable next: int
 }
 type Ellipse = {
-    major: float
-    minor: float
+    mutable major: float
+    mutable minor: float
 }
 type Circle = {
-    radius: float
+    mutable radius: float
 }
 type Polygon = {
-    sides: Side array
+    mutable sides: Side array
 }
 type Rectangle = {
-    short_side: Side
-    long_side: Side
-    poly: Polygon
+    mutable short_side: Side
+    mutable long_side: Side
+    mutable poly: Polygon
 }
 type Square = {
-    side: Side
-    rect: Rectangle
+    mutable side: Side
+    mutable rect: Rectangle
 }
 let PI: float = 3.141592653589793
 let rec make_angle (deg: float) =
@@ -62,7 +62,7 @@ let rec make_angle (deg: float) =
     let mutable deg = deg
     try
         if (deg < 0.0) || (deg > 360.0) then
-            failwith ("degrees must be between 0 and 360")
+            ignore (failwith ("degrees must be between 0 and 360"))
         __ret <- { degrees = deg }
         raise Return
         __ret
@@ -74,7 +74,7 @@ and make_side (length: float) (angle: Angle) =
     let mutable angle = angle
     try
         if length <= 0.0 then
-            failwith ("length must be positive")
+            ignore (failwith ("length must be positive"))
         __ret <- { length = length; angle = angle; next = -1 }
         raise Return
         __ret
@@ -134,7 +134,7 @@ and circle_max_parts (num_cuts: float) =
     let mutable num_cuts = num_cuts
     try
         if num_cuts < 0.0 then
-            failwith ("num_cuts must be positive")
+            ignore (failwith ("num_cuts must be positive"))
         __ret <- ((num_cuts + 2.0) + (num_cuts * num_cuts)) * 0.5
         raise Return
         __ret
@@ -143,7 +143,7 @@ and circle_max_parts (num_cuts: float) =
 and make_polygon () =
     let mutable __ret : Polygon = Unchecked.defaultof<Polygon>
     try
-        let mutable s: Side array = [||]
+        let mutable s: Side array = Array.empty<Side>
         __ret <- { sides = s }
         raise Return
         __ret
@@ -154,7 +154,7 @@ and polygon_add_side (p: Polygon) (s: Side) =
     let mutable p = p
     let mutable s = s
     try
-        p <- { p with sides = Array.append (p.sides) [|s|] }
+        p.sides <- Array.append (p.sides) [|s|]
         __ret
     with
         | Return -> __ret
@@ -163,7 +163,7 @@ and polygon_get_side (p: Polygon) (index: int) =
     let mutable p = p
     let mutable index = index
     try
-        __ret <- _idx (p.sides) (index)
+        __ret <- _idx (p.sides) (int index)
         raise Return
         __ret
     with
@@ -176,7 +176,7 @@ and polygon_set_side (p: Polygon) (index: int) (s: Side) =
     try
         let mutable tmp: Side array = p.sides
         tmp.[index] <- s
-        p <- { p with sides = tmp }
+        p.sides <- tmp
         __ret
     with
         | Return -> __ret
@@ -186,7 +186,7 @@ and make_rectangle (short_len: float) (long_len: float) =
     let mutable long_len = long_len
     try
         if (short_len <= 0.0) || (long_len <= 0.0) then
-            failwith ("length must be positive")
+            ignore (failwith ("length must be positive"))
         let short: Side = make_side (short_len) (make_angle (90.0))
         let long: Side = make_side (long_len) (make_angle (90.0))
         let mutable p: Polygon = make_polygon()
@@ -251,23 +251,23 @@ and main () =
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let a: Angle = make_angle (90.0)
-        printfn "%g" (a.degrees)
+        ignore (printfn "%A" (a.degrees))
         let s: Side = make_side (5.0) (a)
-        printfn "%g" (s.length)
+        ignore (printfn "%A" (s.length))
         let e: Ellipse = { major = 5.0; minor = 10.0 }
-        printfn "%g" (ellipse_area (e))
-        printfn "%g" (ellipse_perimeter (e))
+        ignore (printfn "%A" (ellipse_area (e)))
+        ignore (printfn "%A" (ellipse_perimeter (e)))
         let c: Circle = { radius = 5.0 }
-        printfn "%g" (circle_area (c))
-        printfn "%g" (circle_perimeter (c))
-        printfn "%g" (circle_diameter (c))
-        printfn "%g" (circle_max_parts (7.0))
+        ignore (printfn "%A" (circle_area (c)))
+        ignore (printfn "%A" (circle_perimeter (c)))
+        ignore (printfn "%A" (circle_diameter (c)))
+        ignore (printfn "%A" (circle_max_parts (7.0)))
         let r: Rectangle = make_rectangle (5.0) (10.0)
-        printfn "%g" (rectangle_perimeter (r))
-        printfn "%g" (rectangle_area (r))
+        ignore (printfn "%A" (rectangle_perimeter (r)))
+        ignore (printfn "%A" (rectangle_area (r)))
         let q: Square = make_square (5.0)
-        printfn "%g" (square_perimeter (q))
-        printfn "%g" (square_area (q))
+        ignore (printfn "%A" (square_perimeter (q)))
+        ignore (printfn "%A" (square_area (q)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

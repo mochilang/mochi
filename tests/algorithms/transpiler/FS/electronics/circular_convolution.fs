@@ -1,4 +1,4 @@
-// Generated 2025-08-13 07:12 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,7 +23,11 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")

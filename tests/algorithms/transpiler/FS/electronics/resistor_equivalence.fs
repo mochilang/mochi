@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,11 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -35,9 +40,9 @@ let rec resistor_parallel (resistors: float array) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (resistors)) do
-            let r: float = _idx resistors (i)
+            let r: float = _idx resistors (int i)
             if r <= 0.0 then
-                failwith (("Resistor at index " + (_str (i))) + " has a negative or zero value!")
+                ignore (failwith (("Resistor at index " + (_str (i))) + " has a negative or zero value!"))
             sum <- sum + (1.0 / r)
             i <- i + 1
         __ret <- 1.0 / sum
@@ -52,9 +57,9 @@ and resistor_series (resistors: float array) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (resistors)) do
-            let r: float = _idx resistors (i)
+            let r: float = _idx resistors (int i)
             if r < 0.0 then
-                failwith (("Resistor at index " + (_str (i))) + " has a negative value!")
+                ignore (failwith (("Resistor at index " + (_str (i))) + " has a negative value!"))
             sum <- sum + r
             i <- i + 1
         __ret <- sum
@@ -67,9 +72,9 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        let resistors: float array = [|3.21389; 2.0; 3.0|]
-        printfn "%s" ("Parallel: " + (_str (resistor_parallel (resistors))))
-        printfn "%s" ("Series: " + (_str (resistor_series (resistors))))
+        let resistors: float array = unbox<float array> [|3.21389; 2.0; 3.0|]
+        ignore (printfn "%s" ("Parallel: " + (_str (resistor_parallel (resistors)))))
+        ignore (printfn "%s" ("Series: " + (_str (resistor_series (resistors)))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

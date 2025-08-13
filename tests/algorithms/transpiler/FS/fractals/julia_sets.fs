@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -27,8 +27,8 @@ let _repr v =
      .Replace("|]", "]")
      .Replace("; ", ", ")
 type Complex = {
-    re: float
-    im: float
+    mutable re: float
+    mutable im: float
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -42,7 +42,7 @@ let rec complex_add (a: Complex) (b: Complex) =
         __ret
     with
         | Return -> __ret
-let rec complex_mul (a: Complex) (b: Complex) =
+and complex_mul (a: Complex) (b: Complex) =
     let mutable __ret : Complex = Unchecked.defaultof<Complex>
     let mutable a = a
     let mutable b = b
@@ -54,7 +54,7 @@ let rec complex_mul (a: Complex) (b: Complex) =
         __ret
     with
         | Return -> __ret
-let rec sqrtApprox (x: float) =
+and sqrtApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -68,7 +68,7 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec complex_abs (a: Complex) =
+and complex_abs (a: Complex) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable a = a
     try
@@ -77,7 +77,7 @@ let rec complex_abs (a: Complex) =
         __ret
     with
         | Return -> __ret
-let rec sin_taylor (x: float) =
+and sin_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -95,7 +95,7 @@ let rec sin_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec cos_taylor (x: float) =
+and cos_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -113,7 +113,7 @@ let rec cos_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec exp_taylor (x: float) =
+and exp_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -129,7 +129,7 @@ let rec exp_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec complex_exp (z: Complex) =
+and complex_exp (z: Complex) =
     let mutable __ret : Complex = Unchecked.defaultof<Complex>
     let mutable z = z
     try
@@ -139,7 +139,7 @@ let rec complex_exp (z: Complex) =
         __ret
     with
         | Return -> __ret
-let rec eval_quadratic (c: Complex) (z: Complex) =
+and eval_quadratic (c: Complex) (z: Complex) =
     let mutable __ret : Complex = Unchecked.defaultof<Complex>
     let mutable c = c
     let mutable z = z
@@ -149,7 +149,7 @@ let rec eval_quadratic (c: Complex) (z: Complex) =
         __ret
     with
         | Return -> __ret
-let rec eval_exponential (c: Complex) (z: Complex) =
+and eval_exponential (c: Complex) (z: Complex) =
     let mutable __ret : Complex = Unchecked.defaultof<Complex>
     let mutable c = c
     let mutable z = z
@@ -159,7 +159,7 @@ let rec eval_exponential (c: Complex) (z: Complex) =
         __ret
     with
         | Return -> __ret
-let rec iterate_function (eval_function: Complex -> Complex -> Complex) (c: Complex) (nb_iterations: int) (z0: Complex) (infinity: float) =
+and iterate_function (eval_function: Complex -> Complex -> Complex) (c: Complex) (nb_iterations: int) (z0: Complex) (infinity: float) =
     let mutable __ret : Complex = Unchecked.defaultof<Complex>
     let mutable eval_function = eval_function
     let mutable c = c
@@ -180,15 +180,15 @@ let rec iterate_function (eval_function: Complex -> Complex -> Complex) (c: Comp
         __ret
     with
         | Return -> __ret
-let rec prepare_grid (window_size: float) (nb_pixels: int) =
+and prepare_grid (window_size: float) (nb_pixels: int) =
     let mutable __ret : Complex array array = Unchecked.defaultof<Complex array array>
     let mutable window_size = window_size
     let mutable nb_pixels = nb_pixels
     try
-        let mutable grid: Complex array array = [||]
+        let mutable grid: Complex array array = Array.empty<Complex array>
         let mutable i: int = 0
         while i < nb_pixels do
-            let mutable row: Complex array = [||]
+            let mutable row: Complex array = Array.empty<Complex>
             let mutable j: int = 0
             while j < nb_pixels do
                 let real: float = (-window_size) + (((2.0 * window_size) * (float i)) / (float (nb_pixels - 1)))
@@ -202,21 +202,21 @@ let rec prepare_grid (window_size: float) (nb_pixels: int) =
         __ret
     with
         | Return -> __ret
-let rec julia_demo () =
+and julia_demo () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let mutable grid: Complex array array = prepare_grid (1.0) (5)
         let c_poly: Complex = { re = -0.4; im = 0.6 }
         let c_exp: Complex = { re = -2.0; im = 0.0 }
-        let mutable poly_result: int array array = [||]
-        let mutable exp_result: int array array = [||]
+        let mutable poly_result: int array array = Array.empty<int array>
+        let mutable exp_result: int array array = Array.empty<int array>
         let mutable y: int = 0
         while y < (Seq.length (grid)) do
-            let mutable row_poly: int array = [||]
-            let mutable row_exp: int array = [||]
+            let mutable row_poly: int array = Array.empty<int>
+            let mutable row_exp: int array = Array.empty<int>
             let mutable x: int = 0
-            while x < (Seq.length (_idx grid (y))) do
-                let z0: Complex = _idx (_idx grid (y)) (x)
+            while x < (Seq.length (_idx grid (int y))) do
+                let z0: Complex = _idx (_idx grid (int y)) (int x)
                 let z_poly: Complex = iterate_function (unbox<Complex -> Complex -> Complex> eval_quadratic) (c_poly) (20) (z0) (4.0)
                 let z_exp: Complex = iterate_function (unbox<Complex -> Complex -> Complex> eval_exponential) (c_exp) (10) (z0) (10000000000.0)
                 row_poly <- Array.append row_poly [|(if (complex_abs (z_poly)) < 2.0 then 1 else 0)|]
@@ -225,8 +225,8 @@ let rec julia_demo () =
             poly_result <- Array.append poly_result [|row_poly|]
             exp_result <- Array.append exp_result [|row_exp|]
             y <- y + 1
-        printfn "%s" (_repr (poly_result))
-        printfn "%s" (_repr (exp_result))
+        ignore (printfn "%s" (_repr (poly_result)))
+        ignore (printfn "%s" (_repr (exp_result)))
         __ret
     with
         | Return -> __ret

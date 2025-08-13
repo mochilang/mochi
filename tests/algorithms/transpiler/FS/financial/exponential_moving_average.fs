@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,11 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -36,13 +41,13 @@ let rec exponential_moving_average (stock_prices: float array) (window_size: int
     let mutable window_size = window_size
     try
         if window_size <= 0 then
-            failwith ("window_size must be > 0")
+            ignore (failwith ("window_size must be > 0"))
         let alpha: float = 2.0 / (1.0 + (float window_size))
         let mutable moving_average: float = 0.0
-        let mutable result: float array = [||]
+        let mutable result: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (stock_prices)) do
-            let price: float = _idx stock_prices (i)
+            let price: float = _idx stock_prices (int i)
             if i <= window_size then
                 if i = 0 then
                     moving_average <- price
@@ -57,10 +62,10 @@ let rec exponential_moving_average (stock_prices: float array) (window_size: int
         __ret
     with
         | Return -> __ret
-let stock_prices: float array = [|2.0; 5.0; 3.0; 8.2; 6.0; 9.0; 10.0|]
+let stock_prices: float array = unbox<float array> [|2.0; 5.0; 3.0; 8.2; 6.0; 9.0; 10.0|]
 let window_size: int = 3
 let mutable result: float array = exponential_moving_average (stock_prices) (window_size)
-printfn "%s" (_str (result))
+ignore (printfn "%s" (_str (result)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

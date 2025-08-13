@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,14 +21,23 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 type Point = {
-    x: int
-    y: int
+    mutable x: int
+    mutable y: int
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -42,7 +51,7 @@ let rec get_mid (p1: Point) (p2: Point) =
         __ret
     with
         | Return -> __ret
-let rec point_to_string (p: Point) =
+and point_to_string (p: Point) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable p = p
     try
@@ -51,14 +60,14 @@ let rec point_to_string (p: Point) =
         __ret
     with
         | Return -> __ret
-let rec triangle (v1: Point) (v2: Point) (v3: Point) (depth: int) =
+and triangle (v1: Point) (v2: Point) (v3: Point) (depth: int) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable v1 = v1
     let mutable v2 = v2
     let mutable v3 = v3
     let mutable depth = depth
     try
-        printfn "%s" (((((point_to_string (v1)) + " ") + (point_to_string (v2))) + " ") + (point_to_string (v3)))
+        ignore (printfn "%s" (((((point_to_string (v1)) + " ") + (point_to_string (v2))) + " ") + (point_to_string (v3))))
         if depth = 0 then
             __ret <- ()
             raise Return

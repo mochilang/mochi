@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -36,22 +36,22 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec resonant_frequency (inductance: float) (capacitance: float) =
+and resonant_frequency (inductance: float) (capacitance: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable inductance = inductance
     let mutable capacitance = capacitance
     try
         if inductance <= 0.0 then
-            failwith ("Inductance cannot be 0 or negative")
+            ignore (failwith ("Inductance cannot be 0 or negative"))
         if capacitance <= 0.0 then
-            failwith ("Capacitance cannot be 0 or negative")
+            ignore (failwith ("Capacitance cannot be 0 or negative"))
         let denom: float = (2.0 * PI) * (sqrtApprox (inductance * capacitance))
         __ret <- 1.0 / denom
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%g" (resonant_frequency (10.0) (5.0))
+ignore (printfn "%A" (resonant_frequency (10.0) (5.0)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

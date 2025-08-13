@@ -1,4 +1,4 @@
-// Generated 2025-08-13 07:12 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -101,9 +101,9 @@ and charging_inductor (source_voltage: float) (resistance: float) (inductance: f
         __ret
     with
         | Return -> __ret
-ignore (printfn "%g" (charging_inductor (5.8) (1.5) (2.3) (2.0)))
-ignore (printfn "%g" (charging_inductor (8.0) (5.0) (3.0) (2.0)))
-ignore (printfn "%g" (charging_inductor (8.0) (5.0 * (pow10 (2))) (3.0) (2.0)))
+ignore (printfn "%A" (charging_inductor (5.8) (1.5) (2.3) (2.0)))
+ignore (printfn "%A" (charging_inductor (8.0) (5.0) (3.0) (2.0)))
+ignore (printfn "%A" (charging_inductor (8.0) (5.0 * (pow10 (2))) (3.0) (2.0)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

@@ -1,4 +1,4 @@
-// Generated 2025-08-13 07:12 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -80,10 +80,10 @@ and charging_capacitor (source_voltage: float) (resistance: float) (capacitance:
         __ret
     with
         | Return -> __ret
-ignore (printfn "%g" (charging_capacitor (0.2) (0.9) (8.4) (0.5)))
-ignore (printfn "%g" (charging_capacitor (2.2) (3.5) (2.4) (9.0)))
-ignore (printfn "%g" (charging_capacitor (15.0) (200.0) (20.0) (2.0)))
-ignore (printfn "%g" (charging_capacitor (20.0) (2000.0) (0.0003) (4.0)))
+ignore (printfn "%A" (charging_capacitor (0.2) (0.9) (8.4) (0.5)))
+ignore (printfn "%A" (charging_capacitor (2.2) (3.5) (2.4) (9.0)))
+ignore (printfn "%A" (charging_capacitor (15.0) (200.0) (20.0) (2.0)))
+ignore (printfn "%A" (charging_capacitor (20.0) (2000.0) (0.0003) (4.0)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

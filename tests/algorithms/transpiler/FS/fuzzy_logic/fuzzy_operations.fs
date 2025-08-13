@@ -1,4 +1,4 @@
-// Generated 2025-08-07 17:32 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,30 +19,23 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
 type FuzzySet = {
-    name: string
-    left_boundary: float
-    peak: float
-    right_boundary: float
+    mutable name: string
+    mutable left_boundary: float
+    mutable peak: float
+    mutable right_boundary: float
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -55,7 +48,7 @@ let rec stringify (fs: FuzzySet) =
         __ret
     with
         | Return -> __ret
-let rec max2 (a: float) (b: float) =
+and max2 (a: float) (b: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable a = a
     let mutable b = b
@@ -65,7 +58,7 @@ let rec max2 (a: float) (b: float) =
         __ret
     with
         | Return -> __ret
-let rec min2 (a: float) (b: float) =
+and min2 (a: float) (b: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable a = a
     let mutable b = b
@@ -75,7 +68,7 @@ let rec min2 (a: float) (b: float) =
         __ret
     with
         | Return -> __ret
-let rec complement (fs: FuzzySet) =
+and complement (fs: FuzzySet) =
     let mutable __ret : FuzzySet = Unchecked.defaultof<FuzzySet>
     let mutable fs = fs
     try
@@ -84,7 +77,7 @@ let rec complement (fs: FuzzySet) =
         __ret
     with
         | Return -> __ret
-let rec intersection (a: FuzzySet) (b: FuzzySet) =
+and intersection (a: FuzzySet) (b: FuzzySet) =
     let mutable __ret : FuzzySet = Unchecked.defaultof<FuzzySet>
     let mutable a = a
     let mutable b = b
@@ -94,7 +87,7 @@ let rec intersection (a: FuzzySet) (b: FuzzySet) =
         __ret
     with
         | Return -> __ret
-let rec union (a: FuzzySet) (b: FuzzySet) =
+and union (a: FuzzySet) (b: FuzzySet) =
     let mutable __ret : FuzzySet = Unchecked.defaultof<FuzzySet>
     let mutable a = a
     let mutable b = b
@@ -104,7 +97,7 @@ let rec union (a: FuzzySet) (b: FuzzySet) =
         __ret
     with
         | Return -> __ret
-let rec membership (fs: FuzzySet) (x: float) =
+and membership (fs: FuzzySet) (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable fs = fs
     let mutable x = x
@@ -125,16 +118,16 @@ let rec membership (fs: FuzzySet) (x: float) =
         | Return -> __ret
 let sheru: FuzzySet = { name = "Sheru"; left_boundary = 0.4; peak = 1.0; right_boundary = 0.6 }
 let siya: FuzzySet = { name = "Siya"; left_boundary = 0.5; peak = 1.0; right_boundary = 0.7 }
-printfn "%s" (stringify (sheru))
-printfn "%s" (stringify (siya))
+ignore (printfn "%s" (stringify (sheru)))
+ignore (printfn "%s" (stringify (siya)))
 let sheru_comp: FuzzySet = complement (sheru)
-printfn "%s" (stringify (sheru_comp))
+ignore (printfn "%s" (stringify (sheru_comp)))
 let inter: FuzzySet = intersection (siya) (sheru)
-printfn "%s" (stringify (inter))
-printfn "%s" ("Sheru membership 0.5: " + (_str (membership (sheru) (0.5))))
-printfn "%s" ("Sheru membership 0.6: " + (_str (membership (sheru) (0.6))))
+ignore (printfn "%s" (stringify (inter)))
+ignore (printfn "%s" ("Sheru membership 0.5: " + (_str (membership (sheru) (0.5)))))
+ignore (printfn "%s" ("Sheru membership 0.6: " + (_str (membership (sheru) (0.6)))))
 let uni: FuzzySet = union (siya) (sheru)
-printfn "%s" (stringify (uni))
+ignore (printfn "%s" (stringify (uni)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

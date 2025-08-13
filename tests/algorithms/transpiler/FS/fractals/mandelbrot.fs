@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Break
 exception Continue
@@ -26,15 +26,20 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
 type RGB = {
-    r: int
-    g: int
-    b: int
+    mutable r: int
+    mutable g: int
+    mutable b: int
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -47,7 +52,7 @@ let rec round_int (x: float) =
         __ret
     with
         | Return -> __ret
-let rec hsv_to_rgb (h: float) (s: float) (v: float) =
+and hsv_to_rgb (h: float) (s: float) (v: float) =
     let mutable __ret : RGB = Unchecked.defaultof<RGB>
     let mutable h = h
     let mutable s = s
@@ -95,7 +100,7 @@ let rec hsv_to_rgb (h: float) (s: float) (v: float) =
         __ret
     with
         | Return -> __ret
-let rec get_distance (x: float) (y: float) (max_step: int) =
+and get_distance (x: float) (y: float) (max_step: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable y = y
@@ -124,7 +129,7 @@ let rec get_distance (x: float) (y: float) (max_step: int) =
         __ret
     with
         | Return -> __ret
-let rec get_black_and_white_rgb (distance: float) =
+and get_black_and_white_rgb (distance: float) =
     let mutable __ret : RGB = Unchecked.defaultof<RGB>
     let mutable distance = distance
     try
@@ -137,7 +142,7 @@ let rec get_black_and_white_rgb (distance: float) =
         __ret
     with
         | Return -> __ret
-let rec get_color_coded_rgb (distance: float) =
+and get_color_coded_rgb (distance: float) =
     let mutable __ret : RGB = Unchecked.defaultof<RGB>
     let mutable distance = distance
     try
@@ -150,7 +155,7 @@ let rec get_color_coded_rgb (distance: float) =
         __ret
     with
         | Return -> __ret
-let rec get_image (image_width: int) (image_height: int) (figure_center_x: float) (figure_center_y: float) (figure_width: float) (max_step: int) (use_distance_color_coding: bool) =
+and get_image (image_width: int) (image_height: int) (figure_center_x: float) (figure_center_y: float) (figure_width: float) (max_step: int) (use_distance_color_coding: bool) =
     let mutable __ret : RGB array array = Unchecked.defaultof<RGB array array>
     let mutable image_width = image_width
     let mutable image_height = image_height
@@ -160,11 +165,11 @@ let rec get_image (image_width: int) (image_height: int) (figure_center_x: float
     let mutable max_step = max_step
     let mutable use_distance_color_coding = use_distance_color_coding
     try
-        let mutable img: RGB array array = [||]
+        let mutable img: RGB array array = Array.empty<RGB array>
         let figure_height: float = (figure_width / (float image_width)) * (float image_height)
         let mutable image_y: int = 0
         while image_y < image_height do
-            let mutable row: RGB array = [||]
+            let mutable row: RGB array = Array.empty<RGB>
             let mutable image_x: int = 0
             while image_x < image_width do
                 let fx: float = figure_center_x + ((((float image_x) / (float image_width)) - 0.5) * figure_width)
@@ -184,7 +189,7 @@ let rec get_image (image_width: int) (image_height: int) (figure_center_x: float
         __ret
     with
         | Return -> __ret
-let rec rgb_to_string (c: RGB) =
+and rgb_to_string (c: RGB) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable c = c
     try
@@ -194,9 +199,9 @@ let rec rgb_to_string (c: RGB) =
     with
         | Return -> __ret
 let img1: RGB array array = get_image (10) (10) (-0.6) (0.0) (3.2) (50) (true)
-printfn "%s" (rgb_to_string (_idx (_idx img1 (0)) (0)))
+ignore (printfn "%s" (rgb_to_string (_idx (_idx img1 (int 0)) (int 0))))
 let img2: RGB array array = get_image (10) (10) (-0.6) (0.0) (3.2) (50) (false)
-printfn "%s" (rgb_to_string (_idx (_idx img2 (0)) (0)))
+ignore (printfn "%s" (rgb_to_string (_idx (_idx img2 (int 0)) (int 0))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

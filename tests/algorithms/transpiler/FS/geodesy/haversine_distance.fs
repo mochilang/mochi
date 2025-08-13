@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,11 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -43,7 +48,7 @@ let rec to_radians (deg: float) =
         __ret
     with
         | Return -> __ret
-let rec sin_taylor (x: float) =
+and sin_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -61,7 +66,7 @@ let rec sin_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec cos_taylor (x: float) =
+and cos_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -79,7 +84,7 @@ let rec cos_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec tan_approx (x: float) =
+and tan_approx (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -88,7 +93,7 @@ let rec tan_approx (x: float) =
         __ret
     with
         | Return -> __ret
-let rec sqrtApprox (x: float) =
+and sqrtApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -102,7 +107,7 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec atanApprox (x: float) =
+and atanApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -117,7 +122,7 @@ let rec atanApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec atan2Approx (y: float) (x: float) =
+and atan2Approx (y: float) (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable y = y
     let mutable x = x
@@ -143,7 +148,7 @@ let rec atan2Approx (y: float) (x: float) =
         __ret
     with
         | Return -> __ret
-let rec asinApprox (x: float) =
+and asinApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -154,7 +159,7 @@ let rec asinApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec haversine_distance (lat1: float) (lon1: float) (lat2: float) (lon2: float) =
+and haversine_distance (lat1: float) (lon1: float) (lat2: float) (lon2: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable lat1 = lat1
     let mutable lon1 = lon1
@@ -176,9 +181,9 @@ let rec haversine_distance (lat1: float) (lon1: float) (lat2: float) (lon2: floa
         __ret
     with
         | Return -> __ret
-let SAN_FRANCISCO: float array = [|37.774856; -122.424227|]
-let YOSEMITE: float array = [|37.864742; -119.537521|]
-printfn "%s" (_str (haversine_distance (_idx SAN_FRANCISCO (0)) (_idx SAN_FRANCISCO (1)) (_idx YOSEMITE (0)) (_idx YOSEMITE (1))))
+let SAN_FRANCISCO: float array = unbox<float array> [|37.774856; -122.424227|]
+let YOSEMITE: float array = unbox<float array> [|37.864742; -119.537521|]
+ignore (printfn "%s" (_str (haversine_distance (_idx SAN_FRANCISCO (int 0)) (_idx SAN_FRANCISCO (int 1)) (_idx YOSEMITE (int 0)) (_idx YOSEMITE (int 1)))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

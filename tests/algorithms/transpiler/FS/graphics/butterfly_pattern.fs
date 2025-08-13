@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -38,11 +38,11 @@ let rec repeat_char (ch: string) (count: int) =
         __ret
     with
         | Return -> __ret
-let rec butterfly_pattern (n: int) =
+and butterfly_pattern (n: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable n = n
     try
-        let mutable lines: string array = [||]
+        let mutable lines: string array = Array.empty<string>
         let mutable i: int = 1
         while i < n do
             let left: string = repeat_char ("*") (i)
@@ -63,15 +63,15 @@ let rec butterfly_pattern (n: int) =
         while k < (Seq.length (lines)) do
             if k > 0 then
                 out <- out + "\n"
-            out <- out + (_idx lines (k))
+            out <- out + (_idx lines (int k))
             k <- k + 1
         __ret <- out
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (butterfly_pattern (3))
-printfn "%s" (butterfly_pattern (5))
+ignore (printfn "%s" (butterfly_pattern (3)))
+ignore (printfn "%s" (butterfly_pattern (5)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

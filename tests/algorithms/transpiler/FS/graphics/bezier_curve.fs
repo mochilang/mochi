@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,11 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -51,7 +56,7 @@ let rec n_choose_k (n: int) (k: int) =
         __ret
     with
         | Return -> __ret
-let rec pow_float (``base``: float) (exp: int) =
+and pow_float (``base``: float) (exp: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable ``base`` = ``base``
     let mutable exp = exp
@@ -66,13 +71,13 @@ let rec pow_float (``base``: float) (exp: int) =
         __ret
     with
         | Return -> __ret
-let rec basis_function (points: float array array) (t: float) =
+and basis_function (points: float array array) (t: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable points = points
     let mutable t = t
     try
         let degree: int = (Seq.length (points)) - 1
-        let mutable res: float array = [||]
+        let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i <= degree do
             let coef: float = n_choose_k (degree) (i)
@@ -84,7 +89,7 @@ let rec basis_function (points: float array array) (t: float) =
         __ret
     with
         | Return -> __ret
-let rec bezier_point (points: float array array) (t: float) =
+and bezier_point (points: float array array) (t: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable points = points
     let mutable t = t
@@ -94,8 +99,8 @@ let rec bezier_point (points: float array array) (t: float) =
         let mutable y: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (points)) do
-            x <- x + ((_idx basis (i)) * (_idx (_idx points (i)) (0)))
-            y <- y + ((_idx basis (i)) * (_idx (_idx points (i)) (1)))
+            x <- x + ((_idx basis (int i)) * (_idx (_idx points (int i)) (int 0)))
+            y <- y + ((_idx basis (int i)) * (_idx (_idx points (int i)) (int 1)))
             i <- i + 1
         __ret <- unbox<float array> [|x; y|]
         raise Return
@@ -103,10 +108,10 @@ let rec bezier_point (points: float array array) (t: float) =
     with
         | Return -> __ret
 let control: float array array = [|[|1.0; 1.0|]; [|1.0; 2.0|]|]
-printfn "%s" (_str (basis_function (control) (0.0)))
-printfn "%s" (_str (basis_function (control) (1.0)))
-printfn "%s" (_str (bezier_point (control) (0.0)))
-printfn "%s" (_str (bezier_point (control) (1.0)))
+ignore (printfn "%s" (_str (basis_function (control) (0.0))))
+ignore (printfn "%s" (_str (basis_function (control) (1.0))))
+ignore (printfn "%s" (_str (bezier_point (control) (0.0))))
+ignore (printfn "%s" (_str (bezier_point (control) (1.0))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

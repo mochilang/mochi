@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,9 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -46,13 +43,13 @@ let rec ind_reactance (inductance: float) (frequency: float) (reactance: float) 
         if reactance = 0.0 then
             zero_count <- zero_count + 1
         if zero_count <> 1 then
-            failwith ("One and only one argument must be 0")
+            ignore (failwith ("One and only one argument must be 0"))
         if inductance < 0.0 then
-            failwith ("Inductance cannot be negative")
+            ignore (failwith ("Inductance cannot be negative"))
         if frequency < 0.0 then
-            failwith ("Frequency cannot be negative")
+            ignore (failwith ("Frequency cannot be negative"))
         if reactance < 0.0 then
-            failwith ("Inductive reactance cannot be negative")
+            ignore (failwith ("Inductive reactance cannot be negative"))
         if inductance = 0.0 then
             __ret <- _dictCreate [("inductance", reactance / ((2.0 * PI) * frequency))]
             raise Return
@@ -64,9 +61,9 @@ let rec ind_reactance (inductance: float) (frequency: float) (reactance: float) 
         __ret
     with
         | Return -> __ret
-printfn "%A" (ind_reactance (0.0) (10000.0) (50.0))
-printfn "%A" (ind_reactance (0.035) (0.0) (50.0))
-printfn "%A" (ind_reactance (0.000035) (1000.0) (0.0))
+ignore (printfn "%A" (ind_reactance (0.0) (10000.0) (50.0)))
+ignore (printfn "%A" (ind_reactance (0.035) (0.0) (50.0)))
+ignore (printfn "%A" (ind_reactance (0.000035) (1000.0) (0.0)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

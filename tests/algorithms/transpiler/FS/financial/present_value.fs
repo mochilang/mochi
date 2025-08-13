@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,11 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -45,7 +50,7 @@ let rec powf (``base``: float) (exponent: int) =
         __ret
     with
         | Return -> __ret
-let rec round2 (value: float) =
+and round2 (value: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable value = value
     try
@@ -59,20 +64,20 @@ let rec round2 (value: float) =
         __ret
     with
         | Return -> __ret
-let rec present_value (discount_rate: float) (cash_flows: float array) =
+and present_value (discount_rate: float) (cash_flows: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable discount_rate = discount_rate
     let mutable cash_flows = cash_flows
     try
         if discount_rate < 0.0 then
-            failwith ("Discount rate cannot be negative")
+            ignore (failwith ("Discount rate cannot be negative"))
         if (Seq.length (cash_flows)) = 0 then
-            failwith ("Cash flows list cannot be empty")
+            ignore (failwith ("Cash flows list cannot be empty"))
         let mutable pv: float = 0.0
         let mutable i: int = 0
         let factor: float = 1.0 + discount_rate
         while i < (Seq.length (cash_flows)) do
-            let cf: float = _idx cash_flows (i)
+            let cf: float = _idx cash_flows (int i)
             pv <- pv + (cf / (powf (factor) (i)))
             i <- i + 1
         __ret <- round2 (pv)
@@ -80,9 +85,9 @@ let rec present_value (discount_rate: float) (cash_flows: float array) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (present_value (0.13) (unbox<float array> [|10.0; 20.7; -293.0; 297.0|])))
-printfn "%s" (_str (present_value (0.07) (unbox<float array> [|-109129.39; 30923.23; 15098.93; 29734.0; 39.0|])))
-printfn "%s" (_str (present_value (0.07) (unbox<float array> [|109129.39; 30923.23; 15098.93; 29734.0; 39.0|])))
+ignore (printfn "%s" (_str (present_value (0.13) (unbox<float array> [|10.0; 20.7; -293.0; 297.0|]))))
+ignore (printfn "%s" (_str (present_value (0.07) (unbox<float array> [|-109129.39; 30923.23; 15098.93; 29734.0; 39.0|]))))
+ignore (printfn "%s" (_str (present_value (0.07) (unbox<float array> [|109129.39; 30923.23; 15098.93; 29734.0; 39.0|]))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

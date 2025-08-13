@@ -1,4 +1,4 @@
-// Generated 2025-08-13 07:12 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,15 +21,19 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
 type Result = {
-    mutable _kind: string
-    mutable _value: float
+    mutable kind: string
+    mutable value: float
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -56,12 +60,12 @@ let rec electric_conductivity (conductivity: float) (electron_conc: float) (mobi
         if mobility < 0.0 then
             ignore (failwith ("mobility cannot be negative"))
         if conductivity = 0.0 then
-            __ret <- { _kind = "conductivity"; _value = (mobility * electron_conc) * ELECTRON_CHARGE }
+            __ret <- { kind = "conductivity"; value = (mobility * electron_conc) * ELECTRON_CHARGE }
             raise Return
         if electron_conc = 0.0 then
-            __ret <- { _kind = "electron_conc"; _value = conductivity / (mobility * ELECTRON_CHARGE) }
+            __ret <- { kind = "electron_conc"; value = conductivity / (mobility * ELECTRON_CHARGE) }
             raise Return
-        __ret <- { _kind = "mobility"; _value = conductivity / (electron_conc * ELECTRON_CHARGE) }
+        __ret <- { kind = "mobility"; value = conductivity / (electron_conc * ELECTRON_CHARGE) }
         raise Return
         __ret
     with
@@ -69,9 +73,9 @@ let rec electric_conductivity (conductivity: float) (electron_conc: float) (mobi
 let r1: Result = electric_conductivity (25.0) (100.0) (0.0)
 let r2: Result = electric_conductivity (0.0) (1600.0) (200.0)
 let r3: Result = electric_conductivity (1000.0) (0.0) (1200.0)
-ignore (printfn "%s" (((r1._kind) + " ") + (_str (r1._value))))
-ignore (printfn "%s" (((r2._kind) + " ") + (_str (r2._value))))
-ignore (printfn "%s" (((r3._kind) + " ") + (_str (r3._value))))
+ignore (printfn "%s" (((r1.kind) + " ") + (_str (r1.value))))
+ignore (printfn "%s" (((r2.kind) + " ") + (_str (r2.value))))
+ignore (printfn "%s" (((r3.kind) + " ") + (_str (r3.value))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

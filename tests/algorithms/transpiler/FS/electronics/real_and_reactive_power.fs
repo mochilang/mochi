@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,11 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -45,36 +50,36 @@ let rec sqrt (x: float) =
         __ret
     with
         | Return -> __ret
-let rec real_power (apparent_power: float) (power_factor: float) =
+and real_power (apparent_power: float) (power_factor: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable apparent_power = apparent_power
     let mutable power_factor = power_factor
     try
         if (power_factor < (0.0 - 1.0)) || (power_factor > 1.0) then
-            failwith ("power_factor must be a valid float value between -1 and 1.")
+            ignore (failwith ("power_factor must be a valid float value between -1 and 1."))
         __ret <- apparent_power * power_factor
         raise Return
         __ret
     with
         | Return -> __ret
-let rec reactive_power (apparent_power: float) (power_factor: float) =
+and reactive_power (apparent_power: float) (power_factor: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable apparent_power = apparent_power
     let mutable power_factor = power_factor
     try
         if (power_factor < (0.0 - 1.0)) || (power_factor > 1.0) then
-            failwith ("power_factor must be a valid float value between -1 and 1.")
+            ignore (failwith ("power_factor must be a valid float value between -1 and 1."))
         __ret <- apparent_power * (sqrt (1.0 - (power_factor * power_factor)))
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (real_power (100.0) (0.9)))
-printfn "%s" (_str (real_power (0.0) (0.8)))
-printfn "%s" (_str (real_power (100.0) (-0.9)))
-printfn "%s" (_str (reactive_power (100.0) (0.9)))
-printfn "%s" (_str (reactive_power (0.0) (0.8)))
-printfn "%s" (_str (reactive_power (100.0) (-0.9)))
+ignore (printfn "%s" (_str (real_power (100.0) (0.9))))
+ignore (printfn "%s" (_str (real_power (0.0) (0.8))))
+ignore (printfn "%s" (_str (real_power (100.0) (-0.9))))
+ignore (printfn "%s" (_str (reactive_power (100.0) (0.9))))
+ignore (printfn "%s" (_str (reactive_power (0.0) (0.8))))
+ignore (printfn "%s" (_str (reactive_power (100.0) (-0.9))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

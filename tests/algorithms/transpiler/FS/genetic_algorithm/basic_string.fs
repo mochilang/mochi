@@ -1,4 +1,4 @@
-// Generated 2025-08-07 17:32 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,30 +29,27 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 type PairString = {
-    first: string
-    second: string
+    mutable first: string
+    mutable second: string
 }
 let rec evaluate (item: string) (target: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
@@ -91,7 +88,7 @@ and mutate (child: string) (genes: string array) =
         if (String.length (child)) = 0 then
             __ret <- child
             raise Return
-        let gene: string = _idx genes (0)
+        let gene: string = _idx genes (int 0)
         __ret <- (_substring child 0 ((String.length (child)) - 1)) + gene
         raise Return
         __ret
@@ -102,12 +99,12 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        printfn "%s" (_str (evaluate ("Helxo Worlx") ("Hello World")))
+        ignore (printfn "%s" (_str (evaluate ("Helxo Worlx") ("Hello World"))))
         let pair: PairString = crossover ("123456") ("abcdef")
-        printfn "%s" (pair.first)
-        printfn "%s" (pair.second)
+        ignore (printfn "%s" (pair.first))
+        ignore (printfn "%s" (pair.second))
         let mut: string = mutate ("123456") (unbox<string array> [|"A"; "B"; "C"; "D"; "E"; "F"|])
-        printfn "%s" (mut)
+        ignore (printfn "%s" (mut))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

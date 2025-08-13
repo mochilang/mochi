@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,11 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -38,8 +43,8 @@ let rec price_plus_tax (price: float) (tax_rate: float) =
         __ret
     with
         | Return -> __ret
-printfn "%s" ("price_plus_tax(100, 0.25) = " + (_str (price_plus_tax (100.0) (0.25))))
-printfn "%s" ("price_plus_tax(125.50, 0.05) = " + (_str (price_plus_tax (125.5) (0.05))))
+ignore (printfn "%s" ("price_plus_tax(100, 0.25) = " + (_str (price_plus_tax (100.0) (0.25)))))
+ignore (printfn "%s" ("price_plus_tax(125.50, 0.05) = " + (_str (price_plus_tax (125.5) (0.05)))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

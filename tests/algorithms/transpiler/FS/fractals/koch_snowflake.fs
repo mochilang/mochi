@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,14 +23,19 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
 type Vec = {
-    x: float
-    y: float
+    mutable x: float
+    mutable y: float
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -46,7 +51,7 @@ let rec _mod (x: float) (m: float) =
         __ret
     with
         | Return -> __ret
-let rec sin (x: float) =
+and sin (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -60,7 +65,7 @@ let rec sin (x: float) =
         __ret
     with
         | Return -> __ret
-let rec cos (x: float) =
+and cos (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -73,7 +78,7 @@ let rec cos (x: float) =
         __ret
     with
         | Return -> __ret
-let rec rotate (v: Vec) (angle_deg: float) =
+and rotate (v: Vec) (angle_deg: float) =
     let mutable __ret : Vec = Unchecked.defaultof<Vec>
     let mutable v = v
     let mutable angle_deg = angle_deg
@@ -86,15 +91,15 @@ let rec rotate (v: Vec) (angle_deg: float) =
         __ret
     with
         | Return -> __ret
-let rec iteration_step (vectors: Vec array) =
+and iteration_step (vectors: Vec array) =
     let mutable __ret : Vec array = Unchecked.defaultof<Vec array>
     let mutable vectors = vectors
     try
-        let mutable new_vectors: Vec array = [||]
+        let mutable new_vectors: Vec array = Array.empty<Vec>
         let mutable i: int = 0
         while i < ((Seq.length (vectors)) - 1) do
-            let start: Vec = _idx vectors (i)
-            let ``end``: Vec = _idx vectors (i + 1)
+            let start: Vec = _idx vectors (int i)
+            let ``end``: Vec = _idx vectors (int (i + 1))
             new_vectors <- Array.append new_vectors [|start|]
             let dx: float = (``end``.x) - (start.x)
             let dy: float = (``end``.y) - (start.y)
@@ -106,13 +111,13 @@ let rec iteration_step (vectors: Vec array) =
             new_vectors <- Array.append new_vectors [|peak|]
             new_vectors <- Array.append new_vectors [|two_third|]
             i <- i + 1
-        new_vectors <- Array.append new_vectors [|(_idx vectors ((Seq.length (vectors)) - 1))|]
+        new_vectors <- Array.append new_vectors [|(_idx vectors (int ((Seq.length (vectors)) - 1)))|]
         __ret <- new_vectors
         raise Return
         __ret
     with
         | Return -> __ret
-let rec iterate (initial: Vec array) (steps: int) =
+and iterate (initial: Vec array) (steps: int) =
     let mutable __ret : Vec array = Unchecked.defaultof<Vec array>
     let mutable initial = initial
     let mutable steps = steps
@@ -127,7 +132,7 @@ let rec iterate (initial: Vec array) (steps: int) =
         __ret
     with
         | Return -> __ret
-let rec vec_to_string (v: Vec) =
+and vec_to_string (v: Vec) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable v = v
     try
@@ -136,14 +141,14 @@ let rec vec_to_string (v: Vec) =
         __ret
     with
         | Return -> __ret
-let rec vec_list_to_string (lst: Vec array) =
+and vec_list_to_string (lst: Vec array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable lst = lst
     try
         let mutable res: string = "["
         let mutable i: int = 0
         while i < (Seq.length (lst)) do
-            res <- res + (vec_to_string (_idx lst (i)))
+            res <- res + (vec_to_string (_idx lst (int i)))
             if i < ((Seq.length (lst)) - 1) then
                 res <- res + ", "
             i <- i + 1
@@ -156,9 +161,9 @@ let rec vec_list_to_string (lst: Vec array) =
 let VECTOR_1: Vec = { x = 0.0; y = 0.0 }
 let VECTOR_2: Vec = { x = 0.5; y = 0.8660254 }
 let VECTOR_3: Vec = { x = 1.0; y = 0.0 }
-let INITIAL_VECTORS: Vec array = [|VECTOR_1; VECTOR_2; VECTOR_3; VECTOR_1|]
+let INITIAL_VECTORS: Vec array = unbox<Vec array> [|VECTOR_1; VECTOR_2; VECTOR_3; VECTOR_1|]
 let example: Vec array = iterate (unbox<Vec array> [|VECTOR_1; VECTOR_3|]) (1)
-printfn "%s" (vec_list_to_string (example))
+ignore (printfn "%s" (vec_list_to_string (example)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

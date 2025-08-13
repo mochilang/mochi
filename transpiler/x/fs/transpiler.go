@@ -214,7 +214,11 @@ const helperJSON = `let json (arr:obj) =
 
 const helperStr = `let rec _str v =
     let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -456,9 +460,6 @@ func fsIdent(name string) string {
 	}
 	if name == "front" {
 		return "_front"
-	}
-	if _, ok := structWithField(name); ok {
-		return "_" + name
 	}
 	return name
 }
@@ -2128,10 +2129,6 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		left = &CastExpr{Expr: left, Type: "bigint"}
 	}
 	if b.Op == "/" && resT == "int" {
-		usesFloorDiv = true
-		left = &CastExpr{Expr: left, Type: "int"}
-		right = &CastExpr{Expr: right, Type: "int"}
-		io.WriteString(w, "_floordiv ")
 		if needsParen(left) {
 			io.WriteString(w, "(")
 			left.emit(w)
@@ -2139,6 +2136,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else {
 			left.emit(w)
 		}
+		io.WriteString(w, " /")
 		io.WriteString(w, " ")
 		if needsParen(right) {
 			io.WriteString(w, "(")
@@ -4645,7 +4643,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
-					return &CallExpr{Func: "printfn \"%g\"", Args: []Expr{args[0]}}, nil
+					return &CallExpr{Func: "printfn \"%A\"", Args: []Expr{args[0]}}, nil
 				case "string":
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{args[0]}}, nil
 				default:
@@ -4665,7 +4663,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "int":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
-					elems[i] = &CallExpr{Func: "sprintf \"%g\"", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: "sprintf \"%A\"", Args: []Expr{a}}
 				case "string":
 					elems[i] = &CallExpr{Func: "sprintf \"%s\"", Args: []Expr{a}}
 				case "array":
@@ -4687,7 +4685,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "int":
 					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
-					return &CallExpr{Func: "printf \"%g\"", Args: []Expr{args[0]}}, nil
+					return &CallExpr{Func: "printf \"%A\"", Args: []Expr{args[0]}}, nil
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
 					concat := &CallExpr{Func: "String.concat \" \"", Args: []Expr{&CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
@@ -4707,7 +4705,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "int":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
-					elems[i] = &CallExpr{Func: "sprintf \"%g\"", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: "sprintf \"%A\"", Args: []Expr{a}}
 				case "string":
 					elems[i] = &CallExpr{Func: "sprintf \"%s\"", Args: []Expr{a}}
 				case "array":

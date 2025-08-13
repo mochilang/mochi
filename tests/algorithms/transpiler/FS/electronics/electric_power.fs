@@ -1,4 +1,4 @@
-// Generated 2025-08-13 07:12 +0700
+// Generated 2025-08-13 16:01 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,15 +21,19 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
+    let s =
+        if s.Contains(".") then
+            let s = s.TrimEnd([| '0' |])
+            if s.EndsWith(".") then s + "0" else s
+        else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
 type Result = {
-    mutable _name: string
-    mutable _value: float
+    mutable name: string
+    mutable value: float
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -87,16 +91,16 @@ and electric_power (voltage: float) (current: float) (power: float) =
                 ignore (failwith ("Power cannot be negative in any electrical/electronics system"))
             else
                 if voltage = 0.0 then
-                    __ret <- { _name = "voltage"; _value = power / current }
+                    __ret <- { name = "voltage"; value = power / current }
                     raise Return
                 else
                     if current = 0.0 then
-                        __ret <- { _name = "current"; _value = power / voltage }
+                        __ret <- { name = "current"; value = power / voltage }
                         raise Return
                     else
                         if power = 0.0 then
                             let mutable p: float = absf (voltage * current)
-                            __ret <- { _name = "power"; _value = round_to (p) (2) }
+                            __ret <- { name = "power"; value = round_to (p) (2) }
                             raise Return
                         else
                             ignore (failwith ("Unhandled case"))
@@ -107,7 +111,7 @@ and str_result (r: Result) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable r = r
     try
-        __ret <- ((("Result(name='" + (r._name)) + "', value=") + (_str (r._value))) + ")"
+        __ret <- ((("Result(name='" + (r.name)) + "', value=") + (_str (r.value))) + ")"
         raise Return
         __ret
     with
