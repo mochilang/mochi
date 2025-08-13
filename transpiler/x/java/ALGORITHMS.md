@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-13 16:06 GMT+7
+Last updated: 2025-08-13 16:22 GMT+7
 
-## Algorithms Golden Test Checklist (938/1077)
+## Algorithms Golden Test Checklist (939/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -352,7 +352,7 @@ Last updated: 2025-08-13 16:06 GMT+7
 | 343 | dynamic_programming/subset_generation | ✓ | 39.0ms | 49.78KB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 14.0ms | 776B |
 | 345 | dynamic_programming/trapped_water | ✓ | 41.0ms | 47.18KB |
-| 346 | dynamic_programming/tribonacci | ✓ | 28.0ms | 46.09KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 28.0ms | 46.82KB |
 | 347 | dynamic_programming/viterbi | ✓ | 43.0ms | 96.02KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 14.0ms | 1.09KB |
 | 349 | dynamic_programming/word_break | ✓ | 25.0ms | 1.43KB |
@@ -380,7 +380,7 @@ Last updated: 2025-08-13 16:06 GMT+7
 | 371 | file_transfer/tests/test_send_file | ✓ | 15.0ms | 1.50KB |
 | 372 | financial/equated_monthly_installments | ✓ | 14.0ms | 10.45KB |
 | 373 | financial/exponential_moving_average | ✓ | 25.0ms | 56.96KB |
-| 374 | financial/interest | error |  |  |
+| 374 | financial/interest | ✓ | 14.0ms | 10.45KB |
 | 375 | financial/present_value | ✓ | 16.0ms | 10.35KB |
 | 376 | financial/price_plus_tax | ✓ | 26.0ms | 47.62KB |
 | 377 | financial/simple_moving_average | ✓ | 40.0ms | 112.99KB |

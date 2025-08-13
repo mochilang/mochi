@@ -513,6 +513,13 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 				}
 			}
 		}
+		switch it {
+		case "int", "long", "double", "float", "float64":
+			fmt.Fprintf(w, "(%s)(", javaType(typ))
+			e.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 		if it == "" || it == "Object" {
 			fmt.Fprint(w, "((Number)(")
 			e.emit(w)
