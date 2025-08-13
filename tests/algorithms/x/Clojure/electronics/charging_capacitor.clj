@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare expApprox round3 charging_capacitor)
@@ -37,13 +43,13 @@
 (def ^:dynamic round3_scaled_int nil)
 
 (defn expApprox [expApprox_x]
-  (binding [expApprox_is_neg nil expApprox_n nil expApprox_sum nil expApprox_term nil expApprox_y nil] (try (do (set! expApprox_y expApprox_x) (set! expApprox_is_neg false) (when (< expApprox_x 0.0) (do (set! expApprox_is_neg true) (set! expApprox_y (- expApprox_x)))) (set! expApprox_term 1.0) (set! expApprox_sum 1.0) (set! expApprox_n 1) (while (< expApprox_n 30) (do (set! expApprox_term (quot (* expApprox_term expApprox_y) (double expApprox_n))) (set! expApprox_sum (+ expApprox_sum expApprox_term)) (set! expApprox_n (+ expApprox_n 1)))) (if expApprox_is_neg (/ 1.0 expApprox_sum) expApprox_sum)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [expApprox_is_neg nil expApprox_n nil expApprox_sum nil expApprox_term nil expApprox_y nil] (try (do (set! expApprox_y expApprox_x) (set! expApprox_is_neg false) (when (< expApprox_x 0.0) (do (set! expApprox_is_neg true) (set! expApprox_y (- expApprox_x)))) (set! expApprox_term 1.0) (set! expApprox_sum 1.0) (set! expApprox_n 1) (while (< expApprox_n 30) (do (set! expApprox_term (/ (* expApprox_term expApprox_y) (double expApprox_n))) (set! expApprox_sum (+ expApprox_sum expApprox_term)) (set! expApprox_n (+ expApprox_n 1)))) (if expApprox_is_neg (/ 1.0 expApprox_sum) expApprox_sum)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn round3 [round3_x]
   (binding [round3_scaled nil round3_scaled_int nil] (try (do (set! round3_scaled (* round3_x 1000.0)) (if (>= round3_scaled 0.0) (set! round3_scaled (+ round3_scaled 0.5)) (set! round3_scaled (- round3_scaled 0.5))) (set! round3_scaled_int (long round3_scaled)) (throw (ex-info "return" {:v (/ (double round3_scaled_int) 1000.0)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn charging_capacitor [charging_capacitor_source_voltage charging_capacitor_resistance charging_capacitor_capacitance charging_capacitor_time_sec]
-  (binding [charging_capacitor_exponent nil charging_capacitor_voltage nil] (try (do (when (<= charging_capacitor_source_voltage 0.0) (throw (Exception. "Source voltage must be positive."))) (when (<= charging_capacitor_resistance 0.0) (throw (Exception. "Resistance must be positive."))) (when (<= charging_capacitor_capacitance 0.0) (throw (Exception. "Capacitance must be positive."))) (set! charging_capacitor_exponent (quot (- charging_capacitor_time_sec) (* charging_capacitor_resistance charging_capacitor_capacitance))) (set! charging_capacitor_voltage (* charging_capacitor_source_voltage (- 1.0 (expApprox charging_capacitor_exponent)))) (throw (ex-info "return" {:v (round3 charging_capacitor_voltage)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [charging_capacitor_exponent nil charging_capacitor_voltage nil] (try (do (when (<= charging_capacitor_source_voltage 0.0) (throw (Exception. "Source voltage must be positive."))) (when (<= charging_capacitor_resistance 0.0) (throw (Exception. "Resistance must be positive."))) (when (<= charging_capacitor_capacitance 0.0) (throw (Exception. "Capacitance must be positive."))) (set! charging_capacitor_exponent (/ (- charging_capacitor_time_sec) (* charging_capacitor_resistance charging_capacitor_capacitance))) (set! charging_capacitor_voltage (* charging_capacitor_source_voltage (- 1.0 (expApprox charging_capacitor_exponent)))) (throw (ex-info "return" {:v (round3 charging_capacitor_voltage)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

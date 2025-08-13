@@ -14,12 +14,18 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare get_mid point_to_string triangle)
 
 (defn get_mid [get_mid_p1 get_mid_p2]
-  (try (throw (ex-info "return" {:v {:x (quot (+ (:x get_mid_p1) (:x get_mid_p2)) 2) :y (quot (+ (:y get_mid_p1) (:y get_mid_p2)) 2)}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v {:x (/ (+ (:x get_mid_p1) (:x get_mid_p2)) 2) :y (/ (+ (:y get_mid_p1) (:y get_mid_p2)) 2)}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn point_to_string [point_to_string_p]
   (try (throw (ex-info "return" {:v (str (str (str (str "(" (str (:x point_to_string_p))) ",") (str (:y point_to_string_p))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

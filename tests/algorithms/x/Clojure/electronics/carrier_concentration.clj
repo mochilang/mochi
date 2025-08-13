@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare sqrtApprox carrier_concentration)
@@ -25,23 +31,26 @@
 (def ^:dynamic sqrtApprox_i nil)
 
 (defn sqrtApprox [sqrtApprox_x]
-  (binding [sqrtApprox_guess nil sqrtApprox_i nil] (try (do (set! sqrtApprox_guess (/ sqrtApprox_x 2.0)) (set! sqrtApprox_i 0) (while (< sqrtApprox_i 20) (do (set! sqrtApprox_guess (/ (+ sqrtApprox_guess (quot sqrtApprox_x sqrtApprox_guess)) 2.0)) (set! sqrtApprox_i (+ sqrtApprox_i 1)))) (throw (ex-info "return" {:v sqrtApprox_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrtApprox_guess nil sqrtApprox_i nil] (try (do (set! sqrtApprox_guess (/ sqrtApprox_x 2.0)) (set! sqrtApprox_i 0) (while (< sqrtApprox_i 20) (do (set! sqrtApprox_guess (/ (+ sqrtApprox_guess (/ sqrtApprox_x sqrtApprox_guess)) 2.0)) (set! sqrtApprox_i (+ sqrtApprox_i 1)))) (throw (ex-info "return" {:v sqrtApprox_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn carrier_concentration [carrier_concentration_electron_conc carrier_concentration_hole_conc carrier_concentration_intrinsic_conc]
-  (binding [carrier_concentration_zero_count nil] (try (do (set! carrier_concentration_zero_count 0) (when (= carrier_concentration_electron_conc 0.0) (set! carrier_concentration_zero_count (+ carrier_concentration_zero_count 1))) (when (= carrier_concentration_hole_conc 0.0) (set! carrier_concentration_zero_count (+ carrier_concentration_zero_count 1))) (when (= carrier_concentration_intrinsic_conc 0.0) (set! carrier_concentration_zero_count (+ carrier_concentration_zero_count 1))) (when (not= carrier_concentration_zero_count 1) (throw (Exception. "You cannot supply more or less than 2 values"))) (when (< carrier_concentration_electron_conc 0.0) (throw (Exception. "Electron concentration cannot be negative in a semiconductor"))) (when (< carrier_concentration_hole_conc 0.0) (throw (Exception. "Hole concentration cannot be negative in a semiconductor"))) (when (< carrier_concentration_intrinsic_conc 0.0) (throw (Exception. "Intrinsic concentration cannot be negative in a semiconductor"))) (when (= carrier_concentration_electron_conc 0.0) (throw (ex-info "return" {:v {:name "electron_conc" :value (quot (* carrier_concentration_intrinsic_conc carrier_concentration_intrinsic_conc) carrier_concentration_hole_conc)}}))) (when (= carrier_concentration_hole_conc 0.0) (throw (ex-info "return" {:v {:name "hole_conc" :value (quot (* carrier_concentration_intrinsic_conc carrier_concentration_intrinsic_conc) carrier_concentration_electron_conc)}}))) (if (= carrier_concentration_intrinsic_conc 0.0) {:name "intrinsic_conc" :value (sqrtApprox (* carrier_concentration_electron_conc carrier_concentration_hole_conc))} {:name "" :value (- 1.0)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [carrier_concentration_zero_count nil] (try (do (set! carrier_concentration_zero_count 0) (when (= carrier_concentration_electron_conc 0.0) (set! carrier_concentration_zero_count (+ carrier_concentration_zero_count 1))) (when (= carrier_concentration_hole_conc 0.0) (set! carrier_concentration_zero_count (+ carrier_concentration_zero_count 1))) (when (= carrier_concentration_intrinsic_conc 0.0) (set! carrier_concentration_zero_count (+ carrier_concentration_zero_count 1))) (when (not= carrier_concentration_zero_count 1) (throw (Exception. "You cannot supply more or less than 2 values"))) (when (< carrier_concentration_electron_conc 0.0) (throw (Exception. "Electron concentration cannot be negative in a semiconductor"))) (when (< carrier_concentration_hole_conc 0.0) (throw (Exception. "Hole concentration cannot be negative in a semiconductor"))) (when (< carrier_concentration_intrinsic_conc 0.0) (throw (Exception. "Intrinsic concentration cannot be negative in a semiconductor"))) (when (= carrier_concentration_electron_conc 0.0) (throw (ex-info "return" {:v {:name "electron_conc" :value (/ (* carrier_concentration_intrinsic_conc carrier_concentration_intrinsic_conc) carrier_concentration_hole_conc)}}))) (when (= carrier_concentration_hole_conc 0.0) (throw (ex-info "return" {:v {:name "hole_conc" :value (/ (* carrier_concentration_intrinsic_conc carrier_concentration_intrinsic_conc) carrier_concentration_electron_conc)}}))) (if (= carrier_concentration_intrinsic_conc 0.0) {:name "intrinsic_conc" :value (sqrtApprox (* carrier_concentration_electron_conc carrier_concentration_hole_conc))} {:name "" :value (- 1.0)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_r1 (carrier_concentration 25.0 100.0 0.0))
+(def ^:dynamic main_r1 nil)
 
-(def ^:dynamic main_r2 (carrier_concentration 0.0 1600.0 200.0))
+(def ^:dynamic main_r2 nil)
 
-(def ^:dynamic main_r3 (carrier_concentration 1000.0 0.0 1200.0))
+(def ^:dynamic main_r3 nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_r1) (constantly (carrier_concentration 25.0 100.0 0.0)))
       (println (str (str (:name main_r1) ", ") (str (:value main_r1))))
+      (alter-var-root (var main_r2) (constantly (carrier_concentration 0.0 1600.0 200.0)))
       (println (str (str (:name main_r2) ", ") (str (:value main_r2))))
+      (alter-var-root (var main_r3) (constantly (carrier_concentration 1000.0 0.0 1200.0)))
       (println (str (str (:name main_r3) ", ") (str (:value main_r3))))
       (System/gc)
       (let [end (System/nanoTime)

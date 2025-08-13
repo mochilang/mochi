@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare panic powf simple_interest compound_interest apr_interest main)
@@ -23,7 +29,7 @@
 (def ^:dynamic powf_result nil)
 
 (defn panic [panic_msg]
-  (println panic_msg))
+  (do (println panic_msg) panic_msg))
 
 (defn powf [powf_base powf_exp]
   (binding [powf_i nil powf_result nil] (try (do (set! powf_result 1.0) (set! powf_i 0) (while (< powf_i (long powf_exp)) (do (set! powf_result (* powf_result powf_base)) (set! powf_i (+ powf_i 1)))) (throw (ex-info "return" {:v powf_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

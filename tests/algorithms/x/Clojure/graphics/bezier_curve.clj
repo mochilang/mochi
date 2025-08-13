@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare n_choose_k pow_float basis_function bezier_point)
@@ -45,7 +51,7 @@
 (def ^:dynamic pow_float_result nil)
 
 (defn n_choose_k [n_choose_k_n n_choose_k_k]
-  (binding [n_choose_k_i nil n_choose_k_result nil] (try (do (when (or (< n_choose_k_k 0) (> n_choose_k_k n_choose_k_n)) (throw (ex-info "return" {:v 0.0}))) (when (or (= n_choose_k_k 0) (= n_choose_k_k n_choose_k_n)) (throw (ex-info "return" {:v 1.0}))) (set! n_choose_k_result 1.0) (set! n_choose_k_i 1) (while (<= n_choose_k_i n_choose_k_k) (do (set! n_choose_k_result (quot (* n_choose_k_result (* 1.0 (+ (- n_choose_k_n n_choose_k_k) n_choose_k_i))) (* 1.0 n_choose_k_i))) (set! n_choose_k_i (+ n_choose_k_i 1)))) (throw (ex-info "return" {:v n_choose_k_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [n_choose_k_i nil n_choose_k_result nil] (try (do (when (or (< n_choose_k_k 0) (> n_choose_k_k n_choose_k_n)) (throw (ex-info "return" {:v 0.0}))) (when (or (= n_choose_k_k 0) (= n_choose_k_k n_choose_k_n)) (throw (ex-info "return" {:v 1.0}))) (set! n_choose_k_result 1.0) (set! n_choose_k_i 1) (while (<= n_choose_k_i n_choose_k_k) (do (set! n_choose_k_result (/ (* n_choose_k_result (* 1.0 (+ (- n_choose_k_n n_choose_k_k) n_choose_k_i))) (* 1.0 n_choose_k_i))) (set! n_choose_k_i (+ n_choose_k_i 1)))) (throw (ex-info "return" {:v n_choose_k_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn pow_float [pow_float_base pow_float_exp]
   (binding [pow_float_i nil pow_float_result nil] (try (do (set! pow_float_result 1.0) (set! pow_float_i 0) (while (< pow_float_i pow_float_exp) (do (set! pow_float_result (* pow_float_result pow_float_base)) (set! pow_float_i (+ pow_float_i 1)))) (throw (ex-info "return" {:v pow_float_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -56,12 +62,13 @@
 (defn bezier_point [bezier_point_points bezier_point_t]
   (binding [bezier_point_basis nil bezier_point_i nil bezier_point_x nil bezier_point_y nil] (try (do (set! bezier_point_basis (basis_function bezier_point_points bezier_point_t)) (set! bezier_point_x 0.0) (set! bezier_point_y 0.0) (set! bezier_point_i 0) (while (< bezier_point_i (count bezier_point_points)) (do (set! bezier_point_x (+ bezier_point_x (* (nth bezier_point_basis bezier_point_i) (nth (nth bezier_point_points bezier_point_i) 0)))) (set! bezier_point_y (+ bezier_point_y (* (nth bezier_point_basis bezier_point_i) (nth (nth bezier_point_points bezier_point_i) 1)))) (set! bezier_point_i (+ bezier_point_i 1)))) (throw (ex-info "return" {:v [bezier_point_x bezier_point_y]}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_control [[1.0 1.0] [1.0 2.0]])
+(def ^:dynamic main_control nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_control) (constantly [[1.0 1.0] [1.0 2.0]]))
       (println (str (basis_function main_control 0.0)))
       (println (str (basis_function main_control 1.0)))
       (println (str (bezier_point main_control 0.0)))

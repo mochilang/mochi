@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare ohms_law)
@@ -21,7 +27,7 @@
 (def ^:dynamic ohms_law_zeros nil)
 
 (defn ohms_law [ohms_law_voltage ohms_law_current ohms_law_resistance]
-  (binding [ohms_law_zeros nil] (try (do (set! ohms_law_zeros 0) (when (= ohms_law_voltage 0.0) (set! ohms_law_zeros (+ ohms_law_zeros 1))) (when (= ohms_law_current 0.0) (set! ohms_law_zeros (+ ohms_law_zeros 1))) (when (= ohms_law_resistance 0.0) (set! ohms_law_zeros (+ ohms_law_zeros 1))) (when (not= ohms_law_zeros 1) (do (println "One and only one argument must be 0") (throw (ex-info "return" {:v {}})))) (when (< ohms_law_resistance 0.0) (do (println "Resistance cannot be negative") (throw (ex-info "return" {:v {}})))) (when (= ohms_law_voltage 0.0) (throw (ex-info "return" {:v {"voltage" (* ohms_law_current ohms_law_resistance)}}))) (if (= ohms_law_current 0.0) {"current" (quot ohms_law_voltage ohms_law_resistance)} {"resistance" (quot ohms_law_voltage ohms_law_current)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [ohms_law_zeros nil] (try (do (set! ohms_law_zeros 0) (when (= ohms_law_voltage 0.0) (set! ohms_law_zeros (+ ohms_law_zeros 1))) (when (= ohms_law_current 0.0) (set! ohms_law_zeros (+ ohms_law_zeros 1))) (when (= ohms_law_resistance 0.0) (set! ohms_law_zeros (+ ohms_law_zeros 1))) (when (not= ohms_law_zeros 1) (do (println "One and only one argument must be 0") (throw (ex-info "return" {:v {}})))) (when (< ohms_law_resistance 0.0) (do (println "Resistance cannot be negative") (throw (ex-info "return" {:v {}})))) (when (= ohms_law_voltage 0.0) (throw (ex-info "return" {:v {"voltage" (* ohms_law_current ohms_law_resistance)}}))) (if (= ohms_law_current 0.0) {"current" (/ ohms_law_voltage ohms_law_resistance)} {"resistance" (/ ohms_law_voltage ohms_law_current)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

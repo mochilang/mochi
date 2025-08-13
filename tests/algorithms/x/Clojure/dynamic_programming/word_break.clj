@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare build_set word_break print_bool)
@@ -39,7 +45,7 @@
   (binding [word_break_dict nil word_break_dp nil word_break_i nil word_break_j nil word_break_n nil word_break_sub nil] (try (do (set! word_break_n (count word_break_s)) (set! word_break_dict (build_set word_break_words)) (set! word_break_dp []) (set! word_break_i 0) (while (<= word_break_i word_break_n) (do (set! word_break_dp (conj word_break_dp false)) (set! word_break_i (+ word_break_i 1)))) (set! word_break_dp (assoc word_break_dp 0 true)) (set! word_break_i 1) (while (<= word_break_i word_break_n) (do (set! word_break_j 0) (while (< word_break_j word_break_i) (do (when (nth word_break_dp word_break_j) (do (set! word_break_sub (subs word_break_s word_break_j (min word_break_i (count word_break_s)))) (when (in word_break_sub word_break_dict) (do (set! word_break_dp (assoc word_break_dp word_break_i true)) (set! word_break_j word_break_i))))) (set! word_break_j (+ word_break_j 1)))) (set! word_break_i (+ word_break_i 1)))) (throw (ex-info "return" {:v (nth word_break_dp word_break_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn print_bool [print_bool_b]
-  (if print_bool_b (println true) (println false)))
+  (do (if print_bool_b (println true) (println false)) print_bool_b))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

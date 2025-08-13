@@ -1,0 +1,5 @@
+Syntax error (IllegalArgumentException) compiling fn* at (/workspace/mochi/tests/algorithms/x/Clojure/file_transfer/tests/test_send_file.clj:98:1).
+Cannot assign to non-mutable: send_file_sock
+
+Full report at:
+/tmp/clojure-4973948514849910568.edn

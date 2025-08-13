@@ -14,6 +14,12 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare make_bool_list make_bool_matrix is_match print_bool)
@@ -52,7 +58,7 @@
   (binding [is_match_dp nil is_match_i nil is_match_j nil is_match_j2 nil is_match_m nil is_match_n nil is_match_pc nil is_match_sc nil] (try (do (set! is_match_n (count is_match_s)) (set! is_match_m (count is_match_p)) (set! is_match_dp (make_bool_matrix (+ is_match_n 1) (+ is_match_m 1))) (set! is_match_dp (assoc-in is_match_dp [0 0] true)) (set! is_match_j 1) (while (<= is_match_j is_match_m) (do (when (= (subs is_match_p (- is_match_j 1) (min is_match_j (count is_match_p))) "*") (set! is_match_dp (assoc-in is_match_dp [0 is_match_j] (nth (nth is_match_dp 0) (- is_match_j 1))))) (set! is_match_j (+ is_match_j 1)))) (set! is_match_i 1) (while (<= is_match_i is_match_n) (do (set! is_match_j2 1) (while (<= is_match_j2 is_match_m) (do (set! is_match_pc (subs is_match_p (- is_match_j2 1) (min is_match_j2 (count is_match_p)))) (set! is_match_sc (subs is_match_s (- is_match_i 1) (min is_match_i (count is_match_s)))) (if (or (= is_match_pc is_match_sc) (= is_match_pc "?")) (set! is_match_dp (assoc-in is_match_dp [is_match_i is_match_j2] (nth (nth is_match_dp (- is_match_i 1)) (- is_match_j2 1)))) (when (= is_match_pc "*") (when (or (nth (nth is_match_dp (- is_match_i 1)) is_match_j2) (nth (nth is_match_dp is_match_i) (- is_match_j2 1))) (set! is_match_dp (assoc-in is_match_dp [is_match_i is_match_j2] true))))) (set! is_match_j2 (+ is_match_j2 1)))) (set! is_match_i (+ is_match_i 1)))) (throw (ex-info "return" {:v (nth (nth is_match_dp is_match_n) is_match_m)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn print_bool [print_bool_b]
-  (if print_bool_b (println true) (println false)))
+  (do (if print_bool_b (println true) (println false)) print_bool_b))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

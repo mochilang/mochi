@@ -14,12 +14,18 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare wheatstone_solver)
 
 (defn wheatstone_solver [wheatstone_solver_resistance_1 wheatstone_solver_resistance_2 wheatstone_solver_resistance_3]
-  (try (do (when (or (or (<= wheatstone_solver_resistance_1 0.0) (<= wheatstone_solver_resistance_2 0.0)) (<= wheatstone_solver_resistance_3 0.0)) (throw (Exception. "All resistance values must be positive"))) (throw (ex-info "return" {:v (* (quot wheatstone_solver_resistance_2 wheatstone_solver_resistance_1) wheatstone_solver_resistance_3)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (when (or (or (<= wheatstone_solver_resistance_1 0.0) (<= wheatstone_solver_resistance_2 0.0)) (<= wheatstone_solver_resistance_3 0.0)) (throw (Exception. "All resistance values must be positive"))) (throw (ex-info "return" {:v (* (/ wheatstone_solver_resistance_2 wheatstone_solver_resistance_1) wheatstone_solver_resistance_3)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
