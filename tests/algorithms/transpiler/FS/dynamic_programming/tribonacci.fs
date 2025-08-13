@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -32,7 +32,7 @@ let rec tribonacci (num: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable num = num
     try
-        let mutable dp: int array = [||]
+        let mutable dp: int array = Array.empty<int>
         let mutable i: int = 0
         while i < num do
             if (i = 0) || (i = 1) then
@@ -41,7 +41,7 @@ let rec tribonacci (num: int) =
                 if i = 2 then
                     dp <- Array.append dp [|1|]
                 else
-                    let t: int = ((_idx dp (i - 1)) + (_idx dp (i - 2))) + (_idx dp (i - 3))
+                    let t: int = ((_idx dp (int (i - 1))) + (_idx dp (int (i - 2)))) + (_idx dp (int (i - 3)))
                     dp <- Array.append dp [|t|]
             i <- i + 1
         __ret <- dp
@@ -49,7 +49,7 @@ let rec tribonacci (num: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_repr (tribonacci (8)))
+ignore (printfn "%s" (_repr (tribonacci (8))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

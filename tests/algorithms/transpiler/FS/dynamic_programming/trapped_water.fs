@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -31,6 +31,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -43,7 +44,7 @@ let rec make_list (len: int) (value: int) =
     let mutable len = len
     let mutable value = value
     try
-        let mutable arr: int array = [||]
+        let mutable arr: int array = Array.empty<int>
         let mutable i: int = 0
         while i < len do
             arr <- Array.append arr [|value|]
@@ -53,7 +54,7 @@ let rec make_list (len: int) (value: int) =
         __ret
     with
         | Return -> __ret
-let rec trapped_rainwater (heights: int array) =
+and trapped_rainwater (heights: int array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable heights = heights
     try
@@ -62,44 +63,44 @@ let rec trapped_rainwater (heights: int array) =
             raise Return
         let mutable i: int = 0
         while i < (Seq.length (heights)) do
-            if (_idx heights (i)) < 0 then
-                failwith ("No height can be negative")
+            if (_idx heights (int i)) < 0 then
+                ignore (failwith ("No height can be negative"))
             i <- i + 1
         let length: int = Seq.length (heights)
         let mutable left_max: int array = make_list (length) (0)
-        left_max.[0] <- _idx heights (0)
+        left_max.[0] <- _idx heights (int 0)
         i <- 1
         while i < length do
-            if (_idx heights (i)) > (_idx left_max (i - 1)) then
-                left_max.[i] <- _idx heights (i)
+            if (_idx heights (int i)) > (_idx left_max (int (i - 1))) then
+                left_max.[i] <- _idx heights (int i)
             else
-                left_max.[i] <- _idx left_max (i - 1)
+                left_max.[i] <- _idx left_max (int (i - 1))
             i <- i + 1
         let mutable right_max: int array = make_list (length) (0)
         let last: int = length - 1
-        right_max.[last] <- _idx heights (last)
+        right_max.[last] <- _idx heights (int last)
         i <- last - 1
         while i >= 0 do
-            if (_idx heights (i)) > (_idx right_max (i + 1)) then
-                right_max.[i] <- _idx heights (i)
+            if (_idx heights (int i)) > (_idx right_max (int (i + 1))) then
+                right_max.[i] <- _idx heights (int i)
             else
-                right_max.[i] <- _idx right_max (i + 1)
+                right_max.[i] <- _idx right_max (int (i + 1))
             i <- i - 1
         let mutable total: int = 0
         i <- 0
         while i < length do
-            let left: int = _idx left_max (i)
-            let right: int = _idx right_max (i)
+            let left: int = _idx left_max (int i)
+            let right: int = _idx right_max (int i)
             let smaller: int = if left < right then left else right
-            total <- total + (smaller - (_idx heights (i)))
+            total <- total + (smaller - (_idx heights (int i)))
             i <- i + 1
         __ret <- total
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (trapped_rainwater (unbox<int array> [|0; 1; 0; 2; 1; 0; 1; 3; 2; 1; 2; 1|])))
-printfn "%s" (_str (trapped_rainwater (unbox<int array> [|7; 1; 5; 3; 6; 4|])))
+ignore (printfn "%s" (_str (trapped_rainwater (unbox<int array> [|0; 1; 0; 2; 1; 0; 1; 3; 2; 1; 2; 1|]))))
+ignore (printfn "%s" (_str (trapped_rainwater (unbox<int array> [|7; 1; 5; 3; 6; 4|]))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

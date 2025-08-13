@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -31,6 +31,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -40,10 +41,10 @@ let rec copy_list (xs: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable xs = xs
     try
-        let mutable res: int array = [||]
+        let mutable res: int array = Array.empty<int>
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            res <- Array.append res [|_idx xs (i)|]
+            res <- Array.append res [|(_idx xs (int i))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -55,28 +56,28 @@ and longest_subsequence (arr: int array) =
     let mutable arr = arr
     try
         let n: int = Seq.length (arr)
-        let mutable lis: int array array = [||]
+        let mutable lis: int array array = Array.empty<int array>
         let mutable i: int = 0
         while i < n do
-            let mutable single: int array = [||]
-            single <- Array.append single [|_idx arr (i)|]
+            let mutable single: int array = Array.empty<int>
+            single <- Array.append single [|(_idx arr (int i))|]
             lis <- Array.append lis [|single|]
             i <- i + 1
         i <- 1
         while i < n do
             let mutable prev: int = 0
             while prev < i do
-                if ((_idx arr (prev)) <= (_idx arr (i))) && (((Seq.length (_idx lis (prev))) + 1) > (Seq.length (_idx lis (i)))) then
-                    let temp: int array = copy_list (_idx lis (prev))
-                    let temp2: int array = Array.append temp [|_idx arr (i)|]
+                if ((_idx arr (int prev)) <= (_idx arr (int i))) && (((Seq.length (_idx lis (int prev))) + 1) > (Seq.length (_idx lis (int i)))) then
+                    let temp: int array = copy_list (_idx lis (int prev))
+                    let temp2: int array = Array.append temp [|(_idx arr (int i))|]
                     lis.[i] <- temp2
                 prev <- prev + 1
             i <- i + 1
-        let mutable result: int array = [||]
+        let mutable result: int array = Array.empty<int>
         i <- 0
         while i < n do
-            if (Seq.length (_idx lis (i))) > (Seq.length (result)) then
-                result <- _idx lis (i)
+            if (Seq.length (_idx lis (int i))) > (Seq.length (result)) then
+                result <- _idx lis (int i)
             i <- i + 1
         __ret <- result
         raise Return
@@ -88,12 +89,12 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        printfn "%s" (_str (longest_subsequence (unbox<int array> [|10; 22; 9; 33; 21; 50; 41; 60; 80|])))
-        printfn "%s" (_str (longest_subsequence (unbox<int array> [|4; 8; 7; 5; 1; 12; 2; 3; 9|])))
-        printfn "%s" (_str (longest_subsequence (unbox<int array> [|9; 8; 7; 6; 5; 7|])))
-        printfn "%s" (_str (longest_subsequence (unbox<int array> [|28; 26; 12; 23; 35; 39|])))
-        printfn "%s" (_str (longest_subsequence (unbox<int array> [|1; 1; 1|])))
-        printfn "%s" (_str (longest_subsequence (Array.empty<int>)))
+        ignore (printfn "%s" (_str (longest_subsequence (unbox<int array> [|10; 22; 9; 33; 21; 50; 41; 60; 80|]))))
+        ignore (printfn "%s" (_str (longest_subsequence (unbox<int array> [|4; 8; 7; 5; 1; 12; 2; 3; 9|]))))
+        ignore (printfn "%s" (_str (longest_subsequence (unbox<int array> [|9; 8; 7; 6; 5; 7|]))))
+        ignore (printfn "%s" (_str (longest_subsequence (unbox<int array> [|28; 26; 12; 23; 35; 39|]))))
+        ignore (printfn "%s" (_str (longest_subsequence (unbox<int array> [|1; 1; 1|]))))
+        ignore (printfn "%s" (_str (longest_subsequence (Array.empty<int>))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

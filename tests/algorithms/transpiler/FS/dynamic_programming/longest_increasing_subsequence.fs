@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -31,12 +31,12 @@ let rec longest_subsequence (xs: int array) =
         if n <= 1 then
             __ret <- xs
             raise Return
-        let pivot: int = _idx xs (0)
+        let pivot: int = _idx xs (int 0)
         let mutable is_found: bool = false
         let mutable i: int = 1
-        let mutable longest_subseq: int array = [||]
+        let mutable longest_subseq: int array = Array.empty<int>
         while (not is_found) && (i < n) do
-            if (_idx xs (i)) < pivot then
+            if (_idx xs (int i)) < pivot then
                 is_found <- true
                 let mutable temp_array: int array = Array.sub xs i (n - i)
                 temp_array <- longest_subsequence (temp_array)
@@ -44,15 +44,15 @@ let rec longest_subsequence (xs: int array) =
                     longest_subseq <- temp_array
             else
                 i <- i + 1
-        let mutable filtered: int array = [||]
+        let mutable filtered: int array = Array.empty<int>
         let mutable j: int = 1
         while j < n do
-            if (_idx xs (j)) >= pivot then
-                filtered <- Array.append filtered [|_idx xs (j)|]
+            if (_idx xs (int j)) >= pivot then
+                filtered <- Array.append filtered [|(_idx xs (int j))|]
             j <- j + 1
-        let mutable candidate: int array = [||]
+        let mutable candidate: int array = Array.empty<int>
         candidate <- Array.append candidate [|pivot|]
-        candidate <- unbox<int array> (Array.append (candidate) (longest_subsequence (filtered)))
+        candidate <- Array.append (candidate) (longest_subsequence (filtered))
         if (Seq.length (candidate)) > (Seq.length (longest_subseq)) then
             __ret <- candidate
             raise Return

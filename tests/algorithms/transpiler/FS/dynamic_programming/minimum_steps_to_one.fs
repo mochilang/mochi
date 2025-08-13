@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -31,6 +31,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -43,7 +44,7 @@ let rec make_list (len: int) (value: int) =
     let mutable len = len
     let mutable value = value
     try
-        let mutable arr: int array = [||]
+        let mutable arr: int array = Array.empty<int>
         let mutable i: int = 0
         while i < len do
             arr <- Array.append arr [|value|]
@@ -53,7 +54,7 @@ let rec make_list (len: int) (value: int) =
         __ret
     with
         | Return -> __ret
-let rec min_int (a: int) (b: int) =
+and min_int (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable b = b
@@ -63,7 +64,7 @@ let rec min_int (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-let rec min_steps_to_one (number: int) =
+and min_steps_to_one (number: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable number = number
     try
@@ -74,20 +75,20 @@ let rec min_steps_to_one (number: int) =
         table.[1] <- 0
         let mutable i: int = 1
         while i < number do
-            table.[i + 1] <- min_int (_idx table (i + 1)) ((_idx table (i)) + 1)
+            table.[(i + 1)] <- min_int (_idx table (int (i + 1))) ((_idx table (int i)) + 1)
             if (i * 2) <= number then
-                table.[i * 2] <- min_int (_idx table (i * 2)) ((_idx table (i)) + 1)
+                table.[(i * 2)] <- min_int (_idx table (int (i * 2))) ((_idx table (int i)) + 1)
             if (i * 3) <= number then
-                table.[i * 3] <- min_int (_idx table (i * 3)) ((_idx table (i)) + 1)
+                table.[(i * 3)] <- min_int (_idx table (int (i * 3))) ((_idx table (int i)) + 1)
             i <- i + 1
-        __ret <- _idx table (number)
+        __ret <- _idx table (int number)
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (min_steps_to_one (10)))
-printfn "%s" (_str (min_steps_to_one (15)))
-printfn "%s" (_str (min_steps_to_one (6)))
+ignore (printfn "%s" (_str (min_steps_to_one (10))))
+ignore (printfn "%s" (_str (min_steps_to_one (15))))
+ignore (printfn "%s" (_str (min_steps_to_one (6))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

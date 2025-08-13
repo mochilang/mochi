@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -37,7 +37,7 @@ let rec make_bool_list (n: int) =
     let mutable __ret : bool array = Unchecked.defaultof<bool array>
     let mutable n = n
     try
-        let mutable row: bool array = [||]
+        let mutable row: bool array = Array.empty<bool>
         let mutable i: int = 0
         while i < n do
             row <- Array.append row [|false|]
@@ -47,22 +47,22 @@ let rec make_bool_list (n: int) =
         __ret
     with
         | Return -> __ret
-let rec make_bool_matrix (rows: int) (cols: int) =
+and make_bool_matrix (rows: int) (cols: int) =
     let mutable __ret : bool array array = Unchecked.defaultof<bool array array>
     let mutable rows = rows
     let mutable cols = cols
     try
-        let mutable matrix: bool array array = [||]
+        let mutable matrix: bool array array = Array.empty<bool array>
         let mutable i: int = 0
         while i < rows do
-            matrix <- Array.append matrix [|make_bool_list (cols)|]
+            matrix <- Array.append matrix [|(make_bool_list (cols))|]
             i <- i + 1
         __ret <- matrix
         raise Return
         __ret
     with
         | Return -> __ret
-let rec is_match (s: string) (p: string) =
+and is_match (s: string) (p: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable s = s
     let mutable p = p
@@ -74,7 +74,7 @@ let rec is_match (s: string) (p: string) =
         let mutable j: int = 1
         while j <= m do
             if (_substring p (j - 1) (j)) = "*" then
-                dp.[0].[j] <- _idx (_idx dp (0)) (j - 1)
+                dp.[0].[j] <- _idx (_idx dp (int 0)) (int (j - 1))
             j <- j + 1
         let mutable i: int = 1
         while i <= n do
@@ -83,26 +83,26 @@ let rec is_match (s: string) (p: string) =
                 let pc: string = _substring p (j2 - 1) (j2)
                 let sc: string = _substring s (i - 1) (i)
                 if (pc = sc) || (pc = "?") then
-                    dp.[i].[j2] <- _idx (_idx dp (i - 1)) (j2 - 1)
+                    dp.[i].[j2] <- _idx (_idx dp (int (i - 1))) (int (j2 - 1))
                 else
                     if pc = "*" then
-                        if (_idx (_idx dp (i - 1)) (j2)) || (_idx (_idx dp (i)) (j2 - 1)) then
+                        if (_idx (_idx dp (int (i - 1))) (int j2)) || (_idx (_idx dp (int i)) (int (j2 - 1))) then
                             dp.[i].[j2] <- true
                 j2 <- j2 + 1
             i <- i + 1
-        __ret <- _idx (_idx dp (n)) (m)
+        __ret <- _idx (_idx dp (int n)) (int m)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec print_bool (b: bool) =
+and print_bool (b: bool) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     try
         if b then
-            printfn "%b" (true)
+            ignore (printfn "%b" (true))
         else
-            printfn "%b" (false)
+            ignore (printfn "%b" (false))
         __ret
     with
         | Return -> __ret

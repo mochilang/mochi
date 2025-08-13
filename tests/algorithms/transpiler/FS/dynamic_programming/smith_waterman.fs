@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -52,7 +52,7 @@ let rec score_function (source_char: string) (target_char: string) (match_score:
         __ret
     with
         | Return -> __ret
-let rec smith_waterman (query: string) (subject: string) (match_score: int) (mismatch_score: int) (gap_score: int) =
+and smith_waterman (query: string) (subject: string) (match_score: int) (mismatch_score: int) (gap_score: int) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable query = query
     let mutable subject = subject
@@ -64,9 +64,9 @@ let rec smith_waterman (query: string) (subject: string) (match_score: int) (mis
         let s: string = subject.ToUpper()
         let m: int = String.length (q)
         let n: int = String.length (s)
-        let mutable score: int array array = [||]
+        let mutable score: int array array = Array.empty<int array>
         for _ in 0 .. ((m + 1) - 1) do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             for _2 in 0 .. ((n + 1) - 1) do
                 row <- Array.append row [|0|]
             score <- Array.append score [|row|]
@@ -74,9 +74,9 @@ let rec smith_waterman (query: string) (subject: string) (match_score: int) (mis
             for j in 1 .. ((n + 1) - 1) do
                 let qc: string = _substring q (i - 1) i
                 let sc: string = _substring s (j - 1) j
-                let diag: int = (_idx (_idx score (i - 1)) (j - 1)) + (score_function (qc) (sc) (match_score) (mismatch_score) (gap_score))
-                let delete: int = (_idx (_idx score (i - 1)) (j)) + gap_score
-                let insert: int = (_idx (_idx score (i)) (j - 1)) + gap_score
+                let diag: int = (_idx (_idx score (int (i - 1))) (int (j - 1))) + (score_function (qc) (sc) (match_score) (mismatch_score) (gap_score))
+                let delete: int = (_idx (_idx score (int (i - 1))) (int j)) + gap_score
+                let insert: int = (_idx (_idx score (int i)) (int (j - 1))) + gap_score
                 let mutable max_val: int = 0
                 if diag > max_val then
                     max_val <- diag
@@ -90,7 +90,7 @@ let rec smith_waterman (query: string) (subject: string) (match_score: int) (mis
         __ret
     with
         | Return -> __ret
-let rec traceback (score: int array array) (query: string) (subject: string) (match_score: int) (mismatch_score: int) (gap_score: int) =
+and traceback (score: int array array) (query: string) (subject: string) (match_score: int) (mismatch_score: int) (gap_score: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable score = score
     let mutable query = query
@@ -105,9 +105,9 @@ let rec traceback (score: int array array) (query: string) (subject: string) (ma
         let mutable i_max: int = 0
         let mutable j_max: int = 0
         for i in 0 .. ((Seq.length (score)) - 1) do
-            for j in 0 .. ((Seq.length (_idx score (i))) - 1) do
-                if (_idx (_idx score (i)) (j)) > max_value then
-                    max_value <- _idx (_idx score (i)) (j)
+            for j in 0 .. ((Seq.length (_idx score (int i))) - 1) do
+                if (_idx (_idx score (int i)) (int j)) > max_value then
+                    max_value <- _idx (_idx score (int i)) (int j)
                     i_max <- i
                     j_max <- j
         let mutable i: int = i_max
@@ -121,13 +121,13 @@ let rec traceback (score: int array array) (query: string) (subject: string) (ma
         while (i > 0) && (j > 0) do
             let qc: string = _substring q (i - 1) i
             let sc: string = _substring s (j - 1) j
-            if (_idx (_idx score (i)) (j)) = ((_idx (_idx score (i - 1)) (j - 1)) + (score_function (qc) (sc) (match_score) (mismatch_score) (gap_score))) then
+            if (_idx (_idx score (int i)) (int j)) = ((_idx (_idx score (int (i - 1))) (int (j - 1))) + (score_function (qc) (sc) (match_score) (mismatch_score) (gap_score))) then
                 align1 <- qc + align1
                 align2 <- sc + align2
                 i <- i - 1
                 j <- j - 1
             else
-                if (_idx (_idx score (i)) (j)) = ((_idx (_idx score (i - 1)) (j)) + gap_penalty) then
+                if (_idx (_idx score (int i)) (int j)) = ((_idx (_idx score (int (i - 1))) (int j)) + gap_penalty) then
                     align1 <- qc + align1
                     align2 <- "-" + align2
                     i <- i - 1
@@ -143,7 +143,7 @@ let rec traceback (score: int array array) (query: string) (subject: string) (ma
 let query: string = "HEAGAWGHEE"
 let subject: string = "PAWHEAE"
 let mutable score: int array array = smith_waterman (query) (subject) (1) (-1) (-2)
-printfn "%s" (traceback (score) (query) (subject) (1) (-1) (-2))
+ignore (printfn "%s" (traceback (score) (query) (subject) (1) (-1) (-2)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

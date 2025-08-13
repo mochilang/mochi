@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,11 +21,16 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec bitwise_and (a: int) (b: int) =
@@ -42,21 +47,21 @@ let rec bitwise_and (a: int) (b: int) =
             let bbit: int = ((y % 2 + 2) % 2)
             if (abit = 1) && (bbit = 1) then
                 result <- result + bit
-            x <- x / 2
-            y <- y / 2
+            x <- _floordiv x 2
+            y <- _floordiv y 2
             bit <- bit * 2
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-let rec list_of_submasks (mask: int) =
+and list_of_submasks (mask: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable mask = mask
     try
         if mask <= 0 then
-            failwith ("mask needs to be positive integer, your input " + (_str (mask)))
-        let mutable all_submasks: int array = [||]
+            ignore (failwith ("mask needs to be positive integer, your input " + (_str (mask))))
+        let mutable all_submasks: int array = Array.empty<int>
         let mutable submask: int = mask
         while submask <> 0 do
             all_submasks <- Array.append all_submasks [|submask|]
@@ -66,8 +71,8 @@ let rec list_of_submasks (mask: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (list_of_submasks (15)))
-printfn "%s" (_str (list_of_submasks (13)))
+ignore (printfn "%s" (_str (list_of_submasks (15))))
+ignore (printfn "%s" (_str (list_of_submasks (13))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

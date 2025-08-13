@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -33,6 +33,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -54,7 +55,7 @@ let rec reverse (s: string) =
         __ret
     with
         | Return -> __ret
-let rec max_int (a: int) (b: int) =
+and max_int (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable b = b
@@ -64,17 +65,17 @@ let rec max_int (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-let rec longest_palindromic_subsequence (s: string) =
+and longest_palindromic_subsequence (s: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable s = s
     try
         let rev: string = reverse (s)
         let n: int = String.length (s)
         let m: int = String.length (rev)
-        let mutable dp: int array array = [||]
+        let mutable dp: int array array = Array.empty<int array>
         let mutable i: int = 0
         while i <= n do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             let mutable j: int = 0
             while j <= m do
                 row <- Array.append row [|0|]
@@ -88,18 +89,18 @@ let rec longest_palindromic_subsequence (s: string) =
                 let a_char: string = _substring s (i - 1) (i)
                 let b_char: string = _substring rev (j - 1) (j)
                 if a_char = b_char then
-                    dp.[i].[j] <- 1 + (_idx (_idx dp (i - 1)) (j - 1))
+                    dp.[i].[j] <- 1 + (_idx (_idx dp (int (i - 1))) (int (j - 1)))
                 else
-                    dp.[i].[j] <- max_int (_idx (_idx dp (i - 1)) (j)) (_idx (_idx dp (i)) (j - 1))
+                    dp.[i].[j] <- max_int (_idx (_idx dp (int (i - 1))) (int j)) (_idx (_idx dp (int i)) (int (j - 1)))
                 j <- j + 1
             i <- i + 1
-        __ret <- _idx (_idx dp (n)) (m)
+        __ret <- _idx (_idx dp (int n)) (int m)
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (longest_palindromic_subsequence ("bbbab")))
-printfn "%s" (_str (longest_palindromic_subsequence ("bbabcbcab")))
+ignore (printfn "%s" (_str (longest_palindromic_subsequence ("bbbab"))))
+ignore (printfn "%s" (_str (longest_palindromic_subsequence ("bbabcbcab"))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -31,6 +31,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -43,12 +44,12 @@ let rec sort_list (nums: int array) =
         let mutable arr: int array = nums
         let mutable i: int = 1
         while i < (Seq.length (arr)) do
-            let key: int = _idx arr (i)
+            let key: int = _idx arr (int i)
             let mutable j: int = i - 1
-            while (j >= 0) && ((_idx arr (j)) > key) do
-                arr.[j + 1] <- _idx arr (j)
+            while (j >= 0) && ((_idx arr (int j)) > key) do
+                arr.[(j + 1)] <- _idx arr (int j)
                 j <- j - 1
-            arr.[j + 1] <- key
+            arr.[(j + 1)] <- key
             i <- i + 1
         __ret <- arr
         raise Return
@@ -64,8 +65,8 @@ and largest_divisible_subset (items: int array) =
             raise Return
         let mutable nums: int array = sort_list (items)
         let n: int = Seq.length (nums)
-        let mutable memo: int array = [||]
-        let mutable prev: int array = [||]
+        let mutable memo: int array = Array.empty<int>
+        let mutable prev: int array = Array.empty<int>
         let mutable i: int = 0
         while i < n do
             memo <- Array.append memo [|1|]
@@ -75,8 +76,8 @@ and largest_divisible_subset (items: int array) =
         while i < n do
             let mutable j: int = 0
             while j < i do
-                if (((_idx nums (j)) = 0) || (((((_idx nums (i)) % (_idx nums (j)) + (_idx nums (j))) % (_idx nums (j)))) = 0)) && (((_idx memo (j)) + 1) > (_idx memo (i))) then
-                    memo.[i] <- (_idx memo (j)) + 1
+                if (((_idx nums (int j)) = 0) || (((((_idx nums (int i)) % (_idx nums (int j)) + (_idx nums (int j))) % (_idx nums (int j)))) = 0)) && (((_idx memo (int j)) + 1) > (_idx memo (int i))) then
+                    memo.[i] <- (_idx memo (int j)) + 1
                     prev.[i] <- j
                 j <- j + 1
             i <- i + 1
@@ -84,17 +85,17 @@ and largest_divisible_subset (items: int array) =
         let mutable last_index: int = 0 - 1
         i <- 0
         while i < n do
-            if (_idx memo (i)) > ans then
-                ans <- _idx memo (i)
+            if (_idx memo (int i)) > ans then
+                ans <- _idx memo (int i)
                 last_index <- i
             i <- i + 1
         if last_index = (0 - 1) then
             __ret <- Array.empty<int>
             raise Return
-        let mutable result: int array = [|_idx nums (last_index)|]
-        while (_idx prev (last_index)) <> last_index do
-            last_index <- _idx prev (last_index)
-            result <- Array.append result [|_idx nums (last_index)|]
+        let mutable result: int array = unbox<int array> [|_idx nums (int last_index)|]
+        while (_idx prev (int last_index)) <> last_index do
+            last_index <- _idx prev (int last_index)
+            result <- Array.append result [|(_idx nums (int last_index))|]
         __ret <- result
         raise Return
         __ret
@@ -105,9 +106,9 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        let items: int array = [|1; 16; 7; 8; 4|]
+        let items: int array = unbox<int array> [|1; 16; 7; 8; 4|]
         let subset: int array = largest_divisible_subset (items)
-        printfn "%s" (((("The longest divisible subset of " + (_str (items))) + " is ") + (_str (subset))) + ".")
+        ignore (printfn "%s" (((("The longest divisible subset of " + (_str (items))) + " is ") + (_str (subset))) + "."))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

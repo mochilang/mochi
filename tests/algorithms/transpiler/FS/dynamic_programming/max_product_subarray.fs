@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -30,12 +30,12 @@ let rec max_product_subarray (numbers: int array) =
         if (Seq.length (numbers)) = 0 then
             __ret <- 0
             raise Return
-        let mutable max_till_now: int = _idx numbers (0)
-        let mutable min_till_now: int = _idx numbers (0)
-        let mutable max_prod: int = _idx numbers (0)
+        let mutable max_till_now: int = _idx numbers (int 0)
+        let mutable min_till_now: int = _idx numbers (int 0)
+        let mutable max_prod: int = _idx numbers (int 0)
         let mutable i: int = 1
         while i < (Seq.length (numbers)) do
-            let number: int = _idx numbers (i)
+            let number: int = _idx numbers (int i)
             if number < 0 then
                 let temp: int = max_till_now
                 max_till_now <- min_till_now
@@ -58,8 +58,8 @@ let rec max_product_subarray (numbers: int array) =
         __ret
     with
         | Return -> __ret
-printfn "%d" (max_product_subarray (unbox<int array> [|2; 3; -2; 4|]))
-printfn "%d" (max_product_subarray (unbox<int array> [|-2; 0; -1|]))
+ignore (printfn "%d" (max_product_subarray (unbox<int array> [|2; 3; -2; 4|])))
+ignore (printfn "%d" (max_product_subarray (unbox<int array> [|-2; 0; -1|])))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

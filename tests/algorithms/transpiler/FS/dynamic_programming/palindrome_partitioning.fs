@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -36,15 +36,15 @@ let rec min_partitions (s: string) =
     let mutable s = s
     try
         let n: int = String.length (s)
-        let mutable cut: int array = [||]
+        let mutable cut: int array = Array.empty<int>
         let mutable i: int = 0
         while i < n do
             cut <- Array.append cut [|0|]
             i <- i + 1
-        let mutable pal: bool array array = [||]
+        let mutable pal: bool array array = Array.empty<bool array>
         i <- 0
         while i < n do
-            let mutable row: bool array = [||]
+            let mutable row: bool array = Array.empty<bool>
             let mutable j: int = 0
             while j < n do
                 row <- Array.append row [|false|]
@@ -56,25 +56,25 @@ let rec min_partitions (s: string) =
             let mutable mincut: int = i
             let mutable j: int = 0
             while j <= i do
-                if ((string (s.[i])) = (string (s.[j]))) && (((i - j) < 2) || (_idx (_idx pal (j + 1)) (i - 1))) then
+                if ((string (s.[i])) = (string (s.[j]))) && (((i - j) < 2) || (_idx (_idx pal (int (j + 1))) (int (i - 1)))) then
                     pal.[j].[i] <- true
                     if j = 0 then
                         mincut <- 0
                     else
-                        let candidate: int = (_idx cut (j - 1)) + 1
+                        let candidate: int = (_idx cut (int (j - 1))) + 1
                         if candidate < mincut then
                             mincut <- candidate
                 j <- j + 1
             cut.[i] <- mincut
             i <- i + 1
-        __ret <- _idx cut (n - 1)
+        __ret <- _idx cut (int (n - 1))
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%d" (min_partitions ("aab"))
-printfn "%d" (min_partitions ("aaa"))
-printfn "%d" (min_partitions ("ababbbabbababa"))
+ignore (printfn "%d" (min_partitions ("aab")))
+ignore (printfn "%d" (min_partitions ("aaa")))
+ignore (printfn "%d" (min_partitions ("ababbbabbababa")))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

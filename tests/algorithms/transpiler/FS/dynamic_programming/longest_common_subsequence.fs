@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,14 +23,15 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
 type LcsResult = {
-    length: int
-    sequence: string
+    mutable _length: int
+    mutable _sequence: string
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -39,10 +40,10 @@ let rec zeros_matrix (rows: int) (cols: int) =
     let mutable rows = rows
     let mutable cols = cols
     try
-        let mutable matrix: int array array = [||]
+        let mutable matrix: int array array = Array.empty<int array>
         let mutable i: int = 0
         while i <= rows do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             let mutable j: int = 0
             while j <= cols do
                 row <- Array.append row [|0|]
@@ -54,7 +55,7 @@ let rec zeros_matrix (rows: int) (cols: int) =
         __ret
     with
         | Return -> __ret
-let rec longest_common_subsequence (x: string) (y: string) =
+and longest_common_subsequence (x: string) (y: string) =
     let mutable __ret : LcsResult = Unchecked.defaultof<LcsResult>
     let mutable x = x
     let mutable y = y
@@ -67,12 +68,12 @@ let rec longest_common_subsequence (x: string) (y: string) =
             let mutable j: int = 1
             while j <= n do
                 if (string (x.[i - 1])) = (string (y.[j - 1])) then
-                    dp.[i].[j] <- (_idx (_idx dp (i - 1)) (j - 1)) + 1
+                    dp.[i].[j] <- (_idx (_idx dp (int (i - 1))) (int (j - 1))) + 1
                 else
-                    if (_idx (_idx dp (i - 1)) (j)) > (_idx (_idx dp (i)) (j - 1)) then
-                        dp.[i].[j] <- _idx (_idx dp (i - 1)) (j)
+                    if (_idx (_idx dp (int (i - 1))) (int j)) > (_idx (_idx dp (int i)) (int (j - 1))) then
+                        dp.[i].[j] <- _idx (_idx dp (int (i - 1))) (int j)
                     else
-                        dp.[i].[j] <- _idx (_idx dp (i)) (j - 1)
+                        dp.[i].[j] <- _idx (_idx dp (int i)) (int (j - 1))
                 j <- j + 1
             i <- i + 1
         let mutable seq: string = ""
@@ -84,11 +85,11 @@ let rec longest_common_subsequence (x: string) (y: string) =
                 i2 <- i2 - 1
                 j2 <- j2 - 1
             else
-                if (_idx (_idx dp (i2 - 1)) (j2)) >= (_idx (_idx dp (i2)) (j2 - 1)) then
+                if (_idx (_idx dp (int (i2 - 1))) (int j2)) >= (_idx (_idx dp (int i2)) (int (j2 - 1))) then
                     i2 <- i2 - 1
                 else
                     j2 <- j2 - 1
-        __ret <- { length = _idx (_idx dp (m)) (n); sequence = seq }
+        __ret <- { _length = _idx (_idx dp (int m)) (int n); _sequence = seq }
         raise Return
         __ret
     with
@@ -96,7 +97,7 @@ let rec longest_common_subsequence (x: string) (y: string) =
 let a: string = "AGGTAB"
 let b: string = "GXTXAYB"
 let res: LcsResult = longest_common_subsequence (a) (b)
-printfn "%s" ((("len = " + (_str (res.length))) + ", sub-sequence = ") + (res.sequence))
+ignore (printfn "%s" ((("len = " + (_str (res._length))) + ", sub-sequence = ") + (res._sequence)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

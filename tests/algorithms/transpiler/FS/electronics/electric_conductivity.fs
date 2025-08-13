@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,14 +21,15 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
 type Result = {
-    kind: string
-    value: float
+    mutable _kind: string
+    mutable _value: float
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -47,20 +48,20 @@ let rec electric_conductivity (conductivity: float) (electron_conc: float) (mobi
         if mobility = 0.0 then
             zero_count <- zero_count + 1
         if zero_count <> 1 then
-            failwith ("You cannot supply more or less than 2 values")
+            ignore (failwith ("You cannot supply more or less than 2 values"))
         if conductivity < 0.0 then
-            failwith ("Conductivity cannot be negative")
+            ignore (failwith ("Conductivity cannot be negative"))
         if electron_conc < 0.0 then
-            failwith ("Electron concentration cannot be negative")
+            ignore (failwith ("Electron concentration cannot be negative"))
         if mobility < 0.0 then
-            failwith ("mobility cannot be negative")
+            ignore (failwith ("mobility cannot be negative"))
         if conductivity = 0.0 then
-            __ret <- { kind = "conductivity"; value = (mobility * electron_conc) * ELECTRON_CHARGE }
+            __ret <- { _kind = "conductivity"; _value = (mobility * electron_conc) * ELECTRON_CHARGE }
             raise Return
         if electron_conc = 0.0 then
-            __ret <- { kind = "electron_conc"; value = conductivity / (mobility * ELECTRON_CHARGE) }
+            __ret <- { _kind = "electron_conc"; _value = conductivity / (mobility * ELECTRON_CHARGE) }
             raise Return
-        __ret <- { kind = "mobility"; value = conductivity / (electron_conc * ELECTRON_CHARGE) }
+        __ret <- { _kind = "mobility"; _value = conductivity / (electron_conc * ELECTRON_CHARGE) }
         raise Return
         __ret
     with
@@ -68,9 +69,9 @@ let rec electric_conductivity (conductivity: float) (electron_conc: float) (mobi
 let r1: Result = electric_conductivity (25.0) (100.0) (0.0)
 let r2: Result = electric_conductivity (0.0) (1600.0) (200.0)
 let r3: Result = electric_conductivity (1000.0) (0.0) (1200.0)
-printfn "%s" (((r1.kind) + " ") + (_str (r1.value)))
-printfn "%s" (((r2.kind) + " ") + (_str (r2.value)))
-printfn "%s" (((r3.kind) + " ") + (_str (r3.value)))
+ignore (printfn "%s" (((r1._kind) + " ") + (_str (r1._value))))
+ignore (printfn "%s" (((r2._kind) + " ") + (_str (r2._value))))
+ignore (printfn "%s" (((r3._kind) + " ") + (_str (r3._value))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

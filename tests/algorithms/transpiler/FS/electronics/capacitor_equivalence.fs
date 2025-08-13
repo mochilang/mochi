@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -35,9 +36,9 @@ let rec capacitor_parallel (capacitors: float array) =
         let mutable sum_c: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (capacitors)) do
-            let c: float = _idx capacitors (i)
+            let c: float = _idx capacitors (int i)
             if c < 0.0 then
-                failwith (("Capacitor at index " + (_str (i))) + " has a negative value!")
+                ignore (failwith (("Capacitor at index " + (_str (i))) + " has a negative value!"))
                 __ret <- 0.0
                 raise Return
             sum_c <- sum_c + c
@@ -54,9 +55,9 @@ and capacitor_series (capacitors: float array) =
         let mutable first_sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (capacitors)) do
-            let c: float = _idx capacitors (i)
+            let c: float = _idx capacitors (int i)
             if c <= 0.0 then
-                failwith (("Capacitor at index " + (_str (i))) + " has a negative or zero value!")
+                ignore (failwith (("Capacitor at index " + (_str (i))) + " has a negative or zero value!"))
                 __ret <- 0.0
                 raise Return
             first_sum <- first_sum + (1.0 / c)
@@ -73,8 +74,8 @@ and main () =
         let __mem_start = System.GC.GetTotalMemory(true)
         let parallel: float = capacitor_parallel (unbox<float array> [|5.71389; 12.0; 3.0|])
         let series: float = capacitor_series (unbox<float array> [|5.71389; 12.0; 3.0|])
-        printfn "%s" (_str (parallel))
-        printfn "%s" (_str (series))
+        ignore (printfn "%s" (_str (parallel)))
+        ignore (printfn "%s" (_str (series)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

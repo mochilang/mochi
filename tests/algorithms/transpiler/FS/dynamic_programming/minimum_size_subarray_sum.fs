@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -42,7 +43,7 @@ let rec minimum_subarray_sum (target: int) (numbers: int array) =
         if target = 0 then
             let mutable i: int = 0
             while i < n do
-                if (_idx numbers (i)) = 0 then
+                if (_idx numbers (int i)) = 0 then
                     __ret <- 0
                     raise Return
                 i <- i + 1
@@ -51,12 +52,12 @@ let rec minimum_subarray_sum (target: int) (numbers: int array) =
         let mutable curr_sum: int = 0
         let mutable min_len: int = n + 1
         while right < n do
-            curr_sum <- curr_sum + (_idx numbers (right))
+            curr_sum <- curr_sum + (_idx numbers (int right))
             while (curr_sum >= target) && (left <= right) do
                 let current_len: int = (right - left) + 1
                 if current_len < min_len then
                     min_len <- current_len
-                curr_sum <- curr_sum - (_idx numbers (left))
+                curr_sum <- curr_sum - (_idx numbers (int left))
                 left <- left + 1
             right <- right + 1
         if min_len = (n + 1) then
@@ -67,10 +68,10 @@ let rec minimum_subarray_sum (target: int) (numbers: int array) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (minimum_subarray_sum (7) (unbox<int array> [|2; 3; 1; 2; 4; 3|])))
-printfn "%s" (_str (minimum_subarray_sum (7) (unbox<int array> [|2; 3; -1; 2; 4; -3|])))
-printfn "%s" (_str (minimum_subarray_sum (11) (unbox<int array> [|1; 1; 1; 1; 1; 1; 1; 1|])))
-printfn "%s" (_str (minimum_subarray_sum (0) (unbox<int array> [|1; 2; 3|])))
+ignore (printfn "%s" (_str (minimum_subarray_sum (7) (unbox<int array> [|2; 3; 1; 2; 4; 3|]))))
+ignore (printfn "%s" (_str (minimum_subarray_sum (7) (unbox<int array> [|2; 3; -1; 2; 4; -3|]))))
+ignore (printfn "%s" (_str (minimum_subarray_sum (11) (unbox<int array> [|1; 1; 1; 1; 1; 1; 1; 1|]))))
+ignore (printfn "%s" (_str (minimum_subarray_sum (0) (unbox<int array> [|1; 2; 3|]))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

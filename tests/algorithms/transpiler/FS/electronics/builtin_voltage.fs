@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,7 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -62,7 +63,7 @@ let rec ln_series (x: float) =
         __ret
     with
         | Return -> __ret
-let rec ln (x: float) =
+and ln (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -79,28 +80,28 @@ let rec ln (x: float) =
         __ret
     with
         | Return -> __ret
-let rec builtin_voltage (donor_conc: float) (acceptor_conc: float) (intrinsic_conc: float) =
+and builtin_voltage (donor_conc: float) (acceptor_conc: float) (intrinsic_conc: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable donor_conc = donor_conc
     let mutable acceptor_conc = acceptor_conc
     let mutable intrinsic_conc = intrinsic_conc
     try
         if donor_conc <= 0.0 then
-            failwith ("Donor concentration should be positive")
+            ignore (failwith ("Donor concentration should be positive"))
         if acceptor_conc <= 0.0 then
-            failwith ("Acceptor concentration should be positive")
+            ignore (failwith ("Acceptor concentration should be positive"))
         if intrinsic_conc <= 0.0 then
-            failwith ("Intrinsic concentration should be positive")
+            ignore (failwith ("Intrinsic concentration should be positive"))
         if donor_conc <= intrinsic_conc then
-            failwith ("Donor concentration should be greater than intrinsic concentration")
+            ignore (failwith ("Donor concentration should be greater than intrinsic concentration"))
         if acceptor_conc <= intrinsic_conc then
-            failwith ("Acceptor concentration should be greater than intrinsic concentration")
+            ignore (failwith ("Acceptor concentration should be greater than intrinsic concentration"))
         __ret <- ((BOLTZMANN * TEMPERATURE) * (ln ((donor_conc * acceptor_conc) / (intrinsic_conc * intrinsic_conc)))) / ELECTRON_VOLT
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (builtin_voltage (pow10 (17)) (pow10 (17)) (pow10 (10))))
+ignore (printfn "%s" (_str (builtin_voltage (pow10 (17)) (pow10 (17)) (pow10 (10)))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

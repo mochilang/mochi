@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -39,7 +39,7 @@ let rec dp_count (s: int array) (n: int) =
         if n < 0 then
             __ret <- 0
             raise Return
-        let mutable table: int array = [||]
+        let mutable table: int array = Array.empty<int>
         let mutable i: int = 0
         while i <= n do
             table <- Array.append table [|0|]
@@ -47,23 +47,23 @@ let rec dp_count (s: int array) (n: int) =
         table.[0] <- 1
         let mutable idx: int = 0
         while idx < (Seq.length (s)) do
-            let coin_val: int = _idx s (idx)
+            let coin_val: int = _idx s (int idx)
             let mutable j: int = coin_val
             while j <= n do
-                table.[j] <- (_idx table (j)) + (_idx table (j - coin_val))
+                table.[j] <- (_idx table (int j)) + (_idx table (int (j - coin_val)))
                 j <- j + 1
             idx <- idx + 1
-        __ret <- _idx table (n)
+        __ret <- _idx table (int n)
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%d" (dp_count (unbox<int array> [|1; 2; 3|]) (4))
-printfn "%d" (dp_count (unbox<int array> [|1; 2; 3|]) (7))
-printfn "%d" (dp_count (unbox<int array> [|2; 5; 3; 6|]) (10))
-printfn "%d" (dp_count (unbox<int array> [|10|]) (99))
-printfn "%d" (dp_count (unbox<int array> [|4; 5; 6|]) (0))
-printfn "%d" (dp_count (unbox<int array> [|1; 2; 3|]) (-5))
+ignore (printfn "%d" (dp_count (unbox<int array> [|1; 2; 3|]) (4)))
+ignore (printfn "%d" (dp_count (unbox<int array> [|1; 2; 3|]) (7)))
+ignore (printfn "%d" (dp_count (unbox<int array> [|2; 5; 3; 6|]) (10)))
+ignore (printfn "%d" (dp_count (unbox<int array> [|10|]) (99)))
+ignore (printfn "%d" (dp_count (unbox<int array> [|4; 5; 6|]) (0)))
+ignore (printfn "%d" (dp_count (unbox<int array> [|1; 2; 3|]) (-5)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

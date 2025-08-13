@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 07:12 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,7 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -34,9 +35,9 @@ let rec fizz_buzz (number: int) (iterations: int) =
     let mutable iterations = iterations
     try
         if number < 1 then
-            failwith ("starting number must be an integer and be more than 0")
+            ignore (failwith ("starting number must be an integer and be more than 0"))
         if iterations < 1 then
-            failwith ("Iterations must be done more than 0 times to play FizzBuzz")
+            ignore (failwith ("Iterations must be done more than 0 times to play FizzBuzz"))
         let mutable out: string = ""
         let mutable n: int = number
         while n <= iterations do
@@ -53,8 +54,8 @@ let rec fizz_buzz (number: int) (iterations: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (fizz_buzz (1) (7))
-printfn "%s" (fizz_buzz (1) (15))
+ignore (printfn "%s" (fizz_buzz (1) (7)))
+ignore (printfn "%s" (fizz_buzz (1) (15)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
