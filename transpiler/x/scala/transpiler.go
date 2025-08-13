@@ -1204,7 +1204,9 @@ func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
 	fmt.Fprint(w, " += ")
 	if ie, ok := a.Elem.(*IfExpr); ok {
-		if inferTypeWithEnv(ie.Then, nil) == "BigInt" && inferTypeWithEnv(ie.Else, nil) == "BigInt" {
+		t1 := inferTypeWithEnv(ie.Then, nil)
+		t2 := inferTypeWithEnv(ie.Else, nil)
+		if t1 != "BigInt" || t2 != "BigInt" {
 			needsBigInt = true
 			fmt.Fprint(w, "BigInt(")
 			a.Elem.emit(w)
@@ -2110,7 +2112,7 @@ func Emit(p *Program) []byte {
 	}
 	if needsStr {
 		buf.WriteString("  private def _str(x: Any): String = x match {\n")
-		buf.WriteString("    case d: Double => if (d.isWhole) d.toLong.toString else d.toString\n")
+		buf.WriteString("    case d: Double => d.toString\n")
 		buf.WriteString("    case other => String.valueOf(other)\n")
 		buf.WriteString("  }\n\n")
 	}
