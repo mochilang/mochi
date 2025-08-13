@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,16 +33,36 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 double PI = 3.141592653589793;
 double floor(double x) {
-  int i = x as int;
-  if ((i as double) > x) {
+  int i = (x).toInt();
+  if ((i.toDouble()) > x) {
     i = i - 1;
   }
-  return i as double;
+  return i.toDouble();
 }
 
 double modf(double x, double m) {
@@ -54,7 +74,7 @@ double sin_taylor(double x) {
   double sum = x;
   int i = 1;
   while (i < 10) {
-    double k1 = 2.0 * (i as double);
+    double k1 = 2.0 * (i.toDouble());
     double k2 = k1 + 1.0;
     term = -term * x * x / (k1 * k2);
     sum = sum + term;
@@ -68,8 +88,8 @@ double cos_taylor(double x) {
   double sum = 1.0;
   int i = 1;
   while (i < 10) {
-    double k1 = 2.0 * (i as double) - 1.0;
-    double k2 = 2.0 * (i as double);
+    double k1 = 2.0 * (i.toDouble()) - 1.0;
+    double k2 = 2.0 * (i.toDouble());
     term = -term * x * x / (k1 * k2);
     sum = sum + term;
     i = i + 1;
@@ -84,7 +104,7 @@ List<double> convert_to_2d(double x, double y, double z, double scale, double di
 }
 
 List<double> rotate(double x, double y, double z, String axis, double angle) {
-  double angle = modf(angle, 360.0) / 450.0 * 180.0 / PI;
+  angle = modf(angle, 360.0) / 450.0 * 180.0 / PI;
   angle = modf(angle, 2.0 * PI);
   if (angle > PI) {
     angle = angle - 2.0 * PI;
@@ -118,8 +138,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((convert_to_2d(1.0, 2.0, 3.0, 10.0, 10.0)).toString());
-  print((rotate(1.0, 2.0, 3.0, "y", 90.0)).toString());
+  print(_str(convert_to_2d(1.0, 2.0, 3.0, 10.0, 10.0)));
+  print(_str(rotate(1.0, 2.0, 3.0, "y", 90.0)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
