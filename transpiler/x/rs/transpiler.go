@@ -98,6 +98,19 @@ func isLocal(name string) bool {
 	return false
 }
 
+// baseName walks an expression and returns the underlying *NameRef if the
+// expression is composed of nested index operations like x[i][j].
+func baseName(e Expr) *NameRef {
+	switch v := e.(type) {
+	case *NameRef:
+		return v
+	case *IndexExpr:
+		return baseName(v.Target)
+	default:
+		return nil
+	}
+}
+
 func isNullLit(e Expr) bool {
 	_, ok := e.(*NullLit)
 	return ok
@@ -2346,6 +2359,19 @@ type IndexAssignStmt struct {
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer) {
+	useUnsafe := false
+	if n := baseName(s.Target); n != nil {
+		name := n.Name
+		if newName, ok := globalRenames[n.Name]; ok && !isLocal(n.Name) {
+			name = newName
+		}
+		if globalVars[name] && !isLocal(n.Name) && !strings.HasPrefix(varTypes[name], "HashMap") {
+			useUnsafe = true
+		}
+	}
+	if useUnsafe {
+		io.WriteString(w, "unsafe { ")
+	}
 	if idx, ok := s.Target.(*IndexExpr); ok {
 		old := indexLHS
 		indexLHS = true
@@ -2368,6 +2394,9 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 						s.Value.emit(w)
 						io.WriteString(w, "; }")
 						indexLHS = old
+						if useUnsafe {
+							io.WriteString(w, " }")
+						}
 						return
 					}
 				}
@@ -2384,6 +2413,9 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 					io.WriteString(w, " = ")
 					s.Value.emit(w)
 					indexLHS = old
+					if useUnsafe {
+						io.WriteString(w, " }")
+					}
 					return
 				}
 			}
@@ -2440,6 +2472,9 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 					}
 					io.WriteString(w, ", _val); }")
 					indexLHS = old
+					if useUnsafe {
+						io.WriteString(w, " }")
+					}
 					return
 				}
 			}
@@ -2485,7 +2520,9 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 				s.Value.emit(w)
 			}
 			io.WriteString(w, ")")
-			indexLHS = old
+			if useUnsafe {
+				io.WriteString(w, " }")
+			}
 			return
 		}
 		idx.Target.emit(w)
@@ -2510,11 +2547,17 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			io.WriteString(w, "String::from(")
 			v.emit(w)
 			io.WriteString(w, ")")
+			if useUnsafe {
+				io.WriteString(w, " }")
+			}
 			return
 		case *NameRef:
 			if inferType(s.Value) == "&str" {
 				v.emit(w)
 				io.WriteString(w, ".to_string()")
+				if useUnsafe {
+					io.WriteString(w, " }")
+				}
 				return
 			}
 		}
@@ -2523,9 +2566,15 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	if nr, ok := s.Value.(*NameRef); ok && vtyp != "i64" && vtyp != "bool" && vtyp != "f64" && !strings.HasPrefix(vtyp, "&") {
 		nr.emit(w)
 		io.WriteString(w, ".clone()")
+		if useUnsafe {
+			io.WriteString(w, " }")
+		}
 		return
 	}
 	s.Value.emit(w)
+	if useUnsafe {
+		io.WriteString(w, " }")
+	}
 }
 
 type BinaryExpr struct {

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-12 16:46 GMT+7
+Last updated: 2025-08-13 07:32 GMT+7
 
-## Algorithms Golden Test Checklist (696/1077)
+## Algorithms Golden Test Checklist (698/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -316,13 +316,13 @@ Last updated: 2025-08-12 16:46 GMT+7
 | 307 | dynamic_programming/edit_distance | ✓ | 196µs | 2.1 MB |
 | 308 | dynamic_programming/factorial | ✓ | 68µs | 2.1 MB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 34µs | 2.0 MB |
-| 310 | dynamic_programming/fibonacci | ✓ | 90µs | 2.1 MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 52µs | 1.9 MB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 61µs | 2.2 MB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 64µs | 2.1 MB |
 | 313 | dynamic_programming/integer_partition | ✓ | 3.179ms | 2.5 MB |
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 48µs | 2.2 MB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | error |  |  |
-| 316 | dynamic_programming/knapsack | error |  |  |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 68µs | 1.9 MB |
+| 316 | dynamic_programming/knapsack | ✓ | 86µs | 2.1 MB |
 | 317 | dynamic_programming/largest_divisible_subset | ✓ | 112µs | 2.2 MB |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 60µs | 2.0 MB |
 | 319 | dynamic_programming/longest_common_substring | ✓ | 79µs | 2.0 MB |
