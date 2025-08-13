@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-13 07:12 +0700
+Last updated: 2025-08-13 16:10 +0700
 
-## Program Checklist (260/1077)
+## Program Checklist (261/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -352,8 +352,8 @@ Last updated: 2025-08-13 07:12 +0700
 | 343 | dynamic_programming/subset_generation | ✓ | 1.649ms | 512.0 KB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 2.436ms | 768.0 KB |
 | 345 | dynamic_programming/trapped_water | ✓ | 1.13ms | 384.0 KB |
-| 346 | dynamic_programming/tribonacci | ✓ | 686µs | 256.0 KB |
-| 347 | dynamic_programming/viterbi |   |  |  |
+| 346 | dynamic_programming/tribonacci | ✓ | 680µs | 384.0 KB |
+| 347 | dynamic_programming/viterbi | ✓ | 1.558ms | 640.0 KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 3.644ms | 896.0 KB |
 | 349 | dynamic_programming/word_break | ✓ | 1.019ms | 256.0 KB |
 | 350 | electronics/apparent_power | ✓ | 308µs | 128.0 KB |

@@ -1,2 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/dynamic_programming/viterbi.zig:60:108: error: expected integer type, found 'f64'
