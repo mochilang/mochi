@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,18 +33,43 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 List<double> straight_line_depreciation(int useful_years, double purchase_value, double residual_value) {
   if (useful_years < 1) {
-    throw Exception("Useful years cannot be less than 1");
+    _error("Useful years cannot be less than 1");
   }
   if (purchase_value < 0.0) {
-    throw Exception("Purchase value cannot be less than zero");
+    _error("Purchase value cannot be less than zero");
   }
   if (purchase_value < residual_value) {
-    throw Exception("Purchase value cannot be less than residual value");
+    _error("Purchase value cannot be less than residual value");
   }
   double depreciable_cost = purchase_value - residual_value;
   double annual_expense = depreciable_cost / (1.0 * useful_years);
@@ -71,11 +96,11 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((straight_line_depreciation(10, 1100.0, 100.0)).toString());
-  print((straight_line_depreciation(6, 1250.0, 50.0)).toString());
-  print((straight_line_depreciation(4, 1001.0, 0.0)).toString());
-  print((straight_line_depreciation(11, 380.0, 50.0)).toString());
-  print((straight_line_depreciation(1, 4985.0, 100.0)).toString());
+  print(_str(straight_line_depreciation(10, 1100.0, 100.0)));
+  print(_str(straight_line_depreciation(6, 1250.0, 50.0)));
+  print(_str(straight_line_depreciation(4, 1001.0, 0.0)));
+  print(_str(straight_line_depreciation(11, 380.0, 50.0)));
+  print(_str(straight_line_depreciation(1, 4985.0, 100.0)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,32 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double powf(double base, int exponent) {
@@ -48,19 +73,19 @@ double powf(double base, int exponent) {
 
 double round2(double value) {
   if (value >= 0.0) {
-    int scaled = value * 100.0 + 0.5 as int;
-    return (scaled as double) / 100.0;
+    int scaled = (value * 100.0 + 0.5).toInt();
+    return (scaled.toDouble()) / 100.0;
   }
-  int scaled = value * 100.0 - 0.5 as int;
-  return (scaled as double) / 100.0;
+  int scaled = (value * 100.0 - 0.5).toInt();
+  return (scaled.toDouble()) / 100.0;
 }
 
 double present_value(double discount_rate, List<double> cash_flows) {
   if (discount_rate < 0.0) {
-    throw Exception("Discount rate cannot be negative");
+    _error("Discount rate cannot be negative");
   }
   if (cash_flows.length == 0) {
-    throw Exception("Cash flows list cannot be empty");
+    _error("Cash flows list cannot be empty");
   }
   double pv = 0.0;
   int i = 0;
@@ -80,9 +105,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((present_value(0.13, List<double>.from([10.0, 20.7, -293.0, 297.0]))).toString());
-  print((present_value(0.07, List<double>.from([-109129.39, 30923.23, 15098.93, 29734.0, 39.0]))).toString());
-  print((present_value(0.07, [109129.39, 30923.23, 15098.93, 29734.0, 39.0])).toString());
+  print(_str(present_value(0.13, List<double>.from([10.0, 20.7, -293.0, 297.0]))));
+  print(_str(present_value(0.07, List<double>.from([-109129.39, 30923.23, 15098.93, 29734.0, 39.0]))));
+  print(_str(present_value(0.07, [109129.39, 30923.23, 15098.93, 29734.0, 39.0])));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

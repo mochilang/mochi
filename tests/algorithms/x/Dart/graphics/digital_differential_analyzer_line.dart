@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,25 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
 }
 
 class Point {
@@ -50,7 +68,7 @@ int abs_int(int n) {
 }
 
 int round_int(double x) {
-  return x + 0.5 as int;
+  return (x + 0.5).toInt();
 }
 
 List<Point> digital_differential_analyzer_line(Point p1, Point p2) {
@@ -59,11 +77,11 @@ List<Point> digital_differential_analyzer_line(Point p1, Point p2) {
   int abs_dx = abs_int(dx);
   int abs_dy = abs_int(dy);
   int steps = (abs_dx > abs_dy ? abs_dx : abs_dy);
-  double x_increment = (dx as double) / (steps as double);
-  double y_increment = (dy as double) / (steps as double);
+  double x_increment = (dx.toDouble()) / (steps.toDouble());
+  double y_increment = (dy.toDouble()) / (steps.toDouble());
   List<Point> coordinates = <Point>[];
-  double x = p1.x as double;
-  double y = p1.y as double;
+  double x = p1.x.toDouble();
+  double y = p1.y.toDouble();
   int i = 0;
   while (i < steps) {
     x = x + x_increment;

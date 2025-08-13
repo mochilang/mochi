@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,32 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 void panic(String msg) {
@@ -43,7 +68,7 @@ void panic(String msg) {
 double powf(double base, double exp) {
   double result = 1.0;
   int i = 0;
-  while (i < (exp as int)) {
+  while (i < ((exp).toInt())) {
     result = result * base;
     i = i + 1;
   }
@@ -52,15 +77,15 @@ double powf(double base, double exp) {
 
 double simple_interest(double principal, double daily_rate, double days) {
   if (days <= 0.0) {
-    throw Exception("days_between_payments must be > 0");
+    _error("days_between_payments must be > 0");
     return 0.0;
   }
   if (daily_rate < 0.0) {
-    throw Exception("daily_interest_rate must be >= 0");
+    _error("daily_interest_rate must be >= 0");
     return 0.0;
   }
   if (principal <= 0.0) {
-    throw Exception("principal must be > 0");
+    _error("principal must be > 0");
     return 0.0;
   }
   return principal * daily_rate * days;
@@ -68,15 +93,15 @@ double simple_interest(double principal, double daily_rate, double days) {
 
 double compound_interest(double principal, double nominal_rate, double periods) {
   if (periods <= 0.0) {
-    throw Exception("number_of_compounding_periods must be > 0");
+    _error("number_of_compounding_periods must be > 0");
     return 0.0;
   }
   if (nominal_rate < 0.0) {
-    throw Exception("nominal_annual_interest_rate_percentage must be >= 0");
+    _error("nominal_annual_interest_rate_percentage must be >= 0");
     return 0.0;
   }
   if (principal <= 0.0) {
-    throw Exception("principal must be > 0");
+    _error("principal must be > 0");
     return 0.0;
   }
   return principal * (powf(1.0 + nominal_rate, periods) - 1.0);
@@ -84,28 +109,28 @@ double compound_interest(double principal, double nominal_rate, double periods) 
 
 double apr_interest(double principal, double apr, double years) {
   if (years <= 0.0) {
-    throw Exception("number_of_years must be > 0");
+    _error("number_of_years must be > 0");
     return 0.0;
   }
   if (apr < 0.0) {
-    throw Exception("nominal_annual_percentage_rate must be >= 0");
+    _error("nominal_annual_percentage_rate must be >= 0");
     return 0.0;
   }
   if (principal <= 0.0) {
-    throw Exception("principal must be > 0");
+    _error("principal must be > 0");
     return 0.0;
   }
   return compound_interest(principal, apr / 365.0, years * 365.0);
 }
 
 void _main() {
-  print((simple_interest(18000.0, 0.06, 3.0)).toString());
-  print((simple_interest(0.5, 0.06, 3.0)).toString());
-  print((simple_interest(18000.0, 0.01, 10.0)).toString());
-  print((compound_interest(10000.0, 0.05, 3.0)).toString());
-  print((compound_interest(10000.0, 0.05, 1.0)).toString());
-  print((apr_interest(10000.0, 0.05, 3.0)).toString());
-  print((apr_interest(10000.0, 0.05, 1.0)).toString());
+  print(_str(simple_interest(18000.0, 0.06, 3.0)));
+  print(_str(simple_interest(0.5, 0.06, 3.0)));
+  print(_str(simple_interest(18000.0, 0.01, 10.0)));
+  print(_str(compound_interest(10000.0, 0.05, 3.0)));
+  print(_str(compound_interest(10000.0, 0.05, 1.0)));
+  print(_str(apr_interest(10000.0, 0.05, 3.0)));
+  print(_str(apr_interest(10000.0, 0.05, 1.0)));
 }
 
 void _start() {

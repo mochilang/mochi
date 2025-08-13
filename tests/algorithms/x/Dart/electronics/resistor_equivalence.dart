@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,32 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double resistor_parallel(List<double> resistors) {
@@ -42,7 +67,7 @@ double resistor_parallel(List<double> resistors) {
   while (i < resistors.length) {
     double r = resistors[i];
     if (r <= 0.0) {
-    throw Exception("Resistor at index " + (i).toString() + " has a negative or zero value!");
+    _error("Resistor at index " + _str(i) + " has a negative or zero value!");
   }
     sum = sum + 1.0 / r;
     i = i + 1;
@@ -56,7 +81,7 @@ double resistor_series(List<double> resistors) {
   while (i < resistors.length) {
     double r = resistors[i];
     if (r < 0.0) {
-    throw Exception("Resistor at index " + (i).toString() + " has a negative value!");
+    _error("Resistor at index " + _str(i) + " has a negative value!");
   }
     sum = sum + r;
     i = i + 1;
@@ -66,8 +91,8 @@ double resistor_series(List<double> resistors) {
 
 void _main() {
   List<double> resistors = [3.21389, 2.0, 3.0];
-  print("Parallel: " + (resistor_parallel(resistors)).toString());
-  print("Series: " + (resistor_series(resistors)).toString());
+  print("Parallel: " + _str(resistor_parallel(resistors)));
+  print("Series: " + _str(resistor_series(resistors)));
 }
 
 void _start() {

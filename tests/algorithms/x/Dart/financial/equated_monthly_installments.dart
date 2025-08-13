@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,32 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double pow_float(double base, int exp) {
@@ -48,13 +73,13 @@ double pow_float(double base, int exp) {
 
 double equated_monthly_installments(double principal, double rate_per_annum, int years_to_repay) {
   if (principal <= 0.0) {
-    throw Exception("Principal borrowed must be > 0");
+    _error("Principal borrowed must be > 0");
   }
   if (rate_per_annum < 0.0) {
-    throw Exception("Rate of interest must be >= 0");
+    _error("Rate of interest must be >= 0");
   }
   if (years_to_repay <= 0) {
-    throw Exception("Years to repay must be an integer > 0");
+    _error("Years to repay must be an integer > 0");
   }
   double rate_per_month = rate_per_annum / 12.0;
   int number_of_payments = years_to_repay * 12;
@@ -69,8 +94,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((equated_monthly_installments(25000.0, 0.12, 3)).toString());
-  print((equated_monthly_installments(25000.0, 0.12, 10)).toString());
+  print(_str(equated_monthly_installments(25000.0, 0.12, 3)));
+  print(_str(equated_monthly_installments(25000.0, 0.12, 10)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

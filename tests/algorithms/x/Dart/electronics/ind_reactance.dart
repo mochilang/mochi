@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,30 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double PI = 3.141592653589793;
@@ -49,16 +72,16 @@ Map<String, double> ind_reactance(double inductance, double frequency, double re
     zero_count = zero_count + 1;
   }
   if (zero_count != 1) {
-    throw Exception("One and only one argument must be 0");
+    _error("One and only one argument must be 0");
   }
   if (inductance < 0.0) {
-    throw Exception("Inductance cannot be negative");
+    _error("Inductance cannot be negative");
   }
   if (frequency < 0.0) {
-    throw Exception("Frequency cannot be negative");
+    _error("Frequency cannot be negative");
   }
   if (reactance < 0.0) {
-    throw Exception("Inductive reactance cannot be negative");
+    _error("Inductive reactance cannot be negative");
   }
   if (inductance == 0.0) {
     return {"inductance": reactance / (2.0 * PI * frequency)};

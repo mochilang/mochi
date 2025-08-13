@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,32 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 List<String> valid_colors = ["Black", "Brown", "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "Grey", "White", "Gold", "Silver"];
@@ -54,32 +79,32 @@ int get_significant_digits(List<String> colors) {
   int digit = 0;
   for (String color in colors) {
     if (!significant_figures_color_values.containsKey(color)) {
-    throw Exception(color + " is not a valid color for significant figure bands");
+    _error(color + " is not a valid color for significant figure bands");
   }
-    digit = (digit * 10 + significant_figures_color_values[color]!).toInt();
+    digit = digit * 10 + (significant_figures_color_values[color] ?? 0);
   }
   return digit;
 }
 
 double get_multiplier(String color) {
   if (!multiplier_color_values.containsKey(color)) {
-    throw Exception(color + " is not a valid color for multiplier band");
+    _error(color + " is not a valid color for multiplier band");
   }
-  return (multiplier_color_values[color])!;
+  return (multiplier_color_values[color]!);
 }
 
 double get_tolerance(String color) {
   if (!tolerance_color_values.containsKey(color)) {
-    throw Exception(color + " is not a valid color for tolerance band");
+    _error(color + " is not a valid color for tolerance band");
   }
-  return (tolerance_color_values[color])!;
+  return (tolerance_color_values[color]!);
 }
 
 int get_temperature_coeffecient(String color) {
   if (!temperature_coeffecient_color_values.containsKey(color)) {
-    throw Exception(color + " is not a valid color for temperature coeffecient band");
+    _error(color + " is not a valid color for temperature coeffecient band");
   }
-  return (temperature_coeffecient_color_values[color])!;
+  return (temperature_coeffecient_color_values[color] ?? 0);
 }
 
 int get_band_type_count(int total, String typ) {
@@ -90,7 +115,7 @@ int get_band_type_count(int total, String typ) {
     if (typ == "multiplier") {
     return 1;
   };
-    throw Exception(typ + " is not valid for a 3 band resistor");
+    _error(typ + " is not valid for a 3 band resistor");
   } else {
     if (total == 4) {
     if (typ == "significant") {
@@ -102,7 +127,7 @@ int get_band_type_count(int total, String typ) {
     if (typ == "tolerance") {
     return 1;
   };
-    throw Exception(typ + " is not valid for a 4 band resistor");
+    _error(typ + " is not valid for a 4 band resistor");
   } else {
     if (total == 5) {
     if (typ == "significant") {
@@ -114,7 +139,7 @@ int get_band_type_count(int total, String typ) {
     if (typ == "tolerance") {
     return 1;
   };
-    throw Exception(typ + " is not valid for a 5 band resistor");
+    _error(typ + " is not valid for a 5 band resistor");
   } else {
     if (total == 6) {
     if (typ == "significant") {
@@ -129,9 +154,9 @@ int get_band_type_count(int total, String typ) {
     if (typ == "temp_coeffecient") {
     return 1;
   };
-    throw Exception(typ + " is not valid for a 6 band resistor");
+    _error(typ + " is not valid for a 6 band resistor");
   } else {
-    throw Exception((total).toString() + " is not a valid number of bands");
+    _error(_str(total) + " is not a valid number of bands");
   };
   };
   };
@@ -140,14 +165,14 @@ int get_band_type_count(int total, String typ) {
 
 bool check_validity(int number_of_bands, List<String> colors) {
   if (number_of_bands < 3 || number_of_bands > 6) {
-    throw Exception("Invalid number of bands. Resistor bands must be 3 to 6");
+    _error("Invalid number of bands. Resistor bands must be 3 to 6");
   }
   if (number_of_bands != colors.length) {
-    throw Exception("Expecting " + (number_of_bands).toString() + " colors, provided " + (colors.length).toString() + " colors");
+    _error("Expecting " + _str(number_of_bands) + " colors, provided " + _str(colors.length) + " colors");
   }
   for (String color in colors) {
-    if (!valid_colors.contains(color)) {
-    throw Exception(color + " is not a valid color");
+    if (!contains(valid_colors, color)) {
+    _error(color + " is not a valid color");
   }
   }
   return true;
@@ -171,13 +196,13 @@ String calculate_resistance(int number_of_bands, List<String> color_code_list) {
     temp_coeff = get_temperature_coeffecient(temp_color);
   }
   double resistance_value = multiplier * significant_digits;
-  String resistance_str = (resistance_value).toString();
-  if (resistance_value == (resistance_value as int)) {
-    resistance_str = (resistance_value as int).toString();
+  String resistance_str = _str(resistance_value);
+  if (resistance_value == ((resistance_value).toInt())) {
+    resistance_str = _str((resistance_value).toInt());
   }
-  String answer = resistance_str + "Ω ±" + (tolerance).toString() + "% ";
+  String answer = resistance_str + "Ω ±" + _str(tolerance) + "% ";
   if (temp_coeff != 0) {
-    answer = answer + (temp_coeff).toString() + " ppm/K";
+    answer = answer + _str(temp_coeff) + " ppm/K";
   }
   return answer;
 }
