@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 16:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,9 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -48,7 +45,7 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec electrical_impedance (resistance: float) (reactance: float) (impedance: float) =
+and electrical_impedance (resistance: float) (reactance: float) (impedance: float) =
     let mutable __ret : System.Collections.Generic.IDictionary<string, float> = Unchecked.defaultof<System.Collections.Generic.IDictionary<string, float>>
     let mutable resistance = resistance
     let mutable reactance = reactance
@@ -62,7 +59,7 @@ let rec electrical_impedance (resistance: float) (reactance: float) (impedance: 
         if impedance = 0.0 then
             zero_count <- zero_count + 1
         if zero_count <> 1 then
-            failwith ("One and only one argument must be 0")
+            ignore (failwith ("One and only one argument must be 0"))
         if resistance = 0.0 then
             let value: float = sqrtApprox ((impedance * impedance) - (reactance * reactance))
             __ret <- _dictCreate [("resistance", value)]
@@ -78,13 +75,13 @@ let rec electrical_impedance (resistance: float) (reactance: float) (impedance: 
                     __ret <- _dictCreate [("impedance", value)]
                     raise Return
                 else
-                    failwith ("Exactly one argument must be 0")
+                    ignore (failwith ("Exactly one argument must be 0"))
         __ret
     with
         | Return -> __ret
-printfn "%A" (electrical_impedance (3.0) (4.0) (0.0))
-printfn "%A" (electrical_impedance (0.0) (4.0) (5.0))
-printfn "%A" (electrical_impedance (3.0) (0.0) (5.0))
+ignore (printfn "%A" (electrical_impedance (3.0) (4.0) (0.0)))
+ignore (printfn "%A" (electrical_impedance (0.0) (4.0) (5.0)))
+ignore (printfn "%A" (electrical_impedance (3.0) (0.0) (5.0)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

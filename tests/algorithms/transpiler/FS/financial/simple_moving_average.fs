@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,14 +23,15 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
 type SMAValue = {
-    value: float
-    ok: bool
+    mutable _value: float
+    mutable _ok: bool
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -40,35 +41,35 @@ let rec simple_moving_average (data: float array) (window_size: int) =
     let mutable window_size = window_size
     try
         if window_size < 1 then
-            failwith ("Window size must be a positive integer")
-        let mutable result: SMAValue array = [||]
+            ignore (failwith ("Window size must be a positive integer"))
+        let mutable result: SMAValue array = Array.empty<SMAValue>
         let mutable window_sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (data)) do
-            window_sum <- window_sum + (_idx data (i))
+            window_sum <- window_sum + (_idx data (int i))
             if i >= window_size then
-                window_sum <- window_sum - (_idx data (i - window_size))
+                window_sum <- window_sum - (_idx data (int (i - window_size)))
             if i >= (window_size - 1) then
                 let avg: float = window_sum / (float window_size)
-                result <- Array.append result [|{ value = avg; ok = true }|]
+                result <- Array.append result [|{ _value = avg; _ok = true }|]
             else
-                result <- Array.append result [|{ value = 0.0; ok = false }|]
+                result <- Array.append result [|{ _value = 0.0; _ok = false }|]
             i <- i + 1
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-let data: float array = [|10.0; 12.0; 15.0; 13.0; 14.0; 16.0; 18.0; 17.0; 19.0; 21.0|]
+let data: float array = unbox<float array> [|10.0; 12.0; 15.0; 13.0; 14.0; 16.0; 18.0; 17.0; 19.0; 21.0|]
 let window_size: int = 3
 let sma_values: SMAValue array = simple_moving_average (data) (window_size)
 let mutable idx: int = 0
 while idx < (Seq.length (sma_values)) do
-    let item: SMAValue = _idx sma_values (idx)
-    if item.ok then
-        printfn "%s" ((("Day " + (_str (idx + 1))) + ": ") + (_str (item.value)))
+    let item: SMAValue = _idx sma_values (int idx)
+    if item._ok then
+        ignore (printfn "%s" ((("Day " + (_str (idx + 1))) + ": ") + (_str (item._value))))
     else
-        printfn "%s" (("Day " + (_str (idx + 1))) + ": Not enough data for SMA")
+        ignore (printfn "%s" (("Day " + (_str (idx + 1))) + ": Not enough data for SMA"))
     idx <- idx + 1
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)

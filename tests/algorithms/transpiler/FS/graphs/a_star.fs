@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -27,8 +27,8 @@ let _repr v =
      .Replace("|]", "]")
      .Replace("; ", ", ")
 type SearchResult = {
-    path: int array array
-    action: int array array
+    mutable _path: int array array
+    mutable _action: int array array
 }
 let DIRECTIONS: int array array = [|[|-1; 0|]; [|0; -1|]; [|1; 0|]; [|0; 1|]|]
 let rec iabs (x: int) =
@@ -48,88 +48,88 @@ and search (grid: int array array) (init: int array) (goal: int array) (cost: in
     let mutable cost = cost
     let mutable heuristic = heuristic
     try
-        let mutable closed: int array array = [||]
+        let mutable closed: int array array = Array.empty<int array>
         let mutable r: int = 0
         while r < (Seq.length (grid)) do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             let mutable c: int = 0
-            while c < (Seq.length (_idx grid (0))) do
+            while c < (Seq.length (_idx grid (int 0))) do
                 row <- Array.append row [|0|]
                 c <- c + 1
             closed <- Array.append closed [|row|]
             r <- r + 1
-        closed.[_idx init (0)].[_idx init (1)] <- 1
-        let mutable action: int array array = [||]
+        closed.[(_idx init (int 0))].[(_idx init (int 1))] <- 1
+        let mutable _action: int array array = Array.empty<int array>
         r <- 0
         while r < (Seq.length (grid)) do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             let mutable c: int = 0
-            while c < (Seq.length (_idx grid (0))) do
+            while c < (Seq.length (_idx grid (int 0))) do
                 row <- Array.append row [|0|]
                 c <- c + 1
-            action <- Array.append action [|row|]
+            _action <- Array.append _action [|row|]
             r <- r + 1
-        let mutable x: int = _idx init (0)
-        let mutable y: int = _idx init (1)
+        let mutable x: int = _idx init (int 0)
+        let mutable y: int = _idx init (int 1)
         let mutable g: int = 0
-        let mutable f: int = g + (_idx (_idx heuristic (x)) (y))
+        let mutable f: int = g + (_idx (_idx heuristic (int x)) (int y))
         let mutable cell: int array array = [|[|f; g; x; y|]|]
         let mutable found: bool = false
         let mutable resign: bool = false
         while (not found) && (not resign) do
             if (Seq.length (cell)) = 0 then
-                failwith ("Algorithm is unable to find solution")
+                ignore (failwith ("Algorithm is unable to find solution"))
             else
                 let mutable best_i: int = 0
-                let mutable best_f: int = _idx (_idx cell (0)) (0)
+                let mutable best_f: int = _idx (_idx cell (int 0)) (int 0)
                 let mutable i: int = 1
                 while i < (Seq.length (cell)) do
-                    if (_idx (_idx cell (i)) (0)) < best_f then
-                        best_f <- _idx (_idx cell (i)) (0)
+                    if (_idx (_idx cell (int i)) (int 0)) < best_f then
+                        best_f <- _idx (_idx cell (int i)) (int 0)
                         best_i <- i
                     i <- i + 1
-                let next_cell: int array = _idx cell (best_i)
-                let mutable new_cell: int array array = [||]
+                let next_cell: int array = _idx cell (int best_i)
+                let mutable new_cell: int array array = Array.empty<int array>
                 i <- 0
                 while i < (Seq.length (cell)) do
                     if i <> best_i then
-                        new_cell <- Array.append new_cell [|(_idx cell (i))|]
+                        new_cell <- Array.append new_cell [|(_idx cell (int i))|]
                     i <- i + 1
                 cell <- new_cell
-                x <- _idx next_cell (2)
-                y <- _idx next_cell (3)
-                g <- _idx next_cell (1)
-                if (x = (_idx goal (0))) && (y = (_idx goal (1))) then
+                x <- _idx next_cell (int 2)
+                y <- _idx next_cell (int 3)
+                g <- _idx next_cell (int 1)
+                if (x = (_idx goal (int 0))) && (y = (_idx goal (int 1))) then
                     found <- true
                 else
                     let mutable d: int = 0
                     while d < (Seq.length (DIRECTIONS)) do
-                        let x2: int = x + (_idx (_idx DIRECTIONS (d)) (0))
-                        let y2: int = y + (_idx (_idx DIRECTIONS (d)) (1))
-                        if (((((x2 >= 0) && (x2 < (Seq.length (grid)))) && (y2 >= 0)) && (y2 < (Seq.length (_idx grid (0))))) && ((_idx (_idx closed (x2)) (y2)) = 0)) && ((_idx (_idx grid (x2)) (y2)) = 0) then
+                        let x2: int = x + (_idx (_idx DIRECTIONS (int d)) (int 0))
+                        let y2: int = y + (_idx (_idx DIRECTIONS (int d)) (int 1))
+                        if (((((x2 >= 0) && (x2 < (Seq.length (grid)))) && (y2 >= 0)) && (y2 < (Seq.length (_idx grid (int 0))))) && ((_idx (_idx closed (int x2)) (int y2)) = 0)) && ((_idx (_idx grid (int x2)) (int y2)) = 0) then
                             let g2: int = g + cost
-                            let f2: int = g2 + (_idx (_idx heuristic (x2)) (y2))
+                            let f2: int = g2 + (_idx (_idx heuristic (int x2)) (int y2))
                             cell <- Array.append cell [|[|f2; g2; x2; y2|]|]
                             closed.[x2].[y2] <- 1
-                            action.[x2].[y2] <- d
+                            _action.[x2].[y2] <- d
                         d <- d + 1
-        let mutable invpath: int array array = [||]
-        x <- _idx goal (0)
-        y <- _idx goal (1)
+        let mutable invpath: int array array = Array.empty<int array>
+        x <- _idx goal (int 0)
+        y <- _idx goal (int 1)
         invpath <- Array.append invpath [|[|x; y|]|]
-        while (x <> (_idx init (0))) || (y <> (_idx init (1))) do
-            let dir: int = _idx (_idx action (x)) (y)
-            let x2: int = x - (_idx (_idx DIRECTIONS (dir)) (0))
-            let y2: int = y - (_idx (_idx DIRECTIONS (dir)) (1))
+        while (x <> (_idx init (int 0))) || (y <> (_idx init (int 1))) do
+            let dir: int = _idx (_idx _action (int x)) (int y)
+            let x2: int = x - (_idx (_idx DIRECTIONS (int dir)) (int 0))
+            let y2: int = y - (_idx (_idx DIRECTIONS (int dir)) (int 1))
             x <- x2
             y <- y2
             invpath <- Array.append invpath [|[|x; y|]|]
-        let mutable path: int array array = [||]
+        let mutable _path: int array array = Array.empty<int array>
         let mutable idx: int = (Seq.length (invpath)) - 1
         while idx >= 0 do
-            path <- Array.append path [|(_idx invpath (idx))|]
+            _path <- Array.append _path [|(_idx invpath (int idx))|]
             idx <- idx - 1
-        __ret <- { path = path; action = action }
+        __ret <- { _path = _path; _action = _action }
         raise Return
         __ret
     with
@@ -140,17 +140,17 @@ and main () =
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let grid: int array array = [|[|0; 1; 0; 0; 0; 0|]; [|0; 1; 0; 0; 0; 0|]; [|0; 1; 0; 0; 0; 0|]; [|0; 1; 0; 0; 1; 0|]; [|0; 0; 0; 0; 1; 0|]|]
-        let init: int array = [|0; 0|]
-        let goal: int array = [|(Seq.length (grid)) - 1; (Seq.length (_idx grid (0))) - 1|]
+        let init: int array = unbox<int array> [|0; 0|]
+        let goal: int array = unbox<int array> [|(Seq.length (grid)) - 1; (Seq.length (_idx grid (int 0))) - 1|]
         let cost: int = 1
-        let mutable heuristic: int array array = [||]
+        let mutable heuristic: int array array = Array.empty<int array>
         let mutable i: int = 0
         while i < (Seq.length (grid)) do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             let mutable j: int = 0
-            while j < (Seq.length (_idx grid (0))) do
-                let h: int = (iabs (i - (_idx goal (0)))) + (iabs (j - (_idx goal (1))))
-                if (_idx (_idx grid (i)) (j)) = 1 then
+            while j < (Seq.length (_idx grid (int 0))) do
+                let h: int = (iabs (i - (_idx goal (int 0)))) + (iabs (j - (_idx goal (int 1))))
+                if (_idx (_idx grid (int i)) (int j)) = 1 then
                     row <- Array.append row [|99|]
                 else
                     row <- Array.append row [|h|]
@@ -158,14 +158,14 @@ and main () =
             heuristic <- Array.append heuristic [|row|]
             i <- i + 1
         let result: SearchResult = search (grid) (init) (goal) (cost) (heuristic)
-        printfn "%s" ("ACTION MAP")
+        ignore (printfn "%s" ("ACTION MAP"))
         let mutable rr: int = 0
-        while rr < (Seq.length (result.action)) do
-            printfn "%s" (_repr (_idx (result.action) (rr)))
+        while rr < (Seq.length (result._action)) do
+            ignore (printfn "%s" (_repr (_idx (result._action) (int rr))))
             rr <- rr + 1
         let mutable p: int = 0
-        while p < (Seq.length (result.path)) do
-            printfn "%s" (_repr (_idx (result.path) (p)))
+        while p < (Seq.length (result._path)) do
+            ignore (printfn "%s" (_repr (_idx (result._path) (int p))))
             p <- p + 1
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)

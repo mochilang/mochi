@@ -4487,12 +4487,16 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			t := inferType(expr)
-			if ix, ok := idx.(*IndexExpr); ok {
-				// Re-associate nested indexing so a[b][c] doesn't become a[b[c]]
-				expr = &IndexExpr{Target: expr, Index: ix.Target}
-				expr = &IndexExpr{Target: expr, Index: ix.Index}
-				continue
-			}
+                        if ix, ok := idx.(*IndexExpr); ok {
+                                // Re-associate only when we're already indexing the base
+                                // expression (i.e. a[b][c]). For cases like a[b[c]] we want
+                                // to preserve the inner index expression.
+                                if isIndexExpr(expr) {
+                                        expr = &IndexExpr{Target: expr, Index: ix.Target}
+                                        expr = &IndexExpr{Target: expr, Index: ix.Index}
+                                        continue
+                                }
+                        }
 			if isMapType(t) {
 				usesDictGet = true
 			} else {

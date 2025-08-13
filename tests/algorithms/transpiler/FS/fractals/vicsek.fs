@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -46,18 +46,18 @@ and vicsek (order: int) =
         let prev: string array = vicsek (order - 1)
         let size: int = Seq.length (prev)
         let blank: string = repeat_char (" ") (size)
-        let mutable result: string array = [||]
+        let mutable result: string array = Array.empty<string>
         let mutable i: int = 0
         while i < size do
-            result <- Array.append result [|((blank + (_idx prev (i))) + blank)|]
+            result <- Array.append result [|((blank + (_idx prev (int i))) + blank)|]
             i <- i + 1
         i <- 0
         while i < size do
-            result <- Array.append result [|(((_idx prev (i)) + (_idx prev (i))) + (_idx prev (i)))|]
+            result <- Array.append result [|(((_idx prev (int i)) + (_idx prev (int i))) + (_idx prev (int i)))|]
             i <- i + 1
         i <- 0
         while i < size do
-            result <- Array.append result [|((blank + (_idx prev (i))) + blank)|]
+            result <- Array.append result [|((blank + (_idx prev (int i))) + blank)|]
             i <- i + 1
         __ret <- result
         raise Return
@@ -70,7 +70,7 @@ and print_pattern (pattern: string array) =
     try
         let mutable i: int = 0
         while i < (Seq.length (pattern)) do
-            printfn "%s" (_idx pattern (i))
+            ignore (printfn "%s" (_idx pattern (int i)))
             i <- i + 1
         __ret
     with

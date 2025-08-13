@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -32,7 +32,7 @@ let rec to_radians (deg: float) =
         __ret
     with
         | Return -> __ret
-let rec sin_approx (x: float) =
+and sin_approx (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -50,7 +50,7 @@ let rec sin_approx (x: float) =
         __ret
     with
         | Return -> __ret
-let rec cos_approx (x: float) =
+and cos_approx (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -68,7 +68,7 @@ let rec cos_approx (x: float) =
         __ret
     with
         | Return -> __ret
-let rec sqrt_approx (x: float) =
+and sqrt_approx (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -85,7 +85,7 @@ let rec sqrt_approx (x: float) =
         __ret
     with
         | Return -> __ret
-let rec lamberts_ellipsoidal_distance (lat1: float) (lon1: float) (lat2: float) (lon2: float) =
+and lamberts_ellipsoidal_distance (lat1: float) (lon1: float) (lat2: float) (lon2: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable lat1 = lat1
     let mutable lon1 = lon1
@@ -103,9 +103,9 @@ let rec lamberts_ellipsoidal_distance (lat1: float) (lon1: float) (lat2: float) 
         __ret
     with
         | Return -> __ret
-printfn "%g" (lamberts_ellipsoidal_distance (37.774856) (-122.424227) (37.864742) (-119.537521))
-printfn "%g" (lamberts_ellipsoidal_distance (37.774856) (-122.424227) (40.713019) (-74.012647))
-printfn "%g" (lamberts_ellipsoidal_distance (37.774856) (-122.424227) (45.443012) (12.313071))
+ignore (printfn "%g" (lamberts_ellipsoidal_distance (37.774856) (-122.424227) (37.864742) (-119.537521)))
+ignore (printfn "%g" (lamberts_ellipsoidal_distance (37.774856) (-122.424227) (40.713019) (-74.012647)))
+ignore (printfn "%g" (lamberts_ellipsoidal_distance (37.774856) (-122.424227) (45.443012) (12.313071)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
