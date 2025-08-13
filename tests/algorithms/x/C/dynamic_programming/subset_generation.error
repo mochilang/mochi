@@ -1,0 +1,45 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c: In function ‘subset_combinations’:
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:160:44: warning: passing argument 1 of ‘list_append_int_new’ from incompatible pointer type [-Wincompatible-pointer-types]
+  160 |     dp[(int)(0LL)] = list_append_int_new(dp[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? dp_len + _mochi_idx : _mochi_idx;})], dp_lens[(int)(0LL)], NULL);
+      |                                          ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                            |
+      |                                            long long int **
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:57:56: note: expected ‘const long long int *’ but argument is of type ‘long long int **’
+   57 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                       ~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:160:156: warning: passing argument 3 of ‘list_append_int_new’ makes integer from pointer without a cast [-Wint-conversion]
+  160 |     dp[(int)(0LL)] = list_append_int_new(dp[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? dp_len + _mochi_idx : _mochi_idx;})], dp_lens[(int)(0LL)], NULL);
+      |                                                                                                                                                            ^~~~
+      |                                                                                                                                                            |
+      |                                                                                                                                                            void *
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:57:83: note: expected ‘long long int’ but argument is of type ‘void *’
+   57 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                                                         ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:160:20: warning: assignment to ‘long long int **’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  160 |     dp[(int)(0LL)] = list_append_int_new(dp[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? dp_len + _mochi_idx : _mochi_idx;})], dp_lens[(int)(0LL)], NULL);
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:170:35: error: ‘prevs_lens’ undeclared (first use in this function); did you mean ‘prevs_len’?
+  170 |                 size_t prev_len = prevs_lens[k];
+      |                                   ^~~~~~~~~~
+      |                                   prevs_len
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:170:35: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:174:54: warning: passing argument 1 of ‘list_append_int_new’ from incompatible pointer type [-Wincompatible-pointer-types]
+  174 |                 dp[(int)(j)] = list_append_int_new(dp[(int)({long long _mochi_idx = j; _mochi_idx < 0 ? dp_len + _mochi_idx : _mochi_idx;})], dp_lens[(int)(j)], comb);
+      |                                                    ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                      |
+      |                                                      long long int **
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:57:56: note: expected ‘const long long int *’ but argument is of type ‘long long int **’
+   57 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                       ~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:174:162: warning: passing argument 3 of ‘list_append_int_new’ makes integer from pointer without a cast [-Wint-conversion]
+  174 |                 dp[(int)(j)] = list_append_int_new(dp[(int)({long long _mochi_idx = j; _mochi_idx < 0 ? dp_len + _mochi_idx : _mochi_idx;})], dp_lens[(int)(j)], comb);
+      |                                                                                                                                                                  ^~~~
+      |                                                                                                                                                                  |
+      |                                                                                                                                                                  long long int *
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:57:83: note: expected ‘long long int’ but argument is of type ‘long long int *’
+   57 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                                                         ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/subset_generation.c:174:30: warning: assignment to ‘long long int **’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  174 |                 dp[(int)(j)] = list_append_int_new(dp[(int)({long long _mochi_idx = j; _mochi_idx < 0 ? dp_len + _mochi_idx : _mochi_idx;})], dp_lens[(int)(j)], comb);
+      |                              ^

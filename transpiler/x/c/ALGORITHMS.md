@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (395/1077) - Last updated 2025-08-12 16:29 +0700:
+Checklist of programs that currently transpile and run (427/1077) - Last updated 2025-08-13 07:12 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -314,39 +314,39 @@ Checklist of programs that currently transpile and run (395/1077) - Last updated
 | 307 | dynamic_programming/edit_distance |  |  |  |
 | 308 | dynamic_programming/factorial |  |  |  |
 | 309 | dynamic_programming/fast_fibonacci |  |  |  |
-| 310 | dynamic_programming/fibonacci |  |  |  |
-| 311 | dynamic_programming/fizz_buzz |  |  |  |
-| 312 | dynamic_programming/floyd_warshall |  |  |  |
-| 313 | dynamic_programming/integer_partition |  |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |  |  |  |
-| 315 | dynamic_programming/k_means_clustering_tensorflow |  |  |  |
-| 316 | dynamic_programming/knapsack |  |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |  |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |  |  |  |
-| 319 | dynamic_programming/longest_common_substring |  |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |  |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |  |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |  |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |  |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |  |  |  |
-| 325 | dynamic_programming/matrix_chain_order |  |  |  |
-| 326 | dynamic_programming/max_non_adjacent_sum |  |  |  |
-| 327 | dynamic_programming/max_product_subarray |  |  |  |
-| 328 | dynamic_programming/max_subarray_sum |  |  |  |
-| 329 | dynamic_programming/min_distance_up_bottom |  |  |  |
-| 330 | dynamic_programming/minimum_coin_change |  |  |  |
-| 331 | dynamic_programming/minimum_cost_path |  |  |  |
+| 310 | dynamic_programming/fibonacci | ✓ | 386us | 1.6 MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 706us | 1.5 MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 377us | 1.6 MB |
+| 313 | dynamic_programming/integer_partition | ✓ | 1.13ms | 1.5 MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 557us | 1.4 MB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 438us | 1.6 MB |
+| 316 | dynamic_programming/knapsack | ✓ | 366us | 1.6 MB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 320us | 1.6 MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 248us | 1.4 MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 663us | 1.6 MB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ |  |  |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 606us | 1.6 MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 273us | 1.6 MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 526us | 1.6 MB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ |  |  |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 278us | 1.5 MB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 867us | 1.5 MB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 648us | 1.5 MB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 373us | 1.7 MB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 399us | 1.4 MB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 378us | 1.5 MB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 335us | 1.5 MB |
 | 332 | dynamic_programming/minimum_partition |  |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |  |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |  |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |  |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |  |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |  |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |  |  |  |
-| 339 | dynamic_programming/range_sum_query |  |  |  |
-| 340 | dynamic_programming/regex_match |  |  |  |
-| 341 | dynamic_programming/rod_cutting |  |  |  |
-| 342 | dynamic_programming/smith_waterman |  |  |  |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 331us | 1.4 MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 195us | 1.5 MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 289us | 1.6 MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 296us | 1.6 MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 427us | 1.6 MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 298us | 1.5 MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 356us | 1.6 MB |
+| 340 | dynamic_programming/regex_match | ✓ | 309us | 1.5 MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 311us | 1.5 MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 247us | 1.4 MB |
 | 343 | dynamic_programming/subset_generation |  |  |  |
 | 344 | dynamic_programming/sum_of_subset |  |  |  |
 | 345 | dynamic_programming/trapped_water |  |  |  |

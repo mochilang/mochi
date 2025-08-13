@@ -1,0 +1,21 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/sum_of_subset.c: In function ‘is_sum_subset’:
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/sum_of_subset.c:95:15: error: ‘arr_len’ redeclared as different kind of symbol
+   95 |     long long arr_len = arr_len;
+      |               ^~~~~~~
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/sum_of_subset.c:94:52: note: previous definition of ‘arr_len’ with type ‘long long int’
+   94 | long long is_sum_subset(long long * arr, long long arr_len, long long required_sum) {
+      |                                          ~~~~~~~~~~^~~~~~~
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/sum_of_subset.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/sum_of_subset.c:130:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  130 |         printf("%d\n", is_sum_subset(({long long *tmp = malloc(4 * sizeof(long long)); tmp[0] = 2LL; tmp[1] = 4LL; tmp[2] = 6LL; tmp[3] = 8LL; tmp;}), 4, 5LL));
+      |                 ~^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
+/workspace/mochi/tests/algorithms/x/C/dynamic_programming/sum_of_subset.c:131:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  131 |         printf("%d\n", is_sum_subset(({long long *tmp = malloc(4 * sizeof(long long)); tmp[0] = 2LL; tmp[1] = 4LL; tmp[2] = 6LL; tmp[3] = 8LL; tmp;}), 4, 14LL));
+      |                 ~^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
