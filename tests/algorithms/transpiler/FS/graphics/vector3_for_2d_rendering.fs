@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-13 16:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,7 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -41,7 +42,7 @@ let rec floor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec modf (x: float) (m: float) =
+and modf (x: float) (m: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable m = m
@@ -51,7 +52,7 @@ let rec modf (x: float) (m: float) =
         __ret
     with
         | Return -> __ret
-let rec sin_taylor (x: float) =
+and sin_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -69,7 +70,7 @@ let rec sin_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec cos_taylor (x: float) =
+and cos_taylor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -87,7 +88,7 @@ let rec cos_taylor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec convert_to_2d (x: float) (y: float) (z: float) (scale: float) (distance: float) =
+and convert_to_2d (x: float) (y: float) (z: float) (scale: float) (distance: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable x = x
     let mutable y = y
@@ -102,7 +103,7 @@ let rec convert_to_2d (x: float) (y: float) (z: float) (scale: float) (distance:
         __ret
     with
         | Return -> __ret
-let rec rotate (x: float) (y: float) (z: float) (axis: string) (angle: float) =
+and rotate (x: float) (y: float) (z: float) (axis: string) (angle: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable x = x
     let mutable y = y
@@ -132,14 +133,14 @@ let rec rotate (x: float) (y: float) (z: float) (axis: string) (angle: float) =
             let new_y: float = y
             __ret <- unbox<float array> [|new_x; new_y; new_z|]
             raise Return
-        printfn "%s" ("not a valid axis, choose one of 'x', 'y', 'z'")
+        ignore (printfn "%s" ("not a valid axis, choose one of 'x', 'y', 'z'"))
         __ret <- unbox<float array> [|0.0; 0.0; 0.0|]
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (convert_to_2d (1.0) (2.0) (3.0) (10.0) (10.0)))
-printfn "%s" (_str (rotate (1.0) (2.0) (3.0) ("y") (90.0)))
+ignore (printfn "%s" (_str (convert_to_2d (1.0) (2.0) (3.0) (10.0) (10.0))))
+ignore (printfn "%s" (_str (rotate (1.0) (2.0) (3.0) ("y") (90.0))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

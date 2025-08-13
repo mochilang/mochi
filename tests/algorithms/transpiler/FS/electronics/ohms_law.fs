@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 16:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,9 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -60,12 +57,12 @@ let rec ohms_law (voltage: float) (current: float) (resistance: float) =
         if resistance = 0.0 then
             zeros <- zeros + 1
         if zeros <> 1 then
-            printfn "%s" ("One and only one argument must be 0")
-            __ret <- unbox<System.Collections.Generic.IDictionary<string, float>> (_dictCreate [])
+            ignore (printfn "%s" ("One and only one argument must be 0"))
+            __ret <- _dictCreate<string, float> []
             raise Return
         if resistance < 0.0 then
-            printfn "%s" ("Resistance cannot be negative")
-            __ret <- unbox<System.Collections.Generic.IDictionary<string, float>> (_dictCreate [])
+            ignore (printfn "%s" ("Resistance cannot be negative"))
+            __ret <- _dictCreate<string, float> []
             raise Return
         if voltage = 0.0 then
             __ret <- _dictCreate [("voltage", current * resistance)]
@@ -78,9 +75,9 @@ let rec ohms_law (voltage: float) (current: float) (resistance: float) =
         __ret
     with
         | Return -> __ret
-json (ohms_law (10.0) (0.0) (5.0))
-json (ohms_law (-10.0) (1.0) (0.0))
-json (ohms_law (0.0) (-1.5) (2.0))
+ignore (json (ohms_law (10.0) (0.0) (5.0)))
+ignore (json (ohms_law (-10.0) (1.0) (0.0)))
+ignore (json (ohms_law (0.0) (-1.5) (2.0)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

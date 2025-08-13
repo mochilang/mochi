@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 915/1077
-Last updated: 2025-08-13 16:00 +0700
+Completed programs: 916/1077
+Last updated: 2025-08-13 16:13 +0700
 
 Checklist:
 
@@ -353,55 +353,55 @@ Checklist:
 | 344 | dynamic_programming/sum_of_subset | ✓ | 571.223ms | 31.5 KB |
 | 345 | dynamic_programming/trapped_water | ✓ | 571.223ms | 77.9 KB |
 | 346 | dynamic_programming/tribonacci | ✓ | 571.223ms | 55.2 KB |
-| 347 | dynamic_programming/viterbi | ✓ | 571.223ms | 37.5 KB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 571.223ms | 42.5 KB |
-| 349 | dynamic_programming/word_break | ✓ | 571.223ms | 36.7 KB |
-| 350 | electronics/apparent_power | ✓ | 571.223ms | 2.0 KB |
+| 347 | dynamic_programming/viterbi | ✓ | 571.223ms | 22.7 KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 571.223ms | 51.1 KB |
+| 349 | dynamic_programming/word_break | ✓ | 571.223ms | 45.1 KB |
+| 350 | electronics/apparent_power | ✓ | 571.223ms | 9.2 KB |
 | 351 | electronics/builtin_voltage | ✓ | 571.223ms | 78.8 KB |
-| 352 | electronics/capacitor_equivalence | ✓ | 571.223ms | 86.9 KB |
-| 353 | electronics/carrier_concentration | ✓ | 571.223ms | 79.3 KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 571.223ms | 79.1 KB |
+| 353 | electronics/carrier_concentration | ✓ | 571.223ms | 89.1 KB |
 | 354 | electronics/charging_capacitor | ✓ | 571.223ms | 33.9 KB |
 | 355 | electronics/charging_inductor | ✓ | 571.223ms | 33.8 KB |
 | 356 | electronics/circular_convolution | ✓ | 571.223ms | 79.8 KB |
 | 357 | electronics/coulombs_law | ✓ | 571.223ms | 79.7 KB |
-| 358 | electronics/electric_conductivity | ✓ | 571.223ms | 87.0 KB |
+| 358 | electronics/electric_conductivity | ✓ | 571.223ms | 79.2 KB |
 | 359 | electronics/electric_power | ✓ | 571.223ms | 79.6 KB |
 | 360 | electronics/electrical_impedance | ✓ | 571.223ms | 58.6 KB |
 | 361 | electronics/ic_555_timer | ✓ | 571.223ms | 33.8 KB |
 | 362 | electronics/ind_reactance | ✓ | 571.223ms | 58.7 KB |
-| 363 | electronics/ohms_law | ✓ | 571.223ms | 7.0 KB |
-| 364 | electronics/real_and_reactive_power | ✓ | 571.223ms | 56.3 KB |
-| 365 | electronics/resistor_color_code | ✓ | 571.223ms | 9.2 KB |
-| 366 | electronics/resistor_equivalence | ✓ | 571.223ms | 59.6 KB |
+| 363 | electronics/ohms_law | ✓ | 571.223ms | 2.8 KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 571.223ms | 79.3 KB |
+| 365 | electronics/resistor_color_code | ✓ | 571.223ms | 5.1 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 571.223ms | 78.9 KB |
 | 367 | electronics/resonant_frequency | ✓ | 571.223ms | 33.6 KB |
 | 368 | electronics/wheatstone_bridge | ✓ | 571.223ms | 33.8 KB |
-| 369 | file_transfer/receive_file | ✓ | 571.223ms | 31.2 KB |
-| 370 | file_transfer/send_file | ✓ | 571.223ms | 35.1 KB |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments | ✓ | 571.223ms | 55.9 KB |
-| 373 | financial/exponential_moving_average | ✓ | 571.223ms | 68.4 KB |
-| 374 | financial/interest | ✓ | 571.223ms | 56.0 KB |
-| 375 | financial/present_value | ✓ | 571.223ms | 56.0 KB |
-| 376 | financial/price_plus_tax | ✓ | 571.223ms | 55.9 KB |
-| 377 | financial/simple_moving_average | ✓ | 571.223ms | 59.2 KB |
-| 378 | financial/straight_line_depreciation | ✓ | 571.223ms | 56.6 KB |
-| 379 | financial/time_and_half_pay | ✓ | 571.223ms | 55.8 KB |
-| 380 | fractals/julia_sets | ✓ | 571.223ms | 68.3 KB |
-| 381 | fractals/koch_snowflake | ✓ | 571.223ms | 56.2 KB |
-| 382 | fractals/mandelbrot | ✓ | 571.223ms | 64.3 KB |
-| 383 | fractals/sierpinski_triangle | ✓ | 571.223ms | 55.1 KB |
-| 384 | fractals/vicsek | ✓ | 571.223ms | 39.6 KB |
-| 385 | fuzzy_logic/fuzzy_operations | ✓ | 571.223ms | 60.8 KB |
-| 386 | genetic_algorithm/basic_string | ✓ | 571.223ms | 54.7 KB |
-| 387 | geodesy/haversine_distance | ✓ | 571.223ms | 55.9 KB |
+| 369 | file_transfer/receive_file | ✓ | 571.223ms | 31.4 KB |
+| 370 | file_transfer/send_file | ✓ | 571.223ms | 7.0 KB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 571.223ms | 43.5 KB |
+| 372 | financial/equated_monthly_installments | ✓ | 571.223ms | 78.9 KB |
+| 373 | financial/exponential_moving_average | ✓ | 571.223ms | 79.3 KB |
+| 374 | financial/interest | ✓ | 571.223ms | 79.0 KB |
+| 375 | financial/present_value | ✓ | 571.223ms | 79.0 KB |
+| 376 | financial/price_plus_tax | ✓ | 571.223ms | 78.9 KB |
+| 377 | financial/simple_moving_average | ✓ | 571.223ms | 82.0 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 571.223ms | 79.6 KB |
+| 379 | financial/time_and_half_pay | ✓ | 571.223ms | 78.6 KB |
+| 380 | fractals/julia_sets | ✓ | 571.223ms | 70.9 KB |
+| 381 | fractals/koch_snowflake | ✓ | 571.223ms | 79.1 KB |
+| 382 | fractals/mandelbrot | ✓ | 571.223ms | 87.3 KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 571.223ms | 78.1 KB |
+| 384 | fractals/vicsek | ✓ | 571.223ms | 37.1 KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 571.223ms | 79.8 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 571.223ms | 77.7 KB |
+| 387 | geodesy/haversine_distance | ✓ | 571.223ms | 78.8 KB |
 | 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 571.223ms | 33.8 KB |
-| 389 | geometry/geometry | ✓ | 571.223ms | 34.8 KB |
-| 390 | graphics/bezier_curve | ✓ | 571.223ms | 60.6 KB |
-| 391 | graphics/butterfly_pattern | ✓ | 571.223ms | 48.7 KB |
-| 392 | graphics/digital_differential_analyzer_line | ✓ | 571.223ms | 58.8 KB |
-| 393 | graphics/vector3_for_2d_rendering | ✓ | 571.223ms | 56.5 KB |
-| 394 | graphs/a_star | ✓ | 571.223ms | 56.4 KB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 445.369ms | 61.1 KB |
+| 389 | geometry/geometry | ✓ | 571.223ms | 34.9 KB |
+| 390 | graphics/bezier_curve | ✓ | 571.223ms | 79.7 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 571.223ms | 31.3 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 571.223ms | 58.9 KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 571.223ms | 79.4 KB |
+| 394 | graphs/a_star | ✓ | 571.223ms | 68.5 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 445.369ms | 96.3 KB |
 | 396 | graphs/articulation_points | ✓ | 571.223ms | 37.4 KB |
 | 397 | graphs/basic_graphs | ✓ | 571.223ms | 65.0 KB |
 | 398 | graphs/bellman_ford | ✓ | 571.223ms | 56.1 KB |

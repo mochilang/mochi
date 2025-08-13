@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-13 16:13 +0700
 
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
@@ -42,7 +42,7 @@ let rec send_file (content: string) (chunk_size: int) =
             if ``end`` > n then
                 ``end`` <- n
             let chunk: string = _substring content start ``end``
-            printfn "%s" (chunk)
+            ignore (printfn "%s" (chunk))
             start <- ``end``
         __ret
     with
