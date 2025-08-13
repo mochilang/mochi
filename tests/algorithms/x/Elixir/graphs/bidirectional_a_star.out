@@ -145,14 +145,5 @@ warning: variable "i" is unused (there is a variable with the same name in the c
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:554:8: Main.path_to_string/1
 
-** (KeyError) key :y not found in: nil
-
-If you are using the dot syntax, such as map.field, make sure the left-hand side of the dot is a map
-    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:60: Main.pos_equal/2
-    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:95: anonymous fn/4 in Main.open_index_of_pos/2
-    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:105: Main.open_index_of_pos/2
-    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:327: anonymous fn/7 in Main.astar/2
-    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:354: anonymous fn/4 in Main.astar/2
-    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:369: Main.astar/2
-    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:572: Main.main/0
-    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:578: (file)
+"[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3), (3, 3), (4, 3), (4, 4), (5, 4), (5, 5), (6, 5), (6, 6)]"
+"[(0, 0)]"

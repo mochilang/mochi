@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-13 12:44 GMT+7
+Last updated: 2025-08-13 16:04 GMT+7
 
 ## Algorithms Golden Test Checklist (828/1077)
 | Index | Name | Status | Duration | Memory |
@@ -351,7 +351,7 @@ Last updated: 2025-08-13 12:44 GMT+7
 | 342 | dynamic_programming/smith_waterman | error |  |  |
 | 343 | dynamic_programming/subset_generation | ✓ | 9.29ms | 25.0 MB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 7.53ms | 25.0 MB |
-| 345 | dynamic_programming/trapped_water | ✓ | 6.28ms | 12.5 MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 6.74ms | 12.5 MB |
 | 346 | dynamic_programming/tribonacci | ✓ | 7.87ms | 12.5 MB |
 | 347 | dynamic_programming/viterbi | ✓ | 6.92ms | 25.0 MB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 2.44ms | 25.0 MB |
@@ -377,7 +377,7 @@ Last updated: 2025-08-13 12:44 GMT+7
 | 368 | electronics/wheatstone_bridge | ✓ | 6.99ms | 25.0 MB |
 | 369 | file_transfer/receive_file | ✓ | 251us | 0 B |
 | 370 | file_transfer/send_file | ✓ | 340us | 12.5 MB |
-| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
+| 371 | file_transfer/tests/test_send_file |   |  |  |
 | 372 | financial/equated_monthly_installments | ✓ | 6.03ms | 25.0 MB |
 | 373 | financial/exponential_moving_average | ✓ | 6.31ms | 25.0 MB |
 | 374 | financial/interest | ✓ | 7.09ms | 15.4 MB |
@@ -406,7 +406,7 @@ Last updated: 2025-08-13 12:44 GMT+7
 | 397 | graphs/basic_graphs | ✓ | 17.19ms | 17.3 MB |
 | 398 | graphs/bellman_ford | ✓ | 10.57ms | 17.3 MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 10.24ms | 12.5 MB |
-| 400 | graphs/bidirectional_a_star | error |  |  |
+| 400 | graphs/bidirectional_a_star | ✓ | 12.42ms | 57.7 MB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 14.80ms | 99.1 MB |
 | 402 | graphs/bidirectional_search | ✓ | 498us | 17.4 MB |
 | 403 | graphs/boruvka | error |  |  |
