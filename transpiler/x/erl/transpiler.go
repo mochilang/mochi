@@ -79,8 +79,10 @@ mochi_to_int(V) ->
     end.
 `
 
+// mochi_to_float converts any Erlang number to a float.
+// The helper name is prefixed to avoid clashing with user-defined functions.
 const helperToFloat = `
-to_float(V) ->
+mochi_to_float(V) ->
     case erlang:is_float(V) of
         true -> V;
         _ -> float(V)
@@ -3368,7 +3370,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useNow = false
 	useLookupHost = false
 	useToInt = false
-	useToFloat = true
+	useToFloat = false
 	useMemberHelper = false
 	usePadStart = false
 	useExists = false
@@ -4673,7 +4675,7 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				return nil, err
 			}
 			useToFloat = true
-			return &CallExpr{Func: "to_float", Args: []Expr{arg}}, nil
+			return &CallExpr{Func: "mochi_to_float", Args: []Expr{arg}}, nil
 		}
 		if mod, ok := ctx.autoModule(name); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 {
 			f := pf.Target.Selector.Tail[0]
@@ -4786,7 +4788,7 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 							return nil, fmt.Errorf("to_float expects 1 arg")
 						}
 						useToFloat = true
-						expr = &CallExpr{Func: "to_float", Args: args}
+						expr = &CallExpr{Func: "mochi_to_float", Args: args}
 					} else {
 						ce := &CallExpr{Func: nr.Name, Args: args}
 						expr = ce
@@ -6506,7 +6508,7 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString("#!/usr/bin/env escript\n")
 	buf.WriteString("-module(main).\n")
-        buf.WriteString("-compile([nowarn_shadow_vars, nowarn_unused_vars, nowarn_export_vars, nowarn_export_all, nowarn_unused_expr, nowarn_unused_function]).\n")
+	buf.WriteString("-compile([nowarn_shadow_vars, nowarn_unused_vars, nowarn_export_vars, nowarn_export_all, nowarn_unused_expr, nowarn_unused_function]).\n")
 	exports := []string{"main/1"}
 	for _, f := range p.Funs {
 		exports = append(exports, fmt.Sprintf("%s/%d", f.Name, len(f.Params)))
@@ -6541,17 +6543,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("\n")
 	}
 	if p.UseToFloat {
-		defined := false
-		for _, f := range p.Funs {
-			if f.Name == "to_float" && len(f.Params) == 1 {
-				defined = true
-				break
-			}
-		}
-		if !defined {
-			buf.WriteString(helperToFloat)
-			buf.WriteString("\n")
-		}
+		buf.WriteString(helperToFloat)
+		buf.WriteString("\n")
 	}
 	if p.UseMemberHelper {
 		buf.WriteString(helperMember)
