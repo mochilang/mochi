@@ -373,6 +373,12 @@ var phpReserved = map[string]struct{}{
 	"date":          {},
 }
 
+func init() {
+	for name := range builtinNames {
+		phpReserved[name] = struct{}{}
+	}
+}
+
 // phpReservedVar lists variable names that cannot be used directly in PHP
 // programs. The transpiler renames these variables to avoid runtime errors.
 var phpReservedVar = map[string]struct{}{

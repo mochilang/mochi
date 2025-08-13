@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,16 +31,18 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-$PI = 3.141592653589793;
-$AXIS_A = 6378137.0;
-$AXIS_B = 6356752.314245;
-$RADIUS = 6378137.0;
-function to_radians($deg) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $PI = 3.141592653589793;
+  $AXIS_A = 6378137.0;
+  $AXIS_B = 6356752.314245;
+  $RADIUS = 6378137.0;
+  function to_radians($deg) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   return $deg * $PI / 180.0;
-}
-function sin_taylor($x) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+};
+  function sin_taylor($x) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   $term = $x;
   $sum = $x;
   $i = 1;
@@ -37,9 +54,9 @@ function sin_taylor($x) {
   $i = $i + 1;
 };
   return $sum;
-}
-function cos_taylor($x) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+};
+  function cos_taylor($x) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   $term = 1.0;
   $sum = 1.0;
   $i = 1;
@@ -51,13 +68,13 @@ function cos_taylor($x) {
   $i = $i + 1;
 };
   return $sum;
-}
-function tan_approx($x) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+};
+  function tan_approx($x) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   return sin_taylor($x) / cos_taylor($x);
-}
-function sqrtApprox($x) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+};
+  function sqrtApprox($x) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   $guess = $x / 2.0;
   $i = 0;
   while ($i < 20) {
@@ -65,9 +82,9 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function atanApprox($x) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+};
+  function atanApprox($x) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   if ($x > 1.0) {
   return $PI / 2.0 - $x / ($x * $x + 0.28);
 }
@@ -75,9 +92,9 @@ function atanApprox($x) {
   return -$PI / 2.0 - $x / ($x * $x + 0.28);
 }
   return $x / (1.0 + 0.28 * $x * $x);
-}
-function atan2Approx($y, $x) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+};
+  function atan2Approx($y, $x) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   if ($x > 0.0) {
   $val = atanApprox($y / $x);
   return $val;
@@ -95,15 +112,15 @@ function atan2Approx($y, $x) {
   return -$PI / 2.0;
 }
   return 0.0;
-}
-function asinApprox($x) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+};
+  function asinApprox($x) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   $denom = sqrtApprox(1.0 - $x * $x);
   $res = atan2Approx($x, $denom);
   return $res;
-}
-function haversine_distance($lat1, $lon1, $lat2, $lon2) {
-  global $PI, $AXIS_A, $AXIS_B, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
+};
+  function haversine_distance($lat1, $lon1, $lat2, $lon2) {
+  global $AXIS_A, $AXIS_B, $PI, $RADIUS, $SAN_FRANCISCO, $YOSEMITE;
   $flattening = ($AXIS_A - $AXIS_B) / $AXIS_A;
   $phi_1 = atanApprox((1.0 - $flattening) * tan_approx(to_radians($lat1)));
   $phi_2 = atanApprox((1.0 - $flattening) * tan_approx(to_radians($lat2)));
@@ -115,7 +132,15 @@ function haversine_distance($lat1, $lon1, $lat2, $lon2) {
   $sin_sq_lambda = $sin_sq_lambda * $sin_sq_lambda;
   $h_value = sqrtApprox($sin_sq_phi + cos_taylor($phi_1) * cos_taylor($phi_2) * $sin_sq_lambda);
   return 2.0 * $RADIUS * asinApprox($h_value);
-}
-$SAN_FRANCISCO = [37.774856, -122.424227];
-$YOSEMITE = [37.864742, -119.537521];
-echo rtrim(_str(haversine_distance($SAN_FRANCISCO[0], $SAN_FRANCISCO[1], $YOSEMITE[0], $YOSEMITE[1]))), PHP_EOL;
+};
+  $SAN_FRANCISCO = [37.774856, -122.424227];
+  $YOSEMITE = [37.864742, -119.537521];
+  echo rtrim(_str(haversine_distance($SAN_FRANCISCO[0], $SAN_FRANCISCO[1], $YOSEMITE[0], $YOSEMITE[1]))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

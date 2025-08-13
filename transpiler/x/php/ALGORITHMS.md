@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-13 07:26 GMT+7
+Last updated: 2025-08-13 12:56 GMT+7
 
-## Algorithms Golden Test Checklist (976/1077)
+## Algorithms Golden Test Checklist (978/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -349,56 +349,56 @@ Last updated: 2025-08-13 07:26 GMT+7
 | 340 | dynamic_programming/regex_match | ✓ | 186µs | 37.4 KB |
 | 341 | dynamic_programming/rod_cutting | ✓ | 79µs | 38.4 KB |
 | 342 | dynamic_programming/smith_waterman | ✓ | 98µs | 38.5 KB |
-| 343 | dynamic_programming/subset_generation | ✓ | 133µs | 39.8 KB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 148µs | 38.3 KB |
-| 345 | dynamic_programming/trapped_water | ✓ | 98µs | 39.9 KB |
-| 346 | dynamic_programming/tribonacci | ✓ | 69µs | 38.4 KB |
-| 347 | dynamic_programming/viterbi | ✓ | 111µs | 39.8 KB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 129µs | 39.9 KB |
-| 349 | dynamic_programming/word_break | ✓ | 147µs | 39.8 KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 101µs | 39.8 KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 90µs | 38.3 KB |
+| 345 | dynamic_programming/trapped_water | ✓ | 81µs | 40.0 KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 88µs | 39.4 KB |
+| 347 | dynamic_programming/viterbi | ✓ | 133µs | 39.9 KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 170µs | 39.9 KB |
+| 349 | dynamic_programming/word_break | ✓ | 106µs | 39.8 KB |
 | 350 | electronics/apparent_power | ✓ | 1µs | 35.9 KB |
-| 351 | electronics/builtin_voltage | ✓ | 61µs | 39.2 KB |
-| 352 | electronics/capacitor_equivalence | ✓ | 82µs | 36.3 KB |
-| 353 | electronics/carrier_concentration | ✓ | 111µs | 35.8 KB |
-| 354 | electronics/charging_capacitor | ✓ | 76µs | 35.1 KB |
-| 355 | electronics/charging_inductor | ✓ | 111µs | 35.0 KB |
-| 356 | electronics/circular_convolution | ✓ | 266µs | 35.4 KB |
-| 357 | electronics/coulombs_law | ✓ | 168µs | 39.2 KB |
-| 358 | electronics/electric_conductivity | ✓ | 189µs | 35.6 KB |
-| 359 | electronics/electric_power | ✓ | 77µs | 36.2 KB |
-| 360 | electronics/electrical_impedance | ✓ | 144µs | 36.3 KB |
-| 361 | electronics/ic_555_timer | ✓ | 63µs | 38.2 KB |
-| 362 | electronics/ind_reactance | ✓ | 91µs | 36.3 KB |
-| 363 | electronics/ohms_law | ✓ | 87µs | 39.0 KB |
-| 364 | electronics/real_and_reactive_power | error |  |  |
-| 365 | electronics/resistor_color_code | ✓ | 2µs | 72.7 KB |
-| 366 | electronics/resistor_equivalence | ✓ | 75µs | 36.4 KB |
-| 367 | electronics/resonant_frequency | ✓ | 62µs | 39.1 KB |
-| 368 | electronics/wheatstone_bridge | ✓ | 82µs | 38.2 KB |
-| 369 | file_transfer/receive_file | ✓ | 122µs | 35.8 KB |
-| 370 | file_transfer/send_file | ✓ | 68µs | 35.3 KB |
+| 351 | electronics/builtin_voltage | ✓ | 68µs | 39.4 KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 48µs | 36.5 KB |
+| 353 | electronics/carrier_concentration | ✓ | 74µs | 36.0 KB |
+| 354 | electronics/charging_capacitor | ✓ | 56µs | 35.3 KB |
+| 355 | electronics/charging_inductor | ✓ | 71µs | 39.2 KB |
+| 356 | electronics/circular_convolution | ✓ | 117µs | 35.4 KB |
+| 357 | electronics/coulombs_law | ✓ | 94µs | 39.4 KB |
+| 358 | electronics/electric_conductivity | ✓ | 63µs | 35.8 KB |
+| 359 | electronics/electric_power | ✓ | 106µs | 36.2 KB |
+| 360 | electronics/electrical_impedance | ✓ | 67µs | 36.3 KB |
+| 361 | electronics/ic_555_timer | ✓ | 50µs | 38.4 KB |
+| 362 | electronics/ind_reactance | ✓ | 61µs | 36.3 KB |
+| 363 | electronics/ohms_law | ✓ | 63µs | 39.0 KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 48µs | 35.7 KB |
+| 365 | electronics/resistor_color_code | ✓ | 1µs | 73.2 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 68µs | 36.5 KB |
+| 367 | electronics/resonant_frequency | ✓ | 104µs | 39.3 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 51µs | 38.3 KB |
+| 369 | file_transfer/receive_file | ✓ | 43µs | 35.8 KB |
+| 370 | file_transfer/send_file | ✓ | 42µs | 35.3 KB |
 | 371 | file_transfer/tests/test_send_file | error |  |  |
-| 372 | financial/equated_monthly_installments | ✓ | 59µs | 38.8 KB |
-| 373 | financial/exponential_moving_average | ✓ | 154µs | 39.5 KB |
-| 374 | financial/interest | ✓ | 96µs | 40.4 KB |
-| 375 | financial/present_value | ✓ | 76µs | 39.1 KB |
-| 376 | financial/price_plus_tax | ✓ | 54µs | 38.7 KB |
-| 377 | financial/simple_moving_average | ✓ | 131µs | 39.1 KB |
-| 378 | financial/straight_line_depreciation | ✓ | 156µs | 35.6 KB |
-| 379 | financial/time_and_half_pay | ✓ | 59µs | 36.3 KB |
-| 380 | fractals/julia_sets | ✓ | 1.139ms | 37.3 KB |
-| 381 | fractals/koch_snowflake | error |  |  |
-| 382 | fractals/mandelbrot | ✓ | 372µs | 40.2 KB |
-| 383 | fractals/sierpinski_triangle | ✓ | 112µs | 38.5 KB |
-| 384 | fractals/vicsek | ✓ | 117µs | 35.5 KB |
-| 385 | fuzzy_logic/fuzzy_operations | ✓ | 132µs | 37.8 KB |
-| 386 | genetic_algorithm/basic_string | ✓ | 146µs | 35.3 KB |
-| 387 | geodesy/haversine_distance | ✓ | 107µs | 39.8 KB |
-| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 106µs | 34.8 KB |
-| 389 | geometry/geometry | ✓ | 139µs | 39.1 KB |
-| 390 | graphics/bezier_curve | ✓ | 176µs | 39.1 KB |
-| 391 | graphics/butterfly_pattern | ✓ | 124µs | 39.4 KB |
-| 392 | graphics/digital_differential_analyzer_line | ✓ | 135µs | 37.7 KB |
+| 372 | financial/equated_monthly_installments | ✓ | 81µs | 39.0 KB |
+| 373 | financial/exponential_moving_average | ✓ | 109µs | 39.6 KB |
+| 374 | financial/interest | ✓ | 138µs | 40.4 KB |
+| 375 | financial/present_value | ✓ | 89µs | 39.2 KB |
+| 376 | financial/price_plus_tax | ✓ | 37µs | 38.7 KB |
+| 377 | financial/simple_moving_average | ✓ | 95µs | 39.2 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 134µs | 35.8 KB |
+| 379 | financial/time_and_half_pay | ✓ | 58µs | 36.3 KB |
+| 380 | fractals/julia_sets | ✓ | 757µs | 37.3 KB |
+| 381 | fractals/koch_snowflake | ✓ | 94µs | 39.6 KB |
+| 382 | fractals/mandelbrot | ✓ | 222µs | 40.2 KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 70µs | 38.5 KB |
+| 384 | fractals/vicsek | ✓ | 132µs | 35.5 KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 75µs | 37.8 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 83µs | 35.3 KB |
+| 387 | geodesy/haversine_distance | ✓ | 75µs | 39.8 KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 57µs | 34.8 KB |
+| 389 | geometry/geometry | ✓ | 95µs | 39.4 KB |
+| 390 | graphics/bezier_curve | ✓ | 113µs | 39.1 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 86µs | 39.4 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 74µs | 37.9 KB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 144µs | 39.5 KB |
 | 394 | graphs/a_star | ✓ | 213µs | 79.9 KB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 9.918ms | 73.3 KB |

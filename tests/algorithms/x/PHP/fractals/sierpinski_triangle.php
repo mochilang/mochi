@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,13 +31,15 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function get_mid($p1, $p2) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function get_mid($p1, $p2) {
   return ['x' => ($p1['x'] + $p2['x']) / 2, 'y' => ($p1['y'] + $p2['y']) / 2];
-}
-function point_to_string($p) {
+};
+  function point_to_string($p) {
   return '(' . _str($p['x']) . ',' . _str($p['y']) . ')';
-}
-function triangle($v1, $v2, $v3, $depth) {
+};
+  function triangle($v1, $v2, $v3, $depth) {
   echo rtrim(point_to_string($v1) . ' ' . point_to_string($v2) . ' ' . point_to_string($v3)), PHP_EOL;
   if ($depth == 0) {
   return;
@@ -30,5 +47,13 @@ function triangle($v1, $v2, $v3, $depth) {
   triangle($v1, get_mid($v1, $v2), get_mid($v1, $v3), $depth - 1);
   triangle($v2, get_mid($v1, $v2), get_mid($v2, $v3), $depth - 1);
   triangle($v3, get_mid($v3, $v2), get_mid($v1, $v3), $depth - 1);
-}
-triangle(['x' => -175, 'y' => -125], ['x' => 0, 'y' => 175], ['x' => 175, 'y' => -125], 2);
+};
+  triangle(['x' => -175, 'y' => -125], ['x' => 0, 'y' => 175], ['x' => 175, 'y' => -125], 2);
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

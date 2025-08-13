@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,15 +31,21 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-$COULOMBS_CONSTANT = 8988000000.0;
-function mochi_abs($x) {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $COULOMBS_CONSTANT = 8988000000.0;
+  function mochi_abs($x) {
   global $COULOMBS_CONSTANT;
   if ($x < 0.0) {
   return -$x;
 }
   return $x;
-}
-function sqrtApprox($x) {
+};
+  function sqrtApprox($x) {
   global $COULOMBS_CONSTANT;
   if ($x <= 0.0) {
   return 0.0;
@@ -36,8 +57,8 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function coulombs_law($force, $charge1, $charge2, $distance) {
+};
+  function coulombs_law($force, $charge1, $charge2, $distance) {
   global $COULOMBS_CONSTANT;
   $charge_product = mochi_abs($charge1 * $charge2);
   $zero_count = 0;
@@ -54,10 +75,10 @@ function coulombs_law($force, $charge1, $charge2, $distance) {
   $zero_count = $zero_count + 1;
 }
   if ($zero_count != 1) {
-  $panic('One and only one argument must be 0');
+  _panic('One and only one argument must be 0');
 }
   if ($distance < 0.0) {
-  $panic('Distance cannot be negative');
+  _panic('Distance cannot be negative');
 }
   if ($force == 0.0) {
   $f = $COULOMBS_CONSTANT * $charge_product / ($distance * $distance);
@@ -73,13 +94,21 @@ function coulombs_law($force, $charge1, $charge2, $distance) {
 }
   $d = sqrtApprox($COULOMBS_CONSTANT * $charge_product / mochi_abs($force));
   return ['distance' => $d];
-}
-function print_map($m) {
+};
+  function print_map($m) {
   global $COULOMBS_CONSTANT;
   foreach (array_keys($m) as $k) {
   echo rtrim('{"' . $k . '": ' . _str($m[$k]) . '}'), PHP_EOL;
 };
-}
-print_map(coulombs_law(0.0, 3.0, 5.0, 2000.0));
-print_map(coulombs_law(10.0, 3.0, 5.0, 0.0));
-print_map(coulombs_law(10.0, 0.0, 5.0, 2000.0));
+};
+  print_map(coulombs_law(0.0, 3.0, 5.0, 2000.0));
+  print_map(coulombs_law(10.0, 3.0, 5.0, 0.0));
+  print_map(coulombs_law(10.0, 0.0, 5.0, 2000.0));
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
