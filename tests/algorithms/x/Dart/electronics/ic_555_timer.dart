@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,19 +33,42 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double astable_frequency(double resistance_1, double resistance_2, double capacitance) {
   if (resistance_1 <= 0.0 || resistance_2 <= 0.0 || capacitance <= 0.0) {
-    throw Exception("All values must be positive");
+    _error("All values must be positive");
   }
   return 1.44 / ((resistance_1 + 2.0 * resistance_2) * capacitance) * 1000000.0;
 }
 
 double astable_duty_cycle(double resistance_1, double resistance_2) {
   if (resistance_1 <= 0.0 || resistance_2 <= 0.0) {
-    throw Exception("All values must be positive");
+    _error("All values must be positive");
   }
   return (resistance_1 + resistance_2) / (resistance_1 + 2.0 * resistance_2) * 100.0;
 }

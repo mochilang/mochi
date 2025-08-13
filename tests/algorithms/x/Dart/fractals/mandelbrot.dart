@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,28 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class RGB {
   int r;
@@ -44,12 +64,12 @@ class RGB {
 }
 
 int round_int(double x) {
-  return x + 0.5 as int;
+  return (x + 0.5).toInt();
 }
 
 RGB hsv_to_rgb(double h, double s, double v) {
-  int i = h * 6.0 as int;
-  double f = h * 6.0 - (i as double);
+  int i = (h * 6.0).toInt();
+  double f = h * 6.0 - (i.toDouble());
   double p = v * (1.0 - s);
   double q = v * (1.0 - f * s);
   double t = v * (1.0 - (1.0 - f) * s);
@@ -106,7 +126,7 @@ double get_distance(double x, double y, int max_step) {
     break;
   }
   }
-  return (step as double) / (max_step - 1 as double);
+  return (step.toDouble()) / (max_step - 1.toDouble());
 }
 
 RGB get_black_and_white_rgb(double distance) {
@@ -127,14 +147,14 @@ RGB get_color_coded_rgb(double distance) {
 
 List<List<RGB>> get_image(int image_width, int image_height, double figure_center_x, double figure_center_y, double figure_width, int max_step, bool use_distance_color_coding) {
   List<List<RGB>> img = <List<RGB>>[];
-  double figure_height = figure_width / (image_width as double) * (image_height as double);
+  double figure_height = figure_width / (image_width.toDouble()) * (image_height.toDouble());
   int image_y = 0;
   while (image_y < image_height) {
     List<RGB> row = <RGB>[];
     int image_x = 0;
     while (image_x < image_width) {
-    double fx = figure_center_x + ((image_x as double) / (image_width as double) - 0.5) * figure_width;
-    double fy = figure_center_y + ((image_y as double) / (image_height as double) - 0.5) * figure_height;
+    double fx = figure_center_x + ((image_x.toDouble()) / (image_width.toDouble()) - 0.5) * figure_width;
+    double fy = figure_center_y + ((image_y.toDouble()) / (image_height.toDouble()) - 0.5) * figure_height;
     double distance = get_distance(fx, fy, max_step);
     RGB rgb;
     if (use_distance_color_coding) {
@@ -145,14 +165,14 @@ List<List<RGB>> get_image(int image_width, int image_height, double figure_cente
     row = [...row, rgb];
     image_x = image_x + 1;
   }
-    img = ([...img, row] as List).map((e) => (List<RGB>.from(e) as List<RGB>)).toList();
+    img = ([...img, row] as List<dynamic>).map((e) => (List<RGB>.from(e) as List<RGB>)).toList();
     image_y = image_y + 1;
   }
   return img;
 }
 
 String rgb_to_string(RGB c) {
-  return "(" + (c.r).toString() + ", " + (c.g).toString() + ", " + (c.b).toString() + ")";
+  return "(" + _str(c.r) + ", " + _str(c.g) + ", " + _str(c.b) + ")";
 }
 
 List<List<RGB>> img1 = get_image(10, 10, -0.6, 0.0, 3.2, 50, true);

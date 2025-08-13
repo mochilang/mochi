@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,32 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double sqrt(double x) {
@@ -51,14 +76,14 @@ double sqrt(double x) {
 
 double real_power(double apparent_power, double power_factor) {
   if (power_factor < 0.0 - 1.0 || power_factor > 1.0) {
-    throw Exception("power_factor must be a valid float value between -1 and 1.");
+    _error("power_factor must be a valid float value between -1 and 1.");
   }
   return apparent_power * power_factor;
 }
 
 double reactive_power(double apparent_power, double power_factor) {
   if (power_factor < 0.0 - 1.0 || power_factor > 1.0) {
-    throw Exception("power_factor must be a valid float value between -1 and 1.");
+    _error("power_factor must be a valid float value between -1 and 1.");
   }
   return apparent_power * sqrt(1.0 - power_factor * power_factor);
 }
@@ -70,12 +95,12 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((real_power(100.0, 0.9)).toString());
-  print((real_power(0.0, 0.8)).toString());
-  print((real_power(100.0, -0.9)).toString());
-  print((reactive_power(100.0, 0.9)).toString());
-  print((reactive_power(0.0, 0.8)).toString());
-  print((reactive_power(100.0, -0.9)).toString());
+  print(_str(real_power(100.0, 0.9)));
+  print(_str(real_power(0.0, 0.8)));
+  print(_str(real_power(100.0, -0.9)));
+  print(_str(reactive_power(100.0, 0.9)));
+  print(_str(reactive_power(0.0, 0.8)));
+  print(_str(reactive_power(100.0, -0.9)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
