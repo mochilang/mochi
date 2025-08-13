@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-12 16:26 GMT+7
+Last updated: 2025-08-13 01:40 GMT+7
 
-## Algorithms Golden Test Checklist (936/1077)
+## Algorithms Golden Test Checklist (937/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -783,7 +783,7 @@ Last updated: 2025-08-12 16:26 GMT+7
 | 774 | physics/in_static_equilibrium | ✓ | 19.0ms | 1.74KB |
 | 775 | physics/kinetic_energy | ✓ | 16.0ms | 10.25KB |
 | 776 | physics/lens_formulae | ✓ | 16.0ms | 10.45KB |
-| 777 | physics/lorentz_transformation_four_vector | error |  |  |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 20.0ms | 10.91KB |
 | 778 | physics/malus_law | error |  |  |
 | 779 | physics/mass_energy_equivalence | ✓ | 18.0ms | 10.45KB |
 | 780 | physics/mirror_formulae | ✓ | 21.0ms | 10.77KB |
