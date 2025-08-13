@@ -1132,6 +1132,9 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	if typ == "" || typ == "int" {
 		typ = "long long"
 	}
+	if vr, ok := d.Value.(*VarRef); ok && vr.Name == d.Name {
+		return
+	}
 	writeIndent(w, indent)
 	if strings.HasSuffix(typ, "[][][]") || strings.HasSuffix(typ, "***") {
 		base := strings.TrimSuffix(typ, "[][][]")
