@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 701/1077
-Last updated: 2025-08-12 16:17 +0700
+Completed programs: 703/1077
+Last updated: 2025-08-13 07:12 +0700
 
 Checklist:
 
@@ -322,14 +322,14 @@ Checklist:
 | 313 | dynamic_programming/integer_partition | ✓ | 1.0ms | 211.84KB |
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 298.0µs | 1.70KB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 472.0µs | 3.55KB |
-| 316 | dynamic_programming/knapsack |   |  |  |
+| 316 | dynamic_programming/knapsack | ✓ | 498.0µs | 4.03KB |
 | 317 | dynamic_programming/largest_divisible_subset | ✓ | 445.0µs | 1.55KB |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 582.0µs | 2.17KB |
 | 319 | dynamic_programming/longest_common_substring | ✓ | 434.0µs | 5.29KB |
 | 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 335.0µs | 1.05KB |
 | 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 501.0µs | 5.74KB |
 | 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 360.0µs | 1.51KB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 402.0µs | 5.23KB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 646.0µs | 5.23KB |
 | 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 367.0µs | 2.39KB |
 | 325 | dynamic_programming/matrix_chain_order |   |  |  |
 | 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 542.0µs | 1.01KB |
@@ -346,7 +346,7 @@ Checklist:
 | 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 452.0µs | 5.06KB |
 | 338 | dynamic_programming/palindrome_partitioning | ✓ | 687.0µs | 2.69KB |
 | 339 | dynamic_programming/range_sum_query | ✓ | 565.0µs | 1.60KB |
-| 340 | dynamic_programming/regex_match | ✓ | 654.0µs | 3.03KB |
+| 340 | dynamic_programming/regex_match | ✓ | 270.0µs | 1.88KB |
 | 341 | dynamic_programming/rod_cutting | ✓ | 535.0µs | 1.35KB |
 | 342 | dynamic_programming/smith_waterman | ✓ | 839.0µs | 7.08KB |
 | 343 | dynamic_programming/subset_generation | ✓ | 564.0µs | 2.88KB |
@@ -354,10 +354,10 @@ Checklist:
 | 345 | dynamic_programming/trapped_water | ✓ | 588.0µs | 1.66KB |
 | 346 | dynamic_programming/tribonacci | ✓ | 954.0µs | 3.19KB |
 | 347 | dynamic_programming/viterbi | ✓ | 769.0µs | 3.13KB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 793.0µs | 2.30KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 402.0µs | 1.84KB |
 | 349 | dynamic_programming/word_break | ✓ | 661.0µs | 2.99KB |
 | 350 | electronics/apparent_power | ✓ | 423.0µs | 1.16KB |
-| 351 | electronics/builtin_voltage | ✓ | 579.0µs | 1.05KB |
+| 351 | electronics/builtin_voltage | ✓ | 249.0µs | 1000B |
 | 352 | electronics/capacitor_equivalence | ✓ | 481.0µs | 1.03KB |
 | 353 | electronics/carrier_concentration | ✓ | 638.0µs | 1.09KB |
 | 354 | electronics/charging_capacitor | ✓ | 425.0µs | 1.04KB |
@@ -365,7 +365,7 @@ Checklist:
 | 356 | electronics/circular_convolution |   |  |  |
 | 357 | electronics/coulombs_law | ✓ | 530.0µs | 2.11KB |
 | 358 | electronics/electric_conductivity | ✓ | 874.0µs | 1.21KB |
-| 359 | electronics/electric_power |   |  |  |
+| 359 | electronics/electric_power | ✓ | 381.0µs | 1.27KB |
 | 360 | electronics/electrical_impedance | ✓ | 720.0µs | 1.91KB |
 | 361 | electronics/ic_555_timer | ✓ | 468.0µs | 1.02KB |
 | 362 | electronics/ind_reactance | ✓ | 752.0µs | 1.93KB |
@@ -696,7 +696,7 @@ Checklist:
 | 687 | maths/test_factorial | ✓ | 389.0µs | 936B |
 | 688 | maths/test_prime_check | ✓ | 292.0µs | 1.26KB |
 | 689 | maths/three_sum | ✓ | 296.0µs | 1.27KB |
-| 690 | maths/trapezoidal_rule | ✓ | 377.0µs | 1.25KB |
+| 690 | maths/trapezoidal_rule | ✓ | 420.0µs | 1.25KB |
 | 691 | maths/triplet_sum | ✓ | 210.0µs | 1.62KB |
 | 692 | maths/twin_prime | ✓ | 387.0µs | 936B |
 | 693 | maths/two_pointer | ✓ | 587.0µs | 3.41KB |

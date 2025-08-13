@@ -6187,12 +6187,17 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				imports["math"] = "math"
 			}
 			return &CallExpr{Func: "math.Log", Args: []Expr{args[0]}}, nil
-		case "exp":
-			if imports != nil {
-				imports["math"] = "math"
-			}
-			return &CallExpr{Func: "math.Exp", Args: []Expr{args[0]}}, nil
-		case "sum":
+                case "exp":
+                        if imports != nil {
+                                imports["math"] = "math"
+                        }
+                        return &CallExpr{Func: "math.Exp", Args: []Expr{args[0]}}, nil
+               case "floor":
+                       if imports != nil {
+                               imports["math"] = "math"
+                       }
+                       return &CallExpr{Func: "math.Floor", Args: []Expr{args[0]}}, nil
+                case "sum":
 			isFloat := false
 			switch a := args[0].(type) {
 			case *ListLit:
