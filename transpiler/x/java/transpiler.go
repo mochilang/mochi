@@ -4117,6 +4117,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needNow = false
 	needMem = false
 	needAppendBool = false
+	needAppendDouble = false
 	needPadStart = false
 	needSHA256 = false
 	needMD5Hex = false
