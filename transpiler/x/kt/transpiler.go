@@ -5324,6 +5324,10 @@ func paramAssigned(name string, stmts []Stmt) bool {
 			if s.Name == name {
 				return true
 			}
+		case *VarStmt:
+			if s.Name == name {
+				return false
+			}
 		case *IfStmt:
 			if paramAssigned(name, s.Then) || paramAssigned(name, s.Else) {
 				return true
@@ -5333,11 +5337,11 @@ func paramAssigned(name string, stmts []Stmt) bool {
 				return true
 			}
 		case *ForEachStmt:
-			if paramAssigned(name, s.Body) {
+			if s.Name != name && paramAssigned(name, s.Body) {
 				return true
 			}
 		case *ForRangeStmt:
-			if paramAssigned(name, s.Body) {
+			if s.Name != name && paramAssigned(name, s.Body) {
 				return true
 			}
 		}
