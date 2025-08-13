@@ -1,3 +1,7 @@
+## Progress (2025-08-13 16:41 +0700)
+- fs transpiler: handle nested map indexing
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-12 16:24 +0700)
 - ex: avoid duplicate globals in bench mode
 - Generated F# for 103/105 programs (103 passing)
