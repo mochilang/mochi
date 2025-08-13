@@ -649,7 +649,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		return
 	case "len", "count":
-		io.WriteString(w, "(function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil) then\n    local c = 0\n    for _ in pairs(v) do c = c + 1 end\n    return c\n  elseif type(v) == 'string' then\n    local l = utf8.len(v)\n    if l then return l end\n    return #v\n  elseif type(v) == 'table' then\n    return #v\n  else\n    return 0\n  end\nend)(")
+		io.WriteString(w, "(function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then\n    local c = 0\n    for _ in pairs(v) do c = c + 1 end\n    return c\n  elseif type(v) == 'string' then\n    local l = utf8.len(v)\n    if l then return l end\n    return #v\n  elseif type(v) == 'table' then\n    return #v\n  else\n    return 0\n  end\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -676,6 +676,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, "))")
 	case "int":
+		io.WriteString(w, "math.floor(tonumber(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ") or 0)")
+	case "toi":
 		io.WriteString(w, "math.floor(tonumber(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
