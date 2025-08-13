@@ -127,7 +127,10 @@ def _concat(a, b):
 
 const helperAppend = `
 def _append(lst, v):
-    return (lst or []) + [v]
+    if lst is None:
+        lst = []
+    lst.append(v)
+    return lst
 `
 
 const helperSetIndex = `
