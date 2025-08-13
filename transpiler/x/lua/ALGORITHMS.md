@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-13 12:53 GMT+7
+Last updated: 2025-08-13 16:04 GMT+7
 
 ## Algorithms Golden Test Checklist (1028/1077)
 | Index | Name | Status | Duration | Memory |
@@ -351,7 +351,7 @@ Last updated: 2025-08-13 12:53 GMT+7
 | 342 | dynamic_programming/smith_waterman | ✓ | 147µs | 3.2 KB |
 | 343 | dynamic_programming/subset_generation | ✓ | 226µs | 912 B |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 410µs | 912 B |
-| 345 | dynamic_programming/trapped_water | ✓ | 294µs | 912 B |
+| 345 | dynamic_programming/trapped_water | ✓ | 177µs | 960 B |
 | 346 | dynamic_programming/tribonacci | ✓ | 212µs | 808 B |
 | 347 | dynamic_programming/viterbi | ✓ | 107µs | 3.0 KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 547µs | 1.0 KB |
