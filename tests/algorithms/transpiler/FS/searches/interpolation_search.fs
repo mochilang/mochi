@@ -1,4 +1,4 @@
-// Generated 2025-08-11 16:20 +0700
+// Generated 2025-08-13 12:32 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,6 +29,10 @@ let rec _str v =
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec interpolation_search (arr: int array) (item: int) =
@@ -45,32 +49,32 @@ let rec interpolation_search (arr: int array) (item: int) =
                     raise Return
                 __ret <- -1
                 raise Return
-            let point: int64 = (int64 left) + (((int64 (item - (_idx arr (int left)))) * (int64 (right - left))) / (int64 ((_idx arr (int right)) - (_idx arr (int left)))))
-            if (point < (int64 0)) || (point >= (int64 (Seq.length (arr)))) then
+            let point: int = left + (_floordiv (int ((item - (_idx arr (int left))) * (right - left))) (int ((_idx arr (int right)) - (_idx arr (int left)))))
+            if (point < 0) || (point >= (Seq.length (arr))) then
                 __ret <- -1
                 raise Return
             let current: int = _idx arr (int point)
             if current = item then
-                __ret <- int point
+                __ret <- point
                 raise Return
-            if point < (int64 left) then
+            if point < left then
                 right <- left
-                left <- int point
+                left <- point
             else
-                if point > (int64 right) then
+                if point > right then
                     left <- right
-                    right <- int point
+                    right <- point
                 else
                     if item < current then
-                        right <- int (point - (int64 1))
+                        right <- point - 1
                     else
-                        left <- int (point + (int64 1))
+                        left <- point + 1
         __ret <- -1
         raise Return
         __ret
     with
         | Return -> __ret
-let rec interpolation_search_recursive (arr: int array) (item: int) (left: int) (right: int) =
+and interpolation_search_recursive (arr: int array) (item: int) (left: int) (right: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable arr = arr
     let mutable item = item
@@ -86,28 +90,28 @@ let rec interpolation_search_recursive (arr: int array) (item: int) (left: int) 
                 raise Return
             __ret <- -1
             raise Return
-        let point: int64 = (int64 left) + (((int64 (item - (_idx arr (int left)))) * (int64 (right - left))) / (int64 ((_idx arr (int right)) - (_idx arr (int left)))))
-        if (point < (int64 0)) || (point >= (int64 (Seq.length (arr)))) then
+        let point: int = left + (_floordiv (int ((item - (_idx arr (int left))) * (right - left))) (int ((_idx arr (int right)) - (_idx arr (int left)))))
+        if (point < 0) || (point >= (Seq.length (arr))) then
             __ret <- -1
             raise Return
         if (_idx arr (int point)) = item then
-            __ret <- int point
+            __ret <- point
             raise Return
-        if point < (int64 left) then
+        if point < left then
             __ret <- interpolation_search_recursive (arr) (item) (point) (left)
             raise Return
-        if point > (int64 right) then
+        if point > right then
             __ret <- interpolation_search_recursive (arr) (item) (right) (left)
             raise Return
         if (_idx arr (int point)) > item then
-            __ret <- interpolation_search_recursive (arr) (item) (left) (point - (int64 1))
+            __ret <- interpolation_search_recursive (arr) (item) (left) (point - 1)
             raise Return
-        __ret <- interpolation_search_recursive (arr) (item) (point + (int64 1)) (right)
+        __ret <- interpolation_search_recursive (arr) (item) (point + 1) (right)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec interpolation_search_by_recursion (arr: int array) (item: int) =
+and interpolation_search_by_recursion (arr: int array) (item: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable arr = arr
     let mutable item = item
@@ -117,11 +121,11 @@ let rec interpolation_search_by_recursion (arr: int array) (item: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (interpolation_search (unbox<int array> [|1; 2; 3; 4; 5|]) (2)))
-printfn "%s" (_str (interpolation_search (unbox<int array> [|1; 2; 3; 4; 5|]) (6)))
-printfn "%s" (_str (interpolation_search_by_recursion (unbox<int array> [|0; 5; 7; 10; 15|]) (5)))
-printfn "%s" (_str (interpolation_search_by_recursion (unbox<int array> [|0; 5; 7; 10; 15|]) (100)))
-printfn "%s" (_str (interpolation_search_by_recursion (unbox<int array> [|5; 5; 5; 5; 5|]) (3)))
+ignore (printfn "%s" (_str (interpolation_search (unbox<int array> [|1; 2; 3; 4; 5|]) (2))))
+ignore (printfn "%s" (_str (interpolation_search (unbox<int array> [|1; 2; 3; 4; 5|]) (6))))
+ignore (printfn "%s" (_str (interpolation_search_by_recursion (unbox<int array> [|0; 5; 7; 10; 15|]) (5))))
+ignore (printfn "%s" (_str (interpolation_search_by_recursion (unbox<int array> [|0; 5; 7; 10; 15|]) (100))))
+ignore (printfn "%s" (_str (interpolation_search_by_recursion (unbox<int array> [|5; 5; 5; 5; 5|]) (3))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

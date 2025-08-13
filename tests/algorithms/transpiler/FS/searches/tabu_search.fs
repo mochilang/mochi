@@ -1,4 +1,4 @@
-// Generated 2025-08-11 16:20 +0700
+// Generated 2025-08-13 12:32 +0700
 
 exception Break
 exception Continue
@@ -71,14 +71,14 @@ let rec path_cost (_path: string array) (graph: System.Collections.Generic.IDict
         while i < ((Seq.length (_path)) - 1) do
             let u: string = _idx _path (int i)
             let v: string = _idx _path (int (i + 1))
-            total <- int (total + (int (_dictGet graph (u).[v])))
+            total <- total + (_dictGet (_dictGet graph ((string (u)))) ((string (v))))
             i <- i + 1
         __ret <- total
         raise Return
         __ret
     with
         | Return -> __ret
-let rec generate_first_solution (graph: System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>>) (start: string) =
+and generate_first_solution (graph: System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>>) (start: string) =
     let mutable __ret : Solution = Unchecked.defaultof<Solution>
     let mutable graph = graph
     let mutable start = start
@@ -92,10 +92,10 @@ let rec generate_first_solution (graph: System.Collections.Generic.IDictionary<s
                     _path <- Array.append _path [|visiting|]
                     let mutable best_node: string = ""
                     let mutable best_cost: int = 1000000
-                    for n in _dictGet graph (visiting) do
-                        if (not (Seq.contains n _path)) && ((int (_dictGet graph (visiting).[n])) < best_cost) then
-                            best_cost <- int (_dictGet graph (visiting).[n])
-                            best_node <- unbox<string> n
+                    for n in (_dictGet graph ((string (visiting)))).Keys do
+                        if (not (Seq.contains n _path)) && ((_dictGet (_dictGet graph ((string (visiting)))) ((string (n)))) < best_cost) then
+                            best_cost <- _dictGet (_dictGet graph ((string (visiting)))) ((string (n)))
+                            best_node <- n
                     if best_node = "" then
                         raise Break
                     total <- total + best_cost
@@ -107,13 +107,13 @@ let rec generate_first_solution (graph: System.Collections.Generic.IDictionary<s
         | Break -> ()
         | Continue -> ()
         _path <- Array.append _path [|start|]
-        total <- int (total + (int (_dictGet graph (visiting).[start])))
+        total <- total + (_dictGet (_dictGet graph ((string (visiting)))) ((string (start))))
         __ret <- { _path = _path; _cost = total }
         raise Return
         __ret
     with
         | Return -> __ret
-let rec copy_path (_path: string array) =
+and copy_path (_path: string array) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable _path = _path
     try
@@ -127,7 +127,7 @@ let rec copy_path (_path: string array) =
         __ret
     with
         | Return -> __ret
-let rec find_neighborhood (sol: Solution) (graph: System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>>) =
+and find_neighborhood (sol: Solution) (graph: System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>>) =
     let mutable __ret : Solution array = Unchecked.defaultof<Solution array>
     let mutable sol = sol
     let mutable graph = graph
@@ -140,8 +140,8 @@ let rec find_neighborhood (sol: Solution) (graph: System.Collections.Generic.IDi
                 if i <> j then
                     let mutable new_path: string array = copy_path (sol._path)
                     let tmp: string = _idx new_path (int i)
-                    new_path.[int i] <- _idx new_path (int j)
-                    new_path.[int j] <- tmp
+                    new_path.[i] <- _idx new_path (int j)
+                    new_path.[j] <- tmp
                     let _cost: int = path_cost (new_path) (graph)
                     neighbors <- Array.append neighbors [|{ _path = new_path; _cost = _cost }|]
                 j <- j + 1
@@ -151,7 +151,7 @@ let rec find_neighborhood (sol: Solution) (graph: System.Collections.Generic.IDi
         __ret
     with
         | Return -> __ret
-let rec find_swap (_a: string array) (_b: string array) =
+and find_swap (_a: string array) (_b: string array) =
     let mutable __ret : Swap = Unchecked.defaultof<Swap>
     let mutable _a = _a
     let mutable _b = _b
@@ -167,7 +167,7 @@ let rec find_swap (_a: string array) (_b: string array) =
         __ret
     with
         | Return -> __ret
-let rec tabu_search (first: Solution) (graph: System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>>) (iters: int) (size: int) =
+and tabu_search (first: Solution) (graph: System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>>) (iters: int) (size: int) =
     let mutable __ret : Solution = Unchecked.defaultof<Solution>
     let mutable first = first
     let mutable graph = graph
@@ -223,11 +223,11 @@ let rec tabu_search (first: Solution) (graph: System.Collections.Generic.IDictio
         __ret
     with
         | Return -> __ret
-let graph: System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>> = unbox<System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>>> (_dictCreate [("a", _dictCreate [("b", 20); ("c", 18); ("d", 22); ("e", 26)]); ("b", _dictCreate [("a", 20); ("c", 10); ("d", 11); ("e", 12)]); ("c", _dictCreate [("a", 18); ("b", 10); ("d", 23); ("e", 24)]); ("d", _dictCreate [("a", 22); ("b", 11); ("c", 23); ("e", 40)]); ("e", _dictCreate [("a", 26); ("b", 12); ("c", 24); ("d", 40)])])
+let graph: System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, int>> = _dictCreate [("a", _dictCreate [("b", 20); ("c", 18); ("d", 22); ("e", 26)]); ("b", _dictCreate [("a", 20); ("c", 10); ("d", 11); ("e", 12)]); ("c", _dictCreate [("a", 18); ("b", 10); ("d", 23); ("e", 24)]); ("d", _dictCreate [("a", 22); ("b", 11); ("c", 23); ("e", 40)]); ("e", _dictCreate [("a", 26); ("b", 12); ("c", 24); ("d", 40)])]
 let first: Solution = generate_first_solution (graph) ("a")
 let mutable best: Solution = tabu_search (first) (graph) (4) (3)
-printfn "%s" (_str (best._path))
-printfn "%s" (_str (best._cost))
+ignore (printfn "%s" (_str (best._path)))
+ignore (printfn "%s" (_str (best._cost)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
