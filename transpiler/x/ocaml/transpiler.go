@@ -1010,13 +1010,24 @@ type SaveStmt struct {
 }
 
 func (s *SaveStmt) emit(w io.Writer) {
-	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+	if s.Format == "jsonl" {
+		if s.Path == "" || s.Path == "-" {
+			io.WriteString(w, "  List.iter (fun m ->\n")
+			io.WriteString(w, `    let parts = List.map (fun (k,v) -> Printf.sprintf "\"%s\": %s" k (string_of_int (Obj.magic v))) m in\n`)
+			io.WriteString(w, `    print_endline ("{" ^ String.concat "," parts ^ "}")\n`)
+			io.WriteString(w, "  ) ")
+			s.Src.emit(w)
+			io.WriteString(w, "\n")
+			return
+		}
+		fmt.Fprintf(w, "  let oc = open_out %q in\n", s.Path)
 		io.WriteString(w, "  List.iter (fun m ->\n")
 		io.WriteString(w, `    let parts = List.map (fun (k,v) -> Printf.sprintf "\"%s\": %s" k (string_of_int (Obj.magic v))) m in\n`)
-		io.WriteString(w, `    print_endline ("{" ^ String.concat "," parts ^ "}")\n`)
+		io.WriteString(w, "    output_string oc (\"{\" ^ String.concat \",\" parts ^ \"}\\n\")\n")
 		io.WriteString(w, "  ) ")
 		s.Src.emit(w)
-		io.WriteString(w, "\n")
+		io.WriteString(w, ";\n")
+		io.WriteString(w, "  close_out oc\n")
 		return
 	}
 	io.WriteString(w, "  () (* unsupported save *)\n")
@@ -3323,13 +3334,12 @@ const helperShow = `
 let rec __is_list v =
   let open Obj in
   let r = repr v in
-  if is_int r then (magic v : int) = 0
+  if is_int r then false
   else
     match tag r with
     | 0 ->
         let t = field r 1 in
-        if is_int t then (magic t : int) = 0
-        else __is_list (magic t)
+        if is_int t then (magic t : int) = 0 else __is_list (magic t)
     | _ -> false
 
 let rec __show v =
@@ -4948,8 +4958,18 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: idxTyp}
 				typ = valTyp
 			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
-				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "map", Dyn: dyn, KeyTyp: idxTyp}
-				typ = "map"
+				valTyp := "dyn"
+				if strings.HasPrefix(typ, "map{") {
+					inner := strings.TrimSuffix(strings.TrimPrefix(typ, "map{"), "}")
+					if i := strings.Index(inner, ":"); i >= 0 {
+						valTyp = strings.TrimSpace(inner[i+1:])
+						if j := strings.Index(valTyp, ","); j >= 0 {
+							valTyp = valTyp[:j]
+						}
+					}
+				}
+				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: idxTyp}
+				typ = valTyp
 			} else if typ == "" || typ == "dyn" {
 				if idxTyp == "int" {
 					expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: typ}
