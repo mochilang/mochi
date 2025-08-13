@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-12 09:34 UTC
+Last updated: 2025-08-13 00:28 UTC
 
-## Algorithms Golden Test Checklist (1052/1077)
+## Algorithms Golden Test Checklist (1053/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -316,48 +316,48 @@ Last updated: 2025-08-12 09:34 UTC
 | 307 | dynamic_programming/edit_distance | ✓ | 571.223ms | 147.0 KB |
 | 308 | dynamic_programming/factorial | ✓ | 571.223ms | 287.1 KB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 571.223ms | 52.0 KB |
-| 310 | dynamic_programming/fibonacci | ✓ | 1.717ms | 532.7 KB |
-| 311 | dynamic_programming/fizz_buzz | ✓ | 646µs | 19.3 KB |
-| 312 | dynamic_programming/floyd_warshall | ✓ | 998µs | 533.1 KB |
-| 313 | dynamic_programming/integer_partition | ✓ | 4.849ms | 273.4 KB |
-| 314 | dynamic_programming/iterating_through_submasks | ✓ | 722µs | 20.5 KB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 4.015ms | 304.8 KB |
-| 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 1.015ms | 530.3 KB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 1.985ms | 42.7 KB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 1.546ms | 36.1 KB |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 8µs | 3.3 KB |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 1.502ms | 66.7 KB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 1.07ms | 26.3 KB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 1.782ms | 536.7 KB |
-| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 9µs | 3.3 KB |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 1.869ms | 585.3 KB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 956µs | 23.1 KB |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 792µs | 17.8 KB |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 1.758ms | 551.0 KB |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 1.793ms | 40.9 KB |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 1.244ms | 593.3 KB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 974µs | 19.2 KB |
-| 332 | dynamic_programming/minimum_partition | ✓ | 3.648ms | 109.7 KB |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 1.265ms | 23.0 KB |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 1.631ms | 28.1 KB |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 1.708ms | 32.2 KB |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 2.309ms | 38.4 KB |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 2.017ms | 93.8 KB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 1.715ms | 539.3 KB |
-| 339 | dynamic_programming/range_sum_query | ✓ | 793µs | 19.6 KB |
-| 340 | dynamic_programming/regex_match | ✓ | 1.856ms | 559.6 KB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 1.796ms | 27.0 KB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 1.993ms | 535.3 KB |
-| 343 | dynamic_programming/subset_generation | ✓ | 1.379ms | 280.3 KB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 1.802ms | 40.0 KB |
-| 345 | dynamic_programming/trapped_water | ✓ | 1.909ms | 533.4 KB |
-| 346 | dynamic_programming/tribonacci | ✓ | 988µs | 271.6 KB |
-| 347 | dynamic_programming/viterbi | ✓ | 1.154ms | 23.5 KB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 2.693ms | 41.7 KB |
-| 349 | dynamic_programming/word_break | ✓ | 1.495ms | 32.2 KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 571.223ms | 22.6 KB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 571.223ms | 18.7 KB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 571.223ms | 87.3 KB |
+| 313 | dynamic_programming/integer_partition | ✓ | 571.223ms | 527.0 KB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 571.223ms | 20.0 KB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 571.223ms | 356.9 KB |
+| 316 | dynamic_programming/knapsack | ✓ | 571.223ms | 100.2 KB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 571.223ms | 30.8 KB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 571.223ms | 76.5 KB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 571.223ms | 45.4 KB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 571.223ms | 2.7 KB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 571.223ms | 108.9 KB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 571.223ms | 44.7 KB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 571.223ms | 70.5 KB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 571.223ms | 2.7 KB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 571.223ms | 832.7 KB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 571.223ms | 24.8 KB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 571.223ms | 19.3 KB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 571.223ms | 43.0 KB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 571.223ms | 260.7 KB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 571.223ms | 60.4 KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 571.223ms | 32.2 KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 571.223ms | 691.4 KB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 571.223ms | 26.0 KB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 571.223ms | 42.0 KB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 571.223ms | 35.4 KB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 571.223ms | 62.0 KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 571.223ms | 153.1 KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 571.223ms | 312.9 KB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 571.223ms | 23.6 KB |
+| 340 | dynamic_programming/regex_match | ✓ | 571.223ms | 82.8 KB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 571.223ms | 29.9 KB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 571.223ms | 111.8 KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 571.223ms | 38.1 KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 571.223ms | 581.1 KB |
+| 345 | dynamic_programming/trapped_water | ✓ | 571.223ms | 552.0 KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 571.223ms | 16.8 KB |
+| 347 | dynamic_programming/viterbi | ✓ | 571.223ms | 29.9 KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 571.223ms | 573.9 KB |
+| 349 | dynamic_programming/word_break | ✓ | 571.223ms | 45.1 KB |
 | 350 | electronics/apparent_power | ✓ | 571.223ms | 2.7 KB |
-| 351 | electronics/builtin_voltage | ✓ | 571.223ms | 17.7 KB |
+| 351 | electronics/builtin_voltage | ✓ | 571.223ms | 15.7 KB |
 | 352 | electronics/capacitor_equivalence | ✓ | 571.223ms | 19.4 KB |
 | 353 | electronics/carrier_concentration | ✓ | 571.223ms | 22.0 KB |
 | 354 | electronics/charging_capacitor | ✓ | 571.223ms | 28.4 KB |
