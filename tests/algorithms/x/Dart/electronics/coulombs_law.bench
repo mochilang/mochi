@@ -1,3 +1,1 @@
-../../../tests/algorithms/x/Dart/electronics/coulombs_law.dart:103:60: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
-  double d = sqrtApprox(COULOMBS_CONSTANT * charge_product ~/ force.abs());
-                                                           ^
+{"duration_us":14127,"memory_bytes":3538944,"name":"main"}

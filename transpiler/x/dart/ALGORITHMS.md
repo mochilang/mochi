@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-12 16:12 GMT+7
+Last updated: 2025-08-13 07:31 GMT+7
 
-## Algorithms Golden Test Checklist (899/1077)
+## Algorithms Golden Test Checklist (901/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -316,56 +316,56 @@ Last updated: 2025-08-12 16:12 GMT+7
 | 307 | dynamic_programming/edit_distance | ✓ | 49.497ms | 688.0 KB |
 | 308 | dynamic_programming/factorial | ✓ | 46.934ms | 7.9 MB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 40.337ms | 884.0 KB |
-| 310 | dynamic_programming/fibonacci | ✓ | 29.147ms | 2.9 MB |
-| 311 | dynamic_programming/fizz_buzz | ✓ | 35.507ms | 4.5 MB |
-| 312 | dynamic_programming/floyd_warshall | ✓ | 36.653ms | 2.0 MB |
-| 313 | dynamic_programming/integer_partition | ✓ | 171.798ms | 9.6 MB |
-| 314 | dynamic_programming/iterating_through_submasks | ✓ | 21.807ms | 5.5 MB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 41.938ms | 3.2 MB |
-| 316 | dynamic_programming/knapsack | error |  |  |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 43.935ms | 4.2 MB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 40.166ms | 7.5 MB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 44.127ms | 828.0 KB |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 15.882ms | 1.1 MB |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 37.442ms | 8.6 MB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 27.5ms | 3.6 MB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 28.499ms | 4.2 MB |
-| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 37.77ms | 912.0 KB |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 66.384ms | 5.5 MB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 35.081ms | 2.4 MB |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 24.509ms | 8.8 MB |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 62.806ms | 3.5 MB |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 58.211ms | 5.8 MB |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 33.511ms | 2.7 MB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 22.865ms | 2.4 MB |
-| 332 | dynamic_programming/minimum_partition | ✓ | 83.197ms | 6.9 MB |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 15.508ms | 2.8 MB |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 17.028ms | 2.8 MB |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 76.601ms | 10.0 MB |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 32.667ms | 1.6 MB |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 22.647ms | 4.9 MB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 25.121ms | 1.8 MB |
-| 339 | dynamic_programming/range_sum_query | ✓ | 54.437ms | 8.2 MB |
-| 340 | dynamic_programming/regex_match | ✓ | 31.763ms | 860.0 KB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 49.362ms | 2.9 MB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 23.497ms | 3.8 MB |
-| 343 | dynamic_programming/subset_generation | ✓ | 54.708ms | 8.7 MB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 41.074ms | 11.0 MB |
-| 345 | dynamic_programming/trapped_water | ✓ | 34.032ms | 2.1 MB |
-| 346 | dynamic_programming/tribonacci | ✓ | 38.711ms | 2.9 MB |
-| 347 | dynamic_programming/viterbi | ✓ | 36.041ms | 4.5 MB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 20.088ms | 872.0 KB |
-| 349 | dynamic_programming/word_break | ✓ | 448.002ms | 3.6 MB |
-| 350 | electronics/apparent_power | ✓ | 58.058ms | 4.6 MB |
-| 351 | electronics/builtin_voltage | ✓ | 28.49ms | 2.4 MB |
-| 352 | electronics/capacitor_equivalence | ✓ | 42.789ms | 8.9 MB |
-| 353 | electronics/carrier_concentration | ✓ | 20.584ms | 3.6 MB |
-| 354 | electronics/charging_capacitor | ✓ | 23.601ms | 1.9 MB |
-| 355 | electronics/charging_inductor | ✓ | 24.253ms | 1.9 MB |
-| 356 | electronics/circular_convolution | ✓ | 22.377ms | 3.8 MB |
-| 357 | electronics/coulombs_law | error |  |  |
-| 358 | electronics/electric_conductivity | ✓ | 34.039ms | 11.2 MB |
-| 359 | electronics/electric_power | ✓ | 14.87ms | 4.2 MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 17.897ms | 2.5 MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 11.388ms | 2.8 MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 14.775ms | 3.6 MB |
+| 313 | dynamic_programming/integer_partition | ✓ | 44.714ms | 12.6 MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 17.637ms | 2.0 MB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 16.616ms | 4.1 MB |
+| 316 | dynamic_programming/knapsack | ✓ | 16.09ms | 4.4 MB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 25.595ms | 10.1 MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 16.275ms | 4.2 MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 18.21ms | 2.7 MB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 19.58ms | 9.9 MB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 19.43ms | 3.0 MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 25.164ms | 10.8 MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 21.968ms | 2.7 MB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 14.659ms | 992.0 KB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 15.307ms | 4.2 MB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 19.618ms | 9.8 MB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 9.738ms | 2.2 MB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 12.284ms | 2.9 MB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 20.369ms | 2.4 MB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 21.389ms | 9.3 MB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 23.971ms | 10.8 MB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 22.714ms | 5.9 MB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 25.643ms | 11.0 MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 21.475ms | 9.4 MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 26.053ms | 10.3 MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 12.858ms | 2.2 MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 15.809ms | 4.5 MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 15.439ms | 3.6 MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 28.946ms | 10.1 MB |
+| 340 | dynamic_programming/regex_match | ✓ | 28.11ms | 10.6 MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 17.015ms | 1.9 MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 14.402ms | 3.6 MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 15.583ms | 4.0 MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 27.43ms | 10.1 MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 12.236ms | 2.8 MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 21.644ms | 2.0 MB |
+| 347 | dynamic_programming/viterbi | ✓ | 19.118ms | 2.1 MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 30.104ms | 9.6 MB |
+| 349 | dynamic_programming/word_break | ✓ | 27.677ms | 10.0 MB |
+| 350 | electronics/apparent_power | ✓ | 9.648ms | 2.9 MB |
+| 351 | electronics/builtin_voltage | ✓ | 18.148ms | 1.9 MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 18.176ms | 1.6 MB |
+| 353 | electronics/carrier_concentration | ✓ | 12.776ms | 3.2 MB |
+| 354 | electronics/charging_capacitor | ✓ | 27.31ms | 10.7 MB |
+| 355 | electronics/charging_inductor | ✓ | 24.677ms | 11.1 MB |
+| 356 | electronics/circular_convolution | ✓ | 22.025ms | 3.1 MB |
+| 357 | electronics/coulombs_law | ✓ | 14.127ms | 3.4 MB |
+| 358 | electronics/electric_conductivity | ✓ | 13.545ms | 3.5 MB |
+| 359 | electronics/electric_power | ✓ | 20.182ms | 2.1 MB |
 | 360 | electronics/electrical_impedance | ✓ | 20.943ms | 4.0 MB |
 | 361 | electronics/ic_555_timer | ✓ | 15.836ms | 10.5 MB |
 | 362 | electronics/ind_reactance | ✓ | 12.277ms | 1.7 MB |

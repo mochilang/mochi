@@ -39,7 +39,22 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 
 Never _error(String msg) {
@@ -100,7 +115,7 @@ Map<String, double> coulombs_law(double force, double charge1, double charge2, d
     double c2 = force.abs() * (distance * distance) / (COULOMBS_CONSTANT * charge1);
     return {"charge2": c2};
   }
-  double d = sqrtApprox(COULOMBS_CONSTANT * charge_product ~/ force.abs());
+  double d = sqrtApprox(COULOMBS_CONSTANT * charge_product / force.abs());
   return {"distance": d};
 }
 
