@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 963/1077
-Last updated: 2025-08-13 07:12 +0700
+Completed programs: 969/1077
+Last updated: 2025-08-13 12:07 +0700
 
 Checklist:
 
@@ -349,7 +349,7 @@ Checklist:
 | 340 | dynamic_programming/regex_match | ✓ | 464.0µs | 3.50MB |
 | 341 | dynamic_programming/rod_cutting | ✓ | 143.0µs | 3.65MB |
 | 342 | dynamic_programming/smith_waterman | ✓ | 139.0µs | 3.71MB |
-| 343 | dynamic_programming/subset_generation | ✓ | 295.0µs | 3.77MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 317.0µs | 3.62MB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 441.0µs | 3.43MB |
 | 345 | dynamic_programming/trapped_water | ✓ | 207.0µs | 3.70MB |
 | 346 | dynamic_programming/tribonacci | ✓ | 193.0µs | 3.69MB |
@@ -407,14 +407,14 @@ Checklist:
 | 398 | graphs/bellman_ford | ✓ | 503.0µs | 3.74MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 400.0µs | 3.80MB |
 | 400 | graphs/bidirectional_a_star | ✓ | 256.0µs | 3.65MB |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 2.0ms | 3.74MB |
 | 402 | graphs/bidirectional_search | ✓ | 320.0µs | 3.54MB |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 231.0µs | 3.45MB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 197.0µs | 3.57MB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 288.0µs | 3.62MB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 0ns | 3.40MB |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 308.0µs | 3.66MB |
 | 409 | graphs/check_bipatrite | ✓ | 192.0µs | 3.62MB |
 | 410 | graphs/check_cycle | ✓ | 247.0µs | 3.53MB |
 | 411 | graphs/connected_components | ✓ | 361.0µs | 3.57MB |
@@ -428,15 +428,15 @@ Checklist:
 | 419 | graphs/dijkstra_binary_grid | ✓ | 660.0µs | 3.84MB |
 | 420 | graphs/dinic | ✓ | 746.0µs | 3.72MB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 379.0µs | 3.71MB |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 230.0µs | 3.66MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1.0ms | 3.57MB |
 | 424 | graphs/even_tree | ✓ | 403.0µs | 3.57MB |
-| 425 | graphs/finding_bridges |   |  |  |
+| 425 | graphs/finding_bridges | ✓ | 400.0µs | 3.71MB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 2.0ms | 3.91MB |
 | 427 | graphs/g_topological_sort | ✓ | 371.0µs | 3.57MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 257.0µs | 3.62MB |
 | 429 | graphs/graph_adjacency_list | ✓ | 367.0µs | 3.74MB |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 261.0µs | 3.51MB |
 | 431 | graphs/graph_list | ✓ | 331.0µs | 3.72MB |
 | 432 | graphs/graphs_floyd_warshall | ✓ | 203.0µs | 3.77MB |
 | 433 | graphs/greedy_best_first | ✓ | 1.0ms | 3.60MB |
@@ -545,7 +545,7 @@ Checklist:
 | 536 | maths/average_median | ✓ | 309.0µs | 3.73MB |
 | 537 | maths/average_mode | ✓ | 232.0µs | 3.59MB |
 | 538 | maths/bailey_borwein_plouffe | ✓ | 581.0ms | 3.70MB |
-| 539 | maths/base_neg2_conversion |   |  |  |
+| 539 | maths/base_neg2_conversion | ✓ | 276.0µs | 3.60MB |
 | 540 | maths/basic_maths | ✓ | 222.0µs | 3.46MB |
 | 541 | maths/binary_exponentiation | ✓ | 395.0µs | 3.80MB |
 | 542 | maths/binary_multiplication | ✓ | 164.0µs | 3.60MB |
