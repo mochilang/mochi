@@ -1,0 +1,5 @@
+run: exit status 1
+/workspace/mochi/tests/algorithms/x/Racket/dynamic_programming/viterbi.rkt:203:24: observations: unbound identifier
+  in: observations
+  location...:
+   /workspace/mochi/tests/algorithms/x/Racket/dynamic_programming/viterbi.rkt:203:24
