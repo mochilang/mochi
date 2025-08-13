@@ -97,6 +97,7 @@ var (
 	varNameMap         map[string]string
 	varDecls           map[string]*VarDecl
 	fetchFuncs         map[string]bool
+	funcPtrParams      map[string]map[int]bool
 	testHeaderVarAdded bool
 )
 
@@ -380,6 +381,13 @@ type VarDecl struct {
 }
 
 func (v *VarDecl) emit(w io.Writer) {
+	if v.Name == "_" {
+		if v.Value != nil {
+			fmt.Fprint(w, "_ = ")
+			v.Value.emit(w)
+		}
+		return
+	}
 	switch {
 	case v.Value != nil && v.Type != "":
 		fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
@@ -817,6 +825,15 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		a.emit(w)
 	}
 	fmt.Fprint(w, ")")
+}
+
+type AddrExpr struct{ Expr Expr }
+
+func (a *AddrExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "&")
+	if a.Expr != nil {
+		a.Expr.emit(w)
+	}
 }
 
 type StringLit struct{ Value string }
@@ -2988,6 +3005,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Var != nil:
 		var typ string
 		var declaredType types.Type
+		if _, ok := env.Types()[st.Var.Name]; ok {
+			if st.Var.Value != nil {
+				e, err := compileExpr(st.Var.Value, env, st.Var.Name)
+				if err != nil {
+					return nil, err
+				}
+				name := st.Var.Name
+				if rn, ok := varNameMap[name]; ok {
+					name = rn
+				}
+				return &AssignStmt{Name: name, Value: e}, nil
+			}
+			return nil, nil
+		}
 		if st.Var.Type != nil {
 			typ = toGoType(st.Var.Type, env)
 			declaredType = types.ResolveTypeRef(st.Var.Type, env)
@@ -4857,6 +4888,16 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 			break
 		}
 	}
+	ptrParams := map[int]bool{}
+	for i, p := range fn.Params {
+		if t, err := child.GetVar(p.Name); err == nil {
+			if _, ok := t.(types.StructType); ok {
+				if paramNeedsPointer(p.Name, body) {
+					ptrParams[i] = true
+				}
+			}
+		}
+	}
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := toGoType(p.Type, env)
@@ -4872,7 +4913,20 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		if rn, ok := varNameMap[p.Name]; ok {
 			pname = rn
 		}
+		if ptrParams[i] {
+			if typ == "" {
+				if t, err := child.GetVar(p.Name); err == nil {
+					typ = toGoTypeFromType(t)
+				}
+			}
+			if typ != "" && !strings.HasPrefix(typ, "*") {
+				typ = "*" + typ
+			}
+		}
 		params[i] = ParamDecl{Name: pname, Type: typ}
+		if varDecls != nil {
+			varDecls[p.Name] = &VarDecl{Name: pname, Type: typ}
+		}
 	}
 	ret := toGoType(fn.Return, env)
 	if ret == "" && fn.Return != nil {
@@ -4936,6 +4990,12 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	if name != origName {
 		varNameMap[origName] = name
+	}
+	if len(ptrParams) > 0 {
+		if funcPtrParams == nil {
+			funcPtrParams = map[string]map[int]bool{}
+		}
+		funcPtrParams[name] = ptrParams
 	}
 	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body}, nil
 }
@@ -6187,17 +6247,17 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				imports["math"] = "math"
 			}
 			return &CallExpr{Func: "math.Log", Args: []Expr{args[0]}}, nil
-                case "exp":
-                        if imports != nil {
-                                imports["math"] = "math"
-                        }
-                        return &CallExpr{Func: "math.Exp", Args: []Expr{args[0]}}, nil
-               case "floor":
-                       if imports != nil {
-                               imports["math"] = "math"
-                       }
-                       return &CallExpr{Func: "math.Floor", Args: []Expr{args[0]}}, nil
-                case "sum":
+		case "exp":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			return &CallExpr{Func: "math.Exp", Args: []Expr{args[0]}}, nil
+		case "floor":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			return &CallExpr{Func: "math.Floor", Args: []Expr{args[0]}}, nil
+		case "sum":
 			isFloat := false
 			switch a := args[0].(type) {
 			case *ListLit:
@@ -6454,6 +6514,19 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 								}
 							}
 						}
+					}
+				}
+			}
+		}
+		if mp := funcPtrParams[name]; mp != nil {
+			for i := range args {
+				if mp[i] {
+					if vr, ok := args[i].(*VarRef); ok {
+						if vd, ok2 := varDecls[vr.Name]; !ok2 || !strings.HasPrefix(vd.Type, "*") {
+							args[i] = &AddrExpr{Expr: args[i]}
+						}
+					} else if _, ok := args[i].(*FieldExpr); ok {
+						args[i] = &AddrExpr{Expr: args[i]}
 					}
 				}
 			}
@@ -8343,6 +8416,9 @@ func stmtsUse(name string, stmts []Stmt) bool {
 func removeUnusedLocals(stmts []Stmt) []Stmt {
 	for i := 0; i < len(stmts); i++ {
 		if vd, ok := stmts[i].(*VarDecl); ok && !vd.Global {
+			if vd.Name == "_" {
+				continue
+			}
 			if !stmtsUse(vd.Name, stmts[i+1:]) {
 				assign := &AssignStmt{Name: "_", Value: &VarRef{Name: vd.Name}}
 				stmts = append(stmts[:i+1], append([]Stmt{assign}, stmts[i+1:]...)...)
@@ -8351,4 +8427,70 @@ func removeUnusedLocals(stmts []Stmt) []Stmt {
 		}
 	}
 	return stmts
+}
+
+func paramNeedsPointer(name string, stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *SetStmt:
+			if fe, ok := s.Target.(*FieldExpr); ok {
+				if vr, ok2 := fe.X.(*VarRef); ok2 && vr.Name == name {
+					return true
+				}
+			}
+		case *AssignStmt:
+			if s.Name == name {
+				return true
+			}
+		case *ExprStmt:
+			if ce, ok := s.Expr.(*CallExpr); ok {
+				if mp := funcPtrParams[ce.Func]; mp != nil {
+					for i, a := range ce.Args {
+						if vr, ok2 := a.(*VarRef); ok2 && vr.Name == name && mp[i] {
+							return true
+						}
+					}
+				}
+			}
+		case *VarDecl:
+			if ce, ok := s.Value.(*CallExpr); ok {
+				if mp := funcPtrParams[ce.Func]; mp != nil {
+					for i, a := range ce.Args {
+						if vr, ok2 := a.(*VarRef); ok2 && vr.Name == name && mp[i] {
+							return true
+						}
+					}
+				}
+			}
+		case *IfStmt:
+			if paramNeedsPointer(name, s.Then) || paramNeedsPointer(name, s.Else) {
+				return true
+			}
+		case *WhileStmt:
+			if paramNeedsPointer(name, s.Body) {
+				return true
+			}
+		case *ForRangeStmt:
+			if paramNeedsPointer(name, s.Body) {
+				return true
+			}
+		case *ForEachStmt:
+			if paramNeedsPointer(name, s.Body) {
+				return true
+			}
+		case *BenchStmt:
+			if paramNeedsPointer(name, s.Body) {
+				return true
+			}
+		case *TestBlockStmt:
+			if paramNeedsPointer(name, s.Body) {
+				return true
+			}
+		case *StmtList:
+			if paramNeedsPointer(name, s.List) {
+				return true
+			}
+		}
+	}
+	return false
 }
