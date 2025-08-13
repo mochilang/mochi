@@ -703,12 +703,12 @@ type StructDecl struct {
 }
 
 func (s *StructDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "#[derive(Debug, Clone, Default)]\nstruct %s {\n", s.Name)
+	fmt.Fprintf(w, "#[derive(Debug, Clone, Default)]\nstruct %s {\n", rustIdent(s.Name))
 	for _, f := range s.Fields {
 		fmt.Fprintf(w, "    %s: %s,\n", rustIdent(f.Name), f.Type)
 	}
 	io.WriteString(w, "}\n")
-	fmt.Fprintf(w, "impl std::fmt::Display for %s {\n", s.Name)
+	fmt.Fprintf(w, "impl std::fmt::Display for %s {\n", rustIdent(s.Name))
 	io.WriteString(w, "    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {\n")
 	io.WriteString(w, "        write!(f, \"{{\")?;\n")
 	for i, fld := range s.Fields {
@@ -792,7 +792,7 @@ func (s *StructLit) emit(w io.Writer) {
 			}
 		}
 	}
-	fmt.Fprintf(w, "%s {", s.Name)
+	fmt.Fprintf(w, "%s {", rustIdent(s.Name))
 	for i, f := range s.Fields {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -6276,6 +6276,9 @@ func inferType(e Expr) string {
 		default:
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
+			if lt == "String" || rt == "String" {
+				return "String"
+			}
 			if lt == "f64" || rt == "f64" || containsFloat(ex.Left) || containsFloat(ex.Right) {
 				return "f64"
 			}
@@ -6394,9 +6397,9 @@ func inferType(e Expr) string {
 		}
 		return ct
 	case *StructLit:
-		return ex.Name
+		return rustIdent(ex.Name)
 	case *EnumLit:
-		return ex.Union
+		return rustIdent(ex.Union)
 	case *QueryExpr:
 		return fmt.Sprintf("Vec<%s>", ex.ItemType)
 	case *OuterJoinExpr:
@@ -6453,6 +6456,9 @@ func inferType(e Expr) string {
 		if t, ok := funReturns[ex.Func]; ok {
 			return t
 		}
+		if ex.Func == "format!" {
+			return "String"
+		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
 			return "bool"
@@ -6470,7 +6476,11 @@ func inferType(e Expr) string {
 		if strings.HasPrefix(rt, "&") {
 			rt = rt[1:]
 		}
-		if st, ok := structTypes[rt]; ok {
+		st, ok := structTypes[rt]
+		if !ok && strings.HasSuffix(rt, "_") {
+			st, ok = structTypes[strings.TrimSuffix(rt, "_")]
+		}
+		if ok {
 			if ft, okf := st.Fields[ex.Name]; okf {
 				return rustTypeFromType(ft)
 			}
@@ -7072,7 +7082,12 @@ func rustType(t string) string {
 		return "String"
 	}
 	if _, ok := structTypes[t]; ok {
-		return t
+		return rustIdent(t)
+	}
+	if strings.HasPrefix(t, "r#") {
+		if _, ok := structTypes[strings.TrimPrefix(t, "r#")]; ok {
+			return rustIdent(strings.TrimPrefix(t, "r#"))
+		}
 	}
 	return "i64"
 }
@@ -7127,9 +7142,9 @@ func rustTypeFromType(t types.Type) string {
 	case types.OptionType:
 		return fmt.Sprintf("Option<%s>", rustTypeFromType(tt.Elem))
 	case types.StructType:
-		return tt.Name
+		return rustIdent(tt.Name)
 	case types.UnionType:
-		return tt.Name
+		return rustIdent(tt.Name)
 	case types.VoidType:
 		return "()"
 	}
@@ -8175,6 +8190,9 @@ func exprIsName(e *parser.Expr, name string) bool {
 func rustIdent(name string) string {
 	if name == "" {
 		return "_"
+	}
+	if name == "Vec" {
+		return "Vec_"
 	}
 	var b strings.Builder
 	for i, r := range name {

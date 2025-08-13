@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-13 07:32 GMT+7
+Last updated: 2025-08-13 13:06 GMT+7
 
-## Algorithms Golden Test Checklist (698/1077)
+## Algorithms Golden Test Checklist (743/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -354,51 +354,51 @@ Last updated: 2025-08-13 07:32 GMT+7
 | 345 | dynamic_programming/trapped_water | ✓ | 53µs | 2.0 MB |
 | 346 | dynamic_programming/tribonacci | ✓ | 20µs | 2.0 MB |
 | 347 | dynamic_programming/viterbi | ✓ | 86µs | 2.1 MB |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 127µs | 2.1 MB |
+| 349 | dynamic_programming/word_break | ✓ | 81µs | 2.1 MB |
+| 350 | electronics/apparent_power | ✓ |  | 1.8 MB |
+| 351 | electronics/builtin_voltage | ✓ | 52µs | 2.1 MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 28µs | 2.1 MB |
+| 353 | electronics/carrier_concentration | ✓ | 56µs | 2.0 MB |
+| 354 | electronics/charging_capacitor | ✓ | 56µs | 2.0 MB |
+| 355 | electronics/charging_inductor | ✓ | 287µs | 2.0 MB |
+| 356 | electronics/circular_convolution | ✓ | 124µs | 2.1 MB |
+| 357 | electronics/coulombs_law | ✓ | 141µs | 2.0 MB |
+| 358 | electronics/electric_conductivity | ✓ | 193µs | 2.0 MB |
+| 359 | electronics/electric_power | ✓ | 48µs | 2.0 MB |
+| 360 | electronics/electrical_impedance | ✓ | 66µs | 2.2 MB |
+| 361 | electronics/ic_555_timer | ✓ | 67µs | 2.0 MB |
+| 362 | electronics/ind_reactance | ✓ | 45µs | 2.1 MB |
+| 363 | electronics/ohms_law | ✓ | 94µs | 2.0 MB |
+| 364 | electronics/real_and_reactive_power | ✓ | 49µs | 2.0 MB |
+| 365 | electronics/resistor_color_code | ✓ | 39µs | 2.2 MB |
+| 366 | electronics/resistor_equivalence | ✓ | 46µs | 2.1 MB |
+| 367 | electronics/resonant_frequency | ✓ | 45µs | 2.1 MB |
+| 368 | electronics/wheatstone_bridge | ✓ | 55µs | 2.1 MB |
+| 369 | file_transfer/receive_file | ✓ | 30µs | 2.0 MB |
+| 370 | file_transfer/send_file | ✓ | 153µs | 2.0 MB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 24µs | 2.0 MB |
+| 372 | financial/equated_monthly_installments | ✓ | 51µs | 2.0 MB |
+| 373 | financial/exponential_moving_average | ✓ | 103µs | 2.0 MB |
+| 374 | financial/interest | ✓ | 53µs | 2.1 MB |
+| 375 | financial/present_value | ✓ | 49µs | 2.1 MB |
+| 376 | financial/price_plus_tax | ✓ | 53µs | 2.0 MB |
+| 377 | financial/simple_moving_average | ✓ | 150µs | 2.1 MB |
+| 378 | financial/straight_line_depreciation | ✓ | 90µs | 2.2 MB |
+| 379 | financial/time_and_half_pay | ✓ | 51µs | 2.1 MB |
+| 380 | fractals/julia_sets | ✓ | 166µs | 2.1 MB |
+| 381 | fractals/koch_snowflake | ✓ | 74µs | 2.2 MB |
+| 382 | fractals/mandelbrot | ✓ | 252µs | 2.1 MB |
+| 383 | fractals/sierpinski_triangle | ✓ | 96µs | 2.0 MB |
+| 384 | fractals/vicsek | ✓ | 193µs | 2.1 MB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 86µs | 2.2 MB |
+| 386 | genetic_algorithm/basic_string | ✓ | 31µs | 2.1 MB |
+| 387 | geodesy/haversine_distance | ✓ | 40µs | 2.1 MB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 89µs | 2.1 MB |
+| 389 | geometry/geometry | ✓ | 76µs | 1.9 MB |
+| 390 | graphics/bezier_curve | ✓ | 62µs | 2.0 MB |
+| 391 | graphics/butterfly_pattern | ✓ | 91µs | 2.0 MB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 28µs | 2.1 MB |
 | 393 | graphics/vector3_for_2d_rendering |   |  |  |
 | 394 | graphs/a_star |   |  |  |
 | 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
@@ -696,7 +696,7 @@ Last updated: 2025-08-13 07:32 GMT+7
 | 687 | maths/test_factorial | ✓ | 61µs | 1.9 MB |
 | 688 | maths/test_prime_check | ✓ | 48µs | 2.0 MB |
 | 689 | maths/three_sum | ✓ | 88µs | 2.0 MB |
-| 690 | maths/trapezoidal_rule | ✓ | 55µs | 2.1 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 29µs | 2.0 MB |
 | 691 | maths/triplet_sum | ✓ | 92µs | 2.0 MB |
 | 692 | maths/twin_prime | ✓ | 135µs | 1.9 MB |
 | 693 | maths/two_pointer | ✓ | 49µs | 2.0 MB |
