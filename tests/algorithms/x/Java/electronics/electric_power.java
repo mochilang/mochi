@@ -19,49 +19,49 @@ public class Main {
     static Result r5;
 
     static double absf(double x) {
-        if (x < 0.0) {
+        if ((double)(x) < 0.0) {
             return -x;
         }
         return x;
     }
 
-    static double pow10(int n) {
+    static double pow10(long n) {
         double p = 1.0;
-        int i = 0;
-        while (i < n) {
+        long i_1 = 0L;
+        while ((long)(i_1) < n) {
             p = p * 10.0;
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return p;
     }
 
-    static double round_to(double x, int n) {
-        double m = pow10(n);
-        return ((Number)(floor(x * m + 0.5))).intValue() / m;
+    static double round_to(double x, long n) {
+        double m = (double)(pow10(n));
+        return Math.floor((double)(x) * (double)(m) + 0.5) / (double)(m);
     }
 
     static Result electric_power(double voltage, double current, double power) {
-        int zeros = 0;
-        if (voltage == 0.0) {
-            zeros = zeros + 1;
+        long zeros = 0L;
+        if ((double)(voltage) == 0.0) {
+            zeros = (long)((long)(zeros) + (long)(1));
         }
-        if (current == 0.0) {
-            zeros = zeros + 1;
+        if ((double)(current) == 0.0) {
+            zeros = (long)((long)(zeros) + (long)(1));
         }
-        if (power == 0.0) {
-            zeros = zeros + 1;
+        if ((double)(power) == 0.0) {
+            zeros = (long)((long)(zeros) + (long)(1));
         }
-        if (zeros != 1) {
+        if ((long)(zeros) != (long)(1)) {
             throw new RuntimeException(String.valueOf("Exactly one argument must be 0"));
-        } else         if (power < 0.0) {
+        } else         if ((double)(power) < 0.0) {
             throw new RuntimeException(String.valueOf("Power cannot be negative in any electrical/electronics system"));
-        } else         if (voltage == 0.0) {
-            return new Result("voltage", power / current);
-        } else         if (current == 0.0) {
-            return new Result("current", power / voltage);
-        } else         if (power == 0.0) {
-            double p_1 = absf(voltage * current);
-            return new Result("power", round_to(p_1, 2));
+        } else         if ((double)(voltage) == 0.0) {
+            return new Result("voltage", (double)(power) / (double)(current));
+        } else         if ((double)(current) == 0.0) {
+            return new Result("current", (double)(power) / (double)(voltage));
+        } else         if ((double)(power) == 0.0) {
+            double p_2 = (double)(absf((double)(voltage) * (double)(current)));
+            return new Result("power", round_to((double)(p_2), 2L));
         } else {
             throw new RuntimeException(String.valueOf("Unhandled case"));
         }
@@ -129,6 +129,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

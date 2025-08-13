@@ -3076,7 +3076,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "java.util.stream.Stream.concat(java.util.Arrays.stream(")
 	a.List.emit(w)
 	fmt.Fprint(w, "), java.util.stream.Stream.of(")
-	a.Value.emit(w)
+	if strings.HasSuffix(jt, "[]") {
+		fmt.Fprintf(w, "new %s[]{", jt)
+		a.Value.emit(w)
+		fmt.Fprint(w, "}")
+	} else {
+		a.Value.emit(w)
+	}
 	fmt.Fprint(w, ")).toArray(")
 	switch elem {
 	case "string", "String":
@@ -5914,6 +5920,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "abs" && len(args) == 1 {
 			return &CallExpr{Func: "Math.abs", Args: args}, nil
+		}
+		if name == "floor" && len(args) == 1 {
+			return &CallExpr{Func: "Math.floor", Args: args}, nil
 		}
 		if name == "int" && len(args) == 1 {
 			return &IntCastExpr{Value: args[0]}, nil

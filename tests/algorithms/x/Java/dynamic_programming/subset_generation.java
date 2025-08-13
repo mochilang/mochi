@@ -1,88 +1,48 @@
 public class Main {
 
-    static int[] copy_list(int[] src) {
-        int[] result = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < src.length) {
-            result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(src[i])).toArray()));
-            i = i + 1;
+    static long[] copy_list(long[] src) {
+        long[] result = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(src.length)) {
+            result = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result), java.util.stream.LongStream.of(src[(int)((long)(i_1))])).toArray()));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return result;
     }
 
-    static int[][] subset_combinations(int[] elements, int n) {
-        int r = elements.length;
-        if (n > r) {
-            return new int[][]{};
+    static long[][] subset_combinations(long[] elements, long n) {
+        long r = (long)(elements.length);
+        if (n > (long)(r)) {
+            return new long[][]{};
         }
-        int[][][] dp = ((int[][][])(new int[][][]{}));
-        int i_1 = 0;
-        while (i_1 <= r) {
-            dp = ((int[][][])(appendObj(dp, new int[][]{})));
-            i_1 = i_1 + 1;
+        long[][][] dp_1 = ((long[][][])(new long[][][]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) <= (long)(r)) {
+            dp_1 = ((long[][][])(java.util.stream.Stream.concat(java.util.Arrays.stream(dp_1), java.util.stream.Stream.of(new long[][][]{new long[][]{}})).toArray(long[][][]::new)));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-dp[0] = ((int[][])(appendObj(dp[0], new int[]{})));
-        i_1 = 1;
-        while (i_1 <= r) {
-            int j = i_1;
-            while (j > 0) {
-                int[][] prevs = ((int[][])(dp[j - 1]));
-                int k = 0;
-                while (k < prevs.length) {
-                    int[] prev = ((int[])(prevs[k]));
-                    int[] comb = ((int[])(copy_list(((int[])(prev)))));
-                    comb = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(comb), java.util.stream.IntStream.of(elements[i_1 - 1])).toArray()));
-dp[j] = ((int[][])(appendObj(dp[j], comb)));
-                    k = k + 1;
+dp_1[(int)((long)(0))] = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(dp_1[(int)((long)(0))]), java.util.stream.Stream.of(new long[][]{new long[]{}})).toArray(long[][]::new)));
+        i_3 = (long)(1);
+        while ((long)(i_3) <= (long)(r)) {
+            long j_1 = (long)(i_3);
+            while ((long)(j_1) > (long)(0)) {
+                long[][] prevs_1 = ((long[][])(dp_1[(int)((long)((long)(j_1) - (long)(1)))]));
+                long k_1 = 0L;
+                while ((long)(k_1) < (long)(prevs_1.length)) {
+                    long[] prev_1 = ((long[])(prevs_1[(int)((long)(k_1))]));
+                    long[] comb_1 = ((long[])(copy_list(((long[])(prev_1)))));
+                    comb_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(comb_1), java.util.stream.LongStream.of(elements[(int)((long)((long)(i_3) - (long)(1)))])).toArray()));
+dp_1[(int)((long)(j_1))] = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(dp_1[(int)((long)(j_1))]), java.util.stream.Stream.of(new long[][]{comb_1})).toArray(long[][]::new)));
+                    k_1 = (long)((long)(k_1) + (long)(1));
                 }
-                j = j - 1;
+                j_1 = (long)((long)(j_1) - (long)(1));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        return dp[n];
+        return dp_1[(int)((long)(n))];
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(subset_combinations(((int[])(new int[]{10, 20, 30, 40})), 2)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+        System.out.println(_p(subset_combinations(((long[])(new long[]{10, 20, 30, 40})), 2L)));
     }
 
     static String _p(Object v) {
@@ -97,6 +57,11 @@ dp[j] = ((int[][])(appendObj(dp[j], comb)));
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-13 07:32 GMT+7
+Last updated: 2025-08-13 13:01 GMT+7
 
-## Algorithms Golden Test Checklist (937/1077)
+## Algorithms Golden Test Checklist (938/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -349,12 +349,12 @@ Last updated: 2025-08-13 07:32 GMT+7
 | 340 | dynamic_programming/regex_match | ✓ | 14.0ms | 1.18KB |
 | 341 | dynamic_programming/rod_cutting | ✓ | 25.0ms | 46.09KB |
 | 342 | dynamic_programming/smith_waterman | ✓ | 43.0ms | 95.88KB |
-| 343 | dynamic_programming/subset_generation | ✓ | 30.0ms | 46.47KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 39.0ms | 49.78KB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 14.0ms | 776B |
 | 345 | dynamic_programming/trapped_water | ✓ | 29.0ms | 46.25KB |
 | 346 | dynamic_programming/tribonacci | ✓ | 28.0ms | 46.09KB |
 | 347 | dynamic_programming/viterbi | ✓ | 43.0ms | 96.02KB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 14.0ms | 1.09KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ |  |  |
 | 349 | dynamic_programming/word_break | ✓ | 25.0ms | 1.43KB |
 | 350 | electronics/apparent_power | ✓ | 15.0ms | 0B |
 | 351 | electronics/builtin_voltage | ✓ | 16.0ms | 10.45KB |
@@ -365,7 +365,7 @@ Last updated: 2025-08-13 07:32 GMT+7
 | 356 | electronics/circular_convolution | ✓ | 27.0ms | 57.16KB |
 | 357 | electronics/coulombs_law | ✓ | 36.0ms | 88.13KB |
 | 358 | electronics/electric_conductivity | ✓ | 35.0ms | 88.51KB |
-| 359 | electronics/electric_power | error |  |  |
+| 359 | electronics/electric_power | ✓ | 99.0ms | 88.23KB |
 | 360 | electronics/electrical_impedance | ✓ | 14.0ms | 10.73KB |
 | 361 | electronics/ic_555_timer | ✓ | 16.0ms | 10.25KB |
 | 362 | electronics/ind_reactance | ✓ | 19.0ms | 10.73KB |
