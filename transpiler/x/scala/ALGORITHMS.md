@@ -401,7 +401,7 @@ Checklist:
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 183.317ms | 8.7 MB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 183.317ms | 8.7 MB |
 | 394 | graphs/a_star | ✓ | 183.317ms | 8.7 MB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ |  |  |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 284.455ms | 8.7 MB |
 | 396 | graphs/articulation_points | ✓ | 6µs | 8.7 MB |
 | 397 | graphs/basic_graphs | ✓ | 12µs | 8.7 MB |
 | 398 | graphs/bellman_ford | ✓ | 3µs | 8.7 MB |

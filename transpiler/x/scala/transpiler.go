@@ -945,7 +945,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "  val _end = _now()\n")
 	fmt.Fprint(w, "  System.gc()\n")
 	fmt.Fprint(w, "  val _endMem = Runtime.getRuntime.totalMemory() - Runtime.getRuntime.freeMemory()\n")
-	fmt.Fprint(w, "  val _durUs = (_end - _start) / 1000\n")
+	fmt.Fprint(w, "  val _durUs = (_end - _start).abs / 1000\n")
 	fmt.Fprint(w, "  var _memDiff = _endMem - _startMem\n")
 	fmt.Fprint(w, "  if (_memDiff <= 0) _memDiff = _endMem\n")
 	fmt.Fprintf(w, "  println(toJson(scala.collection.immutable.Map(\"duration_us\" -> _durUs, \"memory_bytes\" -> _memDiff, \"name\" -> \"%s\")))\n", b.Name)
