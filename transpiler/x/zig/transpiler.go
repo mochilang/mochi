@@ -1272,12 +1272,18 @@ func (m *MapLit) emit(w io.Writer) {
 	}
 	keyType := m.KeyType
 	valType := m.ValType
-	if keyType == "" || valType == "" {
-		keyType = "[]const u8"
-		valType = "i64"
+	if keyType == "" {
 		if len(m.Entries) > 0 {
 			keyType = zigTypeFromExpr(m.Entries[0].Key)
+		} else {
+			keyType = "[]const u8"
+		}
+	}
+	if valType == "" {
+		if len(m.Entries) > 0 {
 			valType = zigTypeFromExpr(m.Entries[0].Value)
+		} else {
+			valType = "i64"
 		}
 	}
 	mapType := "std.StringHashMap(" + valType + ")"
@@ -2221,8 +2227,9 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 }
 
 func (j *JSONStmt) emit(w io.Writer, indent int) {
+	name := uniqueName("__j")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, ")
+	fmt.Fprintf(w, "const %s = std.json.stringifyAlloc(std.heap.page_allocator, ", name)
 	if j.Value != nil {
 		j.Value.emit(w)
 	} else {
@@ -2230,9 +2237,9 @@ func (j *JSONStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, ", .{}) catch unreachable;\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__j});\n")
+	fmt.Fprintf(w, "std.debug.print(\"{s}\\n\", .{%s});\n", name)
 	writeIndent(w, indent)
-	io.WriteString(w, "std.heap.page_allocator.free(__j);\n")
+	fmt.Fprintf(w, "std.heap.page_allocator.free(%s);\n", name)
 }
 
 func (e *ExprStmt) emit(w io.Writer, indent int) {
@@ -3044,6 +3051,17 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, " ")
 		if list, ok := r.Value.(*ListLit); ok && list.ElemType == "" && strings.HasPrefix(currentReturnType, "[]") {
 			list.ElemType = currentReturnType[2:]
+		}
+		if ml, ok := r.Value.(*MapLit); ok && ml.ValType == "" {
+			if strings.HasPrefix(currentReturnType, "std.StringHashMap(") {
+				ml.ValType = strings.TrimSuffix(strings.TrimPrefix(currentReturnType, "std.StringHashMap("), ")")
+			} else if strings.HasPrefix(currentReturnType, "std.AutoHashMap(") {
+				parts := strings.Split(strings.TrimSuffix(strings.TrimPrefix(currentReturnType, "std.AutoHashMap("), ")"), ",")
+				if len(parts) == 2 {
+					ml.KeyType = strings.TrimSpace(parts[0])
+					ml.ValType = strings.TrimSpace(parts[1])
+				}
+			}
 		}
 		if _, ok := r.Value.(*NullLit); ok && valueAccess(currentReturnType) == ".List" {
 			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(currentReturnType, "[]"))
