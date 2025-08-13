@@ -1723,15 +1723,19 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer, indentLevel int) {
-	indent(w, indentLevel)
-	io.WriteString(w, safeName(s.Name)+" = ")
-	typ := ""
-	if vs, ok := varDecls[s.Name]; ok {
-		typ = vs.Type
-	} else {
-		typ = guessType(&VarRef{Name: s.Name})
-	}
-	valType := guessType(s.Value)
+        indent(w, indentLevel)
+        io.WriteString(w, safeName(s.Name)+" = ")
+        typ := ""
+        if vs, ok := varDecls[s.Name]; ok {
+                typ = vs.Type
+        } else {
+                typ = guessType(&VarRef{Name: s.Name})
+        }
+       valType := guessType(s.Value)
+       if ce, ok := s.Value.(*CastExpr); ok && ce.Type == "Any?" {
+               s.Value = ce.Value
+               valType = guessType(s.Value)
+       }
 	if typ == "Int" {
 		io.WriteString(w, "(")
 		s.Value.emit(w)
@@ -3562,10 +3566,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-			} else {
-				val = &IntLit{Value: 0}
-			}
-			typ := kotlinType(st.Var.Type)
+                        } else {
+                                kt := kotlinType(st.Var.Type)
+                                if strings.HasPrefix(kt, "MutableList<") {
+                                        val = &ListLit{Elems: nil}
+                                } else if strings.HasPrefix(kt, "MutableMap<") {
+                                        val = &CastExpr{Value: &MapLit{Items: nil}, Type: kt}
+                                } else {
+                                        val = &IntLit{Value: 0}
+                                }
+                        }
+                        typ := kotlinType(st.Var.Type)
 			if st.Var.Type == nil {
 				typ = localTypeName(env, st.Var.Name)
 				if typ == "" {
@@ -5723,19 +5734,39 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Call != nil:
-		if localFuncs[p.Call.Func] {
-			args := make([]Expr, len(p.Call.Args))
-			for i, a := range p.Call.Args {
-				ex, err := convertExpr(env, a)
-				if err != nil {
-					return nil, err
-				}
-				args[i] = ex
-			}
-			return &CallExpr{Func: p.Call.Func, Args: args}, nil
-		}
-		switch p.Call.Func {
-		case "count", "sum", "avg", "len", "str", "abs":
+               if localFuncs[p.Call.Func] {
+                       args := make([]Expr, len(p.Call.Args))
+                       var paramTypes []types.Type
+                       if t, err := env.GetVar(p.Call.Func); err == nil {
+                               if ft, ok := t.(types.FuncType); ok {
+                                       paramTypes = ft.Params
+                               }
+                       }
+                       for i, a := range p.Call.Args {
+                               ex, err := convertExpr(env, a)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               if ll, ok := ex.(*ListLit); ok && len(ll.Elems) == 0 && i < len(paramTypes) {
+                                       pt := kotlinTypeFromType(paramTypes[i])
+                                       if strings.HasPrefix(pt, "MutableList<") {
+                                               elem := strings.TrimSuffix(strings.TrimPrefix(pt, "MutableList<"), ">")
+                                               ex = &TypedListLit{ElemType: elem, Elems: nil}
+                                       } else if strings.HasPrefix(pt, "MutableMap<") {
+                                               part := strings.TrimSuffix(strings.TrimPrefix(pt, "MutableMap<"), ">")
+                                               if idx := strings.Index(part, ","); idx >= 0 {
+                                                       k := strings.TrimSpace(part[:idx])
+                                                       v := strings.TrimSpace(part[idx+1:])
+                                                       ex = &CastExpr{Value: &MapLit{Items: nil}, Type: "MutableMap<"+k+", "+v+">"}
+                                               }
+                                       }
+                               }
+                               args[i] = ex
+                       }
+                       return &CallExpr{Func: p.Call.Func, Args: args}, nil
+               }
+               switch p.Call.Func {
+               case "count", "sum", "avg", "len", "str", "abs":
 			if len(p.Call.Args) != 1 {
 				return nil, fmt.Errorf("%s expects 1 arg", p.Call.Func)
 			}

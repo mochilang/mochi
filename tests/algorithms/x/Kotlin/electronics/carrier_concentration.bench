@@ -1,0 +1,4 @@
+intrinsic_conc, 50.0
+electron_conc, 25.0
+hole_conc, 1440.0
+{"duration_us":8603, "memory_bytes":127024, "name":"main"}
