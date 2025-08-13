@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,28 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
+String _str(dynamic v) { if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 double sqrtApprox(double x) {
   double guess = x / 2.0;
@@ -47,13 +67,13 @@ double sqrtApprox(double x) {
 }
 
 double rand_float() {
-  return (_now() % 1000000 as double) / 1000000.0;
+  return (_now() % 1000000.toDouble()) / 1000000.0;
 }
 
 double pow_float(double base, double exp) {
   double result = 1.0;
   int i = 0;
-  int e = exp as int;
+  int e = (exp).toInt();
   while (i < e) {
     result = result * base;
     i = i + 1;
@@ -62,8 +82,8 @@ double pow_float(double base, double exp) {
 }
 
 double distance(List<int> city1, List<int> city2) {
-  double dx = city1[0] - city2[0] as double;
-  double dy = city1[1] - city2[1] as double;
+  double dx = city1[0] - city2[0].toDouble();
+  double dy = city1[1] - city2[1].toDouble();
   return sqrtApprox(dx * dx + dy * dy);
 }
 
@@ -92,7 +112,7 @@ int city_select(List<List<double>> pheromone, int current, List<int> unvisited, 
   int i = 0;
   while (i < unvisited.length) {
     int city = unvisited[i];
-    double dist = distance(cities[city]!, cities[current]!);
+    double dist = distance((cities[city]!), (cities[current]!));
     double trail = pheromone[city][current];
     double prob = pow_float(trail, alpha) * pow_float(1.0 / dist, beta);
     probs = [...probs, prob];
@@ -118,7 +138,7 @@ List<List<double>> pheromone_update(List<List<double>> pheromone, Map<int, List<
     double total = 0.0;
     int r = 0;
     while (r < route.length - 1) {
-    total = total + distance(cities[route[r]]!, cities[route[r + 1]]!);
+    total = total + distance((cities[route[r]]!), (cities[route[r + 1]]!));
     r = r + 1;
   }
     double delta = q / total;
@@ -158,7 +178,7 @@ void ant_colony(Map<int, List<int>> cities, int ants_num, int iterations, double
     row = [...row, 1.0];
     j = j + 1;
   }
-    pheromone = ([...pheromone, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    pheromone = ([...pheromone, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   List<int> best_path = <int>[];
@@ -183,7 +203,7 @@ void ant_colony(Map<int, List<int>> cities, int ants_num, int iterations, double
     current = next_city;
   }
     route = [...route, 0];
-    ants_route = ([...ants_route, route] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    ants_route = ([...ants_route, route] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     k = k + 1;
   }
     pheromone = pheromone_update(pheromone, cities, evaporation, ants_route, q);
@@ -193,7 +213,7 @@ void ant_colony(Map<int, List<int>> cities, int ants_num, int iterations, double
     double dist = 0.0;
     int r = 0;
     while (r < route.length - 1) {
-    dist = dist + distance(cities[route[r]]!, cities[route[r + 1]]!);
+    dist = dist + distance((cities[route[r]]!), (cities[route[r + 1]]!));
     r = r + 1;
   }
     if (dist < best_distance) {
@@ -204,8 +224,8 @@ void ant_colony(Map<int, List<int>> cities, int ants_num, int iterations, double
   }
     iter = iter + 1;
   }
-  print("best_path = " + (best_path).toString());
-  print("best_distance = " + (best_distance).toString());
+  print("best_path = " + _str(best_path));
+  print("best_distance = " + _str(best_distance));
 }
 
 Map<int, List<int>> cities = {0: [0, 0], 1: [0, 5], 2: [3, 8], 3: [8, 10], 4: [12, 8], 5: [12, 4], 6: [8, 0], 7: [6, 2]};

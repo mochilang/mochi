@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-13 12:15 GMT+7
+Last updated: 2025-08-13 12:40 GMT+7
 
-## Algorithms Golden Test Checklist (910/1077)
+## Algorithms Golden Test Checklist (912/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -399,9 +399,9 @@ Last updated: 2025-08-13 12:15 GMT+7
 | 390 | graphics/bezier_curve | ✓ | 26.568ms | 10.2 MB |
 | 391 | graphics/butterfly_pattern | ✓ | 19.04ms | 9.7 MB |
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 15.089ms | 4.0 MB |
-| 393 | graphics/vector3_for_2d_rendering | error |  |  |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 27.338ms | 10.1 MB |
 | 394 | graphs/a_star | ✓ | 13.573ms | 5.5 MB |
-| 395 | graphs/ant_colony_optimization_algorithms | error |  |  |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 74.346ms | 360.0 KB |
 | 396 | graphs/articulation_points | ✓ | 10.985ms | 4.0 MB |
 | 397 | graphs/basic_graphs | error |  |  |
 | 398 | graphs/bellman_ford | error |  |  |
