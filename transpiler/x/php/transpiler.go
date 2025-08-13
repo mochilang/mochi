@@ -1762,7 +1762,13 @@ func (u *UnionMatchExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	if c.Func == "echo" {
+	name := c.Func
+	if strings.HasPrefix(name, "$") {
+		if _, ok := builtinNames[name[1:]]; ok {
+			name = name[1:]
+		}
+	}
+	if name == "echo" {
 		io.WriteString(w, "echo ")
 		for i, a := range c.Args {
 			if i > 0 {
@@ -1773,7 +1779,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ", PHP_EOL")
 		return
 	}
-	fmt.Fprint(w, c.Func)
+	fmt.Fprint(w, name)
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {

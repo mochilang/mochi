@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-12 14:35 GMT+7
+Last updated: 2025-08-13 07:26 GMT+7
 
-## Algorithms Golden Test Checklist (974/1077)
+## Algorithms Golden Test Checklist (976/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -322,7 +322,7 @@ Last updated: 2025-08-12 14:35 GMT+7
 | 313 | dynamic_programming/integer_partition | ✓ | 2.321ms | 263.2 KB |
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 133µs | 40.3 KB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 128µs | 37.0 KB |
-| 316 | dynamic_programming/knapsack | error |  |  |
+| 316 | dynamic_programming/knapsack | ✓ | 122µs | 68.7 KB |
 | 317 | dynamic_programming/largest_divisible_subset | ✓ | 112µs | 38.1 KB |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 99µs | 40.0 KB |
 | 319 | dynamic_programming/longest_common_substring | ✓ | 107µs | 38.5 KB |
@@ -365,7 +365,7 @@ Last updated: 2025-08-12 14:35 GMT+7
 | 356 | electronics/circular_convolution | ✓ | 266µs | 35.4 KB |
 | 357 | electronics/coulombs_law | ✓ | 168µs | 39.2 KB |
 | 358 | electronics/electric_conductivity | ✓ | 189µs | 35.6 KB |
-| 359 | electronics/electric_power | error |  |  |
+| 359 | electronics/electric_power | ✓ | 77µs | 36.2 KB |
 | 360 | electronics/electrical_impedance | ✓ | 144µs | 36.3 KB |
 | 361 | electronics/ic_555_timer | ✓ | 63µs | 38.2 KB |
 | 362 | electronics/ind_reactance | ✓ | 91µs | 36.3 KB |
