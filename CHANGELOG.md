@@ -1,5 +1,22 @@
 # 📦 CHANGELOG.md
 
+## [0.10.65] – 2025-08-13T09:00:06+00:00
+
+### Added
+
+* F# casts operands before floor division.
+* Erlang handles floor operations.
+* Elixir captures function references.
+
+### Changed
+
+* Refreshed algorithm outputs and subset sum statistics.
+
+### Fixed
+
+* Removed stale error logs from Dart transpiler.
+
+
 ## [0.10.64] – 2025-08-11T11:27:00+00:00
 
 ### Added
