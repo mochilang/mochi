@@ -100,8 +100,6 @@ const helperStr = `
 def _str(x)
   if x.is_a?(Array)
     x.map { |e| _str(e) }.join(' ')
-  elsif x.is_a?(Float) && x == x.to_i
-    x.to_i.to_s
   else
     x.to_s
   end
