@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-13 12:56 GMT+7
+Last updated: 2025-08-13 16:11 GMT+7
 
 ## Algorithms Golden Test Checklist (978/1077)
 | Index | Name | Status | Duration | Memory |
@@ -352,7 +352,7 @@ Last updated: 2025-08-13 12:56 GMT+7
 | 343 | dynamic_programming/subset_generation | ✓ | 101µs | 39.8 KB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 90µs | 38.3 KB |
 | 345 | dynamic_programming/trapped_water | ✓ | 81µs | 40.0 KB |
-| 346 | dynamic_programming/tribonacci | ✓ | 88µs | 39.4 KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 117µs | 39.4 KB |
 | 347 | dynamic_programming/viterbi | ✓ | 133µs | 39.9 KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 170µs | 39.9 KB |
 | 349 | dynamic_programming/word_break | ✓ | 106µs | 39.8 KB |
