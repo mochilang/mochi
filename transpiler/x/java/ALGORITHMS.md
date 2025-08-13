@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-13 16:22 GMT+7
+Last updated: 2025-08-13 16:47 GMT+7
 
-## Algorithms Golden Test Checklist (939/1077)
+## Algorithms Golden Test Checklist (940/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -404,7 +404,7 @@ Last updated: 2025-08-13 16:22 GMT+7
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 70.0ms | 68.09KB |
 | 396 | graphs/articulation_points | ✓ | 25.0ms | 46.04KB |
 | 397 | graphs/basic_graphs | ✓ | 32.0ms | 64.39KB |
-| 398 | graphs/bellman_ford | error |  |  |
+| 398 | graphs/bellman_ford | ✓ | 46.0ms | 39.23KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 30.0ms | 50.07KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 54.0ms | 119.01KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 55.0ms | 122.15KB |

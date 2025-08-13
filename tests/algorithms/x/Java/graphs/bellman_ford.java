@@ -1,9 +1,9 @@
 public class Main {
     static class Edge {
-        int src;
-        int dst;
-        int weight;
-        Edge(int src, int dst, int weight) {
+        long src;
+        long dst;
+        long weight;
+        Edge(long src, long dst, long weight) {
             this.src = src;
             this.dst = dst;
             this.weight = weight;
@@ -14,105 +14,76 @@ public class Main {
         }
     }
 
-    static double INF;
+    static double INF = (double)(1000000000.0);
     static Edge[] edges;
     static double[] distances;
 
     static String list_to_string(double[] arr) {
         String s = "[";
-        int i = 0;
-        while (i < arr.length) {
-            s = s + _p(_geto(arr, i));
-            if (i < arr.length - 1) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(arr.length)) {
+            s = s + _p(_getd(arr, ((Number)(i_1)).intValue()));
+            if ((long)(i_1) < (long)((long)(arr.length) - (long)(1))) {
                 s = s + ", ";
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return s + "]";
     }
 
-    static boolean check_negative_cycle(Edge[] graph, double[] distance, int edge_count) {
-        int j = 0;
-        while (j < edge_count) {
-            Edge e = graph[j];
-            int u = e.src;
-            int v = e.dst;
-            double w = ((Number)(e.weight)).doubleValue();
-            if (distance[u] < INF && distance[u] + w < distance[v]) {
+    static boolean check_negative_cycle(Edge[] graph, double[] distance, long edge_count) {
+        long j = 0L;
+        while ((long)(j) < (long)(edge_count)) {
+            Edge e_1 = graph[(int)((long)(j))];
+            long u_1 = (long)(e_1.src);
+            long v_1 = (long)(e_1.dst);
+            double w_1 = (double)(((Number)(e_1.weight)).doubleValue());
+            if ((double)(distance[(int)((long)(u_1))]) < (double)(INF) && (double)((double)(distance[(int)((long)(u_1))]) + (double)(w_1)) < (double)(distance[(int)((long)(v_1))])) {
                 return true;
             }
-            j = j + 1;
+            j = (long)((long)(j) + (long)(1));
         }
         return false;
     }
 
-    static double[] bellman_ford(Edge[] graph, int vertex_count, int edge_count, int src) {
+    static double[] bellman_ford(Edge[] graph, long vertex_count, long edge_count, long src) {
         double[] distance = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < vertex_count) {
-            distance = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(distance), java.util.stream.DoubleStream.of(INF)).toArray()));
-            i_1 = i_1 + 1;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(vertex_count)) {
+            distance = ((double[])(appendDouble(distance, (double)(INF))));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-distance[src] = 0.0;
-        int k = 0;
-        while (k < vertex_count - 1) {
-            int j_1 = 0;
-            while (j_1 < edge_count) {
-                Edge e_1 = graph[j_1];
-                int u_1 = e_1.src;
-                int v_1 = e_1.dst;
-                double w_1 = ((Number)(e_1.weight)).doubleValue();
-                if (distance[u_1] < INF && distance[u_1] + w_1 < distance[v_1]) {
-distance[v_1] = distance[u_1] + w_1;
+distance[(int)((long)(src))] = (double)(0.0);
+        long k_1 = 0L;
+        while ((long)(k_1) < (long)((long)(vertex_count) - (long)(1))) {
+            long j_2 = 0L;
+            while ((long)(j_2) < (long)(edge_count)) {
+                Edge e_3 = graph[(int)((long)(j_2))];
+                long u_3 = (long)(e_3.src);
+                long v_3 = (long)(e_3.dst);
+                double w_3 = (double)(((Number)(e_3.weight)).doubleValue());
+                if ((double)(distance[(int)((long)(u_3))]) < (double)(INF) && (double)((double)(distance[(int)((long)(u_3))]) + (double)(w_3)) < (double)(distance[(int)((long)(v_3))])) {
+distance[(int)((long)(v_3))] = (double)((double)(distance[(int)((long)(u_3))]) + (double)(w_3));
                 }
-                j_1 = j_1 + 1;
+                j_2 = (long)((long)(j_2) + (long)(1));
             }
-            k = k + 1;
+            k_1 = (long)((long)(k_1) + (long)(1));
         }
-        if (((Boolean)(check_negative_cycle(((Edge[])(graph)), ((double[])(distance)), edge_count)))) {
+        if (check_negative_cycle(((Edge[])(graph)), ((double[])(distance)), (long)(edge_count))) {
             throw new RuntimeException(String.valueOf("Negative cycle found"));
         }
         return distance;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            INF = 1000000000.0;
-            edges = ((Edge[])(new Edge[]{new Edge(2, 1, -10), new Edge(3, 2, 3), new Edge(0, 3, 5), new Edge(0, 1, 4)}));
-            distances = ((double[])(bellman_ford(((Edge[])(edges)), 4, edges.length, 0)));
-            System.out.println(list_to_string(((double[])(distances))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        edges = ((Edge[])(new Edge[]{new Edge(2, 1, -10), new Edge(3, 2, 3), new Edge(0, 3, 5), new Edge(0, 1, 4)}));
+        distances = ((double[])(bellman_ford(((Edge[])(edges)), 4L, (long)(edges.length), 0L)));
+        System.out.println(list_to_string(((double[])(distances))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -128,10 +99,15 @@ distance[v_1] = distance[u_1] + w_1;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
