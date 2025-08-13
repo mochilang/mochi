@@ -3867,8 +3867,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			typ = types.AnyType{}
 			i++
-		} else if op.Field != nil {
-			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, UseMapSyntax: true}
+               } else if op.Field != nil {
+                       expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: ":" + op.Field.Name}, UseMapSyntax: true}
 			switch tt := typ.(type) {
 			case types.StructType:
 				if t, ok := tt.Fields[op.Field.Name]; ok {
