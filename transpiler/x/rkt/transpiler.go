@@ -1526,6 +1526,13 @@ func header() string {
 	hdr += "(define (num r) (numerator r))\n"
 	hdr += "(define (denom r) (denominator r))\n"
 	hdr += "(define (panic msg) (error msg))\n"
+	hdr += "(define (json-encode x)\n"
+	hdr += "  (define (sanitize v)\n"
+	hdr += "    (cond\n"
+	hdr += "      [(hash? v) (for/hash ([k (in-hash-keys v)]) (values (string->symbol k) (sanitize (hash-ref v k))))]\n"
+	hdr += "      [(list? v) (map sanitize v)]\n"
+	hdr += "      [else v]))\n"
+	hdr += "  (jsexpr->string (sanitize x)))\n"
 	hdr += "(define Object (hash \"keys\" (lambda (self m) (let ([lst (hash-keys m)]) (hash \"join\" (lambda (s sep) (string-join lst sep)))))))\n"
 	// Provide a minimal stdout object with a write method so that programs
 	// using `stdout.write` for output can run without additional setup.
@@ -1917,6 +1924,12 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		} else {
 			e = zeroValue(st.Var.Type, env)
 		}
+		if env != nil {
+			if _, ok := env.Types()[st.Var.Name]; ok {
+				// Existing variable (e.g., parameter) -> assignment.
+				return &AssignStmt{Name: st.Var.Name, Expr: e}, nil
+			}
+		}
 		var t types.Type
 		if env != nil {
 			if st.Var.Type != nil {
@@ -2061,7 +2074,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &PrintStmt{Parts: []Expr{&CallExpr{Func: "jsexpr->string", Args: []Expr{arg}}}}, nil
+			return &PrintStmt{Parts: []Expr{&CallExpr{Func: "json-encode", Args: []Expr{arg}}}}, nil
 		}
 		if call != nil {
 			expr, err := convertCall(call, env)
@@ -2216,7 +2229,8 @@ func convertWhileStmt(n *parser.WhileStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	body, err := convertStatements(n.Body, env)
+	child := types.NewEnv(env)
+	body, err := convertStatements(n.Body, child)
 	if err != nil {
 		return nil, err
 	}
@@ -3411,7 +3425,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "json":
 		if len(args) == 1 {
-			return &CallExpr{Func: "jsexpr->string", Args: args}, nil
+			return &CallExpr{Func: "json-encode", Args: args}, nil
 		}
 	default:
 		return &CallExpr{Func: c.Func, Args: args}, nil
