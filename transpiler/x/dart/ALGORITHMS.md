@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-13 16:16 GMT+7
+Last updated: 2025-08-13 16:30 GMT+7
 
 ## Algorithms Golden Test Checklist (912/1077)
 | Index | Name | Status | Duration | Memory |
@@ -353,7 +353,7 @@ Last updated: 2025-08-13 16:16 GMT+7
 | 344 | dynamic_programming/sum_of_subset | ✓ | 15.578ms | 4.0 MB |
 | 345 | dynamic_programming/trapped_water | ✓ | 12.917ms | 3.4 MB |
 | 346 | dynamic_programming/tribonacci | ✓ | 20.593ms | 9.7 MB |
-| 347 | dynamic_programming/viterbi | ✓ | 14.141ms | 3.9 MB |
+| 347 | dynamic_programming/viterbi | ✓ | 9.376ms | 3.8 MB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 20.482ms | 3.3 MB |
 | 349 | dynamic_programming/word_break | ✓ | 13.047ms | 3.6 MB |
 | 350 | electronics/apparent_power | ✓ | 17.534ms | 10.2 MB |

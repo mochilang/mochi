@@ -2850,38 +2850,38 @@ func (c *CastExpr) emit(w io.Writer) error {
 		}
 	}
 
-       if c.Type == "int" && valType == "BigInt" {
-               if _, err := io.WriteString(w, "("); err != nil {
-                       return err
-               }
-               if err := c.Value.emit(w); err != nil {
-                       return err
-               }
-               _, err := io.WriteString(w, ").toInt()")
-               return err
-       }
+	if c.Type == "int" && valType == "BigInt" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := c.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toInt()")
+		return err
+	}
 
-       if c.Type == "int" && valType == "String" {
-               if _, err := io.WriteString(w, "int.parse("); err != nil {
-                       return err
-               }
-               if err := c.Value.emit(w); err != nil {
-                       return err
-               }
-               _, err := io.WriteString(w, ")")
-               return err
-       }
+	if c.Type == "int" && valType == "String" {
+		if _, err := io.WriteString(w, "int.parse("); err != nil {
+			return err
+		}
+		if err := c.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 
-       if c.Type == "int" {
-               if _, err := io.WriteString(w, "("); err != nil {
-                       return err
-               }
-               if err := c.Value.emit(w); err != nil {
-                       return err
-               }
-               _, err := io.WriteString(w, ").toInt()")
-               return err
-       }
+	if c.Type == "int" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := c.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toInt()")
+		return err
+	}
 
 	if c.Type == "num" || c.Type == "double" {
 		if valType == "num" || valType == "double" {
@@ -4522,11 +4522,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-       if useStr {
-               if _, err := io.WriteString(w, "String _str(dynamic v) => v.toString();\n\n"); err != nil {
-                       return err
-               }
-       }
+	if useStr {
+		if _, err := io.WriteString(w, "String _str(dynamic v) => v.toString();\n\n"); err != nil {
+			return err
+		}
+	}
 	if useBigRat {
 		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\nBigRat _neg(BigRat a) => BigRat(-a.num, a.den);\n\n"); err != nil {
 			return err
@@ -4761,7 +4761,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useStr = false
 	useParseIntStr = false
 	useFloor = false
-	useListEq = true
+	useListEq = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
