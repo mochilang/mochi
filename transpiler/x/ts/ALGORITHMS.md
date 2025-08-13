@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-13 09:14 UTC
+Last updated: 2025-08-13 09:44 UTC
 
 ## Algorithms Golden Test Checklist (1053/1077)
 | Index | Name | Status | Duration | Memory |
@@ -402,7 +402,7 @@ Last updated: 2025-08-13 09:14 UTC
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 571.223ms | 278.3 KB |
 | 394 | graphs/a_star | ✓ | 571.223ms | 241.3 KB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ |  | 490.2 KB |
-| 396 | graphs/articulation_points | ✓ | 571.223ms | 66.8 KB |
+| 396 | graphs/articulation_points | ✓ | 571.223ms | 66.7 KB |
 | 397 | graphs/basic_graphs | ✓ | 571.223ms | 230.1 KB |
 | 398 | graphs/bellman_ford | ✓ | 571.223ms | 37.4 KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 545.8 KB |
