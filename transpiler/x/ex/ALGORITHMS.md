@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-13 07:28 GMT+7
+Last updated: 2025-08-13 12:44 GMT+7
 
-## Algorithms Golden Test Checklist (824/1077)
+## Algorithms Golden Test Checklist (828/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -353,52 +353,52 @@ Last updated: 2025-08-13 07:28 GMT+7
 | 344 | dynamic_programming/sum_of_subset | ✓ | 7.53ms | 25.0 MB |
 | 345 | dynamic_programming/trapped_water | ✓ | 6.28ms | 12.5 MB |
 | 346 | dynamic_programming/tribonacci | ✓ | 7.87ms | 12.5 MB |
-| 347 | dynamic_programming/viterbi | ✓ | 7.29ms | 25.0 MB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 2.91ms | 25.0 MB |
-| 349 | dynamic_programming/word_break | ✓ | 2.43ms | 12.5 MB |
+| 347 | dynamic_programming/viterbi | ✓ | 6.92ms | 25.0 MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 2.44ms | 25.0 MB |
+| 349 | dynamic_programming/word_break | ✓ | 2.19ms | 12.5 MB |
 | 350 | electronics/apparent_power | ✓ | 1us | 0 B |
 | 351 | electronics/builtin_voltage | ✓ | 7.05ms | 25.0 MB |
 | 352 | electronics/capacitor_equivalence | ✓ | 2.85ms | 12.5 MB |
 | 353 | electronics/carrier_concentration | ✓ | 5.34ms | 25.0 MB |
 | 354 | electronics/charging_capacitor | ✓ | 6.08ms | 35.3 MB |
 | 355 | electronics/charging_inductor | ✓ | 7.19ms | 34.0 MB |
-| 356 | electronics/circular_convolution | error |  |  |
+| 356 | electronics/circular_convolution | ✓ | 10.29ms | 26.0 MB |
 | 357 | electronics/coulombs_law | ✓ | 2.48ms | 17.3 MB |
 | 358 | electronics/electric_conductivity | ✓ | 4.78ms | 25.0 MB |
-| 359 | electronics/electric_power | error |  |  |
+| 359 | electronics/electric_power | ✓ | 12.66ms | 32.8 MB |
 | 360 | electronics/electrical_impedance | ✓ | 16.05ms | 32.8 MB |
 | 361 | electronics/ic_555_timer | ✓ | 6.64ms | 25.0 MB |
 | 362 | electronics/ind_reactance | ✓ | 11.99ms | 32.7 MB |
-| 363 | electronics/ohms_law | error |  |  |
+| 363 | electronics/ohms_law | ✓ | 10.73ms | 32.7 MB |
 | 364 | electronics/real_and_reactive_power | ✓ | 7.78ms | 32.7 MB |
 | 365 | electronics/resistor_color_code | ✓ | 1us | 0 B |
 | 366 | electronics/resistor_equivalence | ✓ | 7.12ms | 25.0 MB |
 | 367 | electronics/resonant_frequency | ✓ | 5.83ms | 25.0 MB |
 | 368 | electronics/wheatstone_bridge | ✓ | 6.99ms | 25.0 MB |
 | 369 | file_transfer/receive_file | ✓ | 251us | 0 B |
-| 370 | file_transfer/send_file | ✓ | 231us | 12.5 MB |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
+| 370 | file_transfer/send_file | ✓ | 340us | 12.5 MB |
+| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
 | 372 | financial/equated_monthly_installments | ✓ | 6.03ms | 25.0 MB |
-| 373 | financial/exponential_moving_average | ✓ | 2.29ms | 17.3 MB |
+| 373 | financial/exponential_moving_average | ✓ | 6.31ms | 25.0 MB |
 | 374 | financial/interest | ✓ | 7.09ms | 15.4 MB |
 | 375 | financial/present_value | ✓ | 7.68ms | 25.1 MB |
 | 376 | financial/price_plus_tax | ✓ | 6.42ms | 25.0 MB |
 | 377 | financial/simple_moving_average | ✓ | 2.70ms | 17.3 MB |
 | 378 | financial/straight_line_depreciation | ✓ | 8.01ms | 25.0 MB |
 | 379 | financial/time_and_half_pay | ✓ | 7.04ms | 25.1 MB |
-| 380 | fractals/julia_sets | ✓ | 11.73ms | 25.0 MB |
+| 380 | fractals/julia_sets | ✓ | 10.31ms | 20.2 MB |
 | 381 | fractals/koch_snowflake | ✓ | 6.62ms | 17.3 MB |
 | 382 | fractals/mandelbrot | ✓ | 16.99ms | 33.5 MB |
 | 383 | fractals/sierpinski_triangle | ✓ | 14.32ms | 32.7 MB |
 | 384 | fractals/vicsek | ✓ | 1.08ms | 17.3 MB |
 | 385 | fuzzy_logic/fuzzy_operations | ✓ | 35.62ms | 32.8 MB |
-| 386 | genetic_algorithm/basic_string | ✓ | 9.52ms | 17.4 MB |
+| 386 | genetic_algorithm/basic_string | ✓ | 6.91ms | 17.4 MB |
 | 387 | geodesy/haversine_distance | ✓ | 8.81ms | 32.7 MB |
 | 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 8.28ms | 34.2 MB |
 | 389 | geometry/geometry | ✓ | 11.22ms | 25.1 MB |
 | 390 | graphics/bezier_curve | ✓ | 21.68ms | 25.2 MB |
 | 391 | graphics/butterfly_pattern | ✓ | 8.29ms | 12.5 MB |
-| 392 | graphics/digital_differential_analyzer_line | ✓ | 12.40ms | 25.0 MB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 9.33ms | 25.0 MB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 13.13ms | 35.2 MB |
 | 394 | graphs/a_star | ✓ | 15.76ms | 9.5 MB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 42.64ms | 98.5 MB |

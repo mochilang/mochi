@@ -18,3 +18,5 @@ warning: variable "result" is unused (there is a variable with the same name in 
     │           ~
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/financial/exponential_moving_average.exs:36:11: Main.exponential_moving_average/2
+
+[]
