@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 872/1077
-Last updated: 2025-08-14 17:09 +0700
+Last updated: 2025-08-14 18:14 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -543,7 +543,7 @@ Last updated: 2025-08-14 17:09 +0700
 | 534 | maths/average_absolute_deviation | ✓ | 833µs | 3.4 MB |
 | 535 | maths/average_mean | ✓ | 528µs | 3.3 MB |
 | 536 | maths/average_median | ✓ | 414µs | 3.2 MB |
-| 537 | maths/average_mode | ✓ | 2.259ms | 3.5 MB |
+| 537 | maths/average_mode | ✓ | 964µs | 3.6 MB |
 | 538 | maths/bailey_borwein_plouffe | ✓ | 26.928034s | 3.3 MB |
 | 539 | maths/base_neg2_conversion |   |  |  |
 | 540 | maths/basic_maths | ✓ | 1.348ms | 3.5 MB |
