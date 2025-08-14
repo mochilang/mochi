@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-14 16:24 +0700
+Last updated: 2025-08-14 16:41 +0700
 
-## Program Checklist (266/1077)
+## Program Checklist (301/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -356,57 +356,57 @@ Last updated: 2025-08-14 16:24 +0700
 | 347 | dynamic_programming/viterbi | ✓ | 1.558ms | 640.0 KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 3.644ms | 896.0 KB |
 | 349 | dynamic_programming/word_break | ✓ | 1.019ms | 256.0 KB |
-| 350 | electronics/apparent_power | ✓ | 308µs | 128.0 KB |
-| 351 | electronics/builtin_voltage | ✓ | 500µs | 384.0 KB |
-| 352 | electronics/capacitor_equivalence | ✓ | 505µs | 256.0 KB |
-| 353 | electronics/carrier_concentration | ✓ | 685µs | 512.0 KB |
-| 354 | electronics/charging_capacitor | ✓ | 406µs | 256.0 KB |
-| 355 | electronics/charging_inductor | ✓ | 486µs | 256.0 KB |
-| 356 | electronics/circular_convolution | ✓ | 1.642ms | 512.0 KB |
-| 357 | electronics/coulombs_law | ✓ | 1.023ms | 512.0 KB |
-| 358 | electronics/electric_conductivity | ✓ | 843µs | 384.0 KB |
-| 359 | electronics/electric_power | ✓ | 940µs | 384.0 KB |
-| 360 | electronics/electrical_impedance | ✓ | 1.552ms | 512.0 KB |
-| 361 | electronics/ic_555_timer | ✓ | 305µs | 256.0 KB |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law | ✓ | 581µs | 512.0 KB |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file | ✓ | 0s | 0B |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets | ✓ | 2.426ms | 1.0 MB |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot | ✓ | 4.456ms | 1.2 MB |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
+| 350 | electronics/apparent_power | ✓ | 271µs |  |
+| 351 | electronics/builtin_voltage | ✓ | 465µs | 256.0 KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 494µs | 256.0 KB |
+| 353 | electronics/carrier_concentration | ✓ | 537µs | 384.0 KB |
+| 354 | electronics/charging_capacitor | ✓ | 436µs | 256.0 KB |
+| 355 | electronics/charging_inductor | ✓ | 386µs | 384.0 KB |
+| 356 | electronics/circular_convolution | ✓ | 1.623ms | 512.0 KB |
+| 357 | electronics/coulombs_law | ✓ | 1.011ms | 384.0 KB |
+| 358 | electronics/electric_conductivity | ✓ | 543µs | 384.0 KB |
+| 359 | electronics/electric_power | ✓ | 936µs | 384.0 KB |
+| 360 | electronics/electrical_impedance | ✓ | 1.523ms | 640.0 KB |
+| 361 | electronics/ic_555_timer | ✓ | 403µs | 256.0 KB |
+| 362 | electronics/ind_reactance | ✓ | 1.607ms | 512.0 KB |
+| 363 | electronics/ohms_law | ✓ | 685µs | 384.0 KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 783µs | 384.0 KB |
+| 365 | electronics/resistor_color_code | ✓ | 736µs | 512.0 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 513µs | 384.0 KB |
+| 367 | electronics/resonant_frequency | ✓ | 597µs | 384.0 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 466µs | 384.0 KB |
+| 369 | file_transfer/receive_file | ✓ | 548µs | 256.0 KB |
+| 370 | file_transfer/send_file | ✓ | 514µs |  |
+| 371 | file_transfer/tests/test_send_file |   |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 550µs | 256.0 KB |
+| 373 | financial/exponential_moving_average | ✓ | 761µs | 384.0 KB |
+| 374 | financial/interest | ✓ | 589µs | 384.0 KB |
+| 375 | financial/present_value | ✓ | 526µs | 256.0 KB |
+| 376 | financial/price_plus_tax | ✓ | 615µs | 512.0 KB |
+| 377 | financial/simple_moving_average | ✓ | 1.634ms | 512.0 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 1.832ms | 640.0 KB |
+| 379 | financial/time_and_half_pay | ✓ | 468µs | 256.0 KB |
+| 380 | fractals/julia_sets | ✓ | 3.303ms | 896.0 KB |
+| 381 | fractals/koch_snowflake | ✓ | 1.243ms | 512.0 KB |
+| 382 | fractals/mandelbrot | ✓ | 5.093ms | 1.2 MB |
+| 383 | fractals/sierpinski_triangle | ✓ | 6.104ms | 1.2 MB |
+| 384 | fractals/vicsek | ✓ | 3.411ms | 640.0 KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 1.594ms | 512.0 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 520µs | 384.0 KB |
+| 387 | geodesy/haversine_distance | ✓ | 407µs | 256.0 KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 347µs | 256.0 KB |
+| 389 | geometry/geometry | ✓ | 791µs | 512.0 KB |
+| 390 | graphics/bezier_curve | ✓ | 1.099ms | 384.0 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 3.452ms | 896.0 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 694µs | 384.0 KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 814µs | 384.0 KB |
+| 394 | graphs/a_star | ✓ | 4.291ms | 956.0 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 249.717ms | 52.2 MB |
+| 396 | graphs/articulation_points | ✓ | 2.649ms | 640.0 KB |
+| 397 | graphs/basic_graphs | ✓ | 4.5ms | 1.0 MB |
+| 398 | graphs/bellman_ford | ✓ | 714µs | 384.0 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 936µs | 440.0 KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 46.933ms | 10.0 MB |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka | ✓ | 2.807ms | 768.0 KB |
