@@ -1,0 +1,16 @@
+run: exit status 1
+{
+  "duration_us": 36,
+  "memory_bytes": 13336576,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/strings/manacher.py", line 115, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/strings/manacher.py", line 106, in main
+    print(palindromic_string("abbbaba"))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/strings/manacher.py", line 81, in palindromic_string
+    while j - k >= 0 and j + k < m and new_input_string[j + k:j + k + 1] == new_input_string[j - k:j - k + 1]:
+                                       ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+TypeError: slice indices must be integers or None or have an __index__ method

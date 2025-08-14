@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-13 16:48 GMT+7
+Last updated: 2025-08-13 17:08 GMT+7
 
-## Algorithms Golden Test Checklist (948/1077)
+## Algorithms Golden Test Checklist (949/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -1021,12 +1021,12 @@ Last updated: 2025-08-13 16:48 GMT+7
 | 1012 | strings/is_spain_national_id | ✓ | 279.0µs | 12.99MB |
 | 1013 | strings/is_srilankan_phone_number | ✓ | 14.0µs | 12.69MB |
 | 1014 | strings/is_valid_email_address | ✓ | 1.0ms | 13.75MB |
-| 1015 | strings/jaro_winkler |   |  |  |
+| 1015 | strings/jaro_winkler | ✓ | 63.0µs | 13.71MB |
 | 1016 | strings/join | ✓ | 17.0µs | 12.49MB |
 | 1017 | strings/knuth_morris_pratt | ✓ | 23.0µs | 12.62MB |
 | 1018 | strings/levenshtein_distance | ✓ | 57.0µs | 13.36MB |
 | 1019 | strings/lower | ✓ | 11.0µs | 12.23MB |
-| 1020 | strings/manacher |   |  |  |
+| 1020 | strings/manacher | error |  |  |
 | 1021 | strings/min_cost_string_conversion | ✓ | 137.0µs | 14.20MB |
 | 1022 | strings/naive_string_search | ✓ | 17.0µs | 12.43MB |
 | 1023 | strings/ngram | ✓ | 30.0µs | 12.93MB |
@@ -1050,7 +1050,7 @@ Last updated: 2025-08-13 16:48 GMT+7
 | 1041 | strings/word_occurrence | ✓ | 16.0µs | 12.49MB |
 | 1042 | strings/word_patterns | ✓ | 52.0µs | 12.74MB |
 | 1043 | strings/z_function | ✓ | 100.0µs | 14.17MB |
-| 1044 | web_programming/co2_emission |   |  |  |
+| 1044 | web_programming/co2_emission | error |  |  |
 | 1045 | web_programming/covid_stats_via_xpath | ✓ | 131.0µs | 12.94MB |
 | 1046 | web_programming/crawl_google_results | ✓ | 49.0µs | 12.62MB |
 | 1047 | web_programming/crawl_google_scholar_citation | ✓ | 30.0µs | 12.49MB |
@@ -1058,19 +1058,19 @@ Last updated: 2025-08-13 16:48 GMT+7
 | 1049 | web_programming/current_stock_price | ✓ | 30.0µs | 12.59MB |
 | 1050 | web_programming/current_weather | ✓ | 16.0µs | 12.55MB |
 | 1051 | web_programming/daily_horoscope | ✓ | 9.0µs | 12.88MB |
-| 1052 | web_programming/download_images_from_google_query |   |  |  |
+| 1052 | web_programming/download_images_from_google_query | error |  |  |
 | 1053 | web_programming/emails_from_url | ✓ | 851.0µs | 14.28MB |
 | 1054 | web_programming/fetch_anime_and_play | ✓ | 22.0µs | 13.11MB |
-| 1055 | web_programming/fetch_bbc_news |   |  |  |
-| 1056 | web_programming/fetch_github_info |   |  |  |
-| 1057 | web_programming/fetch_jobs |   |  |  |
-| 1058 | web_programming/fetch_quotes |   |  |  |
+| 1055 | web_programming/fetch_bbc_news | error |  |  |
+| 1056 | web_programming/fetch_github_info | error |  |  |
+| 1057 | web_programming/fetch_jobs | error |  |  |
+| 1058 | web_programming/fetch_quotes | error |  |  |
 | 1059 | web_programming/fetch_well_rx_price | ✓ | 112.0µs | 12.93MB |
 | 1060 | web_programming/get_amazon_product_data | ✓ | 421.0µs | 14.06MB |
 | 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 32.0µs | 12.62MB |
-| 1062 | web_programming/get_ip_geolocation |   |  |  |
-| 1063 | web_programming/get_top_billionaires |   |  |  |
-| 1064 | web_programming/get_top_hn_posts |   |  |  |
+| 1062 | web_programming/get_ip_geolocation | error |  |  |
+| 1063 | web_programming/get_top_billionaires | error |  |  |
+| 1064 | web_programming/get_top_hn_posts | error |  |  |
 | 1065 | web_programming/giphy |   |  |  |
 | 1066 | web_programming/instagram_crawler | ✓ | 2.0ms | 13.57MB |
 | 1067 | web_programming/instagram_pic | ✓ | 20.0µs | 12.70MB |

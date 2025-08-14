@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/get_ip_geolocation.py", line 46, in <module>
+    ip_address = input()
+                 ^^^^^^^
+EOFError: EOF when reading a line

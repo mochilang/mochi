@@ -1,0 +1,15 @@
+{
+  "duration_us": 509750,
+  "memory_bytes": 24223744,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/co2_emission.py", line 110, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/co2_emission.py", line 95, in main
+    entries = fetch_from_to("2020-10-01", "2020-10-03")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/co2_emission.py", line 87, in fetch_from_to
+    return resp.data
+           ^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'data'

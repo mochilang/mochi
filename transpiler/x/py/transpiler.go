@@ -636,7 +636,7 @@ func (f *FieldExpr) emit(w io.Writer) error {
 		_, err := fmt.Fprintf(w, "[%q]", f.Name)
 		return err
 	}
-	_, err := io.WriteString(w, "."+f.Name)
+	_, err := io.WriteString(w, "."+safeName(f.Name))
 	return err
 }
 
@@ -1855,10 +1855,23 @@ func isIntOnlyExpr(e Expr, env *types.Env) bool {
 			return isIntOnlyExpr(ex.Left, env) && isIntOnlyExpr(ex.Right, env)
 		}
 		return false
+	case *CallExpr:
+		if n, ok := ex.Func.(*Name); ok && env != nil {
+			if fn, ok := env.GetFunc(n.Name); ok && fn.Return != nil {
+				t := types.ResolveTypeRef(fn.Return, env)
+				return isIntLike(t)
+			}
+		}
+		return false
 	case *UnaryExpr:
 		return isIntOnlyExpr(ex.Expr, env)
 	case *ParenExpr:
 		return isIntOnlyExpr(ex.Expr, env)
+	case *IndexExpr:
+		if env != nil && isIntLike(inferPyType(ex, env)) {
+			return true
+		}
+		return false
 	default:
 		return false
 	}

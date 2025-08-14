@@ -1,0 +1,15 @@
+{
+  "duration_us": 213,
+  "memory_bytes": 14360576,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/fetch_jobs.py", line 130, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/fetch_jobs.py", line 121, in main
+    print("Job " + intToString(idx) + " is " + j.title + " at " + j.company)
+                   ^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/fetch_jobs.py", line 95, in intToString
+    digits = "0123456789"[d:d + 1] + digits
+             ~~~~~~~~~~~~^^^^^^^^^
+TypeError: slice indices must be integers or None or have an __index__ method

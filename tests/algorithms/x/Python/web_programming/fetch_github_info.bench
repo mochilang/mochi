@@ -1,0 +1,12 @@
+{
+  "duration_us": 193973,
+  "memory_bytes": 24145920,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/fetch_github_info.py", line 96, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/fetch_github_info.py", line 88, in main
+    print(user.login + " " + _str(user.id))
+          ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'login'
