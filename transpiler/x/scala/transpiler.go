@@ -1201,8 +1201,9 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
 	a.List.emit(w)
-	fmt.Fprint(w, " += ")
+	fmt.Fprint(w, " :+ ")
 	if ie, ok := a.Elem.(*IfExpr); ok {
 		t1 := inferTypeWithEnv(ie.Then, nil)
 		t2 := inferTypeWithEnv(ie.Else, nil)
@@ -1210,6 +1211,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 			needsBigInt = true
 			fmt.Fprint(w, "BigInt(")
 			a.Elem.emit(w)
+			fmt.Fprint(w, ")")
 			fmt.Fprint(w, ")")
 			return
 		}
@@ -1220,6 +1222,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 				needsBigInt = true
 				fmt.Fprint(w, "BigInt(")
 				be.emit(w)
+				fmt.Fprint(w, ")")
 				fmt.Fprint(w, ")")
 				return
 			}
@@ -1238,7 +1241,6 @@ func (a *AppendExpr) emit(w io.Writer) {
 			elem = ce.Value
 		}
 	}
-	fmt.Fprint(w, "(")
 	elem.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -3644,7 +3646,7 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			var k Expr
-			if s, ok := types.SimpleStringKey(it.Key); ok {
+			if s, ok := stringKeyLiteral(it.Key); ok {
 				k = &StringLit{Value: s}
 			} else {
 				var err error
@@ -5949,6 +5951,21 @@ func literalString(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func stringKeyLiteral(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil {
+		return "", false
+	}
+	return *p.Target.Lit.Str, true
 }
 
 func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
