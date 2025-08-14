@@ -17,46 +17,46 @@ public class Main {
     static CarrierResult r3;
 
     static double sqrtApprox(double x) {
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess = (double)((double)(x) / (double)(2.0));
+        long i_1 = 0L;
+        while ((long)(i_1) < 20L) {
+            guess = (double)((double)(((double)(guess) + (double)((double)(x) / (double)(guess)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return guess;
     }
 
     static CarrierResult carrier_concentration(double electron_conc, double hole_conc, double intrinsic_conc) {
-        int zero_count = 0;
-        if (electron_conc == 0.0) {
-            zero_count = zero_count + 1;
+        long zero_count = 0L;
+        if ((double)(electron_conc) == (double)(0.0)) {
+            zero_count = (long)((long)(zero_count) + 1L);
         }
-        if (hole_conc == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(hole_conc) == (double)(0.0)) {
+            zero_count = (long)((long)(zero_count) + 1L);
         }
-        if (intrinsic_conc == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(intrinsic_conc) == (double)(0.0)) {
+            zero_count = (long)((long)(zero_count) + 1L);
         }
-        if (zero_count != 1) {
+        if ((long)(zero_count) != 1L) {
             throw new RuntimeException(String.valueOf("You cannot supply more or less than 2 values"));
         }
-        if (electron_conc < 0.0) {
+        if ((double)(electron_conc) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Electron concentration cannot be negative in a semiconductor"));
         }
-        if (hole_conc < 0.0) {
+        if ((double)(hole_conc) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Hole concentration cannot be negative in a semiconductor"));
         }
-        if (intrinsic_conc < 0.0) {
+        if ((double)(intrinsic_conc) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Intrinsic concentration cannot be negative in a semiconductor"));
         }
-        if (electron_conc == 0.0) {
-            return new CarrierResult("electron_conc", (intrinsic_conc * intrinsic_conc) / hole_conc);
+        if ((double)(electron_conc) == (double)(0.0)) {
+            return new CarrierResult("electron_conc", (double)(((double)(intrinsic_conc) * (double)(intrinsic_conc))) / (double)(hole_conc));
         }
-        if (hole_conc == 0.0) {
-            return new CarrierResult("hole_conc", (intrinsic_conc * intrinsic_conc) / electron_conc);
+        if ((double)(hole_conc) == (double)(0.0)) {
+            return new CarrierResult("hole_conc", (double)(((double)(intrinsic_conc) * (double)(intrinsic_conc))) / (double)(electron_conc));
         }
-        if (intrinsic_conc == 0.0) {
-            return new CarrierResult("intrinsic_conc", sqrtApprox(electron_conc * hole_conc));
+        if ((double)(intrinsic_conc) == (double)(0.0)) {
+            return new CarrierResult("intrinsic_conc", sqrtApprox((double)((double)(electron_conc) * (double)(hole_conc))));
         }
         return new CarrierResult("", -1.0);
     }
@@ -64,11 +64,11 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            r1 = carrier_concentration(25.0, 100.0, 0.0);
+            r1 = carrier_concentration((double)(25.0), (double)(100.0), (double)(0.0));
             System.out.println(r1.name + ", " + _p(r1.value));
-            r2 = carrier_concentration(0.0, 1600.0, 200.0);
+            r2 = carrier_concentration((double)(0.0), (double)(1600.0), (double)(200.0));
             System.out.println(r2.name + ", " + _p(r2.value));
-            r3 = carrier_concentration(1000.0, 0.0, 1200.0);
+            r3 = carrier_concentration((double)(1000.0), (double)(0.0), (double)(1200.0));
             System.out.println(r3.name + ", " + _p(r3.value));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -115,6 +115,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

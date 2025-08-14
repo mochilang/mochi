@@ -19,48 +19,48 @@ public class Main {
     static Result r5;
 
     static double absf(double x) {
-        if ((double)(x) < 0.0) {
+        if ((double)(x) < (double)(0.0)) {
             return -x;
         }
         return x;
     }
 
     static double pow10(long n) {
-        double p = 1.0;
+        double p = (double)(1.0);
         long i_1 = 0L;
-        while ((long)(i_1) < n) {
-            p = p * 10.0;
-            i_1 = (long)((long)(i_1) + (long)(1));
+        while ((long)(i_1) < (long)(n)) {
+            p = (double)((double)(p) * (double)(10.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return p;
     }
 
     static double round_to(double x, long n) {
-        double m = (double)(pow10(n));
-        return Math.floor((double)(x) * (double)(m) + 0.5) / (double)(m);
+        double m = (double)(pow10((long)(n)));
+        return Math.floor((double)((double)(x) * (double)(m)) + (double)(0.5)) / (double)(m);
     }
 
     static Result electric_power(double voltage, double current, double power) {
         long zeros = 0L;
-        if ((double)(voltage) == 0.0) {
-            zeros = (long)((long)(zeros) + (long)(1));
+        if ((double)(voltage) == (double)(0.0)) {
+            zeros = (long)((long)(zeros) + 1L);
         }
-        if ((double)(current) == 0.0) {
-            zeros = (long)((long)(zeros) + (long)(1));
+        if ((double)(current) == (double)(0.0)) {
+            zeros = (long)((long)(zeros) + 1L);
         }
-        if ((double)(power) == 0.0) {
-            zeros = (long)((long)(zeros) + (long)(1));
+        if ((double)(power) == (double)(0.0)) {
+            zeros = (long)((long)(zeros) + 1L);
         }
-        if ((long)(zeros) != (long)(1)) {
+        if ((long)(zeros) != 1L) {
             throw new RuntimeException(String.valueOf("Exactly one argument must be 0"));
-        } else         if ((double)(power) < 0.0) {
+        } else         if ((double)(power) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Power cannot be negative in any electrical/electronics system"));
-        } else         if ((double)(voltage) == 0.0) {
+        } else         if ((double)(voltage) == (double)(0.0)) {
             return new Result("voltage", (double)(power) / (double)(current));
-        } else         if ((double)(current) == 0.0) {
+        } else         if ((double)(current) == (double)(0.0)) {
             return new Result("current", (double)(power) / (double)(voltage));
-        } else         if ((double)(power) == 0.0) {
-            double p_2 = (double)(absf((double)(voltage) * (double)(current)));
+        } else         if ((double)(power) == (double)(0.0)) {
+            double p_2 = (double)(absf((double)((double)(voltage) * (double)(current))));
             return new Result("power", round_to((double)(p_2), 2L));
         } else {
             throw new RuntimeException(String.valueOf("Unhandled case"));
@@ -74,15 +74,15 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            r1 = electric_power(0.0, 2.0, 5.0);
+            r1 = electric_power((double)(0.0), (double)(2.0), (double)(5.0));
             System.out.println(str_result(r1));
-            r2 = electric_power(2.0, 2.0, 0.0);
+            r2 = electric_power((double)(2.0), (double)(2.0), (double)(0.0));
             System.out.println(str_result(r2));
-            r3 = electric_power(-2.0, 3.0, 0.0);
+            r3 = electric_power((double)(-2.0), (double)(3.0), (double)(0.0));
             System.out.println(str_result(r3));
-            r4 = electric_power(2.2, 2.2, 0.0);
+            r4 = electric_power((double)(2.2), (double)(2.2), (double)(0.0));
             System.out.println(str_result(r4));
-            r5 = electric_power(2.0, 0.0, 6.0);
+            r5 = electric_power((double)(2.0), (double)(0.0), (double)(6.0));
             System.out.println(str_result(r5));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -132,7 +132,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);
