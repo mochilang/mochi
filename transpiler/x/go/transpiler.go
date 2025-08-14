@@ -3504,10 +3504,31 @@ func compileTestBlock(tb *parser.TestBlock, env *types.Env) (Stmt, error) {
 }
 
 func compileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
+	// Create a shallow copy of varDecls when entering a non-top-level scope so
+	// that variables declared within the block do not leak outside their
+	// intended scope. This mirrors how the type environment handles scoping
+	// for nested blocks.
+	var (
+		origVarDecls map[string]*VarDecl
+		restore      bool
+	)
+	if env != topEnv && varDecls != nil {
+		origVarDecls = varDecls
+		tmp := make(map[string]*VarDecl, len(varDecls))
+		for k, v := range varDecls {
+			tmp[k] = v
+		}
+		varDecls = tmp
+		restore = true
+	}
+
 	var out []Stmt
 	for _, s := range list {
 		st, err := compileStmt(s, env)
 		if err != nil {
+			if restore {
+				varDecls = origVarDecls
+			}
 			return nil, err
 		}
 		if st != nil {
@@ -3515,6 +3536,9 @@ func compileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 		}
 	}
 	out = removeUnusedLocals(out)
+	if restore {
+		varDecls = origVarDecls
+	}
 	return out, nil
 }
 
@@ -6210,6 +6234,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &CallExpr{Func: "len", Args: []Expr{args[0]}}, nil
 		case "str":
 			name = "fmt.Sprint"
+		case "toi":
+			// convert string or generic value to int using strconv.Atoi
+			usesStrconv = true
+			return &AtoiExpr{Expr: args[0]}, nil
 		case "int":
 			argType := types.TypeOfExpr(p.Call.Args[0], env)
 			if _, ok := argType.(types.StringType); ok {
