@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,14 +35,16 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$grid = [[0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0], [1, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0]];
-$delta = [[-1, 0], [0, -1], [1, 0], [0, 1]];
-function mochi_key($y, $x) {
-  global $grid, $delta, $start, $goal, $path1, $path2;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $grid = [[0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0], [1, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0]];
+  $delta = [[-1, 0], [0, -1], [1, 0], [0, 1]];
+  function mochi_key($y, $x) {
+  global $delta, $goal, $grid, $path1, $path2, $start;
   return _str($y) . ',' . _str($x);
-}
-function parse_int($s) {
-  global $grid, $delta, $start, $goal, $path1, $path2;
+};
+  function parse_int($s) {
+  global $delta, $goal, $grid, $path1, $path2, $start;
   $value = 0;
   $i = 0;
   while ($i < strlen($s)) {
@@ -36,19 +53,19 @@ function parse_int($s) {
   $i = $i + 1;
 };
   return $value;
-}
-function parse_key($k) {
-  global $grid, $delta, $start, $goal, $path1, $path2;
+};
+  function parse_key($k) {
+  global $delta, $goal, $grid, $path1, $path2, $start;
   $idx = 0;
   while ($idx < strlen($k) && substr($k, $idx, $idx + 1 - $idx) != ',') {
   $idx = $idx + 1;
 };
-  $y = parse_int(substr($k, 0, $idx - 0));
+  $y = parse_int(substr($k, 0, $idx));
   $x = parse_int(substr($k, $idx + 1, strlen($k) - ($idx + 1)));
   return [$y, $x];
-}
-function neighbors($pos) {
-  global $grid, $delta, $start, $goal, $path1, $path2;
+};
+  function neighbors($pos) {
+  global $delta, $goal, $grid, $path1, $path2, $start;
   $coords = parse_key($pos);
   $y = $coords[0];
   $x = $coords[1];
@@ -65,9 +82,9 @@ function neighbors($pos) {
   $i = $i + 1;
 };
   return $res;
-}
-function reverse_list($lst) {
-  global $grid, $delta, $start, $goal, $path1, $path2;
+};
+  function reverse_list($lst) {
+  global $delta, $goal, $grid, $path1, $path2, $start;
   $res = [];
   $i = count($lst) - 1;
   while ($i >= 0) {
@@ -75,13 +92,13 @@ function reverse_list($lst) {
   $i = $i - 1;
 };
   return $res;
-}
-function bfs($start, $goal) {
-  global $grid, $delta, $path1, $path2;
+};
+  function bfs($start, $goal) {
+  global $delta, $grid, $path1, $path2;
   $queue = [];
   $queue = _append($queue, ['pos' => $start, 'path' => [$start]]);
   $head = 0;
-  $visited = [$start => true];
+  $visited = ['start' => true];
   while ($head < count($queue)) {
   $node = $queue[$head];
   $head = $head + 1;
@@ -101,17 +118,17 @@ function bfs($start, $goal) {
 };
 };
   return [];
-}
-function bidirectional_bfs($start, $goal) {
-  global $grid, $delta, $path1, $path2;
+};
+  function bidirectional_bfs($start, $goal) {
+  global $delta, $grid, $path1, $path2;
   $queue_f = [];
   $queue_b = [];
   $queue_f = _append($queue_f, ['pos' => $start, 'path' => [$start]]);
   $queue_b = _append($queue_b, ['pos' => $goal, 'path' => [$goal]]);
   $head_f = 0;
   $head_b = 0;
-  $visited_f = [$start => [$start]];
-  $visited_b = [$goal => [$goal]];
+  $visited_f = ['start' => [$start]];
+  $visited_b = ['goal' => [$goal]];
   while ($head_f < count($queue_f) && $head_b < count($queue_b)) {
   $node_f = $queue_f[$head_f];
   $head_f = $head_f + 1;
@@ -160,9 +177,9 @@ function bidirectional_bfs($start, $goal) {
 };
 };
   return [$start];
-}
-function path_to_string($path) {
-  global $grid, $delta, $start, $goal, $path1, $path2;
+};
+  function path_to_string($path) {
+  global $delta, $goal, $grid, $path1, $path2, $start;
   if (count($path) == 0) {
   return '[]';
 }
@@ -176,10 +193,18 @@ function path_to_string($path) {
 };
   $s = $s . ']';
   return $s;
-}
-$start = mochi_key(0, 0);
-$goal = mochi_key(count($grid) - 1, count($grid[0]) - 1);
-$path1 = bfs($start, $goal);
-echo rtrim(path_to_string($path1)), PHP_EOL;
-$path2 = bidirectional_bfs($start, $goal);
-echo rtrim(path_to_string($path2)), PHP_EOL;
+};
+  $start = mochi_key(0, 0);
+  $goal = mochi_key(count($grid) - 1, count($grid[0]) - 1);
+  $path1 = bfs($start, $goal);
+  echo rtrim(path_to_string($path1)), PHP_EOL;
+  $path2 = bidirectional_bfs($start, $goal);
+  echo rtrim(path_to_string($path2)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

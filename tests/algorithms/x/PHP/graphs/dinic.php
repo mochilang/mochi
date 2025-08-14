@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,9 +35,11 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$INF = 1000000000;
-function pow2($k) {
-  global $INF, $graph, $source, $sink, $v;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $INF = 1000000000;
+  function pow2($k) {
+  global $INF, $graph, $sink, $source, $v;
   $res = 1;
   $i = 0;
   while ($i < $k) {
@@ -30,16 +47,16 @@ function pow2($k) {
   $i = $i + 1;
 };
   return $res;
-}
-function min2($a, $b) {
-  global $INF, $graph, $source, $sink, $v;
+};
+  function min2($a, $b) {
+  global $INF, $graph, $sink, $source, $v;
   if ($a < $b) {
   return $a;
 }
   return $b;
-}
-function new_dinic($n) {
-  global $INF, $graph, $source, $sink, $v;
+};
+  function new_dinic($n) {
+  global $INF, $graph, $sink, $source, $v;
   $lvl = [];
   $ptr = [];
   $q = [];
@@ -54,9 +71,9 @@ function new_dinic($n) {
   $i = $i + 1;
 };
   return ['n' => $n, 'lvl' => $lvl, 'ptr' => $ptr, 'q' => $q, 'adj' => $adj];
-}
-function add_edge(&$g, $a, $b, $c, $rcap) {
-  global $INF, $graph, $source, $sink, $v;
+};
+  function add_edge(&$g, $a, $b, $c, $rcap) {
+  global $INF, $graph, $sink, $source, $v;
   $adj = $g['adj'];
   $list_a = $adj[$a];
   $list_b = $adj[$b];
@@ -67,8 +84,8 @@ function add_edge(&$g, $a, $b, $c, $rcap) {
   $adj[$a] = $list_a;
   $adj[$b] = $list_b;
   $g['adj'] = $adj;
-}
-function dfs(&$g, $v, $sink, $flow) {
+};
+  function dfs(&$g, $v, $sink, $flow) {
   global $INF, $graph, $source;
   if ($v == $sink || $flow == 0) {
   return $flow;
@@ -103,8 +120,8 @@ function dfs(&$g, $v, $sink, $flow) {
   $adj_all[$v] = $adj_v;
   $g['adj'] = $adj_all;
   return 0;
-}
-function max_flow(&$g, $source, $sink) {
+};
+  function max_flow(&$g, $source, $sink) {
   global $INF, $graph;
   $flow = 0;
   $l = 0;
@@ -158,23 +175,31 @@ function max_flow(&$g, $source, $sink) {
   $l = $l + 1;
 };
   return $flow;
-}
-$graph = new_dinic(10);
-$source = 0;
-$sink = 9;
-$v = 1;
-while ($v < 5) {
+};
+  $graph = new_dinic(10);
+  $source = 0;
+  $sink = 9;
+  $v = 1;
+  while ($v < 5) {
   add_edge($graph, $source, $v, 1, 0);
   $v = $v + 1;
 }
-$v = 5;
-while ($v < 9) {
+  $v = 5;
+  while ($v < 9) {
   add_edge($graph, $v, $sink, 1, 0);
   $v = $v + 1;
 }
-$v = 1;
-while ($v < 5) {
+  $v = 1;
+  while ($v < 5) {
   add_edge($graph, $v, $v + 4, 1, 0);
   $v = $v + 1;
 }
-echo rtrim(_str(max_flow($graph, $source, $sink))), PHP_EOL;
+  echo rtrim(_str(max_flow($graph, $source, $sink))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

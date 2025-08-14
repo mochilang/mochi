@@ -1,14 +1,31 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$G = ['A' => ['B' => 2, 'C' => 5], 'B' => ['A' => 2, 'D' => 3, 'E' => 1, 'F' => 1], 'C' => ['A' => 5, 'F' => 3], 'D' => ['B' => 3], 'E' => ['B' => 4, 'F' => 3], 'F' => ['C' => 3, 'E' => 3]];
-$heap = [['node' => 'E', 'cost' => 0]];
-$visited = [];
-$result = -1;
-while (count($heap) > 0) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $G = ['A' => ['B' => 2, 'C' => 5], 'B' => ['A' => 2, 'D' => 3, 'E' => 1, 'F' => 1], 'C' => ['A' => 5, 'F' => 3], 'D' => ['B' => 3], 'E' => ['B' => 4, 'F' => 3], 'F' => ['C' => 3, 'E' => 3]];
+  $heap = [['node' => 'E', 'cost' => 0]];
+  $visited = [];
+  $result = -1;
+  while (count($heap) > 0) {
   $best_idx = 0;
   $i = 1;
   while ($i < count($heap)) {
@@ -42,15 +59,15 @@ while (count($heap) > 0) {
   continue;
 }
   $next_cost = $cost + $G[$u][$v];
-  $heap = _append($heap, ['node' => $v, $cost => $next_cost]);
+  $heap = _append($heap, ['node' => $v, 'cost' => $next_cost]);
 };
 }
-echo rtrim(json_encode($result, 1344)), PHP_EOL;
-$G2 = ['B' => ['C' => 1], 'C' => ['D' => 1], 'D' => ['F' => 1], 'E' => ['B' => 1, 'F' => 3], 'F' => []];
-$heap2 = [['node' => 'E', 'cost' => 0]];
-$visited2 = [];
-$result2 = -1;
-while (count($heap2) > 0) {
+  echo rtrim(json_encode($result, 1344)), PHP_EOL;
+  $G2 = ['B' => ['C' => 1], 'C' => ['D' => 1], 'D' => ['F' => 1], 'E' => ['B' => 1, 'F' => 3], 'F' => []];
+  $heap2 = [['node' => 'E', 'cost' => 0]];
+  $visited2 = [];
+  $result2 = -1;
+  while (count($heap2) > 0) {
   $best2_idx = 0;
   $i2 = 1;
   while ($i2 < count($heap2)) {
@@ -84,15 +101,15 @@ while (count($heap2) > 0) {
   continue;
 }
   $next_cost2 = $cost2 + $G2[$u2][$v2];
-  $heap2 = _append($heap2, ['node' => $v2, $cost => $next_cost2]);
+  $heap2 = _append($heap2, ['node' => $v2, 'cost' => $next_cost2]);
 };
 }
-echo rtrim(json_encode($result2, 1344)), PHP_EOL;
-$G3 = ['B' => ['C' => 1], 'C' => ['D' => 1], 'D' => ['F' => 1], 'E' => ['B' => 1, 'G' => 2], 'F' => [], 'G' => ['F' => 1]];
-$heap3 = [['node' => 'E', 'cost' => 0]];
-$visited3 = [];
-$result3 = -1;
-while (count($heap3) > 0) {
+  echo rtrim(json_encode($result2, 1344)), PHP_EOL;
+  $G3 = ['B' => ['C' => 1], 'C' => ['D' => 1], 'D' => ['F' => 1], 'E' => ['B' => 1, 'G' => 2], 'F' => [], 'G' => ['F' => 1]];
+  $heap3 = [['node' => 'E', 'cost' => 0]];
+  $visited3 = [];
+  $result3 = -1;
+  while (count($heap3) > 0) {
   $best3_idx = 0;
   $i3 = 1;
   while ($i3 < count($heap3)) {
@@ -126,7 +143,15 @@ while (count($heap3) > 0) {
   continue;
 }
   $next_cost3 = $cost3 + $G3[$u3][$v3];
-  $heap3 = _append($heap3, ['node' => $v3, $cost => $next_cost3]);
+  $heap3 = _append($heap3, ['node' => $v3, 'cost' => $next_cost3]);
 };
 }
-echo rtrim(json_encode($result3, 1344)), PHP_EOL;
+  echo rtrim(json_encode($result3, 1344)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

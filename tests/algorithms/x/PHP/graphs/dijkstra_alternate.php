@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function minimum_distance($distances, $visited) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function minimum_distance($distances, $visited) {
   global $graph;
   $minimum = 10000000;
   $min_index = 0;
@@ -33,8 +50,8 @@ function minimum_distance($distances, $visited) {
   $vertex = $vertex + 1;
 };
   return $min_index;
-}
-function dijkstra($graph, $source) {
+};
+  function dijkstra($graph, $source) {
   $vertices = count($graph);
   $distances = null;
   $i = 0;
@@ -63,8 +80,8 @@ function dijkstra($graph, $source) {
   $count = $count + 1;
 };
   return $distances;
-}
-function print_solution($distances) {
+};
+  function print_solution($distances) {
   global $graph;
   echo rtrim('Vertex 	 Distance from Source'), PHP_EOL;
   $v = 0;
@@ -72,7 +89,15 @@ function print_solution($distances) {
   echo rtrim(_str($v) . '		' . _str($distances[$v])), PHP_EOL;
   $v = $v + 1;
 };
-}
-$graph = [[0, 4, 0, 0, 0, 0, 0, 8, 0], [4, 0, 8, 0, 0, 0, 0, 11, 0], [0, 8, 0, 7, 0, 4, 0, 0, 2], [0, 0, 7, 0, 9, 14, 0, 0, 0], [0, 0, 0, 9, 0, 10, 0, 0, 0], [0, 0, 4, 14, 10, 0, 2, 0, 0], [0, 0, 0, 0, 0, 2, 0, 1, 6], [8, 11, 0, 0, 0, 0, 1, 0, 7], [0, 0, 2, 0, 0, 0, 6, 7, 0]];
-$distances = dijkstra($graph, 0);
-print_solution($distances);
+};
+  $graph = [[0, 4, 0, 0, 0, 0, 0, 8, 0], [4, 0, 8, 0, 0, 0, 0, 11, 0], [0, 8, 0, 7, 0, 4, 0, 0, 2], [0, 0, 7, 0, 9, 14, 0, 0, 0], [0, 0, 0, 9, 0, 10, 0, 0, 0], [0, 0, 4, 14, 10, 0, 2, 0, 0], [0, 0, 0, 0, 0, 2, 0, 1, 6], [8, 11, 0, 0, 0, 0, 1, 0, 7], [0, 0, 2, 0, 0, 0, 6, 7, 0]];
+  $distances = dijkstra($graph, 0);
+  print_solution($distances);
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

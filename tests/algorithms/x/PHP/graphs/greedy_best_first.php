@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,19 +35,21 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function mochi_abs($x) {
-  global $delta, $TEST_GRIDS;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_abs($x) {
+  global $TEST_GRIDS, $delta;
   if ($x < 0) {
   return 0 - $x;
 }
   return $x;
-}
-function manhattan($x1, $y1, $x2, $y2) {
-  global $delta, $TEST_GRIDS;
+};
+  function manhattan($x1, $y1, $x2, $y2) {
+  global $TEST_GRIDS, $delta;
   return mochi_abs($x1 - $x2) + mochi_abs($y1 - $y2);
-}
-function clone_path($p) {
-  global $delta, $TEST_GRIDS;
+};
+  function clone_path($p) {
+  global $TEST_GRIDS, $delta;
   $res = [];
   $i = 0;
   while ($i < count($p)) {
@@ -40,19 +57,19 @@ function clone_path($p) {
   $i = $i + 1;
 };
   return $res;
-}
-function make_node($pos_x, $pos_y, $goal_x, $goal_y, $g_cost, $path) {
-  global $delta, $TEST_GRIDS;
+};
+  function make_node($pos_x, $pos_y, $goal_x, $goal_y, $g_cost, $path) {
+  global $TEST_GRIDS, $delta;
   $f = manhattan($pos_x, $pos_y, $goal_x, $goal_y);
   return ['pos_x' => $pos_x, 'pos_y' => $pos_y, 'goal_x' => $goal_x, 'goal_y' => $goal_y, 'g_cost' => $g_cost, 'f_cost' => $f, 'path' => $path];
-}
-$delta = [['y' => -1, 'x' => 0], ['y' => 0, 'x' => -1], ['y' => 1, 'x' => 0], ['y' => 0, 'x' => 1]];
-function node_equal($a, $b) {
-  global $delta, $TEST_GRIDS;
+};
+  $delta = [['y' => -1, 'x' => 0], ['y' => 0, 'x' => -1], ['y' => 1, 'x' => 0], ['y' => 0, 'x' => 1]];
+  function node_equal($a, $b) {
+  global $TEST_GRIDS, $delta;
   return $a['pos_x'] == $b['pos_x'] && $a['pos_y'] == $b['pos_y'];
-}
-function contains($nodes, $node) {
-  global $delta, $TEST_GRIDS;
+};
+  function mochi_contains($nodes, $node) {
+  global $TEST_GRIDS, $delta;
   $i = 0;
   while ($i < count($nodes)) {
   if (node_equal($nodes[$i], $node)) {
@@ -61,9 +78,9 @@ function contains($nodes, $node) {
   $i = $i + 1;
 };
   return false;
-}
-function sort_nodes($nodes) {
-  global $delta, $TEST_GRIDS;
+};
+  function sort_nodes($nodes) {
+  global $TEST_GRIDS, $delta;
   $arr = $nodes;
   $i = 1;
   while ($i < count($arr)) {
@@ -82,9 +99,9 @@ function sort_nodes($nodes) {
   $i = $i + 1;
 };
   return $arr;
-}
-function get_successors($grid, $parent, $target) {
-  global $delta, $TEST_GRIDS;
+};
+  function get_successors($grid, $parent, $target) {
+  global $TEST_GRIDS, $delta;
   $res = [];
   $i = 0;
   while ($i < count($delta)) {
@@ -99,9 +116,9 @@ function get_successors($grid, $parent, $target) {
   $i = $i + 1;
 };
   return $res;
-}
-function greedy_best_first($grid, $init, $goal) {
-  global $delta, $TEST_GRIDS;
+};
+  function greedy_best_first($grid, $init, $goal) {
+  global $TEST_GRIDS, $delta;
   $start_path = [$init];
   $start = make_node($init['x'], $init['y'], $goal['x'], $goal['y'], 0, $start_path);
   $open_nodes = [$start];
@@ -124,7 +141,7 @@ function greedy_best_first($grid, $init, $goal) {
   $i = 0;
   while ($i < count($successors)) {
   $child = $successors[$i];
-  if ((!contains($closed_nodes, $child)) && (!contains($open_nodes, $child))) {
+  if ((!mochi_contains($closed_nodes, $child)) && (!mochi_contains($open_nodes, $child))) {
   $open_nodes = _append($open_nodes, $child);
 }
   $i = $i + 1;
@@ -132,18 +149,18 @@ function greedy_best_first($grid, $init, $goal) {
 };
   $r = [$init];
   return $r;
-}
-$TEST_GRIDS = [[[0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0], [1, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0]], [[0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 1, 0, 1], [0, 0, 0, 1, 1, 0, 0], [0, 1, 0, 0, 1, 0, 0], [1, 0, 0, 1, 1, 0, 1], [0, 0, 0, 0, 0, 0, 0]], [[0, 0, 1, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 1], [1, 0, 0, 1, 1], [0, 0, 0, 0, 0]]];
-function print_grid($grid) {
-  global $delta, $TEST_GRIDS;
+};
+  $TEST_GRIDS = [[[0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0], [1, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0]], [[0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 1, 0, 1], [0, 0, 0, 1, 1, 0, 0], [0, 1, 0, 0, 1, 0, 0], [1, 0, 0, 1, 1, 0, 1], [0, 0, 0, 0, 0, 0, 0]], [[0, 0, 1, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 1], [1, 0, 0, 1, 1], [0, 0, 0, 0, 0]]];
+  function print_grid($grid) {
+  global $TEST_GRIDS, $delta;
   $i = 0;
   while ($i < count($grid)) {
   echo rtrim(_str($grid[$i])), PHP_EOL;
   $i = $i + 1;
 };
-}
-function main() {
-  global $delta, $TEST_GRIDS;
+};
+  function main() {
+  global $TEST_GRIDS, $delta;
   $idx = 0;
   while ($idx < count($TEST_GRIDS)) {
   echo rtrim('==grid-' . _str($idx + 1) . '=='), PHP_EOL;
@@ -162,5 +179,13 @@ function main() {
   print_grid($grid);
   $idx = $idx + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

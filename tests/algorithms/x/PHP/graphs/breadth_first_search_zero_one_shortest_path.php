@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -24,7 +39,9 @@ function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-function new_adjacency_list($size) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function new_adjacency_list($size) {
   $g = [];
   $i = 0;
   while ($i < $size) {
@@ -32,8 +49,8 @@ function new_adjacency_list($size) {
   $i = $i + 1;
 };
   return ['graph' => $g, 'size' => $size];
-}
-function add_edge(&$al, $from_vertex, $to_vertex, $weight) {
+};
+  function add_edge(&$al, $from_vertex, $to_vertex, $weight) {
   if (!($weight == 0 || $weight == 1)) {
   _panic('Edge weight must be either 0 or 1.');
 }
@@ -44,8 +61,8 @@ function add_edge(&$al, $from_vertex, $to_vertex, $weight) {
   $edges = $g[$from_vertex];
   $g[$from_vertex] = _append($edges, ['destination_vertex' => $to_vertex, 'weight' => $weight]);
   $al['graph'] = $g;
-}
-function push_front($q, $v) {
+};
+  function push_front($q, $v) {
   global $g;
   $res = [$v];
   $i = 0;
@@ -54,8 +71,8 @@ function push_front($q, $v) {
   $i = $i + 1;
 };
   return $res;
-}
-function pop_front($q) {
+};
+  function pop_front($q) {
   global $g;
   $res = [];
   $i = 1;
@@ -64,12 +81,12 @@ function pop_front($q) {
   $i = $i + 1;
 };
   return $res;
-}
-function front($q) {
+};
+  function front($q) {
   global $g;
   return $q[0];
-}
-function get_shortest_path($al, $start_vertex, $finish_vertex) {
+};
+  function get_shortest_path($al, $start_vertex, $finish_vertex) {
   global $g;
   $queue = [$start_vertex];
   $distances = [];
@@ -108,22 +125,30 @@ function get_shortest_path($al, $start_vertex, $finish_vertex) {
   _panic('No path from start_vertex to finish_vertex.');
 }
   return $result;
-}
-$g = new_adjacency_list(11);
-add_edge($g, 0, 1, 0);
-add_edge($g, 0, 3, 1);
-add_edge($g, 1, 2, 0);
-add_edge($g, 2, 3, 0);
-add_edge($g, 4, 2, 1);
-add_edge($g, 4, 5, 1);
-add_edge($g, 4, 6, 1);
-add_edge($g, 5, 9, 0);
-add_edge($g, 6, 7, 1);
-add_edge($g, 7, 8, 1);
-add_edge($g, 8, 10, 1);
-add_edge($g, 9, 7, 0);
-add_edge($g, 9, 10, 1);
-echo rtrim(_str(get_shortest_path($g, 0, 3))), PHP_EOL;
-echo rtrim(_str(get_shortest_path($g, 4, 10))), PHP_EOL;
-echo rtrim(_str(get_shortest_path($g, 4, 8))), PHP_EOL;
-echo rtrim(_str(get_shortest_path($g, 0, 1))), PHP_EOL;
+};
+  $g = new_adjacency_list(11);
+  add_edge($g, 0, 1, 0);
+  add_edge($g, 0, 3, 1);
+  add_edge($g, 1, 2, 0);
+  add_edge($g, 2, 3, 0);
+  add_edge($g, 4, 2, 1);
+  add_edge($g, 4, 5, 1);
+  add_edge($g, 4, 6, 1);
+  add_edge($g, 5, 9, 0);
+  add_edge($g, 6, 7, 1);
+  add_edge($g, 7, 8, 1);
+  add_edge($g, 8, 10, 1);
+  add_edge($g, 9, 7, 0);
+  add_edge($g, 9, 10, 1);
+  echo rtrim(_str(get_shortest_path($g, 0, 3))), PHP_EOL;
+  echo rtrim(_str(get_shortest_path($g, 4, 10))), PHP_EOL;
+  echo rtrim(_str(get_shortest_path($g, 4, 8))), PHP_EOL;
+  echo rtrim(_str(get_shortest_path($g, 0, 1))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

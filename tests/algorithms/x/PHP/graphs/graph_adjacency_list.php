@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,13 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function create_graph($vertices, $edges, $directed) {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function create_graph($vertices, $edges, $directed) {
   $adj = [];
   foreach ($vertices as $v) {
   $adj[$v] = [];
@@ -40,10 +61,10 @@ function create_graph($vertices, $edges, $directed) {
 }
 };
   return ['adj' => $adj, 'directed' => $directed];
-}
-function add_vertex($graph, $v) {
+};
+  function add_vertex($graph, $v) {
   if (isset($graph['adj'][$v])) {
-  $panic('vertex exists');
+  _panic('vertex exists');
 }
   $adj = [];
   foreach (array_keys($graph['adj']) as $k) {
@@ -51,8 +72,8 @@ function add_vertex($graph, $v) {
 };
   $adj[$v] = [];
   return ['adj' => $adj, 'directed' => $graph['directed']];
-}
-function remove_from_list($lst, $value) {
+};
+  function remove_from_list($lst, $value) {
   $res = [];
   $i = 0;
   while ($i < count($lst)) {
@@ -62,8 +83,8 @@ function remove_from_list($lst, $value) {
   $i = $i + 1;
 };
   return $res;
-}
-function remove_key($m, $key) {
+};
+  function remove_key($m, $key) {
   $res = [];
   foreach (array_keys($m) as $k) {
   if ($k != $key) {
@@ -71,13 +92,13 @@ function remove_key($m, $key) {
 }
 };
   return $res;
-}
-function add_edge($graph, $s, $d) {
+};
+  function add_edge($graph, $s, $d) {
   if (((!(isset($graph['adj'][$s]))) || (!(isset($graph['adj'][$d]))))) {
-  $panic('vertex missing');
+  _panic('vertex missing');
 }
   if (contains_edge($graph, $s, $d)) {
-  $panic('edge exists');
+  _panic('edge exists');
 }
   $adj = [];
   foreach (array_keys($graph['adj']) as $k) {
@@ -92,13 +113,13 @@ function add_edge($graph, $s, $d) {
   $adj[$d] = $list_d;
 }
   return ['adj' => $adj, 'directed' => $graph['directed']];
-}
-function remove_edge($graph, $s, $d) {
+};
+  function remove_edge($graph, $s, $d) {
   if (((!(isset($graph['adj'][$s]))) || (!(isset($graph['adj'][$d]))))) {
-  $panic('vertex missing');
+  _panic('vertex missing');
 }
   if (!contains_edge($graph, $s, $d)) {
-  $panic('edge missing');
+  _panic('edge missing');
 }
   $adj = [];
   foreach (array_keys($graph['adj']) as $k) {
@@ -109,10 +130,10 @@ function remove_edge($graph, $s, $d) {
   $adj[$d] = remove_from_list($adj[$d], $s);
 }
   return ['adj' => $adj, 'directed' => $graph['directed']];
-}
-function remove_vertex($graph, $v) {
+};
+  function remove_vertex($graph, $v) {
   if (!(isset($graph['adj'][$v]))) {
-  $panic('vertex missing');
+  _panic('vertex missing');
 }
   $adj = [];
   foreach (array_keys($graph['adj']) as $k) {
@@ -121,13 +142,13 @@ function remove_vertex($graph, $v) {
 }
 };
   return ['adj' => $adj, 'directed' => $graph['directed']];
-}
-function contains_vertex($graph, $v) {
+};
+  function contains_vertex($graph, $v) {
   return isset($graph['adj'][$v]);
-}
-function contains_edge($graph, $s, $d) {
+};
+  function contains_edge($graph, $s, $d) {
   if (((!(isset($graph['adj'][$s]))) || (!(isset($graph['adj'][$d]))))) {
-  $panic('vertex missing');
+  _panic('vertex missing');
 }
   foreach ($graph['adj'][$s] as $x) {
   if ($x == $d) {
@@ -135,14 +156,14 @@ function contains_edge($graph, $s, $d) {
 }
 };
   return false;
-}
-function clear_graph($graph) {
+};
+  function clear_graph($graph) {
   return ['adj' => [], 'directed' => $graph['directed']];
-}
-function to_string($graph) {
+};
+  function to_string($graph) {
   return _str($graph['adj']);
-}
-function main() {
+};
+  function main() {
   $vertices = ['1', '2', '3', '4'];
   $edges = [['1', '2'], ['2', '3'], ['3', '4']];
   $g = create_graph($vertices, $edges, false);
@@ -153,5 +174,13 @@ function main() {
   $g = remove_edge($g, '1', '2');
   $g = remove_vertex($g, '3');
   echo rtrim(to_string($g)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

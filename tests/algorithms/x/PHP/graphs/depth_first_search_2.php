@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function add_edge(&$g, $from_vertex, $to_vertex) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function add_edge($g, $from_vertex, $to_vertex) {
   $v = $g['vertex'];
   if (array_key_exists($from_vertex, $v)) {
   $lst = $v[$from_vertex];
@@ -37,8 +54,8 @@ function add_edge(&$g, $from_vertex, $to_vertex) {
   $g['size'] = $to_vertex + 1;
 }
   return $g;
-}
-function list_to_string($lst) {
+};
+  function list_to_string($lst) {
   global $g;
   $res = '';
   $i = 0;
@@ -50,8 +67,8 @@ function list_to_string($lst) {
   $i = $i + 1;
 };
   return $res;
-}
-function list_to_arrow($lst) {
+};
+  function list_to_arrow($lst) {
   global $g;
   $res = '';
   $i = 0;
@@ -63,8 +80,8 @@ function list_to_arrow($lst) {
   $i = $i + 1;
 };
   return $res;
-}
-function print_graph($g) {
+};
+  function print_graph($g) {
   echo rtrim(_str($g['vertex'])), PHP_EOL;
   $i = 0;
   while ($i < $g['size']) {
@@ -76,8 +93,8 @@ function print_graph($g) {
   echo rtrim($line), PHP_EOL;
   $i = $i + 1;
 };
-}
-function dfs_recursive($g, $start_vertex, &$visited, $order) {
+};
+  function dfs_recursive($g, $start_vertex, &$visited, $order) {
   $visited[$start_vertex] = true;
   $order = _append($order, $start_vertex);
   if (isset($g['vertex'][$start_vertex])) {
@@ -92,8 +109,8 @@ function dfs_recursive($g, $start_vertex, &$visited, $order) {
 };
 }
   return $order;
-}
-function dfs($g) {
+};
+  function dfs($g) {
   $n = $g['size'];
   $visited = [];
   $i = 0;
@@ -110,14 +127,22 @@ function dfs($g) {
   $i = $i + 1;
 };
   return $order;
-}
-$g = ['vertex' => [], 'size' => 0];
-$g = add_edge($g, 0, 1);
-$g = add_edge($g, 0, 2);
-$g = add_edge($g, 1, 2);
-$g = add_edge($g, 2, 0);
-$g = add_edge($g, 2, 3);
-$g = add_edge($g, 3, 3);
-print_graph($g);
-echo rtrim('DFS:'), PHP_EOL;
-echo rtrim(list_to_string(dfs($g))), PHP_EOL;
+};
+  $g = ['vertex' => [], 'size' => 0];
+  $g = add_edge($g, 0, 1);
+  $g = add_edge($g, 0, 2);
+  $g = add_edge($g, 1, 2);
+  $g = add_edge($g, 2, 0);
+  $g = add_edge($g, 2, 3);
+  $g = add_edge($g, 3, 3);
+  print_graph($g);
+  echo rtrim('DFS:'), PHP_EOL;
+  echo rtrim(list_to_string(dfs($g))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,17 +1,34 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$seed = 1;
-function rand_int($n) {
-  global $seed, $TEST_GRAPH, $result;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $seed = 1;
+  function rand_int($n) {
+  global $TEST_GRAPH, $result, $seed;
   $seed = ($seed * 1103515245 + 12345) % 2147483648;
   return $seed % $n;
-}
-function contains($list, $value) {
-  global $seed, $TEST_GRAPH, $result;
+};
+  function mochi_contains($list, $value) {
+  global $TEST_GRAPH, $result, $seed;
   $i = 0;
   while ($i < count($list)) {
   if ($list[$i] == $value) {
@@ -20,9 +37,9 @@ function contains($list, $value) {
   $i = $i + 1;
 };
   return false;
-}
-function remove_all($list, $value) {
-  global $seed, $TEST_GRAPH, $result;
+};
+  function remove_all($list, $value) {
+  global $TEST_GRAPH, $result, $seed;
   $res = [];
   $i = 0;
   while ($i < count($list)) {
@@ -32,9 +49,9 @@ function remove_all($list, $value) {
   $i = $i + 1;
 };
   return $res;
-}
-function partition_graph($graph) {
-  global $seed, $TEST_GRAPH, $result;
+};
+  function partition_graph($graph) {
+  global $TEST_GRAPH, $result, $seed;
   $contracted = [];
   foreach (array_keys($graph) as $node) {
   $contracted[$node] = [$node];
@@ -60,7 +77,7 @@ function partition_graph($graph) {
   $i = 0;
   while ($i < count($graph_copy[$u])) {
   $n = $graph_copy[$u][$i];
-  if ($n != $u && $n != $v && contains($uv_neighbors, $n) == false) {
+  if ($n != $u && $n != $v && mochi_contains($uv_neighbors, $n) == false) {
   $uv_neighbors = _append($uv_neighbors, $n);
 }
   $i = $i + 1;
@@ -68,7 +85,7 @@ function partition_graph($graph) {
   $i = 0;
   while ($i < count($graph_copy[$v])) {
   $n = $graph_copy[$v][$i];
-  if ($n != $u && $n != $v && contains($uv_neighbors, $n) == false) {
+  if ($n != $u && $n != $v && mochi_contains($uv_neighbors, $n) == false) {
   $uv_neighbors = _append($uv_neighbors, $n);
 }
   $i = $i + 1;
@@ -91,7 +108,7 @@ function partition_graph($graph) {
   $i = 0;
   while ($i < count($contracted[$v])) {
   $val = $contracted[$v][$i];
-  if (contains($group, $val) == false) {
+  if (mochi_contains($group, $val) == false) {
   $group = _append($group, $val);
 }
   $i = $i + 1;
@@ -118,7 +135,7 @@ function partition_graph($graph) {
   $l = 0;
   while ($l < count($neigh)) {
   $nb = $neigh[$l];
-  if (contains($groupB, $nb)) {
+  if (mochi_contains($groupB, $nb)) {
   $cut = _append($cut, ['a' => $node, 'b' => $nb]);
 }
   $l = $l + 1;
@@ -126,9 +143,9 @@ function partition_graph($graph) {
   $j = $j + 1;
 };
   return $cut;
-}
-function cut_to_string($cut) {
-  global $seed, $TEST_GRAPH, $result;
+};
+  function cut_to_string($cut) {
+  global $TEST_GRAPH, $result, $seed;
   $s = '{';
   $i = 0;
   while ($i < count($cut)) {
@@ -141,7 +158,15 @@ function cut_to_string($cut) {
 };
   $s = $s . '}';
   return $s;
-}
-$TEST_GRAPH = ['1' => ['2', '3', '4', '5'], '2' => ['1', '3', '4', '5'], '3' => ['1', '2', '4', '5', '10'], '4' => ['1', '2', '3', '5', '6'], '5' => ['1', '2', '3', '4', '7'], '6' => ['7', '8', '9', '10', '4'], '7' => ['6', '8', '9', '10', '5'], '8' => ['6', '7', '9', '10'], '9' => ['6', '7', '8', '10'], '10' => ['6', '7', '8', '9', '3']];
-$result = partition_graph($TEST_GRAPH);
-echo rtrim(cut_to_string($result)), PHP_EOL;
+};
+  $TEST_GRAPH = ['1' => ['2', '3', '4', '5'], '2' => ['1', '3', '4', '5'], '3' => ['1', '2', '4', '5', '10'], '4' => ['1', '2', '3', '5', '6'], '5' => ['1', '2', '3', '4', '7'], '6' => ['7', '8', '9', '10', '4'], '7' => ['6', '8', '9', '10', '5'], '8' => ['6', '7', '9', '10'], '9' => ['6', '7', '8', '10'], '10' => ['6', '7', '8', '9', '3']];
+  $result = partition_graph($TEST_GRAPH);
+  echo rtrim(cut_to_string($result)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
