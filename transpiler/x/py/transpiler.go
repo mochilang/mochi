@@ -129,8 +129,7 @@ const helperAppend = `
 def _append(lst, v):
     if lst is None:
         lst = []
-    lst.append(v)
-    return lst
+    return lst + [v]
 `
 
 const helperSetIndex = `
@@ -4845,6 +4844,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					if err != nil {
 						return nil, err
 					}
+					if call, ok := end.(*CallExpr); ok && len(call.Args) == 1 {
+						if name, ok := call.Func.(*Name); ok && name.Name == "len" {
+							if arg, ok := call.Args[0].(*Name); ok {
+								if targ, ok := expr.(*Name); ok && arg.Name == targ.Name {
+									end = nil
+								}
+							}
+						}
+					}
 				}
 				if op.Index.Step != nil {
 					step, err = convertExpr(op.Index.Step)
@@ -5281,7 +5289,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "slice":
 			if len(args) == 3 {
-				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+				end := args[2]
+				if call, ok := end.(*CallExpr); ok && len(call.Args) == 1 {
+					if name, ok := call.Func.(*Name); ok && name.Name == "len" {
+						if arg, ok := call.Args[0].(*Name); ok {
+							if targ, ok := args[0].(*Name); ok && arg.Name == targ.Name {
+								end = nil
+							}
+						}
+					}
+				}
+				return &SliceExpr{Target: args[0], Start: args[1], End: end}, nil
 			}
 		case "upper":
 			if len(args) == 1 {
