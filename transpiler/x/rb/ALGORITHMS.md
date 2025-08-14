@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
 Completed programs: 1058/1077
-Last updated: 2025-08-14 16:48 +0700
+Last updated: 2025-08-14 17:09 +0700
 
 Checklist:
 
@@ -407,7 +407,7 @@ Checklist:
 | 398 | graphs/bellman_ford | ✓ | 128µs | 14.2 KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 1ms | 21.4 KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 10.263ms | 425.3 KB |
-| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1ms | 319.6 KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 2.755ms | 216.5 KB |
 | 402 | graphs/bidirectional_search | ✓ | 1ms | 21.1 KB |
 | 403 | graphs/boruvka | ✓ | 327µs | 43.9 KB |
 | 404 | graphs/breadth_first_search | ✓ | 118µs | 13.2 KB |
