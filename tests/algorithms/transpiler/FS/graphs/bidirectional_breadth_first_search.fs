@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-14 17:09 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -37,6 +37,10 @@ let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collec
     for (k, v) in pairs do
         d.[k] <- v
     upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -47,8 +51,8 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type Node = {
-    pos: string
-    path: string array
+    mutable _pos: string
+    mutable _path: string array
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -66,7 +70,7 @@ let rec key (y: int) (x: int) =
         __ret
     with
         | Return -> __ret
-let rec parse_int (s: string) =
+and parse_int (s: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable s = s
     try
@@ -81,7 +85,7 @@ let rec parse_int (s: string) =
         __ret
     with
         | Return -> __ret
-let rec parse_key (k: string) =
+and parse_key (k: string) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable k = k
     try
@@ -95,20 +99,20 @@ let rec parse_key (k: string) =
         __ret
     with
         | Return -> __ret
-let rec neighbors (pos: string) =
+and neighbors (_pos: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
-    let mutable pos = pos
+    let mutable _pos = _pos
     try
-        let coords: int array = parse_key (pos)
-        let y: int = _idx coords (0)
-        let x: int = _idx coords (1)
-        let mutable res: string array = [||]
+        let coords: int array = parse_key (_pos)
+        let y: int = _idx coords (int 0)
+        let x: int = _idx coords (int 1)
+        let mutable res: string array = Array.empty<string>
         let mutable i: int = 0
         while i < (Seq.length (delta)) do
-            let ny: int = y + (_idx (_idx delta (i)) (0))
-            let nx: int = x + (_idx (_idx delta (i)) (1))
-            if (((ny >= 0) && (ny < (Seq.length (grid)))) && (nx >= 0)) && (nx < (Seq.length (_idx grid (0)))) then
-                if (_idx (_idx grid (ny)) (nx)) = 0 then
+            let ny: int = y + (_idx (_idx delta (int i)) (int 0))
+            let nx: int = x + (_idx (_idx delta (int i)) (int 1))
+            if (((ny >= 0) && (ny < (Seq.length (grid)))) && (nx >= 0)) && (nx < (Seq.length (_idx grid (int 0)))) then
+                if (_idx (_idx grid (int ny)) (int nx)) = 0 then
                     res <- Array.append res [|(key (ny) (nx))|]
             i <- i + 1
         __ret <- res
@@ -116,120 +120,120 @@ let rec neighbors (pos: string) =
         __ret
     with
         | Return -> __ret
-let rec reverse_list (lst: string array) =
+and reverse_list (lst: string array) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable lst = lst
     try
-        let mutable res: string array = [||]
+        let mutable res: string array = Array.empty<string>
         let mutable i: int = (Seq.length (lst)) - 1
         while i >= 0 do
-            res <- Array.append res [|(_idx lst (i))|]
+            res <- Array.append res [|(_idx lst (int i))|]
             i <- i - 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec bfs (start: string) (goal: string) =
+and bfs (start: string) (goal: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable start = start
     let mutable goal = goal
     try
-        let mutable queue: Node array = [||]
-        queue <- Array.append queue [|{ pos = start; path = [|start|] }|]
+        let mutable queue: Node array = Array.empty<Node>
+        queue <- Array.append queue [|{ _pos = start; _path = unbox<string array> [|start|] }|]
         let mutable head: int = 0
         let mutable visited: System.Collections.Generic.IDictionary<string, bool> = _dictCreate [(start, true)]
         while head < (Seq.length (queue)) do
-            let node: Node = _idx queue (head)
+            let node: Node = _idx queue (int head)
             head <- head + 1
-            if (node.pos) = goal then
-                __ret <- node.path
+            if (node._pos) = goal then
+                __ret <- node._path
                 raise Return
-            let neigh: string array = neighbors (node.pos)
+            let neigh: string array = neighbors (node._pos)
             let mutable i: int = 0
             while i < (Seq.length (neigh)) do
-                let npos: string = _idx neigh (i)
+                let npos: string = _idx neigh (int i)
                 if not (visited.ContainsKey(npos)) then
-                    visited.[npos] <- true
-                    let mutable new_path: string array = Array.append (node.path) [|npos|]
-                    queue <- Array.append queue [|{ pos = npos; path = new_path }|]
+                    visited <- _dictAdd (visited) (string (npos)) (true)
+                    let mutable new_path: string array = Array.append (node._path) [|npos|]
+                    queue <- Array.append queue [|{ _pos = npos; _path = new_path }|]
                 i <- i + 1
         __ret <- Array.empty<string>
         raise Return
         __ret
     with
         | Return -> __ret
-let rec bidirectional_bfs (start: string) (goal: string) =
+and bidirectional_bfs (start: string) (goal: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable start = start
     let mutable goal = goal
     try
-        let mutable queue_f: Node array = [||]
-        let mutable queue_b: Node array = [||]
-        queue_f <- Array.append queue_f [|{ pos = start; path = [|start|] }|]
-        queue_b <- Array.append queue_b [|{ pos = goal; path = [|goal|] }|]
+        let mutable queue_f: Node array = Array.empty<Node>
+        let mutable queue_b: Node array = Array.empty<Node>
+        queue_f <- Array.append queue_f [|{ _pos = start; _path = unbox<string array> [|start|] }|]
+        queue_b <- Array.append queue_b [|{ _pos = goal; _path = unbox<string array> [|goal|] }|]
         let mutable head_f: int = 0
         let mutable head_b: int = 0
         let mutable visited_f: System.Collections.Generic.IDictionary<string, string array> = _dictCreate [(start, [|start|])]
         let mutable visited_b: System.Collections.Generic.IDictionary<string, string array> = _dictCreate [(goal, [|goal|])]
         while (head_f < (Seq.length (queue_f))) && (head_b < (Seq.length (queue_b))) do
-            let node_f: Node = _idx queue_f (head_f)
+            let node_f: Node = _idx queue_f (int head_f)
             head_f <- head_f + 1
-            let neigh_f: string array = neighbors (node_f.pos)
+            let neigh_f: string array = neighbors (node_f._pos)
             let mutable i: int = 0
             while i < (Seq.length (neigh_f)) do
-                let npos: string = _idx neigh_f (i)
+                let npos: string = _idx neigh_f (int i)
                 if not (visited_f.ContainsKey(npos)) then
-                    let mutable new_path: string array = Array.append (node_f.path) [|npos|]
-                    visited_f.[npos] <- new_path
+                    let mutable new_path: string array = Array.append (node_f._path) [|npos|]
+                    visited_f <- _dictAdd (visited_f) (string (npos)) (new_path)
                     if visited_b.ContainsKey(npos) then
-                        let mutable rev: string array = reverse_list (visited_b.[(string (npos))])
+                        let mutable rev: string array = reverse_list (_dictGet visited_b ((string (npos))))
                         let mutable j: int = 1
                         while j < (Seq.length (rev)) do
-                            new_path <- Array.append new_path [|(_idx rev (j))|]
+                            new_path <- Array.append new_path [|(_idx rev (int j))|]
                             j <- j + 1
                         __ret <- new_path
                         raise Return
-                    queue_f <- Array.append queue_f [|{ pos = npos; path = new_path }|]
+                    queue_f <- Array.append queue_f [|{ _pos = npos; _path = new_path }|]
                 i <- i + 1
-            let node_b: Node = _idx queue_b (head_b)
+            let node_b: Node = _idx queue_b (int head_b)
             head_b <- head_b + 1
-            let neigh_b: string array = neighbors (node_b.pos)
+            let neigh_b: string array = neighbors (node_b._pos)
             let mutable j: int = 0
             while j < (Seq.length (neigh_b)) do
-                let nposb: string = _idx neigh_b (j)
+                let nposb: string = _idx neigh_b (int j)
                 if not (visited_b.ContainsKey(nposb)) then
-                    let mutable new_path_b: string array = Array.append (node_b.path) [|nposb|]
-                    visited_b.[nposb] <- new_path_b
+                    let mutable new_path_b: string array = Array.append (node_b._path) [|nposb|]
+                    visited_b <- _dictAdd (visited_b) (string (nposb)) (new_path_b)
                     if visited_f.ContainsKey(nposb) then
-                        let mutable path_f: string array = visited_f.[(string (nposb))]
+                        let mutable path_f: string array = _dictGet visited_f ((string (nposb)))
                         new_path_b <- reverse_list (new_path_b)
                         let mutable t: int = 1
                         while t < (Seq.length (new_path_b)) do
-                            path_f <- Array.append path_f [|(_idx new_path_b (t))|]
+                            path_f <- Array.append path_f [|(_idx new_path_b (int t))|]
                             t <- t + 1
                         __ret <- path_f
                         raise Return
-                    queue_b <- Array.append queue_b [|{ pos = nposb; path = new_path_b }|]
+                    queue_b <- Array.append queue_b [|{ _pos = nposb; _path = new_path_b }|]
                 j <- j + 1
         __ret <- unbox<string array> [|start|]
         raise Return
         __ret
     with
         | Return -> __ret
-let rec path_to_string (path: string array) =
+and path_to_string (_path: string array) =
     let mutable __ret : string = Unchecked.defaultof<string>
-    let mutable path = path
+    let mutable _path = _path
     try
-        if (Seq.length (path)) = 0 then
+        if (Seq.length (_path)) = 0 then
             __ret <- "[]"
             raise Return
-        let mutable first: int array = parse_key (_idx path (0))
-        let mutable s: string = ((("[(" + (_str (_idx first (0)))) + ", ") + (_str (_idx first (1)))) + ")"
+        let mutable first: int array = parse_key (_idx _path (int 0))
+        let mutable s: string = ((("[(" + (_str (_idx first (int 0)))) + ", ") + (_str (_idx first (int 1)))) + ")"
         let mutable i: int = 1
-        while i < (Seq.length (path)) do
-            let c: int array = parse_key (_idx path (i))
-            s <- ((((s + ", (") + (_str (_idx c (0)))) + ", ") + (_str (_idx c (1)))) + ")"
+        while i < (Seq.length (_path)) do
+            let c: int array = parse_key (_idx _path (int i))
+            s <- ((((s + ", (") + (_str (_idx c (int 0)))) + ", ") + (_str (_idx c (int 1)))) + ")"
             i <- i + 1
         s <- s + "]"
         __ret <- s
@@ -238,11 +242,11 @@ let rec path_to_string (path: string array) =
     with
         | Return -> __ret
 let start: string = key (0) (0)
-let goal: string = key ((Seq.length (grid)) - 1) ((Seq.length (_idx grid (0))) - 1)
+let goal: string = key ((Seq.length (grid)) - 1) ((Seq.length (_idx grid (int 0))) - 1)
 let path1: string array = bfs (start) (goal)
-printfn "%s" (path_to_string (path1))
+ignore (printfn "%s" (path_to_string (path1)))
 let path2: string array = bidirectional_bfs (start) (goal)
-printfn "%s" (path_to_string (path2))
+ignore (printfn "%s" (path_to_string (path2)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

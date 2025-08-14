@@ -58,6 +58,7 @@ type Program struct {
 	UsePadStart    bool
 	UseSHA256      bool
 	UseParseIntStr bool
+	UseToi         bool
 	UseDictAdd     bool
 	UseDictGet     bool
 	UseDictCreate  bool
@@ -99,6 +100,7 @@ var (
 	funcParamNames map[string][]string
 	funcDefs       map[string]*FunDef
 	useParseIntStr bool
+	usesToi        bool
 	mutatedVars    map[string]bool
 	letPtrs        map[string][]*LetStmt
 	usesSafeIndex  bool
@@ -157,6 +159,18 @@ const helperPadStart = `let _padStart (s:string) (width:int) (pad:string) =
     while out.Length < width do
         out <- pad + out
     out
+`
+
+const helperToi = `let toi (v:obj) : int =
+    match v with
+    | :? int as n -> n
+    | :? int64 as n -> int n
+    | :? float as f -> int f
+    | :? string as s ->
+        match System.Int32.TryParse(s) with
+        | true, n -> n
+        | _ -> 0
+    | _ -> 0
 `
 
 const helperSHA256 = `let _sha256 (s:string) : int array =
@@ -3422,6 +3436,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperParseIntStr)
 		buf.WriteString("\n")
 	}
+	if prog.UseToi {
+		buf.WriteString(helperToi)
+		buf.WriteString("\n")
+	}
 	if prog.UseDictAdd {
 		neededOpens["System.Collections.Generic"] = true
 		buf.WriteString(helperDictAdd)
@@ -3552,6 +3570,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	mutatedVars = map[string]bool{}
 	letPtrs = map[string][]*LetStmt{}
 	useParseIntStr = false
+	usesToi = false
 	usesNow = false
 	usesBreak = false
 	usesReturn = false
@@ -3653,6 +3672,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UsePadStart = usesPadStart
 	p.UseSHA256 = usesSHA256
 	p.UseParseIntStr = useParseIntStr
+	p.UseToi = usesToi
 	p.UseDictAdd = usesDictAdd
 	p.UseDictGet = usesDictGet
 	p.UseDictCreate = usesDictCreate
@@ -5007,6 +5027,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("to_int expects 1 arg")
 			}
 			return &CastExpr{Expr: args[0], Type: "int"}, nil
+		case "toi":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("toi expects 1 arg")
+			}
+			usesToi = true
+			return &CallExpr{Func: "toi", Args: args}, nil
 		case "indexOf":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("indexOf expects 2 args")
