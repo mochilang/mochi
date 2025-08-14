@@ -214,7 +214,6 @@ const helperJSON = `let json (arr:obj) =
 
 const helperStr = `let rec _str v =
     let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -4648,8 +4647,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
-				case "float":
-					return &CallExpr{Func: "printfn \"%g\"", Args: []Expr{args[0]}}, nil
+                               case "float":
+                                       usesStr = true
+                                       wrapped := &CallExpr{Func: "_str", Args: []Expr{args[0]}}
+                                       return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
 				case "string":
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{args[0]}}, nil
 				default:
@@ -4668,8 +4669,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
 				case "int":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
-				case "float":
-					elems[i] = &CallExpr{Func: "sprintf \"%g\"", Args: []Expr{a}}
+                               case "float":
+                                       usesStr = true
+                                       elems[i] = &CallExpr{Func: "_str", Args: []Expr{a}}
 				case "string":
 					elems[i] = &CallExpr{Func: "sprintf \"%s\"", Args: []Expr{a}}
 				case "array":
@@ -4690,8 +4692,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{b}}, nil
 				case "int":
 					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{args[0]}}, nil
-				case "float":
-					return &CallExpr{Func: "printf \"%g\"", Args: []Expr{args[0]}}, nil
+                               case "float":
+                                       usesStr = true
+                                       wrapped := &CallExpr{Func: "_str", Args: []Expr{args[0]}}
+                                       return &CallExpr{Func: "printf \"%s\"", Args: []Expr{wrapped}}, nil
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
 					concat := &CallExpr{Func: "String.concat \" \"", Args: []Expr{&CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
