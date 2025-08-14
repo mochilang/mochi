@@ -6833,16 +6833,28 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 			tmp := fmt.Sprintf("__tmp%d", tempCounter)
 			tempCounter++
+			ex := convertExpr(s.For.Source)
 			var buf bytes.Buffer
 			buf.WriteString("{\n")
 			writeIndent(&buf, 1)
-			fmt.Fprintf(&buf, "%s* %s = ", elemType, tmp)
-			convertExpr(s.For.Source).emitExpr(&buf)
-			buf.WriteString(";\n")
-			writeIndent(&buf, 1)
-			fmt.Fprintf(&buf, "size_t %s_len = ", tmp)
-			emitLenExpr(&buf, convertExpr(s.For.Source))
-			buf.WriteString(";\n")
+			if idx, ok := ex.(*IndexExpr); ok && inferExprType(env, idx.Target) == "MapSL" {
+				fmt.Fprintf(&buf, "size_t %s_len = 0;\n", tmp)
+				writeIndent(&buf, 1)
+				fmt.Fprintf(&buf, "%s* %s = ", elemType, tmp)
+				prev := currentVarName
+				currentVarName = tmp
+				ex.emitExpr(&buf)
+				currentVarName = prev
+				buf.WriteString(";\n")
+			} else {
+				fmt.Fprintf(&buf, "%s* %s = ", elemType, tmp)
+				ex.emitExpr(&buf)
+				buf.WriteString(";\n")
+				writeIndent(&buf, 1)
+				fmt.Fprintf(&buf, "size_t %s_len = ", tmp)
+				emitLenExpr(&buf, ex)
+				buf.WriteString(";\n")
+			}
 			forStmt := &ForStmt{Var: s.For.Name, ListVar: tmp, LenVar: tmp + "_len", ElemType: elemType, Body: body}
 			forStmt.emit(&buf, 1)
 			buf.WriteString("}\n")
@@ -7322,6 +7334,8 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 				if types.IsStringAnyMapLike(mochiT) {
 					mapValTypes[p.Name] = "const char*"
 					needMapGetSS = true
+				} else if _, ok2 := mt.Value.(types.IntType); ok2 {
+					mapValTypes[p.Name] = "int"
 				} else {
 					mapValTypes[p.Name] = cTypeFromMochiType(mt.Value)
 				}
@@ -9597,10 +9611,8 @@ func cTypeFromMochiType(t types.Type) string {
 		return cTypeFromMochiType(tt.Elem) + "[]"
 	case types.MapType:
 		if _, ok := tt.Key.(types.StringType); ok {
-			if lt, ok2 := tt.Value.(types.ListType); ok2 {
-				if _, ok3 := lt.Elem.(types.StringType); ok3 {
-					return "MapSL"
-				}
+			if _, ok2 := tt.Value.(types.ListType); ok2 {
+				return "MapSL"
 			}
 			if _, ok2 := tt.Value.(types.StringType); ok2 {
 				return "MapSS"
