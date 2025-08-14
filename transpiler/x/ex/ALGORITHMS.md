@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-14 11:09 GMT+7
+Last updated: 2025-08-14 15:49 GMT+7
 
 ## Algorithms Golden Test Checklist (830/1077)
 | Index | Name | Status | Duration | Memory |
@@ -411,7 +411,7 @@ Last updated: 2025-08-14 11:09 GMT+7
 | 402 | graphs/bidirectional_search | ✓ | 498us | 17.4 MB |
 | 403 | graphs/boruvka | error |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 13.98ms | 17.3 MB |
-| 405 | graphs/breadth_first_search_2 | ✓ | 10.55ms | 17.3 MB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 7.25ms | 17.3 MB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 9.97ms | 25.0 MB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1us | 0 B |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | error |  |  |
