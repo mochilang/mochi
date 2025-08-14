@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-13 16:54 GMT+7
+Last updated: 2025-08-13 17:04 GMT+7
 
-## Algorithms Golden Test Checklist (744/1077)
+## Algorithms Golden Test Checklist (751/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -400,14 +400,14 @@ Last updated: 2025-08-13 16:54 GMT+7
 | 391 | graphics/butterfly_pattern | ✓ | 91µs | 2.0 MB |
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 28µs | 2.1 MB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 48µs | 2.0 MB |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
+| 394 | graphs/a_star | ✓ | 148µs | 2.1 MB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 3.518ms | 2.2 MB |
+| 396 | graphs/articulation_points | ✓ | 109µs | 2.1 MB |
+| 397 | graphs/basic_graphs | ✓ | 184µs | 2.2 MB |
+| 398 | graphs/bellman_ford | ✓ | 33µs | 2.1 MB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 118µs | 2.1 MB |
+| 400 | graphs/bidirectional_a_star | ✓ | 942µs | 2.0 MB |
+| 401 | graphs/bidirectional_breadth_first_search | error |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search |   |  |  |

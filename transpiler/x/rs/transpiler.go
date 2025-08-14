@@ -992,7 +992,7 @@ func (f *FunLit) emit(w io.Writer) {
 			writeStmt(buf, st, 1)
 		}
 		io.WriteString(w, "}\n")
-		io.WriteString(w, "move |")
+		io.WriteString(w, "|")
 		for i, p := range f.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -1032,7 +1032,7 @@ func (f *FunLit) emit(w io.Writer) {
 		io.WriteString(w, "\n}")
 		return
 	}
-	io.WriteString(w, "move |")
+	io.WriteString(w, "|")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -2443,13 +2443,19 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 								v.emit(w)
 								io.WriteString(w, ".to_string()")
 							} else {
-								s.Value.emit(w)
+								v.emit(w)
+								io.WriteString(w, ".clone()")
 							}
 						default:
 							s.Value.emit(w)
 						}
 					} else {
-						s.Value.emit(w)
+						if v, ok := s.Value.(*NameRef); ok {
+							v.emit(w)
+							io.WriteString(w, ".clone()")
+						} else {
+							s.Value.emit(w)
+						}
 					}
 					lockedMap = ""
 					io.WriteString(w, "; _map.insert(")
@@ -2511,13 +2517,19 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 						v.emit(w)
 						io.WriteString(w, ".to_string()")
 					} else {
-						s.Value.emit(w)
+						v.emit(w)
+						io.WriteString(w, ".clone()")
 					}
 				default:
 					s.Value.emit(w)
 				}
 			} else {
-				s.Value.emit(w)
+				if v, ok := s.Value.(*NameRef); ok {
+					v.emit(w)
+					io.WriteString(w, ".clone()")
+				} else {
+					s.Value.emit(w)
+				}
 			}
 			io.WriteString(w, ")")
 			if useUnsafe {
@@ -6415,7 +6427,11 @@ func inferType(e Expr) string {
 					kt = "String"
 				}
 				if t := inferType(it.Value); t != vt {
-					same = false
+					if ll, ok := it.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(vt, "Vec<") {
+						// empty list adopts previously inferred vector type
+					} else {
+						same = false
+					}
 				}
 			}
 			if kt == "" {
