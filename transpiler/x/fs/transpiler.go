@@ -3373,14 +3373,17 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\n")
 	}
 	if prog.UseDictAdd {
+		neededOpens["System.Collections.Generic"] = true
 		buf.WriteString(helperDictAdd)
 		buf.WriteString("\n")
 	}
 	if prog.UseDictCreate {
+		neededOpens["System.Collections.Generic"] = true
 		buf.WriteString(helperDictCreate)
 		buf.WriteString("\n")
 	}
 	if prog.UseDictGet {
+		neededOpens["System.Collections.Generic"] = true
 		buf.WriteString(helperDictGet)
 		buf.WriteString("\n")
 	}
