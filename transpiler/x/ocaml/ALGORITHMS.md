@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 762/1077
-Last updated: 2025-08-13 16:48 +0700
+Completed programs: 763/1077
+Last updated: 2025-08-14 10:04 +0700
 
 Checklist:
 
@@ -406,7 +406,7 @@ Checklist:
 | 397 | graphs/basic_graphs |   |  |  |
 | 398 | graphs/bellman_ford | ✓ | 166.0µs | 2.43KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 185.0µs | 5.77KB |
-| 400 | graphs/bidirectional_a_star |   |  |  |
+| 400 | graphs/bidirectional_a_star | ✓ | 8.0ms | 991.85KB |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search | ✓ |  |  |
 | 403 | graphs/boruvka |   |  |  |
