@@ -83,6 +83,12 @@ def _add(a, b)
 end
 `
 
+const helperAppend = `
+def _append(arr, x)
+  (arr || []) + [x]
+end
+`
+
 const helperEq = `
 def _eq(a, b)
   if a.is_a?(Float) || b.is_a?(Float)
@@ -179,7 +185,10 @@ end
 
 const helperIdx = `
 def _idx(arr, idx)
-  return nil if arr.nil? || !idx.is_a?(Numeric) || idx < 0 || idx >= arr.length
+  return nil if arr.nil?
+  if arr.is_a?(Array) && idx.is_a?(Numeric)
+    return nil if idx < 0 || idx >= arr.length
+  end
   arr[idx]
 end
 `
@@ -2541,11 +2550,11 @@ func (m *MethodCallExpr) emit(e *emitter) {
 }
 
 func (a *AppendExpr) emit(e *emitter) {
-	io.WriteString(e.w, "(")
+	io.WriteString(e.w, "_append(")
 	a.List.emit(e)
-	io.WriteString(e.w, " + [")
+	io.WriteString(e.w, ", ")
 	a.Elem.emit(e)
-	io.WriteString(e.w, "])")
+	io.WriteString(e.w, ")")
 }
 
 func (s *SliceExpr) emit(e *emitter) {
@@ -3200,6 +3209,9 @@ func Emit(w io.Writer, p *Program) error {
 		return err
 	}
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperAppend+"\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, helperEq+"\n"); err != nil {
