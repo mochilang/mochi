@@ -3006,14 +3006,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
-			if typ != "" && typ != "any" && types.IsAnyType(valType) {
-				if !(typ == "string" && looksLikeStringExpr(e)) {
-					e = &AssertExpr{Expr: e, Type: typ}
+			if typ != "" && typ != "any" {
+				needsCast := valType == nil || types.IsAnyType(valType)
+				if !needsCast {
+					if ix, ok := e.(*IndexExpr); ok {
+						if ae, ok2 := ix.X.(*AssertExpr); ok2 && ae.Type == "[]any" {
+							needsCast = true
+						}
+					}
 				}
-			}
-			if typ != "" && typ != "any" && types.IsAnyType(valType) {
-				if !(typ == "string" && looksLikeStringExpr(e)) {
-					e = &AssertExpr{Expr: e, Type: typ}
+				if needsCast {
+					if !(typ == "string" && looksLikeStringExpr(e)) {
+						e = &AssertExpr{Expr: e, Type: typ}
+					}
 				}
 			}
 			if typ == "*big.Int" {
@@ -6054,16 +6059,16 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 								}
 							} else if !types.IsStringType(idxType) {
 								usesIndex = true
-								expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]int"}, Index: iex, AllowNegative: true}
-								t = types.IntType{}
+								expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex, AllowNegative: true}
+								t = types.AnyType{}
 							} else {
 								expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
 								t = types.AnyType{}
 							}
 						} else if !types.IsStringType(idxType) {
 							usesIndex = true
-							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]int"}, Index: iex, AllowNegative: true}
-							t = types.IntType{}
+							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex, AllowNegative: true}
+							t = types.AnyType{}
 						} else {
 							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
 							t = types.AnyType{}
@@ -7570,6 +7575,7 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("func _index[T any](s []T, i any) T {\n")
 		buf.WriteString("    idx := func(v any) int { switch vv := v.(type) { case int: return vv; case int64: return int(vv); case float64: return int(vv); case float32: return int(vv); default: return v.(int) } }(i)\n")
 		buf.WriteString("    if idx < 0 { idx += len(s) }\n")
+		buf.WriteString("    if idx < 0 || idx >= len(s) { var zero T; return zero }\n")
 		buf.WriteString("    return s[idx]\n")
 		buf.WriteString("}\n\n")
 	}
