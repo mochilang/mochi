@@ -576,23 +576,50 @@ func (s *IfStmt) emit(w io.Writer) error {
 	if iex, ok := s.Cond.(*IndexExpr); ok {
 		oldBang := iex.NoBang
 		oldSuf := iex.NoSuffix
-		if t := inferType(iex.Target); strings.HasPrefix(strings.TrimSuffix(t, "?"), "Map<") {
+		t := inferType(iex.Target)
+		handled := false
+		if strings.HasPrefix(strings.TrimSuffix(t, "?"), "Map<") {
 			kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(t, "?"), "Map<"), ">")
 			parts := strings.SplitN(kv, ",", 2)
-			needBang := false
 			if len(parts) == 2 {
 				vt := strings.TrimSpace(parts[1])
-				if !strings.HasSuffix(vt, "?") {
-					needBang = true
+				if vt == "bool" || vt == "bool?" {
+					iex.NoBang = false
+					iex.NoSuffix = true
+				} else {
+					needBang := false
+					if !strings.HasSuffix(vt, "?") {
+						needBang = true
+					}
+					iex.NoBang = true
+					iex.NoSuffix = !needBang
 				}
 			}
-			iex.NoBang = true
-			iex.NoSuffix = !needBang
+			if err := iex.emit(w); err != nil {
+				iex.NoBang = oldBang
+				iex.NoSuffix = oldSuf
+				return err
+			}
+			handled = true
 		}
-		if err := iex.emit(w); err != nil {
-			iex.NoBang = oldBang
-			iex.NoSuffix = oldSuf
-			return err
+		if !handled {
+			iex.NoBang = false
+			iex.NoSuffix = true
+			if _, err := io.WriteString(w, "("); err != nil {
+				iex.NoBang = oldBang
+				iex.NoSuffix = oldSuf
+				return err
+			}
+			if err := iex.emit(w); err != nil {
+				iex.NoBang = oldBang
+				iex.NoSuffix = oldSuf
+				return err
+			}
+			if _, err := io.WriteString(w, " ?? false)"); err != nil {
+				iex.NoBang = oldBang
+				iex.NoSuffix = oldSuf
+				return err
+			}
 		}
 		iex.NoBang = oldBang
 		iex.NoSuffix = oldSuf
