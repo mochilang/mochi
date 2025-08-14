@@ -9666,9 +9666,11 @@ func listPtrType(t string) string {
 }
 
 func sanitizeTypeName(typ string) string {
+	typ = strings.TrimSpace(typ)
+	typ = strings.ReplaceAll(typ, "const ", "")
+	typ = strings.ReplaceAll(typ, "const", "")
 	typ = strings.ReplaceAll(typ, " ", "_")
 	typ = strings.ReplaceAll(typ, "*", "ptr")
-	typ = strings.ReplaceAll(typ, "const", "c")
 	typ = strings.ReplaceAll(typ, "[", "")
 	typ = strings.ReplaceAll(typ, "]", "")
 	return typ
