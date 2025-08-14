@@ -78,7 +78,7 @@ def _add(a, b)
   elsif a.is_a?(String) || b.is_a?(String)
     a.to_s + b.to_s
   else
-    a + b
+    (a.nil? ? 0 : a) + (b.nil? ? 0 : b)
   end
 end
 `
@@ -166,10 +166,13 @@ const helperHas = `
 def _has(obj, key)
   if obj.is_a?(Hash)
     obj.key?(key)
+  elsif obj.respond_to?(:include?)
+    obj.include?(key)
   elsif obj.respond_to?(:to_h)
-    obj.to_h.key?(key.to_sym)
+    k = key.respond_to?(:to_sym) ? key.to_sym : key
+    obj.to_h.key?(k)
   else
-    obj.respond_to?(:include?) && obj.include?(key)
+    false
   end
 end
 `
@@ -2067,6 +2070,9 @@ func (f *ForInStmt) emit(e *emitter) {
 	e.writeIndent()
 	io.WriteString(e.w, iterVar+" = ")
 	f.Iterable.emit(e)
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, iterVar+" = [] if "+iterVar+".nil?")
 	e.nl()
 	e.writeIndent()
 	io.WriteString(e.w, "if "+iterVar+".respond_to?(:keys) && !"+iterVar+".is_a?(String)")
