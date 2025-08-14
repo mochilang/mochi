@@ -5239,11 +5239,6 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				if vr, ok := ce.(*VarRef); ok {
-					if paramNames != nil && paramNames[vr.Name] {
-						mutatedParams[vr.Name] = true
-					}
-				}
 				args = append(args, ce)
 			}
 			if sel, ok := expr.(*SelectorExpr); ok && sel.Field == "contains" && len(args) == 1 {
