@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -42,12 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Stump = {
     mutable _feature: int
     mutable _threshold: float
@@ -61,7 +52,7 @@ let rec mean (xs: float array) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            sum <- sum + (_idx xs (i))
+            sum <- sum + (_idx xs (int i))
             i <- i + 1
         __ret <- sum / ((float (Seq.length (xs))) * 1.0)
         raise Return
@@ -73,7 +64,7 @@ and stump_predict (s: Stump) (x: float array) =
     let mutable s = s
     let mutable x = x
     try
-        __ret <- if (_idx x (s._feature)) < (s._threshold) then (s._left) else (s._right)
+        __ret <- if (_idx x (int (s._feature))) < (s._threshold) then (s._left) else (s._right)
         raise Return
         __ret
     with
@@ -88,20 +79,20 @@ and train_stump (features: float array array) (residuals: float array) =
         let mutable best_error: float = 1000000000.0
         let mutable best_left: float = 0.0
         let mutable best_right: float = 0.0
-        let num_features: int = Seq.length (_idx features (0))
+        let num_features: int = Seq.length (_idx features (int 0))
         let mutable f: int = 0
         while f < num_features do
             let mutable i: int = 0
             while i < (Seq.length (features)) do
-                let _threshold: float = _idx (_idx features (i)) (f)
+                let _threshold: float = _idx (_idx features (int i)) (int f)
                 let mutable _left: float array = Array.empty<float>
                 let mutable _right: float array = Array.empty<float>
                 let mutable j: int = 0
                 while j < (Seq.length (features)) do
-                    if (_idx (_idx features (j)) (f)) < _threshold then
-                        _left <- Array.append (_left) ([|_idx residuals (j)|])
+                    if (_idx (_idx features (int j)) (int f)) < _threshold then
+                        _left <- Array.append (_left) ([|_idx residuals (int j)|])
                     else
-                        _right <- Array.append (_right) ([|_idx residuals (j)|])
+                        _right <- Array.append (_right) ([|_idx residuals (int j)|])
                     j <- j + 1
                 if ((Seq.length (_left)) <> 0) && ((Seq.length (_right)) <> 0) then
                     let left_mean: float = mean (_left)
@@ -109,8 +100,8 @@ and train_stump (features: float array array) (residuals: float array) =
                     let mutable err: float = 0.0
                     j <- 0
                     while j < (Seq.length (features)) do
-                        let pred: float = if (_idx (_idx features (j)) (f)) < _threshold then left_mean else right_mean
-                        let diff: float = (_idx residuals (j)) - pred
+                        let pred: float = if (_idx (_idx features (int j)) (int f)) < _threshold then left_mean else right_mean
+                        let diff: float = (_idx residuals (int j)) - pred
                         err <- err + (diff * diff)
                         j <- j + 1
                     if err < best_error then
@@ -143,13 +134,13 @@ and boost (features: float array array) (targets: int array) (rounds: int) =
             let mutable residuals: float array = Array.empty<float>
             let mutable j: int = 0
             while j < (Seq.length (targets)) do
-                residuals <- Array.append (residuals) ([|(float (_idx targets (j))) - (_idx preds (j))|])
+                residuals <- Array.append (residuals) ([|(float (_idx targets (int j))) - (_idx preds (int j))|])
                 j <- j + 1
             let stump: Stump = train_stump (features) (residuals)
             model <- Array.append (model) ([|stump|])
             j <- 0
             while j < (Seq.length (preds)) do
-                preds.[j] <- (_idx preds (j)) + (stump_predict (stump) (_idx features (j)))
+                preds.[j] <- (_idx preds (int j)) + (stump_predict (stump) (_idx features (int j)))
                 j <- j + 1
             r <- r + 1
         __ret <- model
@@ -165,8 +156,8 @@ and predict (model: Stump array) (x: float array) =
         let mutable score: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (model)) do
-            let s: Stump = _idx model (i)
-            if (_idx x (s._feature)) < (s._threshold) then
+            let s: Stump = _idx model (int i)
+            if (_idx x (int (s._feature))) < (s._threshold) then
                 score <- score + (s._left)
             else
                 score <- score + (s._right)
@@ -177,7 +168,7 @@ and predict (model: Stump array) (x: float array) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -187,14 +178,14 @@ and main () =
         let mutable out: string = ""
         let mutable i: int = 0
         while i < (Seq.length (features)) do
-            let s: float = predict (model) (_idx features (i))
+            let s: float = predict (model) (_idx features (int i))
             let label: int = if s >= 0.5 then 1 else 0
             if i = 0 then
                 out <- _str (label)
             else
                 out <- (out + " ") + (_str (label))
             i <- i + 1
-        printfn "%s" (out)
+        ignore (printfn "%s" (out))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -202,4 +193,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

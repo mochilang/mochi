@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -45,12 +33,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Itemset = {
     mutable _items: string array
     mutable _support: int
@@ -65,7 +56,7 @@ let rec load_data () =
         __ret
     with
         | Return -> __ret
-let rec contains_string (xs: string array) (s: string) =
+and contains_string (xs: string array) (s: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable xs = xs
     let mutable s = s
@@ -79,7 +70,7 @@ let rec contains_string (xs: string array) (s: string) =
         __ret
     with
         | Return -> __ret
-let rec is_subset (candidate: string array) (transaction: string array) =
+and is_subset (candidate: string array) (transaction: string array) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable candidate = candidate
     let mutable transaction = transaction
@@ -93,7 +84,7 @@ let rec is_subset (candidate: string array) (transaction: string array) =
         __ret
     with
         | Return -> __ret
-let rec lists_equal (a: string array) (b: string array) =
+and lists_equal (a: string array) (b: string array) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable a = a
     let mutable b = b
@@ -103,7 +94,7 @@ let rec lists_equal (a: string array) (b: string array) =
             raise Return
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            if (_idx a (i)) <> (_idx b (i)) then
+            if (_idx a (int i)) <> (_idx b (int i)) then
                 __ret <- false
                 raise Return
             i <- i + 1
@@ -112,7 +103,7 @@ let rec lists_equal (a: string array) (b: string array) =
         __ret
     with
         | Return -> __ret
-let rec contains_list (itemset: string array array) (item: string array) =
+and contains_list (itemset: string array array) (item: string array) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable itemset = itemset
     let mutable item = item
@@ -126,7 +117,7 @@ let rec contains_list (itemset: string array array) (item: string array) =
         __ret
     with
         | Return -> __ret
-let rec count_list (itemset: string array array) (item: string array) =
+and count_list (itemset: string array array) (item: string array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable itemset = itemset
     let mutable item = item
@@ -140,7 +131,7 @@ let rec count_list (itemset: string array array) (item: string array) =
         __ret
     with
         | Return -> __ret
-let rec slice_list (xs: string array array) (start: int) =
+and slice_list (xs: string array array) (start: int) =
     let mutable __ret : string array array = Unchecked.defaultof<string array array>
     let mutable xs = xs
     let mutable start = start
@@ -148,14 +139,14 @@ let rec slice_list (xs: string array array) (start: int) =
         let mutable res: string array array = Array.empty<string array>
         let mutable i: int = start
         while i < (Seq.length (xs)) do
-            res <- Array.append res [|(_idx xs (i))|]
+            res <- Array.append res [|(_idx xs (int i))|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec combinations_lists (xs: string array array) (k: int) =
+and combinations_lists (xs: string array array) (k: int) =
     let mutable __ret : string array array array = Unchecked.defaultof<string array array array>
     let mutable xs = xs
     let mutable k = k
@@ -167,7 +158,7 @@ let rec combinations_lists (xs: string array array) (k: int) =
             raise Return
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            let head: string array = _idx xs (i)
+            let head: string array = _idx xs (int i)
             let tail: string array array = slice_list (xs) (i + 1)
             let tail_combos: string array array array = combinations_lists (tail) (k - 1)
             for combo in tail_combos do
@@ -182,13 +173,13 @@ let rec combinations_lists (xs: string array array) (k: int) =
         __ret
     with
         | Return -> __ret
-let rec prune (itemset: string array array) (candidates: string array array array) (length: int) =
-    let mutable __ret : string array array array = Unchecked.defaultof<string array array array>
+and prune (itemset: string array array) (candidates: string array array array) (length: int) =
+    let mutable __ret : string array array = Unchecked.defaultof<string array array>
     let mutable itemset = itemset
     let mutable candidates = candidates
     let mutable length = length
     try
-        let mutable pruned: string array array array = Array.empty<string array array>
+        let mutable pruned: string array array = Array.empty<string array>
         try
             for candidate in candidates do
                 try
@@ -206,7 +197,12 @@ let rec prune (itemset: string array array) (candidates: string array array arra
                     | Break -> ()
                     | Continue -> ()
                     if is_subsequence then
-                        pruned <- Array.append pruned [|candidate|]
+                        let mutable merged: string array = Array.empty<string>
+                        for item in candidate do
+                            for s in Seq.map string (item) do
+                                if not (contains_string (merged) (s)) then
+                                    merged <- Array.append merged [|s|]
+                        pruned <- Array.append pruned [|merged|]
                 with
                 | Continue -> ()
                 | Break -> raise Break
@@ -218,7 +214,7 @@ let rec prune (itemset: string array array) (candidates: string array array arra
         __ret
     with
         | Return -> __ret
-let rec sort_strings (xs: string array) =
+and sort_strings (xs: string array) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable xs = xs
     try
@@ -229,9 +225,9 @@ let rec sort_strings (xs: string array) =
         while i < (Seq.length (res)) do
             let mutable j: int = i + 1
             while j < (Seq.length (res)) do
-                if (_idx res (j)) < (_idx res (i)) then
-                    let tmp: string = _idx res (i)
-                    res.[i] <- _idx res (j)
+                if (_idx res (int j)) < (_idx res (int i)) then
+                    let tmp: string = _idx res (int i)
+                    res.[i] <- _idx res (int j)
                     res.[j] <- tmp
                 j <- j + 1
             i <- i + 1
@@ -240,7 +236,7 @@ let rec sort_strings (xs: string array) =
         __ret
     with
         | Return -> __ret
-let rec itemset_to_string (xs: string array) =
+and itemset_to_string (xs: string array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable xs = xs
     try
@@ -249,7 +245,7 @@ let rec itemset_to_string (xs: string array) =
         while i < (Seq.length (xs)) do
             if i > 0 then
                 s <- s + ", "
-            s <- ((s + "'") + (_idx xs (i))) + "'"
+            s <- ((s + "'") + (_idx xs (int i))) + "'"
             i <- i + 1
         s <- s + "]"
         __ret <- s
@@ -257,12 +253,12 @@ let rec itemset_to_string (xs: string array) =
         __ret
     with
         | Return -> __ret
-let rec apriori (data: string array array) (min_support: int) =
+and apriori (data: string array array) (min_support: int) =
     let mutable __ret : Itemset array = Unchecked.defaultof<Itemset array>
     let mutable data = data
     let mutable min_support = min_support
     try
-        let mutable itemset: obj = box (Array.empty<string array>)
+        let mutable itemset: string array array = Array.empty<string array>
         for transaction in data do
             let mutable t: string array = Array.empty<string>
             for v in Seq.map string (transaction) do
@@ -279,25 +275,25 @@ let rec apriori (data: string array array) (min_support: int) =
             for transaction in data do
                 let mutable j: int = 0
                 while j < (Seq.length (itemset)) do
-                    let candidate: string array = _idx itemset (j)
+                    let candidate: string array = _idx itemset (int j)
                     if is_subset (candidate) (transaction) then
-                        counts.[j] <- (_idx counts (j)) + 1
+                        counts.[j] <- (_idx counts (int j)) + 1
                     j <- j + 1
             let mutable new_itemset: string array array = Array.empty<string array>
             let mutable k: int = 0
             while k < (Seq.length (itemset)) do
-                if (_idx counts (k)) >= min_support then
-                    new_itemset <- Array.append new_itemset [|(_idx itemset (k))|]
+                if (_idx counts (int k)) >= min_support then
+                    new_itemset <- Array.append new_itemset [|(_idx itemset (int k))|]
                 k <- k + 1
             itemset <- new_itemset
             let mutable m: int = 0
             while m < (Seq.length (itemset)) do
-                let mutable sorted_item: string array = sort_strings (_idx itemset (m))
-                frequent <- Array.append frequent [|{ _items = sorted_item; _support = _idx counts (m) }|]
+                let mutable sorted_item: string array = sort_strings (_idx itemset (int m))
+                frequent <- Array.append frequent [|{ _items = sorted_item; _support = _idx counts (int m) }|]
                 m <- m + 1
             length <- length + 1
             let combos: string array array array = combinations_lists (itemset) (length)
-            itemset <- box (prune (itemset) (combos) (length))
+            itemset <- prune (itemset) (combos) (length)
         __ret <- frequent
         raise Return
         __ret
@@ -305,7 +301,7 @@ let rec apriori (data: string array array) (min_support: int) =
         | Return -> __ret
 let mutable frequent_itemsets: Itemset array = apriori (load_data()) (2)
 for fi in frequent_itemsets do
-    printfn "%s" (((itemset_to_string (fi._items)) + ": ") + (_str (fi._support)))
+    ignore (printfn "%s" (((itemset_to_string (fi._items)) + ": ") + (_str (fi._support))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

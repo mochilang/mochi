@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,27 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Tree =
     | Leaf of float
     | Branch of float * Tree * Tree
@@ -86,7 +77,7 @@ and mean (vals: float array) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (vals)) do
-            sum <- sum + (_idx vals (i))
+            sum <- sum + (_idx vals (int i))
             i <- i + 1
         __ret <- sum / (float (Seq.length (vals)))
         raise Return
@@ -101,7 +92,7 @@ and mean_squared_error (labels: float array) (prediction: float) =
         let mutable total: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (labels)) do
-            let diff: float = (_idx labels (i)) - prediction
+            let diff: float = (_idx labels (int i)) - prediction
             total <- total + (diff * diff)
             i <- i + 1
         __ret <- total / (float (Seq.length (labels)))
@@ -144,7 +135,7 @@ and train_tree (x: float array) (y: float array) (depth: int) (min_leaf_size: in
             let left_y: float array = Array.sub y 0 (best_split - 0)
             let right_x: float array = Array.sub x best_split ((int (Array.length (x))) - best_split)
             let right_y: float array = Array.sub y best_split ((int (Array.length (y))) - best_split)
-            let boundary: float = _idx x (best_split)
+            let boundary: float = _idx x (int best_split)
             let left_tree: Tree = train_tree (left_x) (left_y) (depth - 1) (min_leaf_size)
             let right_tree: Tree = train_tree (right_x) (right_y) (depth - 1) (min_leaf_size)
             __ret <- Branch(boundary, left_tree, right_tree)
@@ -167,7 +158,7 @@ and predict (tree: Tree) (value: float) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -179,7 +170,7 @@ and main () =
         let mutable y: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (x)) do
-            y <- Array.append y [|(sin (_idx x (i)))|]
+            y <- Array.append y [|(sin (_idx x (int i)))|]
             i <- i + 1
         let tree: Tree = train_tree (x) (y) (10) (10)
         let mutable test_cases: float array = Array.empty<float>
@@ -190,18 +181,18 @@ and main () =
         let mutable predictions: float array = Array.empty<float>
         i <- 0
         while i < (Seq.length (test_cases)) do
-            predictions <- Array.append predictions [|(predict (tree) (_idx test_cases (i)))|]
+            predictions <- Array.append predictions [|(predict (tree) (_idx test_cases (int i)))|]
             i <- i + 1
         let mutable sum_err: float = 0.0
         i <- 0
         while i < (Seq.length (test_cases)) do
-            let diff: float = (_idx predictions (i)) - (_idx test_cases (i))
+            let diff: float = (_idx predictions (int i)) - (_idx test_cases (int i))
             sum_err <- sum_err + (diff * diff)
             i <- i + 1
         let avg_error: float = sum_err / (float (Seq.length (test_cases)))
-        printfn "%s" ("Test values: " + (_str (test_cases)))
-        printfn "%s" ("Predictions: " + (_str (predictions)))
-        printfn "%s" ("Average error: " + (_str (avg_error)))
+        ignore (printfn "%s" ("Test values: " + (_str (test_cases))))
+        ignore (printfn "%s" ("Predictions: " + (_str (predictions))))
+        ignore (printfn "%s" ("Average error: " + (_str (avg_error))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -209,4 +200,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

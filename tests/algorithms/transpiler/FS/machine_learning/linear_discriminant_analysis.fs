@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,20 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _repr v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -145,7 +143,7 @@ and y_generator (class_count: int) (instance_count: int array) =
         let mutable k: int = 0
         while k < class_count do
             let mutable i: int = 0
-            while i < (_idx instance_count (k)) do
+            while i < (_idx instance_count (int k)) do
                 res <- Array.append res [|k|]
                 i <- i + 1
             k <- k + 1
@@ -162,7 +160,7 @@ and calculate_mean (instance_count: int) (items: float array) =
         let mutable total: float = 0.0
         let mutable i: int = 0
         while i < instance_count do
-            total <- total + (_idx items (i))
+            total <- total + (_idx items (int i))
             i <- i + 1
         __ret <- total / (float instance_count)
         raise Return
@@ -189,15 +187,15 @@ and calculate_variance (items: float array array) (means: float array) (total_co
         let mutable i: int = 0
         while i < (Seq.length (items)) do
             let mutable j: int = 0
-            while j < (Seq.length (_idx items (i))) do
-                let diff: float = (_idx (_idx items (i)) (j)) - (_idx means (i))
+            while j < (Seq.length (_idx items (int i))) do
+                let diff: float = (_idx (_idx items (int i)) (int j)) - (_idx means (int i))
                 squared_diff <- Array.append squared_diff [|(diff * diff)|]
                 j <- j + 1
             i <- i + 1
         let mutable sum_sq: float = 0.0
         let mutable k: int = 0
         while k < (Seq.length (squared_diff)) do
-            sum_sq <- sum_sq + (_idx squared_diff (k))
+            sum_sq <- sum_sq + (_idx squared_diff (int k))
             k <- k + 1
         let n_classes: int = Seq.length (means)
         __ret <- (1.0 / (float (total_count - n_classes))) * sum_sq
@@ -216,19 +214,19 @@ and predict_y_values (x_items: float array array) (means: float array) (variance
         let mutable i: int = 0
         while i < (Seq.length (x_items)) do
             let mutable j: int = 0
-            while j < (Seq.length (_idx x_items (i))) do
+            while j < (Seq.length (_idx x_items (int i))) do
                 let mutable temp: float array = Array.empty<float>
                 let mutable k: int = 0
                 while k < (Seq.length (x_items)) do
-                    let discr: float = (((_idx (_idx x_items (i)) (j)) * ((_idx means (k)) / variance)) - (((_idx means (k)) * (_idx means (k))) / (2.0 * variance))) + (ln (_idx probabilities (k)))
+                    let discr: float = (((_idx (_idx x_items (int i)) (int j)) * ((_idx means (int k)) / variance)) - (((_idx means (int k)) * (_idx means (int k))) / (2.0 * variance))) + (ln (_idx probabilities (int k)))
                     temp <- Array.append temp [|discr|]
                     k <- k + 1
                 let mutable max_idx: int = 0
-                let mutable max_val: float = _idx temp (0)
+                let mutable max_val: float = _idx temp (int 0)
                 let mutable t: int = 1
                 while t < (Seq.length (temp)) do
-                    if (_idx temp (t)) > max_val then
-                        max_val <- _idx temp (t)
+                    if (_idx temp (int t)) > max_val then
+                        max_val <- _idx temp (int t)
                         max_idx <- t
                     t <- t + 1
                 results <- Array.append results [|max_idx|]
@@ -247,7 +245,7 @@ and accuracy (actual_y: int array) (predicted_y: int array) =
         let mutable correct: int = 0
         let mutable i: int = 0
         while i < (Seq.length (actual_y)) do
-            if (_idx actual_y (i)) = (_idx predicted_y (i)) then
+            if (_idx actual_y (int i)) = (_idx predicted_y (int i)) then
                 correct <- correct + 1
             i <- i + 1
         __ret <- ((float correct) / (float (Seq.length (actual_y)))) * 100.0
@@ -256,7 +254,7 @@ and accuracy (actual_y: int array) (predicted_y: int array) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -267,28 +265,28 @@ and main () =
         let mutable x: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < (Seq.length (counts)) do
-            x <- Array.append x [|(gaussian_distribution (_idx means (i)) (std_dev) (_idx counts (i)))|]
+            x <- Array.append x [|(gaussian_distribution (_idx means (int i)) (std_dev) (_idx counts (int i)))|]
             i <- i + 1
         let y: int array = y_generator (Seq.length (counts)) (counts)
         let mutable actual_means: float array = Array.empty<float>
         i <- 0
         while i < (Seq.length (counts)) do
-            actual_means <- Array.append actual_means [|(calculate_mean (_idx counts (i)) (_idx x (i)))|]
+            actual_means <- Array.append actual_means [|(calculate_mean (_idx counts (int i)) (_idx x (int i)))|]
             i <- i + 1
         let mutable total_count: int = 0
         i <- 0
         while i < (Seq.length (counts)) do
-            total_count <- total_count + (_idx counts (i))
+            total_count <- total_count + (_idx counts (int i))
             i <- i + 1
         let mutable probabilities: float array = Array.empty<float>
         i <- 0
         while i < (Seq.length (counts)) do
-            probabilities <- Array.append probabilities [|(calculate_probabilities (_idx counts (i)) (total_count))|]
+            probabilities <- Array.append probabilities [|(calculate_probabilities (_idx counts (int i)) (total_count))|]
             i <- i + 1
         let variance: float = calculate_variance (x) (actual_means) (total_count)
         let predicted: int array = predict_y_values (x) (actual_means) (variance) (probabilities)
-        printfn "%s" (_repr (predicted))
-        printfn "%g" (accuracy (y) (predicted))
+        ignore (printfn "%s" (_repr (predicted)))
+        ignore (printfn "%s" (_str (accuracy (y) (predicted))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -296,4 +294,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

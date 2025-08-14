@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:34 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let __bench_start = _now()
@@ -45,11 +33,11 @@ let rec knapsack (capacity: int) (weights: int array) (values: int array) (count
         if (counter = 0) || (capacity = 0) then
             __ret <- 0
             raise Return
-        if (_idx weights (counter - 1)) > capacity then
+        if (_idx weights (int (counter - 1))) > capacity then
             __ret <- knapsack (capacity) (weights) (values) (counter - 1)
             raise Return
-        let left_capacity: int = capacity - (_idx weights (counter - 1))
-        let include_val: int = (_idx values (counter - 1)) + (knapsack (left_capacity) (weights) (values) (counter - 1))
+        let left_capacity: int = capacity - (_idx weights (int (counter - 1)))
+        let include_val: int = (_idx values (int (counter - 1))) + (knapsack (left_capacity) (weights) (values) (counter - 1))
         let exclude_val: int = knapsack (capacity) (weights) (values) (counter - 1)
         if include_val > exclude_val then
             __ret <- include_val
@@ -59,7 +47,7 @@ let rec knapsack (capacity: int) (weights: int array) (values: int array) (count
         __ret
     with
         | Return -> __ret
-let rec test_base_case () =
+and test_base_case () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let cap: int = 0
@@ -77,7 +65,7 @@ let rec test_base_case () =
         __ret
     with
         | Return -> __ret
-let rec test_easy_case () =
+and test_easy_case () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let cap: int = 3
@@ -89,7 +77,7 @@ let rec test_easy_case () =
         __ret
     with
         | Return -> __ret
-let rec test_knapsack () =
+and test_knapsack () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let cap: int = 50
@@ -101,10 +89,10 @@ let rec test_knapsack () =
         __ret
     with
         | Return -> __ret
-printfn "%b" (test_base_case())
-printfn "%b" (test_easy_case())
-printfn "%b" (test_knapsack())
-printfn "%b" (true)
+ignore (printfn "%b" (test_base_case()))
+ignore (printfn "%b" (test_easy_case()))
+ignore (printfn "%b" (test_knapsack()))
+ignore (printfn "%b" (true))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

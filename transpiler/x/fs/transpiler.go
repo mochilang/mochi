@@ -227,12 +227,15 @@ const helperJSON = `let json (arr:obj) =
     | _ -> ()`
 
 const helperStr = `let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")`
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")`
 
 const helperRepr = `let _repr v =
     let s = sprintf "%A" v

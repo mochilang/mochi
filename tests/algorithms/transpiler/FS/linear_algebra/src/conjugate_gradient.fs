@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:34 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Break
 exception Continue
@@ -22,27 +22,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec zeros (n: int) =
@@ -59,7 +50,7 @@ let rec zeros (n: int) =
         __ret
     with
         | Return -> __ret
-let rec dot (a: float array) (b: float array) =
+and dot (a: float array) (b: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable a = a
     let mutable b = b
@@ -67,14 +58,14 @@ let rec dot (a: float array) (b: float array) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            sum <- sum + ((_idx a (i)) * (_idx b (i)))
+            sum <- sum + ((_idx a (int i)) * (_idx b (int i)))
             i <- i + 1
         __ret <- sum
         raise Return
         __ret
     with
         | Return -> __ret
-let rec mat_vec_mul (m: float array array) (v: float array) =
+and mat_vec_mul (m: float array array) (v: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable m = m
     let mutable v = v
@@ -84,8 +75,8 @@ let rec mat_vec_mul (m: float array array) (v: float array) =
         while i < (Seq.length (m)) do
             let mutable s: float = 0.0
             let mutable j: int = 0
-            while j < (Seq.length (_idx m (i))) do
-                s <- s + ((_idx (_idx m (i)) (j)) * (_idx v (j)))
+            while j < (Seq.length (_idx m (int i))) do
+                s <- s + ((_idx (_idx m (int i)) (int j)) * (_idx v (int j)))
                 j <- j + 1
             res <- Array.append res [|s|]
             i <- i + 1
@@ -94,7 +85,7 @@ let rec mat_vec_mul (m: float array array) (v: float array) =
         __ret
     with
         | Return -> __ret
-let rec vec_add (a: float array) (b: float array) =
+and vec_add (a: float array) (b: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable a = a
     let mutable b = b
@@ -102,14 +93,14 @@ let rec vec_add (a: float array) (b: float array) =
         let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            res <- Array.append res [|((_idx a (i)) + (_idx b (i)))|]
+            res <- Array.append res [|((_idx a (int i)) + (_idx b (int i)))|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec vec_sub (a: float array) (b: float array) =
+and vec_sub (a: float array) (b: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable a = a
     let mutable b = b
@@ -117,14 +108,14 @@ let rec vec_sub (a: float array) (b: float array) =
         let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            res <- Array.append res [|((_idx a (i)) - (_idx b (i)))|]
+            res <- Array.append res [|((_idx a (int i)) - (_idx b (int i)))|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec scalar_mul (s: float) (v: float array) =
+and scalar_mul (s: float) (v: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable s = s
     let mutable v = v
@@ -132,14 +123,14 @@ let rec scalar_mul (s: float) (v: float array) =
         let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (v)) do
-            res <- Array.append res [|(s * (_idx v (i)))|]
+            res <- Array.append res [|(s * (_idx v (int i)))|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec sqrtApprox (x: float) =
+and sqrtApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -156,7 +147,7 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec norm (v: float array) =
+and norm (v: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable v = v
     try
@@ -165,7 +156,7 @@ let rec norm (v: float array) =
         __ret
     with
         | Return -> __ret
-let rec conjugate_gradient (A: float array array) (b: float array) (max_iterations: int) (tol: float) =
+and conjugate_gradient (A: float array array) (b: float array) (max_iterations: int) (tol: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable A = A
     let mutable b = b
@@ -206,9 +197,9 @@ let rec conjugate_gradient (A: float array array) (b: float array) (max_iteratio
 let A: float array array = [|[|8.73256573; -5.02034289; -2.68709226|]; [|-5.02034289; 3.78188322; 0.91980451|]; [|-2.68709226; 0.91980451; 1.94746467|]|]
 let b: float array = unbox<float array> [|-5.80872761; 3.23807431; 1.95381422|]
 let mutable x: float array = conjugate_gradient (A) (b) (1000) (0.00000001)
-printfn "%s" (_str (_idx x (0)))
-printfn "%s" (_str (_idx x (1)))
-printfn "%s" (_str (_idx x (2)))
+ignore (printfn "%s" (_str (_idx x (int 0))))
+ignore (printfn "%s" (_str (_idx x (int 1))))
+ignore (printfn "%s" (_str (_idx x (int 2))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

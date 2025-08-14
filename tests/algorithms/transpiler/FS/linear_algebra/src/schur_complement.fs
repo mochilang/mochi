@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:34 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -42,12 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type OptionMatrix = {
     mutable _value: float array array
     mutable _ok: bool
@@ -79,14 +70,14 @@ and transpose (mat: float array array) =
     let mutable mat = mat
     try
         let rows: int = Seq.length (mat)
-        let cols: int = Seq.length (_idx mat (0))
+        let cols: int = Seq.length (_idx mat (int 0))
         let mutable res: float array array = Array.empty<float array>
         let mutable j: int = 0
         while j < cols do
             let mutable row: float array = Array.empty<float>
             let mutable i: int = 0
             while i < rows do
-                row <- Array.append row [|(_idx (_idx mat (i)) (j))|]
+                row <- Array.append row [|(_idx (_idx mat (int i)) (int j))|]
                 i <- i + 1
             res <- Array.append res [|row|]
             j <- j + 1
@@ -101,8 +92,8 @@ and matmul (a: float array array) (b: float array array) =
     let mutable b = b
     try
         let rows: int = Seq.length (a)
-        let cols: int = Seq.length (_idx b (0))
-        let inner: int = Seq.length (_idx a (0))
+        let cols: int = Seq.length (_idx b (int 0))
+        let inner: int = Seq.length (_idx a (int 0))
         let mutable res: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < rows do
@@ -112,7 +103,7 @@ and matmul (a: float array array) (b: float array array) =
                 let mutable sum: float = 0.0
                 let mutable k: int = 0
                 while k < inner do
-                    sum <- sum + ((_idx (_idx a (i)) (k)) * (_idx (_idx b (k)) (j)))
+                    sum <- sum + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
                     k <- k + 1
                 row <- Array.append row [|sum|]
                 j <- j + 1
@@ -129,14 +120,14 @@ and mat_sub (a: float array array) (b: float array array) =
     let mutable b = b
     try
         let rows: int = Seq.length (a)
-        let cols: int = Seq.length (_idx a (0))
+        let cols: int = Seq.length (_idx a (int 0))
         let mutable res: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < rows do
             let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < cols do
-                row <- Array.append row [|((_idx (_idx a (i)) (j)) - (_idx (_idx b (i)) (j)))|]
+                row <- Array.append row [|((_idx (_idx a (int i)) (int j)) - (_idx (_idx b (int i)) (int j)))|]
                 j <- j + 1
             res <- Array.append res [|row|]
             i <- i + 1
@@ -154,28 +145,28 @@ and inverse (mat: float array array) =
         let mutable aug: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < n do
-            let mutable row: float array = Array.append (_idx mat (i)) (_idx id (i))
+            let mutable row: float array = Array.append (_idx mat (int i)) (_idx id (int i))
             aug <- Array.append aug [|row|]
             i <- i + 1
         let mutable col: int = 0
         while col < n do
-            let mutable pivot_row: float array = _idx aug (col)
-            let pivot: float = _idx pivot_row (col)
+            let mutable pivot_row: float array = _idx aug (int col)
+            let pivot: float = _idx pivot_row (int col)
             if pivot = 0.0 then
-                failwith ("matrix is singular")
+                ignore (failwith ("matrix is singular"))
             let mutable j: int = 0
             while j < (2 * n) do
-                pivot_row.[j] <- (_idx pivot_row (j)) / pivot
+                pivot_row.[j] <- (_idx pivot_row (int j)) / pivot
                 j <- j + 1
             aug.[col] <- pivot_row
             let mutable r: int = 0
             while r < n do
                 if r <> col then
-                    let mutable row_r: float array = _idx aug (r)
-                    let factor: float = _idx row_r (col)
+                    let mutable row_r: float array = _idx aug (int r)
+                    let factor: float = _idx row_r (int col)
                     j <- 0
                     while j < (2 * n) do
-                        row_r.[j] <- (_idx row_r (j)) - (factor * (_idx pivot_row (j)))
+                        row_r.[j] <- (_idx row_r (int j)) - (factor * (_idx pivot_row (int j)))
                         j <- j + 1
                     aug.[r] <- row_r
                 r <- r + 1
@@ -186,7 +177,7 @@ and inverse (mat: float array array) =
             let mutable row: float array = Array.empty<float>
             let mutable c: int = n
             while c < (2 * n) do
-                row <- Array.append row [|(_idx (_idx aug (r)) (c))|]
+                row <- Array.append row [|(_idx (_idx aug (int r)) (int c))|]
                 c <- c + 1
             inv <- Array.append inv [|row|]
             r <- r + 1
@@ -203,13 +194,13 @@ and schur_complement (mat_a: float array array) (mat_b: float array array) (mat_
     let mutable pseudo_inv = pseudo_inv
     try
         let a_rows: int = Seq.length (mat_a)
-        let a_cols: int = Seq.length (_idx mat_a (0))
+        let a_cols: int = Seq.length (_idx mat_a (int 0))
         if a_rows <> a_cols then
-            failwith ("Matrix A must be square")
+            ignore (failwith ("Matrix A must be square"))
         if a_rows <> (Seq.length (mat_b)) then
-            failwith ("Expected the same number of rows for A and B")
-        if (Seq.length (_idx mat_b (0))) <> (Seq.length (_idx mat_c (0))) then
-            failwith ("Expected the same number of columns for B and C")
+            ignore (failwith ("Expected the same number of rows for A and B"))
+        if (Seq.length (_idx mat_b (int 0))) <> (Seq.length (_idx mat_c (int 0))) then
+            ignore (failwith ("Expected the same number of columns for B and C"))
         let mutable a_inv: float array array = Array.empty<float array>
         if pseudo_inv._ok then
             a_inv <- pseudo_inv._value
@@ -224,26 +215,26 @@ and schur_complement (mat_a: float array array) (mat_b: float array array) (mat_
     with
         | Return -> __ret
 and print_matrix (mat: float array array) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable mat = mat
     try
         let mutable i: int = 0
         while i < (Seq.length (mat)) do
             let mutable line: string = ""
             let mutable j: int = 0
-            let mutable row: float array = _idx mat (i)
+            let mutable row: float array = _idx mat (int i)
             while j < (Seq.length (row)) do
-                line <- line + (_str (_idx row (j)))
+                line <- line + (_str (_idx row (int j)))
                 if (j + 1) < (Seq.length (row)) then
                     line <- line + " "
                 j <- j + 1
-            printfn "%s" (line)
+            ignore (printfn "%s" (line))
             i <- i + 1
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -252,7 +243,7 @@ and main () =
         let mutable c: float array array = [|[|2.0; 1.0|]; [|6.0; 3.0|]|]
         let none: OptionMatrix = { _value = Array.empty<float array>; _ok = false }
         let s: float array array = schur_complement (a) (b) (c) (none)
-        print_matrix (s)
+        ignore (print_matrix (s))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -260,4 +251,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

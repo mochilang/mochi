@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:34 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -42,12 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Vector = {
     mutable _components: float array
 }
@@ -138,7 +129,7 @@ and vector_to_string (v: Vector) =
         let mutable s: string = "("
         let mutable i: int = 0
         while i < (Seq.length (v._components)) do
-            s <- s + (_str (_idx (v._components) (i)))
+            s <- s + (_str (_idx (v._components) (int i)))
             if i < ((Seq.length (v._components)) - 1) then
                 s <- s + ","
             i <- i + 1
@@ -160,7 +151,7 @@ and vector_add (a: Vector) (b: Vector) =
         let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < size do
-            res <- Array.append res [|((_idx (a._components) (i)) + (_idx (b._components) (i)))|]
+            res <- Array.append res [|((_idx (a._components) (int i)) + (_idx (b._components) (int i)))|]
             i <- i + 1
         __ret <- { _components = res }
         raise Return
@@ -179,7 +170,7 @@ and vector_sub (a: Vector) (b: Vector) =
         let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < size do
-            res <- Array.append res [|((_idx (a._components) (i)) - (_idx (b._components) (i)))|]
+            res <- Array.append res [|((_idx (a._components) (int i)) - (_idx (b._components) (int i)))|]
             i <- i + 1
         __ret <- { _components = res }
         raise Return
@@ -196,7 +187,7 @@ and vector_eq (a: Vector) (b: Vector) =
             raise Return
         let mutable i: int = 0
         while i < (vector_len (a)) do
-            if (_idx (a._components) (i)) <> (_idx (b._components) (i)) then
+            if (_idx (a._components) (int i)) <> (_idx (b._components) (int i)) then
                 __ret <- false
                 raise Return
             i <- i + 1
@@ -213,7 +204,7 @@ and vector_mul_scalar (v: Vector) (s: float) =
         let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (vector_len (v)) do
-            res <- Array.append res [|((_idx (v._components) (i)) * s)|]
+            res <- Array.append res [|((_idx (v._components) (int i)) * s)|]
             i <- i + 1
         __ret <- { _components = res }
         raise Return
@@ -232,7 +223,7 @@ and vector_dot (a: Vector) (b: Vector) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < size do
-            sum <- sum + ((_idx (a._components) (i)) * (_idx (b._components) (i)))
+            sum <- sum + ((_idx (a._components) (int i)) * (_idx (b._components) (int i)))
             i <- i + 1
         __ret <- sum
         raise Return
@@ -246,7 +237,7 @@ and vector_copy (v: Vector) =
         let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (vector_len (v)) do
-            res <- Array.append res [|(_idx (v._components) (i))|]
+            res <- Array.append res [|(_idx (v._components) (int i))|]
             i <- i + 1
         __ret <- { _components = res }
         raise Return
@@ -258,7 +249,7 @@ and vector_component (v: Vector) (idx: int) =
     let mutable v = v
     let mutable idx = idx
     try
-        __ret <- _idx (v._components) (idx)
+        __ret <- _idx (v._components) (int idx)
         raise Return
         __ret
     with
@@ -283,7 +274,7 @@ and vector_euclidean_length (v: Vector) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (v._components)) do
-            sum <- sum + ((_idx (v._components) (i)) * (_idx (v._components) (i)))
+            sum <- sum + ((_idx (v._components) (int i)) * (_idx (v._components) (int i)))
             i <- i + 1
         let mutable result: float = sqrtApprox (sum)
         __ret <- result
@@ -376,7 +367,7 @@ and matrix_to_string (m: Matrix) =
             ans <- ans + "|"
             let mutable j: int = 0
             while j < (m._width) do
-                ans <- ans + (_str (_idx (_idx (m._data) (i)) (j)))
+                ans <- ans + (_str (_idx (_idx (m._data) (int i)) (int j)))
                 if j < ((m._width) - 1) then
                     ans <- ans + ","
                 j <- j + 1
@@ -401,7 +392,7 @@ and matrix_add (a: Matrix) (b: Matrix) =
             let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < (a._width) do
-                row <- Array.append row [|((_idx (_idx (a._data) (i)) (j)) + (_idx (_idx (b._data) (i)) (j)))|]
+                row <- Array.append row [|((_idx (_idx (a._data) (int i)) (int j)) + (_idx (_idx (b._data) (int i)) (int j)))|]
                 j <- j + 1
             mat <- Array.append mat [|row|]
             i <- i + 1
@@ -424,7 +415,7 @@ and matrix_sub (a: Matrix) (b: Matrix) =
             let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < (a._width) do
-                row <- Array.append row [|((_idx (_idx (a._data) (i)) (j)) - (_idx (_idx (b._data) (i)) (j)))|]
+                row <- Array.append row [|((_idx (_idx (a._data) (int i)) (int j)) - (_idx (_idx (b._data) (int i)) (int j)))|]
                 j <- j + 1
             mat <- Array.append mat [|row|]
             i <- i + 1
@@ -447,7 +438,7 @@ and matrix_mul_vector (m: Matrix) (v: Vector) =
             let mutable sum: float = 0.0
             let mutable j: int = 0
             while j < (m._width) do
-                sum <- sum + ((_idx (_idx (m._data) (i)) (j)) * (_idx (v._components) (j)))
+                sum <- sum + ((_idx (_idx (m._data) (int i)) (int j)) * (_idx (v._components) (int j)))
                 j <- j + 1
             res <- vector_change_component (res) (i) (sum)
             i <- i + 1
@@ -467,7 +458,7 @@ and matrix_mul_scalar (m: Matrix) (s: float) =
             let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < (m._width) do
-                row <- Array.append row [|((_idx (_idx (m._data) (i)) (j)) * s)|]
+                row <- Array.append row [|((_idx (_idx (m._data) (int i)) (int j)) * s)|]
                 j <- j + 1
             mat <- Array.append mat [|row|]
             i <- i + 1
@@ -482,7 +473,7 @@ and matrix_component (m: Matrix) (x: int) (y: int) =
     let mutable x = x
     let mutable y = y
     try
-        __ret <- _idx (_idx (m._data) (x)) (y)
+        __ret <- _idx (_idx (m._data) (int x)) (int y)
         raise Return
         __ret
     with
@@ -518,7 +509,7 @@ and matrix_minor (m: Matrix) (x: int) (y: int) =
                 let mutable j: int = 0
                 while j < (m._width) do
                     if j <> y then
-                        row <- Array.append row [|(_idx (_idx (m._data) (i)) (j))|]
+                        row <- Array.append row [|(_idx (_idx (m._data) (int i)) (int j))|]
                     j <- j + 1
                 minor <- Array.append minor [|row|]
             i <- i + 1
@@ -551,15 +542,15 @@ and matrix_determinant (m: Matrix) =
             __ret <- 0.0
             raise Return
         if (m._height) = 1 then
-            __ret <- _idx (_idx (m._data) (0)) (0)
+            __ret <- _idx (_idx (m._data) (int 0)) (int 0)
             raise Return
         if (m._height) = 2 then
-            __ret <- ((_idx (_idx (m._data) (0)) (0)) * (_idx (_idx (m._data) (1)) (1))) - ((_idx (_idx (m._data) (0)) (1)) * (_idx (_idx (m._data) (1)) (0)))
+            __ret <- ((_idx (_idx (m._data) (int 0)) (int 0)) * (_idx (_idx (m._data) (int 1)) (int 1))) - ((_idx (_idx (m._data) (int 0)) (int 1)) * (_idx (_idx (m._data) (int 1)) (int 0)))
             raise Return
         let mutable sum: float = 0.0
         let mutable y: int = 0
         while y < (m._width) do
-            sum <- sum + ((_idx (_idx (m._data) (0)) (y)) * (matrix_cofactor (m) (0) (y)))
+            sum <- sum + ((_idx (_idx (m._data) (int 0)) (int y)) * (matrix_cofactor (m) (0) (y)))
             y <- y + 1
         __ret <- sum
         raise Return
@@ -608,17 +599,17 @@ and random_matrix (w: int) (h: int) (a: int) (b: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let v1: Vector = { _components = unbox<float array> [|1.0; 2.0; 3.0|] }
         let v2: Vector = { _components = unbox<float array> [|4.0; 5.0; 6.0|] }
-        printfn "%s" (vector_to_string (vector_add (v1) (v2)))
-        printfn "%s" (_str (vector_dot (v1) (v2)))
-        printfn "%s" (_str (vector_euclidean_length (v1)))
+        ignore (printfn "%s" (vector_to_string (vector_add (v1) (v2))))
+        ignore (printfn "%s" (_str (vector_dot (v1) (v2))))
+        ignore (printfn "%s" (_str (vector_euclidean_length (v1))))
         let m: Matrix = { _data = [|[|1.0; 2.0|]; [|3.0; 4.0|]|]; _width = 2; _height = 2 }
-        printfn "%s" (_str (matrix_determinant (m)))
+        ignore (printfn "%s" (_str (matrix_determinant (m))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -626,4 +617,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

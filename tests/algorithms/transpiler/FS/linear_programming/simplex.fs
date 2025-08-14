@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Break
 exception Continue
@@ -45,12 +45,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 open System.Collections.Generic
@@ -62,16 +65,16 @@ let rec pivot (t: float array array) (row: int) (col: int) =
     let mutable col = col
     try
         let mutable pivotRow: float array = Array.empty<float>
-        let pivotVal: float = _idx (_idx t (row)) (col)
-        for j in 0 .. ((Seq.length (_idx t (row))) - 1) do
-            pivotRow <- Array.append pivotRow [|((_idx (_idx t (row)) (j)) / pivotVal)|]
+        let pivotVal: float = _idx (_idx t (int row)) (int col)
+        for j in 0 .. ((Seq.length (_idx t (int row))) - 1) do
+            pivotRow <- Array.append pivotRow [|((_idx (_idx t (int row)) (int j)) / pivotVal)|]
         t.[row] <- pivotRow
         for i in 0 .. ((Seq.length (t)) - 1) do
             if i <> row then
-                let factor: float = _idx (_idx t (i)) (col)
+                let factor: float = _idx (_idx t (int i)) (int col)
                 let mutable newRow: float array = Array.empty<float>
-                for j in 0 .. ((Seq.length (_idx t (i))) - 1) do
-                    let value: float = (_idx (_idx t (i)) (j)) - (factor * (_idx pivotRow (j)))
+                for j in 0 .. ((Seq.length (_idx t (int i))) - 1) do
+                    let value: float = (_idx (_idx t (int i)) (int j)) - (factor * (_idx pivotRow (int j)))
                     newRow <- Array.append newRow [|value|]
                 t.[i] <- newRow
         __ret <- t
@@ -79,14 +82,14 @@ let rec pivot (t: float array array) (row: int) (col: int) =
         __ret
     with
         | Return -> __ret
-let rec findPivot (t: float array array) =
+and findPivot (t: float array array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable t = t
     try
         let mutable col: int = 0
         let mutable minVal: float = 0.0
-        for j in 0 .. (((Seq.length (_idx t (0))) - 1) - 1) do
-            let v: float = _idx (_idx t (0)) (j)
+        for j in 0 .. (((Seq.length (_idx t (int 0))) - 1) - 1) do
+            let v: float = _idx (_idx t (int 0)) (int j)
             if v < minVal then
                 minVal <- v
                 col <- j
@@ -97,9 +100,9 @@ let rec findPivot (t: float array array) =
         let mutable minRatio: float = 0.0
         let mutable first: bool = true
         for i in 1 .. ((Seq.length (t)) - 1) do
-            let coeff: float = _idx (_idx t (i)) (col)
+            let coeff: float = _idx (_idx t (int i)) (int col)
             if coeff > 0.0 then
-                let rhs: float = _idx (_idx t (i)) ((Seq.length (_idx t (i))) - 1)
+                let rhs: float = _idx (_idx t (int i)) (int ((Seq.length (_idx t (int i))) - 1))
                 let ratio: float = rhs / coeff
                 if first || (ratio < minRatio) then
                     minRatio <- ratio
@@ -110,33 +113,33 @@ let rec findPivot (t: float array array) =
         __ret
     with
         | Return -> __ret
-let rec interpret (t: float array array) (nVars: int) =
+and interpret (t: float array array) (nVars: int) =
     let mutable __ret : System.Collections.Generic.IDictionary<string, float> = Unchecked.defaultof<System.Collections.Generic.IDictionary<string, float>>
     let mutable t = t
     let mutable nVars = nVars
     try
-        let lastCol: int = (Seq.length (_idx t (0))) - 1
-        let mutable p: float = _idx (_idx t (0)) (lastCol)
+        let lastCol: int = (Seq.length (_idx t (int 0))) - 1
+        let mutable p: float = _idx (_idx t (int 0)) (int lastCol)
         if p < 0.0 then
             p <- -p
         let mutable result: System.Collections.Generic.IDictionary<string, float> = _dictCreate []
-        result.["P"] <- p
+        result <- _dictAdd (result) (string ("P")) (p)
         for i in 0 .. (nVars - 1) do
             let mutable nzRow: int = -1
             let mutable nzCount: int = 0
             for r in 0 .. ((Seq.length (t)) - 1) do
-                let ``val``: float = _idx (_idx t (r)) (i)
+                let ``val``: float = _idx (_idx t (int r)) (int i)
                 if ``val`` <> 0.0 then
                     nzCount <- nzCount + 1
                     nzRow <- r
-            if (nzCount = 1) && ((_idx (_idx t (nzRow)) (i)) = 1.0) then
-                result.["x" + (_str (i + 1))] <- _idx (_idx t (nzRow)) (lastCol)
+            if (nzCount = 1) && ((_idx (_idx t (int nzRow)) (int i)) = 1.0) then
+                result <- _dictAdd (result) (string ("x" + (_str (i + 1)))) (_idx (_idx t (int nzRow)) (int lastCol))
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-let rec simplex (tab: float array array) =
+and simplex (tab: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable tab = tab
     try
@@ -145,8 +148,8 @@ let rec simplex (tab: float array array) =
             while true do
                 try
                     let mutable p: int array = findPivot (t)
-                    let mutable row: int = _idx p (0)
-                    let mutable col: int = _idx p (1)
+                    let mutable row: int = _idx p (int 0)
+                    let mutable col: int = _idx p (int 1)
                     if row < 0 then
                         raise Break
                     t <- pivot (t) (row) (col)
@@ -164,11 +167,11 @@ let rec simplex (tab: float array array) =
 let mutable tableau: float array array = [|[|-1.0; -1.0; 0.0; 0.0; 0.0|]; [|1.0; 3.0; 1.0; 0.0; 4.0|]; [|3.0; 1.0; 0.0; 1.0; 4.0|]|]
 let mutable finalTab: float array array = simplex (tableau)
 let res: System.Collections.Generic.IDictionary<string, float> = interpret (finalTab) (2)
-printfn "%s" ("P: " + (_str (_dictGet res ((string ("P"))))))
+ignore (printfn "%s" ("P: " + (_str (_dictGet res ((string ("P")))))))
 for i in 0 .. (2 - 1) do
     let key: string = "x" + (_str (i + 1))
     if res.ContainsKey(key) then
-        printfn "%s" ((key + ": ") + (_str (_dictGet res ((string (key))))))
+        ignore (printfn "%s" ((key + ": ") + (_str (_dictGet res ((string (key)))))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:34 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -44,6 +32,16 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
         a <- na
     a.[i] <- v
     a
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec calc_profit (profit: int array) (weight: int array) (max_weight: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable profit = profit
@@ -51,15 +49,15 @@ let rec calc_profit (profit: int array) (weight: int array) (max_weight: int) =
     let mutable max_weight = max_weight
     try
         if (Seq.length (profit)) <> (Seq.length (weight)) then
-            failwith ("The length of profit and weight must be same.")
+            ignore (failwith ("The length of profit and weight must be same."))
         if max_weight <= 0 then
-            failwith ("max_weight must greater than zero.")
+            ignore (failwith ("max_weight must greater than zero."))
         let mutable i: int = 0
         while i < (Seq.length (profit)) do
-            if (_idx profit (i)) < 0 then
-                failwith ("Profit can not be negative.")
-            if (_idx weight (i)) < 0 then
-                failwith ("Weight can not be negative.")
+            if (_idx profit (int i)) < 0 then
+                ignore (failwith ("Profit can not be negative."))
+            if (_idx weight (int i)) < 0 then
+                ignore (failwith ("Weight can not be negative."))
             i <- i + 1
         let n: int = Seq.length (profit)
         let mutable used: bool array = Array.empty<bool>
@@ -77,8 +75,8 @@ let rec calc_profit (profit: int array) (weight: int array) (max_weight: int) =
                     let mutable maxIndex: int = -1
                     let mutable k: int = 0
                     while k < n do
-                        if not (_idx used (k)) then
-                            let ratio: float = (float (_idx profit (k))) / (float (_idx weight (k)))
+                        if not (_idx used (int k)) then
+                            let ratio: float = (float (_idx profit (int k))) / (float (_idx weight (int k)))
                             if ratio > maxRatio then
                                 maxRatio <- ratio
                                 maxIndex <- k
@@ -86,11 +84,11 @@ let rec calc_profit (profit: int array) (weight: int array) (max_weight: int) =
                     if maxIndex < 0 then
                         raise Break
                     used.[maxIndex] <- true
-                    if (max_weight - limit) >= (_idx weight (maxIndex)) then
-                        limit <- limit + (_idx weight (maxIndex))
-                        gain <- gain + (float (_idx profit (maxIndex)))
+                    if (max_weight - limit) >= (_idx weight (int maxIndex)) then
+                        limit <- limit + (_idx weight (int maxIndex))
+                        gain <- gain + (float (_idx profit (int maxIndex)))
                     else
-                        gain <- gain + (((float (max_weight - limit)) / (float (_idx weight (maxIndex)))) * (float (_idx profit (maxIndex))))
+                        gain <- gain + (((float (max_weight - limit)) / (float (_idx weight (int maxIndex)))) * (float (_idx profit (int maxIndex))))
                         raise Break
                     count <- count + 1
                 with
@@ -109,9 +107,9 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        printfn "%g" (calc_profit (unbox<int array> [|1; 2; 3|]) (unbox<int array> [|3; 4; 5|]) (15))
-        printfn "%g" (calc_profit (unbox<int array> [|10; 9; 8|]) (unbox<int array> [|3; 4; 5|]) (25))
-        printfn "%g" (calc_profit (unbox<int array> [|10; 9; 8|]) (unbox<int array> [|3; 4; 5|]) (5))
+        ignore (printfn "%s" (_str (calc_profit (unbox<int array> [|1; 2; 3|]) (unbox<int array> [|3; 4; 5|]) (15))))
+        ignore (printfn "%s" (_str (calc_profit (unbox<int array> [|10; 9; 8|]) (unbox<int array> [|3; 4; 5|]) (25))))
+        ignore (printfn "%s" (_str (calc_profit (unbox<int array> [|10; 9; 8|]) (unbox<int array> [|3; 4; 5|]) (5))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
