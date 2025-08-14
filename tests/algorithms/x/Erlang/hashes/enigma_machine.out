@@ -1,9 +1,9 @@
-/workspace/mochi/tests/algorithms/x/Erlang/hashes/enigma_machine.erl:174:22: Warning: the result of calling lists:append/2 is ignored (suppress the warning by assigning the expression to the _ variable)
-%  174|         Gear_one_3 = lists:append((case Gear_one_2 of nil -> []; _ -> Gear_one_2 end), [I_11]),
+/workspace/mochi/tests/algorithms/x/Erlang/hashes/enigma_machine.erl:188:22: Warning: the result of calling lists:append/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  188|         Gear_one_3 = lists:append((case Gear_one_2 of nil -> []; _ -> Gear_one_2 end), [I_11]),
 %     |                      ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/hashes/enigma_machine.erl:179:26: Warning: the result of calling lists:append/2 is ignored (suppress the warning by assigning the expression to the _ variable)
-%  179|             Gear_two_3 = lists:append((case Gear_two_2 of nil -> []; _ -> Gear_two_2 end), [I_12]),
+/workspace/mochi/tests/algorithms/x/Erlang/hashes/enigma_machine.erl:193:26: Warning: the result of calling lists:append/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  193|             Gear_two_3 = lists:append((case Gear_two_2 of nil -> []; _ -> Gear_two_2 end), [I_12]),
 %     |                          ^
 
 "UXQQN}FNKQY"
