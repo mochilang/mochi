@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-13 16:40 +0700
+Last updated: 2025-08-13 16:55 +0700
 
-## Program Checklist (262/1077)
+## Program Checklist (280/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -368,24 +368,24 @@ Last updated: 2025-08-13 16:40 +0700
 | 359 | electronics/electric_power | ✓ | 940µs | 384.0 KB |
 | 360 | electronics/electrical_impedance | ✓ | 1.552ms | 512.0 KB |
 | 361 | electronics/ic_555_timer | ✓ | 305µs | 256.0 KB |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
+| 362 | electronics/ind_reactance | ✓ | 918µs | 512.0 KB |
+| 363 | electronics/ohms_law | ✓ | 409µs | 512.0 KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 460µs | 384.0 KB |
+| 365 | electronics/resistor_color_code | ✓ | 473µs | 256.0 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 363µs | 512.0 KB |
+| 367 | electronics/resonant_frequency | ✓ | 363µs | 128.0 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 235µs | 256.0 KB |
+| 369 | file_transfer/receive_file | ✓ | 340µs | 256.0 KB |
+| 370 | file_transfer/send_file | ✓ | 216µs | 128.0 KB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 271µs |  |
+| 372 | financial/equated_monthly_installments | ✓ | 339µs | 128.0 KB |
+| 373 | financial/exponential_moving_average | ✓ | 481µs | 384.0 KB |
+| 374 | financial/interest | ✓ | 476µs | 384.0 KB |
+| 375 | financial/present_value | ✓ | 277µs | 384.0 KB |
+| 376 | financial/price_plus_tax | ✓ | 369µs | 384.0 KB |
+| 377 | financial/simple_moving_average | ✓ | 1.151ms | 640.0 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 1.28ms | 768.0 KB |
+| 379 | financial/time_and_half_pay | ✓ | 517µs | 256.0 KB |
 | 380 | fractals/julia_sets |   |  |  |
 | 381 | fractals/koch_snowflake |   |  |  |
 | 382 | fractals/mandelbrot |   |  |  |

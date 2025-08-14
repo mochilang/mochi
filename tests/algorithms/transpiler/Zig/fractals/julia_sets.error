@@ -1,0 +1,3 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/fractals/julia_sets.zig:119:34: error: expected type '*julia_sets.Complex', found 'julia_sets.Complex'
+/workspace/mochi/tests/algorithms/transpiler/Zig/fractals/julia_sets.zig:8:17: note: struct declared here
