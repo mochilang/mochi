@@ -5366,7 +5366,7 @@ return string.Join(", ", parts);
 }
 if (v is string s) return "\"" + s.Replace("\"", "\\\"") + "\"";
 if (v is bool b) return b ? "true" : "false";
-return Convert.ToString(v);
+return Convert.ToString(v, CultureInfo.InvariantCulture);
 }
 `)
 		buf.WriteString(`static string _fmtStr(object v) {
