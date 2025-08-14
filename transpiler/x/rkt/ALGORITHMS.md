@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-14 03:10 UTC
+Last updated: 2025-08-14 09:16 UTC
 
-## Algorithms Golden Test Checklist (869/1077)
+## Algorithms Golden Test Checklist (885/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -409,9 +409,9 @@ Last updated: 2025-08-14 03:10 UTC
 | 400 | graphs/bidirectional_a_star | ✓ | 9m31.223891s | 2.7 KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 9m31.223891s | 152.5 KB |
 | 402 | graphs/bidirectional_search | ✓ | 9m31.223891s | 43.3 KB |
-| 403 | graphs/boruvka |   |  |  |
+| 403 | graphs/boruvka | ✓ | 165µs | 159.7 KB |
 | 404 | graphs/breadth_first_search | ✓ | 9m31.223891s | 6.0 KB |
-| 405 | graphs/breadth_first_search_2 | ✓ | 9m31.223891s | 30.5 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 38µs | 30.3 KB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 38µs | 18.1 KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 9m31.223891s | 384 B |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 142µs | 137.5 KB |
@@ -423,12 +423,12 @@ Last updated: 2025-08-14 03:10 UTC
 | 414 | graphs/depth_first_search_2 | ✓ | 151µs | 56.2 KB |
 | 415 | graphs/dijkstra | ✓ | 9m31.223891s | 45.3 KB |
 | 416 | graphs/dijkstra_2 | ✓ | 9m31.223891s | 34.3 KB |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
+| 417 | graphs/dijkstra_algorithm | ✓ | 10µs | 800 B |
 | 418 | graphs/dijkstra_alternate | ✓ | 9m31.223891s | 6.4 KB |
 | 419 | graphs/dijkstra_binary_grid | ✓ | 9m31.223891s | 115.5 KB |
-| 420 | graphs/dinic |   |  |  |
+| 420 | graphs/dinic | ✓ | 378µs | 686.3 KB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 9m31.223891s | 24.2 KB |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 8µs | 768 B |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 9m31.223891s | 416.8 KB |
 | 424 | graphs/even_tree | ✓ | 9m31.223891s | 28.0 KB |
 | 425 | graphs/finding_bridges | ✓ | 9m31.223891s | 2.1 MB |
@@ -545,7 +545,7 @@ Last updated: 2025-08-14 03:10 UTC
 | 536 | maths/average_median | ✓ | 49µs | 37.6 KB |
 | 537 | maths/average_mode | ✓ | 208µs | 426.2 KB |
 | 538 | maths/bailey_borwein_plouffe | ✓ | 14.023475s |  |
-| 539 | maths/base_neg2_conversion |   |  |  |
+| 539 | maths/base_neg2_conversion | ✓ | 26µs | 10.9 KB |
 | 540 | maths/basic_maths | ✓ | 37µs | 32.1 KB |
 | 541 | maths/binary_exponentiation | ✓ | 31µs | 11.1 KB |
 | 542 | maths/binary_multiplication | ✓ | 20µs | 7.6 KB |
@@ -688,14 +688,14 @@ Last updated: 2025-08-14 03:10 UTC
 | 679 | maths/special_numbers/weird_number | ✓ | 846µs | 884.1 KB |
 | 680 | maths/sum_of_arithmetic_series | ✓ | 17µs | 2.9 KB |
 | 681 | maths/sum_of_digits | ✓ | 43µs | 99.8 KB |
-| 682 | maths/sum_of_geometric_progression |   |  |  |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
-| 685 | maths/sylvester_sequence |   |  |  |
-| 686 | maths/tanh |   |  |  |
-| 687 | maths/test_factorial |   |  |  |
-| 688 | maths/test_prime_check |   |  |  |
-| 689 | maths/three_sum |   |  |  |
+| 682 | maths/sum_of_geometric_progression | ✓ | 29µs | 20.6 KB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 30µs | 13.4 KB |
+| 684 | maths/sumset | ✓ | 44µs | 59.4 KB |
+| 685 | maths/sylvester_sequence | ✓ | 18µs | 4.8 KB |
+| 686 | maths/tanh | ✓ | 87µs | 138.3 KB |
+| 687 | maths/test_factorial | ✓ | 21µs | 28.7 KB |
+| 688 | maths/test_prime_check | ✓ | 22µs | 11.9 KB |
+| 689 | maths/three_sum | ✓ | 43µs | 40.8 KB |
 | 690 | maths/trapezoidal_rule | ✓ | 23µs | 1.8 KB |
 | 691 | maths/triplet_sum | ✓ | 91µs | 116.8 KB |
 | 692 | maths/twin_prime | ✓ | 19µs | 12.4 KB |
@@ -705,7 +705,7 @@ Last updated: 2025-08-14 03:10 UTC
 | 696 | maths/zellers_congruence | ✓ | 62µs | 45.5 KB |
 | 697 | matrix/binary_search_matrix | ✓ | 45µs | 16.3 KB |
 | 698 | matrix/count_islands_in_matrix | ✓ | 330µs | 480.0 KB |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 23.935578s | 6.6 MB |
 | 700 | matrix/count_paths | ✓ | 161µs | 96.7 KB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 33µs | 4.7 KB |
 | 702 | matrix/inverse_of_matrix | ✓ | 125µs | 16.7 KB |
@@ -725,7 +725,7 @@ Last updated: 2025-08-14 03:10 UTC
 | 716 | matrix/spiral_print | ✓ | 71µs | 33.8 KB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 124µs | 73.8 KB |
 | 718 | matrix/validate_sudoku_board | ✓ | 59µs | 24.8 KB |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
+| 719 | networking_flow/ford_fulkerson | ✓ |  |  |
 | 720 | networking_flow/minimum_cut |   |  |  |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 21µs | 5.2 KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 90µs | 126.2 KB |
@@ -856,7 +856,7 @@ Last updated: 2025-08-14 03:10 UTC
 | 847 | project_euler/problem_021/sol1 | ✓ | 310.23ms | 5.0 MB |
 | 848 | project_euler/problem_022/sol1 | ✓ | 44µs | 4.8 KB |
 | 849 | project_euler/problem_022/sol2 |   |  |  |
-| 850 | project_euler/problem_023/sol1 |   |  |  |
+| 850 | project_euler/problem_023/sol1 | ✓ |  |  |
 | 851 | project_euler/problem_024/sol1 | ✓ | 31µs | 30.4 KB |
 | 852 | project_euler/problem_025/sol1 | ✓ | 35µs | 2.8 KB |
 | 853 | project_euler/problem_025/sol2 | ✓ | 37µs | 2.3 KB |
