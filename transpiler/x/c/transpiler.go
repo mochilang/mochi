@@ -128,6 +128,7 @@ var (
 
 	currentLocals map[string]bool
 	currentParams map[string]bool
+	mutatedParams map[string]bool
 
 	benchMain bool
 
@@ -150,7 +151,7 @@ func emitLenExpr(w io.Writer, e Expr) {
 	switch v := e.(type) {
 	case *VarRef:
 		if t := inferExprType(currentEnv, v); strings.HasPrefix(t, "Map") {
-			io.WriteString(w, v.Name+".len")
+			io.WriteString(w, mapField(v.Name, "len"))
 		} else {
 			io.WriteString(w, v.Name+"_len")
 		}
@@ -183,7 +184,7 @@ func emitLenExpr(w io.Writer, e Expr) {
 	case *IndexExpr:
 		if vr, ok := v.Target.(*VarRef); ok {
 			if t := inferExprType(currentEnv, vr); strings.HasPrefix(t, "Map") {
-				io.WriteString(w, vr.Name+".lens[")
+				io.WriteString(w, mapField(vr.Name, "lens")+"[")
 				v.Index.emitExpr(w)
 				io.WriteString(w, "]")
 			} else {
@@ -713,8 +714,10 @@ func markStructParamMutations(stmts []Stmt, params map[string]bool, mutated map[
 	for _, st := range stmts {
 		switch s := st.(type) {
 		case *AssignStmt:
-			if len(s.Fields) > 0 && params[s.Name] {
-				mutated[s.Name] = true
+			if params[s.Name] {
+				if len(s.Fields) > 0 || len(s.Indexes) > 0 {
+					mutated[s.Name] = true
+				}
 			}
 		case *IfStmt:
 			markStructParamMutations(s.Then, params, mutated)
@@ -890,7 +893,7 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		}
 		if strings.HasSuffix(paramType, "*") {
 			base := strings.TrimSuffix(paramType, "*")
-			if _, ok := structTypes[base]; ok {
+			if _, ok := structTypes[base]; ok || strings.HasPrefix(base, "Map") {
 				io.WriteString(w, "&")
 			}
 		} else if _, ok := structTypes[paramType]; ok {
@@ -2643,11 +2646,11 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetIL = true
 			funcReturnTypes["map_get_il"] = valT
 			io.WriteString(w, "map_get_il(")
-			if varTypes[vr.Name] == "MapIL" {
-				io.WriteString(w, vr.Name+".keys, ")
-				io.WriteString(w, vr.Name+".vals, ")
-				io.WriteString(w, vr.Name+".lens, ")
-				io.WriteString(w, vr.Name+".len, ")
+			if strings.HasPrefix(varTypes[vr.Name], "MapIL") {
+				io.WriteString(w, mapField(vr.Name, "keys")+", ")
+				io.WriteString(w, mapField(vr.Name, "vals")+", ")
+				io.WriteString(w, mapField(vr.Name, "lens")+", ")
+				io.WriteString(w, mapField(vr.Name, "len")+", ")
 			} else {
 				io.WriteString(w, vr.Name+"_keys, ")
 				io.WriteString(w, vr.Name+"_vals, ")
@@ -2956,7 +2959,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					}
 					c.Args[0].emitExpr(w)
 					io.WriteString(w, ", &")
-					fmt.Fprintf(w, "%s_lens[(int)(", vr.Name)
+					fmt.Fprintf(w, "%s[(int)(", mapField(vr.Name, "lens"))
 					ie.Index.emitExpr(w)
 					io.WriteString(w, ")], ")
 					if len(c.Args) > 1 && c.Args[1] != nil {
@@ -2976,7 +2979,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				}
 				c.Args[0].emitExpr(w)
 				io.WriteString(w, ", ")
-				fmt.Fprintf(w, "%s_lens[(int)(", vr.Name)
+				fmt.Fprintf(w, "%s[(int)(", mapField(vr.Name, "lens"))
 				ie.Index.emitExpr(w)
 				io.WriteString(w, ")], ")
 				if len(c.Args) > 1 && c.Args[1] != nil {
@@ -3500,7 +3503,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		}
 		if strings.HasSuffix(paramType, "*") {
 			base := strings.TrimSuffix(paramType, "*")
-			if _, ok := structTypes[base]; ok {
+			if _, ok := structTypes[base]; ok || strings.HasPrefix(base, "Map") {
 				io.WriteString(w, "&")
 			}
 		} else if _, ok := structTypes[paramType]; ok {
@@ -3575,8 +3578,8 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			if keyT == "const char*" {
 				needContainsStr = true
 				io.WriteString(w, "contains_str(")
-				io.WriteString(w, vr.Name+".keys, ")
-				io.WriteString(w, vr.Name+".len, ")
+				io.WriteString(w, mapField(vr.Name, "keys")+", ")
+				io.WriteString(w, mapField(vr.Name, "len")+", ")
 				b.Left.emitExpr(w)
 				io.WriteString(w, ")")
 				return
@@ -3584,8 +3587,8 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			if keyT == "int" {
 				needContainsMapInt = true
 				io.WriteString(w, "contains_map_int(")
-				io.WriteString(w, vr.Name+".keys, ")
-				io.WriteString(w, vr.Name+".len, ")
+				io.WriteString(w, mapField(vr.Name, "keys")+", ")
+				io.WriteString(w, mapField(vr.Name, "len")+", ")
 				b.Left.emitExpr(w)
 				io.WriteString(w, ")")
 				return
@@ -6612,11 +6615,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				needMapSetIL = true
 				var buf bytes.Buffer
 				buf.WriteString("map_set_il(")
-				if varTypes[s.Assign.Name] == "MapIL" {
-					buf.WriteString(s.Assign.Name + ".keys, ")
-					buf.WriteString(s.Assign.Name + ".vals, ")
-					buf.WriteString(s.Assign.Name + ".lens, &")
-					buf.WriteString(s.Assign.Name + ".len, ")
+				if strings.HasPrefix(varTypes[s.Assign.Name], "MapIL") {
+					buf.WriteString(mapField(s.Assign.Name, "keys") + ", ")
+					buf.WriteString(mapField(s.Assign.Name, "vals") + ", ")
+					buf.WriteString(mapField(s.Assign.Name, "lens") + ", &")
+					buf.WriteString(mapField(s.Assign.Name, "len") + ", ")
 				} else {
 					buf.WriteString(s.Assign.Name + "_keys, ")
 					buf.WriteString(s.Assign.Name + "_vals, ")
@@ -6717,7 +6720,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				listVar := name + "_keys"
 				lenVar := name + "_len"
-				if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" || vt == "MapIS" || vt == "MapIL" {
+				if vt := varTypes[name]; strings.HasPrefix(vt, "MapSL") || strings.HasPrefix(vt, "MapSS") || strings.HasPrefix(vt, "MapSI") || strings.HasPrefix(vt, "MapSD") || strings.HasPrefix(vt, "MapIS") || strings.HasPrefix(vt, "MapIL") {
 					listVar = name + ".keys"
 					lenVar = name + ".len"
 				}
@@ -6743,7 +6746,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					}
 					listVar := name + "_keys"
 					lenVar := name + "_len"
-					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" || vt == "MapIS" || vt == "MapIL" {
+					if vt := varTypes[name]; strings.HasPrefix(vt, "MapSL") || strings.HasPrefix(vt, "MapSS") || strings.HasPrefix(vt, "MapSI") || strings.HasPrefix(vt, "MapSD") || strings.HasPrefix(vt, "MapIS") || strings.HasPrefix(vt, "MapIL") {
 						listVar = name + ".keys"
 						lenVar = name + ".len"
 					}
@@ -7463,19 +7466,25 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		}
 	}
 
-	body, err := compileStmts(localEnv, fn.BlockBody)
-	if err != nil {
-		return nil, err
-	}
 	paramSet := map[string]bool{}
 	for _, p := range params {
 		paramSet[p.Name] = true
 	}
+	currentParams = paramSet
+	mutatedParams = make(map[string]bool)
+	body, err := compileStmts(localEnv, fn.BlockBody)
+	if err != nil {
+		return nil, err
+	}
+	currentParams = nil
 	mutated := map[string]bool{}
 	markStructParamMutations(body, paramSet, mutated)
+	for k := range mutatedParams {
+		mutated[k] = true
+	}
 	for i := range params {
 		if mutated[params[i].Name] && !strings.HasSuffix(params[i].Type, "*") {
-			if _, ok := structTypes[params[i].Type]; ok {
+			if _, ok := structTypes[params[i].Type]; ok || strings.HasPrefix(params[i].Type, "Map") {
 				if !stmtsUseVarInReturn(body, params[i].Name) {
 					params[i].Type = params[i].Type + "*"
 					paramTypes[i] = params[i].Type
@@ -10322,6 +10331,13 @@ func isMapVar(name string) bool {
 		return strings.HasPrefix(t, "Map")
 	}
 	return false
+}
+
+func mapField(name, field string) string {
+	if t, ok := varTypes[name]; ok && strings.HasSuffix(t, "*") {
+		return name + "->" + field
+	}
+	return name + "." + field
 }
 
 func indexCastFieldExpr(e *parser.Expr) Expr {
