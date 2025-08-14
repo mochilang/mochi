@@ -1,3 +1,338 @@
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-14 18:14 +0700)
+- Commit f01ff13e76: fs: print floats without trailing zeros
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-14 16:33 +0700)
 - Commit d69b2b30ff: Support MapII and MapIL fields
 - Generated Ruby for 104/105 programs

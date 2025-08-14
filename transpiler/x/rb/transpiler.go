@@ -194,6 +194,12 @@ def _idx(arr, idx)
 end
 `
 
+const helperPow = `
+def _pow(a, b)
+  a ** b
+end
+`
+
 const helperSHA256 = `
 require 'digest'
 def _sha256(bs)
@@ -3200,12 +3206,15 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, helperIdx+"\n"); err != nil {
-		return err
-	}
-	if _, err := io.WriteString(w, helperLen+"\n"); err != nil {
-		return err
-	}
+        if _, err := io.WriteString(w, helperIdx+"\n"); err != nil {
+                return err
+        }
+       if _, err := io.WriteString(w, helperPow+"\n"); err != nil {
+               return err
+       }
+        if _, err := io.WriteString(w, helperLen+"\n"); err != nil {
+                return err
+        }
 	if _, err := io.WriteString(w, helperHas+"\n"); err != nil {
 		return err
 	}
