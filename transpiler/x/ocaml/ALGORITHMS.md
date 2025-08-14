@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
 Completed programs: 763/1077
-Last updated: 2025-08-14 10:04 +0700
+Last updated: 2025-08-14 15:56 +0700
 
 Checklist:
 
@@ -414,7 +414,7 @@ Checklist:
 | 405 | graphs/breadth_first_search_2 | ✓ | 115.0µs | 6.57KB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 70.0µs | 2.66KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 2.0µs | 208B |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ |  |  |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 236.0µs | 33.34KB |
 | 409 | graphs/check_bipatrite | ✓ |  |  |
 | 410 | graphs/check_cycle | ✓ | 77.0µs | 6.62KB |
 | 411 | graphs/connected_components | ✓ | 1.0ms | 7.46KB |
@@ -422,7 +422,7 @@ Checklist:
 | 413 | graphs/depth_first_search | ✓ | 25.0µs | 3.16KB |
 | 414 | graphs/depth_first_search_2 |   |  |  |
 | 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 | ✓ | 232.0µs | 7.44KB |
+| 416 | graphs/dijkstra_2 | ✓ | 182.0µs | 9.85KB |
 | 417 | graphs/dijkstra_algorithm | ✓ | 127.0µs | 408B |
 | 418 | graphs/dijkstra_alternate | ✓ | 186.0µs | 1000B |
 | 419 | graphs/dijkstra_binary_grid |   |  |  |
