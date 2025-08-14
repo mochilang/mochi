@@ -29,6 +29,7 @@ var usesLookupHost bool
 var usesNum bool
 var usesInt bool
 var usesKeys bool
+var usesValues bool
 var usesMem bool
 var usesBigInt bool
 var usesPad bool
@@ -81,6 +82,7 @@ type Program struct {
 	UseNum        bool
 	UseInt        bool
 	UseKeys       bool
+	UseValues     bool
 	UseMem        bool
 	UseBigInt     bool
 	UsePad        bool
@@ -2148,6 +2150,11 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return Array(m.keys)\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseValues {
+		buf.WriteString("func _values<K,V>(_ m: [K: V]) -> [V] {\n")
+		buf.WriteString("    return Array(m.values)\n")
+		buf.WriteString("}\n")
+	}
 	if p.UsePad {
 		buf.WriteString("func _padStart(_ s: String, _ w: Int, _ p: String) -> String {\n")
 		buf.WriteString("    var out = s\n")
@@ -2202,6 +2209,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    if idx < 0 { idx += xs.count }\n")
 		buf.WriteString("    if idx >= 0 && idx < xs.count { return xs[idx] }\n")
 		buf.WriteString("    return xs.first\n}\n")
+		buf.WriteString("func _idx<K: Hashable, V>(_ m: [K: V], _ k: K) -> V? {\n")
+		buf.WriteString("    return m[k]\n}\n")
 	}
 	if p.UseRat {
 		buf.WriteString("func _rat_num(_ v: Double) -> Int {\n")
@@ -2445,6 +2454,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	// optional unwrapping errors when using Swift's `Int()` initializer.
 	usesInt = true
 	usesKeys = false
+	usesValues = false
 	usesMem = false
 	usesBigInt = false
 	usesPad = false
@@ -2491,6 +2501,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseNum = usesNum
 	p.UseInt = usesInt
 	p.UseKeys = usesKeys
+	p.UseValues = usesValues
 	p.UseMem = usesMem
 	p.UseBigInt = usesBigInt
 	p.UsePad = usesPad
@@ -4314,6 +4325,15 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	}
 	start := 0
 
+	if n, ok := expr.(*NameExpr); ok && n.Name == "values" && len(p.Ops) > 0 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 1 {
+		arg, err := convertExpr(env, p.Ops[0].Call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		usesValues = true
+		return &CallExpr{Func: "_values", Args: []Expr{arg}}, nil
+	}
+
 	// handle `Object.keys(map)`
 	if p.Target != nil && p.Target.Selector != nil && p.Target.Selector.Root == "Object" && len(tail) > 0 && tail[len(tail)-1] == "keys" && len(p.Ops) > 0 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 1 {
 		arg, err := convertExpr(env, p.Ops[0].Call.Args[0])
@@ -4803,11 +4823,11 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			}
 		}
 		t := types.TypeOfPostfix(p, env)
-		if ot, ok := t.(types.OptionType); ok {
+		if _, ok := t.(types.OptionType); ok {
 			if ie, ok2 := expr.(*IndexExpr); ok2 && !ie.Force {
 				return expr, nil
 			}
-			t = ot.Elem
+			return expr, nil
 		} else if ie, ok := expr.(*IndexExpr); ok && !ie.Force {
 			// cast to expected non-optional type
 			return &CastExpr{Expr: expr, Type: swiftTypeOf(t) + "!"}, nil
@@ -5407,6 +5427,14 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: "_keys", Args: []Expr{arg}}, nil
 			}
 			return &CallExpr{Func: "keys", Args: []Expr{arg}}, nil
+		}
+		if pr.Call.Func == "values" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesValues = true
+			return &CallExpr{Func: "_values", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "padStart" && len(pr.Call.Args) == 3 {
 			a0, err := convertExpr(env, pr.Call.Args[0])
