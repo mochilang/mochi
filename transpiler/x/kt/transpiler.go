@@ -2248,6 +2248,12 @@ func (a *AppendExpr) emit(w io.Writer) {
 		*UnionExpr, *UnionAllExpr, *ExceptExpr, *IntersectExpr:
 		needParens = true
 	}
+	listType := guessType(a.List)
+	nullable := false
+	if strings.HasSuffix(listType, "?") {
+		listType = strings.TrimSuffix(listType, "?")
+		nullable = true
+	}
 	if needParens {
 		io.WriteString(w, "(")
 		a.List.emit(w)
@@ -2255,13 +2261,16 @@ func (a *AppendExpr) emit(w io.Writer) {
 	} else {
 		a.List.emit(w)
 	}
+	if nullable {
+		io.WriteString(w, "!!")
+	}
 	io.WriteString(w, ".toMutableList(); _tmp.add(")
 	elemType := ""
-	listType := guessType(a.List)
 	if strings.HasPrefix(listType, "MutableList<") {
 		elemType = strings.TrimSuffix(strings.TrimPrefix(listType, "MutableList<"), ">")
 	}
-	if elemType != "" && elemType != guessType(a.Elem) {
+	elemGuess := guessType(a.Elem)
+	if elemType != "" && elemType != "Any?" && elemType != elemGuess {
 		castExpr := &CastExpr{Value: a.Elem, Type: elemType}
 		castExpr.emit(w)
 	} else {
@@ -4062,6 +4071,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Type: typ, Value: v})
+			varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: typ, Value: v}
 			if env != nil {
 				var tt types.Type
 				if s.Let.Type != nil {
@@ -4176,6 +4186,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					}
 				}
 				out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: expr})
+				varDecls[s.Var.Name] = &VarStmt{Name: s.Var.Name, Type: typ, Value: expr}
 				continue
 			}
 			v, err := convertExpr(env, s.Var.Value)
@@ -4261,6 +4272,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 			}
 			out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: v})
+			varDecls[s.Var.Name] = &VarStmt{Name: s.Var.Name, Type: typ, Value: v}
 			if env != nil {
 				var tt types.Type
 				if s.Var.Type != nil {
@@ -6267,6 +6279,19 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				curType = t
 				if _, ok := t.(types.MapType); ok {
 					baseIsMap = true
+				}
+			}
+			if curType == nil {
+				if vs, ok := varDecls[p.Selector.Root]; ok {
+					if st, ok2 := env.Structs()[vs.Type]; ok2 {
+						curType = st
+					}
+				}
+			} else if _, ok := curType.(types.AnyType); ok {
+				if vs, ok2 := varDecls[p.Selector.Root]; ok2 {
+					if st, ok3 := env.Structs()[vs.Type]; ok3 {
+						curType = st
+					}
 				}
 			}
 		}

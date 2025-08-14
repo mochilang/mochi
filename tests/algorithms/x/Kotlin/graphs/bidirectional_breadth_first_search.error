@@ -1,0 +1,11 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/graphs/bidirectional_breadth_first_search.kt:164:35: error: type mismatch: inferred type is MutableList<Any?> but MutableList<String> was expected
+                    new_path_b = ((reverse_list(new_path_b)) as MutableList<Any?>)
+                                  ^
+/workspace/mochi/tests/algorithms/x/Kotlin/graphs/bidirectional_breadth_first_search.kt:167:57: error: only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type MutableList<String>?
+                        path_f = run { val _tmp = path_f.toMutableList(); _tmp.add(((new_path_b[t] as Any?) as String)); _tmp }
+                                                        ^
+/workspace/mochi/tests/algorithms/x/Kotlin/graphs/bidirectional_breadth_first_search.kt:170:28: error: type mismatch: inferred type is MutableList<String>? but MutableList<String> was expected
+                    return path_f
+                           ^

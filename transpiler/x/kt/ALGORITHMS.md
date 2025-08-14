@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-13 16:20 GMT+7
+Last updated: 2025-08-14 17:20 GMT+7
 
 ## Algorithms Golden Test Checklist (548/1077)
 | Index | Name | Status | Duration | Memory |
@@ -407,7 +407,7 @@ Last updated: 2025-08-13 16:20 GMT+7
 | 398 | graphs/bellman_ford |   |  |  |
 | 399 | graphs/bi_directional_dijkstra |   |  |  |
 | 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
+| 401 | graphs/bidirectional_breadth_first_search | error |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search |   |  |  |
