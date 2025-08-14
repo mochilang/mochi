@@ -51,6 +51,7 @@ var (
 	needStrListDouble       bool
 	needStrListListDouble   bool
 	needJSONListListInt     bool
+	needJSONMapSD           bool
 	needUpper               bool
 	needLower               bool
 	needPadStart            bool
@@ -284,7 +285,7 @@ func varBaseType(name string) string {
 }
 
 func fieldBaseType(varName, field string) string {
-	if stName := varBaseType(varName); stName != "" {
+	if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
 		if st, ok := structTypes[stName]; ok {
 			if ft, ok2 := st.Fields[field]; ok2 {
 				return strings.TrimSuffix(cTypeFromMochiType(ft), "[]")
@@ -1011,27 +1012,23 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 			writeIndent(w, indent)
 			io.WriteString(w, "{\n")
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "static const char* %s_keys[%d] = {", tmp, len(v.Items))
+			fmt.Fprintf(w, "const char** %s_keys = malloc(%d * sizeof(char*));\n", tmp, len(v.Items))
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "double *%s_vals = malloc(%d * sizeof(double));\n", tmp, len(v.Items))
 			for i, it := range v.Items {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_keys[%d] = ", tmp, i)
 				if ks, ok := evalString(it.Key); ok {
 					fmt.Fprintf(w, "\"%s\"", escape(ks))
 				} else {
 					it.Key.emitExpr(w)
 				}
-			}
-			io.WriteString(w, "};\n")
-			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "static double %s_vals[%d] = {", tmp, len(v.Items))
-			for i, it := range v.Items {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
+				io.WriteString(w, ";\n")
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_vals[%d] = ", tmp, i)
 				it.Value.emitExpr(w)
+				io.WriteString(w, ";\n")
 			}
-			io.WriteString(w, "};\n")
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "MapSD %s = { %s_keys, %s_vals, %d, %d };\n", tmp, tmp, tmp, len(v.Items), len(v.Items)+16)
 			writeIndent(w, indent+1)
@@ -1064,6 +1061,39 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "};\n")
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "MapSD %s = { %s_keys, %s_vals, %d, %d };\n", tmp, tmp, tmp, len(v.Fields), len(v.Fields)+16)
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "return %s;\n", tmp)
+			writeIndent(w, indent)
+			io.WriteString(w, "}\n")
+			return
+		}
+	}
+	if currentFuncReturn == "MapSI" {
+		if v, ok := r.Expr.(*MapLit); ok {
+			tmp := fmt.Sprintf("__ret%d", tempCounter)
+			tempCounter++
+			writeIndent(w, indent)
+			io.WriteString(w, "{\n")
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "const char** %s_keys = malloc(%d * sizeof(char*));\n", tmp, len(v.Items))
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "int *%s_vals = malloc(%d * sizeof(int));\n", tmp, len(v.Items))
+			for i, it := range v.Items {
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_keys[%d] = ", tmp, i)
+				if ks, ok := evalString(it.Key); ok {
+					fmt.Fprintf(w, "\"%s\"", escape(ks))
+				} else {
+					it.Key.emitExpr(w)
+				}
+				io.WriteString(w, ";\n")
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_vals[%d] = ", tmp, i)
+				it.Value.emitExpr(w)
+				io.WriteString(w, ";\n")
+			}
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "MapSI %s = { %s_keys, %s_vals, %d, %d };\n", tmp, tmp, tmp, len(v.Items), len(v.Items)+16)
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "return %s;\n", tmp)
 			writeIndent(w, indent)
@@ -4239,8 +4269,18 @@ func (p *Program) Emit() []byte {
 	if needMapGetII || needMapSetII {
 		buf.WriteString("typedef struct { int *keys; int *vals; size_t len; size_t cap; } MapII;\n\n")
 	}
-	if needMapGetSD || needMapSetSD {
+	if needMapGetSD || needMapSetSD || needJSONMapSD {
 		buf.WriteString("typedef struct { const char **keys; double *vals; size_t len; size_t cap; } MapSD;\n\n")
+	}
+	if needJSONMapSD {
+		buf.WriteString("static void json_map_sd(MapSD m) {\n")
+		buf.WriteString("    printf(\"{\");\n")
+		buf.WriteString("    for (size_t i = 0; i < m.len; i++) {\n")
+		buf.WriteString("        if (i) printf(\", \" );\n")
+		buf.WriteString("        printf(\"\\\"%s\\\": %s\", m.keys[i], str_float(m.vals[i]));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    printf(\"}\\n\");\n")
+		buf.WriteString("}\n\n")
 	}
 	if needMapGetSI {
 		buf.WriteString("static int map_get_si(const char *keys[], const int vals[], size_t len, const char *key) {\n")
@@ -4994,6 +5034,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needStrListDouble = false
 	needStrListListDouble = false
 	needJSONListListInt = false
+	needJSONMapSD = false
 	needUpper = false
 	needLower = false
 	needPadStart = false
@@ -5162,6 +5203,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if name == "repeat" { // avoid conflict with builtin helper
 				funcAliases[name] = "user_repeat"
 				name = "user_repeat"
+			}
+			if name == "panic" {
+				funcAliases[name] = "user_panic"
+				name = "user_panic"
+			}
+			if name == "union" { // avoid conflict with C keyword
+				funcAliases[name] = "user_union"
+				name = "user_union"
 			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
@@ -5512,6 +5561,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if strings.HasPrefix(typ, "double") && strings.HasSuffix(typ, "[]") {
 				needStrListDouble = true
 				return &JSONListDoubleCall{Arg: arg}, nil
+			}
+			if typ == "MapSD" {
+				needStrFloat = true
+				needJSONMapSD = true
+				return &CallStmt{Func: "json_map_sd", Args: []Expr{arg}}, nil
 			}
 			return nil, fmt.Errorf("unsupported json argument")
 		}
