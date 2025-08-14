@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Node {
   String pos;
@@ -45,15 +50,15 @@ class Node {
 List<List<int>> grid = [[0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0], [1, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0]];
 List<List<int>> delta = [[-1, 0], [0, -1], [1, 0], [0, 1]];
 String key(int y, int x) {
-  return (y).toString() + "," + (x).toString();
+  return _str(y) + "," + _str(x);
 }
 
 int parse_int(String s) {
   int value = 0;
   int i = 0;
   while (i < s.length) {
-    String c = s.substring(i, i + 1);
-    value = value * 10 + ((c).codeUnitAt(0));
+    String c = _substr(s, i, i + 1);
+    value = value * 10 + (int.parse(c));
     i = i + 1;
   }
   return value;
@@ -144,7 +149,7 @@ List<String> bidirectional_bfs(String start, String goal) {
     List<String> new_path = [...node_f.path, npos];
     visited_f[npos] = new_path;
     if (visited_b.containsKey(npos)) {
-    List<String> rev = reverse_list(visited_b[npos]!);
+    List<String> rev = reverse_list((visited_b[npos]!));
     int j = 1;
     while (j < rev.length) {
     new_path = [...new_path, rev[j]];
@@ -188,11 +193,11 @@ String path_to_string(List<String> path) {
     return "[]";
   }
   List<int> first = parse_key(path[0]);
-  String s = "[(" + (first[0]).toString() + ", " + (first[1]).toString() + ")";
+  String s = "[(" + _str(first[0]) + ", " + _str(first[1]) + ")";
   int i = 1;
   while (i < path.length) {
     List<int> c = parse_key(path[i]);
-    s = s + ", (" + (c[0]).toString() + ", " + (c[1]).toString() + ")";
+    s = s + ", (" + _str(c[0]) + ", " + _str(c[1]) + ")";
     i = i + 1;
   }
   s = s + "]";

@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 bool contains(List<int> xs, int v) {
   for (int x in xs) {
@@ -54,8 +54,8 @@ List<List<int>> get_edges(Map<int, List<int>> graph) {
   int n = graph.length;
   List<List<int>> edges = <List<int>>[];
   for (int i = 0; i < n; i++) {
-    for (var j in graph[i]!) {
-    edges = [...edges, [i, j]];
+    for (int j in (graph[i]!)) {
+    edges = ([...edges, [i, j]] as List<dynamic>).map((e) => (e as List<int>)).toList();
   }
   }
   return edges;
@@ -77,11 +77,11 @@ List<int> matching_min_vertex_cover(Map<int, List<int>> graph) {
     chosen = [...chosen, v];
   }
     List<List<int>> filtered = <List<int>>[];
-    for (var edge in edges) {
-    dynamic a = edge[0];
-    dynamic b = edge[1];
+    for (List<int> edge in edges) {
+    int a = edge[0];
+    int b = edge[1];
     if (a != u && b != u && a != v && b != v) {
-    filtered = [...filtered, edge];
+    filtered = ([...filtered, edge] as List<dynamic>).map((e) => (e as List<int>)).toList();
   }
   }
     edges = filtered;

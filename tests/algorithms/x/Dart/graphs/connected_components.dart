@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,20 +33,25 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 Map<int, List<int>> test_graph_1 = {0: [1, 2], 1: [0, 3], 2: [0], 3: [1], 4: [5, 6], 5: [4, 6], 6: [4, 5]};
 Map<int, List<int>> test_graph_2 = {0: [1, 2, 3], 1: [0, 3], 2: [0], 3: [0, 1], 4: [], 5: []};
 List<int> dfs(Map<int, List<int>> graph, int vert, List<bool> visited) {
   while (visited.length <= vert) { visited.add(false); } visited[vert] = true;
   List<int> connected_verts = <int>[];
-  for (var neighbour in graph[vert]) {
+  for (int neighbour in (graph[vert]!)) {
     if (!visited[neighbour]) {
-    connected_verts = ([...connected_verts, ...dfs(graph, neighbour, visited)] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    connected_verts = ([...connected_verts, ...dfs(graph, neighbour, visited)] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   }
-  return ([...[vert], ...connected_verts] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+  return ([...[vert], ...connected_verts] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
 }
 
 List<List<int>> connected_components(Map<int, List<int>> graph) {
@@ -59,7 +64,7 @@ List<List<int>> connected_components(Map<int, List<int>> graph) {
   for (int i = 0; i < graph_size; i++) {
     if (!visited[i]) {
     List<int> component = dfs(graph, i, visited);
-    components_list = ([...components_list, component] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    components_list = ([...components_list, component] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
   }
   return components_list;
@@ -72,8 +77,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((connected_components(test_graph_1)).toString());
-  print((connected_components(test_graph_2)).toString());
+  print(_str(connected_components(test_graph_1)));
+  print(_str(connected_components(test_graph_2)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

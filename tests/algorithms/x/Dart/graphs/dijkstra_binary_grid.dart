@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Point {
   int x;
@@ -49,7 +54,7 @@ class Result {
 }
 
 String key(Point p) {
-  return (p.x).toString() + "," + (p.y).toString();
+  return _str(p.x) + "," + _str(p.y);
 }
 
 String path_to_string(List<Point> path) {
@@ -57,7 +62,7 @@ String path_to_string(List<Point> path) {
   int i = 0;
   while (i < path.length) {
     Point pt = path[i];
-    s = s + "(" + (pt.x).toString() + ", " + (pt.y).toString() + ")";
+    s = s + "(" + _str(pt.x) + ", " + _str(pt.y) + ")";
     if (i < path.length - 1) {
     s = s + ", ";
   }
@@ -73,8 +78,8 @@ Result dijkstra(List<List<int>> grid, Point source, Point destination, bool allo
   List<int> dx = [-1, 1, 0, 0];
   List<int> dy = [0, 0, -1, 1];
   if (allow_diagonal) {
-    dx = ([...dx, ...[-1, -1, 1, 1]] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
-    dy = ([...dy, ...[-1, 1, -1, 1]] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    dx = ([...dx, ...[-1, -1, 1, 1]] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    dy = ([...dy, ...[-1, 1, -1, 1]] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   double INF = 1000000000000.0;
   List<Point> queue = [source];
@@ -94,9 +99,9 @@ Result dijkstra(List<List<int>> grid, Point source, Point destination, bool allo
     int ny = current.y + dy[i];
     if (nx >= 0 && nx < rows && ny >= 0 && ny < cols) {
     if (grid[nx][ny] == 1) {
-    String n_key = (nx).toString() + "," + (ny).toString();
+    String n_key = _str(nx) + "," + _str(ny);
     if (!dist_map.containsKey(n_key)) {
-    dist_map[n_key] = dist_map[cur_key]! + 1.0;
+    dist_map[n_key] = (dist_map[cur_key]!) + 1.0;
     prev[n_key] = current;
     queue = [...queue, Point(x: nx, y: ny)];
   };
@@ -121,13 +126,13 @@ Result dijkstra(List<List<int>> grid, Point source, Point destination, bool allo
     path = [...path, path_rev[k]];
     k = k - 1;
   };
-    return Result(distance: dist_map[dest_key], path: path);
+    return Result(distance: (dist_map[dest_key]!), path: path);
   }
   return Result(distance: INF, path: []);
 }
 
 void print_result(Result res) {
-  print((res.distance).toString() + ", " + path_to_string(res.path));
+  print(_str(res.distance) + ", " + path_to_string(res.path));
 }
 
 List<List<int>> grid1 = [[1, 1, 1], [0, 1, 0], [0, 1, 1]];

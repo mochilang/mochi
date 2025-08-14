@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 bool contains(List<String> xs, String x) {
@@ -64,16 +67,16 @@ List<String> bfs_shortest_path(Map<String, List<String>> graph, String start, St
   }
   while (queue.length > 0) {
     List<String> path = queue[0];
-    queue = (queue.sublist(1, queue.length) as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    queue = (queue.sublist(1, queue.length) as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
     String node = path[path.length - 1];
-    if (!explored.contains(node)) {
+    if (!contains(explored, node)) {
     List<String> neighbours = graph[node]!;
     int i = 0;
     while (i < neighbours.length) {
     String neighbour = neighbours[i];
     List<String> new_path = path;
     new_path = [...new_path, neighbour];
-    queue = ([...queue, new_path] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    queue = ([...queue, new_path] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
     if (neighbour == goal) {
     return new_path;
   }
@@ -101,7 +104,7 @@ int bfs_shortest_path_distance(Map<String, List<String>> graph, String start, St
     String node = queue[0];
     queue = List<String>.from(queue.sublist(1, queue.length));
     if (node == target) {
-    if (dist[target]! == -1 || dist[node]! < dist[target]!) {
+    if ((dist[target] ?? 0) == -1 || (dist[node] ?? 0) < (dist[target] ?? 0)) {
     dist[target] = dist[node]!;
   };
   }
@@ -109,15 +112,15 @@ int bfs_shortest_path_distance(Map<String, List<String>> graph, String start, St
     int i = 0;
     while (i < adj.length) {
     String next = adj[i];
-    if (!visited.contains(next)) {
+    if (!contains(visited, next)) {
     visited = [...visited, next];
     queue = [...queue, next];
-    dist[next] = (dist[node]! + 1).toInt();
+    dist[next] = (dist[node] ?? 0) + 1;
   }
     i = i + 1;
   }
   }
-  return (dist[target])!;
+  return (dist[target] ?? 0);
 }
 
 Map<String, List<String>> demo_graph = {"A": ["B", "C", "E"], "B": ["A", "D", "E"], "C": ["A", "F", "G"], "D": ["B"], "E": ["A", "B", "D"], "F": ["C"], "G": ["C"]};

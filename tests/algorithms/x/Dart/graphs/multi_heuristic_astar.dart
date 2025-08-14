@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 class Pos {
   int x;
@@ -87,8 +87,8 @@ double sqrtApprox(double x) {
 }
 
 double consistent_heuristic(Pos p, Pos goal) {
-  double dx = p.x - goal.x.toDouble();
-  double dy = p.y - goal.y.toDouble();
+  double dx = (p.x - goal.x).toDouble();
+  double dy = (p.y - goal.y).toDouble();
   return sqrtApprox(dx * dx + dy * dy);
 }
 
@@ -100,12 +100,12 @@ int iabs(int x) {
 }
 
 double heuristic_1(Pos p, Pos goal) {
-  return iabs(p.x - goal.x) + iabs(p.y - goal.y).toDouble();
+  return (iabs(p.x - goal.x) + iabs(p.y - goal.y)).toDouble();
 }
 
 double heuristic_2(Pos p, Pos goal) {
   double h = consistent_heuristic(p, goal);
-  return h / (t.toDouble());
+  return h / ((t).toDouble());
 }
 
 double heuristic(int i, Pos p, Pos goal) {

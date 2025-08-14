@@ -45,16 +45,24 @@ Try passing the '--enable-experiment=dot-shorthands' command line option.
 Try inserting an identifier before ';'.
   return List<int>?>.from(order);
                                 ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:16: Error: The operator '<' isn't defined for the class 'Type'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:16: Error: The operator '<' isn't defined for the type 'Type'.
  - 'Type' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '<' operator.
     return List<int>?>.from(null);
                ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:14: Error: The operator '<' isn't defined for the class 'Type'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:24: Error: The static method or constructor 'from' isn't defined for the type 'invalid-type'.
+Try correcting the name to the name of an existing static method or constructor, or defining a static method or constructor named 'from'.
+    return List<int>?>.from(null);
+                       ^^^^
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:14: Error: The operator '<' isn't defined for the type 'Type'.
  - 'Type' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '<' operator.
   return List<int>?>.from(order);
              ^
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:22: Error: The static method or constructor 'from' isn't defined for the type 'invalid-type'.
+Try correcting the name to the name of an existing static method or constructor, or defining a static method or constructor named 'from'.
+  return List<int>?>.from(order);
+                     ^^^^
 ../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:92:39: Error: Method 'join' cannot be called on 'List<int>?' because it is potentially null.
  - 'List' is from 'dart:core'.
 Try calling using ?. instead.

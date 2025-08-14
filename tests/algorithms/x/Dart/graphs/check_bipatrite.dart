@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 bool is_bipartite_bfs(Map<int, List<int>> graph) {
   Map<int, int> visited = <int, int>{};
@@ -46,12 +51,12 @@ bool is_bipartite_bfs(Map<int, List<int>> graph) {
     while (queue.length > 0) {
     int curr = queue[0];
     queue = queue.sublist(1, queue.length);
-    for (var neighbor in graph[curr]) {
+    for (int neighbor in (graph[curr]!)) {
     if (!visited.containsKey(neighbor)) {
-    visited[(neighbor).toInt()] = (1 - visited[curr]!).toInt();
+    visited[neighbor] = 1 - (visited[curr] ?? 0);
     queue = [...queue, neighbor];
   } else {
-    if (visited[(neighbor).toInt()]! == visited[curr]!) {
+    if ((visited[neighbor] ?? 0) == (visited[curr] ?? 0)) {
     return false;
   };
   }
@@ -70,7 +75,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((is_bipartite_bfs(graph)).toString());
+  print(_str(is_bipartite_bfs(graph)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
