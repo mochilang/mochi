@@ -141,6 +141,11 @@ func isLiteralExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *IntLit, *FloatLit, *StringLit, *BoolLit:
 		return true
+	case *UnaryExpr:
+		if v.Op == "-" || v.Op == "+" {
+			return isLiteralExpr(v.Expr)
+		}
+		return false
 	case *ListLit:
 		for _, el := range v.Elems {
 			if !isLiteralExpr(el) {
@@ -4177,7 +4182,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			if val != nil {
-				if _, ok := val.(*ListLit); ok {
+				if isLiteralExpr(val) {
 					globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
 				} else {
 					globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ})
@@ -4407,6 +4412,20 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
 			hasMain = true
+			if len(body) > 0 {
+				filtered := []Stmt{}
+				for _, st := range body {
+					if es, ok := st.(*ExprStmt); ok {
+						if ce, ok2 := es.Expr.(*CallExpr); ok2 && ce.Name == "main" && len(ce.Args) == 0 {
+							continue
+						}
+					}
+					filtered = append(filtered, st)
+				}
+				if len(filtered) > 0 {
+					fn.Body = append(filtered, fn.Body...)
+				}
+			}
 			if benchMain {
 				fn.Body = []Stmt{&BenchStmt{Name: "main", Body: fn.Body}}
 				cp.UseNow = true

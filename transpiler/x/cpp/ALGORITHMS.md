@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 973/1077
-Last updated: 2025-08-14 15:57 +0700
+Completed programs: 978/1077
+Last updated: 2025-08-14 16:18 +0700
 
 Checklist:
 
@@ -22,56 +22,56 @@ Checklist:
 | 13 | backtracking/power_sum | ✓ | 267.0µs | 3.62MB |
 | 14 | backtracking/rat_in_maze | ✓ | 291.0µs | 3.47MB |
 | 15 | backtracking/sudoku | ✓ | 12.0ms | 3.76MB |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 361.0µs | 3.75MB |
-| 22 | bit_manipulation/binary_count_setbits | ✓ | 251.0µs | 3.57MB |
-| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 370.0µs | 3.73MB |
-| 24 | bit_manipulation/binary_or_operator | ✓ | 174.0µs | 3.52MB |
-| 25 | bit_manipulation/binary_shifts | ✓ | 288.0µs | 3.62MB |
-| 26 | bit_manipulation/binary_twos_complement | ✓ | 278.0µs | 3.56MB |
-| 27 | bit_manipulation/binary_xor_operator | ✓ | 324.0µs | 3.61MB |
-| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 318.0µs | 3.53MB |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 222.0µs | 3.69MB |
-| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 234.0µs | 3.58MB |
-| 31 | bit_manipulation/excess_3_code | ✓ | 273.0µs | 3.59MB |
-| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 283.0µs | 3.73MB |
-| 33 | bit_manipulation/find_unique_number | ✓ | 407.0µs | 3.59MB |
-| 34 | bit_manipulation/gray_code_sequence | ✓ | 248.0µs | 3.44MB |
-| 35 | bit_manipulation/highest_set_bit | ✓ | 216.0µs | 3.69MB |
-| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 221.0µs | 3.54MB |
-| 37 | bit_manipulation/is_even | ✓ | 369.0µs | 3.69MB |
-| 38 | bit_manipulation/is_power_of_two | ✓ | 2.0µs | 3.45MB |
-| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 266.0µs | 3.58MB |
-| 40 | bit_manipulation/missing_number | ✓ | 224.0µs | 3.48MB |
-| 41 | bit_manipulation/numbers_different_signs | ✓ | 249.0µs | 3.61MB |
-| 42 | bit_manipulation/power_of_4 | ✓ | 199.0µs | 3.58MB |
-| 43 | bit_manipulation/reverse_bits | ✓ | 283.0µs | 3.50MB |
-| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 193.0µs | 3.59MB |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 439.0µs | 3.65MB |
-| 46 | blockchain/diophantine_equation | ✓ | 275.0µs | 3.46MB |
-| 47 | boolean_algebra/and_gate | ✓ | 155.0µs | 3.64MB |
-| 48 | boolean_algebra/imply_gate | ✓ | 114.0µs | 3.53MB |
-| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 201.0µs | 3.48MB |
-| 50 | boolean_algebra/multiplexer | ✓ | 126.0µs | 3.51MB |
-| 51 | boolean_algebra/nand_gate | ✓ | 211.0µs | 3.58MB |
-| 52 | boolean_algebra/nimply_gate | ✓ | 109.0µs | 3.51MB |
-| 53 | boolean_algebra/nor_gate | ✓ | 312.0µs | 3.60MB |
-| 54 | boolean_algebra/not_gate | ✓ | 168.0µs | 3.62MB |
-| 55 | boolean_algebra/or_gate | ✓ | 182.0µs | 3.54MB |
-| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 245.0µs | 3.50MB |
-| 57 | boolean_algebra/xnor_gate | ✓ | 137.0µs | 3.43MB |
-| 58 | boolean_algebra/xor_gate | ✓ | 263.0µs | 3.54MB |
-| 59 | cellular_automata/conways_game_of_life | ✓ | 501.0µs | 3.57MB |
-| 60 | cellular_automata/game_of_life | ✓ | 475.0µs | 3.57MB |
-| 61 | cellular_automata/langtons_ant | ✓ | 1.0µs | 3.47MB |
-| 62 | cellular_automata/nagel_schrekenberg | ✓ | 314.0µs | 3.61MB |
-| 63 | cellular_automata/one_dimensional | ✓ | 1.0ms | 3.71MB |
-| 64 | cellular_automata/wa_tor | ✓ | 1.0ms | 3.66MB |
-| 65 | ciphers/a1z26 | ✓ | 279.0µs | 3.62MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 183.0µs | 3.48MB |
+| 17 | backtracking/word_break | ✓ | 331.0µs | 3.69MB |
+| 18 | backtracking/word_ladder | ✓ | 1.0ms | 3.73MB |
+| 19 | backtracking/word_search | ✓ | 236.0µs | 3.43MB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 310.0µs | 3.52MB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 243.0µs | 3.68MB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 192.0µs | 3.60MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 173.0µs | 3.60MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 204.0µs | 3.43MB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 219.0µs | 3.56MB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 226.0µs | 3.56MB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 365.0µs | 3.70MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 284.0µs | 3.59MB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 205.0µs | 3.69MB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 198.0µs | 3.72MB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 221.0µs | 3.69MB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 375.0µs | 3.75MB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 221.0µs | 3.60MB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 243.0µs | 3.60MB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 150.0µs | 3.55MB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 202.0µs | 3.69MB |
+| 37 | bit_manipulation/is_even | ✓ | 235.0µs | 3.58MB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 1.0µs | 3.38MB |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 174.0µs | 3.52MB |
+| 40 | bit_manipulation/missing_number | ✓ | 163.0µs | 3.63MB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 203.0µs | 3.73MB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 226.0µs | 3.68MB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 362.0µs | 3.68MB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 277.0µs | 3.54MB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 377.0µs | 3.71MB |
+| 46 | blockchain/diophantine_equation | ✓ | 260.0µs | 3.61MB |
+| 47 | boolean_algebra/and_gate | ✓ | 162.0µs | 3.52MB |
+| 48 | boolean_algebra/imply_gate | ✓ | 218.0µs | 3.46MB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 242.0µs | 3.70MB |
+| 50 | boolean_algebra/multiplexer | ✓ | 171.0µs | 3.48MB |
+| 51 | boolean_algebra/nand_gate | ✓ | 164.0µs | 3.62MB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 130.0µs | 3.56MB |
+| 53 | boolean_algebra/nor_gate | ✓ | 228.0µs | 3.54MB |
+| 54 | boolean_algebra/not_gate | ✓ | 155.0µs | 3.42MB |
+| 55 | boolean_algebra/or_gate | ✓ | 143.0µs | 3.47MB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 310.0µs | 3.57MB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 160.0µs | 3.52MB |
+| 58 | boolean_algebra/xor_gate | ✓ | 113.0µs | 3.56MB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 1.0ms | 3.70MB |
+| 60 | cellular_automata/game_of_life | ✓ | 864.0µs | 3.71MB |
+| 61 | cellular_automata/langtons_ant | ✓ | 2.0µs | 3.53MB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 353.0µs | 3.62MB |
+| 63 | cellular_automata/one_dimensional | ✓ | 921.0µs | 3.60MB |
+| 64 | cellular_automata/wa_tor | ✓ | 1.0ms | 3.59MB |
+| 65 | ciphers/a1z26 | ✓ | 260.0µs | 3.61MB |
 | 66 | ciphers/affine_cipher | ✓ | 1.0ms | 3.44MB |
 | 67 | ciphers/atbash | ✓ | 315.0µs | 3.48MB |
 | 68 | ciphers/autokey | ✓ | 820.0µs | 3.59MB |
