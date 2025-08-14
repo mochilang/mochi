@@ -2428,6 +2428,8 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
+	// append creates a new array with the provided item appended.
+	// We rely on System.Linq for the convenient ToList/ToArray helpers.
 	usesLinq = true
 	t := typeOfExpr(a.List)
 	if t == "" || strings.HasSuffix(t, "object[]") {
@@ -2445,6 +2447,11 @@ func (a *AppendExpr) emit(w io.Writer) {
 	}
 	listStr := exprString(a.List)
 	itemStr := exprString(a.Item)
+	if listStr == "null" {
+		// handle appending to a nil slice by creating a new array
+		fmt.Fprintf(w, "new %s[]{%s}", elem, itemStr)
+		return
+	}
 	tItem := typeOfExpr(a.Item)
 	if (tItem == "object" || tItem == "object[]") && elem != "object" {
 		if lit, ok := a.Item.(*ListLit); ok && len(lit.Elems) == 0 {
