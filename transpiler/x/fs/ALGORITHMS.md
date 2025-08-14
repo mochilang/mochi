@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
 Completed programs: 921/1077
-Last updated: 2025-08-14 17:48 +0700
+Last updated: 2025-08-14 18:14 +0700
 
 Checklist:
 
@@ -543,7 +543,7 @@ Checklist:
 | 534 | maths/average_absolute_deviation | ✓ | 571.223ms | 56.8 KB |
 | 535 | maths/average_mean | ✓ | 571.223ms | 56.1 KB |
 | 536 | maths/average_median | ✓ | 571.223ms | 60.0 KB |
-| 537 | maths/average_mode | ✓ | 571.223ms | 58.0 KB |
+| 537 | maths/average_mode | ✓ | 571.223ms | 58.1 KB |
 | 538 | maths/bailey_borwein_plouffe | ✓ | 571.223ms | 58.7 KB |
 | 539 | maths/base_neg2_conversion |   |  |  |
 | 540 | maths/basic_maths | ✓ | 571.223ms | 62.2 KB |
@@ -560,7 +560,7 @@ Checklist:
 | 551 | maths/combinations | ✓ | 571.223ms | 78.1 KB |
 | 552 | maths/continued_fraction | ✓ | 571.223ms | 78.0 KB |
 | 553 | maths/decimal_isolate | ✓ | 571.223ms | 79.1 KB |
-| 554 | maths/decimal_to_fraction | ✓ | 571.223ms | 82.2 KB |
+| 554 | maths/decimal_to_fraction | ✓ | 571.223ms | 68.8 KB |
 | 555 | maths/dodecahedron | ✓ | 571.223ms | 33.5 KB |
 | 556 | maths/double_factorial | ✓ | 571.223ms | 43.4 KB |
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 571.223ms | 34.0 KB |

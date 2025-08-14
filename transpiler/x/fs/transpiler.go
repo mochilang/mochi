@@ -228,7 +228,7 @@ const helperJSON = `let json (arr:obj) =
 
 const helperStr = `let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%g" f
+    | :? float as f -> sprintf "%.15g" f
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")

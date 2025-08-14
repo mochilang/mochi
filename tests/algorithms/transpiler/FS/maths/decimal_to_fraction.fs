@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-14 18:14 +0700
 
 exception Break
 exception Continue
@@ -33,13 +33,15 @@ let _substring (s:string) (start:int) (finish:int) =
     s.Substring(st, en - st)
 
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -87,7 +89,7 @@ and parse_decimal (s: string) =
     let mutable s = s
     try
         if (String.length (s)) = 0 then
-            failwith ("invalid number")
+            ignore (failwith ("invalid number"))
         let mutable idx: int = 0
         let mutable sign: int = 1
         let first: string = _substring s 0 1
@@ -148,12 +150,12 @@ and parse_decimal (s: string) =
                     exp_str <- exp_str + c
                     idx <- idx + 1
                 else
-                    failwith ("invalid number")
+                    ignore (failwith ("invalid number"))
             if (String.length (exp_str)) = 0 then
-                failwith ("invalid number")
+                ignore (failwith ("invalid number"))
             exp <- exp_sign * (int (int (exp_str)))
         if idx <> (String.length (s)) then
-            failwith ("invalid number")
+            ignore (failwith ("invalid number"))
         if (String.length (int_part)) = 0 then
             int_part <- "0"
         let mutable num_str: string = int_part + frac_part
@@ -176,7 +178,7 @@ and reduce (fr: Fraction) =
     let mutable fr = fr
     try
         let g: int = gcd (fr._numerator) (fr._denominator)
-        __ret <- { _numerator = _floordiv (fr._numerator) g; _denominator = _floordiv (fr._denominator) g }
+        __ret <- { _numerator = _floordiv (int (fr._numerator)) (int g); _denominator = _floordiv (int (fr._denominator)) (int g) }
         raise Return
         __ret
     with
@@ -200,44 +202,44 @@ and decimal_to_fraction (x: float) =
     with
         | Return -> __ret
 and assert_fraction (name: string) (fr: Fraction) (num: int) (den: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable name = name
     let mutable fr = fr
     let mutable num = num
     let mutable den = den
     try
         if ((fr._numerator) <> num) || ((fr._denominator) <> den) then
-            failwith (name)
+            ignore (failwith (name))
         __ret
     with
         | Return -> __ret
 and test_decimal_to_fraction () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
-        assert_fraction ("case1") (decimal_to_fraction (2.0)) (2) (1)
-        assert_fraction ("case2") (decimal_to_fraction (89.0)) (89) (1)
-        assert_fraction ("case3") (decimal_to_fraction_str ("67")) (67) (1)
-        assert_fraction ("case4") (decimal_to_fraction_str ("45.0")) (45) (1)
-        assert_fraction ("case5") (decimal_to_fraction (1.5)) (3) (2)
-        assert_fraction ("case6") (decimal_to_fraction_str ("6.25")) (25) (4)
-        assert_fraction ("case7") (decimal_to_fraction (0.0)) (0) (1)
-        assert_fraction ("case8") (decimal_to_fraction (-2.5)) (-5) (2)
-        assert_fraction ("case9") (decimal_to_fraction (0.125)) (1) (8)
-        assert_fraction ("case10") (decimal_to_fraction (1000000.25)) (4000001) (4)
-        assert_fraction ("case11") (decimal_to_fraction (1.3333)) (13333) (10000)
-        assert_fraction ("case12") (decimal_to_fraction_str ("1.23e2")) (123) (1)
-        assert_fraction ("case13") (decimal_to_fraction_str ("0.500")) (1) (2)
+        ignore (assert_fraction ("case1") (decimal_to_fraction (2.0)) (2) (1))
+        ignore (assert_fraction ("case2") (decimal_to_fraction (89.0)) (89) (1))
+        ignore (assert_fraction ("case3") (decimal_to_fraction_str ("67")) (67) (1))
+        ignore (assert_fraction ("case4") (decimal_to_fraction_str ("45.0")) (45) (1))
+        ignore (assert_fraction ("case5") (decimal_to_fraction (1.5)) (3) (2))
+        ignore (assert_fraction ("case6") (decimal_to_fraction_str ("6.25")) (25) (4))
+        ignore (assert_fraction ("case7") (decimal_to_fraction (0.0)) (0) (1))
+        ignore (assert_fraction ("case8") (decimal_to_fraction (-2.5)) (-5) (2))
+        ignore (assert_fraction ("case9") (decimal_to_fraction (0.125)) (1) (8))
+        ignore (assert_fraction ("case10") (decimal_to_fraction (1000000.25)) (4000001) (4))
+        ignore (assert_fraction ("case11") (decimal_to_fraction (1.3333)) (13333) (10000))
+        ignore (assert_fraction ("case12") (decimal_to_fraction_str ("1.23e2")) (123) (1))
+        ignore (assert_fraction ("case13") (decimal_to_fraction_str ("0.500")) (1) (2))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_decimal_to_fraction()
+        ignore (test_decimal_to_fraction())
         let fr: Fraction = decimal_to_fraction (1.5)
-        printfn "%s" (((_str (fr._numerator)) + "/") + (_str (fr._denominator)))
+        ignore (printfn "%s" (((_str (fr._numerator)) + "/") + (_str (fr._denominator))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -245,4 +247,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())
