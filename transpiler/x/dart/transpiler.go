@@ -482,13 +482,17 @@ type ForInStmt struct {
 }
 
 func (f *ForInStmt) emit(out io.Writer) error {
-	decl := "var"
-	if f.ElemType != "" && f.ElemType != "dynamic" {
-		decl = f.ElemType
+	decl := f.ElemType
+	if decl == "" || decl == "dynamic" {
+		if typ := inferType(f.Iterable); strings.HasPrefix(typ, "List<") && strings.HasSuffix(typ, ">") {
+			decl = strings.TrimSuffix(strings.TrimPrefix(typ, "List<"), ">")
+		} else {
+			decl = "var"
+		}
 	}
 	saved := localVarTypes[f.Name]
-	if f.ElemType != "" {
-		localVarTypes[f.Name] = f.ElemType
+	if decl != "var" {
+		localVarTypes[f.Name] = decl
 	}
 	if _, err := io.WriteString(out, "for ("+decl+" "+f.Name+" in "); err != nil {
 		return err
