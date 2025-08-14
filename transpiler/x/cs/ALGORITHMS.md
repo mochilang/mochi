@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-14 17:14 GMT+7
+Last updated: 2025-08-14 17:36 GMT+7
 
-## Algorithms Golden Test Checklist (1019/1077)
+## Algorithms Golden Test Checklist (1020/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -409,8 +409,8 @@ Last updated: 2025-08-14 17:14 GMT+7
 | 400 | graphs/bidirectional_a_star | ✓ | 2.0ms | 347.66KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0µs | 105.73KB |
 | 402 | graphs/bidirectional_search | ✓ | 3.0ms | 25.75KB |
-| 403 | graphs/boruvka | error |  |  |
-| 404 | graphs/breadth_first_search | ✓ | 4.0ms | 19.71KB |
+| 403 | graphs/boruvka | ✓ | 1.0µs | 37.37KB |
+| 404 | graphs/breadth_first_search | ✓ | 1.0µs | 21.53KB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 1.0µs | 20.30KB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 1.0µs | 15.72KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1.0µs | 24B |
@@ -421,8 +421,8 @@ Last updated: 2025-08-14 17:14 GMT+7
 | 412 | graphs/deep_clone_graph | error |  |  |
 | 413 | graphs/depth_first_search | ✓ | 1.0µs | 13.48KB |
 | 414 | graphs/depth_first_search_2 | ✓ | 1.0µs | 21.58KB |
-| 415 | graphs/dijkstra | ✓ | 1.0µs | 28.09KB |
-| 416 | graphs/dijkstra_2 | ✓ | 1.0µs | 19.76KB |
+| 415 | graphs/dijkstra | ✓ | 1.0µs | 28.20KB |
+| 416 | graphs/dijkstra_2 | ✓ | 1.0µs | 19.87KB |
 | 417 | graphs/dijkstra_algorithm | ✓ | 1.0µs | 16.66KB |
 | 418 | graphs/dijkstra_alternate | ✓ | 1.0µs | 17.52KB |
 | 419 | graphs/dijkstra_binary_grid | ✓ | 1.0µs | 43.80KB |
@@ -431,7 +431,7 @@ Last updated: 2025-08-14 17:14 GMT+7
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 1.0µs | 16.53KB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1.0µs | 161.93KB |
 | 424 | graphs/even_tree | ✓ | 1.0µs | 23.29KB |
-| 425 | graphs/finding_bridges | ✓ | 1.0µs | 58.38KB |
+| 425 | graphs/finding_bridges | ✓ | 1.0µs | 58.49KB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 1.0µs | 112.94KB |
 | 427 | graphs/g_topological_sort | ✓ | 1.0µs | 25.05KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 1.0µs | 24.53KB |
@@ -440,9 +440,9 @@ Last updated: 2025-08-14 17:14 GMT+7
 | 431 | graphs/graph_list | ✓ | 1.0µs | 23.88KB |
 | 432 | graphs/graphs_floyd_warshall | ✓ | 1.0µs | 17.60KB |
 | 433 | graphs/greedy_best_first | ✓ | 1.0µs | 339.06KB |
-| 434 | graphs/greedy_min_vertex_cover | ✓ | 1.0µs | 19.80KB |
-| 435 | graphs/kahns_algorithm_long | ✓ | 1.0µs | 23.60KB |
-| 436 | graphs/kahns_algorithm_topo | ✓ | 1.0µs | 23.98KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 1.0µs | 19.91KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 1.0µs | 23.71KB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 1.0µs | 24.09KB |
 | 437 | graphs/karger | ✓ | 1.0µs | 14.61KB |
 | 438 | graphs/lanczos_eigenvectors | ✓ | 1.0µs | 16.63KB |
 | 439 | graphs/markov_chain | ✓ | 1.0µs | 18.42KB |
@@ -457,7 +457,7 @@ Last updated: 2025-08-14 17:14 GMT+7
 | 448 | graphs/page_rank | ✓ | 1.0µs | 26.54KB |
 | 449 | graphs/prim | ✓ | 1.0µs | 31.34KB |
 | 450 | graphs/random_graph_generator | ✓ | 1.0µs | 21.44KB |
-| 451 | graphs/scc_kosaraju | ✓ | 1.0µs | 24.16KB |
+| 451 | graphs/scc_kosaraju | ✓ | 1.0µs | 24.27KB |
 | 452 | graphs/strongly_connected_components | ✓ | 1.0µs | 34.33KB |
 | 453 | graphs/tarjans_scc | ✓ | 1.0µs | 35.44KB |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.0µs | 27.63KB |
