@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-14 09:31 UTC
+Last updated: 2025-08-14 09:55 UTC
 
-## Algorithms Golden Test Checklist (883/1077)
+## Algorithms Golden Test Checklist (884/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -469,7 +469,7 @@ Last updated: 2025-08-14 09:31 UTC
 | 460 | greedy_methods/gas_station | ✓ | 36µs | 8.0 KB |
 | 461 | greedy_methods/minimum_coin_change | ✓ | 66µs | 29.3 KB |
 | 462 | greedy_methods/minimum_waiting_time | ✓ | 55µs | 28.5 KB |
-| 463 | greedy_methods/optimal_merge_pattern | ✓ | 9m31.223891s | 87.7 KB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 61µs | 91.8 KB |
 | 464 | greedy_methods/smallest_range | ✓ | 9m31.223891s | 65.0 KB |
 | 465 | hashes/adler32 | ✓ | 9m31.223891s | 189.4 KB |
 | 466 | hashes/chaos_machine | ✓ | 9m31.223891s | 3.0 MB |
@@ -507,14 +507,14 @@ Last updated: 2025-08-14 09:31 UTC
 | 498 | machine_learning/astar | ✓ | 9m31.223891s | 12.2 KB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 9m31.223891s | 10.6 KB |
 | 500 | machine_learning/data_transformations | ✓ | 1.686ms |  |
-| 501 | machine_learning/decision_tree | ✓ | 342.751ms | 188.9 KB |
+| 501 | machine_learning/decision_tree | ✓ | 647.464ms | 4.6 MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 7µs | 1.1 KB |
 | 503 | machine_learning/forecasting/run | ✓ | 196µs | 225.7 KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 20µs | 1.1 KB |
 | 506 | machine_learning/gradient_descent | ✓ | 478µs | 1.1 MB |
 | 507 | machine_learning/k_means_clust | ✓ | 52µs | 9.5 KB |
-| 508 | machine_learning/k_nearest_neighbours |   |  |  |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 86µs | 100.4 KB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 616µs | 2.2 MB |
 | 510 | machine_learning/linear_regression | ✓ | 9µs | 4.7 KB |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 9m31.223891s | 17.0 KB |
