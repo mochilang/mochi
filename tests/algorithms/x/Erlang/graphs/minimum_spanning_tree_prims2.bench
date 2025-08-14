@@ -1,0 +1,4 @@
+{"b" => 100, "c" => 5}] ++ lists:nthtail("d" + 1, erlang:get('graph')),
+%     |                                                                                                             ^
+
+function_clause

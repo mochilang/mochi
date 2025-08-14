@@ -1,9 +1,9 @@
-/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/matrix_inversion.erl:170:60: Warning: variable 'Temp_2' exported from 'case' (line 150, column 17)
-%  170| {Aug_6, C_2, Col, I_2, Matrix, N, Pivot, Pivot_row_3, R_2, Temp_2} = Fun_5(Aug_5, C, Col, I_2, Matrix, N, Pivot, Pivot_row_3, R_2, Temp_2),
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/matrix_inversion.erl:166:60: Warning: variable 'Temp_2' exported from 'case' (line 146, column 17)
+%  166| {Aug_6, C_2, Col, I_2, Matrix, N, Pivot, Pivot_row_3, R_2, Temp_2} = Fun_5(Aug_5, C, Col, I_2, Matrix, N, Pivot, Pivot_row_3, R_2, Temp_2),
 %     |                                                            ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/matrix_inversion.erl:202:66: Warning: variable 'Temp_2' exported from 'case' (line 150, column 17)
-%  202| {Aug_8, C_2, Col, I_2, Matrix, N, Pivot, Pivot_row_3, R_2, R2_2, Temp_2} = Fun_8(Aug_6, C_2, Col, I_2, Matrix, N, Pivot, Pivot_row_3, R_2, R2, Temp_2),
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/matrix_inversion.erl:198:66: Warning: variable 'Temp_2' exported from 'case' (line 146, column 17)
+%  198| {Aug_8, C_2, Col, I_2, Matrix, N, Pivot, Pivot_row_3, R_2, R2_2, Temp_2} = Fun_8(Aug_6, C_2, Col, I_2, Matrix, N, Pivot, Pivot_row_3, R_2, R2, Temp_2),
 %     |                                                                  ^
 
 "Original Matrix:"
