@@ -1805,9 +1805,18 @@ func (f *Func) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		name := p.Name
-		key := f.Name + ":" + p.Name
-		if varUses[key] == 0 && !varMut[key] {
-			name = "_"
+		orig := p.Name
+		for k, v := range f.Aliases {
+			if v == p.Name {
+				orig = k
+				break
+			}
+		}
+		key := f.Name + ":" + orig
+		if u, ok := varUses[key]; ok {
+			if u == 0 && !varMut[key] {
+				name = "_"
+			}
 		}
 		fmt.Fprintf(w, "%s: %s", name, p.Type)
 	}
@@ -2227,6 +2236,43 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 }
 
 func (j *JSONStmt) emit(w io.Writer, indent int) {
+	typ := zigTypeFromExpr(j.Value)
+	if strings.Contains(typ, "HashMap") {
+		mapVar := uniqueName("__m")
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "const %s = ", mapVar)
+		if j.Value != nil {
+			j.Value.emit(w)
+		} else {
+			io.WriteString(w, "null")
+		}
+		io.WriteString(w, ";\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "std.debug.print(\"{{\", .{});\n")
+		iter := uniqueName("__it")
+		first := uniqueName("__first")
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "var %s = %s.iterator();\n", iter, mapVar)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "var %s = true;\n", first)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "while (%s.next()) |entry| {\n", iter)
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "if (!%s) std.debug.print(\",\", .{});\n", first)
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "%s = false;\n", first)
+		writeIndent(w, indent+1)
+		io.WriteString(w, "const __val = std.json.stringifyAlloc(std.heap.page_allocator, entry.value_ptr.*, .{}) catch unreachable;\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "std.debug.print(\"\\\"{s}\\\":{s}\", .{entry.key_ptr.*, __val});\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "std.heap.page_allocator.free(__val);\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "std.debug.print(\"}}\\n\", .{});\n")
+		return
+	}
 	name := uniqueName("__j")
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "const %s = std.json.stringifyAlloc(std.heap.page_allocator, ", name)
@@ -4081,7 +4127,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			args[i] = ex
 		}
-		name := p.Call.Func
+		name := resolveAlias(p.Call.Func)
 		if name == "main" && mainFuncName != "" {
 			name = mainFuncName
 		}
@@ -5016,7 +5062,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	preStmts := []Stmt{}
 	paramTypes := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		mutable := true
+		mutable := false
 		typ := toZigType(p.Type)
 		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
 		if mutable {
@@ -5055,6 +5101,23 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		paramTypes[i] = typ
 		if isMap {
 			mapVars[aliasName] = true
+		}
+		origKey := fn.Name + ":" + name
+		newKey := fn.Name + ":" + paramName
+		if u, ok := varUses[origKey]; ok {
+			varUses[newKey] = u
+		}
+		if varMut[origKey] {
+			varMut[newKey] = true
+		}
+		if aliasName != paramName {
+			aliasKey := fn.Name + ":" + aliasName
+			if u, ok := varUses[origKey]; ok {
+				varUses[aliasKey] = u
+			}
+			if varMut[origKey] {
+				varMut[aliasKey] = true
+			}
 		}
 	}
 	name := fn.Name
@@ -5337,12 +5400,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			}
 		} else {
 			if s.Var.Type != nil {
-				t := toZigType(s.Var.Type)
-				if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
-					expr = nil
-				} else {
-					expr = &IntLit{Value: 0}
-				}
+				expr = nil
 			} else {
 				expr = &IntLit{Value: 0}
 			}
