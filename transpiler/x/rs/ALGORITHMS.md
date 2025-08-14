@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-14 17:26 GMT+7
+Last updated: 2025-08-14 18:27 GMT+7
 
-## Algorithms Golden Test Checklist (756/1077)
+## Algorithms Golden Test Checklist (754/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -545,7 +545,7 @@ Last updated: 2025-08-14 17:26 GMT+7
 | 536 | maths/average_median | ✓ | 53µs | 2.1 MB |
 | 537 | maths/average_mode | ✓ | 143µs | 2.0 MB |
 | 538 | maths/bailey_borwein_plouffe | ✓ | 250.096ms | 2.2 MB |
-| 539 | maths/base_neg2_conversion | error |  |  |
+| 539 | maths/base_neg2_conversion | error | 43µs | 1.9 MB |
 | 540 | maths/basic_maths | ✓ | 41µs | 2.1 MB |
 | 541 | maths/binary_exponentiation | ✓ | 55µs | 2.0 MB |
 | 542 | maths/binary_multiplication | ✓ | 48µs | 2.0 MB |
@@ -574,8 +574,8 @@ Last updated: 2025-08-14 17:26 GMT+7
 | 565 | maths/factors | ✓ | 25µs | 2.1 MB |
 | 566 | maths/fast_inverse_sqrt | ✓ | 49µs | 2.0 MB |
 | 567 | maths/fermat_little_theorem | ✓ | 28µs | 2.0 MB |
-| 568 | maths/fibonacci | ✓ | 107µs | 2.0 MB |
-| 569 | maths/find_max | ✓ | 106µs | 1.9 MB |
+| 568 | maths/fibonacci | error | 107µs | 2.0 MB |
+| 569 | maths/find_max | error | 106µs | 1.9 MB |
 | 570 | maths/find_min | ✓ | 32µs | 2.2 MB |
 | 571 | maths/floor | ✓ | 35µs | 2.0 MB |
 | 572 | maths/gamma | ✓ | 6.634ms | 2.0 MB |
