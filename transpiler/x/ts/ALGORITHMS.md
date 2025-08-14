@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-13 09:44 UTC
+Last updated: 2025-08-14 03:03 UTC
 
 ## Algorithms Golden Test Checklist (1053/1077)
 | Index | Name | Status | Duration | Memory |
@@ -383,29 +383,29 @@ Last updated: 2025-08-13 09:44 UTC
 | 374 | financial/interest | ✓ | 571.223ms | 311.4 KB |
 | 375 | financial/present_value | ✓ | 571.223ms | 23.4 KB |
 | 376 | financial/price_plus_tax | ✓ | 571.223ms | 272.6 KB |
-| 377 | financial/simple_moving_average | ✓ | 571.223ms | 316.6 KB |
+| 377 | financial/simple_moving_average | ✓ | 571.223ms | 814.1 KB |
 | 378 | financial/straight_line_depreciation | ✓ | 571.223ms | 27.3 KB |
 | 379 | financial/time_and_half_pay | ✓ | 571.223ms | 275.4 KB |
-| 380 | fractals/julia_sets | ✓ | 571.223ms | 624.0 KB |
+| 380 | fractals/julia_sets | ✓ | 571.223ms | 608.9 KB |
 | 381 | fractals/koch_snowflake | ✓ | 571.223ms | 278.6 KB |
-| 382 | fractals/mandelbrot | ✓ | 571.223ms | 285.1 KB |
+| 382 | fractals/mandelbrot | ✓ | 571.223ms | 320.6 KB |
 | 383 | fractals/sierpinski_triangle | ✓ | 571.223ms | 327.9 KB |
 | 384 | fractals/vicsek | ✓ | 571.223ms | 117.7 KB |
 | 385 | fuzzy_logic/fuzzy_operations | ✓ | 571.223ms | 291.7 KB |
 | 386 | genetic_algorithm/basic_string | ✓ | 571.223ms | 24.6 KB |
 | 387 | geodesy/haversine_distance | ✓ | 571.223ms | 25.0 KB |
 | 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 571.223ms | 26.0 KB |
-| 389 | geometry/geometry | ✓ | 571.223ms | 821.9 KB |
+| 389 | geometry/geometry | ✓ | 571.223ms | 310.1 KB |
 | 390 | graphics/bezier_curve | ✓ | 571.223ms | 28.7 KB |
 | 391 | graphics/butterfly_pattern | ✓ | 571.223ms | 22.8 KB |
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 571.223ms | 16.3 KB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 571.223ms | 278.3 KB |
 | 394 | graphs/a_star | ✓ | 571.223ms | 241.3 KB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ |  | 490.2 KB |
-| 396 | graphs/articulation_points | ✓ | 571.223ms | 66.7 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ |  | 496.9 KB |
+| 396 | graphs/articulation_points | ✓ | 571.223ms | 315.3 KB |
 | 397 | graphs/basic_graphs | ✓ | 571.223ms | 230.1 KB |
 | 398 | graphs/bellman_ford | ✓ | 571.223ms | 37.4 KB |
-| 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 545.8 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 290.1 KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 571.223ms | 304.0 KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 5.063ms | 149.4 KB |
 | 402 | graphs/bidirectional_search | ✓ | 1.454ms | 42.3 KB |
