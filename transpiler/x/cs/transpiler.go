@@ -2325,6 +2325,9 @@ func (m *MapLit) emit(w io.Writer) {
 		fmt.Fprint(w, "{")
 		it.Key.emit(w)
 		fmt.Fprint(w, ", ")
+		if l, ok := it.Value.(*ListLit); ok && len(l.Elems) == 0 && (l.ElemType == "" || l.ElemType == "object[]") && strings.HasSuffix(v, "[]") {
+			l.ElemType = v
+		}
 		it.Value.emit(w)
 		fmt.Fprint(w, "}")
 	}
