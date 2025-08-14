@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 765/1077
-Last updated: 2025-08-14 16:42 +0700
+Completed programs: 813/1077
+Last updated: 2025-08-14 17:09 +0700
 
 Checklist:
 
@@ -772,56 +772,56 @@ Checklist:
 | 763 | physics/basic_orbital_capture |   |  |  |
 | 764 | physics/casimir_effect |   |  |  |
 | 765 | physics/center_of_mass |   |  |  |
-| 766 | physics/centripetal_force |   |  |  |
-| 767 | physics/coulombs_law |   |  |  |
-| 768 | physics/doppler_frequency |   |  |  |
-| 769 | physics/escape_velocity |   |  |  |
-| 770 | physics/grahams_law |   |  |  |
-| 771 | physics/horizontal_projectile_motion |   |  |  |
-| 772 | physics/hubble_parameter |   |  |  |
-| 773 | physics/ideal_gas_law |   |  |  |
-| 774 | physics/in_static_equilibrium |   |  |  |
-| 775 | physics/kinetic_energy |   |  |  |
-| 776 | physics/lens_formulae |   |  |  |
-| 777 | physics/lorentz_transformation_four_vector |   |  |  |
-| 778 | physics/malus_law |   |  |  |
-| 779 | physics/mass_energy_equivalence |   |  |  |
+| 766 | physics/centripetal_force | ✓ | 154.0µs | 3.45KB |
+| 767 | physics/coulombs_law | ✓ | 105.0µs | 1.33KB |
+| 768 | physics/doppler_frequency | ✓ | 117.0µs | 824B |
+| 769 | physics/escape_velocity | ✓ | 154.0µs | 5.70KB |
+| 770 | physics/grahams_law | ✓ | 181.0µs | 4.77KB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 128.0µs | 1.75KB |
+| 772 | physics/hubble_parameter | ✓ | 140.0µs | 3.53KB |
+| 773 | physics/ideal_gas_law | ✓ | 112.0µs | 880B |
+| 774 | physics/in_static_equilibrium | ✓ | 80.0µs | 7.48KB |
+| 775 | physics/kinetic_energy | ✓ | 106.0µs | 1.09KB |
+| 776 | physics/lens_formulae | ✓ | 153.0µs | 3.72KB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 212.0µs | 12.03KB |
+| 778 | physics/malus_law | ✓ | 114.0µs | 1.02KB |
+| 779 | physics/mass_energy_equivalence | ✓ | 174.0µs | 3.47KB |
 | 780 | physics/mirror_formulae | ✓ | 266.0µs | 2.46KB |
 | 781 | physics/n_body_simulation | ✓ | 467.0µs | 14.16KB |
-| 782 | physics/newtons_law_of_gravitation |   |  |  |
-| 783 | physics/newtons_second_law_of_motion |   |  |  |
-| 784 | physics/orbital_transfer_work |   |  |  |
-| 785 | physics/period_of_pendulum |   |  |  |
-| 786 | physics/photoelectric_effect |   |  |  |
-| 787 | physics/potential_energy |   |  |  |
-| 788 | physics/rainfall_intensity |   |  |  |
-| 789 | physics/reynolds_number |   |  |  |
-| 790 | physics/rms_speed_of_molecule |   |  |  |
-| 791 | physics/shear_stress |   |  |  |
-| 792 | physics/speed_of_sound |   |  |  |
-| 793 | physics/speeds_of_gas_molecules |   |  |  |
-| 794 | physics/terminal_velocity |   |  |  |
-| 795 | project_euler/problem_001/sol1 |   |  |  |
-| 796 | project_euler/problem_001/sol2 |   |  |  |
-| 797 | project_euler/problem_001/sol3 |   |  |  |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
-| 800 | project_euler/problem_001/sol6 |   |  |  |
-| 801 | project_euler/problem_001/sol7 |   |  |  |
-| 802 | project_euler/problem_002/sol1 |   |  |  |
-| 803 | project_euler/problem_002/sol2 |   |  |  |
-| 804 | project_euler/problem_002/sol3 |   |  |  |
-| 805 | project_euler/problem_002/sol4 |   |  |  |
-| 806 | project_euler/problem_002/sol5 |   |  |  |
-| 807 | project_euler/problem_003/sol1 |   |  |  |
-| 808 | project_euler/problem_003/sol2 |   |  |  |
-| 809 | project_euler/problem_003/sol3 |   |  |  |
-| 810 | project_euler/problem_004/sol1 |   |  |  |
-| 811 | project_euler/problem_004/sol2 |   |  |  |
-| 812 | project_euler/problem_005/sol1 |   |  |  |
-| 813 | project_euler/problem_005/sol2 |   |  |  |
-| 814 | project_euler/problem_006/sol1 |   |  |  |
-| 815 | project_euler/problem_006/sol2 |   |  |  |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 175.0µs | 2.65KB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 147.0µs | 776B |
+| 784 | physics/orbital_transfer_work | ✓ | 134.0µs | 5.52KB |
+| 785 | physics/period_of_pendulum | ✓ | 126.0µs | 3.86KB |
+| 786 | physics/photoelectric_effect | ✓ | 142.0µs | 1.77KB |
+| 787 | physics/potential_energy | ✓ | 121.0µs | 512B |
+| 788 | physics/rainfall_intensity | ✓ | 160.0µs | 16.16KB |
+| 789 | physics/reynolds_number | ✓ | 104.0µs | 576B |
+| 790 | physics/rms_speed_of_molecule | ✓ | 134.0µs | 3.57KB |
+| 791 | physics/shear_stress | ✓ | 151.0µs | 2.48KB |
+| 792 | physics/speed_of_sound | ✓ | 139.0µs | 3.19KB |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 162.0µs | 6.27KB |
+| 794 | physics/terminal_velocity | ✓ | 123.0µs | 3.41KB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 138.0µs | 304B |
+| 796 | project_euler/problem_001/sol2 | ✓ | 96.0µs | 256B |
+| 797 | project_euler/problem_001/sol3 | ✓ | 86.0µs | 224B |
+| 798 | project_euler/problem_001/sol4 | ✓ | 774.0ms | 11.98MB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 124.0µs | 272B |
+| 800 | project_euler/problem_001/sol6 | ✓ | 110.0µs | 256B |
+| 801 | project_euler/problem_001/sol7 | ✓ | 107.0µs | 224B |
+| 802 | project_euler/problem_002/sol1 | ✓ | 82.0µs | 256B |
+| 803 | project_euler/problem_002/sol2 | ✓ | 72.0µs | 256B |
+| 804 | project_euler/problem_002/sol3 | ✓ | 68.0µs | 256B |
+| 805 | project_euler/problem_002/sol4 | ✓ | 90.0µs | 256B |
+| 806 | project_euler/problem_002/sol5 | ✓ | 101.0µs | 304B |
+| 807 | project_euler/problem_003/sol1 | ✓ | 8.0ms | 256B |
+| 808 | project_euler/problem_003/sol2 | ✓ | 121.0µs | 224B |
+| 809 | project_euler/problem_003/sol3 | ✓ | 199.0µs | 272B |
+| 810 | project_euler/problem_004/sol1 | ✓ | 37.0ms | 4.49MB |
+| 811 | project_euler/problem_004/sol2 | ✓ | 127.0ms | 224B |
+| 812 | project_euler/problem_005/sol1 | ✓ | 113.0µs | 288B |
+| 813 | project_euler/problem_005/sol2 | ✓ | 73.0µs | 232B |
+| 814 | project_euler/problem_006/sol1 | ✓ | 62.0µs | 232B |
+| 815 | project_euler/problem_006/sol2 | ✓ | 93.0µs | 264B |
 | 816 | project_euler/problem_006/sol3 |   |  |  |
 | 817 | project_euler/problem_006/sol4 |   |  |  |
 | 818 | project_euler/problem_007/sol1 |   |  |  |
