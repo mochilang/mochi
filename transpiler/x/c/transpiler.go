@@ -186,6 +186,9 @@ func emitLenExpr(w io.Writer, e Expr) {
 	case *IndexExpr:
 		if vr, ok := v.Target.(*VarRef); ok {
 			t := inferExprType(currentEnv, vr)
+			if t == "" {
+				t = varTypes[vr.Name]
+			}
 			if strings.HasPrefix(t, "MapSL") {
 				needMapLenSL = true
 				io.WriteString(w, "map_len_sl(")
@@ -2713,7 +2716,11 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetIL = true
 			funcReturnTypes["map_get_il"] = valT
 			io.WriteString(w, "map_get_il(")
-			if strings.HasPrefix(varTypes[vr.Name], "MapIL") {
+			t := varTypes[vr.Name]
+			if t == "" {
+				t = inferExprType(currentEnv, vr)
+			}
+			if strings.HasPrefix(t, "MapIL") {
 				io.WriteString(w, mapField(vr.Name, "keys")+", ")
 				io.WriteString(w, mapField(vr.Name, "vals")+", ")
 				io.WriteString(w, mapField(vr.Name, "lens")+", ")
@@ -6223,7 +6230,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-				fmt.Fprintf(&buf, "%svoid* %s_vals[%d] = {", staticStr, s.Let.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "void* %s_vals[%d] = {", s.Let.Name, len(m.Items)+16)
 				for i := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6533,7 +6540,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-				fmt.Fprintf(&buf, "%svoid* %s_vals[%d] = {", staticStr, s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "void* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
 				for i := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
