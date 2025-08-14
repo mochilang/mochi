@@ -15,35 +15,35 @@ public class Main {
     }
 
     static String[] names;
-    static int[][] graph;
+    static long[][] graph;
     static Node[] nodes = new Node[0];
-    static int ri = 0;
+    static long ri = 0L;
 
     static String node_to_string(Node n) {
         return "<node=" + n.name + " inbound=" + String.valueOf(n.inbound) + " outbound=" + String.valueOf(n.outbound) + ">";
     }
 
-    static java.util.Map<String,Double> page_rank(Node[] nodes, int limit, double d) {
+    static java.util.Map<String,Double> page_rank(Node[] nodes, long limit, double d) {
         java.util.Map<String,Double> ranks = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
         for (Node n : nodes) {
-ranks.put(n.name, 1.0);
+ranks.put(n.name, (double)(1.0));
         }
-        java.util.Map<String,Double> outbounds = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
+        java.util.Map<String,Double> outbounds_1 = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
         for (Node n : nodes) {
-outbounds.put(n.name, 1.0 * n.outbound.length);
+outbounds_1.put(n.name, (double)((double)(1.0) * (double)(n.outbound.length)));
         }
-        int i = 0;
-        while (i < limit) {
-            System.out.println("======= Iteration " + _p(i + 1) + " =======");
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(limit)) {
+            System.out.println("======= Iteration " + _p((long)(i_1) + 1L) + " =======");
             for (Node n : nodes) {
-                double sum_val = 0.0;
+                double sum_val_1 = (double)(0.0);
                 for (String ib : n.inbound) {
-                    sum_val = sum_val + (double)(((double)(ranks).getOrDefault(ib, 0.0))) / (double)(((double)(outbounds).getOrDefault(ib, 0.0)));
+                    sum_val_1 = (double)((double)(sum_val_1) + (double)((double)(((double)(ranks).getOrDefault(ib, 0.0))) / (double)(((double)(outbounds_1).getOrDefault(ib, 0.0)))));
                 }
-ranks.put(n.name, (1.0 - d) + d * sum_val);
+ranks.put(n.name, (double)((double)(((double)(1.0) - (double)(d))) + (double)((double)(d) * (double)(sum_val_1))));
             }
             System.out.println(ranks);
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return ranks;
     }
@@ -52,33 +52,32 @@ ranks.put(n.name, (1.0 - d) + d * sum_val);
             long _benchStart = _now();
             long _benchMem = _mem();
             names = ((String[])(new String[]{"A", "B", "C"}));
-            graph = ((int[][])(new int[][]{new int[]{0, 1, 1}, new int[]{0, 0, 1}, new int[]{1, 0, 0}}));
+            graph = ((long[][])(new long[][]{new long[]{0, 1, 1}, new long[]{0, 0, 1}, new long[]{1, 0, 0}}));
             nodes = ((Node[])(new Node[]{}));
             for (String name : names) {
                 nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(new Node(name, new String[]{}, new String[]{}))).toArray(Node[]::new)));
             }
-            ri = 0;
-            while (ri < graph.length) {
-                int[] row = ((int[])(graph[ri]));
-                int ci = 0;
-                while (ci < row.length) {
-                    if (row[ci] == 1) {
-                        Node n_in = nodes[ci];
-n_in.inbound = java.util.stream.Stream.concat(java.util.Arrays.stream(n_in.inbound), java.util.stream.Stream.of(names[ri])).toArray(String[]::new);
-nodes[ci] = n_in;
-                        Node n_out = nodes[ri];
-n_out.outbound = java.util.stream.Stream.concat(java.util.Arrays.stream(n_out.outbound), java.util.stream.Stream.of(names[ci])).toArray(String[]::new);
-nodes[ri] = n_out;
+            while ((long)(ri) < (long)(graph.length)) {
+                long[] row = ((long[])(graph[(int)((long)(ri))]));
+                long ci = 0L;
+                while ((long)(ci) < (long)(row.length)) {
+                    if ((long)(row[(int)((long)(ci))]) == 1L) {
+                        Node n_in = nodes[(int)((long)(ci))];
+n_in.inbound = java.util.stream.Stream.concat(java.util.Arrays.stream(n_in.inbound), java.util.stream.Stream.of(names[(int)((long)(ri))])).toArray(String[]::new);
+nodes[(int)((long)(ci))] = n_in;
+                        Node n_out = nodes[(int)((long)(ri))];
+n_out.outbound = java.util.stream.Stream.concat(java.util.Arrays.stream(n_out.outbound), java.util.stream.Stream.of(names[(int)((long)(ci))])).toArray(String[]::new);
+nodes[(int)((long)(ri))] = n_out;
                     }
-                    ci = ci + 1;
+                    ci = (long)((long)(ci) + 1L);
                 }
-                ri = ri + 1;
+                ri = (long)((long)(ri) + 1L);
             }
             System.out.println("======= Nodes =======");
             for (Node n : nodes) {
                 System.out.println(n);
             }
-            page_rank(((Node[])(nodes)), 3, 0.85);
+            page_rank(((Node[])(nodes)), 3L, (double)(0.85));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -124,6 +123,10 @@ nodes[ri] = n_out;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

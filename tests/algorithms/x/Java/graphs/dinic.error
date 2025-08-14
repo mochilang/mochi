@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden420_dinic2873299455/001/Main.java:65: error: incompatible types: double[] cannot be converted to long[]
+        long[] e1_1 = ((long[])(new double[]{b, list_b_1.length, c, 0}));
+                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden420_dinic2873299455/001/Main.java:66: error: incompatible types: double[] cannot be converted to long[]
+        long[] e2_1 = ((long[])(new double[]{a, list_a_1.length, rcap, 0}));
+                               ^
+2 errors

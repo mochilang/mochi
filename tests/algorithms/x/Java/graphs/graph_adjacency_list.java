@@ -19,42 +19,42 @@ public class Main {
 adj.put(v, ((String[])(new String[]{})));
         }
         for (String[] e : edges) {
-            String s = e[0];
-            String d = e[1];
-            if (!(Boolean)(adj.containsKey(s))) {
-adj.put(s, ((String[])(new String[]{})));
+            String s_1 = e[(int)((long)(0))];
+            String d_1 = e[(int)((long)(1))];
+            if (!(adj.containsKey(s_1))) {
+adj.put(s_1, ((String[])(new String[]{})));
             }
-            if (!(Boolean)(adj.containsKey(d))) {
-adj.put(d, ((String[])(new String[]{})));
+            if (!(adj.containsKey(d_1))) {
+adj.put(d_1, ((String[])(new String[]{})));
             }
-adj.put(s, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(s))), java.util.stream.Stream.of(d)).toArray(String[]::new))));
+adj.put(s_1, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(s_1))), java.util.stream.Stream.of(d_1)).toArray(String[]::new))));
             if (!(Boolean)directed) {
-adj.put(d, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(d))), java.util.stream.Stream.of(s)).toArray(String[]::new))));
+adj.put(d_1, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(d_1))), java.util.stream.Stream.of(s_1)).toArray(String[]::new))));
             }
         }
         return new Graph(adj, directed);
     }
 
     static Graph add_vertex(Graph graph, String v) {
-        if (((Boolean)(graph.adj.containsKey(v)))) {
+        if (graph.adj.containsKey(v)) {
             throw new RuntimeException(String.valueOf("vertex exists"));
         }
-        java.util.Map<String,String[]> adj_1 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
+        java.util.Map<String,String[]> adj_2 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
         for (String k : graph.adj.keySet()) {
-adj_1.put(k, (String[])(((String[])(graph.adj).get(k))));
+adj_2.put(k, (String[])(((String[])(graph.adj).get(k))));
         }
-adj_1.put(v, ((String[])(new String[]{})));
-        return new Graph(adj_1, graph.directed);
+adj_2.put(v, ((String[])(new String[]{})));
+        return new Graph(adj_2, graph.directed);
     }
 
     static String[] remove_from_list(String[] lst, String value) {
         String[] res = ((String[])(new String[]{}));
-        int i = 0;
-        while (i < lst.length) {
-            if (!(lst[i].equals(value))) {
-                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(lst[i])).toArray(String[]::new)));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(lst.length)) {
+            if (!(lst[(int)((long)(i_1))].equals(value))) {
+                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(lst[(int)((long)(i_1))])).toArray(String[]::new)));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return res;
     }
@@ -62,7 +62,7 @@ adj_1.put(v, ((String[])(new String[]{})));
     static java.util.Map<String,String[]> remove_key(java.util.Map<String,String[]> m, String key) {
         java.util.Map<String,String[]> res_1 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
         for (String k : m.keySet()) {
-            if (((Number)(k)).intValue() != key) {
+            if (!(k.equals(key))) {
 res_1.put(k, (String[])(((String[])(m).get(k))));
             }
         }
@@ -70,56 +70,56 @@ res_1.put(k, (String[])(((String[])(m).get(k))));
     }
 
     static Graph add_edge(Graph graph, String s, String d) {
-        if (((!(Boolean)(graph.adj.containsKey(s))) || (!(Boolean)(graph.adj.containsKey(d))))) {
+        if (((!(graph.adj.containsKey(s))) || (!(graph.adj.containsKey(d))))) {
             throw new RuntimeException(String.valueOf("vertex missing"));
         }
-        if (((Boolean)(contains_edge(graph, s, d)))) {
+        if (contains_edge(graph, s, d)) {
             throw new RuntimeException(String.valueOf("edge exists"));
         }
-        java.util.Map<String,String[]> adj_2 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
+        java.util.Map<String,String[]> adj_4 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
         for (String k : graph.adj.keySet()) {
-adj_2.put(k, (String[])(((String[])(graph.adj).get(k))));
+adj_4.put(k, (String[])(((String[])(graph.adj).get(k))));
         }
-        String[] list_s = (String[])(((String[])(adj_2).get(s)));
-        list_s = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(list_s), java.util.stream.Stream.of(d)).toArray(String[]::new)));
-adj_2.put(s, ((String[])(list_s)));
+        String[] list_s_1 = (String[])(((String[])(adj_4).get(s)));
+        list_s_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(list_s_1), java.util.stream.Stream.of(d)).toArray(String[]::new)));
+adj_4.put(s, ((String[])(list_s_1)));
         if (!graph.directed) {
-            String[] list_d = (String[])(((String[])(adj_2).get(d)));
-            list_d = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(list_d), java.util.stream.Stream.of(s)).toArray(String[]::new)));
-adj_2.put(d, ((String[])(list_d)));
+            String[] list_d_1 = (String[])(((String[])(adj_4).get(d)));
+            list_d_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(list_d_1), java.util.stream.Stream.of(s)).toArray(String[]::new)));
+adj_4.put(d, ((String[])(list_d_1)));
         }
-        return new Graph(adj_2, graph.directed);
+        return new Graph(adj_4, graph.directed);
     }
 
     static Graph remove_edge(Graph graph, String s, String d) {
-        if (((!(Boolean)(graph.adj.containsKey(s))) || (!(Boolean)(graph.adj.containsKey(d))))) {
+        if (((!(graph.adj.containsKey(s))) || (!(graph.adj.containsKey(d))))) {
             throw new RuntimeException(String.valueOf("vertex missing"));
         }
         if (!(Boolean)contains_edge(graph, s, d)) {
             throw new RuntimeException(String.valueOf("edge missing"));
         }
-        java.util.Map<String,String[]> adj_3 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
+        java.util.Map<String,String[]> adj_6 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
         for (String k : graph.adj.keySet()) {
-adj_3.put(k, (String[])(((String[])(graph.adj).get(k))));
+adj_6.put(k, (String[])(((String[])(graph.adj).get(k))));
         }
-adj_3.put(s, ((String[])(remove_from_list((String[])(((String[])(adj_3).get(s))), d))));
+adj_6.put(s, ((String[])(remove_from_list((String[])(((String[])(adj_6).get(s))), d))));
         if (!graph.directed) {
-adj_3.put(d, ((String[])(remove_from_list((String[])(((String[])(adj_3).get(d))), s))));
+adj_6.put(d, ((String[])(remove_from_list((String[])(((String[])(adj_6).get(d))), s))));
         }
-        return new Graph(adj_3, graph.directed);
+        return new Graph(adj_6, graph.directed);
     }
 
     static Graph remove_vertex(Graph graph, String v) {
-        if (!(Boolean)(graph.adj.containsKey(v))) {
+        if (!(graph.adj.containsKey(v))) {
             throw new RuntimeException(String.valueOf("vertex missing"));
         }
-        java.util.Map<String,String[]> adj_4 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
+        java.util.Map<String,String[]> adj_8 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
         for (String k : graph.adj.keySet()) {
-            if (((Number)(k)).intValue() != v) {
-adj_4.put(k, ((String[])(remove_from_list((String[])(((String[])(graph.adj).get(k))), v))));
+            if (!(k.equals(v))) {
+adj_8.put(k, ((String[])(remove_from_list((String[])(((String[])(graph.adj).get(k))), v))));
             }
         }
-        return new Graph(adj_4, graph.directed);
+        return new Graph(adj_8, graph.directed);
     }
 
     static boolean contains_vertex(Graph graph, String v) {
@@ -127,7 +127,7 @@ adj_4.put(k, ((String[])(remove_from_list((String[])(((String[])(graph.adj).get(
     }
 
     static boolean contains_edge(Graph graph, String s, String d) {
-        if (((!(Boolean)(graph.adj.containsKey(s))) || (!(Boolean)(graph.adj.containsKey(d))))) {
+        if (((!(graph.adj.containsKey(s))) || (!(graph.adj.containsKey(d))))) {
             throw new RuntimeException(String.valueOf("vertex missing"));
         }
         for (String x : ((String[])(graph.adj).get(s))) {
@@ -148,15 +148,15 @@ adj_4.put(k, ((String[])(remove_from_list((String[])(((String[])(graph.adj).get(
 
     static void main() {
         String[] vertices = ((String[])(new String[]{"1", "2", "3", "4"}));
-        String[][] edges = ((String[][])(new String[][]{new String[]{"1", "2"}, new String[]{"2", "3"}, new String[]{"3", "4"}}));
-        Graph g = create_graph(((String[])(vertices)), ((String[][])(edges)), false);
-        System.out.println(to_string(g));
-        g = add_vertex(g, "5");
-        g = add_edge(g, "4", "5");
-        System.out.println(_p(contains_edge(g, "4", "5")));
-        g = remove_edge(g, "1", "2");
-        g = remove_vertex(g, "3");
-        System.out.println(to_string(g));
+        String[][] edges_1 = ((String[][])(new String[][]{new String[]{"1", "2"}, new String[]{"2", "3"}, new String[]{"3", "4"}}));
+        Graph g_1 = create_graph(((String[])(vertices)), ((String[][])(edges_1)), false);
+        System.out.println(to_string(g_1));
+        g_1 = add_vertex(g_1, "5");
+        g_1 = add_edge(g_1, "4", "5");
+        System.out.println(_p(contains_edge(g_1, "4", "5")));
+        g_1 = remove_edge(g_1, "1", "2");
+        g_1 = remove_vertex(g_1, "3");
+        System.out.println(to_string(g_1));
     }
     public static void main(String[] args) {
         {
@@ -208,6 +208,10 @@ adj_4.put(k, ((String[])(remove_from_list((String[])(((String[])(graph.adj).get(
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

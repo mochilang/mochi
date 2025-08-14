@@ -2,19 +2,19 @@ public class Main {
     static java.util.Map<String,String[]> demo_graph;
 
     static boolean contains(String[] xs, String x) {
-        int i = 0;
-        while (i < xs.length) {
-            if ((xs[i].equals(x))) {
+        long i = 0L;
+        while ((long)(i) < (long)(xs.length)) {
+            if ((xs[(int)((long)(i))].equals(x))) {
                 return true;
             }
-            i = i + 1;
+            i = (long)((long)(i) + 1L);
         }
         return false;
     }
 
     static boolean contains_key(java.util.Map<String,String[]> m, String key) {
         for (String k : m.keySet()) {
-            if (((Number)(k)).intValue() == key) {
+            if ((k.equals(key))) {
                 return true;
             }
         }
@@ -23,66 +23,66 @@ public class Main {
 
     static String[] bfs_shortest_path(java.util.Map<String,String[]> graph, String start, String goal) {
         String[] explored = ((String[])(new String[]{}));
-        String[][] queue = ((String[][])(new String[][]{new String[]{start}}));
+        String[][] queue_1 = ((String[][])(new String[][]{new String[]{start}}));
         if ((start.equals(goal))) {
             return new String[]{start};
         }
-        while (queue.length > 0) {
-            String[] path = ((String[])(queue[0]));
-            queue = ((String[][])(java.util.Arrays.copyOfRange(queue, 1, queue.length)));
-            String node = path[path.length - 1];
-            if (!(Boolean)contains(((String[])(explored)), node)) {
-                String[] neighbours = (String[])(((String[])(graph).get(node)));
-                int i_1 = 0;
-                while (i_1 < neighbours.length) {
-                    String neighbour = neighbours[i_1];
-                    String[] new_path = ((String[])(path));
-                    new_path = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_path), java.util.stream.Stream.of(neighbour)).toArray(String[]::new)));
-                    queue = ((String[][])(appendObj(queue, new_path)));
-                    if ((neighbour.equals(goal))) {
-                        return new_path;
+        while ((long)(queue_1.length) > 0L) {
+            String[] path_1 = ((String[])(queue_1[(int)((long)(0))]));
+            queue_1 = ((String[][])(java.util.Arrays.copyOfRange(queue_1, (int)((long)(1)), (int)((long)(queue_1.length)))));
+            String node_1 = path_1[(int)((long)((long)(path_1.length) - 1L))];
+            if (!(Boolean)contains(((String[])(explored)), node_1)) {
+                String[] neighbours_1 = (String[])(((String[])(graph).get(node_1)));
+                long i_2 = 0L;
+                while ((long)(i_2) < (long)(neighbours_1.length)) {
+                    String neighbour_1 = neighbours_1[(int)((long)(i_2))];
+                    String[] new_path_1 = ((String[])(path_1));
+                    new_path_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_path_1), java.util.stream.Stream.of(neighbour_1)).toArray(String[]::new)));
+                    queue_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_1), java.util.stream.Stream.of(new String[][]{new_path_1})).toArray(String[][]::new)));
+                    if ((neighbour_1.equals(goal))) {
+                        return new_path_1;
                     }
-                    i_1 = i_1 + 1;
+                    i_2 = (long)((long)(i_2) + 1L);
                 }
-                explored = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(explored), java.util.stream.Stream.of(node)).toArray(String[]::new)));
+                explored = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(explored), java.util.stream.Stream.of(node_1)).toArray(String[]::new)));
             }
         }
         return new String[]{};
     }
 
-    static int bfs_shortest_path_distance(java.util.Map<String,String[]> graph, String start, String target) {
-        if ((contains_key(graph, start) == false) || (contains_key(graph, target) == false)) {
+    static long bfs_shortest_path_distance(java.util.Map<String,String[]> graph, String start, String target) {
+        if (((contains_key(graph, start) == false)) || ((contains_key(graph, target) == false))) {
             return -1;
         }
         if ((start.equals(target))) {
             return 0;
         }
-        String[] queue_1 = ((String[])(new String[]{start}));
-        String[] visited = ((String[])(new String[]{start}));
-        java.util.Map<String,Integer> dist = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
-dist.put(start, 0);
-dist.put(target, (-1));
-        while (queue_1.length > 0) {
-            String node_1 = queue_1[0];
-            queue_1 = ((String[])(java.util.Arrays.copyOfRange(queue_1, 1, queue_1.length)));
-            if ((node_1.equals(target))) {
-                if ((int)(((int)(dist).getOrDefault(target, 0))) == (-1) || (int)(((int)(dist).getOrDefault(node_1, 0))) < (int)(((int)(dist).getOrDefault(target, 0)))) {
-dist.put(target, (int)(((int)(dist).getOrDefault(node_1, 0))));
+        String[] queue_3 = ((String[])(new String[]{start}));
+        String[] visited_1 = ((String[])(new String[]{start}));
+        java.util.Map<String,Long> dist_1 = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
+dist_1.put(start, 0L);
+dist_1.put(target, (long)((-1)));
+        while ((long)(queue_3.length) > 0L) {
+            String node_3 = queue_3[(int)((long)(0))];
+            queue_3 = ((String[])(java.util.Arrays.copyOfRange(queue_3, (int)((long)(1)), (int)((long)(queue_3.length)))));
+            if ((node_3.equals(target))) {
+                if ((long)(((long)(dist_1).getOrDefault(target, 0L))) == (long)((-1)) || (long)(((long)(dist_1).getOrDefault(node_3, 0L))) < (long)(((long)(dist_1).getOrDefault(target, 0L)))) {
+dist_1.put(target, (long)(((long)(dist_1).getOrDefault(node_3, 0L))));
                 }
             }
-            String[] adj = (String[])(((String[])(graph).get(node_1)));
-            int i_2 = 0;
-            while (i_2 < adj.length) {
-                String next = adj[i_2];
-                if (!(Boolean)contains(((String[])(visited)), next)) {
-                    visited = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(visited), java.util.stream.Stream.of(next)).toArray(String[]::new)));
-                    queue_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_1), java.util.stream.Stream.of(next)).toArray(String[]::new)));
-dist.put(next, (int)(((int)(dist).getOrDefault(node_1, 0))) + 1);
+            String[] adj_1 = (String[])(((String[])(graph).get(node_3)));
+            long i_4 = 0L;
+            while ((long)(i_4) < (long)(adj_1.length)) {
+                String next_1 = adj_1[(int)((long)(i_4))];
+                if (!(Boolean)contains(((String[])(visited_1)), next_1)) {
+                    visited_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(visited_1), java.util.stream.Stream.of(next_1)).toArray(String[]::new)));
+                    queue_3 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_3), java.util.stream.Stream.of(next_1)).toArray(String[]::new)));
+dist_1.put(next_1, (long)((long)(((long)(dist_1).getOrDefault(node_3, 0L))) + 1L));
                 }
-                i_2 = i_2 + 1;
+                i_4 = (long)((long)(i_4) + 1L);
             }
         }
-        return ((int)(dist).getOrDefault(target, 0));
+        return ((long)(dist_1).getOrDefault(target, 0L));
     }
     public static void main(String[] args) {
         {
@@ -120,11 +120,5 @@ dist.put(next, (int)(((int)(dist).getOrDefault(node_1, 0))) + 1);
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
     }
 }

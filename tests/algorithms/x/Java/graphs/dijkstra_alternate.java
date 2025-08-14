@@ -1,67 +1,67 @@
 public class Main {
-    static int[][] graph;
-    static int[] distances_1;
+    static long[][] graph;
+    static long[] distances_2;
 
-    static int minimum_distance(int[] distances, boolean[] visited) {
-        int minimum = 10000000;
-        int min_index = 0;
-        int vertex = 0;
-        while (vertex < distances.length) {
-            if (distances[vertex] < minimum && visited[vertex] == false) {
-                minimum = distances[vertex];
-                min_index = vertex;
+    static long minimum_distance(long[] distances, boolean[] visited) {
+        long minimum = 10000000L;
+        long min_index_1 = 0L;
+        long vertex_1 = 0L;
+        while ((long)(vertex_1) < (long)(distances.length)) {
+            if ((long)(distances[(int)((long)(vertex_1))]) < (long)(minimum) && (visited[(int)((long)(vertex_1))] == false)) {
+                minimum = (long)(distances[(int)((long)(vertex_1))]);
+                min_index_1 = (long)(vertex_1);
             }
-            vertex = vertex + 1;
+            vertex_1 = (long)((long)(vertex_1) + 1L);
         }
-        return min_index;
+        return min_index_1;
     }
 
-    static int[] dijkstra(int[][] graph, int source) {
-        int vertices = graph.length;
-        int[] distances = new int[0];
-        int i = 0;
-        while (i < vertices) {
-            distances = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(distances), java.util.stream.IntStream.of(10000000)).toArray()));
-            i = i + 1;
+    static long[] dijkstra(long[][] graph, long source) {
+        long vertices = (long)(graph.length);
+        long[] distances_1 = new long[0];
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vertices)) {
+            distances_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(distances_1), java.util.stream.LongStream.of(10000000L)).toArray()));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-distances[source] = 0;
-        boolean[] visited = new boolean[0];
-        i = 0;
-        while (i < vertices) {
-            visited = ((boolean[])(appendBool(visited, false)));
-            i = i + 1;
+distances_1[(int)((long)(source))] = 0L;
+        boolean[] visited_1 = new boolean[0];
+        i_1 = 0L;
+        while ((long)(i_1) < (long)(vertices)) {
+            visited_1 = ((boolean[])(appendBool(visited_1, false)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int count = 0;
-        while (count < vertices) {
-            int u = minimum_distance(((int[])(distances)), ((boolean[])(visited)));
-visited[u] = true;
-            int v = 0;
-            while (v < vertices) {
-                if (graph[u][v] > 0 && visited[v] == false && distances[v] > distances[u] + graph[u][v]) {
-distances[v] = distances[u] + graph[u][v];
+        long count_1 = 0L;
+        while ((long)(count_1) < (long)(vertices)) {
+            long u_1 = (long)(minimum_distance(((long[])(distances_1)), ((boolean[])(visited_1))));
+visited_1[(int)((long)(u_1))] = true;
+            long v_1 = 0L;
+            while ((long)(v_1) < (long)(vertices)) {
+                if ((long)(graph[(int)((long)(u_1))][(int)((long)(v_1))]) > 0L && (visited_1[(int)((long)(v_1))] == false) && (long)(distances_1[(int)((long)(v_1))]) > (long)((long)(distances_1[(int)((long)(u_1))]) + (long)(graph[(int)((long)(u_1))][(int)((long)(v_1))]))) {
+distances_1[(int)((long)(v_1))] = (long)((long)(distances_1[(int)((long)(u_1))]) + (long)(graph[(int)((long)(u_1))][(int)((long)(v_1))]));
                 }
-                v = v + 1;
+                v_1 = (long)((long)(v_1) + 1L);
             }
-            count = count + 1;
+            count_1 = (long)((long)(count_1) + 1L);
         }
-        return distances;
+        return distances_1;
     }
 
-    static void print_solution(int[] distances) {
+    static void print_solution(long[] distances) {
         System.out.println("Vertex \t Distance from Source");
-        int v_1 = 0;
-        while (v_1 < distances.length) {
-            System.out.println(_p(v_1) + "\t\t" + _p(_geti(distances, v_1)));
-            v_1 = v_1 + 1;
+        long v_3 = 0L;
+        while ((long)(v_3) < (long)(distances.length)) {
+            System.out.println(_p(v_3) + "\t\t" + _p(_geti(distances, ((Number)(v_3)).intValue())));
+            v_3 = (long)((long)(v_3) + 1L);
         }
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            graph = ((int[][])(new int[][]{new int[]{0, 4, 0, 0, 0, 0, 0, 8, 0}, new int[]{4, 0, 8, 0, 0, 0, 0, 11, 0}, new int[]{0, 8, 0, 7, 0, 4, 0, 0, 2}, new int[]{0, 0, 7, 0, 9, 14, 0, 0, 0}, new int[]{0, 0, 0, 9, 0, 10, 0, 0, 0}, new int[]{0, 0, 4, 14, 10, 0, 2, 0, 0}, new int[]{0, 0, 0, 0, 0, 2, 0, 1, 6}, new int[]{8, 11, 0, 0, 0, 0, 1, 0, 7}, new int[]{0, 0, 2, 0, 0, 0, 6, 7, 0}}));
-            distances_1 = ((int[])(dijkstra(((int[][])(graph)), 0)));
-            print_solution(((int[])(distances_1)));
+            graph = ((long[][])(new long[][]{new long[]{0, 4, 0, 0, 0, 0, 0, 8, 0}, new long[]{4, 0, 8, 0, 0, 0, 0, 11, 0}, new long[]{0, 8, 0, 7, 0, 4, 0, 0, 2}, new long[]{0, 0, 7, 0, 9, 14, 0, 0, 0}, new long[]{0, 0, 0, 9, 0, 10, 0, 0, 0}, new long[]{0, 0, 4, 14, 10, 0, 2, 0, 0}, new long[]{0, 0, 0, 0, 0, 2, 0, 1, 6}, new long[]{8, 11, 0, 0, 0, 0, 1, 0, 7}, new long[]{0, 0, 2, 0, 0, 0, 6, 7, 0}}));
+            distances_2 = ((long[])(dijkstra(((long[][])(graph)), 0L)));
+            print_solution(((long[])(distances_2)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -114,10 +114,14 @@ distances[v] = distances[u] + graph[u][v];
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

@@ -14,15 +14,15 @@ public class Main {
         }
     }
 
-    static int seed = 0;
+    static long seed = 1L;
 
-    static int rand() {
-        seed = ((int)(Math.floorMod(((long)((seed * 1103515245 + 12345))), 2147483648L)));
+    static long rand() {
+        seed = (long)(((long)(Math.floorMod(((long)(((long)((long)(seed) * 1103515245L) + 12345L))), 2147483648L))));
         return seed;
     }
 
     static double random() {
-        return (1.0 * rand()) / 2147483648.0;
+        return (double)(((double)(1.0) * (double)(rand()))) / (double)(2147483648.0);
     }
 
     static String[] get_nodes(Transition[] trans) {
@@ -31,20 +31,20 @@ public class Main {
 seen.put(t.src, true);
 seen.put(t.dst, true);
         }
-        String[] nodes = ((String[])(new String[]{}));
+        String[] nodes_1 = ((String[])(new String[]{}));
         for (var k : new java.util.ArrayList<>(seen.keySet())) {
-            nodes = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(k)).toArray(String[]::new)));
+            nodes_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes_1), java.util.stream.Stream.of(k)).toArray(String[]::new)));
         }
-        return nodes;
+        return nodes_1;
     }
 
     static String transition(String current, Transition[] trans) {
-        double current_probability = 0.0;
-        double random_value = random();
+        double current_probability = (double)(0.0);
+        double random_value_1 = (double)(random());
         for (Transition t : trans) {
             if ((t.src.equals(current))) {
-                current_probability = current_probability + t.prob;
-                if (current_probability > random_value) {
+                current_probability = (double)((double)(current_probability) + (double)(t.prob));
+                if ((double)(current_probability) > (double)(random_value_1)) {
                     return t.dst;
                 }
             }
@@ -52,34 +52,33 @@ seen.put(t.dst, true);
         return "";
     }
 
-    static java.util.Map<String,Integer> get_transitions(String start, Transition[] trans, int steps) {
-        java.util.Map<String,Integer> visited = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
+    static java.util.Map<String,Long> get_transitions(String start, Transition[] trans, long steps) {
+        java.util.Map<String,Long> visited = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
         for (String node : get_nodes(((Transition[])(trans)))) {
-            int one = 1;
-visited.put(node, one);
+            long one_1 = 1L;
+visited.put(node, (long)(one_1));
         }
-        String node = start;
-        int i = 0;
-        while (i < steps) {
-            node = String.valueOf(transition(node, ((Transition[])(trans))));
-            int count = (int)(((int)(visited).getOrDefault(node, 0)));
-            count = count + 1;
-visited.put(node, count);
-            i = i + 1;
+        String node_2 = start;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(steps)) {
+            node_2 = String.valueOf(transition(node_2, ((Transition[])(trans))));
+            long count_1 = (long)(((long)(visited).getOrDefault(node_2, 0L)));
+            count_1 = (long)((long)(count_1) + 1L);
+visited.put(node_2, (long)(count_1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return visited;
     }
 
     static void main() {
         Transition[] transitions = ((Transition[])(new Transition[]{new Transition("a", "a", 0.9), new Transition("a", "b", 0.075), new Transition("a", "c", 0.025), new Transition("b", "a", 0.15), new Transition("b", "b", 0.8), new Transition("b", "c", 0.05), new Transition("c", "a", 0.25), new Transition("c", "b", 0.25), new Transition("c", "c", 0.5)}));
-        java.util.Map<String,Integer> result = get_transitions("a", ((Transition[])(transitions)), 5000);
-        System.out.println(_p(((int)(result).getOrDefault("a", 0))) + " " + _p(((int)(result).getOrDefault("b", 0))) + " " + _p(((int)(result).getOrDefault("c", 0))));
+        java.util.Map<String,Long> result_1 = get_transitions("a", ((Transition[])(transitions)), 5000L);
+        System.out.println(_p(((long)(result_1).getOrDefault("a", 0L))) + " " + _p(((long)(result_1).getOrDefault("b", 0L))) + " " + _p(((long)(result_1).getOrDefault("c", 0L))));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            seed = 1;
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -126,6 +125,10 @@ visited.put(node, count);
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

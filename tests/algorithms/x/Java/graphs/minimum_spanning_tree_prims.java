@@ -1,8 +1,8 @@
 public class Main {
     static class Edge {
-        int to;
-        int weight;
-        Edge(int to, int weight) {
+        long to;
+        long weight;
+        Edge(long to, long weight) {
             this.to = to;
             this.weight = weight;
         }
@@ -13,9 +13,9 @@ public class Main {
     }
 
     static class Pair {
-        int u;
-        int v;
-        Pair(int u, int v) {
+        long u;
+        long v;
+        Pair(long u, long v) {
             this.u = u;
             this.v = v;
         }
@@ -25,72 +25,71 @@ public class Main {
         }
     }
 
-    static int INF;
+    static long INF = 1000000000L;
     static Edge[][] adjacency_list;
     static Pair[] mst_edges;
 
     static String pairs_to_string(Pair[] edges) {
         String s = "[";
-        int i = 0;
-        while (i < edges.length) {
-            Pair e = edges[i];
-            s = s + "(" + _p(e.u) + ", " + _p(e.v) + ")";
-            if (i < edges.length - 1) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(edges.length)) {
+            Pair e_1 = edges[(int)((long)(i_1))];
+            s = s + "(" + _p(e_1.u) + ", " + _p(e_1.v) + ")";
+            if ((long)(i_1) < (long)((long)(edges.length) - 1L)) {
                 s = s + ", ";
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return s + "]";
     }
 
     static Pair[] prim_mst(Edge[][] graph) {
-        int n = graph.length;
-        boolean[] visited = ((boolean[])(new boolean[]{}));
-        int[] dist = ((int[])(new int[]{}));
-        int[] parent = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < n) {
-            visited = ((boolean[])(appendBool(visited, false)));
-            dist = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(dist), java.util.stream.IntStream.of(INF)).toArray()));
-            parent = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(parent), java.util.stream.IntStream.of(-1)).toArray()));
-            i_1 = i_1 + 1;
+        long n = (long)(graph.length);
+        boolean[] visited_1 = ((boolean[])(new boolean[]{}));
+        long[] dist_1 = ((long[])(new long[]{}));
+        long[] parent_1 = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(n)) {
+            visited_1 = ((boolean[])(appendBool(visited_1, false)));
+            dist_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(dist_1), java.util.stream.LongStream.of((long)(INF))).toArray()));
+            parent_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(parent_1), java.util.stream.LongStream.of((long)(-1))).toArray()));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-dist[0] = 0;
-        Pair[] result = ((Pair[])(new Pair[]{}));
-        int count = 0;
-        while (count < n) {
-            int min_val = INF;
-            int u = 0;
-            int v = 0;
-            while (v < n) {
-                if (visited[v] == false && dist[v] < min_val) {
-                    min_val = dist[v];
-                    u = v;
+dist_1[(int)((long)(0))] = 0L;
+        Pair[] result_1 = ((Pair[])(new Pair[]{}));
+        long count_1 = 0L;
+        while ((long)(count_1) < (long)(n)) {
+            long min_val_1 = (long)(INF);
+            long u_1 = 0L;
+            long v_1 = 0L;
+            while ((long)(v_1) < (long)(n)) {
+                if ((visited_1[(int)((long)(v_1))] == false) && (long)(dist_1[(int)((long)(v_1))]) < (long)(min_val_1)) {
+                    min_val_1 = (long)(dist_1[(int)((long)(v_1))]);
+                    u_1 = (long)(v_1);
                 }
-                v = v + 1;
+                v_1 = (long)((long)(v_1) + 1L);
             }
-            if (min_val == INF) {
+            if ((long)(min_val_1) == (long)(INF)) {
                 break;
             }
-visited[u] = true;
-            if (u != 0) {
-                result = ((Pair[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new Pair(parent[u], u))).toArray(Pair[]::new)));
+visited_1[(int)((long)(u_1))] = true;
+            if ((long)(u_1) != 0L) {
+                result_1 = ((Pair[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(new Pair(parent_1[(int)((long)(u_1))], u_1))).toArray(Pair[]::new)));
             }
-            for (Edge e : graph[u]) {
-                if (visited[e.to] == false && e.weight < dist[e.to]) {
-dist[e.to] = e.weight;
-parent[e.to] = u;
+            for (Edge e : graph[(int)((long)(u_1))]) {
+                if ((visited_1[(int)((long)(e.to))] == false) && (long)(e.weight) < (long)(dist_1[(int)((long)(e.to))])) {
+dist_1[(int)((long)(e.to))] = (long)(e.weight);
+parent_1[(int)((long)(e.to))] = (long)(u_1);
                 }
             }
-            count = count + 1;
+            count_1 = (long)((long)(count_1) + 1L);
         }
-        return result;
+        return result_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            INF = 1000000000;
             adjacency_list = ((Edge[][])(new Edge[][]{new Edge[]{new Edge(1, 1), new Edge(3, 3)}, new Edge[]{new Edge(0, 1), new Edge(2, 6), new Edge(3, 5), new Edge(4, 1)}, new Edge[]{new Edge(1, 6), new Edge(4, 5), new Edge(5, 2)}, new Edge[]{new Edge(0, 3), new Edge(1, 5), new Edge(4, 1)}, new Edge[]{new Edge(1, 1), new Edge(2, 5), new Edge(3, 1), new Edge(5, 4)}, new Edge[]{new Edge(2, 2), new Edge(4, 4)}}));
             mst_edges = ((Pair[])(prim_mst(((Edge[][])(adjacency_list)))));
             System.out.println(pairs_to_string(((Pair[])(mst_edges))));
@@ -145,6 +144,10 @@ parent[e.to] = u;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

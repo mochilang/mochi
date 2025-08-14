@@ -1,50 +1,50 @@
 public class Main {
-    static int[][] grid1;
-    static int[][] grid2;
+    static long[][] grid1;
+    static long[][] grid2;
 
-    static int[] fill_row(int[] current_row, int[] row_above) {
-current_row[0] = current_row[0] + row_above[0];
-        int cell_n = 1;
-        while (cell_n < current_row.length) {
-            int left = current_row[cell_n - 1];
-            int up = row_above[cell_n];
-            if (left < up) {
-current_row[cell_n] = current_row[cell_n] + left;
+    static long[] fill_row(long[] current_row, long[] row_above) {
+current_row[(int)((long)(0))] = (long)((long)(current_row[(int)((long)(0))]) + (long)(row_above[(int)((long)(0))]));
+        long cell_n_1 = 1L;
+        while ((long)(cell_n_1) < (long)(current_row.length)) {
+            long left_1 = (long)(current_row[(int)((long)((long)(cell_n_1) - 1L))]);
+            long up_1 = (long)(row_above[(int)((long)(cell_n_1))]);
+            if ((long)(left_1) < (long)(up_1)) {
+current_row[(int)((long)(cell_n_1))] = (long)((long)(current_row[(int)((long)(cell_n_1))]) + (long)(left_1));
             } else {
-current_row[cell_n] = current_row[cell_n] + up;
+current_row[(int)((long)(cell_n_1))] = (long)((long)(current_row[(int)((long)(cell_n_1))]) + (long)(up_1));
             }
-            cell_n = cell_n + 1;
+            cell_n_1 = (long)((long)(cell_n_1) + 1L);
         }
         return current_row;
     }
 
-    static int min_path_sum(int[][] grid) {
-        if (grid.length == 0 || grid[0].length == 0) {
+    static long min_path_sum(long[][] grid) {
+        if ((long)(grid.length) == 0L || (long)(grid[(int)((long)(0))].length) == 0L) {
             throw new RuntimeException(String.valueOf("The grid does not contain the appropriate information"));
         }
-        int cell_n_1 = 1;
-        while (cell_n_1 < grid[0].length) {
-grid[0][cell_n_1] = grid[0][cell_n_1] + grid[0][cell_n_1 - 1];
-            cell_n_1 = cell_n_1 + 1;
+        long cell_n_3 = 1L;
+        while ((long)(cell_n_3) < (long)(grid[(int)((long)(0))].length)) {
+grid[(int)((long)(0))][(int)((long)(cell_n_3))] = (long)((long)(grid[(int)((long)(0))][(int)((long)(cell_n_3))]) + (long)(grid[(int)((long)(0))][(int)((long)((long)(cell_n_3) - 1L))]));
+            cell_n_3 = (long)((long)(cell_n_3) + 1L);
         }
-        int[] row_above = ((int[])(grid[0]));
-        int row_n = 1;
-        while (row_n < grid.length) {
-            int[] current_row = ((int[])(grid[row_n]));
-grid[row_n] = ((int[])(fill_row(((int[])(current_row)), ((int[])(row_above)))));
-            row_above = ((int[])(grid[row_n]));
-            row_n = row_n + 1;
+        long[] row_above_1 = ((long[])(grid[(int)((long)(0))]));
+        long row_n_1 = 1L;
+        while ((long)(row_n_1) < (long)(grid.length)) {
+            long[] current_row_1 = ((long[])(grid[(int)((long)(row_n_1))]));
+grid[(int)((long)(row_n_1))] = ((long[])(fill_row(((long[])(current_row_1)), ((long[])(row_above_1)))));
+            row_above_1 = ((long[])(grid[(int)((long)(row_n_1))]));
+            row_n_1 = (long)((long)(row_n_1) + 1L);
         }
-        return grid[grid.length - 1][grid[0].length - 1];
+        return grid[(int)((long)((long)(grid.length) - 1L))][(int)((long)((long)(grid[(int)((long)(0))].length) - 1L))];
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            grid1 = ((int[][])(new int[][]{new int[]{1, 3, 1}, new int[]{1, 5, 1}, new int[]{4, 2, 1}}));
-            System.out.println(_p(min_path_sum(((int[][])(grid1)))));
-            grid2 = ((int[][])(new int[][]{new int[]{1, 0, 5, 6, 7}, new int[]{8, 9, 0, 4, 2}, new int[]{4, 4, 4, 5, 1}, new int[]{9, 6, 3, 1, 0}, new int[]{8, 4, 3, 2, 7}}));
-            System.out.println(_p(min_path_sum(((int[][])(grid2)))));
+            grid1 = ((long[][])(new long[][]{new long[]{1, 3, 1}, new long[]{1, 5, 1}, new long[]{4, 2, 1}}));
+            System.out.println(_p(min_path_sum(((long[][])(grid1)))));
+            grid2 = ((long[][])(new long[][]{new long[]{1, 0, 5, 6, 7}, new long[]{8, 9, 0, 4, 2}, new long[]{4, 4, 4, 5, 1}, new long[]{9, 6, 3, 1, 0}, new long[]{8, 4, 3, 2, 7}}));
+            System.out.println(_p(min_path_sum(((long[][])(grid2)))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -90,6 +90,10 @@ grid[row_n] = ((int[])(fill_row(((int[])(current_row)), ((int[])(row_above)))));
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

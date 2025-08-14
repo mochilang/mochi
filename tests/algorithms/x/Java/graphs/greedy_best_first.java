@@ -1,8 +1,8 @@
 public class Main {
     static class Pos {
-        int y;
-        int x;
-        Pos(int y, int x) {
+        long y;
+        long x;
+        Pos(long y, long x) {
             this.y = y;
             this.x = x;
         }
@@ -13,14 +13,14 @@ public class Main {
     }
 
     static class Node {
-        int pos_x;
-        int pos_y;
-        int goal_x;
-        int goal_y;
-        int g_cost;
-        int f_cost;
+        long pos_x;
+        long pos_y;
+        long goal_x;
+        long goal_y;
+        long g_cost;
+        long f_cost;
         Pos[] path;
-        Node(int pos_x, int pos_y, int goal_x, int goal_y, int g_cost, int f_cost, Pos[] path) {
+        Node(long pos_x, long pos_y, long goal_x, long goal_y, long g_cost, long f_cost, Pos[] path) {
             this.pos_x = pos_x;
             this.pos_y = pos_y;
             this.goal_x = goal_x;
@@ -36,146 +36,146 @@ public class Main {
     }
 
     static Pos[] delta;
-    static int[][][] TEST_GRIDS;
+    static long[][][] TEST_GRIDS;
 
-    static int abs(int x) {
-        if (x < 0) {
-            return 0 - x;
+    static long abs(long x) {
+        if ((long)(x) < 0L) {
+            return 0L - (long)(x);
         }
         return x;
     }
 
-    static int manhattan(int x1, int y1, int x2, int y2) {
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+    static long manhattan(long x1, long y1, long x2, long y2) {
+        return Math.abs((long)(x1) - (long)(x2)) + Math.abs((long)(y1) - (long)(y2));
     }
 
     static Pos[] clone_path(Pos[] p) {
         Pos[] res = ((Pos[])(new Pos[]{}));
-        int i = 0;
-        while (i < p.length) {
-            res = ((Pos[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(p[i])).toArray(Pos[]::new)));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(p.length)) {
+            res = ((Pos[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(p[(int)((long)(i_1))])).toArray(Pos[]::new)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return res;
     }
 
-    static Node make_node(int pos_x, int pos_y, int goal_x, int goal_y, int g_cost, Pos[] path) {
-        int f = manhattan(pos_x, pos_y, goal_x, goal_y);
+    static Node make_node(long pos_x, long pos_y, long goal_x, long goal_y, long g_cost, Pos[] path) {
+        long f = (long)(manhattan((long)(pos_x), (long)(pos_y), (long)(goal_x), (long)(goal_y)));
         return new Node(pos_x, pos_y, goal_x, goal_y, g_cost, f, path);
     }
 
     static boolean node_equal(Node a, Node b) {
-        return a.pos_x == b.pos_x && a.pos_y == b.pos_y;
+        return (long)(a.pos_x) == (long)(b.pos_x) && (long)(a.pos_y) == (long)(b.pos_y);
     }
 
     static boolean contains(Node[] nodes, Node node) {
-        int i_1 = 0;
-        while (i_1 < nodes.length) {
-            if (((Boolean)(node_equal(nodes[i_1], node)))) {
+        long i_2 = 0L;
+        while ((long)(i_2) < (long)(nodes.length)) {
+            if (node_equal(nodes[(int)((long)(i_2))], node)) {
                 return true;
             }
-            i_1 = i_1 + 1;
+            i_2 = (long)((long)(i_2) + 1L);
         }
         return false;
     }
 
     static Node[] sort_nodes(Node[] nodes) {
         Node[] arr = ((Node[])(nodes));
-        int i_2 = 1;
-        while (i_2 < arr.length) {
-            Node key_node = arr[i_2];
-            int j = i_2 - 1;
-            while (j >= 0) {
-                Node temp = arr[j];
-                if (temp.f_cost > key_node.f_cost) {
-arr[j + 1] = temp;
-                    j = j - 1;
+        long i_4 = 1L;
+        while ((long)(i_4) < (long)(arr.length)) {
+            Node key_node_1 = arr[(int)((long)(i_4))];
+            long j_1 = (long)((long)(i_4) - 1L);
+            while ((long)(j_1) >= 0L) {
+                Node temp_1 = arr[(int)((long)(j_1))];
+                if ((long)(temp_1.f_cost) > (long)(key_node_1.f_cost)) {
+arr[(int)((long)((long)(j_1) + 1L))] = temp_1;
+                    j_1 = (long)((long)(j_1) - 1L);
                 } else {
                     break;
                 }
             }
-arr[j + 1] = key_node;
-            i_2 = i_2 + 1;
+arr[(int)((long)((long)(j_1) + 1L))] = key_node_1;
+            i_4 = (long)((long)(i_4) + 1L);
         }
         return arr;
     }
 
-    static Node[] get_successors(int[][] grid, Node parent, Pos target) {
+    static Node[] get_successors(long[][] grid, Node parent, Pos target) {
         Node[] res_1 = ((Node[])(new Node[]{}));
-        int i_3 = 0;
-        while (i_3 < delta.length) {
-            Pos d = delta[i_3];
-            int pos_x = parent.pos_x + d.x;
-            int pos_y = parent.pos_y + d.y;
-            if (pos_x >= 0 && pos_x < grid[0].length && pos_y >= 0 && pos_y < grid.length && grid[pos_y][pos_x] == 0) {
-                Pos[] new_path = ((Pos[])(clone_path(((Pos[])(parent.path)))));
-                new_path = ((Pos[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_path), java.util.stream.Stream.of(new Pos(pos_y, pos_x))).toArray(Pos[]::new)));
-                res_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(make_node(pos_x, pos_y, target.x, target.y, parent.g_cost + 1, ((Pos[])(new_path))))).toArray(Node[]::new)));
+        long i_6 = 0L;
+        while ((long)(i_6) < (long)(delta.length)) {
+            Pos d_1 = delta[(int)((long)(i_6))];
+            long pos_x_1 = (long)((long)(parent.pos_x) + (long)(d_1.x));
+            long pos_y_1 = (long)((long)(parent.pos_y) + (long)(d_1.y));
+            if ((long)(pos_x_1) >= 0L && (long)(pos_x_1) < (long)(grid[(int)((long)(0))].length) && (long)(pos_y_1) >= 0L && (long)(pos_y_1) < (long)(grid.length) && (long)(grid[(int)((long)(pos_y_1))][(int)((long)(pos_x_1))]) == 0L) {
+                Pos[] new_path_1 = ((Pos[])(clone_path(((Pos[])(parent.path)))));
+                new_path_1 = ((Pos[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_path_1), java.util.stream.Stream.of(new Pos(pos_y_1, pos_x_1))).toArray(Pos[]::new)));
+                res_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(make_node((long)(pos_x_1), (long)(pos_y_1), (long)(target.x), (long)(target.y), (long)((long)(parent.g_cost) + 1L), ((Pos[])(new_path_1))))).toArray(Node[]::new)));
             }
-            i_3 = i_3 + 1;
+            i_6 = (long)((long)(i_6) + 1L);
         }
         return res_1;
     }
 
-    static Pos[] greedy_best_first(int[][] grid, Pos init, Pos goal) {
+    static Pos[] greedy_best_first(long[][] grid, Pos init, Pos goal) {
         Pos[] start_path = ((Pos[])(new Pos[]{init}));
-        Node start = make_node(init.x, init.y, goal.x, goal.y, 0, ((Pos[])(start_path)));
-        Node[] open_nodes = ((Node[])(new Node[]{start}));
-        Node[] closed_nodes = ((Node[])(new Node[]{}));
-        while (open_nodes.length > 0) {
-            open_nodes = ((Node[])(sort_nodes(((Node[])(open_nodes)))));
-            Node current = open_nodes[0];
-            Node[] new_open = ((Node[])(new Node[]{}));
-            int idx = 1;
-            while (idx < open_nodes.length) {
-                new_open = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_open), java.util.stream.Stream.of(open_nodes[idx])).toArray(Node[]::new)));
-                idx = idx + 1;
+        Node start_1 = make_node((long)(init.x), (long)(init.y), (long)(goal.x), (long)(goal.y), 0L, ((Pos[])(start_path)));
+        Node[] open_nodes_1 = ((Node[])(new Node[]{start_1}));
+        Node[] closed_nodes_1 = ((Node[])(new Node[]{}));
+        while ((long)(open_nodes_1.length) > 0L) {
+            open_nodes_1 = ((Node[])(sort_nodes(((Node[])(open_nodes_1)))));
+            Node current_1 = open_nodes_1[(int)((long)(0))];
+            Node[] new_open_1 = ((Node[])(new Node[]{}));
+            long idx_1 = 1L;
+            while ((long)(idx_1) < (long)(open_nodes_1.length)) {
+                new_open_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_open_1), java.util.stream.Stream.of(open_nodes_1[(int)((long)(idx_1))])).toArray(Node[]::new)));
+                idx_1 = (long)((long)(idx_1) + 1L);
             }
-            open_nodes = ((Node[])(new_open));
-            if (current.pos_x == goal.x && current.pos_y == goal.y) {
-                return current.path;
+            open_nodes_1 = ((Node[])(new_open_1));
+            if ((long)(current_1.pos_x) == (long)(goal.x) && (long)(current_1.pos_y) == (long)(goal.y)) {
+                return current_1.path;
             }
-            closed_nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(closed_nodes), java.util.stream.Stream.of(current)).toArray(Node[]::new)));
-            Node[] successors = ((Node[])(get_successors(((int[][])(grid)), current, goal)));
-            int i_4 = 0;
-            while (i_4 < successors.length) {
-                Node child = successors[i_4];
-                if ((!(Boolean)contains(((Node[])(closed_nodes)), child)) && (!(Boolean)contains(((Node[])(open_nodes)), child))) {
-                    open_nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(open_nodes), java.util.stream.Stream.of(child)).toArray(Node[]::new)));
+            closed_nodes_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(closed_nodes_1), java.util.stream.Stream.of(current_1)).toArray(Node[]::new)));
+            Node[] successors_1 = ((Node[])(get_successors(((long[][])(grid)), current_1, goal)));
+            long i_8 = 0L;
+            while ((long)(i_8) < (long)(successors_1.length)) {
+                Node child_1 = successors_1[(int)((long)(i_8))];
+                if ((!(Boolean)contains(((Node[])(closed_nodes_1)), child_1)) && (!(Boolean)contains(((Node[])(open_nodes_1)), child_1))) {
+                    open_nodes_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(open_nodes_1), java.util.stream.Stream.of(child_1)).toArray(Node[]::new)));
                 }
-                i_4 = i_4 + 1;
+                i_8 = (long)((long)(i_8) + 1L);
             }
         }
-        Pos[] r = ((Pos[])(new Pos[]{init}));
-        return r;
+        Pos[] r_1 = ((Pos[])(new Pos[]{init}));
+        return r_1;
     }
 
-    static void print_grid(int[][] grid) {
-        int i_5 = 0;
-        while (i_5 < grid.length) {
-            System.out.println(_p(_geto(grid, i_5)));
-            i_5 = i_5 + 1;
+    static void print_grid(long[][] grid) {
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(grid.length)) {
+            System.out.println(_p(_getd(grid, ((Number)(i_9)).intValue())));
+            i_9 = (long)((long)(i_9) + 1L);
         }
     }
 
     static void main() {
-        int idx_1 = 0;
-        while (idx_1 < TEST_GRIDS.length) {
-            System.out.println("==grid-" + _p(idx_1 + 1) + "==");
-            int[][] grid = ((int[][])(TEST_GRIDS[idx_1]));
-            Pos init = new Pos(0, 0);
-            Pos goal = new Pos(grid.length - 1, grid[0].length - 1);
-            print_grid(((int[][])(grid)));
+        long idx_2 = 0L;
+        while ((long)(idx_2) < (long)(TEST_GRIDS.length)) {
+            System.out.println("==grid-" + _p((long)(idx_2) + 1L) + "==");
+            long[][] grid_1 = ((long[][])(TEST_GRIDS[(int)((long)(idx_2))]));
+            Pos init_1 = new Pos(0, 0);
+            Pos goal_1 = new Pos((long)(grid_1.length) - 1L, (long)(grid_1[(int)((long)(0))].length) - 1L);
+            print_grid(((long[][])(grid_1)));
             System.out.println("------");
-            Pos[] path = ((Pos[])(greedy_best_first(((int[][])(grid)), init, goal)));
-            int j_1 = 0;
-            while (j_1 < path.length) {
-                Pos p = path[j_1];
-grid[p.y][p.x] = 2;
-                j_1 = j_1 + 1;
+            Pos[] path_1 = ((Pos[])(greedy_best_first(((long[][])(grid_1)), init_1, goal_1)));
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(path_1.length)) {
+                Pos p_1 = path_1[(int)((long)(j_3))];
+grid_1[(int)((long)(p_1.y))][(int)((long)(p_1.x))] = 2L;
+                j_3 = (long)((long)(j_3) + 1L);
             }
-            print_grid(((int[][])(grid)));
-            idx_1 = idx_1 + 1;
+            print_grid(((long[][])(grid_1)));
+            idx_2 = (long)((long)(idx_2) + 1L);
         }
     }
     public static void main(String[] args) {
@@ -183,7 +183,7 @@ grid[p.y][p.x] = 2;
             long _benchStart = _now();
             long _benchMem = _mem();
             delta = ((Pos[])(new Pos[]{new Pos(-1, 0), new Pos(0, -1), new Pos(1, 0), new Pos(0, 1)}));
-            TEST_GRIDS = ((int[][][])(new int[][][]{new int[][]{new int[]{0, 0, 0, 0, 0, 0, 0}, new int[]{0, 1, 0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0}, new int[]{0, 0, 1, 0, 0, 0, 0}, new int[]{1, 0, 1, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 1, 0, 0}}, new int[][]{new int[]{0, 0, 0, 1, 1, 0, 0}, new int[]{0, 0, 0, 0, 1, 0, 1}, new int[]{0, 0, 0, 1, 1, 0, 0}, new int[]{0, 1, 0, 0, 1, 0, 0}, new int[]{1, 0, 0, 1, 1, 0, 1}, new int[]{0, 0, 0, 0, 0, 0, 0}}, new int[][]{new int[]{0, 0, 1, 0, 0}, new int[]{0, 1, 0, 0, 0}, new int[]{0, 0, 1, 0, 1}, new int[]{1, 0, 0, 1, 1}, new int[]{0, 0, 0, 0, 0}}}));
+            TEST_GRIDS = ((long[][][])(new long[][][]{new long[][]{new long[]{0, 0, 0, 0, 0, 0, 0}, new long[]{0, 1, 0, 0, 0, 0, 0}, new long[]{0, 0, 0, 0, 0, 0, 0}, new long[]{0, 0, 1, 0, 0, 0, 0}, new long[]{1, 0, 1, 0, 0, 0, 0}, new long[]{0, 0, 0, 0, 0, 0, 0}, new long[]{0, 0, 0, 0, 1, 0, 0}}, new long[][]{new long[]{0, 0, 0, 1, 1, 0, 0}, new long[]{0, 0, 0, 0, 1, 0, 1}, new long[]{0, 0, 0, 1, 1, 0, 0}, new long[]{0, 1, 0, 0, 1, 0, 0}, new long[]{1, 0, 0, 1, 1, 0, 1}, new long[]{0, 0, 0, 0, 0, 0, 0}}, new long[][]{new long[]{0, 0, 1, 0, 0}, new long[]{0, 1, 0, 0, 0}, new long[]{0, 0, 1, 0, 1}, new long[]{1, 0, 0, 1, 1}, new long[]{0, 0, 0, 0, 0}}}));
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -231,10 +231,14 @@ grid[p.y][p.x] = 2;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

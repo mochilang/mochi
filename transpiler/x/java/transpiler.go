@@ -2108,9 +2108,22 @@ func (fe *ForEachStmt) emit(w io.Writer, indent string) {
 	} else {
 		fmt.Fprintf(w, indent+"for (%s %s : ", typ, name)
 	}
-	fe.Iterable.emit(w)
 	if fe.IsMap {
-		fmt.Fprint(w, ".keySet()")
+		it := inferType(fe.Iterable)
+		if !strings.Contains(it, "Map") {
+			t := typ
+			if t == "" {
+				t = "Object"
+			}
+			fmt.Fprintf(w, "((java.util.Map<%s, ?>)", t)
+			fe.Iterable.emit(w)
+			fmt.Fprint(w, ").keySet()")
+		} else {
+			fe.Iterable.emit(w)
+			fmt.Fprint(w, ".keySet()")
+		}
+	} else {
+		fe.Iterable.emit(w)
 	}
 	fmt.Fprint(w, ") {\n")
 	emitBlock(w, indent+"    ", fe.Body)
@@ -3613,7 +3626,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			}
 		}
 		fmt.Fprintf(w, "((%s)(", castType)
-		if isMapExpr(ix.Target) {
+		if isMapExpr(ix.Target) && strings.Contains(inferType(ix.Target), "Map") {
 			ix.Target.emit(w)
 		} else {
 			fmt.Fprint(w, "((java.util.Map)")
@@ -5147,10 +5160,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		default:
 			if isMapExpr(iter) {
-				if strings.Contains(inferType(iter), "Map") {
-					isMap = true
+				isMap = true
+				if ix, ok := iter.(*IndexExpr); ok {
+					keyType = mapKeyType(inferType(ix.Target))
+				} else {
+					keyType = mapKeyType(inferType(iter))
 				}
-				keyType = mapKeyType(inferType(iter))
 			}
 		}
 		elemType := ""

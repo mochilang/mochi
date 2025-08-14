@@ -1,9 +1,9 @@
 public class Main {
     static class Graph {
         boolean directed;
-        java.util.Map<Integer,Integer> vertex_to_index;
-        int[][] adj_matrix;
-        Graph(boolean directed, java.util.Map<Integer,Integer> vertex_to_index, int[][] adj_matrix) {
+        java.util.Map<Long,Long> vertex_to_index;
+        long[][] adj_matrix;
+        Graph(boolean directed, java.util.Map<Long,Long> vertex_to_index, long[][] adj_matrix) {
             this.directed = directed;
             this.vertex_to_index = vertex_to_index;
             this.adj_matrix = adj_matrix;
@@ -16,152 +16,152 @@ public class Main {
 
     static Graph g_1 = null;
 
-    static Graph make_graph(int[] vertices, int[][] edges, boolean directed) {
-        Graph g = new Graph(directed, new java.util.LinkedHashMap<Integer, Integer>(), new int[][]{});
-        int i = 0;
-        while (i < vertices.length) {
-            add_vertex(g, vertices[i]);
-            i = i + 1;
+    static Graph make_graph(long[] vertices, long[][] edges, boolean directed) {
+        Graph g = new Graph(directed, new java.util.LinkedHashMap<Long, Long>(), new long[][]{});
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vertices.length)) {
+            add_vertex(g, (long)(vertices[(int)((long)(i_1))]));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int j = 0;
-        while (j < edges.length) {
-            int[] e = ((int[])(edges[j]));
-            add_edge(g, e[0], e[1]);
-            j = j + 1;
+        long j_1 = 0L;
+        while ((long)(j_1) < (long)(edges.length)) {
+            long[] e_1 = ((long[])(edges[(int)((long)(j_1))]));
+            add_edge(g, (long)(e_1[(int)((long)(0))]), (long)(e_1[(int)((long)(1))]));
+            j_1 = (long)((long)(j_1) + 1L);
         }
         return g;
     }
 
-    static boolean contains_vertex(Graph g, int v) {
+    static boolean contains_vertex(Graph g, long v) {
         return g.vertex_to_index.containsKey(v);
     }
 
-    static void add_vertex(Graph g, int v) {
-        if (((Boolean)(contains_vertex(g, v)))) {
+    static void add_vertex(Graph g, long v) {
+        if (contains_vertex(g, (long)(v))) {
             throw new RuntimeException(String.valueOf("vertex already exists"));
         }
-        int[][] matrix = ((int[][])(g.adj_matrix));
-        int i_1 = 0;
-        while (i_1 < matrix.length) {
-matrix[i_1] = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(matrix[i_1]), java.util.stream.IntStream.of(0)).toArray()));
-            i_1 = i_1 + 1;
+        long[][] matrix_1 = ((long[][])(g.adj_matrix));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(matrix_1.length)) {
+matrix_1[(int)((long)(i_3))] = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(matrix_1[(int)((long)(i_3))]), java.util.stream.LongStream.of(0L)).toArray()));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        int[] row = ((int[])(new int[]{}));
-        int j_1 = 0;
-        while (j_1 < matrix.length + 1) {
-            row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray()));
-            j_1 = j_1 + 1;
+        long[] row_1 = ((long[])(new long[]{}));
+        long j_3 = 0L;
+        while ((long)(j_3) < (long)((long)(matrix_1.length) + 1L)) {
+            row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(0L)).toArray()));
+            j_3 = (long)((long)(j_3) + 1L);
         }
-        matrix = ((int[][])(appendObj(matrix, row)));
-g.adj_matrix = matrix;
-        java.util.Map<Integer,Integer> idx_map = g.vertex_to_index;
-idx_map.put(v, matrix.length - 1);
-g.vertex_to_index = idx_map;
+        matrix_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(matrix_1), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
+g.adj_matrix = matrix_1;
+        java.util.Map<Long,Long> idx_map_1 = g.vertex_to_index;
+idx_map_1.put(v, (long)((long)(matrix_1.length) - 1L));
+g.vertex_to_index = idx_map_1;
     }
 
-    static java.util.Map<Integer,Integer> remove_key(java.util.Map<Integer,Integer> m, int k) {
-        java.util.Map<Integer,Integer> out = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-        for (int key : m.keySet()) {
-            if (((Number)(key)).intValue() != k) {
-out.put(key, (int)(((int)(m).getOrDefault(key, 0))));
+    static java.util.Map<Long,Long> remove_key(java.util.Map<Long,Long> m, long k) {
+        java.util.Map<Long,Long> out = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+        for (long key : m.keySet()) {
+            if ((long)(key) != (long)(k)) {
+out.put(key, (long)(((long)(m).getOrDefault(key, 0L))));
             }
         }
         return out;
     }
 
-    static java.util.Map<Integer,Integer> decrement_indices(java.util.Map<Integer,Integer> m, int start) {
-        java.util.Map<Integer,Integer> out_1 = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-        for (int key : m.keySet()) {
-            int idx = (int)(((int)(m).getOrDefault(key, 0)));
-            if (idx > start) {
-out_1.put(key, idx - 1);
+    static java.util.Map<Long,Long> decrement_indices(java.util.Map<Long,Long> m, long start) {
+        java.util.Map<Long,Long> out_1 = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+        for (long key : m.keySet()) {
+            long idx_1 = (long)(((long)(m).getOrDefault(key, 0L)));
+            if ((long)(idx_1) > (long)(start)) {
+out_1.put(key, (long)((long)(idx_1) - 1L));
             } else {
-out_1.put(key, idx);
+out_1.put(key, (long)(idx_1));
             }
         }
         return out_1;
     }
 
-    static void remove_vertex(Graph g, int v) {
-        if (!(Boolean)contains_vertex(g, v)) {
+    static void remove_vertex(Graph g, long v) {
+        if (!(Boolean)contains_vertex(g, (long)(v))) {
             throw new RuntimeException(String.valueOf("vertex does not exist"));
         }
-        int idx_1 = (int)(((int)((g.vertex_to_index)).getOrDefault(v, 0)));
-        int[][] new_matrix = ((int[][])(new int[][]{}));
-        int i_2 = 0;
-        while (i_2 < g.adj_matrix.length) {
-            if (i_2 != idx_1) {
-                int[] row_1 = ((int[])(g.adj_matrix[i_2]));
-                int[] new_row = ((int[])(new int[]{}));
-                int j_2 = 0;
-                while (j_2 < row_1.length) {
-                    if (j_2 != idx_1) {
-                        new_row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(new_row), java.util.stream.IntStream.of(row_1[j_2])).toArray()));
+        long idx_3 = (long)(((long)((g.vertex_to_index)).getOrDefault(v, 0L)));
+        long[][] new_matrix_1 = ((long[][])(new long[][]{}));
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(g.adj_matrix.length)) {
+            if ((long)(i_5) != (long)(idx_3)) {
+                long[] row_3 = ((long[])(g.adj_matrix[(int)((long)(i_5))]));
+                long[] new_row_1 = ((long[])(new long[]{}));
+                long j_5 = 0L;
+                while ((long)(j_5) < (long)(row_3.length)) {
+                    if ((long)(j_5) != (long)(idx_3)) {
+                        new_row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(new_row_1), java.util.stream.LongStream.of((long)(row_3[(int)((long)(j_5))]))).toArray()));
                     }
-                    j_2 = j_2 + 1;
+                    j_5 = (long)((long)(j_5) + 1L);
                 }
-                new_matrix = ((int[][])(appendObj(new_matrix, new_row)));
+                new_matrix_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_matrix_1), java.util.stream.Stream.of(new long[][]{new_row_1})).toArray(long[][]::new)));
             }
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
-g.adj_matrix = new_matrix;
-        java.util.Map<Integer,Integer> m = remove_key(g.vertex_to_index, v);
-g.vertex_to_index = decrement_indices(m, idx_1);
+g.adj_matrix = new_matrix_1;
+        java.util.Map<Long,Long> m_1 = remove_key(g.vertex_to_index, (long)(v));
+g.vertex_to_index = decrement_indices(m_1, (long)(idx_3));
     }
 
-    static void add_edge(Graph g, int u, int v) {
-        if (!(((Boolean)(contains_vertex(g, u))) && ((Boolean)(contains_vertex(g, v))))) {
+    static void add_edge(Graph g, long u, long v) {
+        if (!(contains_vertex(g, (long)(u)) && contains_vertex(g, (long)(v)))) {
             throw new RuntimeException(String.valueOf("missing vertex"));
         }
-        int i_3 = (int)(((int)((g.vertex_to_index)).getOrDefault(u, 0)));
-        int j_3 = (int)(((int)((g.vertex_to_index)).getOrDefault(v, 0)));
-        int[][] matrix_1 = ((int[][])(g.adj_matrix));
-matrix_1[i_3][j_3] = 1;
+        long i_7 = (long)(((long)((g.vertex_to_index)).getOrDefault(u, 0L)));
+        long j_7 = (long)(((long)((g.vertex_to_index)).getOrDefault(v, 0L)));
+        long[][] matrix_3 = ((long[][])(g.adj_matrix));
+matrix_3[(int)((long)(i_7))][(int)((long)(j_7))] = 1L;
         if (!g.directed) {
-matrix_1[j_3][i_3] = 1;
+matrix_3[(int)((long)(j_7))][(int)((long)(i_7))] = 1L;
         }
-g.adj_matrix = matrix_1;
+g.adj_matrix = matrix_3;
     }
 
-    static void remove_edge(Graph g, int u, int v) {
-        if (!(((Boolean)(contains_vertex(g, u))) && ((Boolean)(contains_vertex(g, v))))) {
+    static void remove_edge(Graph g, long u, long v) {
+        if (!(contains_vertex(g, (long)(u)) && contains_vertex(g, (long)(v)))) {
             throw new RuntimeException(String.valueOf("missing vertex"));
         }
-        int i_4 = (int)(((int)((g.vertex_to_index)).getOrDefault(u, 0)));
-        int j_4 = (int)(((int)((g.vertex_to_index)).getOrDefault(v, 0)));
-        int[][] matrix_2 = ((int[][])(g.adj_matrix));
-matrix_2[i_4][j_4] = 0;
+        long i_9 = (long)(((long)((g.vertex_to_index)).getOrDefault(u, 0L)));
+        long j_9 = (long)(((long)((g.vertex_to_index)).getOrDefault(v, 0L)));
+        long[][] matrix_5 = ((long[][])(g.adj_matrix));
+matrix_5[(int)((long)(i_9))][(int)((long)(j_9))] = 0L;
         if (!g.directed) {
-matrix_2[j_4][i_4] = 0;
+matrix_5[(int)((long)(j_9))][(int)((long)(i_9))] = 0L;
         }
-g.adj_matrix = matrix_2;
+g.adj_matrix = matrix_5;
     }
 
-    static boolean contains_edge(Graph g, int u, int v) {
-        if (!(((Boolean)(contains_vertex(g, u))) && ((Boolean)(contains_vertex(g, v))))) {
+    static boolean contains_edge(Graph g, long u, long v) {
+        if (!(contains_vertex(g, (long)(u)) && contains_vertex(g, (long)(v)))) {
             throw new RuntimeException(String.valueOf("missing vertex"));
         }
-        int i_5 = (int)(((int)((g.vertex_to_index)).getOrDefault(u, 0)));
-        int j_5 = (int)(((int)((g.vertex_to_index)).getOrDefault(v, 0)));
-        int[][] matrix_3 = ((int[][])(g.adj_matrix));
-        return matrix_3[i_5][j_5] == 1;
+        long i_11 = (long)(((long)((g.vertex_to_index)).getOrDefault(u, 0L)));
+        long j_11 = (long)(((long)((g.vertex_to_index)).getOrDefault(v, 0L)));
+        long[][] matrix_7 = ((long[][])(g.adj_matrix));
+        return (long)(matrix_7[(int)((long)(i_11))][(int)((long)(j_11))]) == 1L;
     }
 
     static void clear_graph(Graph g) {
 g.vertex_to_index = new java.util.LinkedHashMap<String, Object>();
-g.adj_matrix = new Object[]{};
+g.adj_matrix = new long[][]{};
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            g_1 = make_graph(((int[])(new int[]{1, 2, 3})), ((int[][])(new int[][]{new int[]{1, 2}, new int[]{2, 3}})), false);
+            g_1 = make_graph(((long[])(new long[]{1, 2, 3})), ((long[][])(new long[][]{new long[]{1, 2}, new long[]{2, 3}})), false);
             System.out.println(_p(g_1.adj_matrix));
-            System.out.println(_p(contains_edge(g_1, 1, 2)));
-            System.out.println(_p(contains_edge(g_1, 2, 1)));
-            remove_edge(g_1, 1, 2);
-            System.out.println(_p(contains_edge(g_1, 1, 2)));
-            remove_vertex(g_1, 2);
+            System.out.println(_p(contains_edge(g_1, 1L, 2L)));
+            System.out.println(_p(contains_edge(g_1, 2L, 1L)));
+            remove_edge(g_1, 1L, 2L);
+            System.out.println(_p(contains_edge(g_1, 1L, 2L)));
+            remove_vertex(g_1, 2L);
             System.out.println(_p(g_1.adj_matrix));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -196,12 +196,6 @@ g.adj_matrix = new Object[]{};
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -214,6 +208,10 @@ g.adj_matrix = new Object[]{};
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

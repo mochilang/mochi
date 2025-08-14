@@ -1,164 +1,163 @@
 public class Main {
-    static int INF;
+    static long INF = 1000000000L;
 
-    static java.util.Map<Integer,int[][]> connect(java.util.Map<Integer,int[][]> graph, int a, int b, int w) {
-        int u = a - 1;
-        int v = b - 1;
-        java.util.Map<Integer,int[][]> g = graph;
-g.put(u, ((int[][])(appendObj(((int[][])(g).get(u)), new int[]{v, w}))));
-g.put(v, ((int[][])(appendObj(((int[][])(g).get(v)), new int[]{u, w}))));
-        return g;
+    static java.util.Map<Long,long[][]> connect(java.util.Map<Long,long[][]> graph, long a, long b, long w) {
+        long u = (long)((long)(a) - 1L);
+        long v_1 = (long)((long)(b) - 1L);
+        java.util.Map<Long,long[][]> g_1 = graph;
+g_1.put(u, ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(((long[][])(g_1).get(u))), java.util.stream.Stream.of(new long[][]{new long[]{v_1, w}})).toArray(long[][]::new))));
+g_1.put(v_1, ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(((long[][])(g_1).get(v_1))), java.util.stream.Stream.of(new long[][]{new long[]{u, w}})).toArray(long[][]::new))));
+        return g_1;
     }
 
-    static boolean in_list(int[] arr, int x) {
-        int i = 0;
-        while (i < arr.length) {
-            if (arr[i] == x) {
+    static boolean in_list(long[] arr, long x) {
+        long i = 0L;
+        while ((long)(i) < (long)(arr.length)) {
+            if ((long)(arr[(int)((long)(i))]) == (long)(x)) {
                 return true;
             }
-            i = i + 1;
+            i = (long)((long)(i) + 1L);
         }
         return false;
     }
 
-    static int[][] prim(java.util.Map<Integer,int[][]> graph, int s, int n) {
-        java.util.Map<Integer,Integer> dist = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-        java.util.Map<Integer,Integer> parent = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-dist.put(s, 0);
-parent.put(s, -1);
-        int[] known = ((int[])(new int[]{}));
-        int[] keys = ((int[])(new int[]{s}));
-        while (known.length < n) {
-            int mini = INF;
-            int u_1 = -1;
-            int i_1 = 0;
-            while (i_1 < keys.length) {
-                int k = keys[i_1];
-                int d = (int)(((int)(dist).getOrDefault(k, 0)));
-                if (!(Boolean)(in_list(((int[])(known)), k)) && d < mini) {
-                    mini = d;
-                    u_1 = k;
+    static long[][] prim(java.util.Map<Long,long[][]> graph, long s, long n) {
+        java.util.Map<Long,Long> dist = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+        java.util.Map<Long,Long> parent_1 = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+dist.put(s, 0L);
+parent_1.put(s, (long)(-1));
+        long[] known_1 = ((long[])(new long[]{}));
+        long[] keys_1 = ((long[])(new long[]{s}));
+        while ((long)(known_1.length) < (long)(n)) {
+            long mini_1 = (long)(INF);
+            long u_2 = (long)(-1);
+            long i_2 = 0L;
+            while ((long)(i_2) < (long)(keys_1.length)) {
+                long k_1 = (long)(keys_1[(int)((long)(i_2))]);
+                long d_1 = (long)(((long)(dist).getOrDefault(k_1, 0L)));
+                if (!(Boolean)(in_list(((long[])(known_1)), (long)(k_1))) && (long)(d_1) < (long)(mini_1)) {
+                    mini_1 = (long)(d_1);
+                    u_2 = (long)(k_1);
                 }
-                i_1 = i_1 + 1;
+                i_2 = (long)((long)(i_2) + 1L);
             }
-            known = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(known), java.util.stream.IntStream.of(u_1)).toArray()));
-            for (int[] e : ((int[][])(graph).get(u_1))) {
-                int v_1 = e[0];
-                int w = e[1];
-                if (!(Boolean)(in_list(((int[])(keys)), v_1))) {
-                    keys = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(keys), java.util.stream.IntStream.of(v_1)).toArray()));
+            known_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(known_1), java.util.stream.LongStream.of((long)(u_2))).toArray()));
+            for (long[] e : ((long[][])(graph).get(u_2))) {
+                long v_3 = (long)(e[(int)((long)(0))]);
+                long w_1 = (long)(e[(int)((long)(1))]);
+                if (!(Boolean)(in_list(((long[])(keys_1)), (long)(v_3)))) {
+                    keys_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(keys_1), java.util.stream.LongStream.of((long)(v_3))).toArray()));
                 }
-                int cur = dist.containsKey(v_1) ? ((int)(dist).getOrDefault(v_1, 0)) : INF;
-                if (!(Boolean)(in_list(((int[])(known)), v_1)) && w < cur) {
-dist.put(v_1, w);
-parent.put(v_1, u_1);
+                long cur_1 = (long)(dist.containsKey(v_3) ? ((long)(dist).getOrDefault(v_3, 0L)) : INF);
+                if (!(Boolean)(in_list(((long[])(known_1)), (long)(v_3))) && (long)(w_1) < (long)(cur_1)) {
+dist.put(v_3, (long)(w_1));
+parent_1.put(v_3, (long)(u_2));
                 }
             }
         }
-        int[][] edges = ((int[][])(new int[][]{}));
-        int j = 0;
-        while (j < keys.length) {
-            int v_2 = keys[j];
-            if (v_2 != s) {
-                edges = ((int[][])(appendObj(edges, new int[]{v_2 + 1, (int)(((int)(parent).getOrDefault(v_2, 0))) + 1})));
+        long[][] edges_1 = ((long[][])(new long[][]{}));
+        long j_1 = 0L;
+        while ((long)(j_1) < (long)(keys_1.length)) {
+            long v_5 = (long)(keys_1[(int)((long)(j_1))]);
+            if ((long)(v_5) != (long)(s)) {
+                edges_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(edges_1), java.util.stream.Stream.of(new long[][]{new long[]{(long)(v_5) + 1L, (long)(((long)(parent_1).getOrDefault(v_5, 0L))) + 1L}})).toArray(long[][]::new)));
             }
-            j = j + 1;
-        }
-        return edges;
-    }
-
-    static int[] sort_heap(int[] h, java.util.Map<Integer,Integer> dist) {
-        int[] a = ((int[])(h));
-        int i_2 = 0;
-        while (i_2 < a.length) {
-            int j_1 = 0;
-            while (j_1 < a.length - i_2 - 1) {
-                int dj = dist.containsKey(a[j_1]) ? ((int)(dist).getOrDefault(a[j_1], 0)) : INF;
-                int dj1 = dist.containsKey(a[j_1 + 1]) ? ((int)(dist).getOrDefault(a[j_1 + 1], 0)) : INF;
-                if (dj > dj1) {
-                    int t = a[j_1];
-a[j_1] = a[j_1 + 1];
-a[j_1 + 1] = t;
-                }
-                j_1 = j_1 + 1;
-            }
-            i_2 = i_2 + 1;
-        }
-        return a;
-    }
-
-    static int[][] prim_heap(java.util.Map<Integer,int[][]> graph, int s, int n) {
-        java.util.Map<Integer,Integer> dist_1 = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-        java.util.Map<Integer,Integer> parent_1 = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-dist_1.put(s, 0);
-parent_1.put(s, -1);
-        int[] h = ((int[])(new int[]{}));
-        int i_3 = 0;
-        while (i_3 < n) {
-            h = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(h), java.util.stream.IntStream.of(i_3)).toArray()));
-            i_3 = i_3 + 1;
-        }
-        h = ((int[])(sort_heap(((int[])(h)), dist_1)));
-        int[] known_1 = ((int[])(new int[]{}));
-        while (h.length > 0) {
-            int u_2 = h[0];
-            h = ((int[])(java.util.Arrays.copyOfRange(h, 1, h.length)));
-            known_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(known_1), java.util.stream.IntStream.of(u_2)).toArray()));
-            for (int[] e : ((int[][])(graph).get(u_2))) {
-                int v_3 = e[0];
-                int w_1 = e[1];
-                int cur_1 = dist_1.containsKey(v_3) ? ((int)(dist_1).getOrDefault(v_3, 0)) : INF;
-                if (!(Boolean)(in_list(((int[])(known_1)), v_3)) && w_1 < cur_1) {
-dist_1.put(v_3, w_1);
-parent_1.put(v_3, u_2);
-                }
-            }
-            h = ((int[])(sort_heap(((int[])(h)), dist_1)));
-        }
-        int[][] edges_1 = ((int[][])(new int[][]{}));
-        int j_2 = 0;
-        while (j_2 < n) {
-            if (j_2 != s) {
-                edges_1 = ((int[][])(appendObj(edges_1, new int[]{j_2 + 1, (int)(((int)(parent_1).getOrDefault(j_2, 0))) + 1})));
-            }
-            j_2 = j_2 + 1;
+            j_1 = (long)((long)(j_1) + 1L);
         }
         return edges_1;
     }
 
-    static void print_edges(int[][] edges) {
-        int i_4 = 0;
-        while (i_4 < edges.length) {
-            int[] e = ((int[])(edges[i_4]));
-            System.out.println("(" + _p(_geti(e, 0)) + ", " + _p(_geti(e, 1)) + ")");
-            i_4 = i_4 + 1;
+    static long[] sort_heap(long[] h, java.util.Map<Long,Long> dist) {
+        long[] a = ((long[])(h));
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)(a.length)) {
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)((long)((long)(a.length) - (long)(i_4)) - 1L)) {
+                long dj_1 = (long)(dist.containsKey(a[(int)((long)(j_3))]) ? ((long)(dist).getOrDefault(a[(int)((long)(j_3))], 0L)) : INF);
+                long dj1_1 = (long)(dist.containsKey(a[(int)((long)((long)(j_3) + 1L))]) ? ((long)(dist).getOrDefault(a[(int)((long)((long)(j_3) + 1L))], 0L)) : INF);
+                if ((long)(dj_1) > (long)(dj1_1)) {
+                    long t_1 = (long)(a[(int)((long)(j_3))]);
+a[(int)((long)(j_3))] = (long)(a[(int)((long)((long)(j_3) + 1L))]);
+a[(int)((long)((long)(j_3) + 1L))] = (long)(t_1);
+                }
+                j_3 = (long)((long)(j_3) + 1L);
+            }
+            i_4 = (long)((long)(i_4) + 1L);
+        }
+        return a;
+    }
+
+    static long[][] prim_heap(java.util.Map<Long,long[][]> graph, long s, long n) {
+        java.util.Map<Long,Long> dist_1 = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+        java.util.Map<Long,Long> parent_3 = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+dist_1.put(s, 0L);
+parent_3.put(s, (long)(-1));
+        long[] h_1 = ((long[])(new long[]{}));
+        long i_6 = 0L;
+        while ((long)(i_6) < (long)(n)) {
+            h_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(h_1), java.util.stream.LongStream.of((long)(i_6))).toArray()));
+            i_6 = (long)((long)(i_6) + 1L);
+        }
+        h_1 = ((long[])(sort_heap(((long[])(h_1)), dist_1)));
+        long[] known_3 = ((long[])(new long[]{}));
+        while ((long)(h_1.length) > 0L) {
+            long u_4 = (long)(h_1[(int)((long)(0))]);
+            h_1 = ((long[])(java.util.Arrays.copyOfRange(h_1, (int)((long)(1)), (int)((long)(h_1.length)))));
+            known_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(known_3), java.util.stream.LongStream.of((long)(u_4))).toArray()));
+            for (long[] e : ((long[][])(graph).get(u_4))) {
+                long v_7 = (long)(e[(int)((long)(0))]);
+                long w_3 = (long)(e[(int)((long)(1))]);
+                long cur_3 = (long)(dist_1.containsKey(v_7) ? ((long)(dist_1).getOrDefault(v_7, 0L)) : INF);
+                if (!(Boolean)(in_list(((long[])(known_3)), (long)(v_7))) && (long)(w_3) < (long)(cur_3)) {
+dist_1.put(v_7, (long)(w_3));
+parent_3.put(v_7, (long)(u_4));
+                }
+            }
+            h_1 = ((long[])(sort_heap(((long[])(h_1)), dist_1)));
+        }
+        long[][] edges_3 = ((long[][])(new long[][]{}));
+        long j_5 = 0L;
+        while ((long)(j_5) < (long)(n)) {
+            if ((long)(j_5) != (long)(s)) {
+                edges_3 = java.util.stream.Stream.concat(java.util.Arrays.stream(edges_3), java.util.stream.Stream.of(new Object[][]{new double[]{(long)(j_5) + 1L, (long)(((long)(parent_3).getOrDefault(j_5, 0L))) + 1L}})).toArray(Object[][]::new);
+            }
+            j_5 = (long)((long)(j_5) + 1L);
+        }
+        return ((long[][])(edges_3));
+    }
+
+    static void print_edges(long[][] edges) {
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(edges.length)) {
+            long[] e_1 = ((long[])(edges[(int)((long)(i_7))]));
+            System.out.println("(" + _p(_geti(e_1, ((Number)(0)).intValue())) + ", " + _p(_geti(e_1, ((Number)(1)).intValue())) + ")");
+            i_7 = (long)((long)(i_7) + 1L);
         }
     }
 
     static void test_vector() {
-        int x = 5;
-        java.util.Map<Integer,int[][]> G = ((java.util.Map<Integer,int[][]>)(new java.util.LinkedHashMap<Integer, int[][]>()));
-        int i_5 = 0;
-        while (i_5 < x) {
-G.put(i_5, ((int[][])(new int[][]{})));
-            i_5 = i_5 + 1;
+        long x = 5L;
+        java.util.Map<Long,long[][]> G_1 = ((java.util.Map<Long,long[][]>)(new java.util.LinkedHashMap<Long, long[][]>()));
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(x)) {
+G_1.put(i_9, ((long[][])(new long[][]{})));
+            i_9 = (long)((long)(i_9) + 1L);
         }
-        G = connect(G, 1, 2, 15);
-        G = connect(G, 1, 3, 12);
-        G = connect(G, 2, 4, 13);
-        G = connect(G, 2, 5, 5);
-        G = connect(G, 3, 2, 6);
-        G = connect(G, 3, 4, 6);
-        int[][] mst = ((int[][])(prim(G, 0, x)));
-        print_edges(((int[][])(mst)));
-        int[][] mst_heap = ((int[][])(prim_heap(G, 0, x)));
-        print_edges(((int[][])(mst_heap)));
+        G_1 = connect(G_1, 1L, 2L, 15L);
+        G_1 = connect(G_1, 1L, 3L, 12L);
+        G_1 = connect(G_1, 2L, 4L, 13L);
+        G_1 = connect(G_1, 2L, 5L, 5L);
+        G_1 = connect(G_1, 3L, 2L, 6L);
+        G_1 = connect(G_1, 3L, 4L, 6L);
+        long[][] mst_1 = ((long[][])(prim(G_1, 0L, (long)(x))));
+        print_edges(((long[][])(mst_1)));
+        long[][] mst_heap_1 = ((long[][])(prim_heap(G_1, 0L, (long)(x))));
+        print_edges(((long[][])(mst_heap_1)));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            INF = 1000000000;
             test_vector();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -193,12 +192,6 @@ G.put(i_5, ((int[][])(new int[][]{})));
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -212,10 +205,14 @@ G.put(i_5, ((int[][])(new int[][]{})));
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

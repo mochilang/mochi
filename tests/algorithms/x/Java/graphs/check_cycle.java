@@ -1,47 +1,47 @@
 public class Main {
-    static int[][] g1;
-    static int[][] g2;
+    static long[][] g1;
+    static long[][] g2;
 
-    static boolean depth_first_search(int[][] graph, int vertex, boolean[] visited, boolean[] rec_stk) {
-visited[vertex] = true;
-rec_stk[vertex] = true;
-        for (int node : graph[vertex]) {
-            if (!(Boolean)visited[node]) {
-                if (((Boolean)(depth_first_search(((int[][])(graph)), node, ((boolean[])(visited)), ((boolean[])(rec_stk)))))) {
+    static boolean depth_first_search(long[][] graph, long vertex, boolean[] visited, boolean[] rec_stk) {
+visited[(int)((long)(vertex))] = true;
+rec_stk[(int)((long)(vertex))] = true;
+        for (long node : graph[(int)((long)(vertex))]) {
+            if (!(Boolean)visited[(int)((long)(node))]) {
+                if (depth_first_search(((long[][])(graph)), (long)(node), ((boolean[])(visited)), ((boolean[])(rec_stk)))) {
                     return true;
                 }
-            } else             if (((Boolean)(rec_stk[node]))) {
+            } else             if (rec_stk[(int)((long)(node))]) {
                 return true;
             }
         }
-rec_stk[vertex] = false;
+rec_stk[(int)((long)(vertex))] = false;
         return false;
     }
 
-    static boolean check_cycle(int[][] graph) {
-        int n = graph.length;
-        boolean[] visited = ((boolean[])(new boolean[]{}));
-        boolean[] rec_stk = ((boolean[])(new boolean[]{}));
-        int i = 0;
-        while (i < n) {
-            visited = ((boolean[])(appendBool(visited, false)));
-            rec_stk = ((boolean[])(appendBool(rec_stk, false)));
-            i = i + 1;
+    static boolean check_cycle(long[][] graph) {
+        long n = (long)(graph.length);
+        boolean[] visited_1 = ((boolean[])(new boolean[]{}));
+        boolean[] rec_stk_1 = ((boolean[])(new boolean[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            visited_1 = ((boolean[])(appendBool(visited_1, false)));
+            rec_stk_1 = ((boolean[])(appendBool(rec_stk_1, false)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        i = 0;
-        while (i < n) {
-            if (!(Boolean)visited[i]) {
-                if (((Boolean)(depth_first_search(((int[][])(graph)), i, ((boolean[])(visited)), ((boolean[])(rec_stk)))))) {
+        i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            if (!(Boolean)visited_1[(int)((long)(i_1))]) {
+                if (depth_first_search(((long[][])(graph)), (long)(i_1), ((boolean[])(visited_1)), ((boolean[])(rec_stk_1)))) {
                     return true;
                 }
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return false;
     }
 
     static void print_bool(boolean b) {
-        if (((Boolean)(b))) {
+        if (b) {
             System.out.println(true ? "True" : "False");
         } else {
             System.out.println(false ? "True" : "False");
@@ -51,10 +51,10 @@ rec_stk[vertex] = false;
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            g1 = ((int[][])(new int[][]{new int[]{}, new int[]{0, 3}, new int[]{0, 4}, new int[]{5}, new int[]{5}, new int[]{}}));
-            print_bool(check_cycle(((int[][])(g1))));
-            g2 = ((int[][])(new int[][]{new int[]{1, 2}, new int[]{2}, new int[]{0, 3}, new int[]{3}}));
-            print_bool(check_cycle(((int[][])(g2))));
+            g1 = ((long[][])(new long[][]{new long[]{}, new long[]{0, 3}, new long[]{0, 4}, new long[]{5}, new long[]{5}, new long[]{}}));
+            print_bool(check_cycle(((long[][])(g1))));
+            g2 = ((long[][])(new long[][]{new long[]{1, 2}, new long[]{2}, new long[]{0, 3}, new long[]{3}}));
+            print_bool(check_cycle(((long[][])(g2))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

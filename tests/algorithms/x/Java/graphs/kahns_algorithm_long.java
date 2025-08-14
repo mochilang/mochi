@@ -1,66 +1,66 @@
 public class Main {
-    static int[][] graph;
+    static long[][] graph;
 
-    static int longest_distance(int[][] graph) {
-        int n = graph.length;
-        int[] indegree = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < n) {
-            indegree = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(indegree), java.util.stream.IntStream.of(0)).toArray()));
-            i = i + 1;
+    static long longest_distance(long[][] graph) {
+        long n = (long)(graph.length);
+        long[] indegree_1 = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            indegree_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(indegree_1), java.util.stream.LongStream.of(0L)).toArray()));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int[] long_dist = ((int[])(new int[]{}));
-        int j = 0;
-        while (j < n) {
-            long_dist = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(long_dist), java.util.stream.IntStream.of(1)).toArray()));
-            j = j + 1;
+        long[] long_dist_1 = ((long[])(new long[]{}));
+        long j_1 = 0L;
+        while ((long)(j_1) < (long)(n)) {
+            long_dist_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(long_dist_1), java.util.stream.LongStream.of(1L)).toArray()));
+            j_1 = (long)((long)(j_1) + 1L);
         }
-        int u = 0;
-        while (u < n) {
-            for (int v : graph[u]) {
-indegree[v] = indegree[v] + 1;
+        long u_1 = 0L;
+        while ((long)(u_1) < (long)(n)) {
+            for (long v : graph[(int)((long)(u_1))]) {
+indegree_1[(int)((long)(v))] = (long)((long)(indegree_1[(int)((long)(v))]) + 1L);
             }
-            u = u + 1;
+            u_1 = (long)((long)(u_1) + 1L);
         }
-        int[] queue = ((int[])(new int[]{}));
-        int head = 0;
-        int k = 0;
-        while (k < n) {
-            if (indegree[k] == 0) {
-                queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(k)).toArray()));
+        long[] queue_1 = ((long[])(new long[]{}));
+        long head_1 = 0L;
+        long k_1 = 0L;
+        while ((long)(k_1) < (long)(n)) {
+            if ((long)(indegree_1[(int)((long)(k_1))]) == 0L) {
+                queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(k_1))).toArray()));
             }
-            k = k + 1;
+            k_1 = (long)((long)(k_1) + 1L);
         }
-        while (head < queue.length) {
-            int vertex = queue[head];
-            head = head + 1;
-            for (int x : graph[vertex]) {
-indegree[x] = indegree[x] - 1;
-                int new_dist = long_dist[vertex] + 1;
-                if (new_dist > long_dist[x]) {
-long_dist[x] = new_dist;
+        while ((long)(head_1) < (long)(queue_1.length)) {
+            long vertex_1 = (long)(queue_1[(int)((long)(head_1))]);
+            head_1 = (long)((long)(head_1) + 1L);
+            for (long x : graph[(int)((long)(vertex_1))]) {
+indegree_1[(int)((long)(x))] = (long)((long)(indegree_1[(int)((long)(x))]) - 1L);
+                long new_dist_1 = (long)((long)(long_dist_1[(int)((long)(vertex_1))]) + 1L);
+                if ((long)(new_dist_1) > (long)(long_dist_1[(int)((long)(x))])) {
+long_dist_1[(int)((long)(x))] = (long)(new_dist_1);
                 }
-                if (indegree[x] == 0) {
-                    queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(x)).toArray()));
+                if ((long)(indegree_1[(int)((long)(x))]) == 0L) {
+                    queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(x))).toArray()));
                 }
             }
         }
-        int max_len = long_dist[0];
-        int m = 1;
-        while (m < n) {
-            if (long_dist[m] > max_len) {
-                max_len = long_dist[m];
+        long max_len_1 = (long)(long_dist_1[(int)((long)(0))]);
+        long m_1 = 1L;
+        while ((long)(m_1) < (long)(n)) {
+            if ((long)(long_dist_1[(int)((long)(m_1))]) > (long)(max_len_1)) {
+                max_len_1 = (long)(long_dist_1[(int)((long)(m_1))]);
             }
-            m = m + 1;
+            m_1 = (long)((long)(m_1) + 1L);
         }
-        return max_len;
+        return max_len_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            graph = ((int[][])(new int[][]{new int[]{2, 3, 4}, new int[]{2, 7}, new int[]{5}, new int[]{5, 7}, new int[]{7}, new int[]{6}, new int[]{7}, new int[]{}}));
-            System.out.println(longest_distance(((int[][])(graph))));
+            graph = ((long[][])(new long[][]{new long[]{2, 3, 4}, new long[]{2, 7}, new long[]{5}, new long[]{5, 7}, new long[]{7}, new long[]{6}, new long[]{7}, new long[]{}}));
+            System.out.println(longest_distance(((long[][])(graph))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

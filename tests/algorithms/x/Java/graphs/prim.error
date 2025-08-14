@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden449_prim141057276/001/Main.java:122: error: incompatible types: double[] cannot be converted to Object[]
+                edges_3 = java.util.stream.Stream.concat(java.util.Arrays.stream(edges_3), java.util.stream.Stream.of(new Object[][]{new double[]{(long)(j_5) + 1L, (long)(((long)(parent_3).getOrDefault(j_5, 0L))) + 1L}})).toArray(Object[][]::new);
+                                                                                                                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden449_prim141057276/001/Main.java:122: error: incompatible types: inference variable A has incompatible bounds
+                edges_3 = java.util.stream.Stream.concat(java.util.Arrays.stream(edges_3), java.util.stream.Stream.of(new Object[][]{new double[]{(long)(j_5) + 1L, (long)(((long)(parent_3).getOrDefault(j_5, 0L))) + 1L}})).toArray(Object[][]::new);
+                                                                                                                                                                                                                                     ^
+    upper bounds: long[],Object
+    lower bounds: Object[]
+  where A is a type-variable:
+    A extends Object declared in method <A>toArray(IntFunction<A[]>)
+2 errors

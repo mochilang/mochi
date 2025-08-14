@@ -1,93 +1,93 @@
 public class Main {
-    static int[][] donor_pref;
-    static int[][] recipient_pref;
+    static long[][] donor_pref;
+    static long[][] recipient_pref;
 
-    static int index_of(int[] xs, int x) {
-        int i = 0;
-        while (i < xs.length) {
-            if (xs[i] == x) {
+    static long index_of(long[] xs, long x) {
+        long i = 0L;
+        while ((long)(i) < (long)(xs.length)) {
+            if ((long)(xs[(int)((long)(i))]) == (long)(x)) {
                 return i;
             }
-            i = i + 1;
+            i = (long)((long)(i) + 1L);
         }
         return -1;
     }
 
-    static int[] remove_item(int[] xs, int x) {
-        int[] res = ((int[])(new int[]{}));
-        boolean removed = false;
-        int i_1 = 0;
-        while (i_1 < xs.length) {
-            if (!removed && xs[i_1] == x) {
-                removed = true;
+    static long[] remove_item(long[] xs, long x) {
+        long[] res = ((long[])(new long[]{}));
+        boolean removed_1 = false;
+        long i_2 = 0L;
+        while ((long)(i_2) < (long)(xs.length)) {
+            if (!removed_1 && (long)(xs[(int)((long)(i_2))]) == (long)(x)) {
+                removed_1 = true;
             } else {
-                res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(xs[i_1])).toArray()));
+                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(xs[(int)((long)(i_2))]))).toArray()));
             }
-            i_1 = i_1 + 1;
+            i_2 = (long)((long)(i_2) + 1L);
         }
         return res;
     }
 
-    static int[] stable_matching(int[][] donor_pref, int[][] recipient_pref) {
-        if (donor_pref.length != recipient_pref.length) {
+    static long[] stable_matching(long[][] donor_pref, long[][] recipient_pref) {
+        if ((long)(donor_pref.length) != (long)(recipient_pref.length)) {
             throw new RuntimeException(String.valueOf("unequal groups"));
         }
-        int n = donor_pref.length;
-        int[] unmatched = ((int[])(new int[]{}));
-        int i_2 = 0;
-        while (i_2 < n) {
-            unmatched = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(unmatched), java.util.stream.IntStream.of(i_2)).toArray()));
-            i_2 = i_2 + 1;
+        long n_1 = (long)(donor_pref.length);
+        long[] unmatched_1 = ((long[])(new long[]{}));
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)(n_1)) {
+            unmatched_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(unmatched_1), java.util.stream.LongStream.of((long)(i_4))).toArray()));
+            i_4 = (long)((long)(i_4) + 1L);
         }
-        int[] donor_record = ((int[])(new int[]{}));
-        i_2 = 0;
-        while (i_2 < n) {
-            donor_record = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(donor_record), java.util.stream.IntStream.of(-1)).toArray()));
-            i_2 = i_2 + 1;
+        long[] donor_record_1 = ((long[])(new long[]{}));
+        i_4 = 0L;
+        while ((long)(i_4) < (long)(n_1)) {
+            donor_record_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(donor_record_1), java.util.stream.LongStream.of((long)(-1))).toArray()));
+            i_4 = (long)((long)(i_4) + 1L);
         }
-        int[] rec_record = ((int[])(new int[]{}));
-        i_2 = 0;
-        while (i_2 < n) {
-            rec_record = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(rec_record), java.util.stream.IntStream.of(-1)).toArray()));
-            i_2 = i_2 + 1;
+        long[] rec_record_1 = ((long[])(new long[]{}));
+        i_4 = 0L;
+        while ((long)(i_4) < (long)(n_1)) {
+            rec_record_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(rec_record_1), java.util.stream.LongStream.of((long)(-1))).toArray()));
+            i_4 = (long)((long)(i_4) + 1L);
         }
-        int[] num_donations = ((int[])(new int[]{}));
-        i_2 = 0;
-        while (i_2 < n) {
-            num_donations = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(num_donations), java.util.stream.IntStream.of(0)).toArray()));
-            i_2 = i_2 + 1;
+        long[] num_donations_1 = ((long[])(new long[]{}));
+        i_4 = 0L;
+        while ((long)(i_4) < (long)(n_1)) {
+            num_donations_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(num_donations_1), java.util.stream.LongStream.of(0L)).toArray()));
+            i_4 = (long)((long)(i_4) + 1L);
         }
-        while (unmatched.length > 0) {
-            int donor = unmatched[0];
-            int[] donor_preference = ((int[])(donor_pref[donor]));
-            int recipient = donor_preference[num_donations[donor]];
-num_donations[donor] = num_donations[donor] + 1;
-            int[] rec_preference = ((int[])(recipient_pref[recipient]));
-            int prev_donor = rec_record[recipient];
-            if (prev_donor != 0 - 1) {
-                int prev_index = index_of(((int[])(rec_preference)), prev_donor);
-                int new_index = index_of(((int[])(rec_preference)), donor);
-                if (prev_index > new_index) {
-rec_record[recipient] = donor;
-donor_record[donor] = recipient;
-                    unmatched = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(unmatched), java.util.stream.IntStream.of(prev_donor)).toArray()));
-                    unmatched = ((int[])(remove_item(((int[])(unmatched)), donor)));
+        while ((long)(unmatched_1.length) > 0L) {
+            long donor_1 = (long)(unmatched_1[(int)((long)(0))]);
+            long[] donor_preference_1 = ((long[])(donor_pref[(int)((long)(donor_1))]));
+            long recipient_1 = (long)(donor_preference_1[(int)((long)(num_donations_1[(int)((long)(donor_1))]))]);
+num_donations_1[(int)((long)(donor_1))] = (long)((long)(num_donations_1[(int)((long)(donor_1))]) + 1L);
+            long[] rec_preference_1 = ((long[])(recipient_pref[(int)((long)(recipient_1))]));
+            long prev_donor_1 = (long)(rec_record_1[(int)((long)(recipient_1))]);
+            if ((long)(prev_donor_1) != (long)(0L - 1L)) {
+                long prev_index_1 = (long)(index_of(((long[])(rec_preference_1)), (long)(prev_donor_1)));
+                long new_index_1 = (long)(index_of(((long[])(rec_preference_1)), (long)(donor_1)));
+                if ((long)(prev_index_1) > (long)(new_index_1)) {
+rec_record_1[(int)((long)(recipient_1))] = (long)(donor_1);
+donor_record_1[(int)((long)(donor_1))] = (long)(recipient_1);
+                    unmatched_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(unmatched_1), java.util.stream.LongStream.of((long)(prev_donor_1))).toArray()));
+                    unmatched_1 = ((long[])(remove_item(((long[])(unmatched_1)), (long)(donor_1))));
                 }
             } else {
-rec_record[recipient] = donor;
-donor_record[donor] = recipient;
-                unmatched = ((int[])(remove_item(((int[])(unmatched)), donor)));
+rec_record_1[(int)((long)(recipient_1))] = (long)(donor_1);
+donor_record_1[(int)((long)(donor_1))] = (long)(recipient_1);
+                unmatched_1 = ((long[])(remove_item(((long[])(unmatched_1)), (long)(donor_1))));
             }
         }
-        return donor_record;
+        return donor_record_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            donor_pref = ((int[][])(new int[][]{new int[]{0, 1, 3, 2}, new int[]{0, 2, 3, 1}, new int[]{1, 0, 2, 3}, new int[]{0, 3, 1, 2}}));
-            recipient_pref = ((int[][])(new int[][]{new int[]{3, 1, 2, 0}, new int[]{3, 1, 0, 2}, new int[]{0, 3, 1, 2}, new int[]{1, 0, 3, 2}}));
-            System.out.println(_p(stable_matching(((int[][])(donor_pref)), ((int[][])(recipient_pref)))));
+            donor_pref = ((long[][])(new long[][]{new long[]{0, 1, 3, 2}, new long[]{0, 2, 3, 1}, new long[]{1, 0, 2, 3}, new long[]{0, 3, 1, 2}}));
+            recipient_pref = ((long[][])(new long[][]{new long[]{3, 1, 2, 0}, new long[]{3, 1, 0, 2}, new long[]{0, 3, 1, 2}, new long[]{1, 0, 3, 2}}));
+            System.out.println(_p(stable_matching(((long[][])(donor_pref)), ((long[][])(recipient_pref)))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -133,6 +133,10 @@ donor_record[donor] = recipient;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

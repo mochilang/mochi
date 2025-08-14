@@ -1,9 +1,9 @@
 public class Main {
     static class Edge {
-        int u;
-        int v;
-        int w;
-        Edge(int u, int v, int w) {
+        long u;
+        long v;
+        long w;
+        Edge(long u, long v, long w) {
             this.u = u;
             this.v = v;
             this.w = w;
@@ -16,8 +16,8 @@ public class Main {
 
     static class Graph {
         Edge[] edges;
-        int num_nodes;
-        Graph(Edge[] edges, int num_nodes) {
+        long num_nodes;
+        Graph(Edge[] edges, long num_nodes) {
             this.edges = edges;
             this.num_nodes = num_nodes;
         }
@@ -28,9 +28,9 @@ public class Main {
     }
 
     static class DS {
-        int[] parent;
-        int[] rank;
-        DS(int[] parent, int[] rank) {
+        long[] parent;
+        long[] rank;
+        DS(long[] parent, long[] rank) {
             this.parent = parent;
             this.rank = rank;
         }
@@ -42,8 +42,8 @@ public class Main {
 
     static class FindResult {
         DS ds;
-        int root;
-        FindResult(DS ds, int root) {
+        long root;
+        FindResult(DS ds, long root) {
             this.ds = ds;
             this.root = root;
         }
@@ -58,107 +58,107 @@ public class Main {
         return new Graph(new Edge[]{}, 0);
     }
 
-    static Graph add_edge(Graph g, int u, int v, int w) {
+    static Graph add_edge(Graph g, long u, long v, long w) {
         Edge[] es = ((Edge[])(g.edges));
         es = ((Edge[])(java.util.stream.Stream.concat(java.util.Arrays.stream(es), java.util.stream.Stream.of(new Edge(u, v, w))).toArray(Edge[]::new)));
-        int n = g.num_nodes;
-        if (u > n) {
-            n = u;
+        long n_1 = (long)(g.num_nodes);
+        if ((long)(u) > (long)(n_1)) {
+            n_1 = (long)(u);
         }
-        if (v > n) {
-            n = v;
+        if ((long)(v) > (long)(n_1)) {
+            n_1 = (long)(v);
         }
-        return new Graph(es, n);
+        return new Graph(es, n_1);
     }
 
-    static DS make_ds(int n) {
-        int[] parent = ((int[])(new int[]{}));
-        int[] rank = ((int[])(new int[]{}));
-        int i = 0;
-        while (i <= n) {
-            parent = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(parent), java.util.stream.IntStream.of(i)).toArray()));
-            rank = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(rank), java.util.stream.IntStream.of(0)).toArray()));
-            i = i + 1;
+    static DS make_ds(long n) {
+        long[] parent = ((long[])(new long[]{}));
+        long[] rank_1 = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) <= (long)(n)) {
+            parent = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(parent), java.util.stream.LongStream.of((long)(i_1))).toArray()));
+            rank_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(rank_1), java.util.stream.LongStream.of(0L)).toArray()));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return new DS(parent, rank);
+        return new DS(parent, rank_1);
     }
 
-    static FindResult find_set(DS ds, int x) {
-        if (ds.parent[x] == x) {
+    static FindResult find_set(DS ds, long x) {
+        if ((long)(ds.parent[(int)((long)(x))]) == (long)(x)) {
             return new FindResult(ds, x);
         }
-        FindResult res = find_set(ds, ds.parent[x]);
-        int[] p = ((int[])(res.ds.parent));
-p[x] = res.root;
-        return new FindResult(new DS(p, res.ds.rank), res.root);
+        FindResult res_1 = find_set(ds, (long)(ds.parent[(int)((long)(x))]));
+        long[] p_1 = ((long[])(res_1.ds.parent));
+p_1[(int)((long)(x))] = (long)(res_1.root);
+        return new FindResult(new DS(p_1, res_1.ds.rank), res_1.root);
     }
 
-    static DS union_set(DS ds, int x, int y) {
-        FindResult fx = find_set(ds, x);
-        DS ds1 = fx.ds;
-        int x_root = fx.root;
-        FindResult fy = find_set(ds1, y);
-        DS ds2 = fy.ds;
-        int y_root = fy.root;
-        if (x_root == y_root) {
-            return ds2;
+    static DS union_set(DS ds, long x, long y) {
+        FindResult fx = find_set(ds, (long)(x));
+        DS ds1_1 = fx.ds;
+        long x_root_1 = (long)(fx.root);
+        FindResult fy_1 = find_set(ds1_1, (long)(y));
+        DS ds2_1 = fy_1.ds;
+        long y_root_1 = (long)(fy_1.root);
+        if ((long)(x_root_1) == (long)(y_root_1)) {
+            return ds2_1;
         }
-        int[] p_1 = ((int[])(ds2.parent));
-        int[] r = ((int[])(ds2.rank));
-        if (r[x_root] > r[y_root]) {
-p_1[y_root] = x_root;
+        long[] p_3 = ((long[])(ds2_1.parent));
+        long[] r_1 = ((long[])(ds2_1.rank));
+        if ((long)(r_1[(int)((long)(x_root_1))]) > (long)(r_1[(int)((long)(y_root_1))])) {
+p_3[(int)((long)(y_root_1))] = (long)(x_root_1);
         } else {
-p_1[x_root] = y_root;
-            if (r[x_root] == r[y_root]) {
-r[y_root] = r[y_root] + 1;
+p_3[(int)((long)(x_root_1))] = (long)(y_root_1);
+            if ((long)(r_1[(int)((long)(x_root_1))]) == (long)(r_1[(int)((long)(y_root_1))])) {
+r_1[(int)((long)(y_root_1))] = (long)((long)(r_1[(int)((long)(y_root_1))]) + 1L);
             }
         }
-        return new DS(p_1, r);
+        return new DS(p_3, r_1);
     }
 
     static Edge[] sort_edges(Edge[] edges) {
         Edge[] arr = ((Edge[])(edges));
-        int i_1 = 1;
-        while (i_1 < arr.length) {
-            Edge key = arr[i_1];
-            int j = i_1 - 1;
-            while (j >= 0) {
-                Edge temp = arr[j];
-                if (temp.w > key.w || (temp.w == key.w && (temp.u > key.u || (temp.u == key.u && temp.v > key.v)))) {
-arr[j + 1] = temp;
-                    j = j - 1;
+        long i_3 = 1L;
+        while ((long)(i_3) < (long)(arr.length)) {
+            Edge key_1 = arr[(int)((long)(i_3))];
+            long j_1 = (long)((long)(i_3) - 1L);
+            while ((long)(j_1) >= 0L) {
+                Edge temp_1 = arr[(int)((long)(j_1))];
+                if ((long)(temp_1.w) > (long)(key_1.w) || ((long)(temp_1.w) == (long)(key_1.w) && ((long)(temp_1.u) > (long)(key_1.u) || ((long)(temp_1.u) == (long)(key_1.u) && (long)(temp_1.v) > (long)(key_1.v))))) {
+arr[(int)((long)((long)(j_1) + 1L))] = temp_1;
+                    j_1 = (long)((long)(j_1) - 1L);
                 } else {
                     break;
                 }
             }
-arr[j + 1] = key;
-            i_1 = i_1 + 1;
+arr[(int)((long)((long)(j_1) + 1L))] = key_1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return arr;
     }
 
     static Graph kruskal(Graph g) {
         Edge[] edges = ((Edge[])(sort_edges(((Edge[])(g.edges)))));
-        DS ds = make_ds(g.num_nodes);
-        Edge[] mst_edges = ((Edge[])(new Edge[]{}));
-        int i_2 = 0;
-        int added = 0;
-        while (added < g.num_nodes - 1 && i_2 < edges.length) {
-            Edge e = edges[i_2];
-            i_2 = i_2 + 1;
-            FindResult fu = find_set(ds, e.u);
-            ds = fu.ds;
-            int ru = fu.root;
-            FindResult fv = find_set(ds, e.v);
-            ds = fv.ds;
-            int rv = fv.root;
-            if (ru != rv) {
-                mst_edges = ((Edge[])(java.util.stream.Stream.concat(java.util.Arrays.stream(mst_edges), java.util.stream.Stream.of(e)).toArray(Edge[]::new)));
-                added = added + 1;
-                ds = union_set(ds, ru, rv);
+        DS ds_1 = make_ds((long)(g.num_nodes));
+        Edge[] mst_edges_1 = ((Edge[])(new Edge[]{}));
+        long i_5 = 0L;
+        long added_1 = 0L;
+        while ((long)(added_1) < (long)((long)(g.num_nodes) - 1L) && (long)(i_5) < (long)(edges.length)) {
+            Edge e_1 = edges[(int)((long)(i_5))];
+            i_5 = (long)((long)(i_5) + 1L);
+            FindResult fu_1 = find_set(ds_1, (long)(e_1.u));
+            ds_1 = fu_1.ds;
+            long ru_1 = (long)(fu_1.root);
+            FindResult fv_1 = find_set(ds_1, (long)(e_1.v));
+            ds_1 = fv_1.ds;
+            long rv_1 = (long)(fv_1.root);
+            if ((long)(ru_1) != (long)(rv_1)) {
+                mst_edges_1 = ((Edge[])(java.util.stream.Stream.concat(java.util.Arrays.stream(mst_edges_1), java.util.stream.Stream.of(e_1)).toArray(Edge[]::new)));
+                added_1 = (long)((long)(added_1) + 1L);
+                ds_1 = union_set(ds_1, (long)(ru_1), (long)(rv_1));
             }
         }
-        return new Graph(mst_edges, g.num_nodes);
+        return new Graph(mst_edges_1, g.num_nodes);
     }
 
     static void print_mst(Graph g) {
@@ -170,13 +170,13 @@ arr[j + 1] = key;
 
     static void main() {
         Graph g = new_graph();
-        g = add_edge(g, 1, 2, 1);
-        g = add_edge(g, 2, 3, 2);
-        g = add_edge(g, 3, 4, 1);
-        g = add_edge(g, 3, 5, 100);
-        g = add_edge(g, 4, 5, 5);
-        Graph mst = kruskal(g);
-        print_mst(mst);
+        g = add_edge(g, 1L, 2L, 1L);
+        g = add_edge(g, 2L, 3L, 2L);
+        g = add_edge(g, 3L, 4L, 1L);
+        g = add_edge(g, 3L, 5L, 100L);
+        g = add_edge(g, 4L, 5L, 5L);
+        Graph mst_1 = kruskal(g);
+        print_mst(mst_1);
     }
     public static void main(String[] args) {
         {
@@ -228,6 +228,10 @@ arr[j + 1] = key;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden440_matching_min_vertex_cover3977373192/001/Main.java:19: error: incompatible types: double[] cannot be converted to Object[]
+                edges_1 = java.util.stream.Stream.concat(java.util.Arrays.stream(edges_1), java.util.stream.Stream.of(new Object[][]{new double[]{i, j}})).toArray(Object[][]::new);
+                                                                                                                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden440_matching_min_vertex_cover3977373192/001/Main.java:19: error: incompatible types: inference variable A has incompatible bounds
+                edges_1 = java.util.stream.Stream.concat(java.util.Arrays.stream(edges_1), java.util.stream.Stream.of(new Object[][]{new double[]{i, j}})).toArray(Object[][]::new);
+                                                                                                                                                                  ^
+    upper bounds: long[],Object
+    lower bounds: Object[]
+  where A is a type-variable:
+    A extends Object declared in method <A>toArray(IntFunction<A[]>)
+2 errors

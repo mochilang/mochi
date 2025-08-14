@@ -3,34 +3,34 @@ public class Main {
     static String[] result;
 
     static boolean contains(String[] lst, String v) {
-        int i = 0;
-        while (i < lst.length) {
-            if ((lst[i].equals(v))) {
+        long i = 0L;
+        while ((long)(i) < (long)(lst.length)) {
+            if ((lst[(int)((long)(i))].equals(v))) {
                 return true;
             }
-            i = i + 1;
+            i = (long)((long)(i) + 1L);
         }
         return false;
     }
 
     static String[] depth_first_search(java.util.Map<String,String[]> graph, String start) {
         String[] explored = ((String[])(new String[]{}));
-        String[] stack = ((String[])(new String[]{}));
-        stack = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(start)).toArray(String[]::new)));
+        String[] stack_1 = ((String[])(new String[]{}));
+        stack_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack_1), java.util.stream.Stream.of(start)).toArray(String[]::new)));
         explored = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(explored), java.util.stream.Stream.of(start)).toArray(String[]::new)));
-        while (stack.length > 0) {
-            int idx = stack.length - 1;
-            String v = stack[idx];
-            stack = ((String[])(java.util.Arrays.copyOfRange(stack, 0, idx)));
-            String[] neighbors = (String[])(((String[])(graph).get(v)));
-            int i_1 = neighbors.length - 1;
-            while (i_1 >= 0) {
-                String adj = neighbors[i_1];
-                if (!(Boolean)contains(((String[])(explored)), adj)) {
-                    explored = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(explored), java.util.stream.Stream.of(adj)).toArray(String[]::new)));
-                    stack = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(adj)).toArray(String[]::new)));
+        while ((long)(stack_1.length) > 0L) {
+            long idx_1 = (long)((long)(stack_1.length) - 1L);
+            String v_1 = stack_1[(int)((long)(idx_1))];
+            stack_1 = ((String[])(java.util.Arrays.copyOfRange(stack_1, (int)((long)(0)), (int)((long)(idx_1)))));
+            String[] neighbors_1 = (String[])(((String[])(graph).get(v_1)));
+            long i_2 = (long)((long)(neighbors_1.length) - 1L);
+            while ((long)(i_2) >= 0L) {
+                String adj_1 = neighbors_1[(int)((long)(i_2))];
+                if (!(Boolean)contains(((String[])(explored)), adj_1)) {
+                    explored = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(explored), java.util.stream.Stream.of(adj_1)).toArray(String[]::new)));
+                    stack_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack_1), java.util.stream.Stream.of(adj_1)).toArray(String[]::new)));
                 }
-                i_1 = i_1 - 1;
+                i_2 = (long)((long)(i_2) - 1L);
             }
         }
         return explored;

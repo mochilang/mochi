@@ -1,58 +1,58 @@
 public class Main {
 
-    static int[] topological_sort(java.util.Map<Integer,int[]> graph) {
-        int[] indegree = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < graph.size()) {
-            indegree = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(indegree), java.util.stream.IntStream.of(0)).toArray()));
-            i = i + 1;
+    static long[] topological_sort(java.util.Map<Long,long[]> graph) {
+        long[] indegree = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(graph.size())) {
+            indegree = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(indegree), java.util.stream.LongStream.of(0L)).toArray()));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         for (var edges : new java.util.ArrayList<>(graph.values())) {
-            int j = 0;
-            while (j < String.valueOf(edges).length()) {
-                Object v = edges[j];
-indegree[v] = indegree[v] + 1;
-                j = j + 1;
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(String.valueOf(edges).length())) {
+                Object v_1 = edges[j_1];
+indegree[(int)((long)(v_1))] = (long)((long)(indegree[(int)((long)(v_1))]) + 1L);
+                j_1 = (long)((long)(j_1) + 1L);
             }
         }
-        int[] queue = ((int[])(new int[]{}));
-        i = 0;
-        while (i < indegree.length) {
-            if (indegree[i] == 0) {
-                queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(i)).toArray()));
+        long[] queue_1 = ((long[])(new long[]{}));
+        i_1 = 0L;
+        while ((long)(i_1) < (long)(indegree.length)) {
+            if ((long)(indegree[(int)((long)(i_1))]) == 0L) {
+                queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(i_1))).toArray()));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int[] order = ((int[])(new int[]{}));
-        int head = 0;
-        int processed = 0;
-        while (head < queue.length) {
-            int v_1 = queue[head];
-            head = head + 1;
-            processed = processed + 1;
-            order = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(order), java.util.stream.IntStream.of(v_1)).toArray()));
-            int[] neighbors = (int[])(((int[])(graph).get(v_1)));
-            int k = 0;
-            while (k < neighbors.length) {
-                int nb = neighbors[k];
-indegree[nb] = indegree[nb] - 1;
-                if (indegree[nb] == 0) {
-                    queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(nb)).toArray()));
+        long[] order_1 = ((long[])(new long[]{}));
+        long head_1 = 0L;
+        long processed_1 = 0L;
+        while ((long)(head_1) < (long)(queue_1.length)) {
+            long v_3 = (long)(queue_1[(int)((long)(head_1))]);
+            head_1 = (long)((long)(head_1) + 1L);
+            processed_1 = (long)((long)(processed_1) + 1L);
+            order_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order_1), java.util.stream.LongStream.of((long)(v_3))).toArray()));
+            long[] neighbors_1 = (long[])(((long[])(graph).get(v_3)));
+            long k_1 = 0L;
+            while ((long)(k_1) < (long)(neighbors_1.length)) {
+                long nb_1 = (long)(neighbors_1[(int)((long)(k_1))]);
+indegree[(int)((long)(nb_1))] = (long)((long)(indegree[(int)((long)(nb_1))]) - 1L);
+                if ((long)(indegree[(int)((long)(nb_1))]) == 0L) {
+                    queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(nb_1))).toArray()));
                 }
-                k = k + 1;
+                k_1 = (long)((long)(k_1) + 1L);
             }
         }
-        if (processed != graph.size()) {
-            return null;
+        if ((long)(processed_1) != (long)(graph.size())) {
+            return ((long[])(null));
         }
-        return order;
+        return order_1;
     }
 
     static void main() {
-        java.util.Map<Integer,int[]> graph = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(0, ((int[])(new int[]{1, 2}))), java.util.Map.entry(1, ((int[])(new int[]{3}))), java.util.Map.entry(2, ((int[])(new int[]{3}))), java.util.Map.entry(3, ((int[])(new int[]{4, 5}))), java.util.Map.entry(4, new int[]{}), java.util.Map.entry(5, new int[]{})))));
+        java.util.Map<Long,long[]> graph = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(0L, ((long[])(new long[]{1, 2}))), java.util.Map.entry(1L, ((long[])(new long[]{3}))), java.util.Map.entry(2L, ((long[])(new long[]{3}))), java.util.Map.entry(3L, ((long[])(new long[]{4, 5}))), java.util.Map.entry(4L, ((long[])(new long[]{}))), java.util.Map.entry(5L, ((long[])(new long[]{})))))));
         System.out.println(topological_sort(graph));
-        java.util.Map<Integer,int[]> cyclic = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(0, ((int[])(new int[]{1}))), java.util.Map.entry(1, ((int[])(new int[]{2}))), java.util.Map.entry(2, ((int[])(new int[]{0})))))));
-        System.out.println(topological_sort(cyclic));
+        java.util.Map<Long,long[]> cyclic_1 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(0L, ((long[])(new long[]{1}))), java.util.Map.entry(1L, ((long[])(new long[]{2}))), java.util.Map.entry(2L, ((long[])(new long[]{0})))))));
+        System.out.println(topological_sort(cyclic_1));
     }
     public static void main(String[] args) {
         {

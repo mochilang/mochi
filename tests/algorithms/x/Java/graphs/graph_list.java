@@ -26,25 +26,25 @@ public class Main {
     static GraphAdjacencyList add_edge(GraphAdjacencyList g, String s, String d) {
         java.util.Map<String,String[]> adj = g.adj_list;
         if (!g.directed) {
-            if (((Boolean)(contains_vertex(adj, s))) && ((Boolean)(contains_vertex(adj, d)))) {
+            if (contains_vertex(adj, s) && contains_vertex(adj, d)) {
 adj.put(s, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(s))), java.util.stream.Stream.of(d)).toArray(String[]::new))));
 adj.put(d, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(d))), java.util.stream.Stream.of(s)).toArray(String[]::new))));
-            } else             if (((Boolean)(contains_vertex(adj, s)))) {
+            } else             if (contains_vertex(adj, s)) {
 adj.put(s, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(s))), java.util.stream.Stream.of(d)).toArray(String[]::new))));
 adj.put(d, ((String[])(new String[]{s})));
-            } else             if (((Boolean)(contains_vertex(adj, d)))) {
+            } else             if (contains_vertex(adj, d)) {
 adj.put(d, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(d))), java.util.stream.Stream.of(s)).toArray(String[]::new))));
 adj.put(s, ((String[])(new String[]{d})));
             } else {
 adj.put(s, ((String[])(new String[]{d})));
 adj.put(d, ((String[])(new String[]{s})));
             }
-        } else         if (((Boolean)(contains_vertex(adj, s))) && ((Boolean)(contains_vertex(adj, d)))) {
+        } else         if (contains_vertex(adj, s) && contains_vertex(adj, d)) {
 adj.put(s, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(s))), java.util.stream.Stream.of(d)).toArray(String[]::new))));
-        } else         if (((Boolean)(contains_vertex(adj, s)))) {
+        } else         if (contains_vertex(adj, s)) {
 adj.put(s, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(adj).get(s))), java.util.stream.Stream.of(d)).toArray(String[]::new))));
 adj.put(d, ((String[])(new String[]{})));
-        } else         if (((Boolean)(contains_vertex(adj, d)))) {
+        } else         if (contains_vertex(adj, d)) {
 adj.put(s, ((String[])(new String[]{d})));
         } else {
 adj.put(s, ((String[])(new String[]{d})));
@@ -117,6 +117,10 @@ g.adj_list = adj;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

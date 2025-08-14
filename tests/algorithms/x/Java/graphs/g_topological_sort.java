@@ -1,68 +1,68 @@
 public class Main {
 
-    static int[] depth_first_search(int u, boolean[] visited, int[][] graph, int[] stack) {
-visited[u] = true;
-        int i = 0;
-        while (i < graph[u].length) {
-            int v = graph[u][i];
-            if (!(Boolean)visited[v]) {
-                stack = ((int[])(depth_first_search(v, ((boolean[])(visited)), ((int[][])(graph)), ((int[])(stack)))));
+    static long[] depth_first_search(long u, boolean[] visited, long[][] graph, long[] stack) {
+visited[(int)((long)(u))] = true;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(graph[(int)((long)(u))].length)) {
+            long v_1 = (long)(graph[(int)((long)(u))][(int)((long)(i_1))]);
+            if (!(Boolean)visited[(int)((long)(v_1))]) {
+                stack = ((long[])(depth_first_search((long)(v_1), ((boolean[])(visited)), ((long[][])(graph)), ((long[])(stack)))));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        stack = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(stack), java.util.stream.IntStream.of(u)).toArray()));
+        stack = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(stack), java.util.stream.LongStream.of((long)(u))).toArray()));
         return stack;
     }
 
-    static int[] topological_sort(int[][] graph) {
+    static long[] topological_sort(long[][] graph) {
         boolean[] visited = ((boolean[])(new boolean[]{}));
-        int i_1 = 0;
-        while (i_1 < graph.length) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(graph.length)) {
             visited = ((boolean[])(appendBool(visited, false)));
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        int[] stack = ((int[])(new int[]{}));
-        i_1 = 0;
-        while (i_1 < graph.length) {
-            if (!(Boolean)visited[i_1]) {
-                stack = ((int[])(depth_first_search(i_1, ((boolean[])(visited)), ((int[][])(graph)), ((int[])(stack)))));
+        long[] stack_1 = ((long[])(new long[]{}));
+        i_3 = 0L;
+        while ((long)(i_3) < (long)(graph.length)) {
+            if (!(Boolean)visited[(int)((long)(i_3))]) {
+                stack_1 = ((long[])(depth_first_search((long)(i_3), ((boolean[])(visited)), ((long[][])(graph)), ((long[])(stack_1)))));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return stack;
+        return stack_1;
     }
 
-    static void print_stack(int[] stack, java.util.Map<Integer,String> clothes) {
-        int order = 1;
-        int[] s = ((int[])(stack));
-        while (s.length > 0) {
-            int idx = s[s.length - 1];
-            s = ((int[])(java.util.Arrays.copyOfRange(s, 0, s.length - 1)));
-            System.out.println(_p(order) + " " + ((String)(clothes).get(idx)));
-            order = order + 1;
+    static void print_stack(long[] stack, java.util.Map<Long,String> clothes) {
+        long order = 1L;
+        long[] s_1 = ((long[])(stack));
+        while ((long)(s_1.length) > 0L) {
+            long idx_1 = (long)(s_1[(int)((long)((long)(s_1.length) - 1L))]);
+            s_1 = ((long[])(java.util.Arrays.copyOfRange(s_1, (int)((long)(0)), (int)((long)((long)(s_1.length) - 1L)))));
+            System.out.println(_p(order) + " " + ((String)(clothes).get(idx_1)));
+            order = (long)((long)(order) + 1L);
         }
     }
 
-    static String format_list(int[] xs) {
+    static String format_list(long[] xs) {
         String res = "[";
-        int i_2 = 0;
-        while (i_2 < xs.length) {
-            res = res + _p(_geti(xs, i_2));
-            if (i_2 < xs.length - 1) {
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(xs.length)) {
+            res = res + _p(_geti(xs, ((Number)(i_5)).intValue()));
+            if ((long)(i_5) < (long)((long)(xs.length) - 1L)) {
                 res = res + ", ";
             }
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
         res = res + "]";
         return res;
     }
 
     static void main() {
-        java.util.Map<Integer,String> clothes = ((java.util.Map<Integer,String>)(new java.util.LinkedHashMap<Integer, String>(java.util.Map.ofEntries(java.util.Map.entry(0, "underwear"), java.util.Map.entry(1, "pants"), java.util.Map.entry(2, "belt"), java.util.Map.entry(3, "suit"), java.util.Map.entry(4, "shoe"), java.util.Map.entry(5, "socks"), java.util.Map.entry(6, "shirt"), java.util.Map.entry(7, "tie"), java.util.Map.entry(8, "watch")))));
-        int[][] graph = ((int[][])(new int[][]{new int[]{1, 4}, new int[]{2, 4}, new int[]{3}, new int[]{}, new int[]{}, new int[]{4}, new int[]{2, 7}, new int[]{3}, new int[]{}}));
-        int[] stack_1 = ((int[])(topological_sort(((int[][])(graph)))));
-        System.out.println(format_list(((int[])(stack_1))));
-        print_stack(((int[])(stack_1)), clothes);
+        java.util.Map<Long,String> clothes = ((java.util.Map<Long,String>)(new java.util.LinkedHashMap<Long, String>(java.util.Map.ofEntries(java.util.Map.entry(0L, "underwear"), java.util.Map.entry(1L, "pants"), java.util.Map.entry(2L, "belt"), java.util.Map.entry(3L, "suit"), java.util.Map.entry(4L, "shoe"), java.util.Map.entry(5L, "socks"), java.util.Map.entry(6L, "shirt"), java.util.Map.entry(7L, "tie"), java.util.Map.entry(8L, "watch")))));
+        long[][] graph_1 = ((long[][])(new long[][]{new long[]{1, 4}, new long[]{2, 4}, new long[]{3}, new long[]{}, new long[]{}, new long[]{4}, new long[]{2, 7}, new long[]{3}, new long[]{}}));
+        long[] stack_3 = ((long[])(topological_sort(((long[][])(graph_1)))));
+        System.out.println(format_list(((long[])(stack_3))));
+        print_stack(((long[])(stack_3)), clothes);
     }
     public static void main(String[] args) {
         {
@@ -121,10 +121,14 @@ visited[u] = true;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
