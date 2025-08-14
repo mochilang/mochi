@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-13 16:46 GMT+7
+Last updated: 2025-08-13 16:54 GMT+7
 
-## Algorithms Golden Test Checklist (830/1077)
+## Algorithms Golden Test Checklist (831/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -14,7 +14,7 @@ Last updated: 2025-08-13 16:46 GMT+7
 | 5 | backtracking/combination_sum | ✓ | 5.41ms | 25.0 MB |
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 5.38ms | 33.0 MB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 1us | 0 B |
-| 8 | backtracking/knight_tour | error |  |  |
+| 8 | backtracking/knight_tour | ✓ | 8.03ms | 25.0 MB |
 | 9 | backtracking/match_word_pattern |   |  |  |
 | 10 | backtracking/minimax | ✓ | 2.52ms | 12.5 MB |
 | 11 | backtracking/n_queens | ✓ | 3.41ms | 17.3 MB |
