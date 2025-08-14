@@ -932,6 +932,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 					} else {
 						lhsType = StringType{}
 					}
+				case AnyType:
+					lhsType = AnyType{}
 				default:
 					return errNotIndexable(s.Assign.Pos, lhsType)
 				}
@@ -1113,9 +1115,10 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 					params := make([]Type, len(m.Method.Params))
 					for i, p := range m.Method.Params {
 						if p.Type == nil {
-							return errParamMissingType(m.Method.Pos, p.Name)
+							params[i] = AnyType{}
+						} else {
+							params[i] = resolveTypeRef(p.Type, env)
 						}
-						params[i] = resolveTypeRef(p.Type, env)
 					}
 					var ret Type = VoidType{}
 					if m.Method.Return != nil {
@@ -1203,11 +1206,12 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		params := []Type{}
 		for _, p := range s.Fun.Params {
 			if p.Type == nil {
-				return errParamMissingType(s.Fun.Pos, p.Name)
+				params = append(params, AnyType{})
+			} else {
+				params = append(params, resolveTypeRef(p.Type, env))
 			}
-			params = append(params, resolveTypeRef(p.Type, env))
 		}
-		var ret Type = VoidType{}
+		var ret Type = AnyType{}
 		if s.Fun.Return != nil {
 			ret = resolveTypeRef(s.Fun.Return, env)
 		}
@@ -1627,6 +1631,8 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				}
 				typ = StringType{}
 
+			case AnyType:
+				typ = AnyType{}
 			default:
 				return nil, errNotIndexable(p.Target.Pos, typ)
 			}
@@ -2082,9 +2088,10 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 	paramTypes := make([]Type, len(f.Params))
 	for i, p := range f.Params {
 		if p.Type == nil {
-			return nil, errParamMissingType(pos, p.Name)
+			paramTypes[i] = AnyType{}
+		} else {
+			paramTypes[i] = resolveTypeRef(p.Type, env)
 		}
-		paramTypes[i] = resolveTypeRef(p.Type, env)
 	}
 
 	var declaredRet Type
