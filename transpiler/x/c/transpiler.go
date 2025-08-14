@@ -72,6 +72,7 @@ var (
 	needMapSetIS            bool
 	needMapGetSL            bool
 	needMapSetSL            bool
+	needMapLenSL            bool
 	needMapGetIL            bool
 	needMapSetIL            bool
 	needMapGetSS            bool
@@ -178,14 +179,37 @@ func emitLenExpr(w io.Writer, e Expr) {
 		fmt.Fprintf(w, "%d", len(v.Elems))
 	case *IndexExpr:
 		if vr, ok := v.Target.(*VarRef); ok {
-			io.WriteString(w, vr.Name+"_lens[")
-			v.Index.emitExpr(w)
-			io.WriteString(w, "]")
+			if inferExprType(currentEnv, v.Target) == "MapSL" {
+				needMapLenSL = true
+				io.WriteString(w, "map_get_sl_len(")
+				io.WriteString(w, vr.Name+".keys, ")
+				io.WriteString(w, vr.Name+".lens, ")
+				io.WriteString(w, vr.Name+".len, ")
+				v.Index.emitExpr(w)
+				io.WriteString(w, ")")
+			} else {
+				io.WriteString(w, vr.Name+"_lens[")
+				v.Index.emitExpr(w)
+				io.WriteString(w, "]")
+			}
 		} else if fe, ok := v.Target.(*FieldExpr); ok {
-			fe.Target.emitExpr(w)
-			io.WriteString(w, "."+fe.Name+"_lens[")
-			v.Index.emitExpr(w)
-			io.WriteString(w, "]")
+			if inferExprType(currentEnv, v.Target) == "MapSL" {
+				needMapLenSL = true
+				io.WriteString(w, "map_get_sl_len(")
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+".keys, ")
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+".lens, ")
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+".len, ")
+				v.Index.emitExpr(w)
+				io.WriteString(w, ")")
+			} else {
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+"_lens[")
+				v.Index.emitExpr(w)
+				io.WriteString(w, "]")
+			}
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -2556,13 +2580,23 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 	if vr, ok := i.Target.(*VarRef); ok && isMapVar(vr.Name) {
 		keyT := mapKeyTypes[vr.Name]
 		valT := mapValTypes[vr.Name]
+		keys := vr.Name + "_keys"
+		vals := vr.Name + "_vals"
+		lens := vr.Name + "_lens"
+		lenv := vr.Name + "_len"
+		if strings.HasPrefix(varTypes[vr.Name], "Map") {
+			keys = vr.Name + ".keys"
+			vals = vr.Name + ".vals"
+			lens = vr.Name + ".lens"
+			lenv = vr.Name + ".len"
+		}
 		if keyT == "const char*" && valT == "int" {
 			needMapGetSI = true
 			funcReturnTypes["map_get_si"] = "int"
 			io.WriteString(w, "map_get_si(")
-			io.WriteString(w, vr.Name+".keys, ")
-			io.WriteString(w, vr.Name+".vals, ")
-			io.WriteString(w, vr.Name+".len, ")
+			io.WriteString(w, keys+", ")
+			io.WriteString(w, vals+", ")
+			io.WriteString(w, lenv+", ")
 			i.Index.emitExpr(w)
 			io.WriteString(w, ")")
 			return
@@ -2571,9 +2605,9 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetII = true
 			funcReturnTypes["map_get_ii"] = "int"
 			io.WriteString(w, "map_get_ii(")
-			io.WriteString(w, vr.Name+"_keys, ")
-			io.WriteString(w, vr.Name+"_vals, ")
-			io.WriteString(w, vr.Name+"_len, ")
+			io.WriteString(w, keys+", ")
+			io.WriteString(w, vals+", ")
+			io.WriteString(w, lenv+", ")
 			i.Index.emitExpr(w)
 			io.WriteString(w, ")")
 			return
@@ -2582,15 +2616,9 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetIS = true
 			funcReturnTypes["map_get_is"] = "const char*"
 			io.WriteString(w, "map_get_is(")
-			if varTypes[vr.Name] == "MapIS" {
-				io.WriteString(w, vr.Name+".keys, ")
-				io.WriteString(w, vr.Name+".vals, ")
-				io.WriteString(w, vr.Name+".len, ")
-			} else {
-				io.WriteString(w, vr.Name+"_keys, ")
-				io.WriteString(w, vr.Name+"_vals, ")
-				io.WriteString(w, vr.Name+"_len, ")
-			}
+			io.WriteString(w, keys+", ")
+			io.WriteString(w, vals+", ")
+			io.WriteString(w, lenv+", ")
 			i.Index.emitExpr(w)
 			io.WriteString(w, ")")
 			return
@@ -2599,9 +2627,9 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetSS = true
 			funcReturnTypes["map_get_ss"] = "const char*"
 			io.WriteString(w, "map_get_ss(")
-			io.WriteString(w, vr.Name+".keys, ")
-			io.WriteString(w, vr.Name+".vals, ")
-			io.WriteString(w, vr.Name+".len, ")
+			io.WriteString(w, keys+", ")
+			io.WriteString(w, vals+", ")
+			io.WriteString(w, lenv+", ")
 			i.Index.emitExpr(w)
 			io.WriteString(w, ")")
 			return
@@ -2610,10 +2638,10 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetSL = true
 			funcReturnTypes["map_get_sl"] = valT
 			io.WriteString(w, "map_get_sl(")
-			io.WriteString(w, vr.Name+".keys, ")
-			io.WriteString(w, vr.Name+".vals, ")
-			io.WriteString(w, vr.Name+".lens, ")
-			io.WriteString(w, vr.Name+".len, ")
+			io.WriteString(w, keys+", ")
+			io.WriteString(w, vals+", ")
+			io.WriteString(w, lens+", ")
+			io.WriteString(w, lenv+", ")
 			i.Index.emitExpr(w)
 			if currentVarName != "" && strings.HasSuffix(varTypes[currentVarName], "*") {
 				io.WriteString(w, ", &")
@@ -2628,10 +2656,10 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetIL = true
 			funcReturnTypes["map_get_il"] = valT
 			io.WriteString(w, "map_get_il(")
-			io.WriteString(w, vr.Name+"_keys, ")
-			io.WriteString(w, vr.Name+"_vals, ")
-			io.WriteString(w, vr.Name+"_lens, ")
-			io.WriteString(w, vr.Name+"_len, ")
+			io.WriteString(w, keys+", ")
+			io.WriteString(w, vals+", ")
+			io.WriteString(w, lens+", ")
+			io.WriteString(w, lenv+", ")
 			i.Index.emitExpr(w)
 			if currentVarName != "" && strings.HasSuffix(varTypes[currentVarName], "*") {
 				io.WriteString(w, ", &")
@@ -2646,15 +2674,9 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetSD = true
 			funcReturnTypes["map_get_sd"] = "double"
 			io.WriteString(w, "map_get_sd(")
-			if varTypes[vr.Name] == "MapSD" {
-				io.WriteString(w, vr.Name+".keys, ")
-				io.WriteString(w, vr.Name+".vals, ")
-				io.WriteString(w, vr.Name+".len, ")
-			} else {
-				io.WriteString(w, vr.Name+"_keys, ")
-				io.WriteString(w, vr.Name+"_vals, ")
-				io.WriteString(w, vr.Name+"_len, ")
-			}
+			io.WriteString(w, keys+", ")
+			io.WriteString(w, vals+", ")
+			io.WriteString(w, lenv+", ")
 			i.Index.emitExpr(w)
 			io.WriteString(w, ")")
 			return
@@ -2952,7 +2974,10 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		}
 		if fe, ok := c.Args[0].(*FieldExpr); ok {
 			base := inferExprType(currentEnv, c.Args[0])
-			elemBase := strings.TrimSuffix(strings.TrimSuffix(base, "[]"), "*")
+			elemBase := strings.TrimSuffix(base, "[]")
+			if strings.HasSuffix(elemBase, "*") && !strings.Contains(elemBase, "char*") {
+				elemBase = strings.TrimSuffix(elemBase, "*")
+			}
 			switch elemBase {
 			case "int", "long long":
 				needListAppendIntNew = true
@@ -3978,6 +4003,10 @@ func (p *Program) Emit() []byte {
 	if len(p.Functions) > 0 {
 		buf.WriteString("\n")
 	}
+	if needListAppendIntNew || needListAppendDoubleNew || needListAppendStrNew || len(needListAppendStructNew) > 0 {
+		buf.WriteString("size_t append_len;\n")
+		buf.WriteString("\n")
+	}
 	if needSHA256 {
 		buf.WriteString("size_t _sha256_len;\n")
 	}
@@ -4082,7 +4111,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needStrBool {
-		buf.WriteString("static char* str_bool(long long v) {\n")
+		buf.WriteString("static char* str_bool(int v) {\n")
 		buf.WriteString("    return strdup(v ? \"true\" : \"false\");\n")
 		buf.WriteString("}\n\n")
 	}
@@ -4430,6 +4459,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return NULL;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needMapLenSL {
+		buf.WriteString("static size_t map_get_sl_len(const char *keys[], const size_t lens[], size_t len, const char *key) {\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        if (strcmp(keys[i], key) == 0) return lens[i];\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 0;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needMapSetSL {
 		buf.WriteString("static void map_set_sl(const char *keys[], void *vals[], size_t lens[], size_t *len, const char *key, void *val, size_t val_len) {\n")
 		buf.WriteString("    for (size_t i = 0; i < *len; i++) {\n")
@@ -4476,6 +4513,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    long long *res = malloc((len + 1) * sizeof(long long));\n")
 		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(long long));\n")
 		buf.WriteString("    res[len] = val;\n")
+		buf.WriteString("    append_len = len + 1;\n")
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
@@ -4492,6 +4530,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    double *res = malloc((len + 1) * sizeof(double));\n")
 		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(double));\n")
 		buf.WriteString("    res[len] = val;\n")
+		buf.WriteString("    append_len = len + 1;\n")
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
@@ -4532,6 +4571,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    const char **res = malloc((len + 1) * sizeof(const char*));\n")
 		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(const char*));\n")
 		buf.WriteString("    res[len] = val;\n")
+		buf.WriteString("    append_len = len + 1;\n")
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
@@ -4892,6 +4932,7 @@ func (p *Program) Emit() []byte {
 			fmt.Fprintf(&buf, "    %s *res = malloc((len + 1) * sizeof(%s));\n", typ, typ)
 			fmt.Fprintf(&buf, "    if (arr && len) memcpy(res, arr, len * sizeof(%s));\n", typ)
 			buf.WriteString("    res[len] = val;\n")
+			buf.WriteString("    append_len = len + 1;\n")
 			buf.WriteString("    return res;\n")
 			buf.WriteString("}\n\n")
 		}
@@ -5094,6 +5135,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMapGetIS = false
 	needMapGetSL = false
 	needMapSetSL = false
+	needMapLenSL = false
 	needMapGetSS = false
 	needMapSetSS = false
 	needMapGetII = false
@@ -6052,14 +6094,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-				fmt.Fprintf(&buf, "static void* %s_vals[%d] = {", s.Let.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "static void* %s_vals[%d];\n", s.Let.Name, len(m.Items)+16)
 				for i := range m.Items {
-					if i > 0 {
-						buf.WriteString(", ")
-					}
-					fmt.Fprintf(&buf, "%s_vals_%d", s.Let.Name, i)
+					fmt.Fprintf(&buf, "%s_vals[%d] = %s_vals_%d;\n", s.Let.Name, i, s.Let.Name, i)
 				}
-				buf.WriteString("};\n")
 				fmt.Fprintf(&buf, "static size_t %s_lens[%d] = {", s.Let.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
@@ -6357,14 +6395,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-				fmt.Fprintf(&buf, "static void* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "static void* %s_vals[%d];\n", s.Var.Name, len(m.Items)+16)
 				for i := range m.Items {
-					if i > 0 {
-						buf.WriteString(", ")
-					}
-					fmt.Fprintf(&buf, "%s_vals_%d", s.Var.Name, i)
+					fmt.Fprintf(&buf, "%s_vals[%d] = %s_vals_%d;\n", s.Var.Name, i, s.Var.Name, i)
 				}
-				buf.WriteString("};\n")
 				fmt.Fprintf(&buf, "static size_t %s_lens[%d] = {", s.Var.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
@@ -6417,6 +6451,17 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		ds := &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}
 		// track variable type for later inference
 		varTypes[s.Var.Name] = declType
+		if vr, ok := valExpr.(*VarRef); ok {
+			if vt, ok2 := varTypes[vr.Name]; ok2 && strings.HasPrefix(vt, "Map") {
+				varTypes[s.Var.Name] = vt
+				if kt, ok3 := mapKeyTypes[vr.Name]; ok3 {
+					mapKeyTypes[s.Var.Name] = kt
+				}
+				if vv, ok3 := mapValTypes[vr.Name]; ok3 {
+					mapValTypes[s.Var.Name] = vv
+				}
+			}
+		}
 		if declStmts != nil {
 			declStmts[s.Var.Name] = ds
 		}
@@ -7731,13 +7776,8 @@ func convertUnary(u *parser.Unary) Expr {
 		if allStr {
 			if currentVarName != "" {
 				if currentVarType != nil {
-					if types.IsStringAnyMapLike(currentVarType) {
+					if _, ok := currentVarType.(types.MapType); ok {
 						return &MapLit{Items: items}
-					}
-					if len(items) == 0 {
-						if _, ok := currentVarType.(types.MapType); ok {
-							return &MapLit{Items: items}
-						}
 					}
 				}
 			} else if len(items) == 0 {
@@ -9602,7 +9642,7 @@ func cTypeFromMochiType(t types.Type) string {
 		needGMP = true
 		return "bigrat"
 	case types.BoolType:
-		return "long long"
+		return "int"
 	case types.AnyType:
 		return "const char*"
 	case types.StructType:
@@ -10050,6 +10090,12 @@ func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 
 func evalMap(e Expr) (*ListLit, bool) {
 	switch v := e.(type) {
+	case *MapLit:
+		var elems []Expr
+		for _, it := range v.Items {
+			elems = append(elems, it.Value)
+		}
+		return &ListLit{Elems: elems}, true
 	case *StructLit:
 		var out []Expr
 		for _, f := range v.Fields {
