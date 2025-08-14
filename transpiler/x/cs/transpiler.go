@@ -108,6 +108,7 @@ var usesSubstr bool
 var usesSlice bool
 var usesLen bool
 var usesMod bool
+var usesFloorDiv bool
 var usesAtoi bool
 var usesIdx bool
 var envTypes map[string]types.Type
@@ -749,6 +750,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else {
 			lt := typeOfExpr(b.Left)
 			rt := typeOfExpr(b.Right)
+			if b.Op == "/" && lt == "long" && rt == "long" {
+				usesFloorDiv = true
+				fmt.Fprint(w, "_floordiv(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ", ")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+				return
+			}
 			if b.Op == "%" {
 				usesMod = true
 				lt := typeOfExpr(b.Left)
@@ -1095,7 +1105,7 @@ func (c *CallExpr) emit(w io.Writer) {
 	}
 	name := c.Func
 	if name == "pow10" && len(c.Args) == 1 {
-		fmt.Fprint(w, "Math.Pow(10.0, ")
+		fmt.Fprint(w, "(long)Math.Pow(10.0, ")
 		c.Args[0].emit(w)
 		fmt.Fprint(w, ")")
 		return
@@ -2605,6 +2615,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesSlice = false
 	usesLen = false
 	usesMod = false
+	usesFloorDiv = false
 	usesBigInt = false
 	usesBigRat = false
 	usesFetch = false
@@ -2749,6 +2760,9 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			usesLinq = true
 			fallthrough
 		default:
+			if op == "/" {
+				usesFloorDiv = true
+			}
 			if op == "%" {
 				usesMod = true
 			}
@@ -5246,6 +5260,15 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tvar r = a % b;\n")
 		buf.WriteString("\t\tif ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;\n")
 		buf.WriteString("\t\treturn r;\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesFloorDiv {
+		buf.WriteString("\tstatic long _floordiv(long a, long b) {\n")
+		buf.WriteString("\t\tif (b == 0) return 0;\n")
+		buf.WriteString("\t\tvar q = a / b;\n")
+		buf.WriteString("\t\tvar r = a % b;\n")
+		buf.WriteString("\t\tif ((r > 0 && b < 0) || (r < 0 && b > 0)) q--;\n")
+		buf.WriteString("\t\treturn q;\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesFetch {

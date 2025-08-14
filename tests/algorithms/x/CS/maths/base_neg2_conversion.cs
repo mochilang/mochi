@@ -35,6 +35,19 @@ class Program {
         if (i < 0 || i >= arr.Length) return default(T);
         return arr[(int)i];
     }
+    static long _atoi(object v) {
+        if (v == null) return 0;
+        if (v is long l) return l;
+        if (v is int i) return i;
+        if (v is double d) return (long)d;
+        if (v is bool b) return b ? 1L : 0L;
+        if (v is string s) {
+            if (long.TryParse(s, out var n)) return n;
+            if (double.TryParse(s, out var f)) return (long)f;
+            return 0;
+        }
+        try { return Convert.ToInt64(v); } catch { return 0; }
+    }
     static long _mod(long a, long b) {
         if (b == 0) return 0;
         var r = a % b;
@@ -114,86 +127,22 @@ class Program {
         return _fmt(v);
     }
     static string __name__ = "__main__";
-    static string digits_31 = "";
-    static long i_32 = 1;
-    public static long mod_pow(long base_0, long exponent_1, long modulus_2) {
-        long result_3 = 1;
-        long b_4 = _mod(base_0, modulus_2);
-        long e_5 = exponent_1;
-        while ((e_5 > 0)) {
-            if ((_mod(e_5, 2) == 1)) {
-                result_3 = _mod((result_3 * b_4), modulus_2);
+    public static long decimal_to_negative_base_2(long num_0) {
+        if ((num_0 == 0)) {
+            return 0;
+        };
+        long n_1 = num_0;
+        string ans_2 = "";
+        while ((n_1 != 0)) {
+            long rem_3 = _mod(n_1, -2);
+            n_1 = _floordiv(n_1, -2);
+            if ((rem_3 < 0)) {
+                rem_3 = (rem_3 + 2);
+                n_1 = (n_1 + 1);
             }
-            b_4 = _mod((b_4 * b_4), modulus_2);
-            e_5 = _floordiv(e_5, 2);
+            ans_2 = (_fmtStr(rem_3) + ans_2);
         };
-        return result_3;
-    }
-
-    public static double pow_float(double base_6, long exponent_7) {
-        long exp_8 = exponent_7;
-        double result_9 = 1.0;
-        if ((exp_8 < 0)) {
-            exp_8 = -exp_8;
-        };
-        long i_10 = 0;
-        while ((i_10 < exp_8)) {
-            result_9 = (result_9 * base_6);
-            i_10 = (i_10 + 1);
-        };
-        if ((exponent_7 < 0)) {
-            result_9 = (1.0 / result_9);
-        };
-        return result_9;
-    }
-
-    public static string hex_digit(long n_11) {
-        if ((n_11 < 10)) {
-            return _fmtStr(n_11);
-        };
-        string[] letters_12 = new string[]{"a", "b", "c", "d", "e", "f"};
-        return _idx(letters_12, (n_11 - 10));
-    }
-
-    public static double floor_float(double x_13) {
-        long i_14 = (long)(x_13);
-        if ((Convert.ToDouble(i_14) > x_13)) {
-            i_14 = (i_14 - 1);
-        };
-        return Convert.ToDouble(i_14);
-    }
-
-    public static double subsum(long digit_pos_to_extract_15, long denominator_addend_16, long precision_17) {
-        double total_18 = 0.0;
-        long sum_index_19 = 0;
-        while ((sum_index_19 < (digit_pos_to_extract_15 + precision_17))) {
-            long denominator_20 = ((8 * sum_index_19) + denominator_addend_16);
-            if ((sum_index_19 < digit_pos_to_extract_15)) {
-                long exponent_21 = ((digit_pos_to_extract_15 - 1) - sum_index_19);
-                long exponential_term_22 = Program.mod_pow(16, exponent_21, denominator_20);
-                total_18 = (total_18 + (Convert.ToDouble(exponential_term_22) / Convert.ToDouble(denominator_20)));
-            } else {
-                long exponent_23 = ((digit_pos_to_extract_15 - 1) - sum_index_19);
-                double exponential_term_24 = Program.pow_float(16.0, exponent_23);
-                total_18 = (total_18 + (exponential_term_24 / Convert.ToDouble(denominator_20)));
-            }
-            sum_index_19 = (sum_index_19 + 1);
-        };
-        return total_18;
-    }
-
-    public static string bailey_borwein_plouffe(long digit_position_25, long precision_26) {
-        if ((digit_position_25 <= 0)) {
-            throw new Exception("Digit position must be a positive integer");
-        };
-        if ((precision_26 < 0)) {
-            throw new Exception("Precision must be a nonnegative integer");
-        };
-        double sum_result_27 = ((((4.0 * Program.subsum(digit_position_25, 1, precision_26)) - (2.0 * Program.subsum(digit_position_25, 4, precision_26))) - (1.0 * Program.subsum(digit_position_25, 5, precision_26))) - (1.0 * Program.subsum(digit_position_25, 6, precision_26)));
-        double fraction_28 = (sum_result_27 - Program.floor_float(sum_result_27));
-        long digit_29 = (long)((fraction_28 * 16.0));
-        string hd_30 = Program.hex_digit(digit_29);
-        return hd_30;
+        return _atoi(ans_2);
     }
 
     static void Main() {
@@ -201,12 +150,10 @@ class Program {
         {
             var __memStart = _mem();
             var __start = _now();
-            while ((i_32 <= 10)) {
-                digits_31 = (digits_31 + Program.bailey_borwein_plouffe(i_32, 1000));
-                i_32 = (i_32 + 1);
-            }
-            Console.WriteLine(Program._fmtTop(digits_31));
-            Console.WriteLine(Program._fmtTop(Program.bailey_borwein_plouffe(5, 10000)));
+            Console.WriteLine(Program._fmtTop(Program.decimal_to_negative_base_2(0)));
+            Console.WriteLine(Program._fmtTop(Program.decimal_to_negative_base_2(-19)));
+            Console.WriteLine(Program._fmtTop(Program.decimal_to_negative_base_2(4)));
+            Console.WriteLine(Program._fmtTop(Program.decimal_to_negative_base_2(7)));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);
