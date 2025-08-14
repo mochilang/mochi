@@ -82,6 +82,8 @@ func declareName(name string) string {
 		"array", "real", "integer", "string", "boolean", "char",
 		// Additional common Pascal keywords
 		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out",
+		// Control flow keywords
+		"case", "do", "downto", "else", "for", "if", "of", "then", "to", "until", "while", "with", "goto",
 		// Math functions that should map to Pascal's built-ins
 		"ln", "exp":
 		// Avoid Pascal reserved keywords and built-in types (case-insensitive)
@@ -115,7 +117,9 @@ func declareName(name string) string {
 func sanitizeField(name string) string {
 	switch strings.ToLower(name) {
 	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
-		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out", "ln", "exp":
+		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out",
+		"case", "do", "downto", "else", "for", "if", "of", "then", "to", "until", "while", "with", "goto",
+		"ln", "exp":
 		return name + "_"
 	}
 	return name
