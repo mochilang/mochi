@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 813/1077
-Last updated: 2025-08-14 17:09 +0700
+Completed programs: 826/1077
+Last updated: 2025-08-14 18:14 +0700
 
 Checklist:
 
@@ -543,58 +543,58 @@ Checklist:
 | 534 | maths/average_absolute_deviation |   |  |  |
 | 535 | maths/average_mean |   |  |  |
 | 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode |   |  |  |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
+| 537 | maths/average_mode | ✓ | 787.0µs | 47.35KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 4.64s | 3.28GB |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
-| 543 | maths/binomial_coefficient |   |  |  |
-| 544 | maths/binomial_distribution |   |  |  |
-| 545 | maths/ceil |   |  |  |
-| 546 | maths/chebyshev_distance |   |  |  |
-| 547 | maths/check_polygon |   |  |  |
-| 548 | maths/chinese_remainder_theorem |   |  |  |
-| 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence | ✓ | 170.0µs | 3.96KB |
-| 551 | maths/combinations | ✓ | 101.0µs | 784B |
-| 552 | maths/continued_fraction | ✓ | 116.0µs | 1.02KB |
-| 553 | maths/decimal_isolate | ✓ | 182.0µs | 5.80KB |
-| 554 | maths/decimal_to_fraction | ✓ | 343.0µs | 9.53KB |
-| 555 | maths/dodecahedron | ✓ | 244.0µs | 9.59KB |
-| 556 | maths/double_factorial | ✓ | 94.0µs | 224B |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 933.0µs | 69.41KB |
-| 558 | maths/entropy | ✓ | 23.0ms | 2.06MB |
-| 559 | maths/euclidean_distance | ✓ | 252.0µs | 8.85KB |
-| 560 | maths/euler_method | ✓ |  |  |
-| 561 | maths/euler_modified | ✓ |  |  |
-| 562 | maths/eulers_totient | ✓ | 248.0µs | 14.17KB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 137.0µs | 1.05KB |
-| 564 | maths/factorial | ✓ | 104.0µs | 224B |
-| 565 | maths/factors | ✓ | 188.0µs | 2.55KB |
-| 566 | maths/fast_inverse_sqrt | ✓ | 714.0µs | 79.78KB |
-| 567 | maths/fermat_little_theorem | ✓ | 30.0µs | 208B |
-| 568 | maths/fibonacci | ✓ | 150.0µs | 20.09KB |
-| 569 | maths/find_max | ✓ | 231.0µs | 1.23KB |
-| 570 | maths/find_min | ✓ | 248.0µs | 1.66KB |
-| 571 | maths/floor |   |  |  |
-| 572 | maths/gamma | ✓ | 204.0ms | 311.28MB |
-| 573 | maths/gaussian | ✓ | 214.0µs | 3.71KB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 125.0µs | 656B |
+| 540 | maths/basic_maths | ✓ | 204.0µs | 1.30KB |
+| 541 | maths/binary_exponentiation | ✓ | 199.0µs | 512B |
+| 542 | maths/binary_multiplication | ✓ | 126.0µs | 272B |
+| 543 | maths/binomial_coefficient | ✓ | 172.0µs | 11.26KB |
+| 544 | maths/binomial_distribution | ✓ | 1.0µs | 208B |
+| 545 | maths/ceil | ✓ | 192.0µs | 688B |
+| 546 | maths/chebyshev_distance | ✓ | 272.0µs | 912B |
+| 547 | maths/check_polygon | ✓ | 216.0µs | 2.15KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 228.0µs | 5.14KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 206.0µs | 3.84KB |
+| 550 | maths/collatz_sequence | ✓ | 229.0µs | 3.96KB |
+| 551 | maths/combinations | ✓ | 150.0µs | 784B |
+| 552 | maths/continued_fraction | ✓ | 179.0µs | 1.09KB |
+| 553 | maths/decimal_isolate | ✓ | 270.0µs | 5.80KB |
+| 554 | maths/decimal_to_fraction | ✓ | 365.0µs | 10.84KB |
+| 555 | maths/dodecahedron | ✓ | 222.0µs | 9.59KB |
+| 556 | maths/double_factorial | ✓ | 130.0µs | 224B |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 853.0µs | 88.45KB |
+| 558 | maths/entropy | ✓ | 35.0ms | 2.12MB |
+| 559 | maths/euclidean_distance | ✓ | 318.0µs | 9.32KB |
+| 560 | maths/euler_method | ✓ | 48.0ms | 17.41MB |
+| 561 | maths/euler_modified | ✓ | 344.0µs | 16.63KB |
+| 562 | maths/eulers_totient | ✓ | 270.0µs | 15.38KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 181.0µs | 1.30KB |
+| 564 | maths/factorial | ✓ | 100.0µs | 224B |
+| 565 | maths/factors | ✓ | 167.0µs | 2.70KB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 880.0µs | 79.78KB |
+| 567 | maths/fermat_little_theorem | ✓ | 48.0µs | 208B |
+| 568 | maths/fibonacci | ✓ | 285.0µs | 23.96KB |
+| 569 | maths/find_max | ✓ | 252.0µs | 1.80KB |
+| 570 | maths/find_min | ✓ | 282.0µs | 2.30KB |
+| 571 | maths/floor | ✓ | 209.0µs | 1.23KB |
+| 572 | maths/gamma | ✓ | 225.0ms | 311.28MB |
+| 573 | maths/gaussian | ✓ | 231.0µs | 3.71KB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 166.0µs | 912B |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes | ✓ | 34.0µs | 208B |
-| 577 | maths/greatest_common_divisor | ✓ | 130.0µs | 448B |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 199.0µs | 3.55KB |
-| 579 | maths/integer_square_root | ✓ | 138.0µs | 656B |
-| 580 | maths/interquartile_range | ✓ | 366.0µs | 27.29KB |
-| 581 | maths/is_int_palindrome | ✓ | 24.0µs | 208B |
-| 582 | maths/is_ip_v4_address_valid | ✓ | 301.0µs | 8.98KB |
-| 583 | maths/is_square_free | ✓ | 24.0µs | 736B |
-| 584 | maths/jaccard_similarity | ✓ | 232.0µs | 2.91KB |
-| 585 | maths/joint_probability_distribution | ✓ | 352.0µs | 14.67KB |
-| 586 | maths/josephus_problem | ✓ | 170.0µs | 2.73KB |
-| 587 | maths/juggler_sequence | ✓ | 215.0µs | 11.11KB |
-| 588 | maths/karatsuba | ✓ | 138.0µs | 1.02KB |
+| 576 | maths/germain_primes | ✓ | 35.0µs | 208B |
+| 577 | maths/greatest_common_divisor | ✓ | 146.0µs | 448B |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 212.0µs | 3.53KB |
+| 579 | maths/integer_square_root | ✓ | 144.0µs | 944B |
+| 580 | maths/interquartile_range | ✓ | 391.0µs | 32.27KB |
+| 581 | maths/is_int_palindrome | ✓ | 29.0µs | 208B |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 237.0µs | 9.50KB |
+| 583 | maths/is_square_free | ✓ | 34.0µs | 1.06KB |
+| 584 | maths/jaccard_similarity | ✓ | 256.0µs | 4.06KB |
+| 585 | maths/joint_probability_distribution | ✓ | 291.0µs | 16.33KB |
+| 586 | maths/josephus_problem | ✓ | 166.0µs | 3.08KB |
+| 587 | maths/juggler_sequence | ✓ | 214.0µs | 10.91KB |
+| 588 | maths/karatsuba | ✓ | 125.0µs | 1.02KB |
 | 589 | maths/kth_lexicographic_permutation | ✓ | 235.0µs | 5.30KB |
 | 590 | maths/largest_of_very_large_numbers | ✓ | 231.0µs | 24.34KB |
 | 591 | maths/least_common_multiple | ✓ | 136.0µs | 272B |
