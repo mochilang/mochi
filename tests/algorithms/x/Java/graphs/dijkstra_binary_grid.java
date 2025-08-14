@@ -1,8 +1,8 @@
 public class Main {
     static class Point {
-        int x;
-        int y;
-        Point(int x, int y) {
+        long x;
+        long y;
+        Point(long x, long y) {
             this.x = x;
             this.y = y;
         }
@@ -25,8 +25,8 @@ public class Main {
         }
     }
 
-    static int[][] grid1 = new int[0][];
-    static int[][] grid2 = new int[0][];
+    static long[][] grid1 = new long[0][];
+    static long[][] grid2 = new long[0][];
 
     static String key(Point p) {
         return _p(p.x) + "," + _p(p.y);
@@ -34,76 +34,76 @@ public class Main {
 
     static String path_to_string(Point[] path) {
         String s = "[";
-        int i = 0;
-        while (i < path.length) {
-            Point pt = path[i];
-            s = s + "(" + _p(pt.x) + ", " + _p(pt.y) + ")";
-            if (i < path.length - 1) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(path.length)) {
+            Point pt_1 = path[(int)((long)(i_1))];
+            s = s + "(" + _p(pt_1.x) + ", " + _p(pt_1.y) + ")";
+            if ((long)(i_1) < (long)((long)(path.length) - 1L)) {
                 s = s + ", ";
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         s = s + "]";
         return s;
     }
 
-    static Result dijkstra(int[][] grid, Point source, Point destination, boolean allow_diagonal) {
-        int rows = grid.length;
-        int cols = grid[0].length;
-        int[] dx = ((int[])(new int[]{-1, 1, 0, 0}));
-        int[] dy = ((int[])(new int[]{0, 0, -1, 1}));
-        if (((Boolean)(allow_diagonal))) {
-            dx = ((int[])(concat(dx, new int[]{-1, -1, 1, 1})));
-            dy = ((int[])(concat(dy, new int[]{-1, 1, -1, 1})));
+    static Result dijkstra(long[][] grid, Point source, Point destination, boolean allow_diagonal) {
+        long rows = (long)(grid.length);
+        long cols_1 = (long)(grid[(int)((long)(0))].length);
+        long[] dx_1 = ((long[])(new long[]{-1, 1, 0, 0}));
+        long[] dy_1 = ((long[])(new long[]{0, 0, -1, 1}));
+        if (allow_diagonal) {
+            dx_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(dx_1), java.util.Arrays.stream(new long[]{-1, -1, 1, 1})).toArray()));
+            dy_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(dy_1), java.util.Arrays.stream(new long[]{-1, 1, -1, 1})).toArray()));
         }
-        double INF = 1000000000000.0;
-        Point[] queue = ((Point[])(new Point[]{source}));
-        int front = 0;
-        java.util.Map<String,Double> dist_map = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry(key(source), 0.0)))));
-        java.util.Map<String,Point> prev = ((java.util.Map<String,Point>)(new java.util.LinkedHashMap<String, Point>()));
-        while (front < queue.length) {
-            Point current = queue[front];
-            front = front + 1;
-            String cur_key = String.valueOf(key(current));
-            if (current.x == destination.x && current.y == destination.y) {
+        double INF_1 = (double)(1000000000000.0);
+        Point[] queue_1 = ((Point[])(new Point[]{source}));
+        long front_1 = 0L;
+        java.util.Map<String,Double> dist_map_1 = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry(String.valueOf(key(source)), (double)(0.0))))));
+        java.util.Map<String,Point> prev_1 = ((java.util.Map<String,Point>)(new java.util.LinkedHashMap<String, Point>()));
+        while ((long)(front_1) < (long)(queue_1.length)) {
+            Point current_1 = queue_1[(int)((long)(front_1))];
+            front_1 = (long)((long)(front_1) + 1L);
+            String cur_key_1 = String.valueOf(key(current_1));
+            if ((long)(current_1.x) == (long)(destination.x) && (long)(current_1.y) == (long)(destination.y)) {
                 break;
             }
-            int i_1 = 0;
-            while (i_1 < dx.length) {
-                int nx = current.x + dx[i_1];
-                int ny = current.y + dy[i_1];
-                if (nx >= 0 && nx < rows && ny >= 0 && ny < cols) {
-                    if (grid[nx][ny] == 1) {
-                        String n_key = _p(nx) + "," + _p(ny);
-                        if (!(Boolean)(dist_map.containsKey(n_key))) {
-dist_map.put(n_key, (double)(((double)(dist_map).getOrDefault(cur_key, 0.0))) + 1.0);
-prev.put(n_key, current);
-                            queue = ((Point[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue), java.util.stream.Stream.of(new Point(nx, ny))).toArray(Point[]::new)));
+            long i_3 = 0L;
+            while ((long)(i_3) < (long)(dx_1.length)) {
+                long nx_1 = (long)((long)(current_1.x) + (long)(dx_1[(int)((long)(i_3))]));
+                long ny_1 = (long)((long)(current_1.y) + (long)(dy_1[(int)((long)(i_3))]));
+                if ((long)(nx_1) >= 0L && (long)(nx_1) < (long)(rows) && (long)(ny_1) >= 0L && (long)(ny_1) < (long)(cols_1)) {
+                    if ((long)(grid[(int)((long)(nx_1))][(int)((long)(ny_1))]) == 1L) {
+                        String n_key_1 = _p(nx_1) + "," + _p(ny_1);
+                        if (!(dist_map_1.containsKey(n_key_1))) {
+dist_map_1.put(n_key_1, (double)((double)(((double)(dist_map_1).getOrDefault(cur_key_1, 0.0))) + (double)(1.0)));
+prev_1.put(n_key_1, current_1);
+                            queue_1 = ((Point[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_1), java.util.stream.Stream.of(new Point(nx_1, ny_1))).toArray(Point[]::new)));
                         }
                     }
                 }
-                i_1 = i_1 + 1;
+                i_3 = (long)((long)(i_3) + 1L);
             }
         }
-        String dest_key = String.valueOf(key(destination));
-        if (((Boolean)(dist_map.containsKey(dest_key)))) {
-            Point[] path_rev = ((Point[])(new Point[]{destination}));
-            String step_key = dest_key;
-            Point step_pt = destination;
-            while (!(step_key.equals(key(source)))) {
-                step_pt = (Point)(((Point)(prev).get(step_key)));
-                step_key = String.valueOf(key(step_pt));
-                path_rev = ((Point[])(java.util.stream.Stream.concat(java.util.Arrays.stream(path_rev), java.util.stream.Stream.of(step_pt)).toArray(Point[]::new)));
+        String dest_key_1 = String.valueOf(key(destination));
+        if (dist_map_1.containsKey(dest_key_1)) {
+            Point[] path_rev_1 = ((Point[])(new Point[]{destination}));
+            String step_key_1 = dest_key_1;
+            Point step_pt_1 = destination;
+            while (!(step_key_1.equals(key(source)))) {
+                step_pt_1 = (Point)(((Point)(prev_1).get(step_key_1)));
+                step_key_1 = String.valueOf(key(step_pt_1));
+                path_rev_1 = ((Point[])(java.util.stream.Stream.concat(java.util.Arrays.stream(path_rev_1), java.util.stream.Stream.of(step_pt_1)).toArray(Point[]::new)));
             }
-            Point[] path = ((Point[])(new Point[]{}));
-            int k = path_rev.length - 1;
-            while (k >= 0) {
-                path = ((Point[])(java.util.stream.Stream.concat(java.util.Arrays.stream(path), java.util.stream.Stream.of(path_rev[k])).toArray(Point[]::new)));
-                k = k - 1;
+            Point[] path_1 = ((Point[])(new Point[]{}));
+            long k_1 = (long)((long)(path_rev_1.length) - 1L);
+            while ((long)(k_1) >= 0L) {
+                path_1 = ((Point[])(java.util.stream.Stream.concat(java.util.Arrays.stream(path_1), java.util.stream.Stream.of(path_rev_1[(int)((long)(k_1))])).toArray(Point[]::new)));
+                k_1 = (long)((long)(k_1) - 1L);
             }
-            return new Result(((double)(dist_map).getOrDefault(dest_key, 0.0)), path);
+            return new Result(((double)(dist_map_1).getOrDefault(dest_key_1, 0.0)), path_1);
         }
-        return new Result(INF, new Point[]{});
+        return new Result(INF_1, new Point[]{});
     }
 
     static void print_result(Result res) {
@@ -113,11 +113,11 @@ prev.put(n_key, current);
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            grid1 = ((int[][])(new int[][]{new int[]{1, 1, 1}, new int[]{0, 1, 0}, new int[]{0, 1, 1}}));
-            print_result(dijkstra(((int[][])(grid1)), new Point(0, 0), new Point(2, 2), false));
-            print_result(dijkstra(((int[][])(grid1)), new Point(0, 0), new Point(2, 2), true));
-            grid2 = ((int[][])(new int[][]{new int[]{1, 1, 1}, new int[]{0, 0, 1}, new int[]{0, 1, 1}}));
-            print_result(dijkstra(((int[][])(grid2)), new Point(0, 0), new Point(2, 2), false));
+            grid1 = ((long[][])(new long[][]{new long[]{1, 1, 1}, new long[]{0, 1, 0}, new long[]{0, 1, 1}}));
+            print_result(dijkstra(((long[][])(grid1)), new Point(0, 0), new Point(2, 2), false));
+            print_result(dijkstra(((long[][])(grid1)), new Point(0, 0), new Point(2, 2), true));
+            grid2 = ((long[][])(new long[][]{new long[]{1, 1, 1}, new long[]{0, 0, 1}, new long[]{0, 1, 1}}));
+            print_result(dijkstra(((long[][])(grid2)), new Point(0, 0), new Point(2, 2), false));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -151,12 +151,6 @@ prev.put(n_key, current);
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -169,6 +163,10 @@ prev.put(n_key, current);
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

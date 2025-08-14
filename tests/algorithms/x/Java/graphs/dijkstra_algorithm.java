@@ -1,8 +1,8 @@
 public class Main {
     static class Edge {
-        int node;
-        int weight;
-        Edge(int node, int weight) {
+        long node;
+        long weight;
+        Edge(long node, long weight) {
             this.node = node;
             this.weight = weight;
         }
@@ -13,77 +13,77 @@ public class Main {
     }
 
     static Edge[][] graph;
-    static int[] dist_1;
+    static long[] dist_2;
 
-    static int[] make_int_list(int n, int value) {
-        int[] lst = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < n) {
-            lst = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(lst), java.util.stream.IntStream.of(value)).toArray()));
-            i = i + 1;
+    static long[] make_int_list(long n, long value) {
+        long[] lst = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            lst = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(lst), java.util.stream.LongStream.of((long)(value))).toArray()));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return lst;
     }
 
-    static boolean[] make_bool_list(int n) {
+    static boolean[] make_bool_list(long n) {
         boolean[] lst_1 = ((boolean[])(new boolean[]{}));
-        int i_1 = 0;
-        while (i_1 < n) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(n)) {
             lst_1 = ((boolean[])(appendBool(lst_1, false)));
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return lst_1;
     }
 
-    static int[] dijkstra(Edge[][] graph, int src) {
-        int n = graph.length;
-        int[] dist = ((int[])(make_int_list(n, 1000000000)));
-        boolean[] visited = ((boolean[])(make_bool_list(n)));
-dist[src] = 0;
-        int count = 0;
-        while (count < n) {
-            int u = -1;
-            int min_dist = 1000000000;
-            int i_2 = 0;
-            while (i_2 < n) {
-                if (!visited[i_2] && dist[i_2] < min_dist) {
-                    min_dist = dist[i_2];
-                    u = i_2;
+    static long[] dijkstra(Edge[][] graph, long src) {
+        long n = (long)(graph.length);
+        long[] dist_1 = ((long[])(make_int_list((long)(n), 1000000000L)));
+        boolean[] visited_1 = ((boolean[])(make_bool_list((long)(n))));
+dist_1[(int)((long)(src))] = 0L;
+        long count_1 = 0L;
+        while ((long)(count_1) < (long)(n)) {
+            long u_1 = (long)(-1);
+            long min_dist_1 = 1000000000L;
+            long i_5 = 0L;
+            while ((long)(i_5) < (long)(n)) {
+                if (!visited_1[(int)((long)(i_5))] && (long)(dist_1[(int)((long)(i_5))]) < (long)(min_dist_1)) {
+                    min_dist_1 = (long)(dist_1[(int)((long)(i_5))]);
+                    u_1 = (long)(i_5);
                 }
-                i_2 = i_2 + 1;
+                i_5 = (long)((long)(i_5) + 1L);
             }
-            if (u < 0) {
+            if ((long)(u_1) < 0L) {
                 break;
             }
-visited[u] = true;
-            int j = 0;
-            while (j < graph[u].length) {
-                Edge e = graph[u][j];
-                int v = e.node;
-                int w = e.weight;
-                if (!visited[v]) {
-                    int new_dist = dist[u] + w;
-                    if (new_dist < dist[v]) {
-dist[v] = new_dist;
+visited_1[(int)((long)(u_1))] = true;
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(graph[(int)((long)(u_1))].length)) {
+                Edge e_1 = graph[(int)((long)(u_1))][(int)((long)(j_1))];
+                long v_1 = (long)(e_1.node);
+                long w_1 = (long)(e_1.weight);
+                if (!visited_1[(int)((long)(v_1))]) {
+                    long new_dist_1 = (long)((long)(dist_1[(int)((long)(u_1))]) + (long)(w_1));
+                    if ((long)(new_dist_1) < (long)(dist_1[(int)((long)(v_1))])) {
+dist_1[(int)((long)(v_1))] = (long)(new_dist_1);
                     }
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            count = count + 1;
+            count_1 = (long)((long)(count_1) + 1L);
         }
-        return dist;
+        return dist_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
             graph = ((Edge[][])(new Edge[][]{new Edge[]{new Edge(1, 10), new Edge(3, 5)}, new Edge[]{new Edge(2, 1), new Edge(3, 2)}, new Edge[]{new Edge(4, 4)}, new Edge[]{new Edge(1, 3), new Edge(2, 9), new Edge(4, 2)}, new Edge[]{new Edge(0, 7), new Edge(2, 6)}}));
-            dist_1 = ((int[])(dijkstra(((Edge[][])(graph)), 0)));
-            System.out.println(_p(_geti(dist_1, 0)));
-            System.out.println(_p(_geti(dist_1, 1)));
-            System.out.println(_p(_geti(dist_1, 2)));
-            System.out.println(_p(_geti(dist_1, 3)));
-            System.out.println(_p(_geti(dist_1, 4)));
+            dist_2 = ((long[])(dijkstra(((Edge[][])(graph)), 0L)));
+            System.out.println(_p(_geti(dist_2, ((Number)(0)).intValue())));
+            System.out.println(_p(_geti(dist_2, ((Number)(1)).intValue())));
+            System.out.println(_p(_geti(dist_2, ((Number)(2)).intValue())));
+            System.out.println(_p(_geti(dist_2, ((Number)(3)).intValue())));
+            System.out.println(_p(_geti(dist_2, ((Number)(4)).intValue())));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -136,10 +136,14 @@ dist[v] = new_dist;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

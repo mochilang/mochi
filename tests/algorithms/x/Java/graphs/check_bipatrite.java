@@ -1,21 +1,21 @@
 public class Main {
-    static java.util.Map<Integer,int[]> graph;
+    static java.util.Map<Long,long[]> graph;
 
-    static boolean is_bipartite_bfs(java.util.Map<Integer,int[]> graph) {
-        java.util.Map<Integer,Integer> visited = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-        for (int node : graph.keySet()) {
-            if (!(Boolean)(visited.containsKey(node))) {
-                int[] queue = ((int[])(new int[]{}));
-                queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(((Number)(node)).intValue())).toArray()));
-visited.put(node, 0);
-                while (queue.length > 0) {
-                    int curr = queue[0];
-                    queue = ((int[])(java.util.Arrays.copyOfRange(queue, 1, queue.length)));
-                    for (int neighbor : ((int[])(graph).get(curr))) {
-                        if (!(Boolean)(visited.containsKey(neighbor))) {
-visited.put(neighbor, 1 - (int)(((int)(visited).getOrDefault(curr, 0))));
-                            queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(neighbor)).toArray()));
-                        } else                         if ((int)(((int)(visited).getOrDefault(neighbor, 0))) == (int)(((int)(visited).getOrDefault(curr, 0)))) {
+    static boolean is_bipartite_bfs(java.util.Map<Long,long[]> graph) {
+        java.util.Map<Long,Long> visited = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+        for (long node : graph.keySet()) {
+            if (!(visited.containsKey(node))) {
+                long[] queue_1 = ((long[])(new long[]{}));
+                queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(node))).toArray()));
+visited.put(node, 0L);
+                while ((long)(queue_1.length) > 0L) {
+                    long curr_1 = (long)(queue_1[(int)((long)(0))]);
+                    queue_1 = ((long[])(java.util.Arrays.copyOfRange(queue_1, (int)((long)(1)), (int)((long)(queue_1.length)))));
+                    for (long neighbor : ((long[])(graph).get(curr_1))) {
+                        if (!(visited.containsKey(neighbor))) {
+visited.put(neighbor, (long)(1L - (long)(((long)(visited).getOrDefault(curr_1, 0L)))));
+                            queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(neighbor))).toArray()));
+                        } else                         if ((long)(((long)(visited).getOrDefault(neighbor, 0L))) == (long)(((long)(visited).getOrDefault(curr_1, 0L)))) {
                             return false;
                         }
                     }
@@ -28,7 +28,7 @@ visited.put(neighbor, 1 - (int)(((int)(visited).getOrDefault(curr, 0))));
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            graph = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(0, ((int[])(new int[]{1, 3}))), java.util.Map.entry(1, ((int[])(new int[]{0, 2}))), java.util.Map.entry(2, ((int[])(new int[]{1, 3}))), java.util.Map.entry(3, ((int[])(new int[]{0, 2})))))));
+            graph = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(0L, ((long[])(new long[]{1, 3}))), java.util.Map.entry(1L, ((long[])(new long[]{0, 2}))), java.util.Map.entry(2L, ((long[])(new long[]{1, 3}))), java.util.Map.entry(3L, ((long[])(new long[]{0, 2})))))));
             System.out.println(_p(is_bipartite_bfs(graph)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -75,6 +75,10 @@ visited.put(neighbor, 1 - (int)(((int)(visited).getOrDefault(curr, 0))));
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

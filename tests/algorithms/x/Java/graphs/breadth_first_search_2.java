@@ -3,10 +3,10 @@ public class Main {
 
     static String join(String[] xs) {
         String s = "";
-        int i = 0;
-        while (i < xs.length) {
-            s = s + xs[i];
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(xs.length)) {
+            s = s + xs[(int)((long)(i_1))];
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return s;
     }
@@ -14,48 +14,48 @@ public class Main {
     static String[] breadth_first_search(java.util.Map<String,String[]> graph, String start) {
         java.util.Map<String,Boolean> explored = ((java.util.Map<String,Boolean>)(new java.util.LinkedHashMap<String, Boolean>()));
 explored.put(start, true);
-        String[] result = ((String[])(new String[]{start}));
-        String[] queue = ((String[])(new String[]{start}));
-        while (queue.length > 0) {
-            String v = queue[0];
-            queue = ((String[])(java.util.Arrays.copyOfRange(queue, 1, queue.length)));
-            String[] children = (String[])(((String[])(graph).get(v)));
-            int i_1 = 0;
-            while (i_1 < children.length) {
-                String w = children[i_1];
-                if (!(Boolean)(explored.containsKey(w))) {
-explored.put(w, true);
-                    result = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(w)).toArray(String[]::new)));
-                    queue = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue), java.util.stream.Stream.of(w)).toArray(String[]::new)));
+        String[] result_1 = ((String[])(new String[]{start}));
+        String[] queue_1 = ((String[])(new String[]{start}));
+        while ((long)(queue_1.length) > 0L) {
+            String v_1 = queue_1[(int)((long)(0))];
+            queue_1 = ((String[])(java.util.Arrays.copyOfRange(queue_1, (int)((long)(1)), (int)((long)(queue_1.length)))));
+            String[] children_1 = (String[])(((String[])(graph).get(v_1)));
+            long i_3 = 0L;
+            while ((long)(i_3) < (long)(children_1.length)) {
+                String w_1 = children_1[(int)((long)(i_3))];
+                if (!(explored.containsKey(w_1))) {
+explored.put(w_1, true);
+                    result_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(w_1)).toArray(String[]::new)));
+                    queue_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_1), java.util.stream.Stream.of(w_1)).toArray(String[]::new)));
                 }
-                i_1 = i_1 + 1;
+                i_3 = (long)((long)(i_3) + 1L);
             }
         }
-        return result;
+        return result_1;
     }
 
     static String[] breadth_first_search_with_deque(java.util.Map<String,String[]> graph, String start) {
         java.util.Map<String,Boolean> visited = ((java.util.Map<String,Boolean>)(new java.util.LinkedHashMap<String, Boolean>()));
 visited.put(start, true);
-        String[] result_1 = ((String[])(new String[]{start}));
-        String[] queue_1 = ((String[])(new String[]{start}));
-        int head = 0;
-        while (head < queue_1.length) {
-            String v_1 = queue_1[head];
-            head = head + 1;
-            String[] children_1 = (String[])(((String[])(graph).get(v_1)));
-            int i_2 = 0;
-            while (i_2 < children_1.length) {
-                String child = children_1[i_2];
-                if (!(Boolean)(visited.containsKey(child))) {
-visited.put(child, true);
-                    result_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(child)).toArray(String[]::new)));
-                    queue_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_1), java.util.stream.Stream.of(child)).toArray(String[]::new)));
+        String[] result_3 = ((String[])(new String[]{start}));
+        String[] queue_3 = ((String[])(new String[]{start}));
+        long head_1 = 0L;
+        while ((long)(head_1) < (long)(queue_3.length)) {
+            String v_3 = queue_3[(int)((long)(head_1))];
+            head_1 = (long)((long)(head_1) + 1L);
+            String[] children_3 = (String[])(((String[])(graph).get(v_3)));
+            long i_5 = 0L;
+            while ((long)(i_5) < (long)(children_3.length)) {
+                String child_1 = children_3[(int)((long)(i_5))];
+                if (!(visited.containsKey(child_1))) {
+visited.put(child_1, true);
+                    result_3 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_3), java.util.stream.Stream.of(child_1)).toArray(String[]::new)));
+                    queue_3 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_3), java.util.stream.Stream.of(child_1)).toArray(String[]::new)));
                 }
-                i_2 = i_2 + 1;
+                i_5 = (long)((long)(i_5) + 1L);
             }
         }
-        return result_1;
+        return result_3;
     }
     public static void main(String[] args) {
         {

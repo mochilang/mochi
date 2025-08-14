@@ -24,17 +24,17 @@ public class Main {
     static Graph breath_first_search(Graph g) {
         java.util.Map<String,String> parent = g.parent;
 parent.put(g.source, g.source);
-        String[] queue = ((String[])(new String[]{g.source}));
-        int idx = 0;
-        while (idx < queue.length) {
-            String vertex = queue[idx];
-            for (String adj : ((String[])(g.graph).get(vertex))) {
-                if (!(Boolean)(parent.containsKey(adj))) {
-parent.put(adj, vertex);
-                    queue = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue), java.util.stream.Stream.of(adj)).toArray(String[]::new)));
+        String[] queue_1 = ((String[])(new String[]{g.source}));
+        long idx_1 = 0L;
+        while ((long)(idx_1) < (long)(queue_1.length)) {
+            String vertex_1 = queue_1[(int)((long)(idx_1))];
+            for (String adj : ((String[])(g.graph).get(vertex_1))) {
+                if (!(parent.containsKey(adj))) {
+parent.put(adj, vertex_1);
+                    queue_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_1), java.util.stream.Stream.of(adj)).toArray(String[]::new)));
                 }
             }
-            idx = idx + 1;
+            idx_1 = (long)((long)(idx_1) + 1L);
         }
 g.parent = parent;
         return g;
@@ -44,11 +44,11 @@ g.parent = parent;
         if ((target.equals(g.source))) {
             return g.source;
         }
-        if (!(Boolean)(g.parent.containsKey(target))) {
+        if (!(g.parent.containsKey(target))) {
             return "No path from vertex: " + g.source + " to vertex: " + target;
         }
-        String p = ((String)(g.parent).get(target));
-        return String.valueOf(shortest_path(g, p)) + "->" + target;
+        String p_1 = ((String)(g.parent).get(target));
+        return String.valueOf(shortest_path(g, p_1)) + "->" + target;
     }
     public static void main(String[] args) {
         {

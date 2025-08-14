@@ -1,51 +1,51 @@
 public class Main {
-    static java.util.Map<Integer,int[]> graph;
-    static int[] cover;
+    static java.util.Map<Long,long[]> graph;
+    static long[] cover;
 
-    static boolean contains(int[] xs, int v) {
-        for (int x : xs) {
-            if (x == v) {
+    static boolean contains(long[] xs, long v) {
+        for (long x : xs) {
+            if ((long)(x) == (long)(v)) {
                 return true;
             }
         }
         return false;
     }
 
-    static int[][] get_edges(java.util.Map<Integer,int[]> graph) {
-        int n = graph.size();
-        int[][] edges = ((int[][])(new int[][]{}));
+    static long[][] get_edges(java.util.Map<Long,long[]> graph) {
+        long n = (long)(graph.size());
+        long[][] edges_1 = ((long[][])(new long[][]{}));
         for (int i = 0; i < n; i++) {
-            for (int j : ((int[])(graph).get(i))) {
-                edges = ((int[][])(appendObj(edges, new int[]{i, j})));
+            for (long j : ((long[])(graph).get(i))) {
+                edges_1 = java.util.stream.Stream.concat(java.util.Arrays.stream(edges_1), java.util.stream.Stream.of(new Object[][]{new double[]{i, j}})).toArray(Object[][]::new);
             }
         }
-        return edges;
+        return ((long[][])(edges_1));
     }
 
-    static int[] matching_min_vertex_cover(java.util.Map<Integer,int[]> graph) {
-        int[] chosen = ((int[])(new int[]{}));
-        int[][] edges_1 = ((int[][])(get_edges(graph)));
-        while (edges_1.length > 0) {
-            int idx = edges_1.length - 1;
-            int[] e = ((int[])(edges_1[idx]));
-            edges_1 = ((int[][])(java.util.Arrays.copyOfRange(edges_1, 0, idx)));
-            int u = e[0];
-            int v = e[1];
-            if (!(Boolean)contains(((int[])(chosen)), u)) {
-                chosen = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(chosen), java.util.stream.IntStream.of(u)).toArray()));
+    static long[] matching_min_vertex_cover(java.util.Map<Long,long[]> graph) {
+        long[] chosen = ((long[])(new long[]{}));
+        long[][] edges_3 = ((long[][])(get_edges(graph)));
+        while ((long)(edges_3.length) > 0L) {
+            long idx_1 = (long)((long)(edges_3.length) - 1L);
+            long[] e_1 = ((long[])(edges_3[(int)((long)(idx_1))]));
+            edges_3 = ((long[][])(java.util.Arrays.copyOfRange(edges_3, (int)((long)(0)), (int)((long)(idx_1)))));
+            long u_1 = (long)(e_1[(int)((long)(0))]);
+            long v_1 = (long)(e_1[(int)((long)(1))]);
+            if (!(Boolean)contains(((long[])(chosen)), (long)(u_1))) {
+                chosen = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(chosen), java.util.stream.LongStream.of((long)(u_1))).toArray()));
             }
-            if (!(Boolean)contains(((int[])(chosen)), v)) {
-                chosen = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(chosen), java.util.stream.IntStream.of(v)).toArray()));
+            if (!(Boolean)contains(((long[])(chosen)), (long)(v_1))) {
+                chosen = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(chosen), java.util.stream.LongStream.of((long)(v_1))).toArray()));
             }
-            int[][] filtered = ((int[][])(new int[][]{}));
-            for (int[] edge : edges_1) {
-                int a = edge[0];
-                int b = edge[1];
-                if (a != u && b != u && a != v && b != v) {
-                    filtered = ((int[][])(appendObj(filtered, edge)));
+            long[][] filtered_1 = ((long[][])(new long[][]{}));
+            for (long[] edge : edges_3) {
+                long a_1 = (long)(edge[(int)((long)(0))]);
+                long b_1 = (long)(edge[(int)((long)(1))]);
+                if ((long)(a_1) != (long)(u_1) && (long)(b_1) != (long)(u_1) && (long)(a_1) != (long)(v_1) && (long)(b_1) != (long)(v_1)) {
+                    filtered_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(filtered_1), java.util.stream.Stream.of(new long[][]{edge})).toArray(long[][]::new)));
                 }
             }
-            edges_1 = ((int[][])(filtered));
+            edges_3 = ((long[][])(filtered_1));
         }
         return chosen;
     }
@@ -53,8 +53,8 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            graph = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(0, ((int[])(new int[]{1, 3}))), java.util.Map.entry(1, ((int[])(new int[]{0, 3}))), java.util.Map.entry(2, ((int[])(new int[]{0, 3, 4}))), java.util.Map.entry(3, ((int[])(new int[]{0, 1, 2}))), java.util.Map.entry(4, ((int[])(new int[]{2, 3})))))));
-            cover = ((int[])(matching_min_vertex_cover(graph)));
+            graph = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(0L, ((long[])(new long[]{1, 3}))), java.util.Map.entry(1L, ((long[])(new long[]{0, 3}))), java.util.Map.entry(2L, ((long[])(new long[]{0, 3, 4}))), java.util.Map.entry(3L, ((long[])(new long[]{0, 1, 2}))), java.util.Map.entry(4L, ((long[])(new long[]{2, 3})))))));
+            cover = ((long[])(matching_min_vertex_cover(graph)));
             System.out.println(_p(cover));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -89,12 +89,6 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -107,6 +101,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

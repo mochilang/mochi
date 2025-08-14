@@ -1,4 +1,120 @@
-## Progress (2025-08-13 16:02 +0700)
+## Progress (2025-08-14 15:45 +0700)
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
+- java: remove stale error (af736b421f)
+
 - feat(java): support array append and floor (e08be4cefe)
 
 - feat(java): support array append and floor (e08be4cefe)

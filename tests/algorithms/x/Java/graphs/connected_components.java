@@ -1,39 +1,39 @@
 public class Main {
-    static java.util.Map<Integer,int[]> test_graph_1;
-    static java.util.Map<Integer,int[]> test_graph_2;
+    static java.util.Map<Long,long[]> test_graph_1;
+    static java.util.Map<Long,long[]> test_graph_2;
 
-    static int[] dfs(java.util.Map<Integer,int[]> graph, int vert, boolean[] visited) {
-visited[vert] = true;
-        int[] connected_verts = ((int[])(new int[]{}));
-        for (int neighbour : ((int[])(graph).get(vert))) {
-            if (!(Boolean)visited[neighbour]) {
-                connected_verts = ((int[])(concat(connected_verts, dfs(graph, neighbour, ((boolean[])(visited))))));
+    static long[] dfs(java.util.Map<Long,long[]> graph, long vert, boolean[] visited) {
+visited[(int)((long)(vert))] = true;
+        long[] connected_verts_1 = ((long[])(new long[]{}));
+        for (long neighbour : ((long[])(graph).get(vert))) {
+            if (!(Boolean)visited[(int)((long)(neighbour))]) {
+                connected_verts_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(connected_verts_1), java.util.Arrays.stream(dfs(graph, (long)(neighbour), ((boolean[])(visited))))).toArray()));
             }
         }
-        return concat(new int[]{vert}, connected_verts);
+        return java.util.stream.LongStream.concat(java.util.Arrays.stream(new long[]{vert}), java.util.Arrays.stream(connected_verts_1)).toArray();
     }
 
-    static int[][] connected_components(java.util.Map<Integer,int[]> graph) {
-        int graph_size = graph.size();
-        boolean[] visited = ((boolean[])(new boolean[]{}));
+    static long[][] connected_components(java.util.Map<Long,long[]> graph) {
+        long graph_size = (long)(graph.size());
+        boolean[] visited_1 = ((boolean[])(new boolean[]{}));
         for (int _v = 0; _v < graph_size; _v++) {
-            visited = ((boolean[])(appendBool(visited, false)));
+            visited_1 = ((boolean[])(appendBool(visited_1, false)));
         }
-        int[][] components_list = ((int[][])(new int[][]{}));
+        long[][] components_list_1 = ((long[][])(new long[][]{}));
         for (int i = 0; i < graph_size; i++) {
-            if (!(Boolean)visited[i]) {
-                int[] component = ((int[])(dfs(graph, i, ((boolean[])(visited)))));
-                components_list = ((int[][])(appendObj(components_list, component)));
+            if (!(Boolean)visited_1[(int)((long)(i))]) {
+                long[] component_1 = ((long[])(dfs(graph, (long)(i), ((boolean[])(visited_1)))));
+                components_list_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(components_list_1), java.util.stream.Stream.of(new long[][]{component_1})).toArray(long[][]::new)));
             }
         }
-        return components_list;
+        return components_list_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            test_graph_1 = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(0, ((int[])(new int[]{1, 2}))), java.util.Map.entry(1, ((int[])(new int[]{0, 3}))), java.util.Map.entry(2, ((int[])(new int[]{0}))), java.util.Map.entry(3, ((int[])(new int[]{1}))), java.util.Map.entry(4, ((int[])(new int[]{5, 6}))), java.util.Map.entry(5, ((int[])(new int[]{4, 6}))), java.util.Map.entry(6, ((int[])(new int[]{4, 5})))))));
-            test_graph_2 = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(0, ((int[])(new int[]{1, 2, 3}))), java.util.Map.entry(1, ((int[])(new int[]{0, 3}))), java.util.Map.entry(2, ((int[])(new int[]{0}))), java.util.Map.entry(3, ((int[])(new int[]{0, 1}))), java.util.Map.entry(4, new int[]{}), java.util.Map.entry(5, new int[]{})))));
+            test_graph_1 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(0L, ((long[])(new long[]{1, 2}))), java.util.Map.entry(1L, ((long[])(new long[]{0, 3}))), java.util.Map.entry(2L, ((long[])(new long[]{0}))), java.util.Map.entry(3L, ((long[])(new long[]{1}))), java.util.Map.entry(4L, ((long[])(new long[]{5, 6}))), java.util.Map.entry(5L, ((long[])(new long[]{4, 6}))), java.util.Map.entry(6L, ((long[])(new long[]{4, 5})))))));
+            test_graph_2 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(0L, ((long[])(new long[]{1, 2, 3}))), java.util.Map.entry(1L, ((long[])(new long[]{0, 3}))), java.util.Map.entry(2L, ((long[])(new long[]{0}))), java.util.Map.entry(3L, ((long[])(new long[]{0, 1}))), java.util.Map.entry(4L, ((long[])(new long[]{}))), java.util.Map.entry(5L, ((long[])(new long[]{})))))));
             System.out.println(_p(connected_components(test_graph_1)));
             System.out.println(_p(connected_components(test_graph_2)));
             long _benchDuration = _now() - _benchStart;
@@ -75,18 +75,6 @@ visited[vert] = true;
         return out;
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -99,6 +87,10 @@ visited[vert] = true;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

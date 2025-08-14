@@ -1,5 +1,14 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden446_minimum_spanning_tree_prims23588932195/001/Main.java:72: error: incompatible types: String cannot be converted to Number
-                    if (queue[k].node == ((Number)(neighbour)).intValue()) {
-                                                  ^
-1 error
+/tmp/TestJavaTranspiler_Algorithms_Golden446_minimum_spanning_tree_prims2383340463/001/Main.java:130: error: incompatible types: LinkedHashMap<String,Long> cannot be converted to long
+graph.put("a", (long)(new java.util.LinkedHashMap<String, Long>(java.util.Map.ofEntries(java.util.Map.entry("b", 3L), java.util.Map.entry("c", 15L)))));
+                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden446_minimum_spanning_tree_prims2383340463/001/Main.java:131: error: incompatible types: LinkedHashMap<String,Long> cannot be converted to long
+graph.put("b", (long)(new java.util.LinkedHashMap<String, Long>(java.util.Map.ofEntries(java.util.Map.entry("a", 3L), java.util.Map.entry("c", 10L), java.util.Map.entry("d", 100L)))));
+                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden446_minimum_spanning_tree_prims2383340463/001/Main.java:132: error: incompatible types: LinkedHashMap<String,Long> cannot be converted to long
+graph.put("c", (long)(new java.util.LinkedHashMap<String, Long>(java.util.Map.ofEntries(java.util.Map.entry("a", 15L), java.util.Map.entry("b", 10L), java.util.Map.entry("d", 5L)))));
+                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden446_minimum_spanning_tree_prims2383340463/001/Main.java:133: error: incompatible types: LinkedHashMap<String,Long> cannot be converted to long
+graph.put("d", (long)(new java.util.LinkedHashMap<String, Long>(java.util.Map.ofEntries(java.util.Map.entry("b", 100L), java.util.Map.entry("c", 5L)))));
+                     ^
+4 errors

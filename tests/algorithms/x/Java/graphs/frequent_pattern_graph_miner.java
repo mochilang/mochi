@@ -14,9 +14,9 @@ public class Main {
     }
 
     static class ClusterData {
-        java.util.Map<Integer,String[]> clusters;
-        int[] weights;
-        ClusterData(java.util.Map<Integer,String[]> clusters, int[] weights) {
+        java.util.Map<Long,String[]> clusters;
+        long[] weights;
+        ClusterData(java.util.Map<Long,String[]> clusters, long[] weights) {
             this.clusters = clusters;
             this.weights = weights;
         }
@@ -54,9 +54,9 @@ public class Main {
         String[] distinct = ((String[])(new String[]{}));
         for (String[][] row : edge_array) {
             for (String[] item : row) {
-                String e = item[0];
-                if (!(Boolean)contains(((String[])(distinct)), e)) {
-                    distinct = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(distinct), java.util.stream.Stream.of(e)).toArray(String[]::new)));
+                String e_1 = item[(int)((long)(0))];
+                if (!(Boolean)contains(((String[])(distinct)), e_1)) {
+                    distinct = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(distinct), java.util.stream.Stream.of(e_1)).toArray(String[]::new)));
                 }
             }
         }
@@ -65,202 +65,202 @@ public class Main {
 
     static String get_bitcode(String[][][] edge_array, String de) {
         String bitcode = "";
-        int i = 0;
-        while (i < edge_array.length) {
-            boolean found = false;
-            for (String[] item : edge_array[i]) {
-                if ((item[0].equals(de))) {
-                    found = true;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(edge_array.length)) {
+            boolean found_1 = false;
+            for (String[] item : edge_array[(int)((long)(i_1))]) {
+                if ((item[(int)((long)(0))].equals(de))) {
+                    found_1 = true;
                     break;
                 }
             }
-            if (found) {
+            if (found_1) {
                 bitcode = bitcode + "1";
             } else {
                 bitcode = bitcode + "0";
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return bitcode;
     }
 
-    static int count_ones(String s) {
-        int c = 0;
-        int i_1 = 0;
-        while (i_1 < _runeLen(s)) {
-            if ((_substr(s, i_1, i_1 + 1).equals("1"))) {
-                c = c + 1;
+    static long count_ones(String s) {
+        long c = 0L;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(_runeLen(s))) {
+            if ((_substr(s, (int)((long)(i_3)), (int)((long)((long)(i_3) + 1L))).equals("1"))) {
+                c = (long)((long)(c) + 1L);
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return c;
     }
 
     static java.util.Map<String,String>[] get_frequency_table(String[][][] edge_array) {
         String[] distinct_1 = ((String[])(get_distinct_edge(((String[][][])(edge_array)))));
-        java.util.Map<String,String>[] table = ((java.util.Map<String,String>[])((java.util.Map<String,String>[])new java.util.Map[]{}));
+        java.util.Map<String,String>[] table_1 = ((java.util.Map<String,String>[])((java.util.Map<String,String>[])new java.util.Map[]{}));
         for (String e : distinct_1) {
-            String bit = String.valueOf(get_bitcode(((String[][][])(edge_array)), e));
-            int cnt = count_ones(bit);
-            java.util.Map<String,String> entry = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("edge", e), java.util.Map.entry("count", _p(cnt)), java.util.Map.entry("bit", bit)))));
-            table = ((java.util.Map<String,String>[])(appendObj(table, entry)));
+            String bit_1 = String.valueOf(get_bitcode(((String[][][])(edge_array)), e));
+            long cnt_1 = (long)(count_ones(bit_1));
+            java.util.Map<String,String> entry_1 = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("edge", e), java.util.Map.entry("count", _p(cnt_1)), java.util.Map.entry("bit", bit_1)))));
+            table_1 = ((java.util.Map<String,String>[])(appendObj((java.util.Map<String,String>[])table_1, entry_1)));
         }
-        int i_2 = 0;
-        while (i_2 < table.length) {
-            int max_i = i_2;
-            int j = i_2 + 1;
-            while (j < table.length) {
-                if (String.valueOf(toi(((String)(((java.util.Map)table[j])).get("count")))).compareTo(String.valueOf(toi(((String)(((java.util.Map)table[max_i])).get("count"))))) > 0) {
-                    max_i = j;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(table_1.length)) {
+            long max_i_1 = (long)(i_5);
+            long j_1 = (long)((long)(i_5) + 1L);
+            while ((long)(j_1) < (long)(table_1.length)) {
+                if (String.valueOf(toi(((String)(((java.util.Map)table_1[(int)((long)(j_1))])).get("count")))).compareTo(String.valueOf(toi(((String)(((java.util.Map)table_1[(int)((long)(max_i_1))])).get("count"))))) > 0) {
+                    max_i_1 = (long)(j_1);
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            java.util.Map<String,String> tmp = table[i_2];
-table[i_2] = table[max_i];
-table[max_i] = tmp;
-            i_2 = i_2 + 1;
+            java.util.Map<String,String> tmp_1 = table_1[(int)((long)(i_5))];
+table_1[(int)((long)(i_5))] = table_1[(int)((long)(max_i_1))];
+table_1[(int)((long)(max_i_1))] = tmp_1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
-        return table;
+        return table_1;
     }
 
     static NodesData get_nodes(java.util.Map<String,String>[] freq_table) {
         java.util.Map<String,String[]> nodes = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
-        String[] keys = ((String[])(new String[]{}));
+        String[] keys_1 = ((String[])(new String[]{}));
         for (java.util.Map<String,String> f : freq_table) {
-            String code = ((String)(f).get("bit"));
-            String edge = ((String)(f).get("edge"));
-            if (((Boolean)(nodes.containsKey(code)))) {
-nodes.put(code, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(nodes).get(code))), java.util.stream.Stream.of(edge)).toArray(String[]::new))));
+            String code_1 = ((String)(f).get("bit"));
+            String edge_1 = ((String)(f).get("edge"));
+            if (nodes.containsKey(code_1)) {
+nodes.put(code_1, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(nodes).get(code_1))), java.util.stream.Stream.of(edge_1)).toArray(String[]::new))));
             } else {
-nodes.put(code, ((String[])(new String[]{edge})));
-                keys = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(keys), java.util.stream.Stream.of(code)).toArray(String[]::new)));
+nodes.put(code_1, ((String[])(new String[]{edge_1})));
+                keys_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(keys_1), java.util.stream.Stream.of(code_1)).toArray(String[]::new)));
             }
         }
-        return new NodesData(nodes, keys);
+        return new NodesData(nodes, keys_1);
     }
 
     static ClusterData get_cluster(NodesData nodes) {
-        java.util.Map<Integer,String[]> clusters = ((java.util.Map<Integer,String[]>)(new java.util.LinkedHashMap<Integer, String[]>()));
-        int[] weights = ((int[])(new int[]{}));
-        int i_3 = 0;
-        while (i_3 < nodes.keys.length) {
-            String code_1 = nodes.keys[i_3];
-            int wt = count_ones(code_1);
-            if (((Boolean)(clusters.containsKey(wt)))) {
-clusters.put(wt, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(clusters).get(wt))), java.util.stream.Stream.of(code_1)).toArray(String[]::new))));
+        java.util.Map<Long,String[]> clusters = ((java.util.Map<Long,String[]>)(new java.util.LinkedHashMap<Long, String[]>()));
+        long[] weights_1 = ((long[])(new long[]{}));
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(nodes.keys.length)) {
+            String code_3 = nodes.keys[(int)((long)(i_7))];
+            long wt_1 = (long)(count_ones(code_3));
+            if (clusters.containsKey(wt_1)) {
+clusters.put(wt_1, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(clusters).get(wt_1))), java.util.stream.Stream.of(code_3)).toArray(String[]::new))));
             } else {
-clusters.put(wt, ((String[])(new String[]{code_1})));
-                weights = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(weights), java.util.stream.IntStream.of(wt)).toArray()));
+clusters.put(wt_1, ((String[])(new String[]{code_3})));
+                weights_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(weights_1), java.util.stream.LongStream.of((long)(wt_1))).toArray()));
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + 1L);
         }
-        return new ClusterData(clusters, weights);
+        return new ClusterData(clusters, weights_1);
     }
 
-    static int[] get_support(ClusterData clusters) {
-        int[] sup = ((int[])(new int[]{}));
-        int i_4 = 0;
-        while (i_4 < clusters.weights.length) {
-            int w = clusters.weights[i_4];
-            sup = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(sup), java.util.stream.IntStream.of(w * 100 / clusters.weights.length)).toArray()));
-            i_4 = i_4 + 1;
+    static long[] get_support(ClusterData clusters) {
+        long[] sup = ((long[])(new long[]{}));
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(clusters.weights.length)) {
+            long w_1 = (long)(clusters.weights[(int)((long)(i_9))]);
+            sup = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(sup), java.util.stream.LongStream.of((long)((long)((long)(w_1) * 100L) / (long)(clusters.weights.length)))).toArray()));
+            i_9 = (long)((long)(i_9) + 1L);
         }
         return sup;
     }
 
     static boolean contains_bits(String a, String b) {
-        int i_5 = 0;
-        while (i_5 < _runeLen(a)) {
-            String c1 = _substr(a, i_5, i_5 + 1);
-            String c2 = _substr(b, i_5, i_5 + 1);
-            if ((c1.equals("1")) && !(c2.equals("1"))) {
+        long i_10 = 0L;
+        while ((long)(i_10) < (long)(_runeLen(a))) {
+            String c1_1 = _substr(a, (int)((long)(i_10)), (int)((long)((long)(i_10) + 1L)));
+            String c2_1 = _substr(b, (int)((long)(i_10)), (int)((long)((long)(i_10) + 1L)));
+            if ((c1_1.equals("1")) && !(c2_1.equals("1"))) {
                 return false;
             }
-            i_5 = i_5 + 1;
+            i_10 = (long)((long)(i_10) + 1L);
         }
         return true;
     }
 
-    static int max_cluster_key(ClusterData clusters) {
-        int m = 0;
-        int i_6 = 0;
-        while (i_6 < clusters.weights.length) {
-            int w_1 = clusters.weights[i_6];
-            if (w_1 > m) {
-                m = w_1;
+    static long max_cluster_key(ClusterData clusters) {
+        long m = 0L;
+        long i_12 = 0L;
+        while ((long)(i_12) < (long)(clusters.weights.length)) {
+            long w_3 = (long)(clusters.weights[(int)((long)(i_12))]);
+            if ((long)(w_3) > (long)(m)) {
+                m = (long)(w_3);
             }
-            i_6 = i_6 + 1;
+            i_12 = (long)((long)(i_12) + 1L);
         }
         return m;
     }
 
-    static String[] get_cluster_codes(ClusterData clusters, int wt) {
-        if (((Boolean)(clusters.clusters.containsKey(wt)))) {
+    static String[] get_cluster_codes(ClusterData clusters, long wt) {
+        if (clusters.clusters.containsKey(wt)) {
             return ((String[])(clusters.clusters).get(wt));
         }
         return new String[]{};
     }
 
-    static String[] create_edge(NodesData nodes, java.util.Map<String,String[]> graph, String[] gkeys, ClusterData clusters, int c1, int maxk) {
-        String[] keys_1 = ((String[])(gkeys));
-        String[] codes1 = ((String[])(get_cluster_codes(clusters, c1)));
-        int idx1 = 0;
-        while (idx1 < codes1.length) {
-            String i_code = codes1[idx1];
-            int count = 0;
-            int c2_1 = c1 + 1;
-            while (c2_1 <= maxk) {
-                String[] codes2 = ((String[])(get_cluster_codes(clusters, c2_1)));
-                int j_1 = 0;
-                while (j_1 < codes2.length) {
-                    String j_code = codes2[j_1];
-                    if (((Boolean)(contains_bits(i_code, j_code)))) {
-                        if (((Boolean)(graph.containsKey(i_code)))) {
-graph.put(i_code, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(graph).get(i_code))), java.util.stream.Stream.of(j_code)).toArray(String[]::new))));
+    static String[] create_edge(NodesData nodes, java.util.Map<String,String[]> graph, String[] gkeys, ClusterData clusters, long c1, long maxk) {
+        String[] keys_2 = ((String[])(gkeys));
+        String[] codes1_1 = ((String[])(get_cluster_codes(clusters, (long)(c1))));
+        long idx1_1 = 0L;
+        while ((long)(idx1_1) < (long)(codes1_1.length)) {
+            String i_code_1 = codes1_1[(int)((long)(idx1_1))];
+            long count_1 = 0L;
+            long c2_3 = (long)((long)(c1) + 1L);
+            while ((long)(c2_3) <= (long)(maxk)) {
+                String[] codes2_1 = ((String[])(get_cluster_codes(clusters, (long)(c2_3))));
+                long j_3 = 0L;
+                while ((long)(j_3) < (long)(codes2_1.length)) {
+                    String j_code_1 = codes2_1[(int)((long)(j_3))];
+                    if (contains_bits(i_code_1, j_code_1)) {
+                        if (graph.containsKey(i_code_1)) {
+graph.put(i_code_1, ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(graph).get(i_code_1))), java.util.stream.Stream.of(j_code_1)).toArray(String[]::new))));
                         } else {
-graph.put(i_code, ((String[])(new String[]{j_code})));
-                            if (!(Boolean)contains(((String[])(keys_1)), i_code)) {
-                                keys_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(keys_1), java.util.stream.Stream.of(i_code)).toArray(String[]::new)));
+graph.put(i_code_1, ((String[])(new String[]{j_code_1})));
+                            if (!(Boolean)contains(((String[])(keys_2)), i_code_1)) {
+                                keys_2 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(keys_2), java.util.stream.Stream.of(i_code_1)).toArray(String[]::new)));
                             }
                         }
-                        if (!(Boolean)contains(((String[])(keys_1)), j_code)) {
-                            keys_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(keys_1), java.util.stream.Stream.of(j_code)).toArray(String[]::new)));
+                        if (!(Boolean)contains(((String[])(keys_2)), j_code_1)) {
+                            keys_2 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(keys_2), java.util.stream.Stream.of(j_code_1)).toArray(String[]::new)));
                         }
-                        count = count + 1;
+                        count_1 = (long)((long)(count_1) + 1L);
                     }
-                    j_1 = j_1 + 1;
+                    j_3 = (long)((long)(j_3) + 1L);
                 }
-                if (count == 0) {
-                    c2_1 = c2_1 + 1;
+                if ((long)(count_1) == 0L) {
+                    c2_3 = (long)((long)(c2_3) + 1L);
                 } else {
                     break;
                 }
             }
-            idx1 = idx1 + 1;
+            idx1_1 = (long)((long)(idx1_1) + 1L);
         }
-        return keys_1;
+        return keys_2;
     }
 
     static GraphData construct_graph(ClusterData clusters, NodesData nodes) {
-        int maxk = max_cluster_key(clusters);
-        String[] top_codes = ((String[])(get_cluster_codes(clusters, maxk)));
-        java.util.Map<String,String[]> graph = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
-        String[] keys_2 = ((String[])(new String[]{"Header"}));
-graph.put("Header", ((String[])(new String[]{})));
-        int i_7 = 0;
-        while (i_7 < top_codes.length) {
-            String code_2 = top_codes[i_7];
-graph.put("Header", ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(graph).get("Header"))), java.util.stream.Stream.of(code_2)).toArray(String[]::new))));
-graph.put(code_2, ((String[])(new String[]{"Header"})));
-            keys_2 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(keys_2), java.util.stream.Stream.of(code_2)).toArray(String[]::new)));
-            i_7 = i_7 + 1;
+        long maxk = (long)(max_cluster_key(clusters));
+        String[] top_codes_1 = ((String[])(get_cluster_codes(clusters, (long)(maxk))));
+        java.util.Map<String,String[]> graph_1 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>()));
+        String[] keys_4 = ((String[])(new String[]{"Header"}));
+graph_1.put("Header", ((String[])(new String[]{})));
+        long i_14 = 0L;
+        while ((long)(i_14) < (long)(top_codes_1.length)) {
+            String code_5 = top_codes_1[(int)((long)(i_14))];
+graph_1.put("Header", ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])(graph_1).get("Header"))), java.util.stream.Stream.of(code_5)).toArray(String[]::new))));
+graph_1.put(code_5, ((String[])(new String[]{"Header"})));
+            keys_4 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(keys_4), java.util.stream.Stream.of(code_5)).toArray(String[]::new)));
+            i_14 = (long)((long)(i_14) + 1L);
         }
-        int c_1 = 1;
-        while (c_1 < maxk) {
-            keys_2 = ((String[])(create_edge(nodes, graph, ((String[])(keys_2)), clusters, c_1, maxk)));
-            c_1 = c_1 + 1;
+        long c_2 = 1L;
+        while ((long)(c_2) < (long)(maxk)) {
+            keys_4 = ((String[])(create_edge(nodes, graph_1, ((String[])(keys_4)), clusters, (long)(c_2), (long)(maxk))));
+            c_2 = (long)((long)(c_2) + 1L);
         }
-        return new GraphData(graph, keys_2);
+        return new GraphData(graph_1, keys_4);
     }
 
     static String[] copy_list(String[] lst) {
@@ -275,29 +275,29 @@ graph.put(code_2, ((String[])(new String[]{"Header"})));
         String[] new_path = ((String[])(copy_list(((String[])(path)))));
         new_path = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_path), java.util.stream.Stream.of(start)).toArray(String[]::new)));
         if ((start.equals(end))) {
-            paths = ((String[][])(appendObj(paths, new_path)));
+            paths = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(paths), java.util.stream.Stream.of(new String[][]{new_path})).toArray(String[][]::new)));
             return;
         }
         for (String node : ((String[])(graph).get(start))) {
-            boolean seen = false;
+            boolean seen_1 = false;
             for (String p : new_path) {
                 if ((p.equals(node))) {
-                    seen = true;
+                    seen_1 = true;
                 }
             }
-            if (!seen) {
+            if (!seen_1) {
                 my_dfs(graph, node, end, ((String[])(new_path)));
             }
         }
     }
 
-    static void find_freq_subgraph_given_support(int s, ClusterData clusters, GraphData graph) {
-        int k = s * clusters.weights.length / 100;
-        String[] codes = ((String[])(get_cluster_codes(clusters, k)));
-        int i_8 = 0;
-        while (i_8 < codes.length) {
-            my_dfs(graph.edges, codes[i_8], "Header", ((String[])(new String[]{})));
-            i_8 = i_8 + 1;
+    static void find_freq_subgraph_given_support(long s, ClusterData clusters, GraphData graph) {
+        long k = (long)((long)((long)(s) * (long)(clusters.weights.length)) / 100L);
+        String[] codes_1 = ((String[])(get_cluster_codes(clusters, (long)(k))));
+        long i_16 = 0L;
+        while ((long)(i_16) < (long)(codes_1.length)) {
+            my_dfs(graph.edges, codes_1[(int)((long)(i_16))], "Header", ((String[])(new String[]{})));
+            i_16 = (long)((long)(i_16) + 1L);
         }
     }
 
@@ -308,51 +308,51 @@ graph.put(code_2, ((String[])(new String[]{"Header"})));
     static String[][][] freq_subgraphs_edge_list(String[][] paths, NodesData nodes) {
         String[][][] freq_sub_el = ((String[][][])(new String[][][]{}));
         for (String[] path : paths) {
-            String[][] el = ((String[][])(new String[][]{}));
-            int j_2 = 0;
-            while (j_2 < path.length - 1) {
-                String code_3 = path[j_2];
-                String[] edge_list = ((String[])(node_edges(nodes, code_3)));
-                int e_1 = 0;
-                while (e_1 < edge_list.length) {
-                    String edge_1 = edge_list[e_1];
-                    String a = _substr(edge_1, 0, 1);
-                    String b = _substr(edge_1, 1, 2);
-                    el = ((String[][])(appendObj(el, new String[]{a, b})));
-                    e_1 = e_1 + 1;
+            String[][] el_1 = ((String[][])(new String[][]{}));
+            long j_5 = 0L;
+            while ((long)(j_5) < (long)((long)(path.length) - 1L)) {
+                String code_7 = path[(int)((long)(j_5))];
+                String[] edge_list_1 = ((String[])(node_edges(nodes, code_7)));
+                long e_3 = 0L;
+                while ((long)(e_3) < (long)(edge_list_1.length)) {
+                    String edge_3 = edge_list_1[(int)((long)(e_3))];
+                    String a_1 = _substr(edge_3, (int)((long)(0)), (int)((long)(1)));
+                    String b_1 = _substr(edge_3, (int)((long)(1)), (int)((long)(2)));
+                    el_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(el_1), java.util.stream.Stream.of(new String[][]{new String[]{a_1, b_1}})).toArray(String[][]::new)));
+                    e_3 = (long)((long)(e_3) + 1L);
                 }
-                j_2 = j_2 + 1;
+                j_5 = (long)((long)(j_5) + 1L);
             }
-            freq_sub_el = ((String[][][])(appendObj(freq_sub_el, el)));
+            freq_sub_el = ((String[][][])(java.util.stream.Stream.concat(java.util.Arrays.stream(freq_sub_el), java.util.stream.Stream.of(new String[][][]{el_1})).toArray(String[][][]::new)));
         }
         return freq_sub_el;
     }
 
-    static void print_all(NodesData nodes, int[] support, ClusterData clusters, GraphData graph, String[][][] freq_subgraph_edge_list) {
+    static void print_all(NodesData nodes, long[] support, ClusterData clusters, GraphData graph, String[][][] freq_subgraph_edge_list) {
         System.out.println("\nNodes\n");
-        int i_9 = 0;
-        while (i_9 < nodes.keys.length) {
-            String code_4 = nodes.keys[i_9];
-            System.out.println(code_4);
-            System.out.println(java.util.Arrays.toString(((String[])(nodes.map).get(code_4))));
-            i_9 = i_9 + 1;
+        long i_18 = 0L;
+        while ((long)(i_18) < (long)(nodes.keys.length)) {
+            String code_9 = nodes.keys[(int)((long)(i_18))];
+            System.out.println(code_9);
+            System.out.println(java.util.Arrays.toString(((String[])(nodes.map).get(code_9))));
+            i_18 = (long)((long)(i_18) + 1L);
         }
         System.out.println("\nSupport\n");
         System.out.println(java.util.Arrays.toString(support));
         System.out.println("\nCluster\n");
-        int j_3 = 0;
-        while (j_3 < clusters.weights.length) {
-            int w_2 = clusters.weights[j_3];
-            System.out.println(_p(w_2) + ":" + _p(((String[])(clusters.clusters).get(w_2))));
-            j_3 = j_3 + 1;
+        long j_7 = 0L;
+        while ((long)(j_7) < (long)(clusters.weights.length)) {
+            long w_5 = (long)(clusters.weights[(int)((long)(j_7))]);
+            System.out.println(_p(w_5) + ":" + _p(((String[])(clusters.clusters).get(w_5))));
+            j_7 = (long)((long)(j_7) + 1L);
         }
         System.out.println("\nGraph\n");
-        int k_1 = 0;
-        while (k_1 < graph.keys.length) {
-            String key = graph.keys[k_1];
-            System.out.println(key);
-            System.out.println(java.util.Arrays.toString(((String[])(graph.edges).get(key))));
-            k_1 = k_1 + 1;
+        long k_2 = 0L;
+        while ((long)(k_2) < (long)(graph.keys.length)) {
+            String key_1 = graph.keys[(int)((long)(k_2))];
+            System.out.println(key_1);
+            System.out.println(java.util.Arrays.toString(((String[])(graph.edges).get(key_1))));
+            k_2 = (long)((long)(k_2) + 1L);
         }
         System.out.println("\nEdge List of Frequent subgraphs\n");
         for (String[][] el : freq_subgraph_edge_list) {
@@ -362,13 +362,13 @@ graph.put(code_2, ((String[])(new String[]{"Header"})));
 
     static void main() {
         java.util.Map<String,String>[] frequency_table = ((java.util.Map<String,String>[])(get_frequency_table(((String[][][])(EDGE_ARRAY)))));
-        NodesData nodes_1 = get_nodes(((java.util.Map<String,String>[])(frequency_table)));
-        ClusterData clusters_1 = get_cluster(nodes_1);
-        int[] support = ((int[])(get_support(clusters_1)));
-        GraphData graph_1 = construct_graph(clusters_1, nodes_1);
-        find_freq_subgraph_given_support(60, clusters_1, graph_1);
-        String[][][] freq_subgraph_edge_list = ((String[][][])(freq_subgraphs_edge_list(((String[][])(paths)), nodes_1)));
-        print_all(nodes_1, ((int[])(support)), clusters_1, graph_1, ((String[][][])(freq_subgraph_edge_list)));
+        NodesData nodes_2 = get_nodes(((java.util.Map<String,String>[])(frequency_table)));
+        ClusterData clusters_2 = get_cluster(nodes_2);
+        long[] support_1 = ((long[])(get_support(clusters_2)));
+        GraphData graph_3 = construct_graph(clusters_2, nodes_2);
+        find_freq_subgraph_given_support(60L, clusters_2, graph_3);
+        String[][][] freq_subgraph_edge_list_1 = ((String[][][])(freq_subgraphs_edge_list(((String[][])(paths)), nodes_2)));
+        print_all(nodes_2, ((long[])(support_1)), clusters_2, graph_3, ((String[][][])(freq_subgraph_edge_list_1)));
     }
     public static void main(String[] args) {
         {
@@ -421,6 +421,10 @@ graph.put(code_2, ((String[])(new String[]{"Header"})));
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
@@ -438,6 +442,10 @@ graph.put(code_2, ((String[])(new String[]{"Header"})));
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

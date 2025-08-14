@@ -1,8 +1,8 @@
 public class Main {
     static class Graph {
-        java.util.Map<Integer,int[]> vertex;
-        int size;
-        Graph(java.util.Map<Integer,int[]> vertex, int size) {
+        java.util.Map<Long,long[]> vertex;
+        long size;
+        Graph(java.util.Map<Long,long[]> vertex, long size) {
             this.vertex = vertex;
             this.size = size;
         }
@@ -14,114 +14,114 @@ public class Main {
 
     static Graph g = null;
 
-    static Graph add_edge(Graph g, int from_vertex, int to_vertex) {
-        java.util.Map<Integer,int[]> v = g.vertex;
-        if (((Boolean)(v.containsKey(from_vertex)))) {
-            int[] lst = (int[])(((int[])(v).get(from_vertex)));
-            lst = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(lst), java.util.stream.IntStream.of(to_vertex)).toArray()));
-v.put(from_vertex, ((int[])(lst)));
+    static Graph add_edge(Graph g, long from_vertex, long to_vertex) {
+        java.util.Map<Long,long[]> v = g.vertex;
+        if (v.containsKey(from_vertex)) {
+            long[] lst_1 = (long[])(((long[])(v).get(from_vertex)));
+            lst_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(lst_1), java.util.stream.LongStream.of((long)(to_vertex))).toArray()));
+v.put(from_vertex, ((long[])(lst_1)));
         } else {
-v.put(from_vertex, ((int[])(new int[]{to_vertex})));
+v.put(from_vertex, ((long[])(new long[]{to_vertex})));
         }
 g.vertex = v;
-        if (from_vertex + 1 > g.size) {
-g.size = from_vertex + 1;
+        if ((long)((long)(from_vertex) + 1L) > (long)(g.size)) {
+g.size = (long)(from_vertex) + 1L;
         }
-        if (to_vertex + 1 > g.size) {
-g.size = to_vertex + 1;
+        if ((long)((long)(to_vertex) + 1L) > (long)(g.size)) {
+g.size = (long)(to_vertex) + 1L;
         }
         return g;
     }
 
-    static String list_to_string(int[] lst) {
+    static String list_to_string(long[] lst) {
         String res = "";
-        int i = 0;
-        while (i < lst.length) {
-            res = res + _p(_geti(lst, i));
-            if (i < lst.length - 1) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(lst.length)) {
+            res = res + _p(_geti(lst, ((Number)(i_1)).intValue()));
+            if ((long)(i_1) < (long)((long)(lst.length) - 1L)) {
                 res = res + " ";
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return res;
     }
 
-    static String list_to_arrow(int[] lst) {
+    static String list_to_arrow(long[] lst) {
         String res_1 = "";
-        int i_1 = 0;
-        while (i_1 < lst.length) {
-            res_1 = res_1 + _p(_geti(lst, i_1));
-            if (i_1 < lst.length - 1) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(lst.length)) {
+            res_1 = res_1 + _p(_geti(lst, ((Number)(i_3)).intValue()));
+            if ((long)(i_3) < (long)((long)(lst.length) - 1L)) {
                 res_1 = res_1 + " -> ";
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return res_1;
     }
 
     static void print_graph(Graph g) {
         System.out.println(_p(g.vertex));
-        int i_2 = 0;
-        while (i_2 < g.size) {
-            int[] edges = ((int[])(new int[]{}));
-            if (((Boolean)(g.vertex.containsKey(i_2)))) {
-                edges = (int[])(((int[])(g.vertex).get(i_2)));
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(g.size)) {
+            long[] edges_1 = ((long[])(new long[]{}));
+            if (g.vertex.containsKey(i_5)) {
+                edges_1 = (long[])(((long[])(g.vertex).get(i_5)));
             }
-            String line = _p(i_2) + "  ->  " + String.valueOf(list_to_arrow(((int[])(edges))));
-            System.out.println(line);
-            i_2 = i_2 + 1;
+            String line_1 = _p(i_5) + "  ->  " + String.valueOf(list_to_arrow(((long[])(edges_1))));
+            System.out.println(line_1);
+            i_5 = (long)((long)(i_5) + 1L);
         }
     }
 
-    static int[] dfs_recursive(Graph g, int start_vertex, boolean[] visited, int[] order) {
-visited[start_vertex] = true;
-        order = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(order), java.util.stream.IntStream.of(start_vertex)).toArray()));
-        if (((Boolean)(g.vertex.containsKey(start_vertex)))) {
-            int[] neighbors = (int[])(((int[])(g.vertex).get(start_vertex)));
-            int i_3 = 0;
-            while (i_3 < neighbors.length) {
-                int nb = neighbors[i_3];
-                if (!(Boolean)visited[nb]) {
-                    order = ((int[])(dfs_recursive(g, nb, ((boolean[])(visited)), ((int[])(order)))));
+    static long[] dfs_recursive(Graph g, long start_vertex, boolean[] visited, long[] order) {
+visited[(int)((long)(start_vertex))] = true;
+        order = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order), java.util.stream.LongStream.of((long)(start_vertex))).toArray()));
+        if (g.vertex.containsKey(start_vertex)) {
+            long[] neighbors_1 = (long[])(((long[])(g.vertex).get(start_vertex)));
+            long i_7 = 0L;
+            while ((long)(i_7) < (long)(neighbors_1.length)) {
+                long nb_1 = (long)(neighbors_1[(int)((long)(i_7))]);
+                if (!(Boolean)visited[(int)((long)(nb_1))]) {
+                    order = ((long[])(dfs_recursive(g, (long)(nb_1), ((boolean[])(visited)), ((long[])(order)))));
                 }
-                i_3 = i_3 + 1;
+                i_7 = (long)((long)(i_7) + 1L);
             }
         }
         return order;
     }
 
-    static int[] dfs(Graph g) {
-        int n = g.size;
-        boolean[] visited = ((boolean[])(new boolean[]{}));
-        int i_4 = 0;
-        while (i_4 < n) {
-            visited = ((boolean[])(appendBool(visited, false)));
-            i_4 = i_4 + 1;
+    static long[] dfs(Graph g) {
+        long n = (long)(g.size);
+        boolean[] visited_1 = ((boolean[])(new boolean[]{}));
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(n)) {
+            visited_1 = ((boolean[])(appendBool(visited_1, false)));
+            i_9 = (long)((long)(i_9) + 1L);
         }
-        int[] order = ((int[])(new int[]{}));
-        i_4 = 0;
-        while (i_4 < n) {
-            if (!(Boolean)visited[i_4]) {
-                order = ((int[])(dfs_recursive(g, i_4, ((boolean[])(visited)), ((int[])(order)))));
+        long[] order_1 = ((long[])(new long[]{}));
+        i_9 = 0L;
+        while ((long)(i_9) < (long)(n)) {
+            if (!(Boolean)visited_1[(int)((long)(i_9))]) {
+                order_1 = ((long[])(dfs_recursive(g, (long)(i_9), ((boolean[])(visited_1)), ((long[])(order_1)))));
             }
-            i_4 = i_4 + 1;
+            i_9 = (long)((long)(i_9) + 1L);
         }
-        return order;
+        return order_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            g = new Graph(new java.util.LinkedHashMap<Integer, int[]>(), 0);
-            g = add_edge(g, 0, 1);
-            g = add_edge(g, 0, 2);
-            g = add_edge(g, 1, 2);
-            g = add_edge(g, 2, 0);
-            g = add_edge(g, 2, 3);
-            g = add_edge(g, 3, 3);
+            g = new Graph(new java.util.LinkedHashMap<Long, long[]>(), 0);
+            g = add_edge(g, 0L, 1L);
+            g = add_edge(g, 0L, 2L);
+            g = add_edge(g, 1L, 2L);
+            g = add_edge(g, 2L, 0L);
+            g = add_edge(g, 2L, 3L);
+            g = add_edge(g, 3L, 3L);
             print_graph(g);
             System.out.println("DFS:");
-            System.out.println(list_to_string(((int[])(dfs(g)))));
+            System.out.println(list_to_string(((long[])(dfs(g)))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -174,10 +174,14 @@ visited[start_vertex] = true;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

@@ -1,52 +1,52 @@
 public class Main {
-    static java.util.Map<Integer,int[]> graph = null;
+    static java.util.Map<Long,long[]> graph = null;
 
-    static int[] remove_value(int[] lst, int val) {
-        int[] res = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < lst.length) {
-            if (lst[i] != val) {
-                res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(lst[i])).toArray()));
+    static long[] remove_value(long[] lst, long val) {
+        long[] res = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(lst.length)) {
+            if ((long)(lst[(int)((long)(i_1))]) != (long)(val)) {
+                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(lst[(int)((long)(i_1))]))).toArray()));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return res;
     }
 
-    static int[] greedy_min_vertex_cover(java.util.Map<Integer,int[]> graph) {
-        java.util.Map<Integer,int[]> g = graph;
-        int[] cover = ((int[])(new int[]{}));
+    static long[] greedy_min_vertex_cover(java.util.Map<Long,long[]> graph) {
+        java.util.Map<Long,long[]> g = graph;
+        long[] cover_1 = ((long[])(new long[]{}));
         while (true) {
-            int max_v = 0;
-            int max_deg = 0;
-            for (int v : g.keySet()) {
-                int key = ((Number)(v)).intValue();
-                int deg = ((int[])(g).get(key)).length;
-                if (deg > max_deg) {
-                    max_deg = deg;
-                    max_v = key;
+            long max_v_1 = 0L;
+            long max_deg_1 = 0L;
+            for (long v : g.keySet()) {
+                long key_1 = (long)(((Number)(v)).intValue());
+                long deg_1 = (long)(((long[])(g).get(key_1)).length);
+                if ((long)(deg_1) > (long)(max_deg_1)) {
+                    max_deg_1 = (long)(deg_1);
+                    max_v_1 = (long)(key_1);
                 }
             }
-            if (max_deg == 0) {
+            if ((long)(max_deg_1) == 0L) {
                 break;
             }
-            cover = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(cover), java.util.stream.IntStream.of(max_v)).toArray()));
-            int[] neighbors = (int[])(((int[])(g).get(max_v)));
-            int i_1 = 0;
-            while (i_1 < neighbors.length) {
-                int n = neighbors[i_1];
-g.put(n, ((int[])(remove_value((int[])(((int[])(g).get(n))), max_v))));
-                i_1 = i_1 + 1;
+            cover_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(cover_1), java.util.stream.LongStream.of((long)(max_v_1))).toArray()));
+            long[] neighbors_1 = (long[])(((long[])(g).get(max_v_1)));
+            long i_3 = 0L;
+            while ((long)(i_3) < (long)(neighbors_1.length)) {
+                long n_1 = (long)(neighbors_1[(int)((long)(i_3))]);
+g.put(n_1, ((long[])(remove_value((long[])(((long[])(g).get(n_1))), (long)(max_v_1)))));
+                i_3 = (long)((long)(i_3) + 1L);
             }
-g.put(max_v, ((int[])(new int[]{})));
+g.put(max_v_1, ((long[])(new long[]{})));
         }
-        return cover;
+        return cover_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            graph = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(0, ((int[])(new int[]{1, 3}))), java.util.Map.entry(1, ((int[])(new int[]{0, 3}))), java.util.Map.entry(2, ((int[])(new int[]{0, 3, 4}))), java.util.Map.entry(3, ((int[])(new int[]{0, 1, 2}))), java.util.Map.entry(4, ((int[])(new int[]{2, 3})))))));
+            graph = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(0L, ((long[])(new long[]{1, 3}))), java.util.Map.entry(1L, ((long[])(new long[]{0, 3}))), java.util.Map.entry(2L, ((long[])(new long[]{0, 3, 4}))), java.util.Map.entry(3L, ((long[])(new long[]{0, 1, 2}))), java.util.Map.entry(4L, ((long[])(new long[]{2, 3})))))));
             System.out.println(greedy_min_vertex_cover(graph));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;

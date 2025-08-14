@@ -1,64 +1,63 @@
 public class Main {
-    static double INF;
+    static double INF = (double)(1000000000.0);
     static Object[][] graph;
     static double[][] result;
 
     static double[][] floyd_warshall(double[][] graph) {
-        int v = graph.length;
-        double[][] dist = ((double[][])(new double[][]{}));
-        int i = 0;
-        while (i < v) {
-            double[] row = ((double[])(new double[]{}));
-            int j = 0;
-            while (j < v) {
-                row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(graph[i][j])).toArray()));
-                j = j + 1;
+        long v = (long)(graph.length);
+        double[][] dist_1 = ((double[][])(new double[][]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(v)) {
+            double[] row_1 = ((double[])(new double[]{}));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(v)) {
+                row_1 = ((double[])(appendDouble(row_1, (double)(graph[(int)((long)(i_1))][(int)((long)(j_1))]))));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            dist = ((double[][])(appendObj(dist, row)));
-            i = i + 1;
+            dist_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(dist_1), java.util.stream.Stream.of(new double[][]{row_1})).toArray(double[][]::new)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int k = 0;
-        while (k < v) {
-            int i_1 = 0;
-            while (i_1 < v) {
-                int j_1 = 0;
-                while (j_1 < v) {
-                    if (dist[i_1][k] < INF && dist[k][j_1] < INF && dist[i_1][k] + dist[k][j_1] < dist[i_1][j_1]) {
-dist[i_1][j_1] = dist[i_1][k] + dist[k][j_1];
+        long k_1 = 0L;
+        while ((long)(k_1) < (long)(v)) {
+            long i_3 = 0L;
+            while ((long)(i_3) < (long)(v)) {
+                long j_3 = 0L;
+                while ((long)(j_3) < (long)(v)) {
+                    if ((double)(dist_1[(int)((long)(i_3))][(int)((long)(k_1))]) < (double)(INF) && (double)(dist_1[(int)((long)(k_1))][(int)((long)(j_3))]) < (double)(INF) && (double)((double)(dist_1[(int)((long)(i_3))][(int)((long)(k_1))]) + (double)(dist_1[(int)((long)(k_1))][(int)((long)(j_3))])) < (double)(dist_1[(int)((long)(i_3))][(int)((long)(j_3))])) {
+dist_1[(int)((long)(i_3))][(int)((long)(j_3))] = (double)((double)(dist_1[(int)((long)(i_3))][(int)((long)(k_1))]) + (double)(dist_1[(int)((long)(k_1))][(int)((long)(j_3))]));
                     }
-                    j_1 = j_1 + 1;
+                    j_3 = (long)((long)(j_3) + 1L);
                 }
-                i_1 = i_1 + 1;
+                i_3 = (long)((long)(i_3) + 1L);
             }
-            k = k + 1;
+            k_1 = (long)((long)(k_1) + 1L);
         }
-        return dist;
+        return dist_1;
     }
 
     static void print_dist(double[][] dist) {
         System.out.println("\nThe shortest path matrix using Floyd Warshall algorithm\n");
-        int i_2 = 0;
-        while (i_2 < dist.length) {
-            int j_2 = 0;
-            String line = "";
-            while (j_2 < dist[i_2].length) {
-                if (dist[i_2][j_2] >= INF / 2.0) {
-                    line = line + "INF\t";
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(dist.length)) {
+            long j_5 = 0L;
+            String line_1 = "";
+            while ((long)(j_5) < (long)(dist[(int)((long)(i_5))].length)) {
+                if ((double)(dist[(int)((long)(i_5))][(int)((long)(j_5))]) >= (double)((double)(INF) / (double)(2.0))) {
+                    line_1 = line_1 + "INF\t";
                 } else {
-                    line = line + _p(((Number)(dist[i_2][j_2])).intValue()) + "\t";
+                    line_1 = line_1 + _p(((Number)(_getd(dist[(int)((long)(i_5))], ((Number)(j_5)).intValue()))).intValue()) + "\t";
                 }
-                j_2 = j_2 + 1;
+                j_5 = (long)((long)(j_5) + 1L);
             }
-            System.out.println(line);
-            i_2 = i_2 + 1;
+            System.out.println(line_1);
+            i_5 = (long)((long)(i_5) + 1L);
         }
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            INF = 1000000000.0;
-            graph = ((Object[][])(new Object[][]{new Object[]{0.0, 5.0, INF, 10.0}, new Object[]{INF, 0.0, 3.0, INF}, new Object[]{INF, INF, 0.0, 1.0}, new Object[]{INF, INF, INF, 0.0}}));
+            graph = ((Object[][])(new Object[][]{new double[]{0.0, 5.0, INF, 10.0}, new double[]{INF, 0.0, 3.0, INF}, new double[]{INF, INF, 0.0, 1.0}, new double[]{INF, INF, INF, 0.0}}));
             result = ((double[][])(floyd_warshall(((double[][])(graph)))));
             print_dist(((double[][])(result)));
             long _benchDuration = _now() - _benchStart;
@@ -94,8 +93,8 @@ dist[i_1][j_1] = dist[i_1][k] + dist[k][j_1];
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -113,6 +112,14 @@ dist[i_1][j_1] = dist[i_1][k] + dist[k][j_1];
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static Double _getd(double[] a, int i) {
+        return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

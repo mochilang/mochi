@@ -1,71 +1,70 @@
 public class Main {
-    static double INF;
+    static double INF = (double)(1000000000.0);
 
     static void print_dist(double[] dist) {
         System.out.println("Vertex Distance");
-        int i = 0;
-        while (i < dist.length) {
-            if (dist[i] >= INF) {
-                System.out.println(String.valueOf(i) + " " + "\tINF");
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(dist.length)) {
+            if ((double)(dist[(int)((long)(i_1))]) >= (double)(INF)) {
+                System.out.println(String.valueOf(i_1) + " " + "\tINF");
             } else {
-                System.out.println(String.valueOf(i) + " " + "\t" + " " + String.valueOf(((int)(dist[i]))));
+                System.out.println(String.valueOf(i_1) + " " + "\t" + " " + String.valueOf(((long)(dist[(int)((long)(i_1))]))));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
     }
 
-    static int min_dist(double[] mdist, boolean[] vset) {
-        double min_val = INF;
-        int min_ind = -1;
-        int i_1 = 0;
-        while (i_1 < mdist.length) {
-            if (!(Boolean)(vset[i_1]) && mdist[i_1] < min_val) {
-                min_val = mdist[i_1];
-                min_ind = i_1;
+    static long min_dist(double[] mdist, boolean[] vset) {
+        double min_val = (double)(INF);
+        long min_ind_1 = (long)(-1);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(mdist.length)) {
+            if (!(Boolean)(vset[(int)((long)(i_3))]) && (double)(mdist[(int)((long)(i_3))]) < (double)(min_val)) {
+                min_val = (double)(mdist[(int)((long)(i_3))]);
+                min_ind_1 = (long)(i_3);
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return min_ind;
+        return min_ind_1;
     }
 
-    static double[] dijkstra(double[][] graph, int src) {
-        int v = graph.length;
-        double[] mdist = ((double[])(new double[]{}));
-        boolean[] vset = ((boolean[])(new boolean[]{}));
-        int i_2 = 0;
-        while (i_2 < v) {
-            mdist = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(mdist), java.util.stream.DoubleStream.of(INF)).toArray()));
-            vset = ((boolean[])(appendBool(vset, false)));
-            i_2 = i_2 + 1;
+    static double[] dijkstra(double[][] graph, long src) {
+        long v = (long)(graph.length);
+        double[] mdist_1 = ((double[])(new double[]{}));
+        boolean[] vset_1 = ((boolean[])(new boolean[]{}));
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(v)) {
+            mdist_1 = ((double[])(appendDouble(mdist_1, (double)(INF))));
+            vset_1 = ((boolean[])(appendBool(vset_1, false)));
+            i_5 = (long)((long)(i_5) + 1L);
         }
-mdist[src] = 0.0;
-        int count = 0;
-        while (count < v - 1) {
-            int u = min_dist(((double[])(mdist)), ((boolean[])(vset)));
-vset[u] = true;
-            int i_3 = 0;
-            while (i_3 < v) {
-                double alt = mdist[u] + graph[u][i_3];
-                if (!(Boolean)(vset[i_3]) && graph[u][i_3] < INF && alt < mdist[i_3]) {
-mdist[i_3] = alt;
+mdist_1[(int)((long)(src))] = (double)(0.0);
+        long count_1 = 0L;
+        while ((long)(count_1) < (long)((long)(v) - 1L)) {
+            long u_1 = (long)(min_dist(((double[])(mdist_1)), ((boolean[])(vset_1))));
+vset_1[(int)((long)(u_1))] = true;
+            long i_7 = 0L;
+            while ((long)(i_7) < (long)(v)) {
+                double alt_1 = (double)((double)(mdist_1[(int)((long)(u_1))]) + (double)(graph[(int)((long)(u_1))][(int)((long)(i_7))]));
+                if (!(Boolean)(vset_1[(int)((long)(i_7))]) && (double)(graph[(int)((long)(u_1))][(int)((long)(i_7))]) < (double)(INF) && (double)(alt_1) < (double)(mdist_1[(int)((long)(i_7))])) {
+mdist_1[(int)((long)(i_7))] = (double)(alt_1);
                 }
-                i_3 = i_3 + 1;
+                i_7 = (long)((long)(i_7) + 1L);
             }
-            count = count + 1;
+            count_1 = (long)((long)(count_1) + 1L);
         }
-        return mdist;
+        return mdist_1;
     }
 
     static void main() {
         double[][] graph = ((double[][])(new double[][]{new double[]{0.0, 10.0, INF, INF, 5.0}, new double[]{INF, 0.0, 1.0, INF, 2.0}, new double[]{INF, INF, 0.0, 4.0, INF}, new double[]{INF, INF, 6.0, 0.0, INF}, new double[]{INF, 3.0, 9.0, 2.0, 0.0}}));
-        double[] dist = ((double[])(dijkstra(((double[][])(graph)), 0)));
-        print_dist(((double[])(dist)));
+        double[] dist_1 = ((double[])(dijkstra(((double[][])(graph)), 0L)));
+        print_dist(((double[])(dist_1)));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            INF = 1000000000.0;
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -102,6 +101,12 @@ mdist[i_3] = alt;
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
         boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }

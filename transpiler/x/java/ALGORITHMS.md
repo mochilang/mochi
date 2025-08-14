@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-14 10:19 GMT+7
+Last updated: 2025-08-14 15:55 GMT+7
 
-## Algorithms Golden Test Checklist (940/1077)
+## Algorithms Golden Test Checklist (945/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -400,7 +400,7 @@ Last updated: 2025-08-14 10:19 GMT+7
 | 391 | graphics/butterfly_pattern | ✓ | 43.0ms | 103.18KB |
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 33.0ms | 69.52KB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 21.0ms | 10.60KB |
-| 394 | graphs/a_star | error | 29.0ms | 46.57KB |
+| 394 | graphs/a_star | ✓ | 29.0ms | 46.57KB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 70.0ms | 68.09KB |
 | 396 | graphs/articulation_points | ✓ | 25.0ms | 46.04KB |
 | 397 | graphs/basic_graphs | ✓ | 32.0ms | 64.39KB |
@@ -411,56 +411,56 @@ Last updated: 2025-08-14 10:19 GMT+7
 | 402 | graphs/bidirectional_search | ✓ | 46.0ms | 113.06KB |
 | 403 | graphs/boruvka | error |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 31.0ms | 55.75KB |
-| 405 | graphs/breadth_first_search_2 | ✓ | 28.0ms | 53.22KB |
-| 406 | graphs/breadth_first_search_shortest_path | ✓ | 39.0ms | 94.30KB |
-| 407 | graphs/breadth_first_search_shortest_path_2 | error |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 29.0ms | 48.99KB |
-| 409 | graphs/check_bipatrite | ✓ | 26.0ms | 47.28KB |
-| 410 | graphs/check_cycle | ✓ | 14.0ms | 1.03KB |
-| 411 | graphs/connected_components | error |  |  |
+| 405 | graphs/breadth_first_search_2 | ✓ | 41.0ms | 53.22KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 54.0ms | 94.19KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 27.0ms | 1.02KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 45.0ms | 50.76KB |
+| 409 | graphs/check_bipatrite | ✓ | 40.0ms | 48.35KB |
+| 410 | graphs/check_cycle | ✓ | 21.0ms | 1.17KB |
+| 411 | graphs/connected_components | ✓ | 41.0ms | 49.50KB |
 | 412 | graphs/deep_clone_graph | error |  |  |
-| 413 | graphs/depth_first_search | ✓ | 27.0ms | 48.10KB |
-| 414 | graphs/depth_first_search_2 | ✓ | 44.0ms | 96.26KB |
-| 415 | graphs/dijkstra | error |  |  |
-| 416 | graphs/dijkstra_2 | ✓ | 38.0ms | 93.77KB |
-| 417 | graphs/dijkstra_algorithm | ✓ | 25.0ms | 47.24KB |
-| 418 | graphs/dijkstra_alternate | ✓ | 39.0ms | 93.51KB |
-| 419 | graphs/dijkstra_binary_grid | error |  |  |
-| 420 | graphs/dinic | ✓ | 34.0ms | 48.16KB |
-| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 29.0ms | 47.48KB |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink | error |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 30.0ms | 49.15KB |
-| 424 | graphs/even_tree | ✓ | 26.0ms | 47.36KB |
-| 425 | graphs/finding_bridges | error |  |  |
+| 413 | graphs/depth_first_search | ✓ | 39.0ms | 48.10KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 62.0ms | 97.10KB |
+| 415 | graphs/dijkstra | ✓ | 38.0ms | 53.82KB |
+| 416 | graphs/dijkstra_2 | ✓ | 47.0ms | 77.70KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 45.0ms | 48.27KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 57.0ms | 94.76KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 77.0ms | 128.62KB |
+| 420 | graphs/dinic | error | 34.0ms | 48.16KB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 43.0ms | 50.91KB |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 50.0ms | 56.42KB |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 62.0ms | 51.08KB |
+| 424 | graphs/even_tree | ✓ | 40.0ms | 48.44KB |
+| 425 | graphs/finding_bridges | ✓ | 43.0ms | 48.87KB |
 | 426 | graphs/frequent_pattern_graph_miner | error |  |  |
-| 427 | graphs/g_topological_sort | ✓ | 39.0ms | 95.77KB |
-| 428 | graphs/gale_shapley_bigraph | ✓ | 28.0ms | 46.45KB |
-| 429 | graphs/graph_adjacency_list | error |  |  |
+| 427 | graphs/g_topological_sort | ✓ | 56.0ms | 96.70KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 39.0ms | 47.42KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 39.0ms | 49.36KB |
 | 430 | graphs/graph_adjacency_matrix | error |  |  |
-| 431 | graphs/graph_list | ✓ | 28.0ms | 47.80KB |
+| 431 | graphs/graph_list | ✓ | 40.0ms | 47.89KB |
 | 432 | graphs/graphs_floyd_warshall | error |  |  |
-| 433 | graphs/greedy_best_first | ✓ | 42.0ms | 89.09KB |
-| 434 | graphs/greedy_min_vertex_cover | ✓ | 25.0ms | 47.14KB |
-| 435 | graphs/kahns_algorithm_long | ✓ | 28.0ms | 46.27KB |
+| 433 | graphs/greedy_best_first | error | 42.0ms | 89.09KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 41.0ms | 47.88KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 38.0ms | 47.14KB |
 | 436 | graphs/kahns_algorithm_topo | error |  |  |
 | 437 | graphs/karger | error |  |  |
-| 438 | graphs/lanczos_eigenvectors | error |  |  |
-| 439 | graphs/markov_chain | ✓ | 46.0ms | 99.75KB |
-| 440 | graphs/matching_min_vertex_cover | ✓ | 26.0ms | 47.05KB |
-| 441 | graphs/minimum_path_sum | ✓ | 20.0ms | 1.01KB |
-| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 38.0ms | 101.68KB |
-| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 42.0ms | 105.02KB |
-| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 40.0ms | 102.56KB |
-| 445 | graphs/minimum_spanning_tree_prims | ✓ | 42.0ms | 105.41KB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 43.0ms | 65.57KB |
+| 439 | graphs/markov_chain | ✓ | 65.0ms | 99.95KB |
+| 440 | graphs/matching_min_vertex_cover | error | 26.0ms | 47.05KB |
+| 441 | graphs/minimum_path_sum | ✓ | 23.0ms | 1.41KB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 61.0ms | 102.61KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 60.0ms | 107.34KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 58.0ms | 103.49KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 72.0ms | 106.52KB |
 | 446 | graphs/minimum_spanning_tree_prims2 | error |  |  |
-| 447 | graphs/multi_heuristic_astar | ✓ | 43.0ms | 94.27KB |
-| 448 | graphs/page_rank | ✓ | 44.0ms | 119.35KB |
-| 449 | graphs/prim | ✓ | 44.0ms | 93.11KB |
+| 447 | graphs/multi_heuristic_astar | ✓ | 58.0ms | 95.27KB |
+| 448 | graphs/page_rank | ✓ | 58.0ms | 119.58KB |
+| 449 | graphs/prim | error | 44.0ms | 93.11KB |
 | 450 | graphs/random_graph_generator | ✓ | 35.0ms | 47.24KB |
-| 451 | graphs/scc_kosaraju | ✓ | 27.0ms | 48.72KB |
-| 452 | graphs/strongly_connected_components | ✓ | 30.0ms | 48.85KB |
-| 453 | graphs/tarjans_scc | ✓ | 30.0ms | 56.63KB |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 26.0ms | 48.31KB |
+| 451 | graphs/scc_kosaraju | ✓ | 41.0ms | 48.61KB |
+| 452 | graphs/strongly_connected_components | ✓ | 42.0ms | 48.85KB |
+| 453 | graphs/tarjans_scc | ✓ | 45.0ms | 56.52KB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 40.0ms | 48.20KB |
 | 455 | graphs/tests/test_min_spanning_tree_prim | error | 38.0ms | 95.47KB |
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 13.0ms | 448B |
 | 457 | greedy_methods/fractional_cover_problem | error |  |  |

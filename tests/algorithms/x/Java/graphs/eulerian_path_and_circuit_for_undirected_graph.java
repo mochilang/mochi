@@ -1,8 +1,8 @@
 public class Main {
     static class CheckResult {
-        int status;
-        int odd_node;
-        CheckResult(int status, int odd_node) {
+        long status;
+        long odd_node;
+        CheckResult(long status, long odd_node) {
             this.status = status;
             this.odd_node = odd_node;
         }
@@ -12,103 +12,102 @@ public class Main {
         }
     }
 
-    static java.util.Map<Integer,int[]> g1;
-    static java.util.Map<Integer,int[]> g2;
-    static java.util.Map<Integer,int[]> g3;
-    static java.util.Map<Integer,int[]> g4;
-    static java.util.Map<Integer,int[]> g5;
-    static int max_node;
+    static java.util.Map<Long,long[]> g1;
+    static java.util.Map<Long,long[]> g2;
+    static java.util.Map<Long,long[]> g3;
+    static java.util.Map<Long,long[]> g4;
+    static java.util.Map<Long,long[]> g5;
+    static long max_node = 10L;
 
-    static boolean[][] make_matrix(int n) {
+    static boolean[][] make_matrix(long n) {
         boolean[][] matrix = ((boolean[][])(new boolean[][]{}));
-        int i = 0;
-        while (i <= n) {
-            boolean[] row = ((boolean[])(new boolean[]{}));
-            int j = 0;
-            while (j <= n) {
-                row = ((boolean[])(appendBool(row, false)));
-                j = j + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) <= (long)(n)) {
+            boolean[] row_1 = ((boolean[])(new boolean[]{}));
+            long j_1 = 0L;
+            while ((long)(j_1) <= (long)(n)) {
+                row_1 = ((boolean[])(appendBool(row_1, false)));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            matrix = ((boolean[][])(appendObj(matrix, row)));
-            i = i + 1;
+            matrix = ((boolean[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(matrix), java.util.stream.Stream.of(new boolean[][]{row_1})).toArray(boolean[][]::new)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return matrix;
     }
 
-    static int[] dfs(int u, java.util.Map<Integer,int[]> graph, boolean[][] visited_edge, int[] path) {
-        path = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(path), java.util.stream.IntStream.of(u)).toArray()));
-        if (((Boolean)(graph.containsKey(u)))) {
-            int[] neighbors = (int[])(((int[])(graph).get(u)));
-            int i_1 = 0;
-            while (i_1 < neighbors.length) {
-                int v = neighbors[i_1];
-                if (visited_edge[u][v] == false) {
-visited_edge[u][v] = true;
-visited_edge[v][u] = true;
-                    path = ((int[])(dfs(v, graph, ((boolean[][])(visited_edge)), ((int[])(path)))));
+    static long[] dfs(long u, java.util.Map<Long,long[]> graph, boolean[][] visited_edge, long[] path) {
+        path = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(path), java.util.stream.LongStream.of((long)(u))).toArray()));
+        if (graph.containsKey(u)) {
+            long[] neighbors_1 = (long[])(((long[])(graph).get(u)));
+            long i_3 = 0L;
+            while ((long)(i_3) < (long)(neighbors_1.length)) {
+                long v_1 = (long)(neighbors_1[(int)((long)(i_3))]);
+                if ((visited_edge[(int)((long)(u))][(int)((long)(v_1))] == false)) {
+visited_edge[(int)((long)(u))][(int)((long)(v_1))] = true;
+visited_edge[(int)((long)(v_1))][(int)((long)(u))] = true;
+                    path = ((long[])(dfs((long)(v_1), graph, ((boolean[][])(visited_edge)), ((long[])(path)))));
                 }
-                i_1 = i_1 + 1;
+                i_3 = (long)((long)(i_3) + 1L);
             }
         }
         return path;
     }
 
-    static CheckResult check_circuit_or_path(java.util.Map<Integer,int[]> graph, int max_node) {
-        int odd_degree_nodes = 0;
-        int odd_node = -1;
-        int i_2 = 0;
-        while (i_2 < max_node) {
-            if (((Boolean)(graph.containsKey(i_2)))) {
-                if (Math.floorMod(((int[])(graph).get(i_2)).length, 2) == 1) {
-                    odd_degree_nodes = odd_degree_nodes + 1;
-                    odd_node = i_2;
+    static CheckResult check_circuit_or_path(java.util.Map<Long,long[]> graph, long max_node) {
+        long odd_degree_nodes = 0L;
+        long odd_node_1 = (long)(-1);
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(max_node)) {
+            if (graph.containsKey(i_5)) {
+                if (Math.floorMod(((long[])(graph).get(i_5)).length, 2) == 1L) {
+                    odd_degree_nodes = (long)((long)(odd_degree_nodes) + 1L);
+                    odd_node_1 = (long)(i_5);
                 }
             }
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
-        if (odd_degree_nodes == 0) {
-            return new CheckResult(1, odd_node);
+        if ((long)(odd_degree_nodes) == 0L) {
+            return new CheckResult(1, odd_node_1);
         }
-        if (odd_degree_nodes == 2) {
-            return new CheckResult(2, odd_node);
+        if ((long)(odd_degree_nodes) == 2L) {
+            return new CheckResult(2, odd_node_1);
         }
-        return new CheckResult(3, odd_node);
+        return new CheckResult(3, odd_node_1);
     }
 
-    static void check_euler(java.util.Map<Integer,int[]> graph, int max_node) {
-        boolean[][] visited_edge = ((boolean[][])(make_matrix(max_node)));
-        CheckResult res = check_circuit_or_path(graph, max_node);
-        if (res.status == 3) {
+    static void check_euler(java.util.Map<Long,long[]> graph, long max_node) {
+        boolean[][] visited_edge = ((boolean[][])(make_matrix((long)(max_node))));
+        CheckResult res_1 = check_circuit_or_path(graph, (long)(max_node));
+        if ((long)(res_1.status) == 3L) {
             System.out.println("graph is not Eulerian");
             System.out.println("no path");
             return;
         }
-        int start_node = 1;
-        if (res.status == 2) {
-            start_node = res.odd_node;
+        long start_node_1 = 1L;
+        if ((long)(res_1.status) == 2L) {
+            start_node_1 = (long)(res_1.odd_node);
             System.out.println("graph has a Euler path");
         }
-        if (res.status == 1) {
+        if ((long)(res_1.status) == 1L) {
             System.out.println("graph has a Euler cycle");
         }
-        int[] path = ((int[])(dfs(start_node, graph, ((boolean[][])(visited_edge)), ((int[])(new int[]{})))));
-        System.out.println(_p(path));
+        long[] path_1 = ((long[])(dfs((long)(start_node_1), graph, ((boolean[][])(visited_edge)), ((long[])(new long[]{})))));
+        System.out.println(_p(path_1));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            g1 = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(1, ((int[])(new int[]{2, 3, 4}))), java.util.Map.entry(2, ((int[])(new int[]{1, 3}))), java.util.Map.entry(3, ((int[])(new int[]{1, 2}))), java.util.Map.entry(4, ((int[])(new int[]{1, 5}))), java.util.Map.entry(5, ((int[])(new int[]{4})))))));
-            g2 = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(1, ((int[])(new int[]{2, 3, 4, 5}))), java.util.Map.entry(2, ((int[])(new int[]{1, 3}))), java.util.Map.entry(3, ((int[])(new int[]{1, 2}))), java.util.Map.entry(4, ((int[])(new int[]{1, 5}))), java.util.Map.entry(5, ((int[])(new int[]{1, 4})))))));
-            g3 = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(1, ((int[])(new int[]{2, 3, 4}))), java.util.Map.entry(2, ((int[])(new int[]{1, 3, 4}))), java.util.Map.entry(3, ((int[])(new int[]{1, 2}))), java.util.Map.entry(4, ((int[])(new int[]{1, 2, 5}))), java.util.Map.entry(5, ((int[])(new int[]{4})))))));
-            g4 = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(1, ((int[])(new int[]{2, 3}))), java.util.Map.entry(2, ((int[])(new int[]{1, 3}))), java.util.Map.entry(3, ((int[])(new int[]{1, 2})))))));
-            g5 = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(1, new int[]{}), java.util.Map.entry(2, new int[]{})))));
-            max_node = 10;
-            check_euler(g1, max_node);
-            check_euler(g2, max_node);
-            check_euler(g3, max_node);
-            check_euler(g4, max_node);
-            check_euler(g5, max_node);
+            g1 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(1L, ((long[])(new long[]{2, 3, 4}))), java.util.Map.entry(2L, ((long[])(new long[]{1, 3}))), java.util.Map.entry(3L, ((long[])(new long[]{1, 2}))), java.util.Map.entry(4L, ((long[])(new long[]{1, 5}))), java.util.Map.entry(5L, ((long[])(new long[]{4})))))));
+            g2 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(1L, ((long[])(new long[]{2, 3, 4, 5}))), java.util.Map.entry(2L, ((long[])(new long[]{1, 3}))), java.util.Map.entry(3L, ((long[])(new long[]{1, 2}))), java.util.Map.entry(4L, ((long[])(new long[]{1, 5}))), java.util.Map.entry(5L, ((long[])(new long[]{1, 4})))))));
+            g3 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(1L, ((long[])(new long[]{2, 3, 4}))), java.util.Map.entry(2L, ((long[])(new long[]{1, 3, 4}))), java.util.Map.entry(3L, ((long[])(new long[]{1, 2}))), java.util.Map.entry(4L, ((long[])(new long[]{1, 2, 5}))), java.util.Map.entry(5L, ((long[])(new long[]{4})))))));
+            g4 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(1L, ((long[])(new long[]{2, 3}))), java.util.Map.entry(2L, ((long[])(new long[]{1, 3}))), java.util.Map.entry(3L, ((long[])(new long[]{1, 2})))))));
+            g5 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>(java.util.Map.ofEntries(java.util.Map.entry(1L, ((long[])(new long[]{}))), java.util.Map.entry(2L, ((long[])(new long[]{})))))));
+            check_euler(g1, (long)(max_node));
+            check_euler(g2, (long)(max_node));
+            check_euler(g3, (long)(max_node));
+            check_euler(g4, (long)(max_node));
+            check_euler(g5, (long)(max_node));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -148,12 +147,6 @@ visited_edge[v][u] = true;
         return out;
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -166,6 +159,10 @@ visited_edge[v][u] = true;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,8 +1,8 @@
 public class Main {
     static class Edge {
-        int destination_vertex;
-        int weight;
-        Edge(int destination_vertex, int weight) {
+        long destination_vertex;
+        long weight;
+        Edge(long destination_vertex, long weight) {
             this.destination_vertex = destination_vertex;
             this.weight = weight;
         }
@@ -14,8 +14,8 @@ public class Main {
 
     static class AdjacencyList {
         Edge[][] graph;
-        int size;
-        AdjacencyList(Edge[][] graph, int size) {
+        long size;
+        AdjacencyList(Edge[][] graph, long size) {
             this.graph = graph;
             this.size = size;
         }
@@ -25,116 +25,116 @@ public class Main {
         }
     }
 
-    static AdjacencyList g_2;
+    static AdjacencyList g_3;
 
-    static AdjacencyList new_adjacency_list(int size) {
+    static AdjacencyList new_adjacency_list(long size) {
         Edge[][] g = ((Edge[][])(new Edge[][]{}));
-        int i = 0;
-        while (i < size) {
-            g = ((Edge[][])(appendObj(g, new Edge[]{})));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(size)) {
+            g = ((Edge[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(g), java.util.stream.Stream.of(new Edge[][]{new Edge[]{}})).toArray(Edge[][]::new)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return new AdjacencyList(g, size);
     }
 
-    static void add_edge(AdjacencyList al, int from_vertex, int to_vertex, int weight) {
-        if (!(weight == 0 || weight == 1)) {
+    static void add_edge(AdjacencyList al, long from_vertex, long to_vertex, long weight) {
+        if (!((long)(weight) == 0L || (long)(weight) == 1L)) {
             throw new RuntimeException(String.valueOf("Edge weight must be either 0 or 1."));
         }
-        if (to_vertex < 0 || to_vertex >= al.size) {
+        if ((long)(to_vertex) < 0L || (long)(to_vertex) >= (long)(al.size)) {
             throw new RuntimeException(String.valueOf("Vertex indexes must be in [0; size)."));
         }
-        Edge[][] g_1 = ((Edge[][])(al.graph));
-        Edge[] edges = ((Edge[])(g_1[from_vertex]));
-g_1[from_vertex] = ((Edge[])(java.util.stream.Stream.concat(java.util.Arrays.stream(edges), java.util.stream.Stream.of(new Edge(to_vertex, weight))).toArray(Edge[]::new)));
-al.graph = g_1;
+        Edge[][] g_2 = ((Edge[][])(al.graph));
+        Edge[] edges_1 = ((Edge[])(g_2[(int)((long)(from_vertex))]));
+g_2[(int)((long)(from_vertex))] = ((Edge[])(java.util.stream.Stream.concat(java.util.Arrays.stream(edges_1), java.util.stream.Stream.of(new Edge(to_vertex, weight))).toArray(Edge[]::new)));
+al.graph = g_2;
     }
 
-    static int[] push_front(int[] q, int v) {
-        int[] res = ((int[])(new int[]{v}));
-        int i_1 = 0;
-        while (i_1 < q.length) {
-            res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(q[i_1])).toArray()));
-            i_1 = i_1 + 1;
+    static long[] push_front(long[] q, long v) {
+        long[] res = ((long[])(new long[]{v}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(q.length)) {
+            res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(q[(int)((long)(i_3))]))).toArray()));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return res;
     }
 
-    static int[] pop_front(int[] q) {
-        int[] res_1 = ((int[])(new int[]{}));
-        int i_2 = 1;
-        while (i_2 < q.length) {
-            res_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_1), java.util.stream.IntStream.of(q[i_2])).toArray()));
-            i_2 = i_2 + 1;
+    static long[] pop_front(long[] q) {
+        long[] res_1 = ((long[])(new long[]{}));
+        long i_5 = 1L;
+        while ((long)(i_5) < (long)(q.length)) {
+            res_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_1), java.util.stream.LongStream.of((long)(q[(int)((long)(i_5))]))).toArray()));
+            i_5 = (long)((long)(i_5) + 1L);
         }
         return res_1;
     }
 
-    static int front(int[] q) {
-        return q[0];
+    static long front(long[] q) {
+        return q[(int)((long)(0))];
     }
 
-    static int get_shortest_path(AdjacencyList al, int start_vertex, int finish_vertex) {
-        int[] queue = ((int[])(new int[]{start_vertex}));
-        int[] distances = ((int[])(new int[]{}));
-        int i_3 = 0;
-        while (i_3 < al.size) {
-            distances = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(distances), java.util.stream.IntStream.of(-1)).toArray()));
-            i_3 = i_3 + 1;
+    static long get_shortest_path(AdjacencyList al, long start_vertex, long finish_vertex) {
+        long[] queue = ((long[])(new long[]{start_vertex}));
+        long[] distances_1 = ((long[])(new long[]{}));
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(al.size)) {
+            distances_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(distances_1), java.util.stream.LongStream.of((long)(-1))).toArray()));
+            i_7 = (long)((long)(i_7) + 1L);
         }
-distances[start_vertex] = 0;
-        while (queue.length > 0) {
-            int current_vertex = front(((int[])(queue)));
-            queue = ((int[])(pop_front(((int[])(queue)))));
-            int current_distance = distances[current_vertex];
-            Edge[] edges_1 = ((Edge[])(al.graph[current_vertex]));
-            int j = 0;
-            while (j < edges_1.length) {
-                Edge edge = edges_1[j];
-                int new_distance = current_distance + edge.weight;
-                int dest = edge.destination_vertex;
-                int dest_distance = distances[dest];
-                if (dest_distance >= 0 && new_distance >= dest_distance) {
-                    j = j + 1;
+distances_1[(int)((long)(start_vertex))] = 0L;
+        while ((long)(queue.length) > 0L) {
+            long current_vertex_1 = (long)(front(((long[])(queue))));
+            queue = ((long[])(pop_front(((long[])(queue)))));
+            long current_distance_1 = (long)(distances_1[(int)((long)(current_vertex_1))]);
+            Edge[] edges_3 = ((Edge[])(al.graph[(int)((long)(current_vertex_1))]));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(edges_3.length)) {
+                Edge edge_1 = edges_3[(int)((long)(j_1))];
+                long new_distance_1 = (long)((long)(current_distance_1) + (long)(edge_1.weight));
+                long dest_1 = (long)(edge_1.destination_vertex);
+                long dest_distance_1 = (long)(distances_1[(int)((long)(dest_1))]);
+                if ((long)(dest_distance_1) >= 0L && (long)(new_distance_1) >= (long)(dest_distance_1)) {
+                    j_1 = (long)((long)(j_1) + 1L);
                     continue;
                 }
-distances[dest] = new_distance;
-                if (edge.weight == 0) {
-                    queue = ((int[])(push_front(((int[])(queue)), dest)));
+distances_1[(int)((long)(dest_1))] = (long)(new_distance_1);
+                if ((long)(edge_1.weight) == 0L) {
+                    queue = ((long[])(push_front(((long[])(queue)), (long)(dest_1))));
                 } else {
-                    queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(dest)).toArray()));
+                    queue = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue), java.util.stream.LongStream.of((long)(dest_1))).toArray()));
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
         }
-        int result = distances[finish_vertex];
-        if (result < 0) {
+        long result_1 = (long)(distances_1[(int)((long)(finish_vertex))]);
+        if ((long)(result_1) < 0L) {
             throw new RuntimeException(String.valueOf("No path from start_vertex to finish_vertex."));
         }
-        return result;
+        return result_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            g_2 = new_adjacency_list(11);
-            add_edge(g_2, 0, 1, 0);
-            add_edge(g_2, 0, 3, 1);
-            add_edge(g_2, 1, 2, 0);
-            add_edge(g_2, 2, 3, 0);
-            add_edge(g_2, 4, 2, 1);
-            add_edge(g_2, 4, 5, 1);
-            add_edge(g_2, 4, 6, 1);
-            add_edge(g_2, 5, 9, 0);
-            add_edge(g_2, 6, 7, 1);
-            add_edge(g_2, 7, 8, 1);
-            add_edge(g_2, 8, 10, 1);
-            add_edge(g_2, 9, 7, 0);
-            add_edge(g_2, 9, 10, 1);
-            System.out.println(_p(get_shortest_path(g_2, 0, 3)));
-            System.out.println(_p(get_shortest_path(g_2, 4, 10)));
-            System.out.println(_p(get_shortest_path(g_2, 4, 8)));
-            System.out.println(_p(get_shortest_path(g_2, 0, 1)));
+            g_3 = new_adjacency_list(11L);
+            add_edge(g_3, 0L, 1L, 0L);
+            add_edge(g_3, 0L, 3L, 1L);
+            add_edge(g_3, 1L, 2L, 0L);
+            add_edge(g_3, 2L, 3L, 0L);
+            add_edge(g_3, 4L, 2L, 1L);
+            add_edge(g_3, 4L, 5L, 1L);
+            add_edge(g_3, 4L, 6L, 1L);
+            add_edge(g_3, 5L, 9L, 0L);
+            add_edge(g_3, 6L, 7L, 1L);
+            add_edge(g_3, 7L, 8L, 1L);
+            add_edge(g_3, 8L, 10L, 1L);
+            add_edge(g_3, 9L, 7L, 0L);
+            add_edge(g_3, 9L, 10L, 1L);
+            System.out.println(_p(get_shortest_path(g_3, 0L, 3L)));
+            System.out.println(_p(get_shortest_path(g_3, 4L, 10L)));
+            System.out.println(_p(get_shortest_path(g_3, 4L, 8L)));
+            System.out.println(_p(get_shortest_path(g_3, 0L, 1L)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -168,12 +168,6 @@ distances[dest] = new_distance;
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -186,6 +180,10 @@ distances[dest] = new_distance;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,66 +1,66 @@
 public class Main {
-    static int[][] edges1;
-    static int[][] edges2;
-    static int[][] edges3;
+    static long[][] edges1;
+    static long[][] edges2;
+    static long[][] edges3;
 
-    static int[][] sort_edges(int[][] edges) {
-        int[][] es = ((int[][])(edges));
-        int i = 0;
-        while (i < es.length) {
-            int j = 0;
-            while (j < es.length - i - 1) {
-                if (es[j][2] > es[j + 1][2]) {
-                    int[] temp = ((int[])(es[j]));
-es[j] = ((int[])(es[j + 1]));
-es[j + 1] = ((int[])(temp));
+    static long[][] sort_edges(long[][] edges) {
+        long[][] es = ((long[][])(edges));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(es.length)) {
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)((long)((long)(es.length) - (long)(i_1)) - 1L)) {
+                if ((long)(es[(int)((long)(j_1))][(int)((long)(2))]) > (long)(es[(int)((long)((long)(j_1) + 1L))][(int)((long)(2))])) {
+                    long[] temp_1 = ((long[])(es[(int)((long)(j_1))]));
+es[(int)((long)(j_1))] = ((long[])(es[(int)((long)((long)(j_1) + 1L))]));
+es[(int)((long)((long)(j_1) + 1L))] = ((long[])(temp_1));
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return es;
     }
 
-    static int find_parent(int[] parent, int i) {
-        if (parent[i] != i) {
-parent[i] = find_parent(((int[])(parent)), parent[i]);
+    static long find_parent(long[] parent, long i) {
+        if ((long)(parent[(int)((long)(i))]) != (long)(i)) {
+parent[(int)((long)(i))] = (long)(find_parent(((long[])(parent)), (long)(parent[(int)((long)(i))])));
         }
-        return parent[i];
+        return parent[(int)((long)(i))];
     }
 
-    static int[][] kruskal(int num_nodes, int[][] edges) {
-        int[][] es_1 = ((int[][])(sort_edges(((int[][])(edges)))));
-        int[] parent = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < num_nodes) {
-            parent = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(parent), java.util.stream.IntStream.of(i_1)).toArray()));
-            i_1 = i_1 + 1;
+    static long[][] kruskal(long num_nodes, long[][] edges) {
+        long[][] es_1 = ((long[][])(sort_edges(((long[][])(edges)))));
+        long[] parent_1 = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(num_nodes)) {
+            parent_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(parent_1), java.util.stream.LongStream.of((long)(i_3))).toArray()));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        int[][] mst = ((int[][])(new int[][]{}));
-        int idx = 0;
-        while (idx < es_1.length) {
-            int[] e = ((int[])(es_1[idx]));
-            int pa = find_parent(((int[])(parent)), e[0]);
-            int pb = find_parent(((int[])(parent)), e[1]);
-            if (pa != pb) {
-                mst = ((int[][])(appendObj(mst, e)));
-parent[pa] = pb;
+        long[][] mst_1 = ((long[][])(new long[][]{}));
+        long idx_1 = 0L;
+        while ((long)(idx_1) < (long)(es_1.length)) {
+            long[] e_1 = ((long[])(es_1[(int)((long)(idx_1))]));
+            long pa_1 = (long)(find_parent(((long[])(parent_1)), (long)(e_1[(int)((long)(0))])));
+            long pb_1 = (long)(find_parent(((long[])(parent_1)), (long)(e_1[(int)((long)(1))])));
+            if ((long)(pa_1) != (long)(pb_1)) {
+                mst_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(mst_1), java.util.stream.Stream.of(new long[][]{e_1})).toArray(long[][]::new)));
+parent_1[(int)((long)(pa_1))] = (long)(pb_1);
             }
-            idx = idx + 1;
+            idx_1 = (long)((long)(idx_1) + 1L);
         }
-        return mst;
+        return mst_1;
     }
 
-    static String edges_to_string(int[][] es) {
+    static String edges_to_string(long[][] es) {
         String s = "[";
-        int i_2 = 0;
-        while (i_2 < es.length) {
-            int[] e_1 = ((int[])(es[i_2]));
-            s = s + "(" + _p(_geti(e_1, 0)) + ", " + _p(_geti(e_1, 1)) + ", " + _p(_geti(e_1, 2)) + ")";
-            if (i_2 < es.length - 1) {
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(es.length)) {
+            long[] e_3 = ((long[])(es[(int)((long)(i_5))]));
+            s = s + "(" + _p(_geti(e_3, ((Number)(0)).intValue())) + ", " + _p(_geti(e_3, ((Number)(1)).intValue())) + ", " + _p(_geti(e_3, ((Number)(2)).intValue())) + ")";
+            if ((long)(i_5) < (long)((long)(es.length) - 1L)) {
                 s = s + ", ";
             }
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
         s = s + "]";
         return s;
@@ -69,12 +69,12 @@ parent[pa] = pb;
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            edges1 = ((int[][])(new int[][]{new int[]{0, 1, 3}, new int[]{1, 2, 5}, new int[]{2, 3, 1}}));
-            System.out.println(edges_to_string(((int[][])(kruskal(4, ((int[][])(edges1)))))));
-            edges2 = ((int[][])(new int[][]{new int[]{0, 1, 3}, new int[]{1, 2, 5}, new int[]{2, 3, 1}, new int[]{0, 2, 1}, new int[]{0, 3, 2}}));
-            System.out.println(edges_to_string(((int[][])(kruskal(4, ((int[][])(edges2)))))));
-            edges3 = ((int[][])(new int[][]{new int[]{0, 1, 3}, new int[]{1, 2, 5}, new int[]{2, 3, 1}, new int[]{0, 2, 1}, new int[]{0, 3, 2}, new int[]{2, 1, 1}}));
-            System.out.println(edges_to_string(((int[][])(kruskal(4, ((int[][])(edges3)))))));
+            edges1 = ((long[][])(new long[][]{new long[]{0, 1, 3}, new long[]{1, 2, 5}, new long[]{2, 3, 1}}));
+            System.out.println(edges_to_string(((long[][])(kruskal(4L, ((long[][])(edges1)))))));
+            edges2 = ((long[][])(new long[][]{new long[]{0, 1, 3}, new long[]{1, 2, 5}, new long[]{2, 3, 1}, new long[]{0, 2, 1}, new long[]{0, 3, 2}}));
+            System.out.println(edges_to_string(((long[][])(kruskal(4L, ((long[][])(edges2)))))));
+            edges3 = ((long[][])(new long[][]{new long[]{0, 1, 3}, new long[]{1, 2, 5}, new long[]{2, 3, 1}, new long[]{0, 2, 1}, new long[]{0, 3, 2}, new long[]{2, 1, 1}}));
+            System.out.println(edges_to_string(((long[][])(kruskal(4L, ((long[][])(edges3)))))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -108,12 +108,6 @@ parent[pa] = pb;
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -127,10 +121,14 @@ parent[pa] = pb;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

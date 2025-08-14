@@ -1,0 +1,6 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden433_greedy_best_first4012183518/001/Main.java:156: error: incompatible types: long[][] cannot be converted to double[]
+            System.out.println(_p(_getd(grid, ((Number)(i_9)).intValue())));
+                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

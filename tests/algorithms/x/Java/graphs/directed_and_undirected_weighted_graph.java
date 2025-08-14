@@ -1,7 +1,7 @@
 public class Main {
     static class DirectedGraph {
-        java.util.Map<Integer,int[][]> graph;
-        DirectedGraph(java.util.Map<Integer,int[][]> graph) {
+        java.util.Map<Long,long[][]> graph;
+        DirectedGraph(java.util.Map<Long,long[][]> graph) {
             this.graph = graph;
         }
         DirectedGraph() {}
@@ -11,8 +11,8 @@ public class Main {
     }
 
     static class Graph {
-        java.util.Map<Integer,int[][]> graph;
-        Graph(java.util.Map<Integer,int[][]> graph) {
+        java.util.Map<Long,long[][]> graph;
+        Graph(java.util.Map<Long,long[][]> graph) {
             this.graph = graph;
         }
         Graph() {}
@@ -22,261 +22,261 @@ public class Main {
     }
 
 
-    static boolean list_contains_int(int[] xs, int x) {
-        int i = 0;
-        while (i < xs.length) {
-            if (xs[i] == x) {
+    static boolean list_contains_int(long[] xs, long x) {
+        long i = 0L;
+        while ((long)(i) < (long)(xs.length)) {
+            if ((long)(xs[(int)((long)(i))]) == (long)(x)) {
                 return true;
             }
-            i = i + 1;
+            i = (long)((long)(i) + 1L);
         }
         return false;
     }
 
-    static boolean edge_exists(int[][] edges, int w, int v) {
-        int i_1 = 0;
-        while (i_1 < edges.length) {
-            if (edges[i_1][0] == w && edges[i_1][1] == v) {
+    static boolean edge_exists(long[][] edges, long w, long v) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(edges.length)) {
+            if ((long)(edges[(int)((long)(i_1))][(int)((long)(0))]) == (long)(w) && (long)(edges[(int)((long)(i_1))][(int)((long)(1))]) == (long)(v)) {
                 return true;
             }
-            i_1 = i_1 + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return false;
     }
 
-    static int first_key(java.util.Map<Integer,int[][]> m) {
-        for (int k : m.keySet()) {
+    static long first_key(java.util.Map<Long,long[][]> m) {
+        for (long k : m.keySet()) {
             return k;
         }
         return 0;
     }
 
-    static int rand_range(int low, int high) {
-        return (Math.floorMod(_now(), (high - low))) + low;
+    static long rand_range(long low, long high) {
+        return (long)((Math.floorMod(_now(), ((long)(high) - (long)(low))))) + (long)(low);
     }
 
     static DirectedGraph dg_make_graph() {
-        return new DirectedGraph(new java.util.LinkedHashMap<Integer, int[][]>());
+        return new DirectedGraph(new java.util.LinkedHashMap<Long, long[][]>());
     }
 
-    static void dg_add_pair(DirectedGraph g, int u, int v, int w) {
-        if (((Boolean)(g.graph.containsKey(u)))) {
-            int[][] edges = (int[][])(((int[][])(g.graph).get(u)));
-            if (!(Boolean)edge_exists(((int[][])(edges)), w, v)) {
-                edges = ((int[][])(appendObj(edges, new int[]{w, v})));
-                java.util.Map<Integer,int[][]> m = g.graph;
-m.put(u, ((int[][])(edges)));
+    static void dg_add_pair(DirectedGraph g, long u, long v, long w) {
+        if (g.graph.containsKey(u)) {
+            long[][] edges = (long[][])(((long[][])(g.graph).get(u)));
+            if (!(Boolean)edge_exists(((long[][])(edges)), (long)(w), (long)(v))) {
+                edges = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(edges), java.util.stream.Stream.of(new long[][]{new long[]{w, v}})).toArray(long[][]::new)));
+                java.util.Map<Long,long[][]> m = g.graph;
+m.put(u, ((long[][])(edges)));
 g.graph = m;
             }
         } else {
-            java.util.Map<Integer,int[][]> m0 = g.graph;
-m0.put(u, ((int[][])(new int[][]{new int[]{w, v}})));
+            java.util.Map<Long,long[][]> m0 = g.graph;
+m0.put(u, ((long[][])(new long[][]{new long[]{w, v}})));
 g.graph = m0;
         }
-        if (!(Boolean)(g.graph.containsKey(v))) {
-            java.util.Map<Integer,int[][]> m1 = g.graph;
-m1.put(v, ((int[][])(new int[][]{})));
-g.graph = m1;
+        if (!(g.graph.containsKey(v))) {
+            java.util.Map<Long,long[][]> m1_1 = g.graph;
+m1_1.put(v, ((long[][])(new long[][]{})));
+g.graph = m1_1;
         }
     }
 
-    static void dg_remove_pair(DirectedGraph g, int u, int v) {
-        if (((Boolean)(g.graph.containsKey(u)))) {
-            int[][] edges_1 = (int[][])(((int[][])(g.graph).get(u)));
-            int[][] new_edges = ((int[][])(new int[][]{}));
-            int i_2 = 0;
-            while (i_2 < edges_1.length) {
-                if (edges_1[i_2][1] != v) {
-                    new_edges = ((int[][])(appendObj(new_edges, edges_1[i_2])));
+    static void dg_remove_pair(DirectedGraph g, long u, long v) {
+        if (g.graph.containsKey(u)) {
+            long[][] edges_1 = (long[][])(((long[][])(g.graph).get(u)));
+            long[][] new_edges = ((long[][])(new long[][]{}));
+            long i_2 = 0L;
+            while ((long)(i_2) < (long)(edges_1.length)) {
+                if ((long)(edges_1[(int)((long)(i_2))][(int)((long)(1))]) != (long)(v)) {
+                    new_edges = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_edges), java.util.stream.Stream.of(new long[][]{edges_1[(int)((long)(i_2))]})).toArray(long[][]::new)));
                 }
-                i_2 = i_2 + 1;
+                i_2 = (long)((long)(i_2) + 1L);
             }
-            java.util.Map<Integer,int[][]> m_1 = g.graph;
-m_1.put(u, ((int[][])(new_edges)));
+            java.util.Map<Long,long[][]> m_1 = g.graph;
+m_1.put(u, ((long[][])(new_edges)));
 g.graph = m_1;
         }
     }
 
-    static int[] dg_all_nodes(DirectedGraph g) {
-        int[] res = ((int[])(new int[]{}));
-        for (int k : g.graph.keySet()) {
-            res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(((Number)(k)).intValue())).toArray()));
+    static long[] dg_all_nodes(DirectedGraph g) {
+        long[] res = ((long[])(new long[]{}));
+        for (long k : g.graph.keySet()) {
+            res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(k))).toArray()));
         }
         return res;
     }
 
-    static int[] dg_dfs_util(DirectedGraph g, int node, java.util.Map<Integer,Boolean> visited, int[] order, int d) {
+    static long[] dg_dfs_util(DirectedGraph g, long node, java.util.Map<Long,Boolean> visited, long[] order, long d) {
 visited.put(node, true);
-        order = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(order), java.util.stream.IntStream.of(node)).toArray()));
-        if (d != (-1) && node == d) {
+        order = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order), java.util.stream.LongStream.of((long)(node))).toArray()));
+        if ((long)(d) != (long)((-1)) && (long)(node) == (long)(d)) {
             return order;
         }
-        int[][] edges_2 = (int[][])(((int[][])(g.graph).get(node)));
-        int i_3 = 0;
-        while (i_3 < edges_2.length) {
-            int neigh = edges_2[i_3][1];
-            if (!(Boolean)(visited.containsKey(neigh))) {
-                order = ((int[])(dg_dfs_util(g, neigh, visited, ((int[])(order)), d)));
-                if (d != (-1) && order[order.length - 1] == d) {
+        long[][] edges_3 = (long[][])(((long[][])(g.graph).get(node)));
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)(edges_3.length)) {
+            long neigh_1 = (long)(edges_3[(int)((long)(i_4))][(int)((long)(1))]);
+            if (!(visited.containsKey(neigh_1))) {
+                order = ((long[])(dg_dfs_util(g, (long)(neigh_1), visited, ((long[])(order)), (long)(d))));
+                if ((long)(d) != (long)((-1)) && (long)(order[(int)((long)((long)(order.length) - 1L))]) == (long)(d)) {
                     return order;
                 }
             }
-            i_3 = i_3 + 1;
+            i_4 = (long)((long)(i_4) + 1L);
         }
         return order;
     }
 
-    static int[] dg_dfs(DirectedGraph g, int s, int d) {
-        if (s == d) {
-            return new int[]{};
+    static long[] dg_dfs(DirectedGraph g, long s, long d) {
+        if ((long)(s) == (long)(d)) {
+            return new long[]{};
         }
-        int start = s == (-2) ? first_key(g.graph) : s;
-        java.util.Map<Integer,Boolean> visited = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        int[] order = ((int[])(new int[]{}));
-        order = ((int[])(dg_dfs_util(g, start, visited, ((int[])(order)), d)));
-        return order;
-    }
-
-    static int[] dg_bfs(DirectedGraph g, int s) {
-        int[] queue = ((int[])(new int[]{}));
-        java.util.Map<Integer,Boolean> visited_1 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        int[] order_1 = ((int[])(new int[]{}));
-        int start_1 = s == (-2) ? first_key(g.graph) : s;
-        queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(start_1)).toArray()));
-visited_1.put(start_1, true);
-        while (queue.length > 0) {
-            int node = queue[0];
-            queue = ((int[])(java.util.Arrays.copyOfRange(queue, 1, queue.length)));
-            order_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(order_1), java.util.stream.IntStream.of(node)).toArray()));
-            int[][] edges_3 = (int[][])(((int[][])(g.graph).get(node)));
-            int i_4 = 0;
-            while (i_4 < edges_3.length) {
-                int neigh_1 = edges_3[i_4][1];
-                if (!(Boolean)(visited_1.containsKey(neigh_1))) {
-                    queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(neigh_1)).toArray()));
-visited_1.put(neigh_1, true);
-                }
-                i_4 = i_4 + 1;
-            }
-        }
+        long start_1 = (long)((long)(s) == (long)((-2)) ? first_key(g.graph) : s);
+        java.util.Map<Long,Boolean> visited_1 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        long[] order_1 = ((long[])(new long[]{}));
+        order_1 = ((long[])(dg_dfs_util(g, (long)(start_1), visited_1, ((long[])(order_1)), (long)(d))));
         return order_1;
     }
 
-    static int dg_in_degree(DirectedGraph g, int u) {
-        int count = 0;
-        for (int k : g.graph.keySet()) {
-            int[][] edges_4 = (int[][])(((int[][])(g.graph).get(k)));
-            int i_5 = 0;
-            while (i_5 < edges_4.length) {
-                if (edges_4[i_5][1] == u) {
-                    count = count + 1;
+    static long[] dg_bfs(DirectedGraph g, long s) {
+        long[] queue = ((long[])(new long[]{}));
+        java.util.Map<Long,Boolean> visited_3 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        long[] order_3 = ((long[])(new long[]{}));
+        long start_3 = (long)((long)(s) == (long)((-2)) ? first_key(g.graph) : s);
+        queue = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue), java.util.stream.LongStream.of((long)(start_3))).toArray()));
+visited_3.put(start_3, true);
+        while ((long)(queue.length) > 0L) {
+            long node_1 = (long)(queue[(int)((long)(0))]);
+            queue = ((long[])(java.util.Arrays.copyOfRange(queue, (int)((long)(1)), (int)((long)(queue.length)))));
+            order_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order_3), java.util.stream.LongStream.of((long)(node_1))).toArray()));
+            long[][] edges_5 = (long[][])(((long[][])(g.graph).get(node_1)));
+            long i_6 = 0L;
+            while ((long)(i_6) < (long)(edges_5.length)) {
+                long neigh_3 = (long)(edges_5[(int)((long)(i_6))][(int)((long)(1))]);
+                if (!(visited_3.containsKey(neigh_3))) {
+                    queue = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue), java.util.stream.LongStream.of((long)(neigh_3))).toArray()));
+visited_3.put(neigh_3, true);
                 }
-                i_5 = i_5 + 1;
+                i_6 = (long)((long)(i_6) + 1L);
+            }
+        }
+        return order_3;
+    }
+
+    static long dg_in_degree(DirectedGraph g, long u) {
+        long count = 0L;
+        for (long k : g.graph.keySet()) {
+            long[][] edges_7 = (long[][])(((long[][])(g.graph).get(k)));
+            long i_8 = 0L;
+            while ((long)(i_8) < (long)(edges_7.length)) {
+                if ((long)(edges_7[(int)((long)(i_8))][(int)((long)(1))]) == (long)(u)) {
+                    count = (long)((long)(count) + 1L);
+                }
+                i_8 = (long)((long)(i_8) + 1L);
             }
         }
         return count;
     }
 
-    static int dg_out_degree(DirectedGraph g, int u) {
-        if (((Boolean)(g.graph.containsKey(u)))) {
-            return ((int[][])(g.graph).get(u)).length;
+    static long dg_out_degree(DirectedGraph g, long u) {
+        if (g.graph.containsKey(u)) {
+            return ((long[][])(g.graph).get(u)).length;
         }
         return 0;
     }
 
-    static int[] dg_topo_util(DirectedGraph g, int node, java.util.Map<Integer,Boolean> visited, int[] stack) {
+    static long[] dg_topo_util(DirectedGraph g, long node, java.util.Map<Long,Boolean> visited, long[] stack) {
 visited.put(node, true);
-        int[][] edges_5 = (int[][])(((int[][])(g.graph).get(node)));
-        int i_6 = 0;
-        while (i_6 < edges_5.length) {
-            int neigh_2 = edges_5[i_6][1];
-            if (!(Boolean)(visited.containsKey(neigh_2))) {
-                stack = ((int[])(dg_topo_util(g, neigh_2, visited, ((int[])(stack)))));
+        long[][] edges_9 = (long[][])(((long[][])(g.graph).get(node)));
+        long i_10 = 0L;
+        while ((long)(i_10) < (long)(edges_9.length)) {
+            long neigh_5 = (long)(edges_9[(int)((long)(i_10))][(int)((long)(1))]);
+            if (!(visited.containsKey(neigh_5))) {
+                stack = ((long[])(dg_topo_util(g, (long)(neigh_5), visited, ((long[])(stack)))));
             }
-            i_6 = i_6 + 1;
+            i_10 = (long)((long)(i_10) + 1L);
         }
-        stack = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(stack), java.util.stream.IntStream.of(node)).toArray()));
+        stack = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(stack), java.util.stream.LongStream.of((long)(node))).toArray()));
         return stack;
     }
 
-    static int[] dg_topological_sort(DirectedGraph g) {
-        java.util.Map<Integer,Boolean> visited_2 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        int[] stack = ((int[])(new int[]{}));
-        for (int k : g.graph.keySet()) {
-            if (!(Boolean)(visited_2.containsKey(k))) {
-                stack = ((int[])(dg_topo_util(g, ((Number)(k)).intValue(), visited_2, ((int[])(stack)))));
+    static long[] dg_topological_sort(DirectedGraph g) {
+        java.util.Map<Long,Boolean> visited_4 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        long[] stack_1 = ((long[])(new long[]{}));
+        for (long k : g.graph.keySet()) {
+            if (!(visited_4.containsKey(k))) {
+                stack_1 = ((long[])(dg_topo_util(g, (long)(k), visited_4, ((long[])(stack_1)))));
             }
         }
-        int[] res_1 = ((int[])(new int[]{}));
-        int i_7 = stack.length - 1;
-        while (i_7 >= 0) {
-            res_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_1), java.util.stream.IntStream.of(stack[i_7])).toArray()));
-            i_7 = i_7 - 1;
+        long[] res_2 = ((long[])(new long[]{}));
+        long i_12 = (long)((long)(stack_1.length) - 1L);
+        while ((long)(i_12) >= 0L) {
+            res_2 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_2), java.util.stream.LongStream.of((long)(stack_1[(int)((long)(i_12))]))).toArray()));
+            i_12 = (long)((long)(i_12) - 1L);
         }
-        return res_1;
+        return res_2;
     }
 
-    static int[] dg_cycle_util(DirectedGraph g, int node, java.util.Map<Integer,Boolean> visited, java.util.Map<Integer,Boolean> rec, int[] res) {
+    static long[] dg_cycle_util(DirectedGraph g, long node, java.util.Map<Long,Boolean> visited, java.util.Map<Long,Boolean> rec, long[] res) {
 visited.put(node, true);
 rec.put(node, true);
-        int[][] edges_6 = (int[][])(((int[][])(g.graph).get(node)));
-        int i_8 = 0;
-        while (i_8 < edges_6.length) {
-            int neigh_3 = edges_6[i_8][1];
-            if (!(Boolean)(visited.containsKey(neigh_3))) {
-                res = ((int[])(dg_cycle_util(g, neigh_3, visited, rec, ((int[])(res)))));
-            } else             if (((boolean)(rec).getOrDefault(neigh_3, false))) {
-                if (!(Boolean)list_contains_int(((int[])(res)), neigh_3)) {
-                    res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(neigh_3)).toArray()));
+        long[][] edges_11 = (long[][])(((long[][])(g.graph).get(node)));
+        long i_14 = 0L;
+        while ((long)(i_14) < (long)(edges_11.length)) {
+            long neigh_7 = (long)(edges_11[(int)((long)(i_14))][(int)((long)(1))]);
+            if (!(visited.containsKey(neigh_7))) {
+                res = ((long[])(dg_cycle_util(g, (long)(neigh_7), visited, rec, ((long[])(res)))));
+            } else             if (((boolean)(rec).getOrDefault(neigh_7, false))) {
+                if (!(Boolean)list_contains_int(((long[])(res)), (long)(neigh_7))) {
+                    res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(neigh_7))).toArray()));
                 }
-                if (!(Boolean)list_contains_int(((int[])(res)), node)) {
-                    res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(node)).toArray()));
+                if (!(Boolean)list_contains_int(((long[])(res)), (long)(node))) {
+                    res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(node))).toArray()));
                 }
             }
-            i_8 = i_8 + 1;
+            i_14 = (long)((long)(i_14) + 1L);
         }
 rec.put(node, false);
         return res;
     }
 
-    static int[] dg_cycle_nodes(DirectedGraph g) {
-        java.util.Map<Integer,Boolean> visited_3 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        java.util.Map<Integer,Boolean> rec = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        int[] res_2 = ((int[])(new int[]{}));
-        for (int k : g.graph.keySet()) {
-            if (!(Boolean)(visited_3.containsKey(k))) {
-                res_2 = ((int[])(dg_cycle_util(g, ((Number)(k)).intValue(), visited_3, rec, ((int[])(res_2)))));
+    static long[] dg_cycle_nodes(DirectedGraph g) {
+        java.util.Map<Long,Boolean> visited_5 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        java.util.Map<Long,Boolean> rec_1 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        long[] res_4 = ((long[])(new long[]{}));
+        for (long k : g.graph.keySet()) {
+            if (!(visited_5.containsKey(k))) {
+                res_4 = ((long[])(dg_cycle_util(g, (long)(k), visited_5, rec_1, ((long[])(res_4)))));
             }
         }
-        return res_2;
+        return res_4;
     }
 
-    static boolean dg_has_cycle_util(DirectedGraph g, int node, java.util.Map<Integer,Boolean> visited, java.util.Map<Integer,Boolean> rec) {
+    static boolean dg_has_cycle_util(DirectedGraph g, long node, java.util.Map<Long,Boolean> visited, java.util.Map<Long,Boolean> rec) {
 visited.put(node, true);
 rec.put(node, true);
-        int[][] edges_7 = (int[][])(((int[][])(g.graph).get(node)));
-        int i_9 = 0;
-        while (i_9 < edges_7.length) {
-            int neigh_4 = edges_7[i_9][1];
-            if (!(Boolean)(visited.containsKey(neigh_4))) {
-                if (((Boolean)(dg_has_cycle_util(g, neigh_4, visited, rec)))) {
+        long[][] edges_13 = (long[][])(((long[][])(g.graph).get(node)));
+        long i_16 = 0L;
+        while ((long)(i_16) < (long)(edges_13.length)) {
+            long neigh_9 = (long)(edges_13[(int)((long)(i_16))][(int)((long)(1))]);
+            if (!(visited.containsKey(neigh_9))) {
+                if (dg_has_cycle_util(g, (long)(neigh_9), visited, rec)) {
                     return true;
                 }
-            } else             if (((boolean)(rec).getOrDefault(neigh_4, false))) {
+            } else             if (((boolean)(rec).getOrDefault(neigh_9, false))) {
                 return true;
             }
-            i_9 = i_9 + 1;
+            i_16 = (long)((long)(i_16) + 1L);
         }
 rec.put(node, false);
         return false;
     }
 
     static boolean dg_has_cycle(DirectedGraph g) {
-        java.util.Map<Integer,Boolean> visited_4 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        java.util.Map<Integer,Boolean> rec_1 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        for (int k : g.graph.keySet()) {
-            if (!(Boolean)(visited_4.containsKey(k))) {
-                if (((Boolean)(dg_has_cycle_util(g, ((Number)(k)).intValue(), visited_4, rec_1)))) {
+        java.util.Map<Long,Boolean> visited_6 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        java.util.Map<Long,Boolean> rec_3 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        for (long k : g.graph.keySet()) {
+            if (!(visited_6.containsKey(k))) {
+                if (dg_has_cycle_util(g, (long)(k), visited_6, rec_3)) {
                     return true;
                 }
             }
@@ -284,231 +284,231 @@ rec.put(node, false);
         return false;
     }
 
-    static void dg_fill_graph_randomly(DirectedGraph g, int c) {
-        int count_1 = c;
-        if (count_1 == (-1)) {
-            count_1 = rand_range(10, 10010);
+    static void dg_fill_graph_randomly(DirectedGraph g, long c) {
+        long count_1 = (long)(c);
+        if ((long)(count_1) == (long)((-1))) {
+            count_1 = (long)(rand_range(10L, 10010L));
         }
-        int i_10 = 0;
-        while (i_10 < count_1) {
-            int edge_count = rand_range(1, 103);
-            int j = 0;
-            while (j < edge_count) {
-                int n = rand_range(0, count_1);
-                if (n != i_10) {
-                    dg_add_pair(g, i_10, n, 1);
+        long i_18 = 0L;
+        while ((long)(i_18) < (long)(count_1)) {
+            long edge_count_1 = (long)(rand_range(1L, 103L));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(edge_count_1)) {
+                long n_1 = (long)(rand_range(0L, (long)(count_1)));
+                if ((long)(n_1) != (long)(i_18)) {
+                    dg_add_pair(g, (long)(i_18), (long)(n_1), 1L);
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            i_10 = i_10 + 1;
+            i_18 = (long)((long)(i_18) + 1L);
         }
     }
 
-    static int dg_dfs_time(DirectedGraph g, int s, int e) {
-        int begin = _now();
-        dg_dfs(g, s, e);
-        int end = _now();
-        return end - begin;
+    static long dg_dfs_time(DirectedGraph g, long s, long e) {
+        long begin = (long)(_now());
+        dg_dfs(g, (long)(s), (long)(e));
+        long end_1 = (long)(_now());
+        return (long)(end_1) - (long)(begin);
     }
 
-    static int dg_bfs_time(DirectedGraph g, int s) {
-        int begin_1 = _now();
-        dg_bfs(g, s);
-        int end_1 = _now();
-        return end_1 - begin_1;
+    static long dg_bfs_time(DirectedGraph g, long s) {
+        long begin_1 = (long)(_now());
+        dg_bfs(g, (long)(s));
+        long end_3 = (long)(_now());
+        return (long)(end_3) - (long)(begin_1);
     }
 
     static Graph g_make_graph() {
-        return new Graph(new java.util.LinkedHashMap<Integer, int[][]>());
+        return new Graph(new java.util.LinkedHashMap<Long, long[][]>());
     }
 
-    static void g_add_pair(Graph g, int u, int v, int w) {
-        if (((Boolean)(g.graph.containsKey(u)))) {
-            int[][] edges_8 = (int[][])(((int[][])(g.graph).get(u)));
-            if (!(Boolean)edge_exists(((int[][])(edges_8)), w, v)) {
-                edges_8 = ((int[][])(appendObj(edges_8, new int[]{w, v})));
-                java.util.Map<Integer,int[][]> m_2 = g.graph;
-m_2.put(u, ((int[][])(edges_8)));
+    static void g_add_pair(Graph g, long u, long v, long w) {
+        if (g.graph.containsKey(u)) {
+            long[][] edges_14 = (long[][])(((long[][])(g.graph).get(u)));
+            if (!(Boolean)edge_exists(((long[][])(edges_14)), (long)(w), (long)(v))) {
+                edges_14 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(edges_14), java.util.stream.Stream.of(new long[][]{new long[]{w, v}})).toArray(long[][]::new)));
+                java.util.Map<Long,long[][]> m_2 = g.graph;
+m_2.put(u, ((long[][])(edges_14)));
 g.graph = m_2;
             }
         } else {
-            java.util.Map<Integer,int[][]> m0_1 = g.graph;
-m0_1.put(u, ((int[][])(new int[][]{new int[]{w, v}})));
+            java.util.Map<Long,long[][]> m0_1 = g.graph;
+m0_1.put(u, ((long[][])(new long[][]{new long[]{w, v}})));
 g.graph = m0_1;
         }
-        if (((Boolean)(g.graph.containsKey(v)))) {
-            int[][] edges2 = (int[][])(((int[][])(g.graph).get(v)));
-            if (!(Boolean)edge_exists(((int[][])(edges2)), w, u)) {
-                edges2 = ((int[][])(appendObj(edges2, new int[]{w, u})));
-                java.util.Map<Integer,int[][]> m2 = g.graph;
-m2.put(v, ((int[][])(edges2)));
-g.graph = m2;
+        if (g.graph.containsKey(v)) {
+            long[][] edges2_1 = (long[][])(((long[][])(g.graph).get(v)));
+            if (!(Boolean)edge_exists(((long[][])(edges2_1)), (long)(w), (long)(u))) {
+                edges2_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(edges2_1), java.util.stream.Stream.of(new long[][]{new long[]{w, u}})).toArray(long[][]::new)));
+                java.util.Map<Long,long[][]> m2_1 = g.graph;
+m2_1.put(v, ((long[][])(edges2_1)));
+g.graph = m2_1;
             }
         } else {
-            java.util.Map<Integer,int[][]> m3 = g.graph;
-m3.put(v, ((int[][])(new int[][]{new int[]{w, u}})));
-g.graph = m3;
+            java.util.Map<Long,long[][]> m3_1 = g.graph;
+m3_1.put(v, ((long[][])(new long[][]{new long[]{w, u}})));
+g.graph = m3_1;
         }
     }
 
-    static void g_remove_pair(Graph g, int u, int v) {
-        if (((Boolean)(g.graph.containsKey(u)))) {
-            int[][] edges_9 = (int[][])(((int[][])(g.graph).get(u)));
-            int[][] new_edges_1 = ((int[][])(new int[][]{}));
-            int i_11 = 0;
-            while (i_11 < edges_9.length) {
-                if (edges_9[i_11][1] != v) {
-                    new_edges_1 = ((int[][])(appendObj(new_edges_1, edges_9[i_11])));
+    static void g_remove_pair(Graph g, long u, long v) {
+        if (g.graph.containsKey(u)) {
+            long[][] edges_15 = (long[][])(((long[][])(g.graph).get(u)));
+            long[][] new_edges_1 = ((long[][])(new long[][]{}));
+            long i_19 = 0L;
+            while ((long)(i_19) < (long)(edges_15.length)) {
+                if ((long)(edges_15[(int)((long)(i_19))][(int)((long)(1))]) != (long)(v)) {
+                    new_edges_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_edges_1), java.util.stream.Stream.of(new long[][]{edges_15[(int)((long)(i_19))]})).toArray(long[][]::new)));
                 }
-                i_11 = i_11 + 1;
+                i_19 = (long)((long)(i_19) + 1L);
             }
-            java.util.Map<Integer,int[][]> m_3 = g.graph;
-m_3.put(u, ((int[][])(new_edges_1)));
+            java.util.Map<Long,long[][]> m_3 = g.graph;
+m_3.put(u, ((long[][])(new_edges_1)));
 g.graph = m_3;
         }
-        if (((Boolean)(g.graph.containsKey(v)))) {
-            int[][] edges2_1 = (int[][])(((int[][])(g.graph).get(v)));
-            int[][] new_edges2 = ((int[][])(new int[][]{}));
-            int j_1 = 0;
-            while (j_1 < edges2_1.length) {
-                if (edges2_1[j_1][1] != u) {
-                    new_edges2 = ((int[][])(appendObj(new_edges2, edges2_1[j_1])));
+        if (g.graph.containsKey(v)) {
+            long[][] edges2_3 = (long[][])(((long[][])(g.graph).get(v)));
+            long[][] new_edges2_1 = ((long[][])(new long[][]{}));
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(edges2_3.length)) {
+                if ((long)(edges2_3[(int)((long)(j_3))][(int)((long)(1))]) != (long)(u)) {
+                    new_edges2_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_edges2_1), java.util.stream.Stream.of(new long[][]{edges2_3[(int)((long)(j_3))]})).toArray(long[][]::new)));
                 }
-                j_1 = j_1 + 1;
+                j_3 = (long)((long)(j_3) + 1L);
             }
-            java.util.Map<Integer,int[][]> m2_1 = g.graph;
-m2_1.put(v, ((int[][])(new_edges2)));
-g.graph = m2_1;
+            java.util.Map<Long,long[][]> m2_3 = g.graph;
+m2_3.put(v, ((long[][])(new_edges2_1)));
+g.graph = m2_3;
         }
     }
 
-    static int[] g_all_nodes(Graph g) {
-        int[] res_3 = ((int[])(new int[]{}));
-        for (int k : g.graph.keySet()) {
-            res_3 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_3), java.util.stream.IntStream.of(((Number)(k)).intValue())).toArray()));
+    static long[] g_all_nodes(Graph g) {
+        long[] res_5 = ((long[])(new long[]{}));
+        for (long k : g.graph.keySet()) {
+            res_5 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_5), java.util.stream.LongStream.of((long)(k))).toArray()));
         }
-        return res_3;
+        return res_5;
     }
 
-    static int[] g_dfs_util(Graph g, int node, java.util.Map<Integer,Boolean> visited, int[] order, int d) {
+    static long[] g_dfs_util(Graph g, long node, java.util.Map<Long,Boolean> visited, long[] order, long d) {
 visited.put(node, true);
-        order = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(order), java.util.stream.IntStream.of(node)).toArray()));
-        if (d != (-1) && node == d) {
+        order = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order), java.util.stream.LongStream.of((long)(node))).toArray()));
+        if ((long)(d) != (long)((-1)) && (long)(node) == (long)(d)) {
             return order;
         }
-        int[][] edges_10 = (int[][])(((int[][])(g.graph).get(node)));
-        int i_12 = 0;
-        while (i_12 < edges_10.length) {
-            int neigh_5 = edges_10[i_12][1];
-            if (!(Boolean)(visited.containsKey(neigh_5))) {
-                order = ((int[])(g_dfs_util(g, neigh_5, visited, ((int[])(order)), d)));
-                if (d != (-1) && order[order.length - 1] == d) {
+        long[][] edges_17 = (long[][])(((long[][])(g.graph).get(node)));
+        long i_21 = 0L;
+        while ((long)(i_21) < (long)(edges_17.length)) {
+            long neigh_11 = (long)(edges_17[(int)((long)(i_21))][(int)((long)(1))]);
+            if (!(visited.containsKey(neigh_11))) {
+                order = ((long[])(g_dfs_util(g, (long)(neigh_11), visited, ((long[])(order)), (long)(d))));
+                if ((long)(d) != (long)((-1)) && (long)(order[(int)((long)((long)(order.length) - 1L))]) == (long)(d)) {
                     return order;
                 }
             }
-            i_12 = i_12 + 1;
+            i_21 = (long)((long)(i_21) + 1L);
         }
         return order;
     }
 
-    static int[] g_dfs(Graph g, int s, int d) {
-        if (s == d) {
-            return new int[]{};
+    static long[] g_dfs(Graph g, long s, long d) {
+        if ((long)(s) == (long)(d)) {
+            return new long[]{};
         }
-        int start_2 = s == (-2) ? first_key(g.graph) : s;
-        java.util.Map<Integer,Boolean> visited_5 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        int[] order_2 = ((int[])(new int[]{}));
-        order_2 = ((int[])(g_dfs_util(g, start_2, visited_5, ((int[])(order_2)), d)));
-        return order_2;
+        long start_5 = (long)((long)(s) == (long)((-2)) ? first_key(g.graph) : s);
+        java.util.Map<Long,Boolean> visited_8 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        long[] order_5 = ((long[])(new long[]{}));
+        order_5 = ((long[])(g_dfs_util(g, (long)(start_5), visited_8, ((long[])(order_5)), (long)(d))));
+        return order_5;
     }
 
-    static int[] g_bfs(Graph g, int s) {
-        int[] queue_1 = ((int[])(new int[]{}));
-        java.util.Map<Integer,Boolean> visited_6 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        int[] order_3 = ((int[])(new int[]{}));
-        int start_3 = s == (-2) ? first_key(g.graph) : s;
-        queue_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.IntStream.of(start_3)).toArray()));
-visited_6.put(start_3, true);
-        while (queue_1.length > 0) {
-            int node_1 = queue_1[0];
-            queue_1 = ((int[])(java.util.Arrays.copyOfRange(queue_1, 1, queue_1.length)));
-            order_3 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(order_3), java.util.stream.IntStream.of(node_1)).toArray()));
-            int[][] edges_11 = (int[][])(((int[][])(g.graph).get(node_1)));
-            int i_13 = 0;
-            while (i_13 < edges_11.length) {
-                int neigh_6 = edges_11[i_13][1];
-                if (!(Boolean)(visited_6.containsKey(neigh_6))) {
-                    queue_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.IntStream.of(neigh_6)).toArray()));
-visited_6.put(neigh_6, true);
+    static long[] g_bfs(Graph g, long s) {
+        long[] queue_1 = ((long[])(new long[]{}));
+        java.util.Map<Long,Boolean> visited_10 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        long[] order_7 = ((long[])(new long[]{}));
+        long start_7 = (long)((long)(s) == (long)((-2)) ? first_key(g.graph) : s);
+        queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(start_7))).toArray()));
+visited_10.put(start_7, true);
+        while ((long)(queue_1.length) > 0L) {
+            long node_3 = (long)(queue_1[(int)((long)(0))]);
+            queue_1 = ((long[])(java.util.Arrays.copyOfRange(queue_1, (int)((long)(1)), (int)((long)(queue_1.length)))));
+            order_7 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order_7), java.util.stream.LongStream.of((long)(node_3))).toArray()));
+            long[][] edges_19 = (long[][])(((long[][])(g.graph).get(node_3)));
+            long i_23 = 0L;
+            while ((long)(i_23) < (long)(edges_19.length)) {
+                long neigh_13 = (long)(edges_19[(int)((long)(i_23))][(int)((long)(1))]);
+                if (!(visited_10.containsKey(neigh_13))) {
+                    queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(neigh_13))).toArray()));
+visited_10.put(neigh_13, true);
                 }
-                i_13 = i_13 + 1;
+                i_23 = (long)((long)(i_23) + 1L);
             }
         }
-        return order_3;
+        return order_7;
     }
 
-    static int g_degree(Graph g, int u) {
-        if (((Boolean)(g.graph.containsKey(u)))) {
-            return ((int[][])(g.graph).get(u)).length;
+    static long g_degree(Graph g, long u) {
+        if (g.graph.containsKey(u)) {
+            return ((long[][])(g.graph).get(u)).length;
         }
         return 0;
     }
 
-    static int[] g_cycle_util(Graph g, int node, java.util.Map<Integer,Boolean> visited, int parent, int[] res) {
+    static long[] g_cycle_util(Graph g, long node, java.util.Map<Long,Boolean> visited, long parent, long[] res) {
 visited.put(node, true);
-        int[][] edges_12 = (int[][])(((int[][])(g.graph).get(node)));
-        int i_14 = 0;
-        while (i_14 < edges_12.length) {
-            int neigh_7 = edges_12[i_14][1];
-            if (!(Boolean)(visited.containsKey(neigh_7))) {
-                res = ((int[])(g_cycle_util(g, neigh_7, visited, node, ((int[])(res)))));
-            } else             if (neigh_7 != parent) {
-                if (!(Boolean)list_contains_int(((int[])(res)), neigh_7)) {
-                    res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(neigh_7)).toArray()));
+        long[][] edges_21 = (long[][])(((long[][])(g.graph).get(node)));
+        long i_25 = 0L;
+        while ((long)(i_25) < (long)(edges_21.length)) {
+            long neigh_15 = (long)(edges_21[(int)((long)(i_25))][(int)((long)(1))]);
+            if (!(visited.containsKey(neigh_15))) {
+                res = ((long[])(g_cycle_util(g, (long)(neigh_15), visited, (long)(node), ((long[])(res)))));
+            } else             if ((long)(neigh_15) != (long)(parent)) {
+                if (!(Boolean)list_contains_int(((long[])(res)), (long)(neigh_15))) {
+                    res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(neigh_15))).toArray()));
                 }
-                if (!(Boolean)list_contains_int(((int[])(res)), node)) {
-                    res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(node)).toArray()));
+                if (!(Boolean)list_contains_int(((long[])(res)), (long)(node))) {
+                    res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(node))).toArray()));
                 }
             }
-            i_14 = i_14 + 1;
+            i_25 = (long)((long)(i_25) + 1L);
         }
         return res;
     }
 
-    static int[] g_cycle_nodes(Graph g) {
-        java.util.Map<Integer,Boolean> visited_7 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        int[] res_4 = ((int[])(new int[]{}));
-        for (int k : g.graph.keySet()) {
-            if (!(Boolean)(visited_7.containsKey(k))) {
-                res_4 = ((int[])(g_cycle_util(g, ((Number)(k)).intValue(), visited_7, -1, ((int[])(res_4)))));
+    static long[] g_cycle_nodes(Graph g) {
+        java.util.Map<Long,Boolean> visited_11 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        long[] res_7 = ((long[])(new long[]{}));
+        for (long k : g.graph.keySet()) {
+            if (!(visited_11.containsKey(k))) {
+                res_7 = ((long[])(g_cycle_util(g, (long)(k), visited_11, (long)(-1), ((long[])(res_7)))));
             }
         }
-        return res_4;
+        return res_7;
     }
 
-    static boolean g_has_cycle_util(Graph g, int node, java.util.Map<Integer,Boolean> visited, int parent) {
+    static boolean g_has_cycle_util(Graph g, long node, java.util.Map<Long,Boolean> visited, long parent) {
 visited.put(node, true);
-        int[][] edges_13 = (int[][])(((int[][])(g.graph).get(node)));
-        int i_15 = 0;
-        while (i_15 < edges_13.length) {
-            int neigh_8 = edges_13[i_15][1];
-            if (!(Boolean)(visited.containsKey(neigh_8))) {
-                if (((Boolean)(g_has_cycle_util(g, neigh_8, visited, node)))) {
+        long[][] edges_23 = (long[][])(((long[][])(g.graph).get(node)));
+        long i_27 = 0L;
+        while ((long)(i_27) < (long)(edges_23.length)) {
+            long neigh_17 = (long)(edges_23[(int)((long)(i_27))][(int)((long)(1))]);
+            if (!(visited.containsKey(neigh_17))) {
+                if (g_has_cycle_util(g, (long)(neigh_17), visited, (long)(node))) {
                     return true;
                 }
-            } else             if (neigh_8 != parent) {
+            } else             if ((long)(neigh_17) != (long)(parent)) {
                 return true;
             }
-            i_15 = i_15 + 1;
+            i_27 = (long)((long)(i_27) + 1L);
         }
         return false;
     }
 
     static boolean g_has_cycle(Graph g) {
-        java.util.Map<Integer,Boolean> visited_8 = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        for (int k : g.graph.keySet()) {
-            if (!(Boolean)(visited_8.containsKey(k))) {
-                if (((Boolean)(g_has_cycle_util(g, ((Number)(k)).intValue(), visited_8, -1)))) {
+        java.util.Map<Long,Boolean> visited_12 = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        for (long k : g.graph.keySet()) {
+            if (!(visited_12.containsKey(k))) {
+                if (g_has_cycle_util(g, (long)(k), visited_12, (long)(-1))) {
                     return true;
                 }
             }
@@ -516,60 +516,60 @@ visited.put(node, true);
         return false;
     }
 
-    static void g_fill_graph_randomly(Graph g, int c) {
-        int count_2 = c;
-        if (count_2 == (-1)) {
-            count_2 = rand_range(10, 10010);
+    static void g_fill_graph_randomly(Graph g, long c) {
+        long count_2 = (long)(c);
+        if ((long)(count_2) == (long)((-1))) {
+            count_2 = (long)(rand_range(10L, 10010L));
         }
-        int i_16 = 0;
-        while (i_16 < count_2) {
-            int edge_count_1 = rand_range(1, 103);
-            int j_2 = 0;
-            while (j_2 < edge_count_1) {
-                int n_1 = rand_range(0, count_2);
-                if (n_1 != i_16) {
-                    g_add_pair(g, i_16, n_1, 1);
+        long i_29 = 0L;
+        while ((long)(i_29) < (long)(count_2)) {
+            long edge_count_3 = (long)(rand_range(1L, 103L));
+            long j_5 = 0L;
+            while ((long)(j_5) < (long)(edge_count_3)) {
+                long n_3 = (long)(rand_range(0L, (long)(count_2)));
+                if ((long)(n_3) != (long)(i_29)) {
+                    g_add_pair(g, (long)(i_29), (long)(n_3), 1L);
                 }
-                j_2 = j_2 + 1;
+                j_5 = (long)((long)(j_5) + 1L);
             }
-            i_16 = i_16 + 1;
+            i_29 = (long)((long)(i_29) + 1L);
         }
     }
 
-    static int g_dfs_time(Graph g, int s, int e) {
-        int begin_2 = _now();
-        g_dfs(g, s, e);
-        int end_2 = _now();
-        return end_2 - begin_2;
+    static long g_dfs_time(Graph g, long s, long e) {
+        long begin_2 = (long)(_now());
+        g_dfs(g, (long)(s), (long)(e));
+        long end_5 = (long)(_now());
+        return (long)(end_5) - (long)(begin_2);
     }
 
-    static int g_bfs_time(Graph g, int s) {
-        int begin_3 = _now();
-        g_bfs(g, s);
-        int end_3 = _now();
-        return end_3 - begin_3;
+    static long g_bfs_time(Graph g, long s) {
+        long begin_3 = (long)(_now());
+        g_bfs(g, (long)(s));
+        long end_7 = (long)(_now());
+        return (long)(end_7) - (long)(begin_3);
     }
 
     static void main() {
         DirectedGraph dg = dg_make_graph();
-        dg_add_pair(dg, 0, 1, 5);
-        dg_add_pair(dg, 0, 2, 3);
-        dg_add_pair(dg, 1, 3, 2);
-        dg_add_pair(dg, 2, 3, 4);
-        System.out.println(_p(dg_dfs(dg, -2, -1)));
-        System.out.println(_p(dg_bfs(dg, -2)));
-        System.out.println(_p(dg_in_degree(dg, 3)));
-        System.out.println(_p(dg_out_degree(dg, 0)));
+        dg_add_pair(dg, 0L, 1L, 5L);
+        dg_add_pair(dg, 0L, 2L, 3L);
+        dg_add_pair(dg, 1L, 3L, 2L);
+        dg_add_pair(dg, 2L, 3L, 4L);
+        System.out.println(_p(dg_dfs(dg, (long)(-2), (long)(-1))));
+        System.out.println(_p(dg_bfs(dg, (long)(-2))));
+        System.out.println(_p(dg_in_degree(dg, 3L)));
+        System.out.println(_p(dg_out_degree(dg, 0L)));
         System.out.println(_p(dg_topological_sort(dg)));
         System.out.println(_p(dg_has_cycle(dg)));
-        Graph ug = g_make_graph();
-        g_add_pair(ug, 0, 1, 1);
-        g_add_pair(ug, 1, 2, 1);
-        g_add_pair(ug, 2, 0, 1);
-        System.out.println(_p(g_dfs(ug, -2, -1)));
-        System.out.println(_p(g_bfs(ug, -2)));
-        System.out.println(_p(g_degree(ug, 1)));
-        System.out.println(_p(g_has_cycle(ug)));
+        Graph ug_1 = g_make_graph();
+        g_add_pair(ug_1, 0L, 1L, 1L);
+        g_add_pair(ug_1, 1L, 2L, 1L);
+        g_add_pair(ug_1, 2L, 0L, 1L);
+        System.out.println(_p(g_dfs(ug_1, (long)(-2), (long)(-1))));
+        System.out.println(_p(g_bfs(ug_1, (long)(-2))));
+        System.out.println(_p(g_degree(ug_1, 1L)));
+        System.out.println(_p(g_has_cycle(ug_1)));
     }
     public static void main(String[] args) {
         {
@@ -609,12 +609,6 @@ visited.put(node, true);
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -627,6 +621,10 @@ visited.put(node, true);
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
