@@ -1568,7 +1568,13 @@ func (c *CastExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ".toString")
 		}
 	case "bool":
-		fmt.Fprint(w, ".asInstanceOf[Boolean]")
+		// Boolean values don't require casting in Scala. The
+		// previous implementation always appended
+		// `.asInstanceOf[Boolean]` which produced verbose code such
+		// as `expr.asInstanceOf[Boolean]` even when `expr` already
+		// had type `Boolean`. Removing the cast keeps the generated
+		// output concise while relying on Scala's type system to
+		// ensure correctness.
 	default:
 		if c.Type != "" {
 			fmt.Fprintf(w, ".asInstanceOf[%s]", c.Type)
