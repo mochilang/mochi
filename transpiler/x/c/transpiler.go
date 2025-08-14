@@ -152,7 +152,11 @@ func SetBenchMain(v bool) { benchMain = v }
 func emitLenExpr(w io.Writer, e Expr) {
 	switch v := e.(type) {
 	case *VarRef:
-		if t := inferExprType(currentEnv, v); strings.HasPrefix(t, "Map") {
+		t := inferExprType(currentEnv, v)
+		if t == "" {
+			t = varTypes[v.Name]
+		}
+		if strings.HasPrefix(t, "Map") || mapKeyTypes[v.Name] != "" {
 			io.WriteString(w, mapField(v.Name, "len"))
 		} else {
 			io.WriteString(w, v.Name+"_len")
@@ -189,7 +193,7 @@ func emitLenExpr(w io.Writer, e Expr) {
 			if t == "" {
 				t = varTypes[vr.Name]
 			}
-			if strings.HasPrefix(t, "MapSL") {
+			if strings.HasPrefix(t, "MapSL") || (mapKeyTypes[vr.Name] == "const char*" && strings.HasSuffix(mapValTypes[vr.Name], "[]")) {
 				needMapLenSL = true
 				io.WriteString(w, "map_len_sl(")
 				io.WriteString(w, mapField(vr.Name, "keys")+", ")
@@ -197,7 +201,7 @@ func emitLenExpr(w io.Writer, e Expr) {
 				io.WriteString(w, mapField(vr.Name, "len")+", ")
 				v.Index.emitExpr(w)
 				io.WriteString(w, ")")
-			} else if strings.HasPrefix(t, "Map") {
+			} else if strings.HasPrefix(t, "Map") || mapKeyTypes[vr.Name] != "" {
 				io.WriteString(w, mapField(vr.Name, "lens")+"[")
 				v.Index.emitExpr(w)
 				io.WriteString(w, "]")
@@ -2720,7 +2724,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			if t == "" {
 				t = inferExprType(currentEnv, vr)
 			}
-			if strings.HasPrefix(t, "MapIL") {
+			if strings.HasPrefix(t, "MapIL") || mapKeyTypes[vr.Name] != "" {
 				io.WriteString(w, mapField(vr.Name, "keys")+", ")
 				io.WriteString(w, mapField(vr.Name, "vals")+", ")
 				io.WriteString(w, mapField(vr.Name, "lens")+", ")
@@ -3100,9 +3104,13 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		}
 	}
 	if c.Func == "concat" && len(c.Args) == 2 {
-		if a, ok := c.Args[0].(*VarRef); ok {
-			t0 := inferExprType(currentEnv, c.Args[0])
-			if strings.Contains(t0, "const char*") {
+		t0 := inferExprType(currentEnv, c.Args[0])
+		if t0 == "" {
+			t0 = inferExprType(currentEnv, c.Args[1])
+		}
+		base := strings.TrimSuffix(t0, "[]")
+		if strings.Contains(base, "const char*") {
+			if a, ok := c.Args[0].(*VarRef); ok {
 				if b, ok2 := c.Args[1].(*VarRef); ok2 {
 					needConcatStrPtr = true
 					needListAppendStrPtr = true
@@ -3110,19 +3118,19 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					fmt.Fprintf(w, "concat_strptr(%s, &%s_len, &%s_lens, &%s_lens_len, %s, %s_len, %s_lens)", a.Name, a.Name, a.Name, a.Name, b.Name, b.Name, b.Name)
 					return
 				}
-			} else {
-				needConcatLongLong = true
-				if b, ok2 := c.Args[1].(*VarRef); ok2 {
-					fmt.Fprintf(w, "concat_long_long(%s, %s_len, %s, %s_len)", a.Name, a.Name, b.Name, b.Name)
-					return
-				}
-				fmt.Fprintf(w, "concat_long_long(%s, %s_len, ", a.Name, a.Name)
-				c.Args[1].emitExpr(w)
-				io.WriteString(w, ", ")
-				emitLenExpr(w, c.Args[1])
-				io.WriteString(w, ")")
-				return
 			}
+		} else if base != "" {
+			needConcatLongLong = true
+			io.WriteString(w, "concat_long_long(")
+			c.Args[0].emitExpr(w)
+			io.WriteString(w, ", ")
+			emitLenExpr(w, c.Args[0])
+			io.WriteString(w, ", ")
+			c.Args[1].emitExpr(w)
+			io.WriteString(w, ", ")
+			emitLenExpr(w, c.Args[1])
+			io.WriteString(w, ")")
+			return
 		}
 	}
 	if c.Func == "_slice_int" && len(c.Args) == 5 {
@@ -7026,16 +7034,27 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			var buf bytes.Buffer
 			buf.WriteString("{\n")
 			writeIndent(&buf, 1)
-			if idx, ok := ex.(*IndexExpr); ok && inferExprType(env, idx.Target) == "MapSL" {
-				fmt.Fprintf(&buf, "size_t %s_len = 0;\n", tmp)
-				writeIndent(&buf, 1)
-				fmt.Fprintf(&buf, "%s* %s = ", elemType, tmp)
-				varTypes[tmp] = elemType + "*"
-				prev := currentVarName
-				currentVarName = tmp
-				ex.emitExpr(&buf)
-				currentVarName = prev
-				buf.WriteString(";\n")
+			if idx, ok := ex.(*IndexExpr); ok {
+				t := inferExprType(env, idx.Target)
+				if t == "MapSL" || t == "MapIL" {
+					fmt.Fprintf(&buf, "size_t %s_len = 0;\n", tmp)
+					writeIndent(&buf, 1)
+					fmt.Fprintf(&buf, "%s* %s = ", elemType, tmp)
+					varTypes[tmp] = elemType + "*"
+					prev := currentVarName
+					currentVarName = tmp
+					ex.emitExpr(&buf)
+					currentVarName = prev
+					buf.WriteString(";\n")
+				} else {
+					fmt.Fprintf(&buf, "%s* %s = ", elemType, tmp)
+					ex.emitExpr(&buf)
+					buf.WriteString(";\n")
+					writeIndent(&buf, 1)
+					fmt.Fprintf(&buf, "size_t %s_len = ", tmp)
+					emitLenExpr(&buf, ex)
+					buf.WriteString(";\n")
+				}
 			} else {
 				fmt.Fprintf(&buf, "%s* %s = ", elemType, tmp)
 				ex.emitExpr(&buf)
