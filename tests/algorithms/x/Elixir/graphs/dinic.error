@@ -1,4 +1,5 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
  29 │       {i, res} = try do
     │        ~
@@ -125,3 +126,4 @@ warning: variable "i" is unused (there is a variable with the same name in the c
      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dinic.exs:327:5: Main.main/0
 
 ** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/graphs/dinic.exs: cannot compile module Main (errors have been logged)
+

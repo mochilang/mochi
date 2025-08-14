@@ -1,5 +1,5 @@
-## Progress (2025-08-13 12:32 +0700)
-- Commit 25cf3a3e28: chore(dart): update algorithm benchmarks
+## Progress (2025-08-14 17:09 +0700)
+- Commit 5cabcd7927: zig: handle shadowed params and list types
 - Generated Elixir for 102/105 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference

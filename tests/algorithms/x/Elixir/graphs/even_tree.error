@@ -1,4 +1,5 @@
-error: undefined variable "tree"
+run: exit status 1
+    error: undefined variable "tree"
     │
  81 │           while_fun.(while_fun, i, tree)
     │                                    ^^^^
@@ -20,3 +21,4 @@ error: undefined variable "tree"
     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/even_tree.exs:80:11: Main.main/0
 
 ** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/graphs/even_tree.exs: cannot compile module Main (errors have been logged)
+
