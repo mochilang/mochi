@@ -1,0 +1,41 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c: In function ‘add_edge’:
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:142:20: error: ‘graph_keys’ undeclared (first use in this function)
+  142 |         map_set_il(graph_keys, graph_vals, graph_lens, &graph_len, from, list_append_int_new(map_get_il(graph_keys, graph_vals, graph_lens, graph_len, from, NULL), graph_lens[(int)(from)], to), graph_lens[from] + 1);
+      |                    ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:142:20: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:142:32: error: ‘graph_vals’ undeclared (first use in this function)
+  142 |         map_set_il(graph_keys, graph_vals, graph_lens, &graph_len, from, list_append_int_new(map_get_il(graph_keys, graph_vals, graph_lens, graph_len, from, NULL), graph_lens[(int)(from)], to), graph_lens[from] + 1);
+      |                                ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:142:44: error: ‘graph_lens’ undeclared (first use in this function)
+  142 |         map_set_il(graph_keys, graph_vals, graph_lens, &graph_len, from, list_append_int_new(map_get_il(graph_keys, graph_vals, graph_lens, graph_len, from, NULL), graph_lens[(int)(from)], to), graph_lens[from] + 1);
+      |                                            ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:142:57: error: ‘graph_len’ undeclared (first use in this function)
+  142 |         map_set_il(graph_keys, graph_vals, graph_lens, &graph_len, from, list_append_int_new(map_get_il(graph_keys, graph_vals, graph_lens, graph_len, from, NULL), graph_lens[(int)(from)], to), graph_lens[from] + 1);
+      |                                                         ^~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c: In function ‘print_graph’:
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:151:37: error: ‘graph_keys’ undeclared (first use in this function)
+  151 |         long long *adj = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, v, NULL);
+      |                                     ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:151:49: error: ‘graph_vals’ undeclared (first use in this function)
+  151 |         long long *adj = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, v, NULL);
+      |                                                 ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:151:61: error: ‘graph_lens’ undeclared (first use in this function)
+  151 |         long long *adj = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, v, NULL);
+      |                                                             ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:151:73: error: ‘graph_len’ undeclared (first use in this function)
+  151 |         long long *adj = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, v, NULL);
+      |                                                                         ^~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c: In function ‘bfs’:
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:182:43: error: ‘graph_keys’ undeclared (first use in this function)
+  182 |         long long *neighbors = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, vertex, NULL);
+      |                                           ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:182:55: error: ‘graph_vals’ undeclared (first use in this function)
+  182 |         long long *neighbors = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, vertex, NULL);
+      |                                                       ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:182:67: error: ‘graph_lens’ undeclared (first use in this function)
+  182 |         long long *neighbors = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, vertex, NULL);
+      |                                                                   ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/breadth_first_search.c:182:79: error: ‘graph_len’ undeclared (first use in this function)
+  182 |         long long *neighbors = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, vertex, NULL);
+      |                                                                               ^~~~~~~~~

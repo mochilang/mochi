@@ -1,0 +1,30 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c: In function ‘add_edge’:
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c:119:37: error: ‘v_keys’ undeclared (first use in this function)
+  119 |         long long *lst = map_get_il(v_keys, v_vals, v_lens, v_len, from_vertex, NULL);
+      |                                     ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c:119:37: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c:119:45: error: ‘v_vals’ undeclared (first use in this function)
+  119 |         long long *lst = map_get_il(v_keys, v_vals, v_lens, v_len, from_vertex, NULL);
+      |                                             ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c:119:53: error: ‘v_lens’ undeclared (first use in this function); did you mean ‘v_len’?
+  119 |         long long *lst = map_get_il(v_keys, v_vals, v_lens, v_len, from_vertex, NULL);
+      |                                                     ^~~~~~
+      |                                                     v_len
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c: In function ‘print_graph’:
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c:163:19: error: incompatible type for argument 1 of ‘str_int’
+  163 |     puts(str_int(g.vertex));
+      |                  ~^~~~~~~
+      |                   |
+      |                   MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c:28:32: note: expected ‘long long int’ but argument is of type ‘MapIL’
+   28 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c: In function ‘dfs_recursive’:
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c:181:117: error: ‘_len’ undeclared (first use in this function)
+  181 |         long long *neighbors = map_get_il(g.vertex.keys, g.vertex.vals, g.vertex.lens, g.vertex.len, start_vertex, &_len);
+      |                                                                                                                     ^~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/graphs/depth_first_search_2.c:221:31: error: incompatible types when initializing type ‘int *’ using type ‘Anon1’
+  221 |         g = (Graph){.vertex = (Anon1){}, .size = 0LL};
+      |                               ^

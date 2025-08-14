@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (434/1077) - Last updated 2025-08-14 09:46 +0700:
+Checklist of programs that currently transpile and run (483/1077) - Last updated 2025-08-14 09:53 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -354,57 +354,57 @@ Checklist of programs that currently transpile and run (434/1077) - Last updated
 | 347 | dynamic_programming/viterbi |  |  |  |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 2.69ms | 1.4 MB |
 | 349 | dynamic_programming/word_break | ✓ | 236us | 1.4 MB |
-| 350 | electronics/apparent_power | ✓ | 0us | 1.6 MB |
-| 351 | electronics/builtin_voltage |  |  |  |
-| 352 | electronics/capacitor_equivalence |  |  |  |
-| 353 | electronics/carrier_concentration |  |  |  |
-| 354 | electronics/charging_capacitor |  |  |  |
-| 355 | electronics/charging_inductor |  |  |  |
-| 356 | electronics/circular_convolution |  |  |  |
-| 357 | electronics/coulombs_law |  |  |  |
-| 358 | electronics/electric_conductivity |  |  |  |
-| 359 | electronics/electric_power |  |  |  |
-| 360 | electronics/electrical_impedance |  |  |  |
-| 361 | electronics/ic_555_timer |  |  |  |
-| 362 | electronics/ind_reactance |  |  |  |
-| 363 | electronics/ohms_law |  |  |  |
-| 364 | electronics/real_and_reactive_power |  |  |  |
-| 365 | electronics/resistor_color_code |  |  |  |
-| 366 | electronics/resistor_equivalence |  |  |  |
-| 367 | electronics/resonant_frequency |  |  |  |
-| 368 | electronics/wheatstone_bridge |  |  |  |
-| 369 | file_transfer/receive_file |  |  |  |
-| 370 | file_transfer/send_file |  |  |  |
-| 371 | file_transfer/tests/test_send_file |  |  |  |
-| 372 | financial/equated_monthly_installments |  |  |  |
-| 373 | financial/exponential_moving_average |  |  |  |
-| 374 | financial/interest |  |  |  |
-| 375 | financial/present_value |  |  |  |
-| 376 | financial/price_plus_tax |  |  |  |
-| 377 | financial/simple_moving_average |  |  |  |
-| 378 | financial/straight_line_depreciation |  |  |  |
-| 379 | financial/time_and_half_pay |  |  |  |
-| 380 | fractals/julia_sets |  |  |  |
-| 381 | fractals/koch_snowflake |  |  |  |
-| 382 | fractals/mandelbrot |  |  |  |
-| 383 | fractals/sierpinski_triangle |  |  |  |
-| 384 | fractals/vicsek |  |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |  |  |  |
-| 386 | genetic_algorithm/basic_string |  |  |  |
-| 387 | geodesy/haversine_distance |  |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |  |  |  |
-| 389 | geometry/geometry |  |  |  |
-| 390 | graphics/bezier_curve |  |  |  |
-| 391 | graphics/butterfly_pattern |  |  |  |
-| 392 | graphics/digital_differential_analyzer_line |  |  |  |
-| 393 | graphics/vector3_for_2d_rendering |  |  |  |
+| 350 | electronics/apparent_power | ✓ |  |  |
+| 351 | electronics/builtin_voltage | ✓ | 330us | 2.1 MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 338us | 1.6 MB |
+| 353 | electronics/carrier_concentration | ✓ | 295us | 1.7 MB |
+| 354 | electronics/charging_capacitor | ✓ | 172us | 1.6 MB |
+| 355 | electronics/charging_inductor | ✓ | 280us | 1.7 MB |
+| 356 | electronics/circular_convolution | ✓ | 370us | 1.7 MB |
+| 357 | electronics/coulombs_law | ✓ | 446us | 1.6 MB |
+| 358 | electronics/electric_conductivity | ✓ | 353us | 1.6 MB |
+| 359 | electronics/electric_power | ✓ | 341us | 2.0 MB |
+| 360 | electronics/electrical_impedance | ✓ | 185us | 1.5 MB |
+| 361 | electronics/ic_555_timer | ✓ | 231us | 1.6 MB |
+| 362 | electronics/ind_reactance | ✓ | 265us | 1.5 MB |
+| 363 | electronics/ohms_law | ✓ | 375us | 1.5 MB |
+| 364 | electronics/real_and_reactive_power | ✓ | 310us | 1.6 MB |
+| 365 | electronics/resistor_color_code | ✓ | 57us | 1.6 MB |
+| 366 | electronics/resistor_equivalence | ✓ | 328us | 1.7 MB |
+| 367 | electronics/resonant_frequency | ✓ | 279us | 1.5 MB |
+| 368 | electronics/wheatstone_bridge | ✓ | 205us | 1.6 MB |
+| 369 | file_transfer/receive_file | ✓ | 263us | 1.5 MB |
+| 370 | file_transfer/send_file | ✓ | 151us | 1.5 MB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 193us | 1.5 MB |
+| 372 | financial/equated_monthly_installments | ✓ | 445us | 1.7 MB |
+| 373 | financial/exponential_moving_average | ✓ | 377us | 1.6 MB |
+| 374 | financial/interest | ✓ | 239us | 1.6 MB |
+| 375 | financial/present_value | ✓ | 306us | 1.6 MB |
+| 376 | financial/price_plus_tax | ✓ | 280us | 1.5 MB |
+| 377 | financial/simple_moving_average | ✓ | 235us | 1.6 MB |
+| 378 | financial/straight_line_depreciation | ✓ | 361us | 1.7 MB |
+| 379 | financial/time_and_half_pay | ✓ | 227us | 1.6 MB |
+| 380 | fractals/julia_sets | ✓ | 419us | 1.4 MB |
+| 381 | fractals/koch_snowflake | ✓ | 292us | 1.5 MB |
+| 382 | fractals/mandelbrot | ✓ | 236us | 1.4 MB |
+| 383 | fractals/sierpinski_triangle | ✓ | 233us | 1.4 MB |
+| 384 | fractals/vicsek | ✓ | 221us | 1.6 MB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 304us | 1.6 MB |
+| 386 | genetic_algorithm/basic_string | ✓ | 376us | 1.4 MB |
+| 387 | geodesy/haversine_distance | ✓ | 242us | 1.5 MB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 194us | 1.7 MB |
+| 389 | geometry/geometry | ✓ | 266us | 1.6 MB |
+| 390 | graphics/bezier_curve | ✓ | 452us | 1.5 MB |
+| 391 | graphics/butterfly_pattern | ✓ | 242us | 1.5 MB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 358us | 1.6 MB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 444us | 1.5 MB |
 | 394 | graphs/a_star |  |  |  |
 | 395 | graphs/ant_colony_optimization_algorithms |  |  |  |
 | 396 | graphs/articulation_points |  |  |  |
 | 397 | graphs/basic_graphs |  |  |  |
-| 398 | graphs/bellman_ford |  |  |  |
+| 398 | graphs/bellman_ford | ✓ | 516us | 1.7 MB |
 | 399 | graphs/bi_directional_dijkstra |  |  |  |
-| 400 | graphs/bidirectional_a_star |  |  |  |
+| 400 | graphs/bidirectional_a_star | ✓ | 464us | 1.7 MB |
 | 401 | graphs/bidirectional_breadth_first_search |  |  |  |
 | 402 | graphs/bidirectional_search |  |  |  |
 | 403 | graphs/boruvka |  |  |  |
@@ -414,15 +414,15 @@ Checklist of programs that currently transpile and run (434/1077) - Last updated
 | 407 | graphs/breadth_first_search_shortest_path_2 |  |  |  |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |  |  |  |
 | 409 | graphs/check_bipatrite |  |  |  |
-| 410 | graphs/check_cycle |  |  |  |
+| 410 | graphs/check_cycle | ✓ | 320us | 1.6 MB |
 | 411 | graphs/connected_components |  |  |  |
 | 412 | graphs/deep_clone_graph |  |  |  |
 | 413 | graphs/depth_first_search |  |  |  |
 | 414 | graphs/depth_first_search_2 |  |  |  |
 | 415 | graphs/dijkstra |  |  |  |
-| 416 | graphs/dijkstra_2 |  |  |  |
-| 417 | graphs/dijkstra_algorithm |  |  |  |
-| 418 | graphs/dijkstra_alternate |  |  |  |
+| 416 | graphs/dijkstra_2 | ✓ | 413us | 1.6 MB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 327us | 1.5 MB |
+| 418 | graphs/dijkstra_alternate | ✓ | 685us | 1.4 MB |
 | 419 | graphs/dijkstra_binary_grid |  |  |  |
 | 420 | graphs/dinic |  |  |  |
 | 421 | graphs/directed_and_undirected_weighted_graph |  |  |  |

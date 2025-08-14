@@ -127,6 +127,7 @@ var (
 	currentFuncReturn string
 
 	currentLocals map[string]bool
+	currentParams map[string]bool
 
 	benchMain bool
 
@@ -4927,6 +4928,10 @@ func (p *Program) Emit() []byte {
 		currentFuncName = f.Name
 		currentFuncReturn = f.Return
 		currentLocals = f.Locals
+		currentParams = make(map[string]bool)
+		for _, p := range f.Params {
+			currentParams[p.Name] = true
+		}
 		ret := f.Return
 		if ret == "" {
 			ret = "int"
@@ -4999,6 +5004,7 @@ func (p *Program) Emit() []byte {
 		currentFuncName = ""
 		currentFuncReturn = ""
 		currentLocals = nil
+		currentParams = nil
 	}
 	return buf.Bytes()
 }
@@ -5137,6 +5143,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if name == "floor" { // avoid conflict with stdlib
 				funcAliases[name] = "user_floor"
 				name = "user_floor"
+			}
+			if name == "modf" { // avoid conflict with stdlib
+				funcAliases[name] = "user_modf"
+				name = "user_modf"
 			}
 			if name == "powf" { // avoid conflict with stdlib
 				funcAliases[name] = "user_powf"
@@ -6034,6 +6044,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	case s.Var != nil:
 		currentVarName = aliasName(s.Var.Name)
 		s.Var.Name = currentVarName
+		if currentParams != nil {
+			if _, ok := currentParams[currentVarName]; ok {
+				valExpr := convertExpr(s.Var.Value)
+				delete(constLists, currentVarName)
+				delete(constStrings, currentVarName)
+				currentVarName = ""
+				currentVarType = nil
+				return &AssignStmt{Name: s.Var.Name, Value: valExpr}, nil
+			}
+		}
 		if s.Var.Type != nil {
 			currentVarType = types.ResolveTypeRef(s.Var.Type, env)
 		} else {
@@ -9398,6 +9418,9 @@ func inferExprType(env *types.Env, e Expr) string {
 
 func inferCType(env *types.Env, name string, e Expr) string {
 	if t := inferExprType(env, e); t != "" {
+		if strings.HasPrefix(t, "int") {
+			t = "long long" + t[3:]
+		}
 		if t == "int[]" || t == "int[][]" {
 			if lst, ok := e.(*ListLit); ok && len(lst.Elems) > 0 {
 				if sub, ok2 := lst.Elems[0].(*ListLit); ok2 {

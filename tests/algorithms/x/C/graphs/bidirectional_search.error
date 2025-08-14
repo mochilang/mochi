@@ -1,0 +1,155 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c: In function ‘expand_search’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:157:39: error: ‘graph_keys’ undeclared (first use in this function)
+  157 |     long long *neighbors = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, current, NULL);
+      |                                       ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:157:39: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:157:51: error: ‘graph_vals’ undeclared (first use in this function)
+  157 |     long long *neighbors = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, current, NULL);
+      |                                                   ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:157:63: error: ‘graph_lens’ undeclared (first use in this function)
+  157 |     long long *neighbors = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, current, NULL);
+      |                                                               ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:157:75: error: ‘graph_len’ undeclared (first use in this function)
+  157 |     long long *neighbors = map_get_il(graph_keys, graph_vals, graph_lens, graph_len, current, NULL);
+      |                                                                           ^~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:167:72: error: ‘v_len’ undeclared (first use in this function); did you mean ‘p_len’?
+  167 |         if (v[(int)({long long _mochi_idx = neighbor; _mochi_idx < 0 ? v_len + _mochi_idx : _mochi_idx;})]) {
+      |                                                                        ^~~~~
+      |                                                                        p_len
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:171:10: error: subscripted value is neither array nor pointer nor vector
+  171 |         v[(int)(neighbor)] = 1LL;
+      |          ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:172:10: error: subscripted value is neither array nor pointer nor vector
+  172 |         p[(int)(neighbor)] = current;
+      |          ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:175:87: error: ‘opposite_visited_len’ undeclared (first use in this function); did you mean ‘opposite_visited’?
+  175 |         if (opposite_visited[(int)({long long _mochi_idx = neighbor; _mochi_idx < 0 ? opposite_visited_len + _mochi_idx : _mochi_idx;})]) {
+      |                                                                                       ^~~~~~~~~~~~~~~~~~~~
+      |                                                                                       opposite_visited
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c: In function ‘construct_path’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:189:77: error: ‘parents_len’ undeclared (first use in this function); did you mean ‘path_len’?
+  189 |         node = parents[(int)({long long _mochi_idx = node; _mochi_idx < 0 ? parents_len + _mochi_idx : _mochi_idx;})];
+      |                                                                             ^~~~~~~~~~~
+      |                                                                             path_len
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c: In function ‘bidirectional_search’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:239:110: error: incompatible type for argument 6 of ‘expand_search’
+  239 |         ExpandResult res = expand_search(g, forward_queue, forward_queue_len, forward_head, forward_parents, forward_visited, backward_visited);
+      |                                                                                                              ^~~~~~~~~~~~~~~
+      |                                                                                                              |
+      |                                                                                                              MapII
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:151:113: note: expected ‘int’ but argument is of type ‘MapII’
+  151 | ExpandResult expand_search(MapIL graph, long long * queue, size_t queue_len, long long head, MapII parents, int visited, int opposite_visited) {
+      |                                                                                                             ~~~~^~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:239:127: error: incompatible type for argument 7 of ‘expand_search’
+  239 |         ExpandResult res = expand_search(g, forward_queue, forward_queue_len, forward_head, forward_parents, forward_visited, backward_visited);
+      |                                                                                                                               ^~~~~~~~~~~~~~~~
+      |                                                                                                                               |
+      |                                                                                                                               MapII
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:151:126: note: expected ‘int’ but argument is of type ‘MapII’
+  151 | ExpandResult expand_search(MapIL graph, long long * queue, size_t queue_len, long long head, MapII parents, int visited, int opposite_visited) {
+      |                                                                                                                          ~~~~^~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:243:27: error: incompatible types when assigning to type ‘MapII’ from type ‘int’
+  243 |         forward_visited = res.visited;
+      |                           ^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:248:101: error: incompatible type for argument 6 of ‘expand_search’
+  248 |         res = expand_search(g, backward_queue, backward_queue_len, backward_head, backward_parents, backward_visited, forward_visited);
+      |                                                                                                     ^~~~~~~~~~~~~~~~
+      |                                                                                                     |
+      |                                                                                                     MapII
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:151:113: note: expected ‘int’ but argument is of type ‘MapII’
+  151 | ExpandResult expand_search(MapIL graph, long long * queue, size_t queue_len, long long head, MapII parents, int visited, int opposite_visited) {
+      |                                                                                                             ~~~~^~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:248:119: error: incompatible type for argument 7 of ‘expand_search’
+  248 |         res = expand_search(g, backward_queue, backward_queue_len, backward_head, backward_parents, backward_visited, forward_visited);
+      |                                                                                                                       ^~~~~~~~~~~~~~~
+      |                                                                                                                       |
+      |                                                                                                                       MapII
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:151:126: note: expected ‘int’ but argument is of type ‘MapII’
+  151 | ExpandResult expand_search(MapIL graph, long long * queue, size_t queue_len, long long head, MapII parents, int visited, int opposite_visited) {
+      |                                                                                                                          ~~~~^~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:252:28: error: incompatible types when assigning to type ‘MapII’ from type ‘int’
+  252 |         backward_visited = res.visited;
+      |                            ^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c: In function ‘is_edge’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:280:39: error: ‘g_keys’ undeclared (first use in this function)
+  280 |     long long *neighbors = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                       ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:280:47: error: ‘g_vals’ undeclared (first use in this function)
+  280 |     long long *neighbors = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                               ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:280:55: error: ‘g_lens’ undeclared (first use in this function)
+  280 |     long long *neighbors = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                                       ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:280:63: error: ‘g_len’ undeclared (first use in this function)
+  280 |     long long *neighbors = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                                               ^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:36: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                    ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:36: note: (near initialization for ‘graph_vals[0]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:50: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                  ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:50: note: (near initialization for ‘graph_vals[1]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:64: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:64: note: (near initialization for ‘graph_vals[2]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:78: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                              ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:78: note: (near initialization for ‘graph_vals[3]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:92: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                                            ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:92: note: (near initialization for ‘graph_vals[4]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:106: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                                                          ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:106: note: (near initialization for ‘graph_vals[5]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:120: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                                                                        ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:120: note: (near initialization for ‘graph_vals[6]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:134: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                                                                                      ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:134: note: (near initialization for ‘graph_vals[7]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:148: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                                                                                                    ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:148: note: (near initialization for ‘graph_vals[8]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:162: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                                                                                                                  ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:162: note: (near initialization for ‘graph_vals[9]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:176: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                                                                                                                                ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:176: note: (near initialization for ‘graph_vals[10]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:191: error: initializer element is not constant
+  329 |     static void* graph_vals[28] = {graph_vals_0, graph_vals_1, graph_vals_2, graph_vals_3, graph_vals_4, graph_vals_5, graph_vals_6, graph_vals_7, graph_vals_8, graph_vals_9, graph_vals_10, graph_vals_11};
+      |                                                                                                                                                                                               ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:329:191: note: (near initialization for ‘graph_vals[11]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:43: error: initializer element is not constant
+  341 |     static void* disconnected_vals[21] = {disconnected_vals_0, disconnected_vals_1, disconnected_vals_2, disconnected_vals_3, disconnected_vals_4};
+      |                                           ^~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:43: note: (near initialization for ‘disconnected_vals[0]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:64: error: initializer element is not constant
+  341 |     static void* disconnected_vals[21] = {disconnected_vals_0, disconnected_vals_1, disconnected_vals_2, disconnected_vals_3, disconnected_vals_4};
+      |                                                                ^~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:64: note: (near initialization for ‘disconnected_vals[1]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:85: error: initializer element is not constant
+  341 |     static void* disconnected_vals[21] = {disconnected_vals_0, disconnected_vals_1, disconnected_vals_2, disconnected_vals_3, disconnected_vals_4};
+      |                                                                                     ^~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:85: note: (near initialization for ‘disconnected_vals[2]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:106: error: initializer element is not constant
+  341 |     static void* disconnected_vals[21] = {disconnected_vals_0, disconnected_vals_1, disconnected_vals_2, disconnected_vals_3, disconnected_vals_4};
+      |                                                                                                          ^~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:106: note: (near initialization for ‘disconnected_vals[3]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:127: error: initializer element is not constant
+  341 |     static void* disconnected_vals[21] = {disconnected_vals_0, disconnected_vals_1, disconnected_vals_2, disconnected_vals_3, disconnected_vals_4};
+      |                                                                                                                               ^~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_search.c:341:127: note: (near initialization for ‘disconnected_vals[4]’)

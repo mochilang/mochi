@@ -1,0 +1,428 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c: In function ‘dfs’:
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:209:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  209 |     printf("%d\n", s);
+      |             ~^     ~
+      |              |     |
+      |              int   long long int
+      |             %lld
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:214:44: error: ‘g_keys’ undeclared (first use in this function)
+  214 |             long long* __tmp0 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                            ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:214:44: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:214:52: error: ‘g_vals’ undeclared (first use in this function)
+  214 |             long long* __tmp0 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                                    ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:214:60: error: ‘g_lens’ undeclared (first use in this function)
+  214 |             long long* __tmp0 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                                            ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:214:68: error: ‘g_len’ undeclared (first use in this function)
+  214 |             long long* __tmp0 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                                                    ^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:221:30: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  221 |                     printf("%d\n", v);
+      |                             ~^     ~
+      |                              |     |
+      |                              int   long long int
+      |                             %lld
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c: In function ‘bfs’:
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:243:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  243 |     printf("%d\n", s);
+      |             ~^     ~
+      |              |     |
+      |              int   long long int
+      |             %lld
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:249:44: error: ‘g_keys’ undeclared (first use in this function)
+  249 |             long long* __tmp1 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                            ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:249:52: error: ‘g_vals’ undeclared (first use in this function)
+  249 |             long long* __tmp1 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                                    ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:249:60: error: ‘g_lens’ undeclared (first use in this function); did you mean ‘q_len’?
+  249 |             long long* __tmp1 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                                            ^~~~~~
+      |                                                            q_len
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:249:68: error: ‘g_len’ undeclared (first use in this function); did you mean ‘q_len’?
+  249 |             long long* __tmp1 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                                                                    ^~~~~
+      |                                                                    q_len
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:256:30: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  256 |                     printf("%d\n", v);
+      |                             ~^     ~
+      |                              |     |
+      |                              int   long long int
+      |                             %lld
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c: In function ‘dijkstra’:
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:304:20: error: expected ‘)’ before ‘in’
+  304 |             if (!(k in known) && (d < mini)) {
+      |                  ~ ^~~
+      |                    )
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:312:22: error: expected identifier or ‘(’ before ‘[’ token
+  312 |             long long[]* __tmp2 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                      ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:313:33: error: ‘g_lens’ undeclared (first use in this function)
+  313 |             size_t __tmp2_len = g_lens[u];
+      |                                 ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:315:32: error: ‘__tmp2’ undeclared (first use in this function); did you mean ‘__exp2’?
+  315 |                 long long *e = __tmp2[__i];
+      |                                ^~~~~~
+      |                                __exp2
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:316:32: error: ‘__tmp2_lens’ undeclared (first use in this function); did you mean ‘__tmp2_len’?
+  316 |                 size_t e_len = __tmp2_lens[__i];
+      |                                ^~~~~~~~~~~
+      |                                __tmp2_len
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:317:33: warning: initialization of ‘const char *’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  317 |                 const char* v = e[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? e_len + _mochi_idx : _mochi_idx;})];
+      |                                 ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:318:33: warning: initialization of ‘const char *’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  318 |                 const char* w = e[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? e_len + _mochi_idx : _mochi_idx;})];
+      |                                 ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:319:24: error: expected ‘)’ before ‘in’
+  319 |                 if (!(v in keys)) {
+      |                      ~ ^~~
+      |                        )
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:320:67: warning: passing argument 3 of ‘list_append_long_long’ makes integer from pointer without a cast [-Wint-conversion]
+  320 |                     keys = list_append_long_long(keys, &keys_len, v);
+      |                                                                   ^
+      |                                                                   |
+      |                                                                   const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:168:80: note: expected ‘long long int’ but argument is of type ‘const char *’
+  168 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                                                      ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:323:72: warning: passing argument 3 of ‘contains_map_int’ makes integer from pointer without a cast [-Wint-conversion]
+  323 |                 long long cur = (contains_map_int(dist.keys, dist.len, v) ? map_get_ii(dist_keys, dist_vals, dist_len, v) : 100000LL);
+      |                                                                        ^
+      |                                                                        |
+      |                                                                        const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:15:63: note: expected ‘int’ but argument is of type ‘const char *’
+   15 | static int contains_map_int(const int keys[], size_t len, int key) {
+      |                                                           ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:323:120: warning: passing argument 4 of ‘map_get_ii’ makes integer from pointer without a cast [-Wint-conversion]
+  323 |                 long long cur = (contains_map_int(dist.keys, dist.len, v) ? map_get_ii(dist_keys, dist_vals, dist_len, v) : 100000LL);
+      |                                                                                                                        ^
+      |                                                                                                                        |
+      |                                                                                                                        const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:81:75: note: expected ‘int’ but argument is of type ‘const char *’
+   81 | static int map_get_ii(const int keys[], const int vals[], size_t len, int key) {
+      |                                                                       ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:324:24: error: expected ‘)’ before ‘in’
+  324 |                 if (!(v in known) && (strcmp(alt, cur) < 0)) {
+      |                      ~ ^~~
+      |                        )
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:324:51: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  324 |                 if (!(v in known) && (strcmp(alt, cur) < 0)) {
+      |                                                   ^~~
+      |                                                   |
+      |                                                   long long int
+In file included from /workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:3:
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘long long int’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:325:65: warning: passing argument 4 of ‘map_set_ii’ makes integer from pointer without a cast [-Wint-conversion]
+  325 |                     map_set_ii(dist_keys, dist_vals, &dist_len, v, alt);
+      |                                                                 ^
+      |                                                                 |
+      |                                                                 const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:88:65: note: expected ‘int’ but argument is of type ‘const char *’
+   88 | static void map_set_ii(int keys[], int vals[], size_t *len, int key, int val) {
+      |                                                             ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:325:68: warning: passing argument 5 of ‘map_set_ii’ makes integer from pointer without a cast [-Wint-conversion]
+  325 |                     map_set_ii(dist_keys, dist_vals, &dist_len, v, alt);
+      |                                                                    ^~~
+      |                                                                    |
+      |                                                                    const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:88:74: note: expected ‘int’ but argument is of type ‘const char *’
+   88 | static void map_set_ii(int keys[], int vals[], size_t *len, int key, int val) {
+      |                                                                      ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:326:65: warning: passing argument 4 of ‘map_set_ii’ makes integer from pointer without a cast [-Wint-conversion]
+  326 |                     map_set_ii(path_keys, path_vals, &path_len, v, u);
+      |                                                                 ^
+      |                                                                 |
+      |                                                                 const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:88:65: note: expected ‘int’ but argument is of type ‘const char *’
+   88 | static void map_set_ii(int keys[], int vals[], size_t *len, int key, int val) {
+      |                                                             ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c: In function ‘topo’:
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:354:44: error: ‘g_keys’ undeclared (first use in this function)
+  354 |             long long* __tmp3 = map_get_il(g_keys, g_vals, g_lens, g_len, node, NULL);
+      |                                            ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:354:52: error: ‘g_vals’ undeclared (first use in this function)
+  354 |             long long* __tmp3 = map_get_il(g_keys, g_vals, g_lens, g_len, node, NULL);
+      |                                                    ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:354:60: error: ‘g_lens’ undeclared (first use in this function)
+  354 |             long long* __tmp3 = map_get_il(g_keys, g_vals, g_lens, g_len, node, NULL);
+      |                                                            ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:354:68: error: ‘g_len’ undeclared (first use in this function)
+  354 |             long long* __tmp3 = map_get_il(g_keys, g_vals, g_lens, g_len, node, NULL);
+      |                                                                    ^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:376:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  376 |         printf("%d\n", v);
+      |                 ~^     ~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c: In function ‘floyd’:
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:416:32: error: ‘dist_keys’ undeclared (first use in this function); did you mean ‘dist_lens’?
+  416 |                 if (map_get_ii(dist_keys, dist_vals, dist_len, ii)[(int)({long long _mochi_idx = jj; _mochi_idx < 0 ? dist_lens[ii] + _mochi_idx : _mochi_idx;})] > (map_get_ii(dist_keys, dist_vals, dist_len, ii)[(int)({long long _mochi_idx = k; _mochi_idx < 0 ? dist_lens[ii] + _mochi_idx : _mochi_idx;})] + map_get_ii(dist_keys, dist_vals, dist_len, k)[(int)({long long _mochi_idx = jj; _mochi_idx < 0 ? dist_lens[k] + _mochi_idx : _mochi_idx;})])) {
+      |                                ^~~~~~~~~
+      |                                dist_lens
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:416:43: error: ‘dist_vals’ undeclared (first use in this function); did you mean ‘dist_lens’?
+  416 |                 if (map_get_ii(dist_keys, dist_vals, dist_len, ii)[(int)({long long _mochi_idx = jj; _mochi_idx < 0 ? dist_lens[ii] + _mochi_idx : _mochi_idx;})] > (map_get_ii(dist_keys, dist_vals, dist_len, ii)[(int)({long long _mochi_idx = k; _mochi_idx < 0 ? dist_lens[ii] + _mochi_idx : _mochi_idx;})] + map_get_ii(dist_keys, dist_vals, dist_len, k)[(int)({long long _mochi_idx = jj; _mochi_idx < 0 ? dist_lens[k] + _mochi_idx : _mochi_idx;})])) {
+      |                                           ^~~~~~~~~
+      |                                           dist_lens
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c: In function ‘prim’:
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:446:20: error: expected ‘)’ before ‘in’
+  446 |             if (!(k in known) && (d < mini)) {
+      |                  ~ ^~~
+      |                    )
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:455:22: error: expected identifier or ‘(’ before ‘[’ token
+  455 |             long long[]* __tmp5 = map_get_il(g_keys, g_vals, g_lens, g_len, u, NULL);
+      |                      ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:456:33: error: ‘g_lens’ undeclared (first use in this function)
+  456 |             size_t __tmp5_len = g_lens[u];
+      |                                 ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:458:32: error: ‘__tmp5’ undeclared (first use in this function)
+  458 |                 long long *e = __tmp5[__i];
+      |                                ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:459:32: error: ‘__tmp5_lens’ undeclared (first use in this function); did you mean ‘__tmp5_len’?
+  459 |                 size_t e_len = __tmp5_lens[__i];
+      |                                ^~~~~~~~~~~
+      |                                __tmp5_len
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:460:33: warning: initialization of ‘const char *’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  460 |                 const char* v = e[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? e_len + _mochi_idx : _mochi_idx;})];
+      |                                 ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:461:33: warning: initialization of ‘const char *’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  461 |                 const char* w = e[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? e_len + _mochi_idx : _mochi_idx;})];
+      |                                 ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:462:24: error: expected ‘)’ before ‘in’
+  462 |                 if (!(v in keys)) {
+      |                      ~ ^~~
+      |                        )
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:463:67: warning: passing argument 3 of ‘list_append_long_long’ makes integer from pointer without a cast [-Wint-conversion]
+  463 |                     keys = list_append_long_long(keys, &keys_len, v);
+      |                                                                   ^
+      |                                                                   |
+      |                                                                   const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:168:80: note: expected ‘long long int’ but argument is of type ‘const char *’
+  168 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                                                      ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:465:72: warning: passing argument 3 of ‘contains_map_int’ makes integer from pointer without a cast [-Wint-conversion]
+  465 |                 long long cur = (contains_map_int(dist.keys, dist.len, v) ? map_get_ii(dist_keys, dist_vals, dist_len, v) : 100000LL);
+      |                                                                        ^
+      |                                                                        |
+      |                                                                        const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:15:63: note: expected ‘int’ but argument is of type ‘const char *’
+   15 | static int contains_map_int(const int keys[], size_t len, int key) {
+      |                                                           ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:465:120: warning: passing argument 4 of ‘map_get_ii’ makes integer from pointer without a cast [-Wint-conversion]
+  465 |                 long long cur = (contains_map_int(dist.keys, dist.len, v) ? map_get_ii(dist_keys, dist_vals, dist_len, v) : 100000LL);
+      |                                                                                                                        ^
+      |                                                                                                                        |
+      |                                                                                                                        const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:81:75: note: expected ‘int’ but argument is of type ‘const char *’
+   81 | static int map_get_ii(const int keys[], const int vals[], size_t len, int key) {
+      |                                                                       ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:466:24: error: expected ‘)’ before ‘in’
+  466 |                 if (!(v in known) && (strcmp(w, cur) < 0)) {
+      |                      ~ ^~~
+      |                        )
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:466:49: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  466 |                 if (!(v in known) && (strcmp(w, cur) < 0)) {
+      |                                                 ^~~
+      |                                                 |
+      |                                                 long long int
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘long long int’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:467:65: warning: passing argument 4 of ‘map_set_ii’ makes integer from pointer without a cast [-Wint-conversion]
+  467 |                     map_set_ii(dist_keys, dist_vals, &dist_len, v, w);
+      |                                                                 ^
+      |                                                                 |
+      |                                                                 const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:88:65: note: expected ‘int’ but argument is of type ‘const char *’
+   88 | static void map_set_ii(int keys[], int vals[], size_t *len, int key, int val) {
+      |                                                             ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:467:68: warning: passing argument 5 of ‘map_set_ii’ makes integer from pointer without a cast [-Wint-conversion]
+  467 |                     map_set_ii(dist_keys, dist_vals, &dist_len, v, w);
+      |                                                                    ^
+      |                                                                    |
+      |                                                                    const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:88:74: note: expected ‘int’ but argument is of type ‘const char *’
+   88 | static void map_set_ii(int keys[], int vals[], size_t *len, int key, int val) {
+      |                                                                      ~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c: In function ‘find_isolated_nodes’:
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:547:13: error: ‘g_lens’ undeclared (first use in this function)
+  547 |         if (g_lens[node] == 0LL) {
+      |             ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:40: error: initializer element is not constant
+  563 |         static void* g_dfs_vals[21] = {g_dfs_vals_0, g_dfs_vals_1, g_dfs_vals_2, g_dfs_vals_3, g_dfs_vals_4};
+      |                                        ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:40: note: (near initialization for ‘g_dfs_vals[0]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:54: error: initializer element is not constant
+  563 |         static void* g_dfs_vals[21] = {g_dfs_vals_0, g_dfs_vals_1, g_dfs_vals_2, g_dfs_vals_3, g_dfs_vals_4};
+      |                                                      ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:54: note: (near initialization for ‘g_dfs_vals[1]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:68: error: initializer element is not constant
+  563 |         static void* g_dfs_vals[21] = {g_dfs_vals_0, g_dfs_vals_1, g_dfs_vals_2, g_dfs_vals_3, g_dfs_vals_4};
+      |                                                                    ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:68: note: (near initialization for ‘g_dfs_vals[2]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:82: error: initializer element is not constant
+  563 |         static void* g_dfs_vals[21] = {g_dfs_vals_0, g_dfs_vals_1, g_dfs_vals_2, g_dfs_vals_3, g_dfs_vals_4};
+      |                                                                                  ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:82: note: (near initialization for ‘g_dfs_vals[3]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:96: error: initializer element is not constant
+  563 |         static void* g_dfs_vals[21] = {g_dfs_vals_0, g_dfs_vals_1, g_dfs_vals_2, g_dfs_vals_3, g_dfs_vals_4};
+      |                                                                                                ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:563:96: note: (near initialization for ‘g_dfs_vals[4]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:40: error: initializer element is not constant
+  576 |         static void* g_bfs_vals[24] = {g_bfs_vals_0, g_bfs_vals_1, g_bfs_vals_2, g_bfs_vals_3, g_bfs_vals_4, g_bfs_vals_5, g_bfs_vals_6, g_bfs_vals_7};
+      |                                        ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:40: note: (near initialization for ‘g_bfs_vals[0]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:54: error: initializer element is not constant
+  576 |         static void* g_bfs_vals[24] = {g_bfs_vals_0, g_bfs_vals_1, g_bfs_vals_2, g_bfs_vals_3, g_bfs_vals_4, g_bfs_vals_5, g_bfs_vals_6, g_bfs_vals_7};
+      |                                                      ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:54: note: (near initialization for ‘g_bfs_vals[1]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:68: error: initializer element is not constant
+  576 |         static void* g_bfs_vals[24] = {g_bfs_vals_0, g_bfs_vals_1, g_bfs_vals_2, g_bfs_vals_3, g_bfs_vals_4, g_bfs_vals_5, g_bfs_vals_6, g_bfs_vals_7};
+      |                                                                    ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:68: note: (near initialization for ‘g_bfs_vals[2]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:82: error: initializer element is not constant
+  576 |         static void* g_bfs_vals[24] = {g_bfs_vals_0, g_bfs_vals_1, g_bfs_vals_2, g_bfs_vals_3, g_bfs_vals_4, g_bfs_vals_5, g_bfs_vals_6, g_bfs_vals_7};
+      |                                                                                  ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:82: note: (near initialization for ‘g_bfs_vals[3]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:96: error: initializer element is not constant
+  576 |         static void* g_bfs_vals[24] = {g_bfs_vals_0, g_bfs_vals_1, g_bfs_vals_2, g_bfs_vals_3, g_bfs_vals_4, g_bfs_vals_5, g_bfs_vals_6, g_bfs_vals_7};
+      |                                                                                                ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:96: note: (near initialization for ‘g_bfs_vals[4]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:110: error: initializer element is not constant
+  576 |         static void* g_bfs_vals[24] = {g_bfs_vals_0, g_bfs_vals_1, g_bfs_vals_2, g_bfs_vals_3, g_bfs_vals_4, g_bfs_vals_5, g_bfs_vals_6, g_bfs_vals_7};
+      |                                                                                                              ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:110: note: (near initialization for ‘g_bfs_vals[5]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:124: error: initializer element is not constant
+  576 |         static void* g_bfs_vals[24] = {g_bfs_vals_0, g_bfs_vals_1, g_bfs_vals_2, g_bfs_vals_3, g_bfs_vals_4, g_bfs_vals_5, g_bfs_vals_6, g_bfs_vals_7};
+      |                                                                                                                            ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:124: note: (near initialization for ‘g_bfs_vals[6]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:138: error: initializer element is not constant
+  576 |         static void* g_bfs_vals[24] = {g_bfs_vals_0, g_bfs_vals_1, g_bfs_vals_2, g_bfs_vals_3, g_bfs_vals_4, g_bfs_vals_5, g_bfs_vals_6, g_bfs_vals_7};
+      |                                                                                                                                          ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:576:138: note: (near initialization for ‘g_bfs_vals[7]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:581:18: error: expected identifier or ‘(’ before ‘[’ token
+  581 |         long long[] g_weighted_vals_0[3] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 2LL; tmp[1] = 7LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 3LL; tmp[1] = 9LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 6LL; tmp[1] = 14LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:582:18: error: expected identifier or ‘(’ before ‘[’ token
+  582 |         long long[] g_weighted_vals_1[3] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 7LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 3LL; tmp[1] = 10LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 4LL; tmp[1] = 15LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:583:18: error: expected identifier or ‘(’ before ‘[’ token
+  583 |         long long[] g_weighted_vals_2[4] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 9LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 2LL; tmp[1] = 10LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 4LL; tmp[1] = 11LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 6LL; tmp[1] = 2LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:584:18: error: expected identifier or ‘(’ before ‘[’ token
+  584 |         long long[] g_weighted_vals_3[3] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 2LL; tmp[1] = 15LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 3LL; tmp[1] = 11LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 5LL; tmp[1] = 6LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:585:18: error: expected identifier or ‘(’ before ‘[’ token
+  585 |         long long[] g_weighted_vals_4[2] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 4LL; tmp[1] = 6LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 6LL; tmp[1] = 9LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:586:18: error: expected identifier or ‘(’ before ‘[’ token
+  586 |         long long[] g_weighted_vals_5[3] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 14LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 3LL; tmp[1] = 2LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 5LL; tmp[1] = 9LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:587:45: error: ‘g_weighted_vals_0’ undeclared (first use in this function); did you mean ‘g_weighted_vals’?
+  587 |         static void* g_weighted_vals[22] = {g_weighted_vals_0, g_weighted_vals_1, g_weighted_vals_2, g_weighted_vals_3, g_weighted_vals_4, g_weighted_vals_5};
+      |                                             ^~~~~~~~~~~~~~~~~
+      |                                             g_weighted_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:587:64: error: ‘g_weighted_vals_1’ undeclared (first use in this function); did you mean ‘g_weighted_vals’?
+  587 |         static void* g_weighted_vals[22] = {g_weighted_vals_0, g_weighted_vals_1, g_weighted_vals_2, g_weighted_vals_3, g_weighted_vals_4, g_weighted_vals_5};
+      |                                                                ^~~~~~~~~~~~~~~~~
+      |                                                                g_weighted_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:587:83: error: ‘g_weighted_vals_2’ undeclared (first use in this function); did you mean ‘g_weighted_vals’?
+  587 |         static void* g_weighted_vals[22] = {g_weighted_vals_0, g_weighted_vals_1, g_weighted_vals_2, g_weighted_vals_3, g_weighted_vals_4, g_weighted_vals_5};
+      |                                                                                   ^~~~~~~~~~~~~~~~~
+      |                                                                                   g_weighted_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:587:102: error: ‘g_weighted_vals_3’ undeclared (first use in this function); did you mean ‘g_weighted_vals’?
+  587 |         static void* g_weighted_vals[22] = {g_weighted_vals_0, g_weighted_vals_1, g_weighted_vals_2, g_weighted_vals_3, g_weighted_vals_4, g_weighted_vals_5};
+      |                                                                                                      ^~~~~~~~~~~~~~~~~
+      |                                                                                                      g_weighted_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:587:121: error: ‘g_weighted_vals_4’ undeclared (first use in this function); did you mean ‘g_weighted_vals’?
+  587 |         static void* g_weighted_vals[22] = {g_weighted_vals_0, g_weighted_vals_1, g_weighted_vals_2, g_weighted_vals_3, g_weighted_vals_4, g_weighted_vals_5};
+      |                                                                                                                         ^~~~~~~~~~~~~~~~~
+      |                                                                                                                         g_weighted_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:587:140: error: ‘g_weighted_vals_5’ undeclared (first use in this function); did you mean ‘g_weighted_vals’?
+  587 |         static void* g_weighted_vals[22] = {g_weighted_vals_0, g_weighted_vals_1, g_weighted_vals_2, g_weighted_vals_3, g_weighted_vals_4, g_weighted_vals_5};
+      |                                                                                                                                            ^~~~~~~~~~~~~~~~~
+      |                                                                                                                                            g_weighted_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:596:41: error: initializer element is not constant
+  596 |         static void* g_topo_vals[20] = {g_topo_vals_0, g_topo_vals_1, g_topo_vals_2, g_topo_vals_3};
+      |                                         ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:596:41: note: (near initialization for ‘g_topo_vals[0]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:596:56: error: initializer element is not constant
+  596 |         static void* g_topo_vals[20] = {g_topo_vals_0, g_topo_vals_1, g_topo_vals_2, g_topo_vals_3};
+      |                                                        ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:596:56: note: (near initialization for ‘g_topo_vals[1]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:596:71: error: initializer element is not constant
+  596 |         static void* g_topo_vals[20] = {g_topo_vals_0, g_topo_vals_1, g_topo_vals_2, g_topo_vals_3};
+      |                                                                       ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:596:71: note: (near initialization for ‘g_topo_vals[2]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:596:86: error: initializer element is not constant
+  596 |         static void* g_topo_vals[20] = {g_topo_vals_0, g_topo_vals_1, g_topo_vals_2, g_topo_vals_3};
+      |                                                                                      ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:596:86: note: (near initialization for ‘g_topo_vals[3]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:605:18: error: expected identifier or ‘(’ before ‘[’ token
+  605 |         long long[] g_prim_vals_0[2] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 2LL; tmp[1] = 1LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 3LL; tmp[1] = 3LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:606:18: error: expected identifier or ‘(’ before ‘[’ token
+  606 |         long long[] g_prim_vals_1[3] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 1LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 3LL; tmp[1] = 1LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 4LL; tmp[1] = 6LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:607:18: error: expected identifier or ‘(’ before ‘[’ token
+  607 |         long long[] g_prim_vals_2[3] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 3LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 2LL; tmp[1] = 1LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 4LL; tmp[1] = 2LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:608:18: error: expected identifier or ‘(’ before ‘[’ token
+  608 |         long long[] g_prim_vals_3[2] = {({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 2LL; tmp[1] = 6LL; tmp;}), ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 3LL; tmp[1] = 2LL; tmp;})};
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:609:41: error: ‘g_prim_vals_0’ undeclared (first use in this function); did you mean ‘g_prim_vals’?
+  609 |         static void* g_prim_vals[20] = {g_prim_vals_0, g_prim_vals_1, g_prim_vals_2, g_prim_vals_3};
+      |                                         ^~~~~~~~~~~~~
+      |                                         g_prim_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:609:56: error: ‘g_prim_vals_1’ undeclared (first use in this function); did you mean ‘g_prim_vals’?
+  609 |         static void* g_prim_vals[20] = {g_prim_vals_0, g_prim_vals_1, g_prim_vals_2, g_prim_vals_3};
+      |                                                        ^~~~~~~~~~~~~
+      |                                                        g_prim_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:609:71: error: ‘g_prim_vals_2’ undeclared (first use in this function); did you mean ‘g_prim_vals’?
+  609 |         static void* g_prim_vals[20] = {g_prim_vals_0, g_prim_vals_1, g_prim_vals_2, g_prim_vals_3};
+      |                                                                       ^~~~~~~~~~~~~
+      |                                                                       g_prim_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:609:86: error: ‘g_prim_vals_3’ undeclared (first use in this function); did you mean ‘g_prim_vals’?
+  609 |         static void* g_prim_vals[20] = {g_prim_vals_0, g_prim_vals_1, g_prim_vals_2, g_prim_vals_3};
+      |                                                                                      ^~~~~~~~~~~~~
+      |                                                                                      g_prim_vals
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:622:40: error: initializer element is not constant
+  622 |         static void* g_iso_vals[20] = {g_iso_vals_0, g_iso_vals_1, g_iso_vals_2, g_iso_vals_3};
+      |                                        ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:622:40: note: (near initialization for ‘g_iso_vals[0]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:622:54: error: initializer element is not constant
+  622 |         static void* g_iso_vals[20] = {g_iso_vals_0, g_iso_vals_1, g_iso_vals_2, g_iso_vals_3};
+      |                                                      ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:622:54: note: (near initialization for ‘g_iso_vals[1]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:622:68: error: initializer element is not constant
+  622 |         static void* g_iso_vals[20] = {g_iso_vals_0, g_iso_vals_1, g_iso_vals_2, g_iso_vals_3};
+      |                                                                    ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:622:68: note: (near initialization for ‘g_iso_vals[2]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:622:82: error: initializer element is not constant
+  622 |         static void* g_iso_vals[20] = {g_iso_vals_0, g_iso_vals_1, g_iso_vals_2, g_iso_vals_3};
+      |                                                                                  ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:622:82: note: (near initialization for ‘g_iso_vals[3]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:628:9: error: aggregate value used where an integer was expected
+  628 |         dijkstra((int)g_weighted, 1LL);
+      |         ^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:631:29: error: incompatible type for argument 1 of ‘prim’
+  631 |         printf("%d\n", prim(g_prim, 1LL, 4LL));
+      |                             ^~~~~~
+      |                             |
+      |                             MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:428:20: note: expected ‘int’ but argument is of type ‘MapIL’
+  428 | long long prim(int g, long long s, long long n) {
+      |                ~~~~^
+/workspace/mochi/tests/algorithms/x/C/graphs/basic_graphs.c:632:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  632 |         printf("%d\n", kruskal(edges_kruskal, edges_kruskal_len, edges_kruskal_lens, edges_kruskal_len, 4LL));
+      |                 ~^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld

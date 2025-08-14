@@ -1,0 +1,183 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c: In function ‘list_append_c_char_new’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:130:28: warning: passing argument 1 of ‘memcpy’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  130 |     if (arr && len) memcpy(res, arr, len * sizeof(const char));
+      |                            ^~~
+In file included from /workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:3:
+/usr/include/string.h:43:39: note: expected ‘void * restrict’ but argument is of type ‘const char *’
+   43 | extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
+      |                      ~~~~~~~~~~~~~~~~~^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:131:14: error: assignment of read-only location ‘*(res + (sizetype)len)’
+  131 |     res[len] = val;
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c: In function ‘parse_int’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:169:34: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  169 |         value = (value * 10LL) + (int)(c);
+      |                                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c: In function ‘bfs’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:228:5: error: unknown type name ‘MapSI’; did you mean ‘MapSL’?
+  228 |     MapSI visited = (Anon1){.start = 1LL, .start_len = 0};
+      |     ^~~~~
+      |     MapSL
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:228:38: warning: initialization of ‘const char **’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  228 |     MapSI visited = (Anon1){.start = 1LL, .start_len = 0};
+      |                                      ^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:228:38: note: (near initialization for ‘(anonymous).start’)
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:228:21: error: incompatible types when initializing type ‘int’ using type ‘Anon1’
+  228 |     MapSI visited = (Anon1){.start = 1LL, .start_len = 0};
+      |                     ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:241:23: error: expected ‘)’ before ‘in’
+  241 |             if (!(npos in visited)) {
+      |                  ~    ^~~
+      |                       )
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:242:25: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  242 |                 visited[(int)(npos)] = 1LL;
+      |                         ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:242:24: error: subscripted value is neither array nor pointer nor vector
+  242 |                 visited[(int)(npos)] = 1LL;
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:243:68: warning: passing argument 1 of ‘list_append_c_char_new’ from incompatible pointer type [-Wincompatible-pointer-types]
+  243 |                 const char* *new_path = list_append_c_char_new(node.path, node.path_len, npos);
+      |                                                                ~~~~^~~~~
+      |                                                                    |
+      |                                                                    const char **
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:128:61: note: expected ‘const char *’ but argument is of type ‘const char **’
+  128 | static const char* list_append_c_char_new(const const char *arr, size_t len, const char val) {
+      |                                           ~~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:243:90: warning: passing argument 3 of ‘list_append_c_char_new’ makes integer from pointer without a cast [-Wint-conversion]
+  243 |                 const char* *new_path = list_append_c_char_new(node.path, node.path_len, npos);
+      |                                                                                          ^~~~
+      |                                                                                          |
+      |                                                                                          const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:128:89: note: expected ‘char’ but argument is of type ‘const char *’
+  128 | static const char* list_append_c_char_new(const const char *arr, size_t len, const char val) {
+      |                                                                              ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:243:41: warning: initialization of ‘const char **’ from incompatible pointer type ‘const char *’ [-Wincompatible-pointer-types]
+  243 |                 const char* *new_path = list_append_c_char_new(node.path, node.path_len, npos);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:244:39: error: ‘append_len’ undeclared (first use in this function)
+  244 |                 size_t new_path_len = append_len;
+      |                                       ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:244:39: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c: In function ‘bidirectional_bfs’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:266:23: error: invalid initializer
+  266 |     MapSL visited_f = (Anon1){.start = ({const char* *tmp = malloc(1 * sizeof(const char*)); tmp[0] = start; tmp;}), .start_len = 1};
+      |                       ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:268:23: error: invalid initializer
+  268 |     MapSL visited_b = (Anon2){.goal = ({const char* *tmp = malloc(1 * sizeof(const char*)); tmp[0] = goal; tmp;}), .goal_len = 1};
+      |                       ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:278:23: error: expected ‘)’ before ‘in’
+  278 |             if (!(npos in visited_f)) {
+      |                  ~    ^~~
+      |                       )
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:279:70: warning: passing argument 1 of ‘list_append_c_char_new’ from incompatible pointer type [-Wincompatible-pointer-types]
+  279 |                 const char* *new_path = list_append_c_char_new(node_f.path, node_f.path_len, npos);
+      |                                                                ~~~~~~^~~~~
+      |                                                                      |
+      |                                                                      const char **
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:128:61: note: expected ‘const char *’ but argument is of type ‘const char **’
+  128 | static const char* list_append_c_char_new(const const char *arr, size_t len, const char val) {
+      |                                           ~~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:279:94: warning: passing argument 3 of ‘list_append_c_char_new’ makes integer from pointer without a cast [-Wint-conversion]
+  279 |                 const char* *new_path = list_append_c_char_new(node_f.path, node_f.path_len, npos);
+      |                                                                                              ^~~~
+      |                                                                                              |
+      |                                                                                              const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:128:89: note: expected ‘char’ but argument is of type ‘const char *’
+  128 | static const char* list_append_c_char_new(const const char *arr, size_t len, const char val) {
+      |                                                                              ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:279:41: warning: initialization of ‘const char **’ from incompatible pointer type ‘const char *’ [-Wincompatible-pointer-types]
+  279 |                 const char* *new_path = list_append_c_char_new(node_f.path, node_f.path_len, npos);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:280:39: error: ‘append_len’ undeclared (first use in this function)
+  280 |                 size_t new_path_len = append_len;
+      |                                       ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:281:27: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  281 |                 visited_f[(int)(npos)] = new_path;
+      |                           ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:281:26: error: subscripted value is neither array nor pointer nor vector
+  281 |                 visited_f[(int)(npos)] = new_path;
+      |                          ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:282:25: error: expected ‘)’ before ‘in’
+  282 |                 if (npos in visited_b) {
+      |                    ~    ^~~
+      |                         )
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:283:140: error: ‘visited_b_lens’ undeclared (first use in this function); did you mean ‘visited_b_len’?
+  283 |                     const char* *rev = reverse_list(map_get_sl(visited_b.keys, visited_b.vals, visited_b.lens, visited_b.len, npos, NULL), visited_b_lens[npos]);
+      |                                                                                                                                            ^~~~~~~~~~~~~~
+      |                                                                                                                                            visited_b_len
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:303:24: error: expected ‘)’ before ‘in’
+  303 |             if (!(nposb in visited_b)) {
+      |                  ~     ^~~
+      |                        )
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:304:72: warning: passing argument 1 of ‘list_append_c_char_new’ from incompatible pointer type [-Wincompatible-pointer-types]
+  304 |                 const char* *new_path_b = list_append_c_char_new(node_b.path, node_b.path_len, nposb);
+      |                                                                  ~~~~~~^~~~~
+      |                                                                        |
+      |                                                                        const char **
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:128:61: note: expected ‘const char *’ but argument is of type ‘const char **’
+  128 | static const char* list_append_c_char_new(const const char *arr, size_t len, const char val) {
+      |                                           ~~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:304:96: warning: passing argument 3 of ‘list_append_c_char_new’ makes integer from pointer without a cast [-Wint-conversion]
+  304 |                 const char* *new_path_b = list_append_c_char_new(node_b.path, node_b.path_len, nposb);
+      |                                                                                                ^~~~~
+      |                                                                                                |
+      |                                                                                                const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:128:89: note: expected ‘char’ but argument is of type ‘const char *’
+  128 | static const char* list_append_c_char_new(const const char *arr, size_t len, const char val) {
+      |                                                                              ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:304:43: warning: initialization of ‘const char **’ from incompatible pointer type ‘const char *’ [-Wincompatible-pointer-types]
+  304 |                 const char* *new_path_b = list_append_c_char_new(node_b.path, node_b.path_len, nposb);
+      |                                           ^~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:306:27: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  306 |                 visited_b[(int)(nposb)] = new_path_b;
+      |                           ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:306:26: error: subscripted value is neither array nor pointer nor vector
+  306 |                 visited_b[(int)(nposb)] = new_path_b;
+      |                          ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:307:26: error: expected ‘)’ before ‘in’
+  307 |                 if (nposb in visited_f) {
+      |                    ~     ^~~
+      |                          )
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:308:40: warning: initialization of ‘long long int’ from ‘void *’ makes integer from pointer without a cast [-Wint-conversion]
+  308 |                     long long path_f = map_get_sl(visited_f.keys, visited_f.vals, visited_f.lens, visited_f.len, nposb, NULL);
+      |                                        ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:313:65: error: ‘path_f_len’ undeclared (first use in this function); did you mean ‘path2_len’?
+  313 |                         path_f = list_append_long_long(path_f, &path_f_len, new_path_b[(int)({long long _mochi_idx = t; _mochi_idx < 0 ? new_path_b_len + _mochi_idx : _mochi_idx;})]);
+      |                                                                 ^~~~~~~~~~
+      |                                                                 path2_len
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:313:56: warning: passing argument 1 of ‘list_append_long_long’ makes pointer from integer without a cast [-Wint-conversion]
+  313 |                         path_f = list_append_long_long(path_f, &path_f_len, new_path_b[(int)({long long _mochi_idx = t; _mochi_idx < 0 ? new_path_b_len + _mochi_idx : _mochi_idx;})]);
+      |                                                        ^~~~~~
+      |                                                        |
+      |                                                        long long int
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:121:52: note: expected ‘long long int *’ but argument is of type ‘long long int’
+  121 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:313:87: warning: passing argument 3 of ‘list_append_long_long’ makes integer from pointer without a cast [-Wint-conversion]
+  313 |                         path_f = list_append_long_long(path_f, &path_f_len, new_path_b[(int)({long long _mochi_idx = t; _mochi_idx < 0 ? new_path_b_len + _mochi_idx : _mochi_idx;})]);
+      |                                                                             ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                       |
+      |                                                                                       const char *
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:121:80: note: expected ‘long long int’ but argument is of type ‘const char *’
+  121 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                                                      ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:316:62: warning: returning ‘long long int’ from a function with return type ‘const char **’ makes pointer from integer without a cast [-Wint-conversion]
+  316 |                     return bidirectional_bfs_len = path_f_len, path_f;
+      |                                                              ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:356:64: warning: assignment to ‘int *’ from incompatible pointer type ‘double *’ [-Wincompatible-pointer-types]
+  356 |         delta = ({int** tmp = malloc(4 * sizeof(int*)); tmp[0] = ({double *tmp = malloc(2 * sizeof(double)); tmp[0] = -1.0; tmp[1] = 0LL; tmp;}); tmp[1] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = -1.0; tmp;}); tmp[2] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 0LL; tmp;}); tmp[3] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = 1LL; tmp;}); tmp;});
+      |                                                                ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:356:154: warning: assignment to ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  356 |         delta = ({int** tmp = malloc(4 * sizeof(int*)); tmp[0] = ({double *tmp = malloc(2 * sizeof(double)); tmp[0] = -1.0; tmp[1] = 0LL; tmp;}); tmp[1] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = -1.0; tmp;}); tmp[2] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 0LL; tmp;}); tmp[3] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = 1LL; tmp;}); tmp;});
+      |                                                                                                                                                          ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:356:250: warning: assignment to ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  356 |         delta = ({int** tmp = malloc(4 * sizeof(int*)); tmp[0] = ({double *tmp = malloc(2 * sizeof(double)); tmp[0] = -1.0; tmp[1] = 0LL; tmp;}); tmp[1] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = -1.0; tmp;}); tmp[2] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 0LL; tmp;}); tmp[3] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = 1LL; tmp;}); tmp;});
+      |                                                                                                                                                                                                                                                          ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:356:345: warning: assignment to ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  356 |         delta = ({int** tmp = malloc(4 * sizeof(int*)); tmp[0] = ({double *tmp = malloc(2 * sizeof(double)); tmp[0] = -1.0; tmp[1] = 0LL; tmp;}); tmp[1] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = -1.0; tmp;}); tmp[2] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 0LL; tmp;}); tmp[3] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = 1LL; tmp;}); tmp;});
+      |                                                                                                                                                                                                                                                                                                                                                         ^
+/workspace/mochi/tests/algorithms/x/C/graphs/bidirectional_breadth_first_search.c:356:15: warning: assignment to ‘long long int **’ from incompatible pointer type ‘int **’ [-Wincompatible-pointer-types]
+  356 |         delta = ({int** tmp = malloc(4 * sizeof(int*)); tmp[0] = ({double *tmp = malloc(2 * sizeof(double)); tmp[0] = -1.0; tmp[1] = 0LL; tmp;}); tmp[1] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = -1.0; tmp;}); tmp[2] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 1LL; tmp[1] = 0LL; tmp;}); tmp[3] = ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = 0LL; tmp[1] = 1LL; tmp;}); tmp;});
+      |               ^
