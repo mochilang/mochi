@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/page_rank.zig:71:25: error: cannot assign to constant
+                    n_in.inbound = blk: { var _tmp_1 = std.ArrayList([]const u8).init(std.heap.page_allocator); _tmp_1.appendSlice(@as([]const []const u8, n_in.inbound)) catch |err| handleError(err); _tmp_1.append(@constCast(names_var[_idx(names_var.len, ri_var_1)])) catch |err| handleError(err); break :blk (_tmp_1.toOwnedSlice() catch |err| handleError(err)); };
+                    ~~~~^~~~~~~~
+referenced by:
+    main: /opt/zig-0.14.0/lib/std/start.zig:647:22
+    comptime: /opt/zig-0.14.0/lib/std/start.zig:58:30
+    2 reference(s) hidden; use '-freference-trace=4' to see all references

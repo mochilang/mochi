@@ -1,0 +1,15 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/directed_and_undirected_weighted_graph.zig:43:16: error: use of undeclared identifier 'k'
+        return k;
+               ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/directed_and_undirected_weighted_graph.zig:76:42: error: expected type '[][]i64', found '*[0]i64'
+        m1.put(v, @constCast((&[_]i64{}))[0..]) catch unreachable;
+                  ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/directed_and_undirected_weighted_graph.zig:76:42: note: pointer type child 'i64' cannot cast into pointer type child '[]i64'
+/opt/zig-0.14.0/lib/std/hash_map.zig:321:48: note: parameter type declared here
+        pub fn put(self: *Self, key: K, value: V) Allocator.Error!void {
+                                               ^
+referenced by:
+    mochi_main: /workspace/mochi/tests/algorithms/transpiler/Zig/graphs/directed_and_undirected_weighted_graph.zig:647:16
+    main: /workspace/mochi/tests/algorithms/transpiler/Zig/graphs/directed_and_undirected_weighted_graph.zig:671:19
+    4 reference(s) hidden; use '-freference-trace=6' to see all references

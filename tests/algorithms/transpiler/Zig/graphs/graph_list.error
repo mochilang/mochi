@@ -1,0 +1,12 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/graph_list.zig:51:51: error: expected type '[][]const u8', found '*[0]i64'
+                adj.put(d, @constCast((&[_]i64{}))[0..]) catch unreachable;
+                           ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/graph_list.zig:51:51: note: pointer type child 'i64' cannot cast into pointer type child '[]const u8'
+/opt/zig-0.14.0/lib/std/hash_map.zig:321:48: note: parameter type declared here
+        pub fn put(self: *Self, key: K, value: V) Allocator.Error!void {
+                                               ^
+referenced by:
+    main: /workspace/mochi/tests/algorithms/transpiler/Zig/graphs/graph_list.zig:75:33
+    main: /opt/zig-0.14.0/lib/std/start.zig:647:22
+    3 reference(s) hidden; use '-freference-trace=5' to see all references

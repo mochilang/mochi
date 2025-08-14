@@ -1,0 +1,25 @@
+signal: aborted
+==grid-1==
+[0 0 0 0 0 0 0]
+[0 1 0 0 0 0 0]
+[0 0 0 0 0 0 0]
+[0 0 1 0 0 0 0]
+[1 0 1 0 0 0 0]
+[0 0 0 0 0 0 0]
+[0 0 0 0 1 0 0]
+------
+Segmentation fault at address 0x101f978
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/greedy_best_first.zig:177:38: 0x10edbe6 in mochi_main (greedy_best_first)
+            grid[_idx(grid.len, p.y)][_idx(grid[_idx(grid.len, p.y)].len, p.x)] = 2;
+                                     ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/greedy_best_first.zig:190:19: 0x10ec518 in main (greedy_best_first)
+        mochi_main();
+                  ^
+/opt/zig-0.14.0/lib/std/start.zig:647:22: 0x10ec212 in main (greedy_best_first)
+            root.main();
+                     ^
+???:?:?: 0x7ff3268401c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7ff3268401c9` was not available, trace may be incomplete
+
+???:?:?: 0x7ff32684028a in ??? (libc.so.6)
+???:?:?: 0x103f094 in ??? (???)
