@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 764/1077
-Last updated: 2025-08-14 16:16 +0700
+Completed programs: 765/1077
+Last updated: 2025-08-14 16:42 +0700
 
 Checklist:
 
@@ -407,7 +407,7 @@ Checklist:
 | 398 | graphs/bellman_ford | ✓ | 166.0µs | 2.43KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 185.0µs | 5.77KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 8.0ms | 991.85KB |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 105.19KB |
 | 402 | graphs/bidirectional_search | ✓ |  |  |
 | 403 | graphs/boruvka | ✓ | 727.0µs | 58.77KB |
 | 404 | graphs/breadth_first_search | ✓ |  |  |
@@ -427,9 +427,9 @@ Checklist:
 | 418 | graphs/dijkstra_alternate | ✓ | 186.0µs | 1000B |
 | 419 | graphs/dijkstra_binary_grid |   |  |  |
 | 420 | graphs/dinic | ✓ | 2.0ms | 219.63KB |
-| 421 | graphs/directed_and_undirected_weighted_graph | ✓ |  |  |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 386.0µs | 14.52KB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 720.0µs | 106.80KB |
 | 424 | graphs/even_tree | ✓ |  |  |
 | 425 | graphs/finding_bridges | ✓ | 586.0µs | 58.26KB |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |

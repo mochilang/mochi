@@ -1,7 +1,133 @@
-## Progress (2025-08-14 16:16 +0700)
-- ocaml: handle struct refs (351ef0c637)
+## Progress (2025-08-14 16:42 +0700)
+- ocaml: support untyped let (2da8a7c1f8)
 
 - VM valid programs compiled: 102/105
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
+
+- ocaml: handle struct refs (351ef0c637)
+
 
 - ocaml: handle negative list indices (1a86a5d0b1)
 
