@@ -1,5 +1,28 @@
 # 📦 CHANGELOG.md
 
+## [0.10.66] – 2025-08-14T10:19:34+00:00
+
+### Added
+
+* C transpiler gains breadth-first search support.
+* Zig handles shadowed parameters and list types.
+* C# transpiler supports deterministic timestamps.
+* Go precomputes pointer parameters.
+* Erlang accepts untyped function parameters.
+
+### Changed
+
+* Lua defaults to list indexing.
+* OCaml improves map handling and string-to-int conversion.
+* Algorithm outputs refreshed for Ruby, F# and Clojure.
+
+### Fixed
+
+* Racket supports list field mutation.
+* TypeScript fixes negative integer division.
+* Dart casts integers to doubles when necessary.
+* Ruby clones arrays before appending.
+
 ## [0.10.65] – 2025-08-13T09:00:06+00:00
 
 ### Added
