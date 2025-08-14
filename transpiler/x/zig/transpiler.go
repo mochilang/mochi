@@ -5109,7 +5109,8 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		mutable := mutables[p.Name] || varMut[fn.Name+":"+p.Name]
 		typ := toZigType(p.Type)
 		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
-		if mutable && isMap {
+		isStruct := structDefs[typ] != nil
+		if mutable && (isMap || isStruct) {
 			typ = "*" + typ
 		}
 		name := p.Name
