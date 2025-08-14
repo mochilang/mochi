@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-14 16:04 GMT+7
+Last updated: 2025-08-14 16:27 GMT+7
 
-## Algorithms Golden Test Checklist (781/1077)
+## Algorithms Golden Test Checklist (782/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -410,7 +410,7 @@ Last updated: 2025-08-14 16:04 GMT+7
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 95.401ms | 6.86MB |
 | 402 | graphs/bidirectional_search | ✓ | 58.021ms | 24.31MB |
 | 403 | graphs/boruvka | ✓ | 41.697ms | 25.65MB |
-| 404 | graphs/breadth_first_search | error |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 48.5ms | 21.26MB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 91.758ms | 24.31MB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 85.8ms | 24.49MB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 87.688ms | 28.59MB |
