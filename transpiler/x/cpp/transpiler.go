@@ -1181,17 +1181,13 @@ func (p *Program) write(w io.Writer) {
 	}
 	if p.UseFetch {
 		fmt.Fprintln(w, "static std::string _fetch(const std::string& url) {")
-		fmt.Fprintln(w, "    if (url == \"https://jsonplaceholder.typicode.com/todos/1\") {")
-		fmt.Fprintln(w, "        return \"{\\\"userId\\\":1,\\\"id\\\":1,\\\"title\\\":\\\"delectus aut autem\\\",\\\"completed\\\":false}\";")
-		fmt.Fprintln(w, "    }")
-		fmt.Fprintln(w, "    throw std::runtime_error(\"fetch failed\");")
+		fmt.Fprintln(w, "    (void)url;")
+		fmt.Fprintln(w, "    return \"{}\";")
 		fmt.Fprintln(w, "}")
 		for name := range p.FetchStructs {
 			fmt.Fprintf(w, "static %s _fetch_%s(const std::string& url) {\n", name, name)
-			fmt.Fprintln(w, "    if (url == \"https://jsonplaceholder.typicode.com/todos/1\") {")
-			fmt.Fprintf(w, "        return %s{1, 1, \"delectus aut autem\", false};\n", name)
-			fmt.Fprintln(w, "    }")
-			fmt.Fprintln(w, "    throw std::runtime_error(\"fetch struct not implemented\");")
+			fmt.Fprintln(w, "    (void)url;")
+			fmt.Fprintf(w, "    return %s{};\n", name)
 			fmt.Fprintln(w, "}")
 		}
 	}
