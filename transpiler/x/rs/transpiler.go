@@ -4616,7 +4616,16 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	svCopy := copyBoolMap(stringVars)
 	mvCopy := copyBoolMap(mapVars)
 	caps := collectCaptures(body, params, localsCopy, name)
-	useClosure := nested || (topLevelNonConstLet && len(caps) > 0)
+	// Treat any function referencing variables outside its scope as a
+	// closure. Previously, we only generated closures for nested functions
+	// or when a top-level mutable variable existed and captures were
+	// detected during this pass. Some top-level functions reference
+	// variables or closures declared later, so no captures were seen at
+	// this point, leading to invalid `fn` items and Rust compile errors
+	// (e.g. maths/fibonacci using `fib_recursive_cached_term`). By also
+	// considering `topLevelNonConstLet`, we ensure such functions become
+	// closures and can access surrounding state safely.
+	useClosure := nested || topLevelNonConstLet || len(caps) > 0
 	if useClosure {
 		var flit *FunLit
 		if len(caps) > 0 {
