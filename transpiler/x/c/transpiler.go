@@ -2985,7 +2985,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		}
 		if fe, ok := c.Args[0].(*FieldExpr); ok {
 			base := inferExprType(currentEnv, c.Args[0])
-			elemBase := strings.TrimSuffix(strings.TrimSuffix(base, "[]"), "*")
+			elemBase := strings.TrimSuffix(base, "[]")
 			switch elemBase {
 			case "int", "long long":
 				needListAppendIntNew = true
@@ -2998,6 +2998,9 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					needListAppendStrNew = true
 					io.WriteString(w, "list_append_str_new(")
 				} else {
+					if strings.HasSuffix(elemBase, "*") {
+						elemBase = strings.TrimSuffix(elemBase, "*")
+					}
 					if needListAppendStructNew == nil {
 						needListAppendStructNew = make(map[string]bool)
 					}
@@ -4032,6 +4035,9 @@ func (p *Program) Emit() []byte {
 			fmt.Fprintf(&buf, "size_t _slice_%s_len;\n", typ)
 		}
 	}
+	if needListAppendIntNew || needListAppendDoubleNew || needListAppendStrNew || needListAppendStructNew != nil {
+		buf.WriteString("size_t append_len;\n")
+	}
 	if needContainsInt {
 		buf.WriteString("static int contains_int(const int arr[], size_t len, int val) {\n")
 		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
@@ -4509,6 +4515,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    long long *res = malloc((len + 1) * sizeof(long long));\n")
 		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(long long));\n")
 		buf.WriteString("    res[len] = val;\n")
+		buf.WriteString("    append_len = len + 1;\n")
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
@@ -4525,6 +4532,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    double *res = malloc((len + 1) * sizeof(double));\n")
 		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(double));\n")
 		buf.WriteString("    res[len] = val;\n")
+		buf.WriteString("    append_len = len + 1;\n")
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
@@ -4565,6 +4573,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    const char **res = malloc((len + 1) * sizeof(const char*));\n")
 		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(const char*));\n")
 		buf.WriteString("    res[len] = val;\n")
+		buf.WriteString("    append_len = len + 1;\n")
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
@@ -7779,7 +7788,7 @@ func convertUnary(u *parser.Unary) Expr {
 		if allStr {
 			if currentVarName != "" {
 				if currentVarType != nil {
-					if types.IsStringAnyMapLike(currentVarType) {
+					if _, ok := currentVarType.(types.MapType); ok {
 						return &MapLit{Items: items}
 					}
 					if len(items) == 0 {
