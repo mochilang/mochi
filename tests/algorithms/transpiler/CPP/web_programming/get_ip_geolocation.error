@@ -1,10 +1,7 @@
 compile: exit status 1
 /workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:83:215: warning: multi-character character constant [-Wmultichar]
-   83 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+   83 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << " : "; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                       ^~~~
-/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:83:251: warning: multi-character character constant [-Wmultichar]
-   83 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
-      |                                                                                                                                                                                                                                                           ^~~~
 /workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:136:43: error: ‘_fetch_std’ has not been declared
   136 | static std::map<std::string, std::string> _fetch_std::map<std::string, std::string>(const std::string& url) {
       |                                           ^~~~~~~~~~

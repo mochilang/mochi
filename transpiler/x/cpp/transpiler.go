@@ -2237,20 +2237,27 @@ func (c *CastExpr) emit(w io.Writer) {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	if exprType(s.Value) == "std::any" {
+	io.WriteString(w, "([&]{ std::string __s = ")
+	switch exprType(s.Value) {
+	case "std::string":
+		s.Value.emit(w)
+	case "std::any":
 		io.WriteString(w, "std::any_cast<std::string>(")
 		s.Value.emit(w)
-		io.WriteString(w, ").substr(")
-	} else {
+		io.WriteString(w, ")")
+	default:
+		io.WriteString(w, "_to_string(")
 		s.Value.emit(w)
-		io.WriteString(w, ".substr(")
+		io.WriteString(w, ")")
 	}
+	io.WriteString(w, "; long long __start = ")
 	s.Start.emit(w)
-	io.WriteString(w, ", ")
+	io.WriteString(w, "; long long __end = ")
 	s.End.emit(w)
-	io.WriteString(w, " - ")
-	s.Start.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, "; if(__start < 0) __start = 0; if(__end < __start) __end = __start;")
+	io.WriteString(w, " if(__start > static_cast<long long>(__s.size())) __start = __s.size();")
+	io.WriteString(w, " if(__end > static_cast<long long>(__s.size())) __end = __s.size();")
+	io.WriteString(w, " return __s.substr(static_cast<size_t>(__start), static_cast<size_t>(__end - __start)); })()")
 }
 
 func (p *PadStartExpr) emit(w io.Writer) {
