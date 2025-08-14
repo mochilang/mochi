@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 969/1077
-Last updated: 2025-08-13 16:25 +0700
+Last updated: 2025-08-14 09:57 +0700
 
 Checklist:
 
@@ -356,7 +356,7 @@ Checklist:
 | 347 | dynamic_programming/viterbi | ✓ | 353.0µs | 3.62MB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 373.0µs | 3.65MB |
 | 349 | dynamic_programming/word_break | ✓ | 232.0µs | 3.45MB |
-| 350 | electronics/apparent_power | ✓ | 1.0µs | 3.52MB |
+| 350 | electronics/apparent_power | ✓ | 23.0µs | 3.36MB |
 | 351 | electronics/builtin_voltage | ✓ | 238.0µs | 3.75MB |
 | 352 | electronics/capacitor_equivalence | ✓ | 371.0µs | 3.74MB |
 | 353 | electronics/carrier_concentration | ✓ | 629.0µs | 3.70MB |
