@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-13 16:47 GMT+7
+Last updated: 2025-08-14 10:19 GMT+7
 
 ## Algorithms Golden Test Checklist (940/1077)
 | Index | Name | Status | Duration | Memory |
@@ -359,13 +359,13 @@ Last updated: 2025-08-13 16:47 GMT+7
 | 350 | electronics/apparent_power | ✓ | 15.0ms | 0B |
 | 351 | electronics/builtin_voltage | ✓ | 16.0ms | 10.45KB |
 | 352 | electronics/capacitor_equivalence | ✓ | 38.0ms | 10.66KB |
-| 353 | electronics/carrier_concentration | ✓ | 35.0ms | 88.53KB |
+| 353 | electronics/carrier_concentration | ✓ | 50.0ms | 88.63KB |
 | 354 | electronics/charging_capacitor | ✓ | 16.0ms | 10.36KB |
 | 355 | electronics/charging_inductor | ✓ | 18.0ms | 10.25KB |
 | 356 | electronics/circular_convolution | ✓ | 27.0ms | 57.16KB |
-| 357 | electronics/coulombs_law | ✓ | 36.0ms | 88.13KB |
+| 357 | electronics/coulombs_law | ✓ | 44.0ms | 88.13KB |
 | 358 | electronics/electric_conductivity | ✓ | 35.0ms | 88.51KB |
-| 359 | electronics/electric_power | ✓ | 99.0ms | 88.23KB |
+| 359 | electronics/electric_power | ✓ | 48.0ms | 88.23KB |
 | 360 | electronics/electrical_impedance | ✓ | 14.0ms | 10.73KB |
 | 361 | electronics/ic_555_timer | ✓ | 16.0ms | 10.25KB |
 | 362 | electronics/ind_reactance | ✓ | 19.0ms | 10.73KB |
@@ -380,7 +380,7 @@ Last updated: 2025-08-13 16:47 GMT+7
 | 371 | file_transfer/tests/test_send_file | ✓ | 15.0ms | 1.50KB |
 | 372 | financial/equated_monthly_installments | ✓ | 14.0ms | 10.45KB |
 | 373 | financial/exponential_moving_average | ✓ | 25.0ms | 56.96KB |
-| 374 | financial/interest | ✓ | 14.0ms | 10.45KB |
+| 374 | financial/interest | ✓ | 20.0ms | 10.35KB |
 | 375 | financial/present_value | ✓ | 16.0ms | 10.35KB |
 | 376 | financial/price_plus_tax | ✓ | 26.0ms | 47.62KB |
 | 377 | financial/simple_moving_average | ✓ | 40.0ms | 112.99KB |
@@ -399,8 +399,8 @@ Last updated: 2025-08-13 16:47 GMT+7
 | 390 | graphics/bezier_curve | ✓ | 27.0ms | 57.02KB |
 | 391 | graphics/butterfly_pattern | ✓ | 43.0ms | 103.18KB |
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 33.0ms | 69.52KB |
-| 393 | graphics/vector3_for_2d_rendering | error |  |  |
-| 394 | graphs/a_star | ✓ | 29.0ms | 46.57KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 21.0ms | 10.60KB |
+| 394 | graphs/a_star | error | 29.0ms | 46.57KB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 70.0ms | 68.09KB |
 | 396 | graphs/articulation_points | ✓ | 25.0ms | 46.04KB |
 | 397 | graphs/basic_graphs | ✓ | 32.0ms | 64.39KB |

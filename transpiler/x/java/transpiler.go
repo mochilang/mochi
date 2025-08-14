@@ -444,6 +444,9 @@ func mapKeyType(t string) string {
 }
 
 func emitCastExpr(w io.Writer, e Expr, typ string) {
+	if jt := javaType(typ); jt != "" {
+		typ = jt
+	}
 	if ml, ok := e.(*MapLit); ok {
 		if strings.HasPrefix(typ, "java.util.Map<") {
 			if ml.KeyType == "" {
@@ -3120,6 +3123,16 @@ func (c *FloatCastExpr) emit(w io.Writer) {
 
 func (c *CastExpr) emit(w io.Writer) {
 	jt := javaType(c.Type)
+	if ml, ok := c.Value.(*MapLit); ok {
+		if strings.HasPrefix(jt, "java.util.Map<") {
+			if ml.KeyType == "" {
+				ml.KeyType = mapKeyType(jt)
+			}
+			if ml.ValueType == "" {
+				ml.ValueType = mapValueType(jt)
+			}
+		}
+	}
 	if strings.HasSuffix(jt, "[]") {
 		if ll, ok := c.Value.(*ListLit); ok && len(ll.Elems) == 0 && ll.ElemType == "" {
 			saved := ll.ElemType
@@ -4566,10 +4579,6 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if exprUsesVar(e, s.Var.Name) {
-				refVars[s.Var.Name] = true
-			}
-
 			if t == "" {
 				if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && topEnv != nil {
 					t = toJavaTypeFromType(types.ExprType(s.Var.Value, currentEnv()))
@@ -4595,6 +4604,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				t = inferType(e)
 			}
 			alias := declareAlias(s.Var.Name)
+			if _, ok := varTypes[alias]; ok {
+				alias = declareAlias(s.Var.Name)
+			}
+			if exprUsesVar(e, s.Var.Name) {
+				refVars[alias] = true
+			}
 			if t != "" {
 				varTypes[alias] = t
 			}
@@ -5385,7 +5400,7 @@ func applyBinaryOp(left Expr, op *parser.BinaryOp, right Expr) (Expr, error) {
 			lt := inferType(left)
 			rt := inferType(right)
 			if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" && lt != "java.math.BigInteger" && rt != "java.math.BigInteger" {
-				return &CallExpr{Func: "Math.floorDiv", Args: []Expr{left, right}}, nil
+				return &BinaryExpr{Left: left, Op: "/", Right: right}, nil
 			}
 		}
 		return &BinaryExpr{Left: left, Op: op.Op, Right: right}, nil
@@ -7535,7 +7550,6 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        }\n")
 		buf.WriteString("        if (v instanceof Double || v instanceof Float) {\n")
 		buf.WriteString("            double d = ((Number) v).doubleValue();\n")
-		buf.WriteString("            if (d == Math.rint(d)) return String.valueOf((long) d);\n")
 		buf.WriteString("            return String.valueOf(d);\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("        return String.valueOf(v);\n")

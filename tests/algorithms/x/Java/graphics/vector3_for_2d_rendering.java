@@ -1,76 +1,76 @@
 public class Main {
-    static double PI;
+    static double PI = (double)(3.141592653589793);
 
     static double floor(double x) {
-        int i = ((Number)(x)).intValue();
-        if ((((Number)(i)).doubleValue()) > x) {
-            i = i - 1;
+        long i = (long)(((Number)(x)).intValue());
+        if ((double)((((Number)(i)).doubleValue())) > (double)(x)) {
+            i = (long)((long)(i) - 1L);
         }
         return ((Number)(i)).doubleValue();
     }
 
     static double modf(double x, double m) {
-        return x - floor(x / m) * m;
+        return (double)(x) - (double)(Math.floor((double)(x) / (double)(m)) * (double)(m));
     }
 
     static double sin_taylor(double x) {
-        double term = x;
-        double sum = x;
-        int i_1 = 1;
-        while (i_1 < 10) {
-            double k1 = 2.0 * (((Number)(i_1)).doubleValue());
-            double k2 = k1 + 1.0;
-            term = -term * x * x / (k1 * k2);
-            sum = sum + term;
-            i_1 = i_1 + 1;
-        }
-        return sum;
-    }
-
-    static double cos_taylor(double x) {
-        double term_1 = 1.0;
-        double sum_1 = 1.0;
-        int i_2 = 1;
-        while (i_2 < 10) {
-            double k1_1 = 2.0 * (((Number)(i_2)).doubleValue()) - 1.0;
-            double k2_1 = 2.0 * (((Number)(i_2)).doubleValue());
-            term_1 = -term_1 * x * x / (k1_1 * k2_1);
-            sum_1 = sum_1 + term_1;
-            i_2 = i_2 + 1;
+        double term = (double)(x);
+        double sum_1 = (double)(x);
+        long i_2 = 1L;
+        while ((long)(i_2) < 10L) {
+            double k1_1 = (double)((double)(2.0) * (double)((((Number)(i_2)).doubleValue())));
+            double k2_1 = (double)((double)(k1_1) + (double)(1.0));
+            term = (double)((double)((double)((double)(-term) * (double)(x)) * (double)(x)) / (double)(((double)(k1_1) * (double)(k2_1))));
+            sum_1 = (double)((double)(sum_1) + (double)(term));
+            i_2 = (long)((long)(i_2) + 1L);
         }
         return sum_1;
     }
 
+    static double cos_taylor(double x) {
+        double term_1 = (double)(1.0);
+        double sum_3 = (double)(1.0);
+        long i_4 = 1L;
+        while ((long)(i_4) < 10L) {
+            double k1_3 = (double)((double)((double)(2.0) * (double)((((Number)(i_4)).doubleValue()))) - (double)(1.0));
+            double k2_3 = (double)((double)(2.0) * (double)((((Number)(i_4)).doubleValue())));
+            term_1 = (double)((double)((double)((double)(-term_1) * (double)(x)) * (double)(x)) / (double)(((double)(k1_3) * (double)(k2_3))));
+            sum_3 = (double)((double)(sum_3) + (double)(term_1));
+            i_4 = (long)((long)(i_4) + 1L);
+        }
+        return sum_3;
+    }
+
     static double[] convert_to_2d(double x, double y, double z, double scale, double distance) {
-        double projected_x = ((x * distance) / (z + distance)) * scale;
-        double projected_y = ((y * distance) / (z + distance)) * scale;
-        return new double[]{projected_x, projected_y};
+        double projected_x = (double)((double)(((double)(((double)(x) * (double)(distance))) / (double)(((double)(z) + (double)(distance))))) * (double)(scale));
+        double projected_y_1 = (double)((double)(((double)(((double)(y) * (double)(distance))) / (double)(((double)(z) + (double)(distance))))) * (double)(scale));
+        return new double[]{projected_x, projected_y_1};
     }
 
     static double[] rotate(double x, double y, double z, String axis, double angle) {
-        double[] angle = new double[1];
-        angle[0] = modf(angle[0], 360.0) / 450.0 * 180.0 / PI;
-        angle[0] = modf(angle[0], 2.0 * PI);
-        if (angle[0] > PI) {
-            angle[0] = angle[0] - 2.0 * PI;
+        double[] angle_1 = new double[1];
+        angle_1[0] = (double)((double)((double)((double)(modf((double)(angle), (double)(360.0))) / (double)(450.0)) * (double)(180.0)) / (double)(PI));
+        angle_1[0] = (double)(modf((double)(angle_1[0]), (double)((double)(2.0) * (double)(PI))));
+        if ((double)(angle_1[0]) > (double)(PI)) {
+            angle_1[0] = (double)((double)(angle_1[0]) - (double)((double)(2.0) * (double)(PI)));
         }
         if ((axis.equals("z"))) {
-            double new_x = x * cos_taylor(angle[0]) - y * sin_taylor(angle[0]);
-            double new_y = y * cos_taylor(angle[0]) + x * sin_taylor(angle[0]);
-            double new_z = z;
-            return new double[]{new_x, new_y, new_z};
-        }
-        if ((axis.equals("x"))) {
-            double new_y_1 = y * cos_taylor(angle[0]) - z * sin_taylor(angle[0]);
-            double new_z_1 = z * cos_taylor(angle[0]) + y * sin_taylor(angle[0]);
-            double new_x_1 = x;
+            double new_x_1 = (double)((double)((double)(x) * (double)(cos_taylor((double)(angle_1[0])))) - (double)((double)(y) * (double)(sin_taylor((double)(angle_1[0])))));
+            double new_y_1 = (double)((double)((double)(y) * (double)(cos_taylor((double)(angle_1[0])))) + (double)((double)(x) * (double)(sin_taylor((double)(angle_1[0])))));
+            double new_z_1 = (double)(z);
             return new double[]{new_x_1, new_y_1, new_z_1};
         }
+        if ((axis.equals("x"))) {
+            double new_y_3 = (double)((double)((double)(y) * (double)(cos_taylor((double)(angle_1[0])))) - (double)((double)(z) * (double)(sin_taylor((double)(angle_1[0])))));
+            double new_z_3 = (double)((double)((double)(z) * (double)(cos_taylor((double)(angle_1[0])))) + (double)((double)(y) * (double)(sin_taylor((double)(angle_1[0])))));
+            double new_x_3 = (double)(x);
+            return new double[]{new_x_3, new_y_3, new_z_3};
+        }
         if ((axis.equals("y"))) {
-            double new_x_2 = x * cos_taylor(angle[0]) - z * sin_taylor(angle[0]);
-            double new_z_2 = z * cos_taylor(angle[0]) + x * sin_taylor(angle[0]);
-            double new_y_2 = y;
-            return new double[]{new_x_2, new_y_2, new_z_2};
+            double new_x_5 = (double)((double)((double)(x) * (double)(cos_taylor((double)(angle_1[0])))) - (double)((double)(z) * (double)(sin_taylor((double)(angle_1[0])))));
+            double new_z_5 = (double)((double)((double)(z) * (double)(cos_taylor((double)(angle_1[0])))) + (double)((double)(x) * (double)(sin_taylor((double)(angle_1[0])))));
+            double new_y_5 = (double)(y);
+            return new double[]{new_x_5, new_y_5, new_z_5};
         }
         System.out.println("not a valid axis, choose one of 'x', 'y', 'z'");
         return new double[]{0.0, 0.0, 0.0};
@@ -79,9 +79,8 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            PI = 3.141592653589793;
-            System.out.println(_p(convert_to_2d(1.0, 2.0, 3.0, 10.0, 10.0)));
-            System.out.println(_p(rotate(1.0, 2.0, 3.0, "y", 90.0)));
+            System.out.println(_p(convert_to_2d((double)(1.0), (double)(2.0), (double)(3.0), (double)(10.0), (double)(10.0))));
+            System.out.println(_p(rotate((double)(1.0), (double)(2.0), (double)(3.0), "y", (double)(90.0))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -127,6 +126,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,76 +1,75 @@
 public class Main {
-    static double COULOMBS_CONSTANT;
+    static double COULOMBS_CONSTANT = (double)(8988000000.0);
 
     static double abs(double x) {
-        if (x < 0.0) {
+        if ((double)(x) < (double)(0.0)) {
             return -x;
         }
         return x;
     }
 
     static double sqrtApprox(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = (double)(x);
+        long i_1 = 0L;
+        while ((long)(i_1) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return guess;
+        return guess_1;
     }
 
     static java.util.Map<String,Double> coulombs_law(double force, double charge1, double charge2, double distance) {
-        double charge_product = ((Number)(Math.abs(charge1 * charge2))).doubleValue();
-        int zero_count = 0;
-        if (force == 0.0) {
-            zero_count = zero_count + 1;
+        double charge_product = ((Number)(Math.abs((double)(charge1) * (double)(charge2)))).doubleValue();
+        long zero_count_1 = 0L;
+        if ((double)(force) == (double)(0.0)) {
+            zero_count_1 = (long)((long)(zero_count_1) + 1L);
         }
-        if (charge1 == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(charge1) == (double)(0.0)) {
+            zero_count_1 = (long)((long)(zero_count_1) + 1L);
         }
-        if (charge2 == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(charge2) == (double)(0.0)) {
+            zero_count_1 = (long)((long)(zero_count_1) + 1L);
         }
-        if (distance == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(distance) == (double)(0.0)) {
+            zero_count_1 = (long)((long)(zero_count_1) + 1L);
         }
-        if (zero_count != 1) {
+        if ((long)(zero_count_1) != 1L) {
             throw new RuntimeException(String.valueOf("One and only one argument must be 0"));
         }
-        if (distance < 0.0) {
+        if ((double)(distance) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Distance cannot be negative"));
         }
-        if (force == 0.0) {
-            double f = COULOMBS_CONSTANT * charge_product / (distance * distance);
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("force", f)));
+        if ((double)(force) == (double)(0.0)) {
+            double f_1 = (double)((double)((double)(COULOMBS_CONSTANT) * (double)(charge_product)) / (double)(((double)(distance) * (double)(distance))));
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("force", (double)(f_1))))));
         }
-        if (charge1 == 0.0) {
-            double c1 = Math.abs(force) * (distance * distance) / (COULOMBS_CONSTANT * charge2);
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("charge1", c1)));
+        if ((double)(charge1) == (double)(0.0)) {
+            double c1_1 = (double)((double)(Math.abs(force) * (double)(((double)(distance) * (double)(distance)))) / (double)(((double)(COULOMBS_CONSTANT) * (double)(charge2))));
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("charge1", (double)(c1_1))))));
         }
-        if (charge2 == 0.0) {
-            double c2 = Math.abs(force) * (distance * distance) / (COULOMBS_CONSTANT * charge1);
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("charge2", c2)));
+        if ((double)(charge2) == (double)(0.0)) {
+            double c2_1 = (double)((double)(Math.abs(force) * (double)(((double)(distance) * (double)(distance)))) / (double)(((double)(COULOMBS_CONSTANT) * (double)(charge1))));
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("charge2", (double)(c2_1))))));
         }
-        double d = sqrtApprox(COULOMBS_CONSTANT * charge_product / Math.abs(force));
-        return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("distance", d)));
+        double d_1 = (double)(sqrtApprox((double)((double)((double)(COULOMBS_CONSTANT) * (double)(charge_product)) / Math.abs(force))));
+        return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("distance", (double)(d_1))))));
     }
 
     static void print_map(java.util.Map<String,Double> m) {
         for (String k : m.keySet()) {
-            System.out.println("{\"" + (String)(k) + "\": " + _p(((double)(m).getOrDefault(k, 0.0))) + "}");
+            System.out.println("{\"" + k + "\": " + _p(((double)(m).getOrDefault(k, 0.0))) + "}");
         }
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            COULOMBS_CONSTANT = 8988000000.0;
-            print_map(coulombs_law(0.0, 3.0, 5.0, 2000.0));
-            print_map(coulombs_law(10.0, 3.0, 5.0, 0.0));
-            print_map(coulombs_law(10.0, 0.0, 5.0, 2000.0));
+            print_map(coulombs_law((double)(0.0), (double)(3.0), (double)(5.0), (double)(2000.0)));
+            print_map(coulombs_law((double)(10.0), (double)(3.0), (double)(5.0), (double)(0.0)));
+            print_map(coulombs_law((double)(10.0), (double)(0.0), (double)(5.0), (double)(2000.0)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -116,6 +115,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
