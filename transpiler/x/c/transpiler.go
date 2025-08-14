@@ -933,7 +933,24 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		if strings.HasSuffix(paramType, "*") {
 			base := strings.TrimSuffix(paramType, "*")
 			if _, ok := structTypes[base]; ok || strings.HasPrefix(base, "Map") {
-				io.WriteString(w, "&")
+				var at string
+				if ue, ok := a.(*UnaryExpr); ok && ue.Op == "&" {
+					if _, ok2 := ue.Expr.(*VarRef); ok2 {
+						a = ue.Expr
+						at = paramType
+					}
+				}
+				if at == "" {
+					at = inferExprType(currentEnv, a)
+					if vr, ok := a.(*VarRef); ok {
+						if vt := varTypes[vr.Name]; vt != "" {
+							at = vt
+						}
+					}
+				}
+				if !strings.HasSuffix(at, "*") {
+					io.WriteString(w, "&")
+				}
 			}
 		} else if _, ok := structTypes[paramType]; ok {
 			if vr, ok := a.(*VarRef); ok {
@@ -1325,6 +1342,48 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t *%s_lens = %s_lens_init;\n", d.Name, d.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
+			return
+		} else if fe, ok := d.Value.(*FieldExpr); ok {
+			fmt.Fprintf(w, "%s ***%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t *%s_lens = ", d.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_lens"}).emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_len = ", d.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t **%s_lens_lens = ", d.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_lens_lens"}).emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_lens_len = ", d.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			io.WriteString(w, ";\n")
+			return
+		} else if vr, ok := d.Value.(*VarRef); ok {
+			fmt.Fprintf(w, "%s ***%s = %s;\n", base, d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t **%s_lens_lens = %s_lens_lens;\n", d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_lens_len = %s_len;\n", d.Name, vr.Name)
+			if declAliases == nil {
+				declAliases = make(map[string]bool)
+			}
+			declAliases[d.Name] = true
 			return
 		}
 		fmt.Fprintf(w, "%s ***%s = NULL;\n", base, d.Name)
@@ -2607,6 +2666,11 @@ func (f *FieldExpr) emitExpr(w io.Writer) {
 		}
 	}
 	typ := inferExprType(currentEnv, f.Target)
+	if vr, ok := f.Target.(*VarRef); ok {
+		if vt := varTypes[vr.Name]; vt != "" {
+			typ = vt
+		}
+	}
 	base := strings.TrimPrefix(typ, "struct ")
 	f.Target.emitExpr(w)
 	if strings.HasSuffix(base, "*") {
@@ -5102,7 +5166,15 @@ func (p *Program) Emit() []byte {
 					needMapGetSL = true
 				}
 				if strings.HasSuffix(typ, "[]") {
-					if strings.HasSuffix(typ, "[][]") {
+					if strings.HasSuffix(typ, "[][][]") {
+						base := strings.TrimSuffix(typ, "[][][]")
+						fmt.Fprintf(&buf, "    %s ***%s;\n", base, field)
+						fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+						fmt.Fprintf(&buf, "    size_t *%s_lens;\n", field)
+						fmt.Fprintf(&buf, "    size_t %s_lens_len;\n", field)
+						fmt.Fprintf(&buf, "    size_t **%s_lens_lens;\n", field)
+						fmt.Fprintf(&buf, "    size_t %s_lens_lens_len;\n", field)
+					} else if strings.HasSuffix(typ, "[][]") {
 						base := strings.TrimSuffix(typ, "[][]")
 						fmt.Fprintf(&buf, "    %s **%s;\n", base, field)
 						fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
