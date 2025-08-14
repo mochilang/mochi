@@ -1,0 +1,698 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:171:48: warning: forced cast of 'Pos' to same type has no effect
+169 |     }
+170 |     func heuristic_2(_ p: Pos, _ goal: Pos) -> Double {
+171 |         let h = Double(consistent_heuristic((p as! Pos), (goal as! Pos)))
+    |                                                `- warning: forced cast of 'Pos' to same type has no effect
+172 |         return (h / Double(t))
+173 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:171:64: warning: forced cast of 'Pos' to same type has no effect
+169 |     }
+170 |     func heuristic_2(_ p: Pos, _ goal: Pos) -> Double {
+171 |         let h = Double(consistent_heuristic((p as! Pos), (goal as! Pos)))
+    |                                                                `- warning: forced cast of 'Pos' to same type has no effect
+172 |         return (h / Double(t))
+173 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:176:51: warning: forced cast of 'Pos' to same type has no effect
+174 |     func heuristic(_ i: Int, _ p: Pos, _ goal: Pos) -> Double {
+175 |         if (i == 0) {
+176 |             return Double(consistent_heuristic((p as! Pos), (goal as! Pos)))
+    |                                                   `- warning: forced cast of 'Pos' to same type has no effect
+177 |         }
+178 |         if (i == 1) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:176:67: warning: forced cast of 'Pos' to same type has no effect
+174 |     func heuristic(_ i: Int, _ p: Pos, _ goal: Pos) -> Double {
+175 |         if (i == 0) {
+176 |             return Double(consistent_heuristic((p as! Pos), (goal as! Pos)))
+    |                                                                   `- warning: forced cast of 'Pos' to same type has no effect
+177 |         }
+178 |         if (i == 1) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:179:42: warning: forced cast of 'Pos' to same type has no effect
+177 |         }
+178 |         if (i == 1) {
+179 |             return Double(heuristic_1((p as! Pos), (goal as! Pos)))
+    |                                          `- warning: forced cast of 'Pos' to same type has no effect
+180 |         }
+181 |         return Double(heuristic_2((p as! Pos), (goal as! Pos)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:179:58: warning: forced cast of 'Pos' to same type has no effect
+177 |         }
+178 |         if (i == 1) {
+179 |             return Double(heuristic_1((p as! Pos), (goal as! Pos)))
+    |                                                          `- warning: forced cast of 'Pos' to same type has no effect
+180 |         }
+181 |         return Double(heuristic_2((p as! Pos), (goal as! Pos)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:181:38: warning: forced cast of 'Pos' to same type has no effect
+179 |             return Double(heuristic_1((p as! Pos), (goal as! Pos)))
+180 |         }
+181 |         return Double(heuristic_2((p as! Pos), (goal as! Pos)))
+    |                                      `- warning: forced cast of 'Pos' to same type has no effect
+182 |     }
+183 |     func key_fn(_ start: Pos, _ i: Int, _ goal: Pos, _ g_func: [String: Double]) -> Double {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:181:54: warning: forced cast of 'Pos' to same type has no effect
+179 |             return Double(heuristic_1((p as! Pos), (goal as! Pos)))
+180 |         }
+181 |         return Double(heuristic_2((p as! Pos), (goal as! Pos)))
+    |                                                      `- warning: forced cast of 'Pos' to same type has no effect
+182 |     }
+183 |     func key_fn(_ start: Pos, _ i: Int, _ goal: Pos, _ g_func: [String: Double]) -> Double {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:184:72: warning: forced cast of 'Pos' to same type has no effect
+182 |     }
+183 |     func key_fn(_ start: Pos, _ i: Int, _ goal: Pos, _ g_func: [String: Double]) -> Double {
+184 |         let g = Double(g_func[String(String(describing: pos_key((start as! Pos))))] ?? 0.0)
+    |                                                                        `- warning: forced cast of 'Pos' to same type has no effect
+185 |         return (g + (W1 * Double(heuristic(i, (start as! Pos), (goal as! Pos)))))
+186 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:185:54: warning: forced cast of 'Pos' to same type has no effect
+183 |     func key_fn(_ start: Pos, _ i: Int, _ goal: Pos, _ g_func: [String: Double]) -> Double {
+184 |         let g = Double(g_func[String(String(describing: pos_key((start as! Pos))))] ?? 0.0)
+185 |         return (g + (W1 * Double(heuristic(i, (start as! Pos), (goal as! Pos)))))
+    |                                                      `- warning: forced cast of 'Pos' to same type has no effect
+186 |     }
+187 |     func valid(_ p: Pos) -> Bool {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:185:70: warning: forced cast of 'Pos' to same type has no effect
+183 |     func key_fn(_ start: Pos, _ i: Int, _ goal: Pos, _ g_func: [String: Double]) -> Double {
+184 |         let g = Double(g_func[String(String(describing: pos_key((start as! Pos))))] ?? 0.0)
+185 |         return (g + (W1 * Double(heuristic(i, (start as! Pos), (goal as! Pos)))))
+    |                                                                      `- warning: forced cast of 'Pos' to same type has no effect
+186 |     }
+187 |     func valid(_ p: Pos) -> Bool {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:219:9: warning: forced cast of '[Pos]' to same type has no effect
+217 |         _arr = _append(_arr, Pos(x: 19, y: 1))
+218 |         return _arr
+219 |     }() as! [Pos])
+    |         `- warning: forced cast of '[Pos]' to same type has no effect
+220 |     func in_blocks(_ p: Pos) -> Bool {
+221 |         var i = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:223:43: warning: forced cast from 'Pos?' to 'Pos' only unwraps optionals; did you mean to use '!'?
+221 |         var i = 0
+222 |         while (i < _int(((blocks).count))) {
+223 |             if pos_equal((_idx(blocks, i) as! Pos), (p as! Pos)) {
+    |                                           `- warning: forced cast from 'Pos?' to 'Pos' only unwraps optionals; did you mean to use '!'?
+224 |                 return true
+225 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:223:56: warning: forced cast of 'Pos' to same type has no effect
+221 |         var i = 0
+222 |         while (i < _int(((blocks).count))) {
+223 |             if pos_equal((_idx(blocks, i) as! Pos), (p as! Pos)) {
+    |                                                        `- warning: forced cast of 'Pos' to same type has no effect
+224 |                 return true
+225 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:234:46: warning: forced cast of 'Pos' to same type has no effect
+232 |         var i = 0
+233 |         while (i < _int(((pq).count))) {
+234 |             if pos_equal(((_idx(pq, i)!.pos) as! Pos), (node as! Pos)) {
+    |                                              `- warning: forced cast of 'Pos' to same type has no effect
+235 |                 if (String(describing: pri) < String(describing: (_idx(pq, i)!.pri))
+236 |                 ) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:234:62: warning: forced cast of 'Pos' to same type has no effect
+232 |         var i = 0
+233 |         while (i < _int(((pq).count))) {
+234 |             if pos_equal(((_idx(pq, i)!.pos) as! Pos), (node as! Pos)) {
+    |                                                              `- warning: forced cast of 'Pos' to same type has no effect
+235 |                 if (String(describing: pri) < String(describing: (_idx(pq, i)!.pri))
+236 |                 ) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:237:57: warning: forced cast of 'Pos' to same type has no effect
+235 |                 if (String(describing: pri) < String(describing: (_idx(pq, i)!.pri))
+236 |                 ) {
+237 |                     pq = _set(pq, i, (PQNode(pos: (node as! Pos), pri: Double(pri)) as! PQNode))
+    |                                                         `- warning: forced cast of 'Pos' to same type has no effect
+238 |                 }
+239 |                 updated = true
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:237:85: warning: forced cast of 'PQNode' to same type has no effect
+235 |                 if (String(describing: pri) < String(describing: (_idx(pq, i)!.pri))
+236 |                 ) {
+237 |                     pq = _set(pq, i, (PQNode(pos: (node as! Pos), pri: Double(pri)) as! PQNode))
+    |                                                                                     `- warning: forced cast of 'PQNode' to same type has no effect
+238 |                 }
+239 |                 updated = true
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:244:49: warning: forced cast of 'Pos' to same type has no effect
+242 |         }
+243 |         if (!updated) {
+244 |             pq = (_append(pq, PQNode(pos: (node as! Pos), pri: Double(pri))) as! [PQNode])
+    |                                                 `- warning: forced cast of 'Pos' to same type has no effect
+245 |         }
+246 |         return pq
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:252:34: warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+250 |             return INF
+251 |         }
+252 |         var first = (_idx(pq, 0) as! PQNode)
+    |                                  `- warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+253 |         var m = first.pri
+254 |         var i = 1
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:256:37: warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+254 |         var i = 1
+255 |         while (i < _int(((pq).count))) {
+256 |             var item = (_idx(pq, i) as! PQNode)
+    |                                     `- warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+257 |             if (item.pri < m) {
+258 |                 m = Double(item.pri)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:265:33: warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+263 |     }
+264 |     func pq_pop_min(_ pq: [PQNode]) -> PQPopResult {
+265 |         var best = (_idx(pq, 0) as! PQNode)
+    |                                 `- warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+266 |         var idx = 0
+267 |         var i = 1
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:271:37: warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+269 |             if (String(describing: (_idx(pq, i)!.pri)) < String(describing: best.pri)
+270 |             ) {
+271 |                 best = (_idx(pq, i) as! PQNode)
+    |                                     `- warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+272 |                 idx = Int(i)
+273 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:280:56: warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+278 |         while (i < _int(((pq).count))) {
+279 |             if (i != idx) {
+280 |                 new_pq = (_append(new_pq, (_idx(pq, i) as! PQNode)) as! [PQNode])
+    |                                                        `- warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+281 |             }
+282 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:284:40: warning: forced cast of '[PQNode]' to same type has no effect
+282 |             i = _int((i &+ 1))
+283 |         }
+284 |         return PQPopResult(pq: (new_pq as! [PQNode]), node: (best as! PQNode))
+    |                                        `- warning: forced cast of '[PQNode]' to same type has no effect
+285 |     }
+286 |     func pq_remove(_ pq: [PQNode], _ node: Pos) -> [PQNode] {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:284:67: warning: forced cast of 'PQNode' to same type has no effect
+282 |             i = _int((i &+ 1))
+283 |         }
+284 |         return PQPopResult(pq: (new_pq as! [PQNode]), node: (best as! PQNode))
+    |                                                                   `- warning: forced cast of 'PQNode' to same type has no effect
+285 |     }
+286 |     func pq_remove(_ pq: [PQNode], _ node: Pos) -> [PQNode] {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:290:48: warning: forced cast of 'Pos' to same type has no effect
+288 |         var i = 0
+289 |         while (i < _int(((pq).count))) {
+290 |             if (!pos_equal(((_idx(pq, i)!.pos) as! Pos), (node as! Pos))) {
+    |                                                `- warning: forced cast of 'Pos' to same type has no effect
+291 |                 new_pq = (_append(new_pq, (_idx(pq, i) as! PQNode)) as! [PQNode])
+292 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:290:64: warning: forced cast of 'Pos' to same type has no effect
+288 |         var i = 0
+289 |         while (i < _int(((pq).count))) {
+290 |             if (!pos_equal(((_idx(pq, i)!.pos) as! Pos), (node as! Pos))) {
+    |                                                                `- warning: forced cast of 'Pos' to same type has no effect
+291 |                 new_pq = (_append(new_pq, (_idx(pq, i) as! PQNode)) as! [PQNode])
+292 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:291:56: warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+289 |         while (i < _int(((pq).count))) {
+290 |             if (!pos_equal(((_idx(pq, i)!.pos) as! Pos), (node as! Pos))) {
+291 |                 new_pq = (_append(new_pq, (_idx(pq, i) as! PQNode)) as! [PQNode])
+    |                                                        `- warning: forced cast from 'PQNode?' to 'PQNode' only unwraps optionals; did you mean to use '!'?
+292 |             }
+293 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:300:55: warning: forced cast of 'Pos' to same type has no effect
+298 |         var path: [Pos] = ([] as! [Pos])
+299 |         var current = goal
+300 |         var key = String(describing: pos_key((current as! Pos)))
+    |                                                       `- warning: forced cast of 'Pos' to same type has no effect
+301 |         path = (_append(path, current) as! [Pos])
+302 |         while (!pos_equal((current as! Pos), (start as! Pos))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:302:36: warning: forced cast of 'Pos' to same type has no effect
+300 |         var key = String(describing: pos_key((current as! Pos)))
+301 |         path = (_append(path, current) as! [Pos])
+302 |         while (!pos_equal((current as! Pos), (start as! Pos))) {
+    |                                    `- warning: forced cast of 'Pos' to same type has no effect
+303 |             current = (back_pointer[String(String(describing: key))] ?? Pos() as! Pos)
+304 |             key = String(describing: pos_key((current as! Pos)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:302:53: warning: forced cast of 'Pos' to same type has no effect
+300 |         var key = String(describing: pos_key((current as! Pos)))
+301 |         path = (_append(path, current) as! [Pos])
+302 |         while (!pos_equal((current as! Pos), (start as! Pos))) {
+    |                                                     `- warning: forced cast of 'Pos' to same type has no effect
+303 |             current = (back_pointer[String(String(describing: key))] ?? Pos() as! Pos)
+304 |             key = String(describing: pos_key((current as! Pos)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:303:79: warning: forced cast of 'Pos' to same type has no effect
+301 |         path = (_append(path, current) as! [Pos])
+302 |         while (!pos_equal((current as! Pos), (start as! Pos))) {
+303 |             current = (back_pointer[String(String(describing: key))] ?? Pos() as! Pos)
+    |                                                                               `- warning: forced cast of 'Pos' to same type has no effect
+304 |             key = String(describing: pos_key((current as! Pos)))
+305 |             path = (_append(path, current) as! [Pos])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:304:55: warning: forced cast of 'Pos' to same type has no effect
+302 |         while (!pos_equal((current as! Pos), (start as! Pos))) {
+303 |             current = (back_pointer[String(String(describing: key))] ?? Pos() as! Pos)
+304 |             key = String(describing: pos_key((current as! Pos)))
+    |                                                       `- warning: forced cast of 'Pos' to same type has no effect
+305 |             path = (_append(path, current) as! [Pos])
+306 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:310:48: warning: forced cast from 'Pos?' to 'Pos' only unwraps optionals; did you mean to use '!'?
+308 |         var i = (_int(((path).count)) &- 1)
+309 |         while (i >= 0) {
+310 |             rev = (_append(rev, (_idx(path, i) as! Pos)) as! [Pos])
+    |                                                `- warning: forced cast from 'Pos?' to 'Pos' only unwraps optionals; did you mean to use '!'?
+311 |             i = _int((i &- 1))
+312 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:316:53: warning: conditional cast from 'Int' to 'Int' always succeeds
+314 |     }
+315 |     func neighbours(_ p: Pos) -> [Pos] {
+316 |         let left = Pos(x: _int((p.x &- 1)), y: (p.y as? Int ?? 0))
+    |                                                     `- warning: conditional cast from 'Int' to 'Int' always succeeds
+317 |         let right = Pos(x: _int((p.x &+ 1)), y: (p.y as? Int ?? 0))
+318 |         let up = Pos(x: (p.x as? Int ?? 0), y: _int((p.y &+ 1)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:317:54: warning: conditional cast from 'Int' to 'Int' always succeeds
+315 |     func neighbours(_ p: Pos) -> [Pos] {
+316 |         let left = Pos(x: _int((p.x &- 1)), y: (p.y as? Int ?? 0))
+317 |         let right = Pos(x: _int((p.x &+ 1)), y: (p.y as? Int ?? 0))
+    |                                                      `- warning: conditional cast from 'Int' to 'Int' always succeeds
+318 |         let up = Pos(x: (p.x as? Int ?? 0), y: _int((p.y &+ 1)))
+319 |         let down = Pos(x: (p.x as? Int ?? 0), y: _int((p.y &- 1)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:318:30: warning: conditional cast from 'Int' to 'Int' always succeeds
+316 |         let left = Pos(x: _int((p.x &- 1)), y: (p.y as? Int ?? 0))
+317 |         let right = Pos(x: _int((p.x &+ 1)), y: (p.y as? Int ?? 0))
+318 |         let up = Pos(x: (p.x as? Int ?? 0), y: _int((p.y &+ 1)))
+    |                              `- warning: conditional cast from 'Int' to 'Int' always succeeds
+319 |         let down = Pos(x: (p.x as? Int ?? 0), y: _int((p.y &- 1)))
+320 |         return ({
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:319:32: warning: conditional cast from 'Int' to 'Int' always succeeds
+317 |         let right = Pos(x: _int((p.x &+ 1)), y: (p.y as? Int ?? 0))
+318 |         let up = Pos(x: (p.x as? Int ?? 0), y: _int((p.y &+ 1)))
+319 |         let down = Pos(x: (p.x as? Int ?? 0), y: _int((p.y &- 1)))
+    |                                `- warning: conditional cast from 'Int' to 'Int' always succeeds
+320 |         return ({
+321 |             var _arr: [Pos] = []
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:327:13: warning: forced cast of '[Pos]' to same type has no effect
+325 |             _arr = _append(_arr, down)
+326 |             return _arr
+327 |         }() as! [Pos])
+    |             `- warning: forced cast of '[Pos]' to same type has no effect
+328 |     }
+329 |     func multi_a_star(_ start: Pos, _ goal: Pos, _ n_heuristic: Int) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:334:73: warning: forced cast of 'Pos' to same type has no effect
+332 |         var visited: [String: Bool] = ([:] as! [String: Bool])
+333 |         var open_list: [[PQNode]] = ([] as! [[PQNode]])
+334 |         g_function = _set(g_function, String(describing: pos_key((start as! Pos))), 0.0)
+    |                                                                         `- warning: forced cast of 'Pos' to same type has no effect
+335 |         g_function = _set(g_function, String(describing: pos_key((goal as! Pos))), Double(INF))
+336 |         back_pointer = _set(back_pointer, String(describing: pos_key((start as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:335:72: warning: forced cast of 'Pos' to same type has no effect
+333 |         var open_list: [[PQNode]] = ([] as! [[PQNode]])
+334 |         g_function = _set(g_function, String(describing: pos_key((start as! Pos))), 0.0)
+335 |         g_function = _set(g_function, String(describing: pos_key((goal as! Pos))), Double(INF))
+    |                                                                        `- warning: forced cast of 'Pos' to same type has no effect
+336 |         back_pointer = _set(back_pointer, String(describing: pos_key((start as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+337 |         back_pointer = _set(back_pointer, String(describing: pos_key((goal as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:336:77: warning: forced cast of 'Pos' to same type has no effect
+334 |         g_function = _set(g_function, String(describing: pos_key((start as! Pos))), 0.0)
+335 |         g_function = _set(g_function, String(describing: pos_key((goal as! Pos))), Double(INF))
+336 |         back_pointer = _set(back_pointer, String(describing: pos_key((start as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+    |                                                                             `- warning: forced cast of 'Pos' to same type has no effect
+337 |         back_pointer = _set(back_pointer, String(describing: pos_key((goal as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+338 |         visited = _set(visited, String(describing: pos_key((start as! Pos))), true)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:336:120: warning: forced cast of 'Pos' to same type has no effect
+334 |         g_function = _set(g_function, String(describing: pos_key((start as! Pos))), 0.0)
+335 |         g_function = _set(g_function, String(describing: pos_key((goal as! Pos))), Double(INF))
+336 |         back_pointer = _set(back_pointer, String(describing: pos_key((start as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+    |                                                                                                                        `- warning: forced cast of 'Pos' to same type has no effect
+337 |         back_pointer = _set(back_pointer, String(describing: pos_key((goal as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+338 |         visited = _set(visited, String(describing: pos_key((start as! Pos))), true)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:337:76: warning: forced cast of 'Pos' to same type has no effect
+335 |         g_function = _set(g_function, String(describing: pos_key((goal as! Pos))), Double(INF))
+336 |         back_pointer = _set(back_pointer, String(describing: pos_key((start as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+337 |         back_pointer = _set(back_pointer, String(describing: pos_key((goal as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+    |                                                                            `- warning: forced cast of 'Pos' to same type has no effect
+338 |         visited = _set(visited, String(describing: pos_key((start as! Pos))), true)
+339 |         var i = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:337:119: warning: forced cast of 'Pos' to same type has no effect
+335 |         g_function = _set(g_function, String(describing: pos_key((goal as! Pos))), Double(INF))
+336 |         back_pointer = _set(back_pointer, String(describing: pos_key((start as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+337 |         back_pointer = _set(back_pointer, String(describing: pos_key((goal as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+    |                                                                                                                       `- warning: forced cast of 'Pos' to same type has no effect
+338 |         visited = _set(visited, String(describing: pos_key((start as! Pos))), true)
+339 |         var i = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:338:67: warning: forced cast of 'Pos' to same type has no effect
+336 |         back_pointer = _set(back_pointer, String(describing: pos_key((start as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+337 |         back_pointer = _set(back_pointer, String(describing: pos_key((goal as! Pos))), (Pos(x: _int(-1), y: _int(-1)) as! Pos))
+338 |         visited = _set(visited, String(describing: pos_key((start as! Pos))), true)
+    |                                                                   `- warning: forced cast of 'Pos' to same type has no effect
+339 |         var i = 0
+340 |         while (i < n_heuristic) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:341:82: warning: forced cast from '[[PQNode]]' to '[Any?]' always succeeds; did you mean to use 'as'?
+339 |         var i = 0
+340 |         while (i < n_heuristic) {
+341 |             open_list = (((_append(open_list, ([] as! [PQNode])) as! [[PQNode]]) as! [Any?]) as! [[PQNode]])
+    |                                                                                  `- warning: forced cast from '[[PQNode]]' to '[Any?]' always succeeds; did you mean to use 'as'?
+342 |             let pri = Double(key_fn((start as! Pos), i, (goal as! Pos), (g_function as! [String: Double])))
+343 |             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (start as! Pos), Double(pri)) as! [PQNode]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:342:44: warning: forced cast of 'Pos' to same type has no effect
+340 |         while (i < n_heuristic) {
+341 |             open_list = (((_append(open_list, ([] as! [PQNode])) as! [[PQNode]]) as! [Any?]) as! [[PQNode]])
+342 |             let pri = Double(key_fn((start as! Pos), i, (goal as! Pos), (g_function as! [String: Double])))
+    |                                            `- warning: forced cast of 'Pos' to same type has no effect
+343 |             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (start as! Pos), Double(pri)) as! [PQNode]))
+344 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:342:63: warning: forced cast of 'Pos' to same type has no effect
+340 |         while (i < n_heuristic) {
+341 |             open_list = (((_append(open_list, ([] as! [PQNode])) as! [[PQNode]]) as! [Any?]) as! [[PQNode]])
+342 |             let pri = Double(key_fn((start as! Pos), i, (goal as! Pos), (g_function as! [String: Double])))
+    |                                                               `- warning: forced cast of 'Pos' to same type has no effect
+343 |             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (start as! Pos), Double(pri)) as! [PQNode]))
+344 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:342:85: warning: forced cast of '[String : Double]' to same type has no effect
+340 |         while (i < n_heuristic) {
+341 |             open_list = (((_append(open_list, ([] as! [PQNode])) as! [[PQNode]]) as! [Any?]) as! [[PQNode]])
+342 |             let pri = Double(key_fn((start as! Pos), i, (goal as! Pos), (g_function as! [String: Double])))
+    |                                                                                     `- warning: forced cast of '[String : Double]' to same type has no effect
+343 |             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (start as! Pos), Double(pri)) as! [PQNode]))
+344 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:343:52: error: value of optional type '[PQNode]?' must be unwrapped to a value of type '[PQNode]'
+341 |             open_list = (((_append(open_list, ([] as! [PQNode])) as! [[PQNode]]) as! [Any?]) as! [[PQNode]])
+342 |             let pri = Double(key_fn((start as! Pos), i, (goal as! Pos), (g_function as! [String: Double])))
+343 |             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (start as! Pos), Double(pri)) as! [PQNode]))
+    |                                                    |- error: value of optional type '[PQNode]?' must be unwrapped to a value of type '[PQNode]'
+    |                                                    `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+344 |             i = _int((i &+ 1))
+345 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:343:52: error: cannot pass immutable value as inout argument: '_idx' returns immutable value
+341 |             open_list = (((_append(open_list, ([] as! [PQNode])) as! [[PQNode]]) as! [Any?]) as! [[PQNode]])
+342 |             let pri = Double(key_fn((start as! Pos), i, (goal as! Pos), (g_function as! [String: Double])))
+343 |             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (start as! Pos), Double(pri)) as! [PQNode]))
+    |                                                    `- error: cannot pass immutable value as inout argument: '_idx' returns immutable value
+344 |             i = _int((i &+ 1))
+345 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:343:80: warning: forced cast of 'Pos' to same type has no effect
+341 |             open_list = (((_append(open_list, ([] as! [PQNode])) as! [[PQNode]]) as! [Any?]) as! [[PQNode]])
+342 |             let pri = Double(key_fn((start as! Pos), i, (goal as! Pos), (g_function as! [String: Double])))
+343 |             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (start as! Pos), Double(pri)) as! [PQNode]))
+    |                                                                                `- warning: forced cast of 'Pos' to same type has no effect
+344 |             i = _int((i &+ 1))
+345 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:343:103: warning: forced cast of '[PQNode]' to same type has no effect
+341 |             open_list = (((_append(open_list, ([] as! [PQNode])) as! [[PQNode]]) as! [Any?]) as! [[PQNode]])
+342 |             let pri = Double(key_fn((start as! Pos), i, (goal as! Pos), (g_function as! [String: Double])))
+343 |             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (start as! Pos), Double(pri)) as! [PQNode]))
+    |                                                                                                       `- warning: forced cast of '[PQNode]' to same type has no effect
+344 |             i = _int((i &+ 1))
+345 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:346:53: warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+344 |             i = _int((i &+ 1))
+345 |         }
+346 |         while (Double(pq_minkey((_idx(open_list, 0) as! [PQNode]))) < INF) {
+    |                                                     `- warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+347 |             var chosen = 0
+348 |             i = 1
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:350:58: warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+348 |             i = 1
+349 |             while (i < n_heuristic) {
+350 |                 if (Double(pq_minkey((_idx(open_list, i) as! [PQNode]))) <= (W2 * Double(pq_minkey((_idx(open_list, 0) as! [PQNode]))))) {
+    |                                                          `- warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+351 |                     chosen = Int(i)
+352 |                     break
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:350:120: warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+348 |             i = 1
+349 |             while (i < n_heuristic) {
+350 |                 if (Double(pq_minkey((_idx(open_list, i) as! [PQNode]))) <= (W2 * Double(pq_minkey((_idx(open_list, 0) as! [PQNode]))))) {
+    |                                                                                                                        `- warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+351 |                     chosen = Int(i)
+352 |                     break
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:359:60: warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+357 |                 t = _int((t &+ 1))
+358 |             }
+359 |             var pair = pq_pop_min((_idx(open_list, chosen) as! [PQNode]))
+    |                                                            `- warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+360 |             open_list = _set(open_list, chosen, (pair.pq as! [PQNode]))
+361 |             let current = pair.node
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:360:58: warning: forced cast of '[PQNode]' to same type has no effect
+358 |             }
+359 |             var pair = pq_pop_min((_idx(open_list, chosen) as! [PQNode]))
+360 |             open_list = _set(open_list, chosen, (pair.pq as! [PQNode]))
+    |                                                          `- warning: forced cast of '[PQNode]' to same type has no effect
+361 |             let current = pair.node
+362 |             i = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:365:83: warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+363 |             while (i < n_heuristic) {
+364 |                 if (i != chosen) {
+365 |                     open_list = _set(open_list, i, (pq_remove((_idx(open_list, i) as! [PQNode]), (current.pos as! Pos)) as! [PQNode]))
+    |                                                                                   `- warning: forced cast from '[PQNode]?' to '[PQNode]' only unwraps optionals; did you mean to use '!'?
+366 |                 }
+367 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:365:111: warning: forced cast of 'Pos' to same type has no effect
+363 |             while (i < n_heuristic) {
+364 |                 if (i != chosen) {
+365 |                     open_list = _set(open_list, i, (pq_remove((_idx(open_list, i) as! [PQNode]), (current.pos as! Pos)) as! [PQNode]))
+    |                                                                                                               `- warning: forced cast of 'Pos' to same type has no effect
+366 |                 }
+367 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:365:121: warning: forced cast of '[PQNode]' to same type has no effect
+363 |             while (i < n_heuristic) {
+364 |                 if (i != chosen) {
+365 |                     open_list = _set(open_list, i, (pq_remove((_idx(open_list, i) as! [PQNode]), (current.pos as! Pos)) as! [PQNode]))
+    |                                                                                                                         `- warning: forced cast of '[PQNode]' to same type has no effect
+366 |                 }
+367 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:369:64: warning: forced cast of 'Pos' to same type has no effect
+367 |                 i = _int((i &+ 1))
+368 |             }
+369 |             let ckey = String(describing: pos_key((current.pos as! Pos)))
+    |                                                                `- warning: forced cast of 'Pos' to same type has no effect
+370 |             if (visited[ckey] != nil) {
+371 |                 continue
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:374:39: warning: forced cast of 'Pos' to same type has no effect
+372 |             }
+373 |             visited = _set(visited, String(describing: ckey), true)
+374 |             if pos_equal((current.pos as! Pos), (goal as! Pos)) {
+    |                                       `- warning: forced cast of 'Pos' to same type has no effect
+375 |                 let path: [Pos] = (reconstruct((back_pointer as! [String: Pos]), (goal as! Pos), (start as! Pos)) as! [Pos])
+376 |                 var j = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:374:55: warning: forced cast of 'Pos' to same type has no effect
+372 |             }
+373 |             visited = _set(visited, String(describing: ckey), true)
+374 |             if pos_equal((current.pos as! Pos), (goal as! Pos)) {
+    |                                                       `- warning: forced cast of 'Pos' to same type has no effect
+375 |                 let path: [Pos] = (reconstruct((back_pointer as! [String: Pos]), (goal as! Pos), (start as! Pos)) as! [Pos])
+376 |                 var j = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:375:62: warning: forced cast of '[String : Pos]' to same type has no effect
+373 |             visited = _set(visited, String(describing: ckey), true)
+374 |             if pos_equal((current.pos as! Pos), (goal as! Pos)) {
+375 |                 let path: [Pos] = (reconstruct((back_pointer as! [String: Pos]), (goal as! Pos), (start as! Pos)) as! [Pos])
+    |                                                              `- warning: forced cast of '[String : Pos]' to same type has no effect
+376 |                 var j = 0
+377 |                 while (j < _int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:375:88: warning: forced cast of 'Pos' to same type has no effect
+373 |             visited = _set(visited, String(describing: ckey), true)
+374 |             if pos_equal((current.pos as! Pos), (goal as! Pos)) {
+375 |                 let path: [Pos] = (reconstruct((back_pointer as! [String: Pos]), (goal as! Pos), (start as! Pos)) as! [Pos])
+    |                                                                                        `- warning: forced cast of 'Pos' to same type has no effect
+376 |                 var j = 0
+377 |                 while (j < _int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:375:105: warning: forced cast of 'Pos' to same type has no effect
+373 |             visited = _set(visited, String(describing: ckey), true)
+374 |             if pos_equal((current.pos as! Pos), (goal as! Pos)) {
+375 |                 let path: [Pos] = (reconstruct((back_pointer as! [String: Pos]), (goal as! Pos), (start as! Pos)) as! [Pos])
+    |                                                                                                         `- warning: forced cast of 'Pos' to same type has no effect
+376 |                 var j = 0
+377 |                 while (j < _int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:375:115: warning: forced cast of '[Pos]' to same type has no effect
+373 |             visited = _set(visited, String(describing: ckey), true)
+374 |             if pos_equal((current.pos as! Pos), (goal as! Pos)) {
+375 |                 let path: [Pos] = (reconstruct((back_pointer as! [String: Pos]), (goal as! Pos), (start as! Pos)) as! [Pos])
+    |                                                                                                                   `- warning: forced cast of '[Pos]' to same type has no effect
+376 |                 var j = 0
+377 |                 while (j < _int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:378:44: warning: forced cast from 'Pos?' to 'Pos' only unwraps optionals; did you mean to use '!'?
+376 |                 var j = 0
+377 |                 while (j < _int(((path).count))) {
+378 |                     let p = (_idx(path, j) as! Pos)
+    |                                            `- warning: forced cast from 'Pos?' to 'Pos' only unwraps optionals; did you mean to use '!'?
+379 |                     print(_p((((("(" + _p(p.x)) + ",") + _p(p.y)) + ")")))
+380 |                     j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:384:58: warning: forced cast of 'Pos' to same type has no effect
+382 |                 return
+383 |             }
+384 |             let neighs: [Pos] = (neighbours((current.pos as! Pos)) as! [Pos])
+    |                                                          `- warning: forced cast of 'Pos' to same type has no effect
+385 |             var k = 0
+386 |             while (k < _int(((neighs).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:384:68: warning: forced cast of '[Pos]' to same type has no effect
+382 |                 return
+383 |             }
+384 |             let neighs: [Pos] = (neighbours((current.pos as! Pos)) as! [Pos])
+    |                                                                    `- warning: forced cast of '[Pos]' to same type has no effect
+385 |             var k = 0
+386 |             while (k < _int(((neighs).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:387:43: warning: forced cast from 'Pos?' to 'Pos' only unwraps optionals; did you mean to use '!'?
+385 |             var k = 0
+386 |             while (k < _int(((neighs).count))) {
+387 |                 let nb = (_idx(neighs, k) as! Pos)
+    |                                           `- warning: forced cast from 'Pos?' to 'Pos' only unwraps optionals; did you mean to use '!'?
+388 |                 if (valid((nb as! Pos)) && (in_blocks((nb as! Pos)) == false)) {
+389 |                     let nkey = String(describing: pos_key((nb as! Pos)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:388:31: warning: forced cast of 'Pos' to same type has no effect
+386 |             while (k < _int(((neighs).count))) {
+387 |                 let nb = (_idx(neighs, k) as! Pos)
+388 |                 if (valid((nb as! Pos)) && (in_blocks((nb as! Pos)) == false)) {
+    |                               `- warning: forced cast of 'Pos' to same type has no effect
+389 |                     let nkey = String(describing: pos_key((nb as! Pos)))
+390 |                     let tentative = (Double(g_function[String(String(describing: ckey))] ?? 0.0) + 1.0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:388:59: warning: forced cast of 'Pos' to same type has no effect
+386 |             while (k < _int(((neighs).count))) {
+387 |                 let nb = (_idx(neighs, k) as! Pos)
+388 |                 if (valid((nb as! Pos)) && (in_blocks((nb as! Pos)) == false)) {
+    |                                                           `- warning: forced cast of 'Pos' to same type has no effect
+389 |                     let nkey = String(describing: pos_key((nb as! Pos)))
+390 |                     let tentative = (Double(g_function[String(String(describing: ckey))] ?? 0.0) + 1.0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:389:63: warning: forced cast of 'Pos' to same type has no effect
+387 |                 let nb = (_idx(neighs, k) as! Pos)
+388 |                 if (valid((nb as! Pos)) && (in_blocks((nb as! Pos)) == false)) {
+389 |                     let nkey = String(describing: pos_key((nb as! Pos)))
+    |                                                               `- warning: forced cast of 'Pos' to same type has no effect
+390 |                     let tentative = (Double(g_function[String(String(describing: ckey))] ?? 0.0) + 1.0)
+391 |                     if ((!(g_function[nkey] != nil)) || (tentative < Double(g_function[String(String(describing: nkey))] ?? 0.0))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:393:98: warning: forced cast of 'Pos' to same type has no effect
+391 |                     if ((!(g_function[nkey] != nil)) || (tentative < Double(g_function[String(String(describing: nkey))] ?? 0.0))) {
+392 |                         g_function = _set(g_function, String(describing: nkey), Double(tentative))
+393 |                         back_pointer = _set(back_pointer, String(describing: nkey), (current.pos as! Pos))
+    |                                                                                                  `- warning: forced cast of 'Pos' to same type has no effect
+394 |                         i = 0
+395 |                         while (i < n_heuristic) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:396:83: warning: forced cast of 'Pos' to same type has no effect
+394 |                         i = 0
+395 |                         while (i < n_heuristic) {
+396 |                             let pri2 = (tentative + (W1 * Double(heuristic(i, (nb as! Pos), (goal as! Pos)))))
+    |                                                                                   `- warning: forced cast of 'Pos' to same type has no effect
+397 |                             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (nb as! Pos), Double(pri2)) as! [PQNode]))
+398 |                             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:396:99: warning: forced cast of 'Pos' to same type has no effect
+394 |                         i = 0
+395 |                         while (i < n_heuristic) {
+396 |                             let pri2 = (tentative + (W1 * Double(heuristic(i, (nb as! Pos), (goal as! Pos)))))
+    |                                                                                                   `- warning: forced cast of 'Pos' to same type has no effect
+397 |                             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (nb as! Pos), Double(pri2)) as! [PQNode]))
+398 |                             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:397:68: error: value of optional type '[PQNode]?' must be unwrapped to a value of type '[PQNode]'
+395 |                         while (i < n_heuristic) {
+396 |                             let pri2 = (tentative + (W1 * Double(heuristic(i, (nb as! Pos), (goal as! Pos)))))
+397 |                             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (nb as! Pos), Double(pri2)) as! [PQNode]))
+    |                                                                    |- error: value of optional type '[PQNode]?' must be unwrapped to a value of type '[PQNode]'
+    |                                                                    `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+398 |                             i = _int((i &+ 1))
+399 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:397:68: error: cannot pass immutable value as inout argument: '_idx' returns immutable value
+395 |                         while (i < n_heuristic) {
+396 |                             let pri2 = (tentative + (W1 * Double(heuristic(i, (nb as! Pos), (goal as! Pos)))))
+397 |                             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (nb as! Pos), Double(pri2)) as! [PQNode]))
+    |                                                                    `- error: cannot pass immutable value as inout argument: '_idx' returns immutable value
+398 |                             i = _int((i &+ 1))
+399 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:397:93: warning: forced cast of 'Pos' to same type has no effect
+395 |                         while (i < n_heuristic) {
+396 |                             let pri2 = (tentative + (W1 * Double(heuristic(i, (nb as! Pos), (goal as! Pos)))))
+397 |                             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (nb as! Pos), Double(pri2)) as! [PQNode]))
+    |                                                                                             `- warning: forced cast of 'Pos' to same type has no effect
+398 |                             i = _int((i &+ 1))
+399 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:397:117: warning: forced cast of '[PQNode]' to same type has no effect
+395 |                         while (i < n_heuristic) {
+396 |                             let pri2 = (tentative + (W1 * Double(heuristic(i, (nb as! Pos), (goal as! Pos)))))
+397 |                             open_list = _set(open_list, i, (pq_put(&_idx(open_list, i), (nb as! Pos), Double(pri2)) as! [PQNode]))
+    |                                                                                                                     `- warning: forced cast of '[PQNode]' to same type has no effect
+398 |                             i = _int((i &+ 1))
+399 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:409:29: warning: forced cast of 'Pos' to same type has no effect
+407 |     let start = Pos(x: 0, y: 0)
+408 |     let goal = Pos(x: _int((n &- 1)), y: _int((n &- 1)))
+409 |     _ = multi_a_star((start as! Pos), (goal as! Pos), n_heuristic)
+    |                             `- warning: forced cast of 'Pos' to same type has no effect
+410 |     let _benchEnd = _now()
+411 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:409:45: warning: forced cast of 'Pos' to same type has no effect
+407 |     let start = Pos(x: 0, y: 0)
+408 |     let goal = Pos(x: _int((n &- 1)), y: _int((n &- 1)))
+409 |     _ = multi_a_star((start as! Pos), (goal as! Pos), n_heuristic)
+    |                                             `- warning: forced cast of 'Pos' to same type has no effect
+410 |     let _benchEnd = _now()
+411 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden447_graphs_multi_heuristic_astar3893073705/001/main.swift:409:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+407 |     let start = Pos(x: 0, y: 0)
+408 |     let goal = Pos(x: _int((n &- 1)), y: _int((n &- 1)))
+409 |     _ = multi_a_star((start as! Pos), (goal as! Pos), n_heuristic)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+410 |     let _benchEnd = _now()
+411 |     let _benchMemEnd = _mem()

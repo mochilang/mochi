@@ -1201,7 +1201,7 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "])")
 		return
 	}
-	if !ie.Force && !ie.KeyString && !ie.KeyAny && !ie.Map {
+	if !ie.KeyString && !ie.KeyAny && !ie.Map {
 		fmt.Fprint(w, "_idx(")
 		if be, ok := ie.Base.(*IndexExpr); ok {
 			be.emit(w)
@@ -1212,8 +1212,14 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ", ")
 		ie.Index.emit(w)
 		fmt.Fprint(w, ")")
+		if ie.Force {
+			fmt.Fprint(w, "!")
+		}
 		usesIndex = true
 		return
+	}
+	if ie.Map && !ie.Force {
+		fmt.Fprint(w, "(")
 	}
 	ie.Base.emit(w)
 	fmt.Fprint(w, "[")
@@ -1238,6 +1244,7 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		} else {
 			fmt.Fprint(w, "nil")
 		}
+		fmt.Fprint(w, ")")
 	}
 }
 
@@ -1587,7 +1594,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "\"\"")
 		}
 		return
-	case "int":
+	case "int", "toi":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "_int(")
 			c.Args[0].emit(w)
@@ -4486,7 +4493,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				} else if l, ok := baseType.(types.ListType); ok {
 					baseType = l.Elem
 					if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
+						force = true
 						if _, ok2 := baseType.(types.ListType); ok2 {
+							skipUpdate = true
+						} else if _, ok2 := baseType.(types.MapType); ok2 {
 							skipUpdate = true
 						}
 					}
@@ -4538,6 +4548,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					if !force {
 						def = zeroValue(parserTypeRefFromType(mt.Value))
 					}
+					// Map lookups should not be treated as string indexing
+					isStr = false
 				} else if lt, ok := origBaseType.(types.ListType); ok {
 					if env != nil {
 						if idxT := types.TypeOfExpr(op.Index.Start, env); types.IsAnyType(idxT) {
