@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-14 16:38 GMT+7
+Last updated: 2025-08-14 17:22 GMT+7
 
-## Algorithms Golden Test Checklist (1039/1077)
+## Algorithms Golden Test Checklist (1040/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -407,56 +407,56 @@ Last updated: 2025-08-14 16:38 GMT+7
 | 398 | graphs/bellman_ford | ✓ | 93µs | 1.8 KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 186µs | 5.1 KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 4.86ms | 5.0 KB |
-| 401 | graphs/bidirectional_breadth_first_search | ✓ | 2.765ms | 4.3 KB |
-| 402 | graphs/bidirectional_search | ✓ | 241µs | 1.2 KB |
-| 403 | graphs/boruvka | error |  |  |
-| 404 | graphs/breadth_first_search | ✓ |  |  |
-| 405 | graphs/breadth_first_search_2 | ✓ | 147µs | 1.8 KB |
-| 406 | graphs/breadth_first_search_shortest_path | ✓ | 69µs | 2.6 KB |
-| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 5µs | 1.4 KB |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 294µs | 3.6 KB |
-| 409 | graphs/check_bipatrite | ✓ | 72µs | 1.3 KB |
-| 410 | graphs/check_cycle | ✓ | 117µs | 2.0 KB |
-| 411 | graphs/connected_components | ✓ | 240µs | 3.7 KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 2.262ms | 4.3 KB |
+| 402 | graphs/bidirectional_search | ✓ | 337µs | 1.3 KB |
+| 403 | graphs/boruvka | ✓ | 356µs | 1.2 KB |
+| 404 | graphs/breadth_first_search | ✓ | 196µs | 1.4 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 192µs | 1.8 KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 68µs | 2.6 KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 4µs | 1.4 KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 453µs | 3.6 KB |
+| 409 | graphs/check_bipatrite | ✓ | 82µs | 1.3 KB |
+| 410 | graphs/check_cycle | ✓ | 183µs | 2.0 KB |
+| 411 | graphs/connected_components | ✓ | 335µs | 3.7 KB |
 | 412 | graphs/deep_clone_graph | error |  |  |
-| 413 | graphs/depth_first_search | ✓ | 70µs | 2.3 KB |
-| 414 | graphs/depth_first_search_2 | ✓ | 149µs | 1.9 KB |
-| 415 | graphs/dijkstra | ✓ | 186µs | 8.4 KB |
-| 416 | graphs/dijkstra_2 | ✓ | 79µs | 1.0 KB |
-| 417 | graphs/dijkstra_algorithm | ✓ | 93µs | 2.7 KB |
-| 418 | graphs/dijkstra_alternate | ✓ | 177µs | 3.2 KB |
-| 419 | graphs/dijkstra_binary_grid | ✓ | 252µs | 1.8 KB |
-| 420 | graphs/dinic | ✓ | 669µs | 7.6 KB |
-| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 373µs | 3.8 KB |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 106µs | 1.5 KB |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 451µs | 5.3 KB |
-| 424 | graphs/even_tree | ✓ | 113µs | 3.6 KB |
-| 425 | graphs/finding_bridges | ✓ | 225µs | 5.0 KB |
-| 426 | graphs/frequent_pattern_graph_miner | ✓ | 983µs | 9.2 KB |
-| 427 | graphs/g_topological_sort | ✓ | 185µs | 2.6 KB |
-| 428 | graphs/gale_shapley_bigraph | ✓ | 145µs | 2.1 KB |
-| 429 | graphs/graph_adjacency_list | ✓ | 125µs | 1.5 KB |
-| 430 | graphs/graph_adjacency_matrix | ✓ | 175µs | 1.8 KB |
-| 431 | graphs/graph_list | ✓ | 233µs | 2.0 KB |
-| 432 | graphs/graphs_floyd_warshall | ✓ | 105µs | 2.0 KB |
-| 433 | graphs/greedy_best_first | ✓ | 1.526ms | 5.3 KB |
-| 434 | graphs/greedy_min_vertex_cover | ✓ | 198µs | 1.4 KB |
-| 435 | graphs/kahns_algorithm_long | ✓ | 114µs | 1.6 KB |
-| 436 | graphs/kahns_algorithm_topo | ✓ | 145µs | 1.0 KB |
-| 437 | graphs/karger | ✓ | 394µs | 3.6 KB |
-| 438 | graphs/lanczos_eigenvectors | ✓ | 160µs | 2.6 KB |
-| 439 | graphs/markov_chain | ✓ | 1.372ms | 1.2 KB |
-| 440 | graphs/matching_min_vertex_cover | ✓ | 109µs | 1.8 KB |
-| 441 | graphs/minimum_path_sum | ✓ | 131µs | 2.1 KB |
-| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 87µs | 1.1 KB |
-| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 291µs | 2.8 KB |
-| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 145µs | 1.3 KB |
-| 445 | graphs/minimum_spanning_tree_prims | ✓ | 161µs | 4.1 KB |
-| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 139µs | 2.5 KB |
-| 447 | graphs/multi_heuristic_astar | ✓ | 186µs | 4.2 KB |
-| 448 | graphs/page_rank | ✓ | 635µs | 2.5 KB |
-| 449 | graphs/prim | ✓ | 509µs | 1.2 KB |
-| 450 | graphs/random_graph_generator | ✓ | 167µs | 1.1 KB |
+| 413 | graphs/depth_first_search | ✓ | 122µs | 2.3 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 250µs | 1.9 KB |
+| 415 | graphs/dijkstra | ✓ | 352µs | 8.4 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 110µs | 1.0 KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 147µs | 2.7 KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 301µs | 3.2 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 441µs | 1.8 KB |
+| 420 | graphs/dinic | ✓ | 1.409ms | 7.6 KB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 590µs | 3.8 KB |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 171µs | 1.5 KB |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 699µs | 5.3 KB |
+| 424 | graphs/even_tree | ✓ | 249µs | 3.6 KB |
+| 425 | graphs/finding_bridges | ✓ | 442µs | 5.0 KB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 1.514ms | 9.2 KB |
+| 427 | graphs/g_topological_sort | ✓ | 332µs | 2.6 KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 242µs | 2.1 KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 208µs | 1.5 KB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 247µs | 1.8 KB |
+| 431 | graphs/graph_list | ✓ | 292µs | 2.0 KB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 207µs | 2.0 KB |
+| 433 | graphs/greedy_best_first | ✓ | 2.927ms | 5.3 KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 186µs | 1.4 KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 135µs | 1.6 KB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 200µs | 1.0 KB |
+| 437 | graphs/karger | ✓ | 663µs | 3.6 KB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 323µs | 2.6 KB |
+| 439 | graphs/markov_chain | ✓ | 1.794ms | 1.2 KB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 218µs | 1.8 KB |
+| 441 | graphs/minimum_path_sum | ✓ | 181µs | 2.1 KB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 177µs | 1.1 KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 388µs | 2.8 KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 171µs | 1.3 KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 236µs | 4.1 KB |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 249µs | 2.5 KB |
+| 447 | graphs/multi_heuristic_astar | ✓ | 172µs | 4.2 KB |
+| 448 | graphs/page_rank | ✓ | 281µs | 2.5 KB |
+| 449 | graphs/prim | ✓ | 305µs | 1.2 KB |
+| 450 | graphs/random_graph_generator | ✓ | 105µs | 1.1 KB |
 | 451 | graphs/scc_kosaraju | ✓ | 284µs | 2.5 KB |
 | 452 | graphs/strongly_connected_components | ✓ | 415µs | 2.5 KB |
 | 453 | graphs/tarjans_scc | ✓ | 307µs | 2.4 KB |

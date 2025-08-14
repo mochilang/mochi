@@ -818,8 +818,10 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "append":
-		// Mutate the list in place so that existing references remain valid.
-		io.WriteString(w, "(function(lst, item)\n  lst = lst or {}\n  table.insert(lst, item)\n  return lst\nend)(")
+		// Append returns a new list leaving the original unmodified.
+		// This mirrors Mochi's semantics where lists are immutable and
+		// operations produce copies rather than mutating in place.
+		io.WriteString(w, "(function(lst, item)\n  local res = {table.unpack(lst or {})}\n  res[#res+1] = item\n  return res\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
