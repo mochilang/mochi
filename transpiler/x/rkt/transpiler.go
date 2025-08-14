@@ -338,17 +338,13 @@ func (l *ListMapAssignStmt) emit(w io.Writer) {
 
 func (l *ListFieldAssignStmt) emit(w io.Writer) {
 	name := sanitizeName(l.Name)
-	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
-	l.Index.emit(w)
-	io.WriteString(w, " (hash-set (list-ref ")
-	io.WriteString(w, name)
-	io.WriteString(w, " ")
+	fmt.Fprintf(w, "(hash-set! (list-ref %s ", name)
 	l.Index.emit(w)
 	io.WriteString(w, ") \"")
 	io.WriteString(w, l.Field)
 	io.WriteString(w, "\" ")
 	l.Expr.emit(w)
-	io.WriteString(w, ")))\n")
+	io.WriteString(w, ")\n")
 }
 
 type ExprStmt struct{ Expr Expr }
