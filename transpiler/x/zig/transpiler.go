@@ -2227,6 +2227,43 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 }
 
 func (j *JSONStmt) emit(w io.Writer, indent int) {
+	typ := zigTypeFromExpr(j.Value)
+	if strings.HasPrefix(typ, "std.StringHashMap(") {
+		mapName := uniqueName("__m")
+		itName := uniqueName("__it")
+		firstName := uniqueName("__first")
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "const %s = ", mapName)
+		if j.Value != nil {
+			j.Value.emit(w)
+		} else {
+			io.WriteString(w, "std.StringHashMap(void).init(std.heap.page_allocator)")
+		}
+		io.WriteString(w, ";\n")
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "var %s = %s.iterator();\n", itName, mapName)
+		writeIndent(w, indent)
+		io.WriteString(w, "std.debug.print(\"{{\", .{});\n")
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "var %s = true;\n", firstName)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "while (%s.next()) |entry| {\n", itName)
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "if (!%s) std.debug.print(\",\", .{});\n", firstName)
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "%s = false;\n", firstName)
+		writeIndent(w, indent+1)
+		io.WriteString(w, "std.debug.print(\"\\\"{s}\\\":\", .{entry.key_ptr.*});\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "const __v = std.json.stringifyAlloc(std.heap.page_allocator, entry.value_ptr.*, .{}) catch unreachable;\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "std.debug.print(\"{s}\", .{__v});\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "std.debug.print(\"}}\\n\", .{});\n")
+		return
+	}
 	name := uniqueName("__j")
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "const %s = std.json.stringifyAlloc(std.heap.page_allocator, ", name)
@@ -3395,16 +3432,9 @@ func (c *CallExpr) emit(w io.Writer) {
 				if exp != at {
 					switch {
 					case strings.HasPrefix(exp, "*") && !strings.HasPrefix(at, "*"):
-						if v, ok := a.(*VarRef); ok {
-							if vd, ok2 := varDecls[v.Name]; ok2 && !vd.Mutable {
-								io.WriteString(w, "@constCast(&")
-								a.emit(w)
-								io.WriteString(w, ")")
-								break
-							}
-						}
-						io.WriteString(w, "&")
+						io.WriteString(w, "@constCast(&")
 						a.emit(w)
+						io.WriteString(w, ")")
 					case at == "Value":
 						a.emit(w)
 						io.WriteString(w, valueAccess(exp))
@@ -4085,6 +4115,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "main" && mainFuncName != "" {
 			name = mainFuncName
 		}
+		name = resolveAlias(name)
 		if extra, ok := nestedFunArgs[name]; ok {
 			pre := make([]Expr, len(extra))
 			for i, n := range extra {
@@ -4953,7 +4984,11 @@ func toZigType(t *parser.TypeRef) string {
 	if t.Fun != nil {
 		params := make([]string, len(t.Fun.Params))
 		for i, p := range t.Fun.Params {
-			params[i] = toZigType(p)
+			pt := toZigType(p)
+			if !strings.HasPrefix(pt, "*") && !strings.HasPrefix(pt, "[]") && !isIntType(pt) && pt != "f64" && pt != "bool" && pt != "Value" {
+				pt = "*" + pt
+			}
+			params[i] = pt
 		}
 		ret := "void"
 		if t.Fun.Return != nil {
@@ -5190,6 +5225,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if s.Let.Name == "_" {
+				return &ExprStmt{Expr: expr}, nil
+			}
 			if _, ok := expr.(*FieldExpr); ok {
 				if str, ok := exprToString(expr); ok {
 					t := zigTypeFromExpr(expr)
@@ -5205,6 +5243,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				}
 			}
 		} else {
+			if s.Let.Name == "_" {
+				return nil, nil
+			}
 			if s.Let.Type != nil && toZigType(s.Let.Type) == "[]const u8" {
 				expr = &StringLit{Value: ""}
 			} else {
