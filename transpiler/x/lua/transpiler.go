@@ -1265,15 +1265,44 @@ func (fi *ForInStmt) emit(w io.Writer) {
 		io.WriteString(w, idx)
 		io.WriteString(w, ")\n")
 	} else {
-		io.WriteString(w, "for ")
 		if isMapExpr(fi.Iterable) {
-			io.WriteString(w, sanitizeName(fi.Name))
-			io.WriteString(w, " in pairs(")
-		} else {
-			io.WriteString(w, "_, ")
-			io.WriteString(w, sanitizeName(fi.Name))
+			name := sanitizeName(fi.Name)
+			tmp := fmt.Sprintf("_k%d", loopCounter)
+			loopCounter++
+			io.WriteString(w, "local ")
+			io.WriteString(w, tmp)
+			io.WriteString(w, " = {}\n")
+			io.WriteString(w, "for k in pairs(")
+			if fi.Iterable != nil {
+				fi.Iterable.emit(w)
+			}
+			io.WriteString(w, ") do if k ~= '__name' and k ~= '__order' then table.insert(")
+			io.WriteString(w, tmp)
+			io.WriteString(w, ", k) end end\n")
+			io.WriteString(w, "table.sort(")
+			io.WriteString(w, tmp)
+			io.WriteString(w, ", function(a,b) return a<b end)\n")
+			io.WriteString(w, "for _, ")
+			io.WriteString(w, name)
 			io.WriteString(w, " in ipairs(")
+			io.WriteString(w, tmp)
+			io.WriteString(w, ") do\n")
+			for _, st := range fi.Body {
+				st.emit(w)
+				io.WriteString(w, "\n")
+			}
+			if label != "" {
+				io.WriteString(w, "::")
+				io.WriteString(w, label)
+				io.WriteString(w, "::\n")
+				continueLabels = continueLabels[:len(continueLabels)-1]
+			}
+			io.WriteString(w, "end")
+			return
 		}
+		io.WriteString(w, "for _, ")
+		io.WriteString(w, sanitizeName(fi.Name))
+		io.WriteString(w, " in ipairs(")
 		if fi.Iterable != nil {
 			fi.Iterable.emit(w)
 		}
