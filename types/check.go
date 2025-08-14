@@ -1115,10 +1115,9 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 					params := make([]Type, len(m.Method.Params))
 					for i, p := range m.Method.Params {
 						if p.Type == nil {
-							params[i] = AnyType{}
-						} else {
-							params[i] = resolveTypeRef(p.Type, env)
+							return errParamMissingType(m.Method.Pos, p.Name)
 						}
+						params[i] = resolveTypeRef(p.Type, env)
 					}
 					var ret Type = VoidType{}
 					if m.Method.Return != nil {
@@ -1206,10 +1205,9 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		params := []Type{}
 		for _, p := range s.Fun.Params {
 			if p.Type == nil {
-				params = append(params, AnyType{})
-			} else {
-				params = append(params, resolveTypeRef(p.Type, env))
+				return errParamMissingType(s.Fun.Pos, p.Name)
 			}
+			params = append(params, resolveTypeRef(p.Type, env))
 		}
 		var ret Type = AnyType{}
 		if s.Fun.Return != nil {
@@ -2088,10 +2086,9 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 	paramTypes := make([]Type, len(f.Params))
 	for i, p := range f.Params {
 		if p.Type == nil {
-			paramTypes[i] = AnyType{}
-		} else {
-			paramTypes[i] = resolveTypeRef(p.Type, env)
+			return nil, errParamMissingType(pos, p.Name)
 		}
+		paramTypes[i] = resolveTypeRef(p.Type, env)
 	}
 
 	var declaredRet Type
