@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:03 +0700
+// Generated 2025-08-14 16:28 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -57,8 +57,8 @@ let rec prims_algorithm (adjacency: System.Collections.Generic.IDictionary<int, 
     let mutable adjacency = adjacency
     try
         let mutable visited: System.Collections.Generic.IDictionary<int, bool> = _dictCreate []
-        visited.[0] <- true
-        let mutable mst: EdgePair array = [||]
+        visited <- _dictAdd (visited) (0) (true)
+        let mutable mst: EdgePair array = Array.empty<EdgePair>
         let mutable count: int = 1
         let mutable total: int = 0
         for k in adjacency.Keys do
@@ -70,12 +70,12 @@ let rec prims_algorithm (adjacency: System.Collections.Generic.IDictionary<int, 
             for u_str in adjacency.Keys do
                 let _u: int = int (u_str)
                 if _dictGet visited (_u) then
-                    for n in (_dictGet adjacency (_u)).Keys do
+                    for n in _dictGet adjacency (_u) do
                         if (not (_dictGet visited (n._node))) && ((n._cost) < best_cost) then
                             best_cost <- n._cost
                             best_u <- _u
                             best_v <- n._node
-            visited.[best_v] <- true
+            visited <- _dictAdd (visited) (best_v) (true)
             mst <- Array.append mst [|{ _u = best_u; _v = best_v }|]
             count <- count + 1
         __ret <- mst
@@ -83,31 +83,31 @@ let rec prims_algorithm (adjacency: System.Collections.Generic.IDictionary<int, 
         __ret
     with
         | Return -> __ret
-let rec test_prim_successful_result () =
+and test_prim_successful_result () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let edges: int array array = [|[|0; 1; 4|]; [|0; 7; 8|]; [|1; 2; 8|]; [|7; 8; 7|]; [|7; 6; 1|]; [|2; 8; 2|]; [|8; 6; 6|]; [|2; 3; 7|]; [|2; 5; 4|]; [|6; 5; 2|]; [|3; 5; 14|]; [|3; 4; 9|]; [|5; 4; 10|]; [|1; 7; 11|]|]
         let mutable adjacency: System.Collections.Generic.IDictionary<int, Neighbor array> = _dictCreate []
         for e in edges do
-            let _u: int = _idx e (0)
-            let _v: int = _idx e (1)
-            let w: int = _idx e (2)
+            let _u: int = _idx e (int 0)
+            let _v: int = _idx e (int 1)
+            let w: int = _idx e (int 2)
             if not (adjacency.ContainsKey(_u)) then
-                adjacency.[_u] <- [||]
+                adjacency <- _dictAdd (adjacency) (_u) (Array.empty<Neighbor>)
             if not (adjacency.ContainsKey(_v)) then
-                adjacency.[_v] <- [||]
-            adjacency.[_u] <- Array.append (_dictGet adjacency (_u)) [|{ _node = _v; _cost = w }|]
-            adjacency.[_v] <- Array.append (_dictGet adjacency (_v)) [|{ _node = _u; _cost = w }|]
+                adjacency <- _dictAdd (adjacency) (_v) (Array.empty<Neighbor>)
+            adjacency <- _dictAdd (adjacency) (_u) (Array.append (_dictGet adjacency (_u)) [|{ _node = _v; _cost = w }|])
+            adjacency <- _dictAdd (adjacency) (_v) (Array.append (_dictGet adjacency (_v)) [|{ _node = _u; _cost = w }|])
         let result: EdgePair array = prims_algorithm (adjacency)
         let mutable seen: System.Collections.Generic.IDictionary<string, bool> = _dictCreate []
         for e in result do
             let key1: string = ((_str (e._u)) + ",") + (_str (e._v))
             let key2: string = ((_str (e._v)) + ",") + (_str (e._u))
-            seen.[key1] <- true
-            seen.[key2] <- true
+            seen <- _dictAdd (seen) (string (key1)) (true)
+            seen <- _dictAdd (seen) (string (key2)) (true)
         let expected: int array array = [|[|7; 6; 1|]; [|2; 8; 2|]; [|6; 5; 2|]; [|0; 1; 4|]; [|2; 5; 4|]; [|2; 3; 7|]; [|0; 7; 8|]; [|3; 4; 9|]|]
         for ans in expected do
-            let key: string = ((_str (_idx ans (0))) + ",") + (_str (_idx ans (1)))
+            let key: string = ((_str (_idx ans (int 0))) + ",") + (_str (_idx ans (int 1)))
             if not (_dictGet seen ((string (key)))) then
                 __ret <- false
                 raise Return
@@ -116,8 +116,8 @@ let rec test_prim_successful_result () =
         __ret
     with
         | Return -> __ret
-printfn "%b" (test_prim_successful_result())
-printfn "%b" (true)
+ignore (printfn "%b" (test_prim_successful_result()))
+ignore (printfn "%b" (true))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

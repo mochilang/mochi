@@ -1,0 +1,28 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/elf.fs(66,31): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/elf.fs(67,31): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/elf.fs(76,18): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/elf.fs(107,31): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/elf.fs(117,18): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
