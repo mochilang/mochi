@@ -1,0 +1,78 @@
+warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │         {comp, k} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/boruvka.exs:40:16: Main.set_component/2
+
+    warning: variable "comp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │       {comp, comp_size, g} = if Enum.at(comp_size, u, []) <= Enum.at(comp_size, v, []) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/boruvka.exs:60:8: Main.union/4
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/boruvka.exs:91:8: Main.create_empty_edges/1
+
+     warning: variable "component_size" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 188 │       {component_size, g, minimum_weight_edge, mst_weight, num_components} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/boruvka.exs:188:8: Main.boruvka/1
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 188 │       {component_size, g, minimum_weight_edge, mst_weight, num_components} = try do
+     │                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/boruvka.exs:188:24: Main.boruvka/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 118 │       {component_size, g, i} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/boruvka.exs:118:27: Main.boruvka/1
+
+     warning: variable "minimum_weight_edge" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 188 │       {component_size, g, minimum_weight_edge, mst_weight, num_components} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/boruvka.exs:188:27: Main.boruvka/1
+
+     warning: variable "num_components" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 188 │       {component_size, g, minimum_weight_edge, mst_weight, num_components} = try do
+     │                                                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/boruvka.exs:188:60: Main.boruvka/1
+
+Added edge [0 - 3]
+Added weight: 5
+
+Added edge [0 - 1]
+Added weight: 10
+
+Added edge [2 - 3]
+Added weight: 4
+
+Added edge [4 - 7]
+Added weight: 5
+
+Added edge [4 - 5]
+Added weight: 10
+
+Added edge [6 - 7]
+Added weight: 4
+
+Added edge [3 - 4]
+Added weight: 8
+
+The total weight of the minimal spanning tree is: 46
