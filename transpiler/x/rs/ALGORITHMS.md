@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-14 16:07 GMT+7
+Last updated: 2025-08-14 17:26 GMT+7
 
-## Algorithms Golden Test Checklist (754/1077)
+## Algorithms Golden Test Checklist (756/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -413,8 +413,8 @@ Last updated: 2025-08-14 16:07 GMT+7
 | 404 | graphs/breadth_first_search |   |  |  |
 | 405 | graphs/breadth_first_search_2 | ✓ | 191µs | 2.2 MB |
 | 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 38µs | 2.0 MB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 115µs | 2.0 MB |
 | 409 | graphs/check_bipatrite |   |  |  |
 | 410 | graphs/check_cycle |   |  |  |
 | 411 | graphs/connected_components | ✓ | 87µs | 1.9 MB |
