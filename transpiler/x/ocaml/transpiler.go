@@ -3714,7 +3714,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				expr = &CastExpr{Expr: expr, Type: "big_to_rat"}
 			}
 		} else if typ == "" {
-			return nil, fmt.Errorf("let without value not supported: %s", st.Let.Name)
+			typ = "dyn"
 		}
 		vinfo := VarInfo{typ: typ}
 		if strings.HasPrefix(typ, "func-") {
