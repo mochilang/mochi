@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:03 +0700
+// Generated 2025-08-13 16:58 +0700
 
 exception Break
 exception Continue
@@ -64,14 +64,14 @@ let rec key (p: Point) =
         __ret
     with
         | Return -> __ret
-let rec path_to_string (_path: Point array) =
+and path_to_string (_path: Point array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable _path = _path
     try
         let mutable s: string = "["
         let mutable i: int = 0
         while i < (Seq.length (_path)) do
-            let pt: Point = _idx _path (i)
+            let pt: Point = _idx _path (int i)
             s <- ((((s + "(") + (_str (pt._x))) + ", ") + (_str (pt._y))) + ")"
             if i < ((Seq.length (_path)) - 1) then
                 s <- s + ", "
@@ -82,7 +82,7 @@ let rec path_to_string (_path: Point array) =
         __ret
     with
         | Return -> __ret
-let rec dijkstra (grid: int array array) (source: Point) (destination: Point) (allow_diagonal: bool) =
+and dijkstra (grid: int array array) (source: Point) (destination: Point) (allow_diagonal: bool) =
     let mutable __ret : Result = Unchecked.defaultof<Result>
     let mutable grid = grid
     let mutable source = source
@@ -90,35 +90,35 @@ let rec dijkstra (grid: int array array) (source: Point) (destination: Point) (a
     let mutable allow_diagonal = allow_diagonal
     try
         let rows: int = Seq.length (grid)
-        let cols: int = Seq.length (_idx grid (0))
-        let mutable dx: int array = [|-1; 1; 0; 0|]
-        let mutable dy: int array = [|0; 0; -1; 1|]
+        let cols: int = Seq.length (_idx grid (int 0))
+        let mutable dx: int array = unbox<int array> [|-1; 1; 0; 0|]
+        let mutable dy: int array = unbox<int array> [|0; 0; -1; 1|]
         if allow_diagonal then
-            dx <- unbox<int array> (Array.append (dx) ([|-1; -1; 1; 1|]))
-            dy <- unbox<int array> (Array.append (dy) ([|-1; 1; -1; 1|]))
+            dx <- Array.append (dx) ([|-1; -1; 1; 1|])
+            dy <- Array.append (dy) ([|-1; 1; -1; 1|])
         let INF: float = 1000000000000.0
-        let mutable queue: Point array = [|source|]
+        let mutable queue: Point array = unbox<Point array> [|source|]
         let mutable _front: int = 0
         let mutable dist_map: System.Collections.Generic.IDictionary<string, float> = _dictCreate [(key (source), 0.0)]
         let mutable prev: System.Collections.Generic.IDictionary<string, Point> = _dictCreate []
         try
             while _front < (Seq.length (queue)) do
                 try
-                    let current: Point = _idx queue (_front)
+                    let current: Point = _idx queue (int _front)
                     _front <- _front + 1
                     let cur_key: string = key (current)
                     if ((current._x) = (destination._x)) && ((current._y) = (destination._y)) then
                         raise Break
                     let mutable i: int = 0
                     while i < (Seq.length (dx)) do
-                        let nx: int = (current._x) + (_idx dx (i))
-                        let ny: int = (current._y) + (_idx dy (i))
+                        let nx: int = (current._x) + (_idx dx (int i))
+                        let ny: int = (current._y) + (_idx dy (int i))
                         if (((nx >= 0) && (nx < rows)) && (ny >= 0)) && (ny < cols) then
-                            if (_idx (_idx grid (nx)) (ny)) = 1 then
+                            if (_idx (_idx grid (int nx)) (int ny)) = 1 then
                                 let n_key: string = ((_str (nx)) + ",") + (_str (ny))
                                 if not (dist_map.ContainsKey(n_key)) then
-                                    dist_map.[n_key] <- (_dictGet dist_map ((string (cur_key)))) + 1.0
-                                    prev.[n_key] <- current
+                                    dist_map <- _dictAdd (dist_map) (string (n_key)) ((_dictGet dist_map ((string (cur_key)))) + 1.0)
+                                    prev <- _dictAdd (prev) (string (n_key)) (current)
                                     queue <- Array.append queue [|{ _x = nx; _y = ny }|]
                         i <- i + 1
                 with
@@ -129,30 +129,30 @@ let rec dijkstra (grid: int array array) (source: Point) (destination: Point) (a
         | Continue -> ()
         let dest_key: string = key (destination)
         if dist_map.ContainsKey(dest_key) then
-            let mutable path_rev: Point array = [|destination|]
+            let mutable path_rev: Point array = unbox<Point array> [|destination|]
             let mutable step_key: string = dest_key
             let mutable step_pt: Point = destination
             while step_key <> (key (source)) do
                 step_pt <- _dictGet prev ((string (step_key)))
                 step_key <- key (step_pt)
                 path_rev <- Array.append path_rev [|step_pt|]
-            let mutable _path: Point array = [||]
+            let mutable _path: Point array = Array.empty<Point>
             let mutable k: int = (Seq.length (path_rev)) - 1
             while k >= 0 do
-                _path <- Array.append _path [|(_idx path_rev (k))|]
+                _path <- Array.append _path [|(_idx path_rev (int k))|]
                 k <- k - 1
             __ret <- { _distance = _dictGet dist_map ((string (dest_key))); _path = _path }
             raise Return
-        __ret <- { _distance = INF; _path = [||] }
+        __ret <- { _distance = INF; _path = Array.empty<Point> }
         raise Return
         __ret
     with
         | Return -> __ret
-let rec print_result (res: Result) =
+and print_result (res: Result) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable res = res
     try
-        printfn "%s" (((_str (res._distance)) + ", ") + (path_to_string (res._path)))
+        ignore (printfn "%s" (((_str (res._distance)) + ", ") + (path_to_string (res._path))))
         __ret
     with
         | Return -> __ret
