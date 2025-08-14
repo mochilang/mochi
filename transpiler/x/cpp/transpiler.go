@@ -1414,7 +1414,7 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto "+tmp+" = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << \"{\"; bool first=true; for(const auto& __p : "+tmp+"){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << ': '; ")
+		io.WriteString(w, "; "+stream+" << \"{\"; bool first=true; for(const auto& __p : "+tmp+"){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << \": \"; ")
 		switch {
 		case strings.HasPrefix(val, "std::vector<") || strings.HasPrefix(val, "std::map<") || strings.HasPrefix(val, "std::optional<"):
 			io.WriteString(w, "{ std::ostringstream __ss; ")
