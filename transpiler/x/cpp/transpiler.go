@@ -48,7 +48,7 @@ var useJSON bool
 var usesPanic bool
 var usesSubprocess bool
 var useFetch bool
-var fetchStructs map[string]bool
+var fetchStructs map[string]string
 var useMD5 bool
 var useExists bool
 var useAnyVec bool
@@ -228,7 +228,7 @@ type Program struct {
 	UsePanic       bool
 	UseSubprocess  bool
 	UseFetch       bool
-	FetchStructs   map[string]bool
+	FetchStructs   map[string]string
 	UseMD5         bool
 	UseExists      bool
 	UseAnyVec      bool
@@ -1184,10 +1184,10 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    (void)url;")
 		fmt.Fprintln(w, "    return \"{}\";")
 		fmt.Fprintln(w, "}")
-		for name := range p.FetchStructs {
-			fmt.Fprintf(w, "static %s _fetch_%s(const std::string& url) {\n", name, name)
+		for ret, name := range p.FetchStructs {
+			fmt.Fprintf(w, "static %s _fetch_%s(const std::string& url) {\n", ret, name)
 			fmt.Fprintln(w, "    (void)url;")
-			fmt.Fprintf(w, "    return %s{};\n", name)
+			fmt.Fprintf(w, "    return %s{};\n", ret)
 			fmt.Fprintln(w, "}")
 		}
 	}
@@ -4552,6 +4552,18 @@ func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
 	return u.Value.Target.Fetch
 }
 
+func sanitizeTypeName(t string) string {
+	var b strings.Builder
+	for _, r := range t {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') {
+			b.WriteRune(r)
+		} else {
+			b.WriteByte('_')
+		}
+	}
+	return b.String()
+}
+
 func convertStmt(s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Fun != nil:
@@ -4623,10 +4635,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				useFetch = true
 				if typ != "" {
 					if fetchStructs == nil {
-						fetchStructs = map[string]bool{}
+						fetchStructs = map[string]string{}
 					}
-					fetchStructs[typ] = true
-					val = &CallExpr{Name: "_fetch_" + typ, Args: []Expr{urlExpr}}
+					fn := sanitizeTypeName(typ)
+					fetchStructs[typ] = fn
+					val = &CallExpr{Name: "_fetch_" + fn, Args: []Expr{urlExpr}}
 				} else {
 					val = &CallExpr{Name: "_fetch", Args: []Expr{urlExpr}}
 				}
@@ -5005,12 +5018,31 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 	case s.Return != nil:
 		var val Expr
 		if s.Return.Value != nil {
-			var err error
-			inReturn = true
-			val, err = convertExpr(s.Return.Value)
-			inReturn = false
-			if err != nil {
-				return nil, err
+			if f := fetchExprOnly(s.Return.Value); f != nil {
+				urlExpr, err2 := convertExpr(f.URL)
+				if err2 != nil {
+					return nil, err2
+				}
+				useFetch = true
+				typ := currentReturnType
+				if typ != "" {
+					if fetchStructs == nil {
+						fetchStructs = map[string]string{}
+					}
+					fn := sanitizeTypeName(typ)
+					fetchStructs[typ] = fn
+					val = &CallExpr{Name: "_fetch_" + fn, Args: []Expr{urlExpr}}
+				} else {
+					val = &CallExpr{Name: "_fetch", Args: []Expr{urlExpr}}
+				}
+			} else {
+				var err error
+				inReturn = true
+				val, err = convertExpr(s.Return.Value)
+				inReturn = false
+				if err != nil {
+					return nil, err
+				}
 			}
 			if _, ok := val.(*NullLit); ok && currentReturnType == "void" {
 				val = nil
