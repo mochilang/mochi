@@ -99,6 +99,11 @@ mochi_to_float(V) ->
     end.
 `
 
+const helperTof = `
+to_float(V) ->
+    mochi_to_float(V).
+`
+
 const helperPadStart = `
 mochi_pad_start(S, Len, Ch) ->
     Fill0 = case Ch of
@@ -3384,7 +3389,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useNow = false
 	useLookupHost = false
 	useToInt = true
-	useToFloat = false
+	useToFloat = true
 	useMemberHelper = false
 	usePadStart = false
 	useExists = false
@@ -6588,6 +6593,8 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseToFloat {
 		buf.WriteString(helperToFloat)
+		buf.WriteString("\n")
+		buf.WriteString(helperTof)
 		buf.WriteString("\n")
 	}
 	if p.UseMemberHelper {
