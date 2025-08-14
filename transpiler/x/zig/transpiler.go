@@ -79,6 +79,7 @@ var zigKeywords = map[string]bool{
 	"defer":    true,
 	"return":   true,
 	"pub":      true,
+	"union":    true,
 }
 
 // when true, wrap the generated main function in a benchmark block
@@ -3387,9 +3388,25 @@ func (c *CallExpr) emit(w io.Writer) {
 					}
 				}
 				if mapVars[v.Name] {
+					keyType := "[]const u8"
+					if t, ok := varTypes[v.Name]; ok {
+						t = strings.TrimPrefix(t, "*")
+						t = strings.TrimPrefix(t, "const ")
+						if strings.HasPrefix(t, "std.StringHashMap(") {
+							keyType = "[]const u8"
+						} else if strings.HasPrefix(t, "std.AutoHashMap(") {
+							inside := strings.TrimSuffix(strings.TrimPrefix(t, "std.AutoHashMap("), ")")
+							parts := strings.Split(inside, ",")
+							if len(parts) > 0 {
+								keyType = strings.TrimSpace(parts[0])
+							}
+						}
+					}
 					io.WriteString(w, "blk: { var it = ")
 					v.emit(w)
-					io.WriteString(w, ".keyIterator(); var arr = std.ArrayList([]const u8).init(std.heap.page_allocator); while (it.next()) |k| { arr.append(k.*) catch unreachable; } break :blk arr.toOwnedSlice() catch unreachable; }")
+					io.WriteString(w, ".keyIterator(); var arr = std.ArrayList(")
+					io.WriteString(w, keyType)
+					io.WriteString(w, ").init(std.heap.page_allocator); while (it.next()) |k| { arr.append(k.*) catch unreachable; } break :blk arr.toOwnedSlice() catch unreachable; }")
 				} else {
 					io.WriteString(w, "[]i64{}")
 				}
@@ -4425,6 +4442,26 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if ml, ok := v.(*MapLit); ok && ml.KeyType == "" && ml.ValType == "" {
+				if sd, ok2 := structDefs[p.Struct.Name]; ok2 {
+					for _, fd := range sd.Fields {
+						if fd.Name == toSnakeCase(f.Name) {
+							if strings.HasPrefix(fd.Type, "std.StringHashMap(") {
+								ml.KeyType = "[]const u8"
+								ml.ValType = strings.TrimSuffix(strings.TrimPrefix(fd.Type, "std.StringHashMap("), ")")
+							} else if strings.HasPrefix(fd.Type, "std.AutoHashMap(") {
+								inside := strings.TrimSuffix(strings.TrimPrefix(fd.Type, "std.AutoHashMap("), ")")
+								parts := strings.Split(inside, ",")
+								if len(parts) == 2 {
+									ml.KeyType = strings.TrimSpace(parts[0])
+									ml.ValType = strings.TrimSpace(parts[1])
+								}
+							}
+							break
+						}
+					}
+				}
+			}
 			entries[i] = MapEntry{Key: &StringLit{Value: f.Name}, Value: v}
 			fields[i] = Field{Name: toSnakeCase(f.Name), Type: zigTypeFromExpr(v)}
 		}
@@ -4667,7 +4704,9 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 			funDepth--
 			return nil, err
 		}
-		body = append(body, st)
+		if st != nil {
+			body = append(body, st)
+		}
 	}
 	funDepth--
 	popAliasScope()
@@ -5050,6 +5089,11 @@ func toZigType(t *parser.TypeRef) string {
 }
 
 func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
+	zigName := zigIdent(fn.Name)
+	if len(aliasStack) == 0 {
+		pushAliasScope()
+	}
+	aliasStack[0][fn.Name] = zigName
 	names := make([]string, len(fn.Params))
 	params := make([]Param, len(fn.Params))
 	mutables := map[string]bool{}
@@ -5062,13 +5106,11 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	preStmts := []Stmt{}
 	paramTypes := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		mutable := false
+		mutable := mutables[p.Name] || varMut[fn.Name+":"+p.Name]
 		typ := toZigType(p.Type)
 		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
-		if mutable {
-			if isMap || (!strings.HasPrefix(typ, "[]") && !strings.HasPrefix(typ, "*") && !isIntType(typ) && typ != "f64" && typ != "bool" && typ != "Value") {
-				typ = "*" + typ
-			}
+		if mutable && isMap {
+			typ = "*" + typ
 		}
 		name := p.Name
 		paramName := name
@@ -5101,6 +5143,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		paramTypes[i] = typ
 		if isMap {
 			mapVars[aliasName] = true
+			mapVars[name] = true
 		}
 		origKey := fn.Name + ":" + name
 		newKey := fn.Name + ":" + paramName
@@ -5120,7 +5163,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			}
 		}
 	}
-	name := fn.Name
+	name := zigName
 	if funDepth == 1 && fn.Name == "main" {
 		mainFuncName = "mochi_main"
 		name = mainFuncName
@@ -5389,12 +5432,32 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			}
 			if _, ok := expr.(*FieldExpr); ok {
 				if str, ok := exprToString(expr); ok {
-					t := zigTypeFromExpr(expr)
-					if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
-						aliasStack[len(aliasStack)-1][s.Var.Name] = str
-						varTypes[s.Var.Name] = t
-						varTypes[str] = t
-						return nil, nil
+					rootName := strings.Split(str, ".")[0]
+					isParam := false
+					if len(funParamsStack) > 0 {
+						params := funParamsStack[len(funParamsStack)-1]
+						for _, p := range params {
+							if p == rootName {
+								isParam = true
+								break
+							}
+						}
+					}
+					if !isParam {
+						t := zigTypeFromExpr(expr)
+						if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+							aliasStack[len(aliasStack)-1][s.Var.Name] = str
+							varTypes[s.Var.Name] = t
+							varTypes[str] = t
+							if strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+								mapVars[s.Var.Name] = true
+								if varMut == nil {
+									varMut = map[string]bool{}
+								}
+								varMut[currentFunc+":"+rootName] = true
+							}
+							return nil, nil
+						}
 					}
 				}
 			}
@@ -5543,6 +5606,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			}
 			target = &IndexExpr{Target: target, Index: ix, Map: imap}
 			ttype := zigTypeFromExpr(target)
+			if strings.HasPrefix(ttype, "*") {
+				ttype = strings.TrimPrefix(ttype, "*")
+			}
 			if strings.HasPrefix(ttype, "std.StringHashMap(") || strings.HasPrefix(ttype, "std.AutoHashMap(") {
 				imap = true
 			} else {

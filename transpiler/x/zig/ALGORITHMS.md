@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-14 10:00 +0700
+Last updated: 2025-08-14 15:55 +0700
 
-## Program Checklist (284/1077)
+## Program Checklist (266/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -356,41 +356,41 @@ Last updated: 2025-08-14 10:00 +0700
 | 347 | dynamic_programming/viterbi | ✓ | 1.558ms | 640.0 KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 3.644ms | 896.0 KB |
 | 349 | dynamic_programming/word_break | ✓ | 1.019ms | 256.0 KB |
-| 350 | electronics/apparent_power | ✓ | 166µs |  |
-| 351 | electronics/builtin_voltage | ✓ | 322µs | 256.0 KB |
-| 352 | electronics/capacitor_equivalence | ✓ | 462µs | 256.0 KB |
-| 353 | electronics/carrier_concentration | ✓ | 475µs | 384.0 KB |
-| 354 | electronics/charging_capacitor | ✓ | 258µs | 256.0 KB |
-| 355 | electronics/charging_inductor | ✓ | 268µs | 128.0 KB |
-| 356 | electronics/circular_convolution | ✓ | 1.258ms | 640.0 KB |
-| 357 | electronics/coulombs_law | ✓ | 873µs | 512.0 KB |
-| 358 | electronics/electric_conductivity | ✓ | 535µs | 384.0 KB |
-| 359 | electronics/electric_power | ✓ | 688µs | 512.0 KB |
-| 360 | electronics/electrical_impedance | ✓ | 942µs | 640.0 KB |
-| 361 | electronics/ic_555_timer | ✓ | 285µs | 256.0 KB |
-| 362 | electronics/ind_reactance | ✓ | 1.069ms | 640.0 KB |
+| 350 | electronics/apparent_power | ✓ | 308µs | 128.0 KB |
+| 351 | electronics/builtin_voltage | ✓ | 500µs | 384.0 KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 505µs | 256.0 KB |
+| 353 | electronics/carrier_concentration | ✓ | 685µs | 512.0 KB |
+| 354 | electronics/charging_capacitor | ✓ | 406µs | 256.0 KB |
+| 355 | electronics/charging_inductor | ✓ | 486µs | 256.0 KB |
+| 356 | electronics/circular_convolution | ✓ | 1.642ms | 512.0 KB |
+| 357 | electronics/coulombs_law | ✓ | 1.023ms | 512.0 KB |
+| 358 | electronics/electric_conductivity | ✓ | 843µs | 384.0 KB |
+| 359 | electronics/electric_power | ✓ | 940µs | 384.0 KB |
+| 360 | electronics/electrical_impedance | ✓ | 1.552ms | 512.0 KB |
+| 361 | electronics/ic_555_timer | ✓ | 305µs | 256.0 KB |
+| 362 | electronics/ind_reactance |   |  |  |
 | 363 | electronics/ohms_law | ✓ | 581µs | 512.0 KB |
-| 364 | electronics/real_and_reactive_power | ✓ | 602µs | 512.0 KB |
-| 365 | electronics/resistor_color_code | ✓ | 490µs | 256.0 KB |
-| 366 | electronics/resistor_equivalence | ✓ | 392µs | 384.0 KB |
-| 367 | electronics/resonant_frequency | ✓ | 280µs | 256.0 KB |
-| 368 | electronics/wheatstone_bridge | ✓ | 314µs | 128.0 KB |
-| 369 | file_transfer/receive_file | ✓ | 266µs | 256.0 KB |
-| 370 | file_transfer/send_file | ✓ | 243µs |  |
+| 364 | electronics/real_and_reactive_power |   |  |  |
+| 365 | electronics/resistor_color_code |   |  |  |
+| 366 | electronics/resistor_equivalence |   |  |  |
+| 367 | electronics/resonant_frequency |   |  |  |
+| 368 | electronics/wheatstone_bridge |   |  |  |
+| 369 | file_transfer/receive_file |   |  |  |
+| 370 | file_transfer/send_file |   |  |  |
 | 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments | ✓ | 428µs | 256.0 KB |
-| 373 | financial/exponential_moving_average | ✓ | 597µs | 512.0 KB |
-| 374 | financial/interest | ✓ | 498µs | 512.0 KB |
-| 375 | financial/present_value | ✓ | 389µs | 256.0 KB |
-| 376 | financial/price_plus_tax | ✓ | 356µs | 256.0 KB |
-| 377 | financial/simple_moving_average | ✓ | 991µs | 512.0 KB |
-| 378 | financial/straight_line_depreciation | ✓ | 1.199ms | 768.0 KB |
-| 379 | financial/time_and_half_pay | ✓ | 410µs | 256.0 KB |
+| 372 | financial/equated_monthly_installments |   |  |  |
+| 373 | financial/exponential_moving_average |   |  |  |
+| 374 | financial/interest |   |  |  |
+| 375 | financial/present_value |   |  |  |
+| 376 | financial/price_plus_tax |   |  |  |
+| 377 | financial/simple_moving_average |   |  |  |
+| 378 | financial/straight_line_depreciation |   |  |  |
+| 379 | financial/time_and_half_pay |   |  |  |
 | 380 | fractals/julia_sets | ✓ | 2.426ms | 1.0 MB |
-| 381 | fractals/koch_snowflake | ✓ | 923µs | 512.0 KB |
+| 381 | fractals/koch_snowflake |   |  |  |
 | 382 | fractals/mandelbrot | ✓ | 4.456ms | 1.2 MB |
-| 383 | fractals/sierpinski_triangle | ✓ | 4.221ms | 1.2 MB |
-| 384 | fractals/vicsek | ✓ | 2.631ms | 640.0 KB |
+| 383 | fractals/sierpinski_triangle |   |  |  |
+| 384 | fractals/vicsek |   |  |  |
 | 385 | fuzzy_logic/fuzzy_operations |   |  |  |
 | 386 | genetic_algorithm/basic_string |   |  |  |
 | 387 | geodesy/haversine_distance |   |  |  |
@@ -409,7 +409,7 @@ Last updated: 2025-08-14 10:00 +0700
 | 400 | graphs/bidirectional_a_star |   |  |  |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
-| 403 | graphs/boruvka |   |  |  |
+| 403 | graphs/boruvka | ✓ | 2.807ms | 768.0 KB |
 | 404 | graphs/breadth_first_search |   |  |  |
 | 405 | graphs/breadth_first_search_2 |   |  |  |
 | 406 | graphs/breadth_first_search_shortest_path |   |  |  |
