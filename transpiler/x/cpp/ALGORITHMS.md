@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 979/1077
-Last updated: 2025-08-14 17:45 +0700
+Last updated: 2025-08-14 18:10 +0700
 
 Checklist:
 
@@ -533,7 +533,7 @@ Checklist:
 | 524 | machine_learning/word_frequency_functions | ✓ | 1.0ms | 3.69MB |
 | 525 | machine_learning/xgboost_classifier | ✓ | 380.0µs | 3.57MB |
 | 526 | machine_learning/xgboost_regressor | ✓ | 532.0µs | 3.79MB |
-| 527 | maths/abs | ✓ | 580.0µs | 3.74MB |
+| 527 | maths/abs | ✓ | 557.0µs | 3.74MB |
 | 528 | maths/addition_without_arithmetic | ✓ | 300.0µs | 3.60MB |
 | 529 | maths/aliquot_sum | ✓ | 513.0µs | 3.58MB |
 | 530 | maths/allocation_number | ✓ | 381.0µs | 3.73MB |
