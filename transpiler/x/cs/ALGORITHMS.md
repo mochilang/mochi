@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-14 17:51 GMT+7
+Last updated: 2025-08-14 18:35 GMT+7
 
-## Algorithms Golden Test Checklist (1019/1077)
+## Algorithms Golden Test Checklist (1022/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -533,56 +533,56 @@ Last updated: 2025-08-14 17:51 GMT+7
 | 524 | machine_learning/word_frequency_functions | ✓ | 2.0ms | 273.95KB |
 | 525 | machine_learning/xgboost_classifier | ✓ | 2.0ms | 38.86KB |
 | 526 | machine_learning/xgboost_regressor | ✓ | 2.0ms | 17.11KB |
-| 527 | maths/abs | ✓ | 2.0ms | 14.28KB |
-| 528 | maths/addition_without_arithmetic | ✓ | 2.0ms | 17.38KB |
-| 529 | maths/aliquot_sum | ✓ | 1.0ms | 16.48KB |
-| 530 | maths/allocation_number | ✓ | 2.0ms | 19.89KB |
-| 531 | maths/arc_length | ✓ | 2.0ms | 13.92KB |
-| 532 | maths/area | ✓ | 2.0ms | 16.55KB |
-| 533 | maths/area_under_curve | ✓ | 2.0ms | 18.25KB |
-| 534 | maths/average_absolute_deviation | ✓ | 2.0ms | 14.28KB |
-| 535 | maths/average_mean | ✓ | 2.0ms | 14.26KB |
-| 536 | maths/average_median | ✓ | 2.0ms | 14.10KB |
-| 537 | maths/average_mode | ✓ | 2.0ms | 27.12KB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 61.0ms | 17.06KB |
-| 539 | maths/base_neg2_conversion | error |  |  |
-| 540 | maths/basic_maths | ✓ | 2.0ms | 17.87KB |
-| 541 | maths/binary_exponentiation | ✓ | 2.0ms | 17.32KB |
-| 542 | maths/binary_multiplication | ✓ | 1.0ms | 16.44KB |
-| 543 | maths/binomial_coefficient | ✓ | 2.0ms | 17.00KB |
-| 544 | maths/binomial_distribution | ✓ | 1.0µs | 44.39KB |
-| 545 | maths/ceil | ✓ | 1.0ms | 17.53KB |
-| 546 | maths/chebyshev_distance | ✓ | 2.0ms | 14.06KB |
-| 547 | maths/check_polygon | ✓ | 2.0ms | 14.62KB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 1.0ms | 18.70KB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 1.0ms | 17.36KB |
-| 550 | maths/collatz_sequence | ✓ | 2.0ms | 20.06KB |
-| 551 | maths/combinations | ✓ | 1.0ms | 17.12KB |
-| 552 | maths/continued_fraction | ✓ | 3.0ms | 17.62KB |
-| 553 | maths/decimal_isolate | ✓ | 3.0ms | 14.21KB |
-| 554 | maths/decimal_to_fraction | ✓ | 3.0ms | 21.69KB |
-| 555 | maths/dodecahedron | ✓ | 3.0ms | 13.88KB |
-| 556 | maths/double_factorial | ✓ | 3.0ms | 16.35KB |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 18.0ms | 1.76MB |
-| 558 | maths/entropy | ✓ | 4.0ms | 172.02KB |
-| 559 | maths/euclidean_distance | ✓ | 3.0ms | 14.84KB |
-| 560 | maths/euler_method | ✓ | 18.0ms | 3.66MB |
-| 561 | maths/euler_modified | ✓ | 1.0µs | 1.57MB |
-| 562 | maths/eulers_totient | ✓ | 3.0ms | 23.85KB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 3.0ms | 17.62KB |
-| 564 | maths/factorial | ✓ | 3.0ms | 16.35KB |
-| 565 | maths/factors | error |  |  |
-| 566 | maths/fast_inverse_sqrt | ✓ | 4.0ms | 21.50KB |
-| 567 | maths/fermat_little_theorem | ✓ | 2.0ms | 12.90KB |
-| 568 | maths/fibonacci | error |  |  |
-| 569 | maths/find_max | ✓ | 3.0ms | 14.11KB |
-| 570 | maths/find_min | ✓ | 3.0ms | 14.36KB |
-| 571 | maths/floor | ✓ | 3.0ms | 14.09KB |
-| 572 | maths/gamma | ✓ | 9.0ms | 13.95KB |
-| 573 | maths/gaussian | ✓ | 3.0ms | 13.80KB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 3.0ms | 16.75KB |
+| 527 | maths/abs | ✓ | 1.0µs | 14.60KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 1.0µs | 17.20KB |
+| 529 | maths/aliquot_sum | ✓ | 1.0µs | 16.67KB |
+| 530 | maths/allocation_number | ✓ | 1.0µs | 21.57KB |
+| 531 | maths/arc_length | ✓ | 1.0µs | 13.74KB |
+| 532 | maths/area | ✓ | 1.0µs | 16.37KB |
+| 533 | maths/area_under_curve | ✓ | 1.0µs | 18.07KB |
+| 534 | maths/average_absolute_deviation | ✓ | 1.0µs | 14.10KB |
+| 535 | maths/average_mean | ✓ | 1.0µs | 14.08KB |
+| 536 | maths/average_median | ✓ | 1.0µs | 13.92KB |
+| 537 | maths/average_mode | ✓ | 1.0µs | 40.66KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 1.0µs | 17.25KB |
+| 539 | maths/base_neg2_conversion | ✓ | 1.0µs | 18.11KB |
+| 540 | maths/basic_maths | ✓ | 1.0µs | 19.39KB |
+| 541 | maths/binary_exponentiation | ✓ | 1.0µs | 17.14KB |
+| 542 | maths/binary_multiplication | ✓ | 1.0µs | 16.62KB |
+| 543 | maths/binomial_coefficient | ✓ | 1.0µs | 17.73KB |
+| 544 | maths/binomial_distribution | ✓ | 1.0µs | 24B |
+| 545 | maths/ceil | ✓ | 1.0µs | 17.35KB |
+| 546 | maths/chebyshev_distance | ✓ | 1.0µs | 13.88KB |
+| 547 | maths/check_polygon | ✓ | 1.0µs | 14.44KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 1.0µs | 18.52KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 1.0µs | 17.18KB |
+| 550 | maths/collatz_sequence | ✓ | 1.0µs | 23.78KB |
+| 551 | maths/combinations | ✓ | 1.0µs | 17.30KB |
+| 552 | maths/continued_fraction | ✓ | 1.0µs | 18.56KB |
+| 553 | maths/decimal_isolate | ✓ | 1.0µs | 13.98KB |
+| 554 | maths/decimal_to_fraction | ✓ | 1.0µs | 22.21KB |
+| 555 | maths/dodecahedron | ✓ | 1.0µs | 13.64KB |
+| 556 | maths/double_factorial | ✓ | 1.0µs | 16.48KB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 1.0µs | 1.76MB |
+| 558 | maths/entropy | ✓ | 1.0µs | 172.15KB |
+| 559 | maths/euclidean_distance | ✓ | 1.0µs | 14.60KB |
+| 560 | maths/euler_method | ✓ | 1.0µs | 9.46MB |
+| 561 | maths/euler_modified | ✓ | 1.0µs | 1.58MB |
+| 562 | maths/eulers_totient | ✓ | 1.0µs | 31.50KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 1.0µs | 17.39KB |
+| 564 | maths/factorial | ✓ | 1.0µs | 16.48KB |
+| 565 | maths/factors | ✓ | 1.0µs | 24.83KB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 1.0µs | 21.27KB |
+| 567 | maths/fermat_little_theorem | ✓ | 1.0µs | 12.92KB |
+| 568 | maths/fibonacci | ✓ | 1.0µs | 37.66KB |
+| 569 | maths/find_max | ✓ | 1.0µs | 13.88KB |
+| 570 | maths/find_min | ✓ | 1.0µs | 14.12KB |
+| 571 | maths/floor | ✓ | 1.0µs | 14.09KB |
+| 572 | maths/gamma | ✓ | 1.0µs | 13.86KB |
+| 573 | maths/gaussian | ✓ | 1.0µs | 13.57KB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 1.0µs | 16.88KB |
 | 575 | maths/geometric_mean | error |  |  |
-| 576 | maths/germain_primes | ✓ | 2.0ms | 12.90KB |
+| 576 | maths/germain_primes | ✓ | 1.0µs | 12.92KB |
 | 577 | maths/greatest_common_divisor | ✓ | 2.0ms | 16.77KB |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 3.0ms | 17.48KB |
 | 579 | maths/integer_square_root | ✓ | 2.0ms | 16.58KB |
