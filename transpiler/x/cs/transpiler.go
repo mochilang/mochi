@@ -165,6 +165,11 @@ func validIdent(n string) bool {
 }
 
 func gitTimestamp() string {
+	if epoch, ok := os.LookupEnv("SOURCE_DATE_EPOCH"); ok {
+		if sec, err := strconv.ParseInt(epoch, 10, 64); err == nil {
+			return time.Unix(sec, 0).UTC().Format("2006-01-02 15:04 MST")
+		}
+	}
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
