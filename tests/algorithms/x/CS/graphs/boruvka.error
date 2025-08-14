@@ -1,8 +1,0 @@
-error[P001]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/boruvka.mochi:79:20: unexpected token "=" (expected "}")
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/boruvka.mochi:79:20
-
- 79 |     g.component[i] = i
-    |                    ^
-
-help:
-  Check for a missing `{` or `}` to close the block.
