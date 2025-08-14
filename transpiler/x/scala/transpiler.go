@@ -2506,7 +2506,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &AssignStmt{Target: &Name{Name: st.Var.Name}, Value: e}, nil
 		}
-		if typ == "" {
+		if typ == "" || typ == "ArrayBuffer[Any]" {
 			typ = inferTypeWithEnv(e, env)
 			if typ == "Any" {
 				typ = ""
