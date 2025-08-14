@@ -1531,20 +1531,15 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, "]")
 				return
 			}
-			// Fallback: decide based on the index expression. If it
-			// looks numeric, treat as a list; otherwise emit a map
-			// lookup without the +1 offset.
-			if isIntExpr(ix.Index) || isFloatExpr(ix.Index) {
-				ix.Target.emit(w)
-				io.WriteString(w, "[")
-				ix.Index.emit(w)
-				io.WriteString(w, " + 1]")
-			} else {
-				ix.Target.emit(w)
-				io.WriteString(w, "[")
-				ix.Index.emit(w)
-				io.WriteString(w, "]")
-			}
+			// Fallback: default to list-style indexing with the
+			// Lua +1 offset when type information is insufficient.
+			// This mirrors Mochi's zero-based semantics and avoids
+			// dropping the offset for loops like `itemset[j]` where
+			// the index variable's type cannot be inferred.
+			ix.Target.emit(w)
+			io.WriteString(w, "[")
+			ix.Index.emit(w)
+			io.WriteString(w, " + 1]")
 			return
 		}
 		if _, ok := exprType(ix.Target).(types.ListType); ok {
