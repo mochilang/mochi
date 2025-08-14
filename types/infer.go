@@ -692,7 +692,14 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	case p.Match != nil:
 		var rType Type
 		for _, cs := range p.Match.Cases {
-			t := ExprType(cs.Result, env)
+			var t Type
+			if cs.Result != nil {
+				if cs.Result.Expr != nil {
+					t = ExprType(cs.Result.Expr, env)
+				} else {
+					t = AnyType{}
+				}
+			}
 			if rType == nil {
 				rType = t
 			} else if !equalTypes(rType, t) {
