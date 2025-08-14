@@ -1,3 +1,7 @@
+## Progress (2025-08-14 17:48 +0700)
+- fs: add toi helper
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-14 17:09 +0700)
 - zig: handle shadowed params and list types
 - Generated F# for 103/105 programs (103 passing)

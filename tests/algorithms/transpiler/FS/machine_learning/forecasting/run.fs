@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,20 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec int_to_float (x: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
@@ -87,7 +85,7 @@ and dot (a: float array) (b: float array) =
         let mutable s: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            s <- s + ((_idx a (i)) * (_idx b (i)))
+            s <- s + ((_idx a (int i)) * (_idx b (int i)))
             i <- i + 1
         __ret <- s
         raise Return
@@ -99,14 +97,14 @@ and transpose (m: float array array) =
     let mutable m = m
     try
         let rows: int = Seq.length (m)
-        let cols: int = Seq.length (_idx m (0))
+        let cols: int = Seq.length (_idx m (int 0))
         let mutable res: float array array = Array.empty<float array>
         let mutable j: int = 0
         while j < cols do
             let mutable row: float array = Array.empty<float>
             let mutable i: int = 0
             while i < rows do
-                row <- Array.append row [|(_idx (_idx m (i)) (j))|]
+                row <- Array.append row [|(_idx (_idx m (int i)) (int j))|]
                 i <- i + 1
             res <- Array.append res [|row|]
             j <- j + 1
@@ -121,7 +119,7 @@ and matmul (a: float array array) (b: float array array) =
     let mutable b = b
     try
         let n: int = Seq.length (a)
-        let m: int = Seq.length (_idx b (0))
+        let m: int = Seq.length (_idx b (int 0))
         let p: int = Seq.length (b)
         let mutable res: float array array = Array.empty<float array>
         let mutable i: int = 0
@@ -132,7 +130,7 @@ and matmul (a: float array array) (b: float array array) =
                 let mutable s: float = 0.0
                 let mutable k: int = 0
                 while k < p do
-                    s <- s + ((_idx (_idx a (i)) (k)) * (_idx (_idx b (k)) (j)))
+                    s <- s + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
                     k <- k + 1
                 row <- Array.append row [|s|]
                 j <- j + 1
@@ -151,7 +149,7 @@ and matvec (a: float array array) (b: float array) =
         let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            res <- Array.append res [|(dot (_idx a (i)) (b))|]
+            res <- Array.append res [|(dot (_idx a (int i)) (b))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -186,20 +184,20 @@ and invert (mat: float array array) =
         let mutable inv: float array array = identity (n)
         let mutable i: int = 0
         while i < n do
-            let pivot: float = _idx (_idx a (i)) (i)
+            let pivot: float = _idx (_idx a (int i)) (int i)
             let mutable j: int = 0
             while j < n do
-                a.[i].[j] <- (_idx (_idx a (i)) (j)) / pivot
-                inv.[i].[j] <- (_idx (_idx inv (i)) (j)) / pivot
+                a.[i].[j] <- (_idx (_idx a (int i)) (int j)) / pivot
+                inv.[i].[j] <- (_idx (_idx inv (int i)) (int j)) / pivot
                 j <- j + 1
             let mutable k: int = 0
             while k < n do
                 if k <> i then
-                    let factor: float = _idx (_idx a (k)) (i)
+                    let factor: float = _idx (_idx a (int k)) (int i)
                     j <- 0
                     while j < n do
-                        a.[k].[j] <- (_idx (_idx a (k)) (j)) - (factor * (_idx (_idx a (i)) (j)))
-                        inv.[k].[j] <- (_idx (_idx inv (k)) (j)) - (factor * (_idx (_idx inv (i)) (j)))
+                        a.[k].[j] <- (_idx (_idx a (int k)) (int j)) - (factor * (_idx (_idx a (int i)) (int j)))
+                        inv.[k].[j] <- (_idx (_idx inv (int k)) (int j)) - (factor * (_idx (_idx inv (int i)) (int j)))
                         j <- j + 1
                 k <- k + 1
             i <- i + 1
@@ -233,10 +231,10 @@ and linear_regression_prediction (train_dt: float array) (train_usr: float array
         let mutable X: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < (Seq.length (train_dt)) do
-            X <- Array.append X [|[|1.0; _idx train_dt (i); _idx train_mtch (i)|]|]
+            X <- Array.append X [|[|1.0; _idx train_dt (int i); _idx train_mtch (int i)|]|]
             i <- i + 1
         let beta: float array = normal_equation (X) (train_usr)
-        __ret <- abs_float (((_idx beta (0)) + ((_idx test_dt (0)) * (_idx beta (1)))) + ((_idx test_mtch (0)) * (_idx beta (2))))
+        __ret <- abs_float (((_idx beta (int 0)) + ((_idx test_dt (int 0)) * (_idx beta (int 1)))) + ((_idx test_mtch (int 0)) * (_idx beta (int 2))))
         raise Return
         __ret
     with
@@ -252,11 +250,11 @@ and sarimax_predictor (train_user: float array) (train_match: float array) (test
         let mutable y: float array = Array.empty<float>
         let mutable i: int = 1
         while i < n do
-            X <- Array.append X [|[|1.0; _idx train_user (i - 1); _idx train_match (i)|]|]
-            y <- Array.append y [|(_idx train_user (i))|]
+            X <- Array.append X [|[|1.0; _idx train_user (int (i - 1)); _idx train_match (int i)|]|]
+            y <- Array.append y [|(_idx train_user (int i))|]
             i <- i + 1
         let beta: float array = normal_equation (X) (y)
-        __ret <- ((_idx beta (0)) + ((_idx beta (1)) * (_idx train_user (n - 1)))) + ((_idx beta (2)) * (_idx test_match (0)))
+        __ret <- ((_idx beta (int 0)) + ((_idx beta (int 1)) * (_idx train_user (int (n - 1))))) + ((_idx beta (int 2)) * (_idx test_match (int 0)))
         raise Return
         __ret
     with
@@ -270,7 +268,7 @@ and rbf_kernel (a: float array) (b: float array) (gamma: float) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            let diff: float = (_idx a (i)) - (_idx b (i))
+            let diff: float = (_idx a (int i)) - (_idx b (int i))
             sum <- sum + (diff * diff)
             i <- i + 1
         __ret <- exp_approx ((-gamma) * sum)
@@ -288,14 +286,14 @@ and support_vector_regressor (x_train: float array array) (x_test: float array a
         let mutable weights: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (x_train)) do
-            weights <- Array.append weights [|(rbf_kernel (_idx x_train (i)) (_idx x_test (0)) (gamma))|]
+            weights <- Array.append weights [|(rbf_kernel (_idx x_train (int i)) (_idx x_test (int 0)) (gamma))|]
             i <- i + 1
         let mutable num: float = 0.0
         let mutable den: float = 0.0
         i <- 0
         while i < (Seq.length (train_user)) do
-            num <- num + ((_idx weights (i)) * (_idx train_user (i)))
-            den <- den + (_idx weights (i))
+            num <- num + ((_idx weights (int i)) * (_idx train_user (int i)))
+            den <- den + (_idx weights (int i))
             i <- i + 1
         __ret <- num / den
         raise Return
@@ -314,7 +312,7 @@ and set_at_float (xs: float array) (idx: int) (value: float) =
             if i = idx then
                 res <- Array.append res [|value|]
             else
-                res <- Array.append res [|(_idx xs (i))|]
+                res <- Array.append res [|(_idx xs (int i))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -328,10 +326,10 @@ and sort_float (xs: float array) =
         let mutable res: float array = xs
         let mutable i: int = 1
         while i < (Seq.length (res)) do
-            let key: float = _idx res (i)
+            let key: float = _idx res (int i)
             let mutable j: int = i - 1
-            while (j >= 0) && ((_idx res (j)) > key) do
-                res <- set_at_float (res) (j + 1) (_idx res (j))
+            while (j >= 0) && ((_idx res (int j)) > key) do
+                res <- set_at_float (res) (j + 1) (_idx res (int j))
                 j <- j - 1
             res <- set_at_float (res) (j + 1) (key)
             i <- i + 1
@@ -351,9 +349,9 @@ and percentile (data: float array) (q: float) =
         let idx: int = floor_int (pos)
         let frac: float = pos - (int_to_float (idx))
         if (idx + 1) < n then
-            __ret <- ((_idx sorted (idx)) * (1.0 - frac)) + ((_idx sorted (idx + 1)) * frac)
+            __ret <- ((_idx sorted (int idx)) * (1.0 - frac)) + ((_idx sorted (int (idx + 1))) * frac)
             raise Return
-        __ret <- _idx sorted (idx)
+        __ret <- _idx sorted (int idx)
         raise Return
         __ret
     with
@@ -379,7 +377,7 @@ and data_safety_checker (list_vote: float array) (actual_result: float) =
         let mutable not_safe: int = 0
         let mutable i: int = 0
         while i < (Seq.length (list_vote)) do
-            let v: float = _idx list_vote (i)
+            let v: float = _idx list_vote (int i)
             if v > actual_result then
                 safe <- not_safe + 1
             else
@@ -399,10 +397,10 @@ and main () =
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let vote: float array = unbox<float array> [|linear_regression_prediction (unbox<float array> [|2.0; 3.0; 4.0; 5.0|]) (unbox<float array> [|5.0; 3.0; 4.0; 6.0|]) (unbox<float array> [|3.0; 1.0; 2.0; 4.0|]) (unbox<float array> [|2.0|]) (unbox<float array> [|2.0|]); sarimax_predictor (unbox<float array> [|4.0; 2.0; 6.0; 8.0|]) (unbox<float array> [|3.0; 1.0; 2.0; 4.0|]) (unbox<float array> [|2.0|]); support_vector_regressor ([|[|5.0; 2.0|]; [|1.0; 5.0|]; [|6.0; 2.0|]|]) ([|[|3.0; 2.0|]|]) (unbox<float array> [|2.0; 1.0; 4.0|])|]
-        printfn "%g" (_idx vote (0))
-        printfn "%g" (_idx vote (1))
-        printfn "%g" (_idx vote (2))
-        printfn "%b" (data_safety_checker (vote) (5.0))
+        ignore (printfn "%s" (_str (_idx vote (int 0))))
+        ignore (printfn "%s" (_str (_idx vote (int 1))))
+        ignore (printfn "%s" (_str (_idx vote (int 2))))
+        ignore (printfn "%b" (data_safety_checker (vote) (5.0)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

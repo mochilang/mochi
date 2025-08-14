@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -41,6 +29,16 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
         a <- na
     a.[i] <- v
     a
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec expApprox (x: float) =
@@ -67,7 +65,7 @@ let rec expApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec sigmoid (z: float) =
+and sigmoid (z: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable z = z
     try
@@ -76,7 +74,7 @@ let rec sigmoid (z: float) =
         __ret
     with
         | Return -> __ret
-let rec dot (a: float array) (b: float array) =
+and dot (a: float array) (b: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable a = a
     let mutable b = b
@@ -84,14 +82,14 @@ let rec dot (a: float array) (b: float array) =
         let mutable s: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            s <- s + ((_idx a (i)) * (_idx b (i)))
+            s <- s + ((_idx a (int i)) * (_idx b (int i)))
             i <- i + 1
         __ret <- s
         raise Return
         __ret
     with
         | Return -> __ret
-let rec zeros (n: int) =
+and zeros (n: int) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable n = n
     try
@@ -105,7 +103,7 @@ let rec zeros (n: int) =
         __ret
     with
         | Return -> __ret
-let rec logistic_reg (alpha: float) (x: float array array) (y: float array) (iterations: int) =
+and logistic_reg (alpha: float) (x: float array array) (y: float array) (iterations: int) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable alpha = alpha
     let mutable x = x
@@ -113,23 +111,23 @@ let rec logistic_reg (alpha: float) (x: float array array) (y: float array) (ite
     let mutable iterations = iterations
     try
         let m: int = Seq.length (x)
-        let mutable n: int = Seq.length (_idx x (0))
+        let mutable n: int = Seq.length (_idx x (int 0))
         let mutable theta: float array = zeros (n)
         let mutable iter: int = 0
         while iter < iterations do
             let mutable grad: float array = zeros (n)
             let mutable i: int = 0
             while i < m do
-                let z: float = dot (_idx x (i)) (theta)
+                let z: float = dot (_idx x (int i)) (theta)
                 let h: float = sigmoid (z)
                 let mutable k: int = 0
                 while k < n do
-                    grad.[k] <- (_idx grad (k)) + ((h - (_idx y (i))) * (_idx (_idx x (i)) (k)))
+                    grad.[k] <- (_idx grad (int k)) + ((h - (_idx y (int i))) * (_idx (_idx x (int i)) (int k)))
                     k <- k + 1
                 i <- i + 1
             let mutable k2: int = 0
             while k2 < n do
-                theta <- _arrset theta (k2) ((_idx theta (k2)) - ((alpha * (_idx grad (k2))) / (float m)))
+                theta <- _arrset theta (int k2) ((_idx theta (int k2)) - ((alpha * (_idx grad (int k2))) / (float m)))
                 k2 <- k2 + 1
             iter <- iter + 1
         __ret <- theta
@@ -143,7 +141,7 @@ let alpha: float = 0.1
 let iterations: int = 1000
 let theta: float array = logistic_reg (alpha) (x) (y) (iterations)
 for i in 0 .. ((Seq.length (theta)) - 1) do
-    printfn "%g" (_idx theta (i))
+    ignore (printfn "%s" (_str (_idx theta (int i))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

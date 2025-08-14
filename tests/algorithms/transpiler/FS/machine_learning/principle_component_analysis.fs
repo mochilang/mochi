@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -70,26 +58,26 @@ let rec sqrt (x: float) =
         __ret
     with
         | Return -> __ret
-let rec mean (xs: float array) =
+and mean (xs: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable xs = xs
     try
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            sum <- sum + (_idx xs (i))
+            sum <- sum + (_idx xs (int i))
             i <- i + 1
         __ret <- sum / (float (Seq.length (xs)))
         raise Return
         __ret
     with
         | Return -> __ret
-let rec standardize (data: float array array) =
+and standardize (data: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable data = data
     try
         let n_samples: int = Seq.length (data)
-        let n_features: int = Seq.length (_idx data (0))
+        let n_features: int = Seq.length (_idx data (int 0))
         let mutable means: float array = Array.empty<float>
         let mutable stds: float array = Array.empty<float>
         let mutable j: int = 0
@@ -97,14 +85,14 @@ let rec standardize (data: float array array) =
             let mutable column: float array = Array.empty<float>
             let mutable i: int = 0
             while i < n_samples do
-                column <- Array.append column [|(_idx (_idx data (i)) (j))|]
+                column <- Array.append column [|(_idx (_idx data (int i)) (int j))|]
                 i <- i + 1
             let m: float = mean (column)
             means <- Array.append means [|m|]
             let mutable variance: float = 0.0
             let mutable k: int = 0
             while k < n_samples do
-                let diff: float = (_idx column (k)) - m
+                let diff: float = (_idx column (int k)) - m
                 variance <- variance + (diff * diff)
                 k <- k + 1
             stds <- Array.append stds [|(sqrt (variance / (float (n_samples - 1))))|]
@@ -115,7 +103,7 @@ let rec standardize (data: float array array) =
             let mutable row: float array = Array.empty<float>
             let mutable c: int = 0
             while c < n_features do
-                row <- Array.append row [|(((_idx (_idx data (r)) (c)) - (_idx means (c))) / (_idx stds (c)))|]
+                row <- Array.append row [|(((_idx (_idx data (int r)) (int c)) - (_idx means (int c))) / (_idx stds (int c)))|]
                 c <- c + 1
             standardized <- Array.append standardized [|row|]
             r <- r + 1
@@ -124,12 +112,12 @@ let rec standardize (data: float array array) =
         __ret
     with
         | Return -> __ret
-let rec covariance_matrix (data: float array array) =
+and covariance_matrix (data: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable data = data
     try
         let n_samples: int = Seq.length (data)
-        let n_features: int = Seq.length (_idx data (0))
+        let n_features: int = Seq.length (_idx data (int 0))
         let mutable cov: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < n_features do
@@ -139,7 +127,7 @@ let rec covariance_matrix (data: float array array) =
                 let mutable sum: float = 0.0
                 let mutable k: int = 0
                 while k < n_samples do
-                    sum <- sum + ((_idx (_idx data (k)) (i)) * (_idx (_idx data (k)) (j)))
+                    sum <- sum + ((_idx (_idx data (int k)) (int i)) * (_idx (_idx data (int k)) (int j)))
                     k <- k + 1
                 row <- Array.append row [|(sum / (float (n_samples - 1)))|]
                 j <- j + 1
@@ -150,33 +138,33 @@ let rec covariance_matrix (data: float array array) =
         __ret
     with
         | Return -> __ret
-let rec normalize (vec: float array) =
+and normalize (vec: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable vec = vec
     try
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (vec)) do
-            sum <- sum + ((_idx vec (i)) * (_idx vec (i)))
+            sum <- sum + ((_idx vec (int i)) * (_idx vec (int i)))
             i <- i + 1
         let n: float = sqrt (sum)
         let mutable res: float array = Array.empty<float>
         let mutable j: int = 0
         while j < (Seq.length (vec)) do
-            res <- Array.append res [|((_idx vec (j)) / n)|]
+            res <- Array.append res [|((_idx vec (int j)) / n)|]
             j <- j + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec eigen_decomposition_2x2 (matrix: float array array) =
+and eigen_decomposition_2x2 (matrix: float array array) =
     let mutable __ret : Eigen = Unchecked.defaultof<Eigen>
     let mutable matrix = matrix
     try
-        let a: float = _idx (_idx matrix (0)) (0)
-        let b: float = _idx (_idx matrix (0)) (1)
-        let mutable c: float = _idx (_idx matrix (1)) (1)
+        let a: float = _idx (_idx matrix (int 0)) (int 0)
+        let b: float = _idx (_idx matrix (int 0)) (int 1)
+        let mutable c: float = _idx (_idx matrix (int 1)) (int 1)
         let diff: float = a - c
         let discriminant: float = sqrt ((diff * diff) + ((4.0 * b) * b))
         let lambda1: float = ((a + c) + discriminant) / 2.0
@@ -191,31 +179,31 @@ let rec eigen_decomposition_2x2 (matrix: float array array) =
             v2 <- unbox<float array> [|0.0; 1.0|]
         let mutable eigenvalues: float array = unbox<float array> [|lambda1; lambda2|]
         let mutable eigenvectors: float array array = [|v1; v2|]
-        if (_idx eigenvalues (0)) < (_idx eigenvalues (1)) then
-            let tmp_val: float = _idx eigenvalues (0)
-            eigenvalues.[0] <- _idx eigenvalues (1)
+        if (_idx eigenvalues (int 0)) < (_idx eigenvalues (int 1)) then
+            let tmp_val: float = _idx eigenvalues (int 0)
+            eigenvalues.[0] <- _idx eigenvalues (int 1)
             eigenvalues.[1] <- tmp_val
-            let tmp_vec: float array = _idx eigenvectors (0)
-            eigenvectors.[0] <- _idx eigenvectors (1)
+            let tmp_vec: float array = _idx eigenvectors (int 0)
+            eigenvectors.[0] <- _idx eigenvectors (int 1)
             eigenvectors.[1] <- tmp_vec
         __ret <- { _values = eigenvalues; _vectors = eigenvectors }
         raise Return
         __ret
     with
         | Return -> __ret
-let rec transpose (matrix: float array array) =
+and transpose (matrix: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable matrix = matrix
     try
         let rows: int = Seq.length (matrix)
-        let cols: int = Seq.length (_idx matrix (0))
+        let cols: int = Seq.length (_idx matrix (int 0))
         let mutable trans: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < cols do
             let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < rows do
-                row <- Array.append row [|(_idx (_idx matrix (j)) (i))|]
+                row <- Array.append row [|(_idx (_idx matrix (int j)) (int i))|]
                 j <- j + 1
             trans <- Array.append trans [|row|]
             i <- i + 1
@@ -224,17 +212,17 @@ let rec transpose (matrix: float array array) =
         __ret
     with
         | Return -> __ret
-let rec matrix_multiply (a: float array array) (b: float array array) =
+and matrix_multiply (a: float array array) (b: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable a = a
     let mutable b = b
     try
         let rows_a: int = Seq.length (a)
-        let cols_a: int = Seq.length (_idx a (0))
+        let cols_a: int = Seq.length (_idx a (int 0))
         let rows_b: int = Seq.length (b)
-        let cols_b: int = Seq.length (_idx b (0))
+        let cols_b: int = Seq.length (_idx b (int 0))
         if cols_a <> rows_b then
-            failwith ("Incompatible matrices")
+            ignore (failwith ("Incompatible matrices"))
         let mutable result: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < rows_a do
@@ -244,7 +232,7 @@ let rec matrix_multiply (a: float array array) (b: float array array) =
                 let mutable sum: float = 0.0
                 let mutable k: int = 0
                 while k < cols_a do
-                    sum <- sum + ((_idx (_idx a (i)) (k)) * (_idx (_idx b (k)) (j)))
+                    sum <- sum + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
                     k <- k + 1
                 row <- Array.append row [|sum|]
                 j <- j + 1
@@ -255,7 +243,7 @@ let rec matrix_multiply (a: float array array) (b: float array array) =
         __ret
     with
         | Return -> __ret
-let rec apply_pca (data: float array array) (n_components: int) =
+and apply_pca (data: float array array) (n_components: int) =
     let mutable __ret : PCAResult = Unchecked.defaultof<PCAResult>
     let mutable data = data
     let mutable n_components = n_components
@@ -267,11 +255,11 @@ let rec apply_pca (data: float array array) (n_components: int) =
         let eigenvectors: float array array = eig._vectors
         let components: float array array = transpose (eigenvectors)
         let _transformed: float array array = matrix_multiply (standardized) (components)
-        let total: float = (_idx eigenvalues (0)) + (_idx eigenvalues (1))
+        let total: float = (_idx eigenvalues (int 0)) + (_idx eigenvalues (int 1))
         let mutable ratios: float array = Array.empty<float>
         let mutable i: int = 0
         while i < n_components do
-            ratios <- Array.append ratios [|((_idx eigenvalues (i)) / total)|]
+            ratios <- Array.append ratios [|((_idx eigenvalues (int i)) / total)|]
             i <- i + 1
         __ret <- { _transformed = _transformed; _variance_ratio = ratios }
         raise Return
@@ -280,13 +268,13 @@ let rec apply_pca (data: float array array) (n_components: int) =
         | Return -> __ret
 let data: float array array = [|[|2.5; 2.4|]; [|0.5; 0.7|]; [|2.2; 2.9|]; [|1.9; 2.2|]; [|3.1; 3.0|]; [|2.3; 2.7|]; [|2.0; 1.6|]; [|1.0; 1.1|]; [|1.5; 1.6|]; [|1.1; 0.9|]|]
 let mutable result: PCAResult = apply_pca (data) (2)
-printfn "%s" ("Transformed Data (first 5 rows):")
+ignore (printfn "%s" ("Transformed Data (first 5 rows):"))
 let mutable idx: int = 0
 while idx < 5 do
-    printfn "%s" (_repr (_idx (result._transformed) (idx)))
+    ignore (printfn "%s" (_repr (_idx (result._transformed) (int idx))))
     idx <- idx + 1
-printfn "%s" ("Explained Variance Ratio:")
-printfn "%s" (_repr (result._variance_ratio))
+ignore (printfn "%s" ("Explained Variance Ratio:"))
+ignore (printfn "%s" (_repr (result._variance_ratio)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

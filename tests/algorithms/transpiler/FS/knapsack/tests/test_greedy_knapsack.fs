@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:34 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -65,10 +53,10 @@ let rec calc_profit (profit: int array) (weight: int array) (max_weight: int) =
             raise Return
         let mutable i: int = 0
         while i < (Seq.length (profit)) do
-            if (_idx profit (i)) < 0 then
+            if (_idx profit (int i)) < 0 then
                 __ret <- { _ok = false; _value = 0.0; _error = "Profit can not be negative." }
                 raise Return
-            if (_idx weight (i)) < 0 then
+            if (_idx weight (int i)) < 0 then
                 __ret <- { _ok = false; _value = 0.0; _error = "Weight can not be negative." }
                 raise Return
             i <- i + 1
@@ -86,8 +74,8 @@ let rec calc_profit (profit: int array) (weight: int array) (max_weight: int) =
                     let mutable idx: int = 0 - 1
                     let mutable k: int = 0
                     while k < (Seq.length (profit)) do
-                        if not (_idx used (k)) then
-                            let ratio: float = (float (_idx profit (k))) / (float (_idx weight (k)))
+                        if not (_idx used (int k)) then
+                            let ratio: float = (float (_idx profit (int k))) / (float (_idx weight (int k)))
                             if ratio > max_ratio then
                                 max_ratio <- ratio
                                 idx <- k
@@ -95,11 +83,11 @@ let rec calc_profit (profit: int array) (weight: int array) (max_weight: int) =
                     if idx = (0 - 1) then
                         raise Break
                     used.[idx] <- true
-                    if (max_weight - limit) >= (_idx weight (idx)) then
-                        limit <- limit + (_idx weight (idx))
-                        gain <- gain + (float (_idx profit (idx)))
+                    if (max_weight - limit) >= (_idx weight (int idx)) then
+                        limit <- limit + (_idx weight (int idx))
+                        gain <- gain + (float (_idx profit (int idx)))
                     else
-                        gain <- gain + (((float (max_weight - limit)) / (float (_idx weight (idx)))) * (float (_idx profit (idx))))
+                        gain <- gain + (((float (max_weight - limit)) / (float (_idx weight (int idx)))) * (float (_idx profit (int idx))))
                         raise Break
                 with
                 | Continue -> ()
@@ -112,7 +100,7 @@ let rec calc_profit (profit: int array) (weight: int array) (max_weight: int) =
         __ret
     with
         | Return -> __ret
-let rec test_sorted () =
+and test_sorted () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let profit: int array = unbox<int array> [|10; 20; 30; 40; 50; 60|]
@@ -123,7 +111,7 @@ let rec test_sorted () =
         __ret
     with
         | Return -> __ret
-let rec test_negative_max_weight () =
+and test_negative_max_weight () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let profit: int array = unbox<int array> [|10; 20; 30; 40; 50; 60|]
@@ -134,7 +122,7 @@ let rec test_negative_max_weight () =
         __ret
     with
         | Return -> __ret
-let rec test_negative_profit_value () =
+and test_negative_profit_value () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let profit: int array = unbox<int array> [|10; -20; 30; 40; 50; 60|]
@@ -145,7 +133,7 @@ let rec test_negative_profit_value () =
         __ret
     with
         | Return -> __ret
-let rec test_negative_weight_value () =
+and test_negative_weight_value () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let profit: int array = unbox<int array> [|10; 20; 30; 40; 50; 60|]
@@ -156,7 +144,7 @@ let rec test_negative_weight_value () =
         __ret
     with
         | Return -> __ret
-let rec test_null_max_weight () =
+and test_null_max_weight () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let profit: int array = unbox<int array> [|10; 20; 30; 40; 50; 60|]
@@ -167,7 +155,7 @@ let rec test_null_max_weight () =
         __ret
     with
         | Return -> __ret
-let rec test_unequal_list_length () =
+and test_unequal_list_length () =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     try
         let profit: int array = unbox<int array> [|10; 20; 30; 40; 50|]
@@ -178,13 +166,13 @@ let rec test_unequal_list_length () =
         __ret
     with
         | Return -> __ret
-printfn "%b" (test_sorted())
-printfn "%b" (test_negative_max_weight())
-printfn "%b" (test_negative_profit_value())
-printfn "%b" (test_negative_weight_value())
-printfn "%b" (test_null_max_weight())
-printfn "%b" (test_unequal_list_length())
-printfn "%b" (true)
+ignore (printfn "%b" (test_sorted()))
+ignore (printfn "%b" (test_negative_max_weight()))
+ignore (printfn "%b" (test_negative_profit_value()))
+ignore (printfn "%b" (test_negative_weight_value()))
+ignore (printfn "%b" (test_null_max_weight()))
+ignore (printfn "%b" (test_unequal_list_length()))
+ignore (printfn "%b" (true))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

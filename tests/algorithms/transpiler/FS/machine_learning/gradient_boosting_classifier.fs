@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -42,12 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Stump = {
     mutable _feature: int
     mutable _threshold: float
@@ -72,7 +63,7 @@ let rec exp_approx (x: float) =
         __ret
     with
         | Return -> __ret
-let rec signf (x: float) =
+and signf (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -81,7 +72,7 @@ let rec signf (x: float) =
         __ret
     with
         | Return -> __ret
-let rec gradient (target: float array) (preds: float array) =
+and gradient (target: float array) (preds: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable target = target
     let mutable preds = preds
@@ -90,8 +81,8 @@ let rec gradient (target: float array) (preds: float array) =
         let mutable residuals: float array = Array.empty<float>
         let mutable i: int = 0
         while i < n do
-            let t: float = _idx target (i)
-            let y: float = _idx preds (i)
+            let t: float = _idx target (int i)
+            let y: float = _idx preds (int i)
             let exp_val: float = exp_approx (t * y)
             let res: float = (-t) / (1.0 + exp_val)
             residuals <- Array.append residuals [|res|]
@@ -101,7 +92,7 @@ let rec gradient (target: float array) (preds: float array) =
         __ret
     with
         | Return -> __ret
-let rec predict_raw (models: Stump array) (features: float array array) (learning_rate: float) =
+and predict_raw (models: Stump array) (features: float array array) (learning_rate: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable models = models
     let mutable features = features
@@ -115,14 +106,14 @@ let rec predict_raw (models: Stump array) (features: float array array) (learnin
             i <- i + 1
         let mutable m: int = 0
         while m < (Seq.length (models)) do
-            let stump: Stump = _idx models (m)
+            let stump: Stump = _idx models (int m)
             i <- 0
             while i < n do
-                let value: float = _idx (_idx features (i)) (stump._feature)
+                let value: float = _idx (_idx features (int i)) (int (stump._feature))
                 if value <= (stump._threshold) then
-                    preds.[i] <- (_idx preds (i)) + (learning_rate * (stump._left))
+                    preds.[i] <- (_idx preds (int i)) + (learning_rate * (stump._left))
                 else
-                    preds.[i] <- (_idx preds (i)) + (learning_rate * (stump._right))
+                    preds.[i] <- (_idx preds (int i)) + (learning_rate * (stump._right))
                 i <- i + 1
             m <- m + 1
         __ret <- preds
@@ -130,7 +121,7 @@ let rec predict_raw (models: Stump array) (features: float array array) (learnin
         __ret
     with
         | Return -> __ret
-let rec predict (models: Stump array) (features: float array array) (learning_rate: float) =
+and predict (models: Stump array) (features: float array array) (learning_rate: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable models = models
     let mutable features = features
@@ -140,20 +131,20 @@ let rec predict (models: Stump array) (features: float array array) (learning_ra
         let mutable result: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (raw)) do
-            result <- Array.append result [|(signf (_idx raw (i)))|]
+            result <- Array.append result [|(signf (_idx raw (int i)))|]
             i <- i + 1
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-let rec train_stump (features: float array array) (residuals: float array) =
+and train_stump (features: float array array) (residuals: float array) =
     let mutable __ret : Stump = Unchecked.defaultof<Stump>
     let mutable features = features
     let mutable residuals = residuals
     try
         let n_samples: int = Seq.length (features)
-        let n_features: int = Seq.length (_idx features (0))
+        let n_features: int = Seq.length (_idx features (int 0))
         let mutable best_feature: int = 0
         let mutable best_threshold: float = 0.0
         let mutable best_error: float = 1000000000.0
@@ -163,18 +154,18 @@ let rec train_stump (features: float array array) (residuals: float array) =
         while j < n_features do
             let mutable t_index: int = 0
             while t_index < n_samples do
-                let t: float = _idx (_idx features (t_index)) (j)
+                let t: float = _idx (_idx features (int t_index)) (int j)
                 let mutable sum_left: float = 0.0
                 let mutable count_left: int = 0
                 let mutable sum_right: float = 0.0
                 let mutable count_right: int = 0
                 let mutable i: int = 0
                 while i < n_samples do
-                    if (_idx (_idx features (i)) (j)) <= t then
-                        sum_left <- sum_left + (_idx residuals (i))
+                    if (_idx (_idx features (int i)) (int j)) <= t then
+                        sum_left <- sum_left + (_idx residuals (int i))
                         count_left <- count_left + 1
                     else
-                        sum_right <- sum_right + (_idx residuals (i))
+                        sum_right <- sum_right + (_idx residuals (int i))
                         count_right <- count_right + 1
                     i <- i + 1
                 let mutable left_val: float = 0.0
@@ -186,8 +177,8 @@ let rec train_stump (features: float array array) (residuals: float array) =
                 let mutable error: float = 0.0
                 i <- 0
                 while i < n_samples do
-                    let pred: float = if (_idx (_idx features (i)) (j)) <= t then left_val else right_val
-                    let diff: float = (_idx residuals (i)) - pred
+                    let pred: float = if (_idx (_idx features (int i)) (int j)) <= t then left_val else right_val
+                    let diff: float = (_idx residuals (int i)) - pred
                     error <- error + (diff * diff)
                     i <- i + 1
                 if error < best_error then
@@ -203,7 +194,7 @@ let rec train_stump (features: float array array) (residuals: float array) =
         __ret
     with
         | Return -> __ret
-let rec fit (n_estimators: int) (learning_rate: float) (features: float array array) (target: float array) =
+and fit (n_estimators: int) (learning_rate: float) (features: float array array) (target: float array) =
     let mutable __ret : Stump array = Unchecked.defaultof<Stump array>
     let mutable n_estimators = n_estimators
     let mutable learning_rate = learning_rate
@@ -218,7 +209,7 @@ let rec fit (n_estimators: int) (learning_rate: float) (features: float array ar
             let mutable residuals: float array = Array.empty<float>
             let mutable i: int = 0
             while i < (Seq.length (grad)) do
-                residuals <- Array.append residuals [|(-(_idx grad (i)))|]
+                residuals <- Array.append residuals [|(-(_idx grad (int i)))|]
                 i <- i + 1
             let stump: Stump = train_stump (features) (residuals)
             models <- Array.append models [|stump|]
@@ -228,7 +219,7 @@ let rec fit (n_estimators: int) (learning_rate: float) (features: float array ar
         __ret
     with
         | Return -> __ret
-let rec accuracy (preds: float array) (target: float array) =
+and accuracy (preds: float array) (target: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable preds = preds
     let mutable target = target
@@ -237,7 +228,7 @@ let rec accuracy (preds: float array) (target: float array) =
         let mutable correct: int = 0
         let mutable i: int = 0
         while i < n do
-            if (_idx preds (i)) = (_idx target (i)) then
+            if (_idx preds (int i)) = (_idx target (int i)) then
                 correct <- correct + 1
             i <- i + 1
         __ret <- (float correct) / (float n)
@@ -250,7 +241,7 @@ let target: float array = unbox<float array> [|-1.0; -1.0; 1.0; 1.0|]
 let mutable models: Stump array = fit (5) (0.5) (features) (target)
 let predictions: float array = predict (models) (features) (0.5)
 let acc: float = accuracy (predictions) (target)
-printfn "%s" ("Accuracy: " + (_str (acc)))
+ignore (printfn "%s" ("Accuracy: " + (_str (acc))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

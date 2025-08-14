@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let json (arr:obj) =
@@ -73,19 +61,19 @@ let rec expApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec transpose (mat: float array array) =
+and transpose (mat: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable mat = mat
     try
         let rows: int = Seq.length (mat)
-        let cols: int = Seq.length (_idx mat (0))
+        let cols: int = Seq.length (_idx mat (int 0))
         let mutable res: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < cols do
             let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < rows do
-                row <- Array.append row [|(_idx (_idx mat (j)) (i))|]
+                row <- Array.append row [|(_idx (_idx mat (int j)) (int i))|]
                 j <- j + 1
             res <- Array.append res [|row|]
             i <- i + 1
@@ -94,14 +82,14 @@ let rec transpose (mat: float array array) =
         __ret
     with
         | Return -> __ret
-let rec matMul (a: float array array) (b: float array array) =
+and matMul (a: float array array) (b: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable a = a
     let mutable b = b
     try
         let a_rows: int = Seq.length (a)
-        let a_cols: int = Seq.length (_idx a (0))
-        let b_cols: int = Seq.length (_idx b (0))
+        let a_cols: int = Seq.length (_idx a (int 0))
+        let b_cols: int = Seq.length (_idx b (int 0))
         let mutable res: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < a_rows do
@@ -111,7 +99,7 @@ let rec matMul (a: float array array) (b: float array array) =
                 let mutable sum: float = 0.0
                 let mutable k: int = 0
                 while k < a_cols do
-                    sum <- sum + ((_idx (_idx a (i)) (k)) * (_idx (_idx b (k)) (j)))
+                    sum <- sum + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
                     k <- k + 1
                 row <- Array.append row [|sum|]
                 j <- j + 1
@@ -122,7 +110,7 @@ let rec matMul (a: float array array) (b: float array array) =
         __ret
     with
         | Return -> __ret
-let rec matInv (mat: float array array) =
+and matInv (mat: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable mat = mat
     try
@@ -133,7 +121,7 @@ let rec matInv (mat: float array array) =
             let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < n do
-                row <- Array.append row [|(_idx (_idx mat (i)) (j))|]
+                row <- Array.append row [|(_idx (_idx mat (int i)) (int j))|]
                 j <- j + 1
             j <- 0
             while j < n do
@@ -146,20 +134,20 @@ let rec matInv (mat: float array array) =
             i <- i + 1
         let mutable col: int = 0
         while col < n do
-            let pivot: float = _idx (_idx aug (col)) (col)
+            let pivot: float = _idx (_idx aug (int col)) (int col)
             if pivot = 0.0 then
-                failwith ("Matrix is singular")
+                ignore (failwith ("Matrix is singular"))
             let mutable j: int = 0
             while j < (2 * n) do
-                aug.[col].[j] <- (_idx (_idx aug (col)) (j)) / pivot
+                aug.[col].[j] <- (_idx (_idx aug (int col)) (int j)) / pivot
                 j <- j + 1
             let mutable r: int = 0
             while r < n do
                 if r <> col then
-                    let factor: float = _idx (_idx aug (r)) (col)
+                    let factor: float = _idx (_idx aug (int r)) (int col)
                     j <- 0
                     while j < (2 * n) do
-                        aug.[r].[j] <- (_idx (_idx aug (r)) (j)) - (factor * (_idx (_idx aug (col)) (j)))
+                        aug.[r].[j] <- (_idx (_idx aug (int r)) (int j)) - (factor * (_idx (_idx aug (int col)) (int j)))
                         j <- j + 1
                 r <- r + 1
             col <- col + 1
@@ -169,7 +157,7 @@ let rec matInv (mat: float array array) =
             let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < n do
-                row <- Array.append row [|(_idx (_idx aug (i)) (j + n))|]
+                row <- Array.append row [|(_idx (_idx aug (int i)) (int (j + n)))|]
                 j <- j + 1
             inv <- Array.append inv [|row|]
             i <- i + 1
@@ -178,7 +166,7 @@ let rec matInv (mat: float array array) =
         __ret
     with
         | Return -> __ret
-let rec weight_matrix (point: float array) (x_train: float array array) (tau: float) =
+and weight_matrix (point: float array) (x_train: float array array) (tau: float) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable point = point
     let mutable x_train = x_train
@@ -203,7 +191,7 @@ let rec weight_matrix (point: float array) (x_train: float array array) (tau: fl
             let mutable diff_sq: float = 0.0
             let mutable k: int = 0
             while k < (Seq.length (point)) do
-                let diff: float = (_idx point (k)) - (_idx (_idx x_train (j)) (k))
+                let diff: float = (_idx point (int k)) - (_idx (_idx x_train (int j)) (int k))
                 diff_sq <- diff_sq + (diff * diff)
                 k <- k + 1
             weights.[j].[j] <- expApprox ((-diff_sq) / ((2.0 * tau) * tau))
@@ -213,7 +201,7 @@ let rec weight_matrix (point: float array) (x_train: float array array) (tau: fl
         __ret
     with
         | Return -> __ret
-let rec local_weight (point: float array) (x_train: float array array) (y_train: float array) (tau: float) =
+and local_weight (point: float array) (x_train: float array array) (y_train: float array) (tau: float) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable point = point
     let mutable x_train = x_train
@@ -228,7 +216,7 @@ let rec local_weight (point: float array) (x_train: float array array) (y_train:
         let mutable y_col: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < (Seq.length (y_train)) do
-            y_col <- Array.append y_col [|[|_idx y_train (i)|]|]
+            y_col <- Array.append y_col [|[|_idx y_train (int i)|]|]
             i <- i + 1
         let x_t_w_y: float array array = matMul (x_t_w) (y_col)
         __ret <- matMul (inv_part) (x_t_w_y)
@@ -236,7 +224,7 @@ let rec local_weight (point: float array) (x_train: float array array) (y_train:
         __ret
     with
         | Return -> __ret
-let rec local_weight_regression (x_train: float array array) (y_train: float array) (tau: float) =
+and local_weight_regression (x_train: float array array) (y_train: float array) (tau: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable x_train = x_train
     let mutable y_train = y_train
@@ -246,16 +234,16 @@ let rec local_weight_regression (x_train: float array array) (y_train: float arr
         let mutable preds: float array = Array.empty<float>
         let mutable i: int = 0
         while i < m do
-            let theta: float array array = local_weight (_idx x_train (i)) (x_train) (y_train) (tau)
+            let theta: float array array = local_weight (_idx x_train (int i)) (x_train) (y_train) (tau)
             let mutable weights_vec: float array = Array.empty<float>
             let mutable k: int = 0
             while k < (Seq.length (theta)) do
-                weights_vec <- Array.append weights_vec [|(_idx (_idx theta (k)) (0))|]
+                weights_vec <- Array.append weights_vec [|(_idx (_idx theta (int k)) (int 0))|]
                 k <- k + 1
             let mutable pred: float = 0.0
             let mutable j: int = 0
-            while j < (Seq.length (_idx x_train (i))) do
-                pred <- pred + ((_idx (_idx x_train (i)) (j)) * (_idx weights_vec (j)))
+            while j < (Seq.length (_idx x_train (int i))) do
+                pred <- pred + ((_idx (_idx x_train (int i)) (int j)) * (_idx weights_vec (int j)))
                 j <- j + 1
             preds <- Array.append preds [|pred|]
             i <- i + 1
@@ -267,7 +255,7 @@ let rec local_weight_regression (x_train: float array array) (y_train: float arr
 let x_train: float array array = [|[|16.99; 10.34|]; [|21.01; 23.68|]; [|24.59; 25.69|]|]
 let y_train: float array = unbox<float array> [|1.01; 1.66; 3.5|]
 let mutable preds: float array = local_weight_regression (x_train) (y_train) (0.6)
-json (preds)
+ignore (json (preds))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

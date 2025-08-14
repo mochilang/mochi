@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -41,6 +29,16 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
         a <- na
     a.[i] <- v
     a
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _repr v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -83,12 +81,12 @@ and xgboost (features: float array array) (_target: float array) (test_features:
             let mutable residuals: float array = Array.empty<float>
             let mutable j: int = 0
             while j < (Seq.length (_target)) do
-                residuals <- Array.append residuals [|((_idx _target (j)) - (_idx predictions (j)))|]
+                residuals <- Array.append residuals [|((_idx _target (int j)) - (_idx predictions (int j)))|]
                 j <- j + 1
             let mutable sum_feat: float = 0.0
             j <- 0
             while j < (Seq.length (features)) do
-                sum_feat <- sum_feat + (_idx (_idx features (j)) (0))
+                sum_feat <- sum_feat + (_idx (_idx features (int j)) (int 0))
                 j <- j + 1
             let _threshold: float = sum_feat / (float (Seq.length (features)))
             let mutable left_sum: float = 0.0
@@ -97,11 +95,11 @@ and xgboost (features: float array array) (_target: float array) (test_features:
             let mutable right_count: int = 0
             j <- 0
             while j < (Seq.length (features)) do
-                if (_idx (_idx features (j)) (0)) <= _threshold then
-                    left_sum <- left_sum + (_idx residuals (j))
+                if (_idx (_idx features (int j)) (int 0)) <= _threshold then
+                    left_sum <- left_sum + (_idx residuals (int j))
                     left_count <- left_count + 1
                 else
-                    right_sum <- right_sum + (_idx residuals (j))
+                    right_sum <- right_sum + (_idx residuals (int j))
                     right_count <- right_count + 1
                 j <- j + 1
             let mutable _left_value: float = 0.0
@@ -112,10 +110,10 @@ and xgboost (features: float array array) (_target: float array) (test_features:
                 _right_value <- right_sum / (float right_count)
             j <- 0
             while j < (Seq.length (features)) do
-                if (_idx (_idx features (j)) (0)) <= _threshold then
-                    predictions.[j] <- (_idx predictions (j)) + (learning_rate * _left_value)
+                if (_idx (_idx features (int j)) (int 0)) <= _threshold then
+                    predictions.[j] <- (_idx predictions (int j)) + (learning_rate * _left_value)
                 else
-                    predictions.[j] <- (_idx predictions (j)) + (learning_rate * _right_value)
+                    predictions.[j] <- (_idx predictions (int j)) + (learning_rate * _right_value)
                 j <- j + 1
             trees <- Array.append trees [|{ _threshold = _threshold; _left_value = _left_value; _right_value = _right_value }|]
             est <- est + 1
@@ -125,10 +123,10 @@ and xgboost (features: float array array) (_target: float array) (test_features:
             let mutable pred: float = 0.0
             let mutable k: int = 0
             while k < (Seq.length (trees)) do
-                if (_idx (_idx test_features (t)) (0)) <= ((_idx trees (k))._threshold) then
-                    pred <- pred + (learning_rate * ((_idx trees (k))._left_value))
+                if (_idx (_idx test_features (int t)) (int 0)) <= ((_idx trees (int k))._threshold) then
+                    pred <- pred + (learning_rate * ((_idx trees (int k))._left_value))
                 else
-                    pred <- pred + (learning_rate * ((_idx trees (k))._right_value))
+                    pred <- pred + (learning_rate * ((_idx trees (int k))._right_value))
                 k <- k + 1
             preds <- Array.append preds [|pred|]
             t <- t + 1
@@ -145,7 +143,7 @@ and mean_absolute_error (y_true: float array) (y_pred: float array) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (y_true)) do
-            let mutable diff: float = (_idx y_true (i)) - (_idx y_pred (i))
+            let mutable diff: float = (_idx y_true (int i)) - (_idx y_pred (int i))
             if diff < 0.0 then
                 diff <- -diff
             sum <- sum + diff
@@ -163,7 +161,7 @@ and mean_squared_error (y_true: float array) (y_pred: float array) =
         let mutable sum: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (y_true)) do
-            let mutable diff: float = (_idx y_true (i)) - (_idx y_pred (i))
+            let mutable diff: float = (_idx y_true (int i)) - (_idx y_pred (int i))
             sum <- sum + (diff * diff)
             i <- i + 1
         __ret <- sum / (float (Seq.length (y_true)))
@@ -183,12 +181,12 @@ and main () =
         let x_test: float array array = [|[|1.5|]; [|3.5|]|]
         let y_test: float array = unbox<float array> [|2.5; 4.5|]
         let mutable predictions: float array = xgboost (x_train) (y_train) (x_test)
-        printfn "%s" ("Predictions:")
-        printfn "%s" (_repr (predictions))
-        printfn "%s" ("Mean Absolute Error:")
-        printfn "%g" (mean_absolute_error (y_test) (predictions))
-        printfn "%s" ("Mean Square Error:")
-        printfn "%g" (mean_squared_error (y_test) (predictions))
+        ignore (printfn "%s" ("Predictions:"))
+        ignore (printfn "%s" (_repr (predictions)))
+        ignore (printfn "%s" ("Mean Absolute Error:"))
+        ignore (printfn "%s" (_str (mean_absolute_error (y_test) (predictions))))
+        ignore (printfn "%s" ("Mean Square Error:"))
+        ignore (printfn "%s" (_str (mean_squared_error (y_test) (predictions))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

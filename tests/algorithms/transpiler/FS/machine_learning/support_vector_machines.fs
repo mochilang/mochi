@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -58,14 +46,14 @@ let rec dot (a: float array) (b: float array) =
         let mutable s: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            s <- s + ((_idx a (i)) * (_idx b (i)))
+            s <- s + ((_idx a (int i)) * (_idx b (int i)))
             i <- i + 1
         __ret <- s
         raise Return
         __ret
     with
         | Return -> __ret
-let rec new_svc (_lr: float) (_lambda: float) (_epochs: int) =
+and new_svc (_lr: float) (_lambda: float) (_epochs: int) =
     let mutable __ret : SVC = Unchecked.defaultof<SVC>
     let mutable _lr = _lr
     let mutable _lambda = _lambda
@@ -76,13 +64,13 @@ let rec new_svc (_lr: float) (_lambda: float) (_epochs: int) =
         __ret
     with
         | Return -> __ret
-let rec fit (model: SVC) (xs: float array array) (ys: int array) =
+and fit (model: SVC) (xs: float array array) (ys: int array) =
     let mutable __ret : SVC = Unchecked.defaultof<SVC>
     let mutable model = model
     let mutable xs = xs
     let mutable ys = ys
     try
-        let n_features: int = Seq.length (_idx xs (0))
+        let n_features: int = Seq.length (_idx xs (int 0))
         let mutable w: float array = Array.empty<float>
         let mutable i: int = 0
         while i < n_features do
@@ -93,19 +81,19 @@ let rec fit (model: SVC) (xs: float array array) (ys: int array) =
         while epoch < (model._epochs) do
             let mutable j: int = 0
             while j < (Seq.length (xs)) do
-                let x: float array = _idx xs (j)
-                let y: float = float (_idx ys (j))
+                let x: float array = _idx xs (int j)
+                let y: float = float (_idx ys (int j))
                 let prod: float = (dot (w) (x)) + b
                 if (y * prod) < 1.0 then
                     let mutable k: int = 0
                     while k < (Seq.length (w)) do
-                        w.[k] <- (_idx w (k)) + ((model._lr) * ((y * (_idx x (k))) - ((2.0 * (model._lambda)) * (_idx w (k)))))
+                        w.[k] <- (_idx w (int k)) + ((model._lr) * ((y * (_idx x (int k))) - ((2.0 * (model._lambda)) * (_idx w (int k)))))
                         k <- k + 1
                     b <- b + ((model._lr) * y)
                 else
                     let mutable k: int = 0
                     while k < (Seq.length (w)) do
-                        w.[k] <- (_idx w (k)) - ((model._lr) * ((2.0 * (model._lambda)) * (_idx w (k))))
+                        w.[k] <- (_idx w (int k)) - ((model._lr) * ((2.0 * (model._lambda)) * (_idx w (int k))))
                         k <- k + 1
                 j <- j + 1
             epoch <- epoch + 1
@@ -114,7 +102,7 @@ let rec fit (model: SVC) (xs: float array array) (ys: int array) =
         __ret
     with
         | Return -> __ret
-let rec predict (model: SVC) (x: float array) =
+and predict (model: SVC) (x: float array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable model = model
     let mutable x = x
@@ -133,9 +121,9 @@ let xs: float array array = [|[|0.0; 1.0|]; [|0.0; 2.0|]; [|1.0; 1.0|]; [|1.0; 2
 let ys: int array = unbox<int array> [|1; 1; -1; -1|]
 let ``base``: SVC = new_svc (0.01) (0.01) (1000)
 let model: SVC = fit (``base``) (xs) (ys)
-printfn "%d" (predict (model) (unbox<float array> [|0.0; 1.0|]))
-printfn "%d" (predict (model) (unbox<float array> [|1.0; 1.0|]))
-printfn "%d" (predict (model) (unbox<float array> [|2.0; 2.0|]))
+ignore (printfn "%d" (predict (model) (unbox<float array> [|0.0; 1.0|])))
+ignore (printfn "%d" (predict (model) (unbox<float array> [|1.0; 1.0|])))
+ignore (printfn "%d" (predict (model) (unbox<float array> [|2.0; 2.0|])))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

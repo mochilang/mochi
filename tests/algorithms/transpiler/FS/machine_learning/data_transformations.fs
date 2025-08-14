@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,27 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec floor (x: float) =
@@ -54,7 +45,7 @@ let rec floor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec pow10 (n: int) =
+and pow10 (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable n = n
     try
@@ -68,7 +59,7 @@ let rec pow10 (n: int) =
         __ret
     with
         | Return -> __ret
-let rec round (x: float) (n: int) =
+and round (x: float) (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable n = n
@@ -80,7 +71,7 @@ let rec round (x: float) (n: int) =
         __ret
     with
         | Return -> __ret
-let rec sqrtApprox (x: float) =
+and sqrtApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -94,7 +85,7 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec mean (data: float array) =
+and mean (data: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable data = data
     try
@@ -102,25 +93,25 @@ let rec mean (data: float array) =
         let mutable i: int = 0
         let n: int = Seq.length (data)
         while i < n do
-            total <- total + (_idx data (i))
+            total <- total + (_idx data (int i))
             i <- i + 1
         __ret <- total / (float n)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec stdev (data: float array) =
+and stdev (data: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable data = data
     try
         let n: int = Seq.length (data)
         if n <= 1 then
-            failwith ("data length must be > 1")
+            ignore (failwith ("data length must be > 1"))
         let m: float = mean (data)
         let mutable sum_sq: float = 0.0
         let mutable i: int = 0
         while i < n do
-            let diff: float = (_idx data (i)) - m
+            let diff: float = (_idx data (int i)) - m
             sum_sq <- sum_sq + (diff * diff)
             i <- i + 1
         __ret <- sqrtApprox (sum_sq / (float (n - 1)))
@@ -128,7 +119,7 @@ let rec stdev (data: float array) =
         __ret
     with
         | Return -> __ret
-let rec normalization (data: float array) (ndigits: int) =
+and normalization (data: float array) (ndigits: int) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable data = data
     let mutable ndigits = ndigits
@@ -140,7 +131,7 @@ let rec normalization (data: float array) (ndigits: int) =
         let mutable i: int = 0
         let n: int = Seq.length (data)
         while i < n do
-            let norm: float = ((_idx data (i)) - x_min) / denom
+            let norm: float = ((_idx data (int i)) - x_min) / denom
             result <- Array.append result [|(round (norm) (ndigits))|]
             i <- i + 1
         __ret <- result
@@ -148,7 +139,7 @@ let rec normalization (data: float array) (ndigits: int) =
         __ret
     with
         | Return -> __ret
-let rec standardization (data: float array) (ndigits: int) =
+and standardization (data: float array) (ndigits: int) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable data = data
     let mutable ndigits = ndigits
@@ -159,7 +150,7 @@ let rec standardization (data: float array) (ndigits: int) =
         let mutable i: int = 0
         let n: int = Seq.length (data)
         while i < n do
-            let z: float = ((_idx data (i)) - mu) / sigma
+            let z: float = ((_idx data (int i)) - mu) / sigma
             result <- Array.append result [|(round (z) (ndigits))|]
             i <- i + 1
         __ret <- result
@@ -167,10 +158,10 @@ let rec standardization (data: float array) (ndigits: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (normalization (unbox<float array> [|2.0; 7.0; 10.0; 20.0; 30.0; 50.0|]) (3)))
-printfn "%s" (_str (normalization (unbox<float array> [|5.0; 10.0; 15.0; 20.0; 25.0|]) (3)))
-printfn "%s" (_str (standardization (unbox<float array> [|2.0; 7.0; 10.0; 20.0; 30.0; 50.0|]) (3)))
-printfn "%s" (_str (standardization (unbox<float array> [|5.0; 10.0; 15.0; 20.0; 25.0|]) (3)))
+ignore (printfn "%s" (_str (normalization (unbox<float array> [|2.0; 7.0; 10.0; 20.0; 30.0; 50.0|]) (3))))
+ignore (printfn "%s" (_str (normalization (unbox<float array> [|5.0; 10.0; 15.0; 20.0; 25.0|]) (3))))
+ignore (printfn "%s" (_str (standardization (unbox<float array> [|2.0; 7.0; 10.0; 20.0; 30.0; 50.0|]) (3))))
+ignore (printfn "%s" (_str (standardization (unbox<float array> [|5.0; 10.0; 15.0; 20.0; 25.0|]) (3))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

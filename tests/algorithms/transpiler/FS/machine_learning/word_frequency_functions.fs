@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Break
 exception Continue
@@ -22,27 +22,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let LOWER: string = "abcdefghijklmnopqrstuvwxyz"
@@ -88,7 +79,7 @@ let rec to_lowercase (s: string) =
         __ret
     with
         | Return -> __ret
-let rec is_punct (c: string) =
+and is_punct (c: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable c = c
     try
@@ -103,7 +94,7 @@ let rec is_punct (c: string) =
         __ret
     with
         | Return -> __ret
-let rec clean_text (text: string) (keep_newlines: bool) =
+and clean_text (text: string) (keep_newlines: bool) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable text = text
     let mutable keep_newlines = keep_newlines
@@ -126,7 +117,7 @@ let rec clean_text (text: string) (keep_newlines: bool) =
         __ret
     with
         | Return -> __ret
-let rec split (s: string) (sep: string) =
+and split (s: string) (sep: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable s = s
     let mutable sep = sep
@@ -148,7 +139,7 @@ let rec split (s: string) (sep: string) =
         __ret
     with
         | Return -> __ret
-let rec contains (s: string) (sub: string) =
+and contains (s: string) (sub: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable s = s
     let mutable sub = sub
@@ -192,7 +183,7 @@ let rec contains (s: string) (sub: string) =
         __ret
     with
         | Return -> __ret
-let rec floor (x: float) =
+and floor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -204,7 +195,7 @@ let rec floor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec round3 (x: float) =
+and round3 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -213,7 +204,7 @@ let rec round3 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec ln (x: float) =
+and ln (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -230,7 +221,7 @@ let rec ln (x: float) =
         __ret
     with
         | Return -> __ret
-let rec log10 (x: float) =
+and log10 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -239,7 +230,7 @@ let rec log10 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec term_frequency (term: string) (document: string) =
+and term_frequency (term: string) (document: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable term = term
     let mutable document = document
@@ -250,7 +241,7 @@ let rec term_frequency (term: string) (document: string) =
         let mutable count: int = 0
         let mutable i: int = 0
         while i < (Seq.length (tokens)) do
-            if ((_idx tokens (i)) <> "") && ((_idx tokens (i)) = t) then
+            if ((_idx tokens (int i)) <> "") && ((_idx tokens (int i)) = t) then
                 count <- count + 1
             i <- i + 1
         __ret <- count
@@ -258,7 +249,7 @@ let rec term_frequency (term: string) (document: string) =
         __ret
     with
         | Return -> __ret
-let rec document_frequency (term: string) (corpus: string) =
+and document_frequency (term: string) (corpus: string) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable term = term
     let mutable corpus = corpus
@@ -269,7 +260,7 @@ let rec document_frequency (term: string) (corpus: string) =
         let mutable matches: int = 0
         let mutable i: int = 0
         while i < (Seq.length (docs)) do
-            if contains (_idx docs (i)) (t) then
+            if contains (_idx docs (int i)) (t) then
                 matches <- matches + 1
             i <- i + 1
         __ret <- unbox<int array> [|matches; Seq.length (docs)|]
@@ -277,7 +268,7 @@ let rec document_frequency (term: string) (corpus: string) =
         __ret
     with
         | Return -> __ret
-let rec inverse_document_frequency (df: int) (n: int) (smoothing: bool) =
+and inverse_document_frequency (df: int) (n: int) (smoothing: bool) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable df = df
     let mutable n = n
@@ -285,44 +276,44 @@ let rec inverse_document_frequency (df: int) (n: int) (smoothing: bool) =
     try
         if smoothing then
             if n = 0 then
-                failwith ("log10(0) is undefined.")
+                ignore (failwith ("log10(0) is undefined."))
             let ratio: float = (float n) / (1.0 + (float df))
             let l: float = log10 (ratio)
             let result: float = round3 (1.0 + l)
-            printfn "%g" (result)
+            ignore (printfn "%s" (_str (result)))
             __ret <- result
             raise Return
         if df = 0 then
-            failwith ("df must be > 0")
+            ignore (failwith ("df must be > 0"))
         if n = 0 then
-            failwith ("log10(0) is undefined.")
+            ignore (failwith ("log10(0) is undefined."))
         let ratio: float = (float n) / (float df)
         let l: float = log10 (ratio)
         let result: float = round3 (l)
-        printfn "%g" (result)
+        ignore (printfn "%s" (_str (result)))
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-let rec tf_idf (tf: int) (idf: float) =
+and tf_idf (tf: int) (idf: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable tf = tf
     let mutable idf = idf
     try
         let prod: float = (float tf) * idf
         let result: float = round3 (prod)
-        printfn "%g" (result)
+        ignore (printfn "%s" (_str (result)))
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%d" (term_frequency ("to") ("To be, or not to be"))
+ignore (printfn "%d" (term_frequency ("to") ("To be, or not to be")))
 let corpus: string = "This is the first document in the corpus.\nThIs is the second document in the corpus.\nTHIS is the third document in the corpus."
-printfn "%s" (_str (document_frequency ("first") (corpus)))
+ignore (printfn "%s" (_str (document_frequency ("first") (corpus))))
 let idf_val: float = inverse_document_frequency (1) (3) (false)
-tf_idf (2) (idf_val)
+ignore (tf_idf (2) (idf_val))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

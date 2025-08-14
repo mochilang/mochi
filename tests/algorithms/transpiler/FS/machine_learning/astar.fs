@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Break
 exception Continue
@@ -22,27 +22,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Point = {
     mutable _x: int
     mutable _y: int
@@ -74,7 +65,7 @@ let rec get_neighbours (p: Point) (x_limit: int) (y_limit: int) =
         __ret
     with
         | Return -> __ret
-let rec contains (nodes: Node array) (p: Point) =
+and contains (nodes: Node array) (p: Point) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable nodes = nodes
     let mutable p = p
@@ -88,7 +79,7 @@ let rec contains (nodes: Node array) (p: Point) =
         __ret
     with
         | Return -> __ret
-let rec get_node (nodes: Node array) (p: Point) =
+and get_node (nodes: Node array) (p: Point) =
     let mutable __ret : Node = Unchecked.defaultof<Node>
     let mutable nodes = nodes
     let mutable p = p
@@ -102,7 +93,7 @@ let rec get_node (nodes: Node array) (p: Point) =
         __ret
     with
         | Return -> __ret
-let rec astar (x_limit: int) (y_limit: int) (start: Point) (goal: Point) =
+and astar (x_limit: int) (y_limit: int) (start: Point) (goal: Point) =
     let mutable __ret : Point array = Unchecked.defaultof<Point array>
     let mutable x_limit = x_limit
     let mutable y_limit = y_limit
@@ -112,22 +103,22 @@ let rec astar (x_limit: int) (y_limit: int) (start: Point) (goal: Point) =
         let mutable ``open``: Node array = Array.empty<Node>
         let mutable closed: Node array = Array.empty<Node>
         ``open`` <- Array.append ``open`` [|{ _pos = start; _parent = { _x = 0 - 1; _y = 0 - 1 }; _g = 0; _h = 0; _f = 0 }|]
-        let mutable current: Node = _idx ``open`` (0)
+        let mutable current: Node = _idx ``open`` (int 0)
         try
             while (Seq.length (``open``)) > 0 do
                 try
                     let mutable min_index: int = 0
                     let mutable i: int = 1
                     while i < (Seq.length (``open``)) do
-                        if ((_idx ``open`` (i))._f) < ((_idx ``open`` (min_index))._f) then
+                        if ((_idx ``open`` (int i))._f) < ((_idx ``open`` (int min_index))._f) then
                             min_index <- i
                         i <- i + 1
-                    current <- _idx ``open`` (min_index)
+                    current <- _idx ``open`` (int min_index)
                     let mutable new_open: Node array = Array.empty<Node>
                     let mutable j: int = 0
                     while j < (Seq.length (``open``)) do
                         if j <> min_index then
-                            new_open <- Array.append new_open [|(_idx ``open`` (j))|]
+                            new_open <- Array.append new_open [|(_idx ``open`` (int j))|]
                         j <- j + 1
                     ``open`` <- new_open
                     closed <- Array.append closed [|current|]
@@ -171,14 +162,14 @@ let rec astar (x_limit: int) (y_limit: int) (start: Point) (goal: Point) =
         let mutable rev: Point array = Array.empty<Point>
         let mutable k: int = (Seq.length (path)) - 1
         while k >= 0 do
-            rev <- Array.append rev [|(_idx path (k))|]
+            rev <- Array.append rev [|(_idx path (int k))|]
             k <- k - 1
         __ret <- rev
         raise Return
         __ret
     with
         | Return -> __ret
-let rec create_world (x_limit: int) (y_limit: int) =
+and create_world (x_limit: int) (y_limit: int) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable x_limit = x_limit
     let mutable y_limit = y_limit
@@ -198,22 +189,22 @@ let rec create_world (x_limit: int) (y_limit: int) =
         __ret
     with
         | Return -> __ret
-let rec mark_path (world: int array array) (path: Point array) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and mark_path (world: int array array) (path: Point array) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable world = world
     let mutable path = path
     try
         for p in path do
-            world.[p._x].[p._y] <- 1
+            world.[(p._x)].[(p._y)] <- 1
         __ret
     with
         | Return -> __ret
-let rec print_world (world: int array array) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and print_world (world: int array array) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable world = world
     try
         for row in world do
-            printfn "%s" (_str (row))
+            ignore (printfn "%s" (_str (row)))
         __ret
     with
         | Return -> __ret
@@ -222,10 +213,10 @@ let world_y: int = 5
 let start: Point = { _x = 0; _y = 0 }
 let goal: Point = { _x = 4; _y = 4 }
 let mutable path: Point array = astar (world_x) (world_y) (start) (goal)
-printfn "%s" (((((((("path from (" + (_str (start._x))) + ", ") + (_str (start._y))) + ") to (") + (_str (goal._x))) + ", ") + (_str (goal._y))) + ")")
+ignore (printfn "%s" (((((((("path from (" + (_str (start._x))) + ", ") + (_str (start._y))) + ") to (") + (_str (goal._x))) + ", ") + (_str (goal._y))) + ")"))
 let mutable world: int array array = create_world (world_x) (world_y)
-mark_path (world) (path)
-print_world (world)
+ignore (mark_path (world) (path))
+ignore (print_world (world))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

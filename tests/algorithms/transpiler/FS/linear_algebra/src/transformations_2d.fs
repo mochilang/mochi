@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:34 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,27 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let PI: float = 3.141592653589793
@@ -55,7 +46,7 @@ let rec floor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec modf (x: float) (m: float) =
+and modf (x: float) (m: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable m = m
@@ -65,7 +56,7 @@ let rec modf (x: float) (m: float) =
         __ret
     with
         | Return -> __ret
-let rec sin_taylor (angle: float) =
+and sin_taylor (angle: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable angle = angle
     try
@@ -86,7 +77,7 @@ let rec sin_taylor (angle: float) =
         __ret
     with
         | Return -> __ret
-let rec cos_taylor (angle: float) =
+and cos_taylor (angle: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable angle = angle
     try
@@ -107,18 +98,18 @@ let rec cos_taylor (angle: float) =
         __ret
     with
         | Return -> __ret
-let rec matrix_to_string (m: float array array) =
+and matrix_to_string (m: float array array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable m = m
     try
         let mutable s: string = "["
         let mutable i: int = 0
         while i < (Seq.length (m)) do
-            let mutable row: float array = _idx m (i)
+            let mutable row: float array = _idx m (int i)
             s <- s + "["
             let mutable j: int = 0
             while j < (Seq.length (row)) do
-                s <- s + (_str (_idx row (j)))
+                s <- s + (_str (_idx row (int j)))
                 if j < ((Seq.length (row)) - 1) then
                     s <- s + ", "
                 j <- j + 1
@@ -132,7 +123,7 @@ let rec matrix_to_string (m: float array array) =
         __ret
     with
         | Return -> __ret
-let rec scaling (f: float) =
+and scaling (f: float) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable f = f
     try
@@ -141,7 +132,7 @@ let rec scaling (f: float) =
         __ret
     with
         | Return -> __ret
-let rec rotation (angle: float) =
+and rotation (angle: float) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable angle = angle
     try
@@ -152,7 +143,7 @@ let rec rotation (angle: float) =
         __ret
     with
         | Return -> __ret
-let rec projection (angle: float) =
+and projection (angle: float) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable angle = angle
     try
@@ -164,7 +155,7 @@ let rec projection (angle: float) =
         __ret
     with
         | Return -> __ret
-let rec reflection (angle: float) =
+and reflection (angle: float) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable angle = angle
     try
@@ -176,10 +167,10 @@ let rec reflection (angle: float) =
         __ret
     with
         | Return -> __ret
-printfn "%s" ("    scaling(5) = " + (matrix_to_string (scaling (5.0))))
-printfn "%s" ("  rotation(45) = " + (matrix_to_string (rotation (45.0))))
-printfn "%s" ("projection(45) = " + (matrix_to_string (projection (45.0))))
-printfn "%s" ("reflection(45) = " + (matrix_to_string (reflection (45.0))))
+ignore (printfn "%s" ("    scaling(5) = " + (matrix_to_string (scaling (5.0)))))
+ignore (printfn "%s" ("  rotation(45) = " + (matrix_to_string (rotation (45.0)))))
+ignore (printfn "%s" ("projection(45) = " + (matrix_to_string (projection (45.0)))))
+ignore (printfn "%s" ("reflection(45) = " + (matrix_to_string (reflection (45.0)))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

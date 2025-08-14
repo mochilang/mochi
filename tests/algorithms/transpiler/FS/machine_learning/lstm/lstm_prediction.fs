@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,27 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type LSTMWeights = {
     mutable _w_i: float
     mutable _u_i: float
@@ -86,7 +77,7 @@ let rec exp_approx (_x: float) =
         __ret
     with
         | Return -> __ret
-let rec sigmoid (_x: float) =
+and sigmoid (_x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable _x = _x
     try
@@ -95,7 +86,7 @@ let rec sigmoid (_x: float) =
         __ret
     with
         | Return -> __ret
-let rec tanh_approx (_x: float) =
+and tanh_approx (_x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable _x = _x
     try
@@ -105,7 +96,7 @@ let rec tanh_approx (_x: float) =
         __ret
     with
         | Return -> __ret
-let rec forward (seq: float array) (w: LSTMWeights) =
+and forward (seq: float array) (w: LSTMWeights) =
     let mutable __ret : LSTMState = Unchecked.defaultof<LSTMState>
     let mutable seq = seq
     let mutable w = w
@@ -118,9 +109,9 @@ let rec forward (seq: float array) (w: LSTMWeights) =
         let mutable h_arr: float array = unbox<float array> [|0.0|]
         let mutable t: int = 0
         while t < (Seq.length (seq)) do
-            let _x: float = _idx seq (t)
-            let h_prev: float = _idx h_arr (t)
-            let c_prev: float = _idx c_arr (t)
+            let _x: float = _idx seq (int t)
+            let h_prev: float = _idx h_arr (int t)
+            let c_prev: float = _idx c_arr (int t)
             let i_t: float = sigmoid ((((w._w_i) * _x) + ((w._u_i) * h_prev)) + (w._b_i))
             let f_t: float = sigmoid ((((w._w_f) * _x) + ((w._u_f) * h_prev)) + (w._b_f))
             let o_t: float = sigmoid ((((w._w_o) * _x) + ((w._u_o) * h_prev)) + (w._b_o))
@@ -139,7 +130,7 @@ let rec forward (seq: float array) (w: LSTMWeights) =
         __ret
     with
         | Return -> __ret
-let rec backward (seq: float array) (target: float) (w: LSTMWeights) (s: LSTMState) (lr: float) =
+and backward (seq: float array) (target: float) (w: LSTMWeights) (s: LSTMState) (lr: float) =
     let mutable __ret : LSTMWeights = Unchecked.defaultof<LSTMWeights>
     let mutable seq = seq
     let mutable target = target
@@ -162,7 +153,7 @@ let rec backward (seq: float array) (target: float) (w: LSTMWeights) (s: LSTMSta
         let mutable dw_y: float = 0.0
         let mutable db_y: float = 0.0
         let T: int = Seq.length (seq)
-        let h_last: float = _idx (s._h) (T)
+        let h_last: float = _idx (s._h) (int T)
         let _y: float = ((w._w_y) * h_last) + (w._b_y)
         let dy: float = _y - target
         dw_y <- dy * h_last
@@ -171,13 +162,13 @@ let rec backward (seq: float array) (target: float) (w: LSTMWeights) (s: LSTMSta
         let mutable dc_next: float = 0.0
         let mutable t: int = T - 1
         while t >= 0 do
-            let i_t: float = _idx (s._i) (t)
-            let f_t: float = _idx (s._f) (t)
-            let o_t: float = _idx (s._o) (t)
-            let g_t: float = _idx (s._g) (t)
-            let c_t: float = _idx (s._c) (t + 1)
-            let c_prev: float = _idx (s._c) (t)
-            let h_prev: float = _idx (s._h) (t)
+            let i_t: float = _idx (s._i) (int t)
+            let f_t: float = _idx (s._f) (int t)
+            let o_t: float = _idx (s._o) (int t)
+            let g_t: float = _idx (s._g) (int t)
+            let c_t: float = _idx (s._c) (int (t + 1))
+            let c_prev: float = _idx (s._c) (int t)
+            let h_prev: float = _idx (s._h) (int t)
             let tanh_c: float = tanh_approx (c_t)
             let do_t: float = dh_next * tanh_c
             let da_o: float = (do_t * o_t) * (1.0 - o_t)
@@ -188,16 +179,16 @@ let rec backward (seq: float array) (target: float) (w: LSTMWeights) (s: LSTMSta
             let da_g: float = dg_t * (1.0 - (g_t * g_t))
             let df_t: float = dc * c_prev
             let da_f: float = (df_t * f_t) * (1.0 - f_t)
-            dw_i <- dw_i + (da_i * (_idx seq (t)))
+            dw_i <- dw_i + (da_i * (_idx seq (int t)))
             du_i <- du_i + (da_i * h_prev)
             db_i <- db_i + da_i
-            dw_f <- dw_f + (da_f * (_idx seq (t)))
+            dw_f <- dw_f + (da_f * (_idx seq (int t)))
             du_f <- du_f + (da_f * h_prev)
             db_f <- db_f + da_f
-            dw_o <- dw_o + (da_o * (_idx seq (t)))
+            dw_o <- dw_o + (da_o * (_idx seq (int t)))
             du_o <- du_o + (da_o * h_prev)
             db_o <- db_o + da_o
-            dw_c <- dw_c + (da_g * (_idx seq (t)))
+            dw_c <- dw_c + (da_g * (_idx seq (int t)))
             du_c <- du_c + (da_g * h_prev)
             db_c <- db_c + da_g
             dh_next <- (((da_i * (w._u_i)) + (da_f * (w._u_f))) + (da_o * (w._u_o))) + (da_g * (w._u_c))
@@ -222,7 +213,7 @@ let rec backward (seq: float array) (target: float) (w: LSTMWeights) (s: LSTMSta
         __ret
     with
         | Return -> __ret
-let rec make_samples (data: float array) (look_back: int) =
+and make_samples (data: float array) (look_back: int) =
     let mutable __ret : Samples = Unchecked.defaultof<Samples>
     let mutable data = data
     let mutable look_back = look_back
@@ -233,14 +224,14 @@ let rec make_samples (data: float array) (look_back: int) =
         while (_i + look_back) < (Seq.length (data)) do
             let seq: float array = Array.sub data _i ((_i + look_back) - _i)
             X <- Array.append X [|seq|]
-            Y <- Array.append Y [|(_idx data (_i + look_back))|]
+            Y <- Array.append Y [|(_idx data (int (_i + look_back)))|]
             _i <- _i + 1
         __ret <- { _x = X; _y = Y }
         raise Return
         __ret
     with
         | Return -> __ret
-let rec init_weights () =
+and init_weights () =
     let mutable __ret : LSTMWeights = Unchecked.defaultof<LSTMWeights>
     try
         __ret <- { _w_i = 0.1; _u_i = 0.2; _b_i = 0.0; _w_f = 0.1; _u_f = 0.2; _b_f = 0.0; _w_o = 0.1; _u_o = 0.2; _b_o = 0.0; _w_c = 0.1; _u_c = 0.2; _b_c = 0.0; _w_y = 0.1; _b_y = 0.0 }
@@ -248,7 +239,7 @@ let rec init_weights () =
         __ret
     with
         | Return -> __ret
-let rec train (data: float array) (look_back: int) (epochs: int) (lr: float) =
+and train (data: float array) (look_back: int) (epochs: int) (lr: float) =
     let mutable __ret : LSTMWeights = Unchecked.defaultof<LSTMWeights>
     let mutable data = data
     let mutable look_back = look_back
@@ -261,8 +252,8 @@ let rec train (data: float array) (look_back: int) (epochs: int) (lr: float) =
         while ep < epochs do
             let mutable j: int = 0
             while j < (Seq.length (samples._x)) do
-                let seq: float array = _idx (samples._x) (j)
-                let target: float = _idx (samples._y) (j)
+                let seq: float array = _idx (samples._x) (int j)
+                let target: float = _idx (samples._y) (int j)
                 let state: LSTMState = forward (seq) (w)
                 w <- backward (seq) (target) (w) (state) (lr)
                 j <- j + 1
@@ -272,13 +263,13 @@ let rec train (data: float array) (look_back: int) (epochs: int) (lr: float) =
         __ret
     with
         | Return -> __ret
-let rec predict (seq: float array) (w: LSTMWeights) =
+and predict (seq: float array) (w: LSTMWeights) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable seq = seq
     let mutable w = w
     try
         let state: LSTMState = forward (seq) (w)
-        let h_last: float = _idx (state._h) ((Seq.length (state._h)) - 1)
+        let h_last: float = _idx (state._h) (int ((Seq.length (state._h)) - 1))
         __ret <- ((w._w_y) * h_last) + (w._b_y)
         raise Return
         __ret
@@ -291,7 +282,7 @@ let lr: float = 0.1
 let mutable w: LSTMWeights = train (data) (look_back) (epochs) (lr)
 let test_seq: float array = unbox<float array> [|0.6; 0.7; 0.8|]
 let pred: float = predict (test_seq) (w)
-printfn "%s" ("Predicted value: " + (_str (pred)))
+ignore (printfn "%s" ("Predicted value: " + (_str (pred))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

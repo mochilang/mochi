@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 17:48 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,20 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -57,7 +55,7 @@ let rec sinApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec cosApprox (x: float) =
+and cosApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -74,7 +72,7 @@ let rec cosApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec expApprox (x: float) =
+and expApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -90,7 +88,7 @@ let rec expApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec ln (x: float) =
+and ln (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -107,7 +105,7 @@ let rec ln (x: float) =
         __ret
     with
         | Return -> __ret
-let rec log10 (x: float) =
+and log10 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -116,7 +114,7 @@ let rec log10 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec sqrtApprox (x: float) =
+and sqrtApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -133,7 +131,7 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec absf (x: float) =
+and absf (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -142,28 +140,28 @@ let rec absf (x: float) =
         __ret
     with
         | Return -> __ret
-let rec normalize (audio: float array) =
+and normalize (audio: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable audio = audio
     try
         let mutable max_val: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (audio)) do
-            let mutable v: float = absf (_idx audio (i))
+            let mutable v: float = absf (_idx audio (int i))
             if v > max_val then
                 max_val <- v
             i <- i + 1
         let mutable res: float array = Array.empty<float>
         i <- 0
         while i < (Seq.length (audio)) do
-            res <- Array.append res [|((_idx audio (i)) / max_val)|]
+            res <- Array.append res [|((_idx audio (int i)) / max_val)|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec dft (frame: float array) (bins: int) =
+and dft (frame: float array) (bins: int) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable frame = frame
     let mutable bins = bins
@@ -177,8 +175,8 @@ let rec dft (frame: float array) (bins: int) =
             let mutable n: int = 0
             while n < N do
                 let angle: float = ((((-2.0) * PI) * (float k)) * (float n)) / (float N)
-                real <- real + ((_idx frame (n)) * (cosApprox (angle)))
-                imag <- imag + ((_idx frame (n)) * (sinApprox (angle)))
+                real <- real + ((_idx frame (int n)) * (cosApprox (angle)))
+                imag <- imag + ((_idx frame (int n)) * (sinApprox (angle)))
                 n <- n + 1
             spec <- Array.append spec [|((real * real) + (imag * imag))|]
             k <- k + 1
@@ -187,7 +185,7 @@ let rec dft (frame: float array) (bins: int) =
         __ret
     with
         | Return -> __ret
-let rec triangular_filters (bins: int) (spectrum_size: int) =
+and triangular_filters (bins: int) (spectrum_size: int) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable bins = bins
     let mutable spectrum_size = spectrum_size
@@ -195,7 +193,7 @@ let rec triangular_filters (bins: int) (spectrum_size: int) =
         let mutable filters: float array array = Array.empty<float array>
         let mutable b: int = 0
         while b < bins do
-            let center: int = _floordiv ((b + 1) * spectrum_size) (bins + 1)
+            let center: int = _floordiv (int ((b + 1) * spectrum_size)) (int (bins + 1))
             let mutable filt: float array = Array.empty<float>
             let mutable i: int = 0
             while i < spectrum_size do
@@ -213,7 +211,7 @@ let rec triangular_filters (bins: int) (spectrum_size: int) =
         __ret
     with
         | Return -> __ret
-let rec dot (mat: float array array) (vec: float array) =
+and dot (mat: float array array) (vec: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable mat = mat
     let mutable vec = vec
@@ -224,7 +222,7 @@ let rec dot (mat: float array array) (vec: float array) =
             let mutable sum: float = 0.0
             let mutable j: int = 0
             while j < (Seq.length (vec)) do
-                sum <- sum + ((_idx (_idx mat (i)) (j)) * (_idx vec (j)))
+                sum <- sum + ((_idx (_idx mat (int i)) (int j)) * (_idx vec (int j)))
                 j <- j + 1
             res <- Array.append res [|sum|]
             i <- i + 1
@@ -233,7 +231,7 @@ let rec dot (mat: float array array) (vec: float array) =
         __ret
     with
         | Return -> __ret
-let rec discrete_cosine_transform (dct_filter_num: int) (filter_num: int) =
+and discrete_cosine_transform (dct_filter_num: int) (filter_num: int) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable dct_filter_num = dct_filter_num
     let mutable filter_num = filter_num
@@ -257,7 +255,7 @@ let rec discrete_cosine_transform (dct_filter_num: int) (filter_num: int) =
         __ret
     with
         | Return -> __ret
-let rec mfcc (audio: float array) (bins: int) (dct_num: int) =
+and mfcc (audio: float array) (bins: int) (dct_num: int) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable audio = audio
     let mutable bins = bins
@@ -270,7 +268,7 @@ let rec mfcc (audio: float array) (bins: int) (dct_num: int) =
         let mutable logfb: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (energies)) do
-            logfb <- Array.append logfb [|(10.0 * (log10 ((_idx energies (i)) + 0.0000000001)))|]
+            logfb <- Array.append logfb [|(10.0 * (log10 ((_idx energies (int i)) + 0.0000000001)))|]
             i <- i + 1
         let dct_basis: float array array = discrete_cosine_transform (dct_num) (bins)
         let mutable res: float array = dot (dct_basis) (logfb)
@@ -291,7 +289,7 @@ while n < size do
     n <- n + 1
 let coeffs: float array = mfcc (audio) (5) (3)
 for c in coeffs do
-    printfn "%g" (c)
+    ignore (printfn "%s" (_str (c)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
