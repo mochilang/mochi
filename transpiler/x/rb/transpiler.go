@@ -2431,7 +2431,7 @@ func (j *JoinExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(")
 	j.List.emit(e)
 	io.WriteString(e.w, ")")
-	io.WriteString(e.w, ".map{ |x| if x.nil? then 'None' elsif x == true then 'True' elsif x == false then 'False' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| \"'#{k}': #{v.is_a?(String) ? '\\'' + v + '\\'' : v.to_s}\" }.join(', ') + '}' else x end }.join(' ')")
+	io.WriteString(e.w, ".map{ |x| if x.nil? then 'None' elsif x == true then 'True' elsif x == false then 'False' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| \"'#{k}': #{v.is_a?(String) ? '\\'' + v + '\\'' : v.to_s}\" }.join(', ') + '}' else x.to_s end }.join(' ')")
 }
 
 // FormatList renders a list as "[a b]" for printing.
