@@ -933,7 +933,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 						lhsType = StringType{}
 					}
 				default:
-					return errNotIndexable(s.Assign.Pos, lhsType)
+					if IsAnyType(lhsType) {
+						// Allow indexing on dynamic values in
+						// assignments, propagating `any`.
+						lhsType = AnyType{}
+					} else {
+						return errNotIndexable(s.Assign.Pos, lhsType)
+					}
 				}
 			}
 		}
@@ -1203,11 +1209,14 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		params := []Type{}
 		for _, p := range s.Fun.Params {
 			if p.Type == nil {
-				return errParamMissingType(s.Fun.Pos, p.Name)
+				// Permit functions without explicit parameter
+				// annotations by defaulting them to `any`.
+				params = append(params, AnyType{})
+			} else {
+				params = append(params, resolveTypeRef(p.Type, env))
 			}
-			params = append(params, resolveTypeRef(p.Type, env))
 		}
-		var ret Type = VoidType{}
+		var ret Type = AnyType{}
 		if s.Fun.Return != nil {
 			ret = resolveTypeRef(s.Fun.Return, env)
 		}
@@ -1427,24 +1436,15 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 }
 
 func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, error) {
-	if _, ok := left.(AnyType); ok {
-		if op == "+" && unify(right, StringType{}, nil) {
+	if IsAnyType(left) || IsAnyType(right) {
+		if op == "+" && (unify(left, StringType{}, nil) || unify(right, StringType{}, nil)) {
 			return StringType{}, nil
 		}
 		switch op {
-		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
-			return nil, errAnyOperator(pos, op)
-		default:
+		case "+", "-", "*", "/", "%":
 			return AnyType{}, nil
-		}
-	}
-	if _, ok := right.(AnyType); ok {
-		if op == "+" && unify(left, StringType{}, nil) {
-			return StringType{}, nil
-		}
-		switch op {
-		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
-			return nil, errAnyOperator(pos, op)
+		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+			return BoolType{}, nil
 		default:
 			return AnyType{}, nil
 		}
@@ -1628,7 +1628,13 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				typ = StringType{}
 
 			default:
-				return nil, errNotIndexable(p.Target.Pos, typ)
+				if IsAnyType(typ) {
+					// Allow dynamic indexing on values of unknown
+					// type, propagating the `any` type forward.
+					typ = AnyType{}
+				} else {
+					return nil, errNotIndexable(p.Target.Pos, typ)
+				}
 			}
 		} else if call := op.Call; call != nil {
 			ft, ok := typ.(FuncType)
@@ -2082,9 +2088,14 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 	paramTypes := make([]Type, len(f.Params))
 	for i, p := range f.Params {
 		if p.Type == nil {
-			return nil, errParamMissingType(pos, p.Name)
+			// Default missing parameter types to `any` rather than
+			// failing. This allows algorithms that omit explicit
+			// parameter annotations to type-check, falling back to
+			// dynamic behaviour.
+			paramTypes[i] = AnyType{}
+		} else {
+			paramTypes[i] = resolveTypeRef(p.Type, env)
 		}
-		paramTypes[i] = resolveTypeRef(p.Type, env)
 	}
 
 	var declaredRet Type
