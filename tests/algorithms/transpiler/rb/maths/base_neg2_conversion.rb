@@ -125,63 +125,27 @@ end
 __name__ = '__main__'
 start_mem = _mem()
 start = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
-  def join(xs)
-    s = ""
-    i = 0
-    while i < _len(xs)
-      s = _add(s, (__tmp1 = xs; __tmp1.is_a?(Hash) ? __tmp1[i] : _idx(__tmp1, i)))
-      i = _add(i, 1)
+  def decimal_to_negative_base_2(num)
+    if _eq(num, 0)
+      return 0
     end
-    return s
-  end
-  def breadth_first_search(graph, start)
-    explored = {}
-    explored[start] = true
-    result = [start]
-    queue = [start]
-    while _len(queue) > 0
-      v = (__tmp2 = queue; __tmp2.is_a?(Hash) ? __tmp2[0] : _idx(__tmp2, 0))
-      queue = queue[1..._len(queue)]
-      children = (__tmp3 = graph; __tmp3.is_a?(Hash) ? __tmp3[v] : _idx(__tmp3, v))
-      i = 0
-      while i < _len(children)
-        w = (__tmp4 = children; __tmp4.is_a?(Hash) ? __tmp4[i] : _idx(__tmp4, i))
-        if !(_has(explored, w))
-          explored[w] = true
-          result = (result + [w])
-          queue = (queue + [w])
-        end
-        i = _add(i, 1)
+    n = num
+    ans = ""
+    while !_eq(n, 0)
+      rem = n % (-2)
+      n = n / (-2)
+      if rem < 0
+        rem = _add(rem, 2)
+        n = _add(n, 1)
       end
+      ans = _add(_str(rem), ans)
     end
-    return result
+    return (ans).to_i
   end
-  def breadth_first_search_with_deque(graph, start)
-    visited = {}
-    visited[start] = true
-    result = [start]
-    queue = [start]
-    head = 0
-    while head < _len(queue)
-      v = (__tmp5 = queue; __tmp5.is_a?(Hash) ? __tmp5[head] : _idx(__tmp5, head))
-      head = _add(head, 1)
-      children = (__tmp6 = graph; __tmp6.is_a?(Hash) ? __tmp6[v] : _idx(__tmp6, v))
-      i = 0
-      while i < _len(children)
-        child = (__tmp7 = children; __tmp7.is_a?(Hash) ? __tmp7[i] : _idx(__tmp7, i))
-        if !(_has(visited, child))
-          visited[child] = true
-          result = (result + [child])
-          queue = (queue + [child])
-        end
-        i = _add(i, 1)
-      end
-    end
-    return result
-  end
-  $G = {"A" => ["B", "C"], "B" => ["A", "D", "E"], "C" => ["A", "F"], "D" => ["B"], "E" => ["B", "F"], "F" => ["C", "E"]}
-  puts(join(breadth_first_search($G, "A")))
-  puts(join(breadth_first_search_with_deque($G, "A")))
+  puts(decimal_to_negative_base_2(0))
+  puts(decimal_to_negative_base_2(-19))
+  puts(decimal_to_negative_base_2(4))
+  puts(decimal_to_negative_base_2(7))
 end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}
