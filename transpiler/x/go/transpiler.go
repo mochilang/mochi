@@ -163,6 +163,21 @@ func toGoFieldName(name string) string {
 	return n
 }
 
+func fromGoFieldName(name string) string {
+	var b strings.Builder
+	for i, r := range name {
+		if unicode.IsUpper(r) {
+			if i > 0 {
+				b.WriteByte('_')
+			}
+			b.WriteRune(unicode.ToLower(r))
+		} else {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
 var goKeywords = map[string]struct{}{
 	"break": {}, "case": {}, "chan": {}, "const": {}, "continue": {},
 	"default": {}, "defer": {}, "else": {}, "fallthrough": {},
@@ -6001,7 +6016,24 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				default:
 					if types.IsAnyType(t) {
 						idxType := types.TypeOfExpr(idx.Start, env)
-						if !types.IsStringType(idxType) {
+						if fe, ok := expr.(*FieldExpr); ok {
+							orig := fromGoFieldName(fe.Name)
+							if gt, ok := fieldTypeGuess[orig]; ok && strings.HasPrefix(gt, "map[") {
+								expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: gt}, Index: iex}
+								if p := strings.Index(gt, "]"); p >= 0 {
+									t = toTypeFromGoType(strings.TrimSpace(gt[p+1:]))
+								} else {
+									t = types.AnyType{}
+								}
+							} else if !types.IsStringType(idxType) {
+								usesIndex = true
+								expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]int"}, Index: iex, AllowNegative: true}
+								t = types.IntType{}
+							} else {
+								expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+								t = types.AnyType{}
+							}
+						} else if !types.IsStringType(idxType) {
 							usesIndex = true
 							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]int"}, Index: iex, AllowNegative: true}
 							t = types.IntType{}
