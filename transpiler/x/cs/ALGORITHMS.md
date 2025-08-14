@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-14 16:24 GMT+7
+Last updated: 2025-08-14 17:14 GMT+7
 
 ## Algorithms Golden Test Checklist (1019/1077)
 | Index | Name | Status | Duration | Memory |
@@ -407,7 +407,7 @@ Last updated: 2025-08-14 16:24 GMT+7
 | 398 | graphs/bellman_ford | ✓ | 1.0µs | 14.00KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 1.0µs | 22.81KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 2.0ms | 347.66KB |
-| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 125.08KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0µs | 105.73KB |
 | 402 | graphs/bidirectional_search | ✓ | 3.0ms | 25.75KB |
 | 403 | graphs/boruvka | error |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 4.0ms | 19.71KB |
