@@ -332,45 +332,50 @@ func SetBenchMain(v bool) { benchMain = v }
 // defines a function with one of these names we rename the function and all
 // call sites to avoid redeclaration errors.
 var phpReserved = map[string]struct{}{
-	"shuffle":       {},
-	"join":          {},
-	"list":          {},
-	"pow":           {},
-	"abs":           {},
-	"ord":           {},
-	"chr":           {},
-	"key":           {},
-	"exp":           {},
-	"hypot":         {},
-	"floor":         {},
-	"ceil":          {},
-	"round":         {},
-	"fmod":          {},
-	"parseIntStr":   {},
-	"repeat":        {},
-	"rand":          {},
-	"random_int":    {},
-	"sqrt":          {},
-	"crc32":         {},
-	"xor":           {},
-	"base64_encode": {},
-	"base64_decode": {},
-	"trim":          {},
-	"copy":          {},
-	"serialize":     {},
-	"unserialize":   {},
-	"extract":       {},
-	"new":           {},
-	"New":           {},
-	"echo":          {},
-	"sin":           {},
-	"cos":           {},
-	"tan":           {},
-	"log":           {},
-	"log10":         {},
-	"pi":            {},
-	"time":          {},
-	"date":          {},
+	"shuffle":         {},
+	"join":            {},
+	"list":            {},
+	"pow":             {},
+	"abs":             {},
+	"ord":             {},
+	"chr":             {},
+	"key":             {},
+	"exp":             {},
+	"hypot":           {},
+	"floor":           {},
+	"ceil":            {},
+	"round":           {},
+	"fmod":            {},
+	"parseIntStr":     {},
+	"repeat":          {},
+	"rand":            {},
+	"random_int":      {},
+	"sqrt":            {},
+	"crc32":           {},
+	"xor":             {},
+	"base64_encode":   {},
+	"base64_decode":   {},
+	"trim":            {},
+	"copy":            {},
+	"serialize":       {},
+	"unserialize":     {},
+	"extract":         {},
+	"new":             {},
+	"New":             {},
+	"echo":            {},
+	"sin":             {},
+	"cos":             {},
+	"tan":             {},
+	"log":             {},
+	"log10":           {},
+	"socket_bind":     {},
+	"socket_listen":   {},
+	"socket_accept":   {},
+	"socket_shutdown": {},
+	"socket_close":    {},
+	"pi":              {},
+	"time":            {},
+	"date":            {},
 }
 
 func init() {
@@ -398,6 +403,7 @@ func sanitizeVarName(name string) string {
 var renameMap map[string]string
 var closureNames = map[string]bool{}
 var funcRefParams = map[string][]bool{}
+var funcReturnRef = map[string]bool{}
 var groupStack []string
 var structStack []string
 var globalNames []string
@@ -560,6 +566,17 @@ func (s *LetStmt) emit(w io.Writer) {
 	if _, ok := s.Value.(*ClosureExpr); ok {
 		fmt.Fprintf(w, "$%s = null;\n", sanitizeVarName(s.Name))
 		fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
+	} else if call, ok := s.Value.(*CallExpr); ok {
+		name := call.Func
+		if newName, ok := renameMap[name]; ok {
+			name = newName
+		}
+		if funcReturnRef[name] {
+			fmt.Fprintf(w, "$%s =& ", sanitizeVarName(s.Name))
+			call.emit(w)
+			return
+		}
+		fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
 	} else {
 		fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
 	}
@@ -604,6 +621,7 @@ type FuncDecl struct {
 	Params    []string
 	RefParams []bool
 	Body      []Stmt
+	ReturnRef bool
 }
 
 func gatherLocals(stmts []Stmt, locals map[string]struct{}) {
@@ -1198,8 +1216,56 @@ func markRefParams(body []Stmt, params []string) []bool {
 	return ref
 }
 
+func returnsRef(body []Stmt, params []string, refFlags []bool) bool {
+	idx := map[string]int{}
+	for i, p := range params {
+		idx[p] = i
+	}
+	var ret bool
+	var walkStmt func(Stmt)
+	walkStmt = func(s Stmt) {
+		switch st := s.(type) {
+		case *ReturnStmt:
+			if ex, ok := st.Value.(*IndexExpr); ok {
+				if v, ok := ex.X.(*Var); ok {
+					if i, ok := idx[v.Name]; ok && i < len(refFlags) && refFlags[i] {
+						ret = true
+					}
+				}
+			}
+		case *IfStmt:
+			for _, t := range st.Then {
+				walkStmt(t)
+			}
+			for _, e := range st.Else {
+				walkStmt(e)
+			}
+		case *WhileStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		}
+	}
+	for _, st := range body {
+		walkStmt(st)
+	}
+	return ret
+}
+
 func (f *FuncDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "function %s(", f.Name)
+	if f.ReturnRef {
+		fmt.Fprintf(w, "function &%s(", f.Name)
+	} else {
+		fmt.Fprintf(w, "function %s(", f.Name)
+	}
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -1334,6 +1400,17 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
+	if call, ok := s.Value.(*CallExpr); ok {
+		name := call.Func
+		if newName, ok := renameMap[name]; ok {
+			name = newName
+		}
+		if funcReturnRef[name] {
+			fmt.Fprintf(w, "$%s =& ", sanitizeVarName(s.Name))
+			call.emit(w)
+			return
+		}
+	}
 	fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
 	s.Value.emit(w)
 }
@@ -3920,6 +3997,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		refFlags = markRefParams(body, params)
+		retRef := returnsRef(body, params, refFlags)
 		mut := mutatedVars(body)
 		name := st.Fun.Name
 		if _, reserved := phpReserved[name]; reserved {
@@ -3928,6 +4006,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			name = newName
 		}
 		funcRefParams[name] = refFlags
+		funcReturnRef[name] = retRef
 		uses := []string{"&" + st.Fun.Name}
 		for _, frame := range funcStack {
 			for _, v := range frame {
@@ -3959,7 +4038,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			uses = uniq
 		}
 		if wasTop {
-			decl := &FuncDecl{Name: name, Params: params, RefParams: refFlags, Body: body}
+			decl := &FuncDecl{Name: name, Params: params, RefParams: refFlags, Body: body, ReturnRef: retRef}
 			addGlobalFunc(name)
 			return decl, nil
 		}
