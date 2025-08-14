@@ -4536,7 +4536,9 @@ func (p *Program) Emit() []byte {
 	}
 	if needNow {
 		buf.WriteString("#include <time.h>\n")
-		buf.WriteString("#include <stdlib.h>\n")
+		// <stdlib.h> is already included at the top of the file, so avoid
+		// emitting it again to prevent duplicate includes in the generated
+		// C source when benchmarking helpers are enabled.
 		buf.WriteString("static int seeded_now = 0;\n")
 		buf.WriteString("static long long now_seed = 0;\n")
 		buf.WriteString("static long long _now(void) {\n")
