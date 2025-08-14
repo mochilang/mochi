@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-14 18:14 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -55,7 +43,7 @@ let rec contains_int (xs: int array) (x: int) =
     try
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            if (_idx xs (i)) = x then
+            if (_idx xs (int i)) = x then
                 __ret <- true
                 raise Return
             i <- i + 1
@@ -64,14 +52,14 @@ let rec contains_int (xs: int array) (x: int) =
         __ret
     with
         | Return -> __ret
-let rec contains_string (xs: string array) (x: string) =
+and contains_string (xs: string array) (x: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable xs = xs
     let mutable x = x
     try
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            if (_idx xs (i)) = x then
+            if (_idx xs (int i)) = x then
                 __ret <- true
                 raise Return
             i <- i + 1
@@ -80,7 +68,7 @@ let rec contains_string (xs: string array) (x: string) =
         __ret
     with
         | Return -> __ret
-let rec count_int (xs: int array) (x: int) =
+and count_int (xs: int array) (x: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable xs = xs
     let mutable x = x
@@ -88,7 +76,7 @@ let rec count_int (xs: int array) (x: int) =
         let mutable cnt: int = 0
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            if (_idx xs (i)) = x then
+            if (_idx xs (int i)) = x then
                 cnt <- cnt + 1
             i <- i + 1
         __ret <- cnt
@@ -96,7 +84,7 @@ let rec count_int (xs: int array) (x: int) =
         __ret
     with
         | Return -> __ret
-let rec count_string (xs: string array) (x: string) =
+and count_string (xs: string array) (x: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable xs = xs
     let mutable x = x
@@ -104,7 +92,7 @@ let rec count_string (xs: string array) (x: string) =
         let mutable cnt: int = 0
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            if (_idx xs (i)) = x then
+            if (_idx xs (int i)) = x then
                 cnt <- cnt + 1
             i <- i + 1
         __ret <- cnt
@@ -112,7 +100,7 @@ let rec count_string (xs: string array) (x: string) =
         __ret
     with
         | Return -> __ret
-let rec sort_int (xs: int array) =
+and sort_int (xs: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable xs = xs
     try
@@ -121,9 +109,9 @@ let rec sort_int (xs: int array) =
         while i < (Seq.length (arr)) do
             let mutable j: int = i + 1
             while j < (Seq.length (arr)) do
-                if (_idx arr (j)) < (_idx arr (i)) then
-                    let tmp: int = _idx arr (i)
-                    arr.[i] <- _idx arr (j)
+                if (_idx arr (int j)) < (_idx arr (int i)) then
+                    let tmp: int = _idx arr (int i)
+                    arr.[i] <- _idx arr (int j)
                     arr.[j] <- tmp
                 j <- j + 1
             i <- i + 1
@@ -132,7 +120,7 @@ let rec sort_int (xs: int array) =
         __ret
     with
         | Return -> __ret
-let rec sort_string (xs: string array) =
+and sort_string (xs: string array) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable xs = xs
     try
@@ -141,9 +129,9 @@ let rec sort_string (xs: string array) =
         while i < (Seq.length (arr)) do
             let mutable j: int = i + 1
             while j < (Seq.length (arr)) do
-                if (_idx arr (j)) < (_idx arr (i)) then
-                    let tmp: string = _idx arr (i)
-                    arr.[i] <- _idx arr (j)
+                if (_idx arr (int j)) < (_idx arr (int i)) then
+                    let tmp: string = _idx arr (int i)
+                    arr.[i] <- _idx arr (int j)
                     arr.[j] <- tmp
                 j <- j + 1
             i <- i + 1
@@ -152,7 +140,7 @@ let rec sort_string (xs: string array) =
         __ret
     with
         | Return -> __ret
-let rec mode_int (lst: int array) =
+and mode_int (lst: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable lst = lst
     try
@@ -162,19 +150,19 @@ let rec mode_int (lst: int array) =
         let mutable counts: int array = Array.empty<int>
         let mutable i: int = 0
         while i < (Seq.length (lst)) do
-            counts <- Array.append counts [|(count_int (lst) (_idx lst (i)))|]
+            counts <- Array.append counts [|(count_int (lst) (_idx lst (int i)))|]
             i <- i + 1
         let mutable max_count: int = 0
         i <- 0
         while i < (Seq.length (counts)) do
-            if (_idx counts (i)) > max_count then
-                max_count <- _idx counts (i)
+            if (_idx counts (int i)) > max_count then
+                max_count <- _idx counts (int i)
             i <- i + 1
         let mutable modes: int array = Array.empty<int>
         i <- 0
         while i < (Seq.length (lst)) do
-            if (_idx counts (i)) = max_count then
-                let v: int = _idx lst (i)
+            if (_idx counts (int i)) = max_count then
+                let v: int = _idx lst (int i)
                 if not (contains_int (modes) (v)) then
                     modes <- Array.append modes [|v|]
             i <- i + 1
@@ -183,7 +171,7 @@ let rec mode_int (lst: int array) =
         __ret
     with
         | Return -> __ret
-let rec mode_string (lst: string array) =
+and mode_string (lst: string array) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable lst = lst
     try
@@ -193,19 +181,19 @@ let rec mode_string (lst: string array) =
         let mutable counts: int array = Array.empty<int>
         let mutable i: int = 0
         while i < (Seq.length (lst)) do
-            counts <- Array.append counts [|(count_string (lst) (_idx lst (i)))|]
+            counts <- Array.append counts [|(count_string (lst) (_idx lst (int i)))|]
             i <- i + 1
         let mutable max_count: int = 0
         i <- 0
         while i < (Seq.length (counts)) do
-            if (_idx counts (i)) > max_count then
-                max_count <- _idx counts (i)
+            if (_idx counts (int i)) > max_count then
+                max_count <- _idx counts (int i)
             i <- i + 1
         let mutable modes: string array = Array.empty<string>
         i <- 0
         while i < (Seq.length (lst)) do
-            if (_idx counts (i)) = max_count then
-                let v: string = _idx lst (i)
+            if (_idx counts (int i)) = max_count then
+                let v: string = _idx lst (int i)
                 if not (contains_string (modes) (v)) then
                     modes <- Array.append modes [|v|]
             i <- i + 1
@@ -214,11 +202,11 @@ let rec mode_string (lst: string array) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_repr (mode_int (unbox<int array> [|2; 3; 4; 5; 3; 4; 2; 5; 2; 2; 4; 2; 2; 2|])))
-printfn "%s" (_repr (mode_int (unbox<int array> [|3; 4; 5; 3; 4; 2; 5; 2; 2; 4; 4; 2; 2; 2|])))
-printfn "%s" (_repr (mode_int (unbox<int array> [|3; 4; 5; 3; 4; 2; 5; 2; 2; 4; 4; 4; 2; 2; 4; 2|])))
-printfn "%s" (_repr (mode_string (unbox<string array> [|"x"; "y"; "y"; "z"|])))
-printfn "%s" (_repr (mode_string (unbox<string array> [|"x"; "x"; "y"; "y"; "z"|])))
+ignore (printfn "%s" (_repr (mode_int (unbox<int array> [|2; 3; 4; 5; 3; 4; 2; 5; 2; 2; 4; 2; 2; 2|]))))
+ignore (printfn "%s" (_repr (mode_int (unbox<int array> [|3; 4; 5; 3; 4; 2; 5; 2; 2; 4; 4; 2; 2; 2|]))))
+ignore (printfn "%s" (_repr (mode_int (unbox<int array> [|3; 4; 5; 3; 4; 2; 5; 2; 2; 4; 4; 4; 2; 2; 4; 2|]))))
+ignore (printfn "%s" (_repr (mode_string (unbox<string array> [|"x"; "y"; "y"; "z"|]))))
+ignore (printfn "%s" (_repr (mode_string (unbox<string array> [|"x"; "x"; "y"; "y"; "z"|]))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
