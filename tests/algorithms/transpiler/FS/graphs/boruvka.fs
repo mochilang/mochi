@@ -1,4 +1,4 @@
-// Generated 2025-08-13 16:41 +0700
+// Generated 2025-08-14 16:04 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -43,7 +43,6 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
