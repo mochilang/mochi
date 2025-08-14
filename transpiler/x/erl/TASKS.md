@@ -1,3 +1,207 @@
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:09 +0700)
+- zig: handle shadowed params and list types (5cabcd7927)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-14 16:26 +0700)
 - erl: regenerate algorithm outputs and deterministic headers (63755001db)
 - Regenerated golden files - 103/105 vm valid programs passing
