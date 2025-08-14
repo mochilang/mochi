@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-13 16:15 GMT+7
+Last updated: 2025-08-14 10:03 GMT+7
 
 ## Algorithms Golden Test Checklist (1014/1077)
 | Index | Name | Status | Duration | Memory |
@@ -401,11 +401,11 @@ Last updated: 2025-08-13 16:15 GMT+7
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 1.0µs | 16.95KB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 1.0µs | 14.62KB |
 | 394 | graphs/a_star | ✓ | 1.0µs | 74.44KB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 5.0ms | 1.53MB |
-| 396 | graphs/articulation_points | ✓ | 3.0ms | 24.59KB |
-| 397 | graphs/basic_graphs | ✓ | 5.0ms | 37.53KB |
-| 398 | graphs/bellman_ford | ✓ | 3.0ms | 14.89KB |
-| 399 | graphs/bi_directional_dijkstra | ✓ | 4.0ms | 22.28KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 1.0ms | 3.60MB |
+| 396 | graphs/articulation_points | ✓ | 1.0µs | 33.28KB |
+| 397 | graphs/basic_graphs | ✓ | 1.0µs | 40.17KB |
+| 398 | graphs/bellman_ford | ✓ | 1.0µs | 14.00KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 1.0µs | 22.81KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 2.0ms | 347.66KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 125.08KB |
 | 402 | graphs/bidirectional_search | ✓ | 3.0ms | 25.75KB |
