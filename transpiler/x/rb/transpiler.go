@@ -346,28 +346,39 @@ func (s *StructDefStmt) emit(e *emitter) {
 	io.WriteString(e.w, s.Name)
 	io.WriteString(e.w, ")\n")
 	e.writeIndent()
+	io.WriteString(e.w, "Object.const_set(:")
 	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, ", ")
 	if len(s.Fields) == 0 {
-		io.WriteString(e.w, " = Class.new do")
+		io.WriteString(e.w, "Class.new do")
 		e.indent++
 		e.nl()
 		e.writeIndent()
 		io.WriteString(e.w, "def initialize(); end")
-	} else {
-		io.WriteString(e.w, " = Struct.new(")
-		for i, f := range s.Fields {
-			if i > 0 {
-				io.WriteString(e.w, ", ")
-			}
-			io.WriteString(e.w, ":"+f)
+		for _, m := range s.Methods {
+			e.nl()
+			e.writeIndent()
+			m.emit(e)
 		}
-		if len(s.Methods) == 0 {
-			io.WriteString(e.w, ", keyword_init: true)")
-			return
-		}
-		io.WriteString(e.w, ", keyword_init: true) do")
-		e.indent++
+		e.indent--
+		e.nl()
+		e.writeIndent()
+		io.WriteString(e.w, "end)")
+		return
 	}
+	io.WriteString(e.w, "Struct.new(")
+	for i, f := range s.Fields {
+		if i > 0 {
+			io.WriteString(e.w, ", ")
+		}
+		io.WriteString(e.w, ":"+f)
+	}
+	if len(s.Methods) == 0 {
+		io.WriteString(e.w, ", keyword_init: true))")
+		return
+	}
+	io.WriteString(e.w, ", keyword_init: true) do")
+	e.indent++
 	for _, m := range s.Methods {
 		e.nl()
 		e.writeIndent()
@@ -376,7 +387,7 @@ func (s *StructDefStmt) emit(e *emitter) {
 	e.indent--
 	e.nl()
 	e.writeIndent()
-	io.WriteString(e.w, "end")
+	io.WriteString(e.w, "end)")
 }
 
 type StructField struct {
@@ -3206,15 +3217,15 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-        if _, err := io.WriteString(w, helperIdx+"\n"); err != nil {
-                return err
-        }
-       if _, err := io.WriteString(w, helperPow+"\n"); err != nil {
-               return err
-       }
-        if _, err := io.WriteString(w, helperLen+"\n"); err != nil {
-                return err
-        }
+	if _, err := io.WriteString(w, helperIdx+"\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperPow+"\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperLen+"\n"); err != nil {
+		return err
+	}
 	if _, err := io.WriteString(w, helperHas+"\n"); err != nil {
 		return err
 	}
