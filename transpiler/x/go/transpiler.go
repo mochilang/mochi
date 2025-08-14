@@ -2319,6 +2319,23 @@ func (a *AssertExpr) emit(w io.Writer) {
 		case *CallExpr, *IfExpr:
 			a.Expr.emit(w)
 			io.WriteString(w, ".(int)")
+		case *IndexExpr:
+			if vr, ok := ex.X.(*VarRef); ok {
+				if assignAnyVars[vr.Name] {
+					a.Expr.emit(w)
+					io.WriteString(w, ".(int)")
+				} else {
+					a.Expr.emit(w)
+				}
+			} else if _, ok := ex.X.(*CallExpr); ok {
+				a.Expr.emit(w)
+				io.WriteString(w, ".(int)")
+			} else {
+				a.Expr.emit(w)
+			}
+		case *FieldExpr:
+			a.Expr.emit(w)
+			io.WriteString(w, ".(int)")
 		default:
 			io.WriteString(w, "int(")
 			a.Expr.emit(w)
