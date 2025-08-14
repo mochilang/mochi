@@ -1783,7 +1783,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
                buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-               buf.WriteString("        return pages * @as(i64, @intCast(std.heap.pageSize()));\n")
+               buf.WriteString("        return pages * @as(i64, @intCast(std.mem.page_size));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")

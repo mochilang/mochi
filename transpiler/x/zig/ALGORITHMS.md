@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-14 17:09 +0700
+Last updated: 2025-08-14 18:07 +0700
 
-## Program Checklist (310/1077)
+## Program Checklist (304/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -413,13 +413,13 @@ Last updated: 2025-08-14 17:09 +0700
 | 404 | graphs/breadth_first_search |   |  |  |
 | 405 | graphs/breadth_first_search_2 |   |  |  |
 | 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 627µs | 256.0 KB |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 5.388ms | 768.0 KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 294µs | 256.0 KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
 | 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle | ✓ | 1.339ms | 256.0 KB |
-| 411 | graphs/connected_components | ✓ | 2.596ms | 384.0 KB |
+| 410 | graphs/check_cycle |   |  |  |
+| 411 | graphs/connected_components |   |  |  |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search | ✓ | 1.655ms | 256.0 KB |
+| 413 | graphs/depth_first_search |   |  |  |
 | 414 | graphs/depth_first_search_2 |   |  |  |
 | 415 | graphs/dijkstra |   |  |  |
 | 416 | graphs/dijkstra_2 |   |  |  |
