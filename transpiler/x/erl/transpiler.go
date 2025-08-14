@@ -63,7 +63,13 @@ mochi_member(Key, Coll) ->
         true -> maps:is_key(Key, Coll);
         _ -> case erlang:is_list(Coll) of
             true -> lists:member(Key, Coll);
-            _ when is_binary(Coll) -> string:str(Coll, Key) /= 0;
+            _ when is_binary(Coll) ->
+                K = case Key of
+                    <<_/binary>> -> Key;
+                    _ when is_integer(Key) -> <<Key>>;
+                    _ -> list_to_binary(Key)
+                end,
+                binary:match(Coll, K) /= nomatch;
             _ -> false
         end
     end.
