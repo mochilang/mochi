@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 715/1077
-Last updated: 2025-08-14 16:39 +0700
+Completed programs: 716/1077
+Last updated: 2025-08-14 17:09 +0700
 
 Checklist:
 
@@ -407,7 +407,7 @@ Checklist:
 | 398 | graphs/bellman_ford | ✓ | 463.0µs | 1.20KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 1.0ms | 2.46KB |
 | 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search | ✓ | 2.0ms | 39.53KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 39.53KB |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 824.0µs | 3.75KB |
@@ -436,7 +436,7 @@ Checklist:
 | 427 | graphs/g_topological_sort | ✓ | 592.0µs | 2.21KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 661.0µs | 1.92KB |
 | 429 | graphs/graph_adjacency_list | ✓ | 1.0ms | 5.41KB |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 878.0µs | 2.52KB |
 | 431 | graphs/graph_list | ✓ | 885.0µs | 3.27KB |
 | 432 | graphs/graphs_floyd_warshall | ✓ | 413.0µs | 1.77KB |
 | 433 | graphs/greedy_best_first |   |  |  |
