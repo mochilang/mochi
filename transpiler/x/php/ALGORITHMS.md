@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-14 10:08 GMT+7
+Last updated: 2025-08-14 15:55 GMT+7
 
 ## Algorithms Golden Test Checklist (978/1077)
 | Index | Name | Status | Duration | Memory |
@@ -414,7 +414,7 @@ Last updated: 2025-08-14 10:08 GMT+7
 | 405 | graphs/breadth_first_search_2 | ✓ | 177µs | 38.7 KB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 108µs | 38.9 KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1µs | 36.9 KB |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 257µs | 37.5 KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 96µs | 37.8 KB |
 | 409 | graphs/check_bipatrite | ✓ | 107µs | 39.6 KB |
 | 410 | graphs/check_cycle | ✓ | 111µs | 39.8 KB |
 | 411 | graphs/connected_components | ✓ | 159µs | 38.9 KB |

@@ -20,6 +20,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 function new_adjacency_list($size) {
   $g = [];
   $i = 0;
@@ -31,14 +35,14 @@ function new_adjacency_list($size) {
 }
 function add_edge(&$al, $from_vertex, $to_vertex, $weight) {
   if (!($weight == 0 || $weight == 1)) {
-  $panic('Edge weight must be either 0 or 1.');
+  _panic('Edge weight must be either 0 or 1.');
 }
   if ($to_vertex < 0 || $to_vertex >= $al['size']) {
-  $panic('Vertex indexes must be in [0; size).');
+  _panic('Vertex indexes must be in [0; size).');
 }
   $g = $al['graph'];
   $edges = $g[$from_vertex];
-  $g[$from_vertex] = _append($edges, ['destination_vertex' => $to_vertex, $weight => $weight]);
+  $g[$from_vertex] = _append($edges, ['destination_vertex' => $to_vertex, 'weight' => $weight]);
   $al['graph'] = $g;
 }
 function push_front($q, $v) {
@@ -101,7 +105,7 @@ function get_shortest_path($al, $start_vertex, $finish_vertex) {
 };
   $result = $distances[$finish_vertex];
   if ($result < 0) {
-  $panic('No path from start_vertex to finish_vertex.');
+  _panic('No path from start_vertex to finish_vertex.');
 }
   return $result;
 }

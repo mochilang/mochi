@@ -1278,6 +1278,11 @@ func (f *FuncDecl) emit(w io.Writer) {
 	fmt.Fprint(w, ") {\n")
 	if len(globalNames) > 0 {
 		fv := freeVars(f.Body, f.Params)
+		locals := map[string]struct{}{}
+		gatherLocals(f.Body, locals)
+		for _, p := range f.Params {
+			locals[p] = struct{}{}
+		}
 		vars := map[string]struct{}{}
 		for _, name := range fv {
 			if name == f.Name {
@@ -1300,15 +1305,7 @@ func (f *FuncDecl) emit(w io.Writer) {
 			if _, ok := globalFuncs[g]; ok {
 				continue
 			}
-			// skip parameters with the same name
-			skip := false
-			for _, p := range f.Params {
-				if p == g {
-					skip = true
-					break
-				}
-			}
-			if skip {
+			if _, ok := locals[g]; ok {
 				continue
 			}
 			if _, ok := vars[g]; !ok {
