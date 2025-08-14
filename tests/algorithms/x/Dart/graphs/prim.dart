@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 int INF = 1000000000;
 Map<int, List<List<int>>> connect(Map<int, List<List<int>>> graph, int a, int b, int w) {
@@ -83,16 +83,16 @@ List<List<int>> prim(Map<int, List<List<int>>> graph, int s, int n) {
     i = i + 1;
   }
     known = [...known, u];
-    for (var e in graph[u]!) {
-    dynamic v = e[0];
-    dynamic w = e[1];
+    for (List<int> e in (graph[u]!)) {
+    int v = e[0];
+    int w = e[1];
     if (!in_list(keys, v)) {
     keys = [...keys, v];
   }
-    int cur = (dist.containsKey(v) ? (dist[(v).toInt()] ?? 0) : INF);
-    if (!in_list(known, v) && w.compareTo(cur) < 0) {
-    dist[(v).toInt()] = w;
-    parent[(v).toInt()] = u;
+    int cur = (dist.containsKey(v) ? (dist[v] ?? 0) : INF);
+    if (!in_list(known, v) && w < cur) {
+    dist[v] = w;
+    parent[v] = u;
   }
   }
   }
@@ -145,13 +145,13 @@ List<List<int>> prim_heap(Map<int, List<List<int>>> graph, int s, int n) {
     int u = h[0];
     h = (h.sublist(1, h.length) as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     known = [...known, u];
-    for (var e in graph[u]!) {
-    dynamic v = e[0];
-    dynamic w = e[1];
-    int cur = (dist.containsKey(v) ? (dist[(v).toInt()] ?? 0) : INF);
-    if (!in_list(known, v) && w.compareTo(cur) < 0) {
-    dist[(v).toInt()] = w;
-    parent[(v).toInt()] = u;
+    for (List<int> e in (graph[u]!)) {
+    int v = e[0];
+    int w = e[1];
+    int cur = (dist.containsKey(v) ? (dist[v] ?? 0) : INF);
+    if (!in_list(known, v) && w < cur) {
+    dist[v] = w;
+    parent[v] = u;
   }
   }
     h = sort_heap(h, dist);

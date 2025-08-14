@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 class NodeCost {
@@ -90,11 +93,11 @@ void main() {
     result = cost;
     break;
   }
-    for (var v in G[u].keys) {
+    for (String v in (G[u] ?? {}).keys) {
     if (visited.containsKey(v)) {
     continue;
   }
-    num next_cost = cost + G[u][v];
+    int next_cost = cost + ((G[u] ?? {})[v] ?? 0);
     heap = [...heap, NodeCost(node: v, cost: next_cost)];
   }
   }
@@ -128,11 +131,11 @@ void main() {
     result2 = cost2;
     break;
   }
-    for (var v2 in G2[u2].keys) {
+    for (String v2 in (G2[u2] ?? {}).keys) {
     if (visited2.containsKey(v2)) {
     continue;
   }
-    num next_cost2 = cost2 + G2[u2][v2];
+    int next_cost2 = cost2 + ((G2[u2] ?? {})[v2] ?? 0);
     heap2 = [...heap2, NodeCost(node: v2, cost: next_cost2)];
   }
   }
@@ -166,11 +169,11 @@ void main() {
     result3 = cost3;
     break;
   }
-    for (var v3 in G3[u3].keys) {
+    for (String v3 in (G3[u3] ?? {}).keys) {
     if (visited3.containsKey(v3)) {
     continue;
   }
-    num next_cost3 = cost3 + G3[u3][v3];
+    int next_cost3 = cost3 + ((G3[u3] ?? {})[v3] ?? 0);
     heap3 = [...heap3, NodeCost(node: v3, cost: next_cost3)];
   }
   }

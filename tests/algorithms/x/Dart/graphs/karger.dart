@@ -76,11 +76,11 @@ List<String> remove_all(List<String> list, String value) {
 
 List<Pair> partition_graph(Map<String, List<String>> graph) {
   Map<String, List<String>> contracted = <String, List<String>>{};
-  for (var node in graph.keys) {
+  for (dynamic node in graph.keys) {
     contracted[node] = List<String>.from([node]);
   }
   Map<String, List<String>> graph_copy = <String, List<String>>{};
-  for (var node in graph.keys) {
+  for (dynamic node in graph.keys) {
     List<String> lst = <String>[];
     List<String> neigh = graph[node]!;
     int i = 0;

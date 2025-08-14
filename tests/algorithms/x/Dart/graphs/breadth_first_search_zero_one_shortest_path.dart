@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class Edge {
@@ -60,10 +70,10 @@ AdjacencyList new_adjacency_list(int size) {
 
 void add_edge(AdjacencyList al, int from_vertex, int to_vertex, int weight) {
   if (!(weight == 0 || weight == 1)) {
-    throw Exception("Edge weight must be either 0 or 1.");
+    _error("Edge weight must be either 0 or 1.");
   }
   if (to_vertex < 0 || to_vertex >= al.size) {
-    throw Exception("Vertex indexes must be in [0; size).");
+    _error("Vertex indexes must be in [0; size).");
   }
   List<List<Edge>> g = al.graph;
   List<Edge> edges = g[from_vertex];
@@ -130,7 +140,7 @@ int get_shortest_path(AdjacencyList al, int start_vertex, int finish_vertex) {
   }
   int result = distances[finish_vertex];
   if (result < 0) {
-    throw Exception("No path from start_vertex to finish_vertex.");
+    _error("No path from start_vertex to finish_vertex.");
   }
   return result;
 }
@@ -156,10 +166,10 @@ void main() {
   add_edge(g, 8, 10, 1);
   add_edge(g, 9, 7, 0);
   add_edge(g, 9, 10, 1);
-  print((get_shortest_path(g, 0, 3)).toString());
-  print((get_shortest_path(g, 4, 10)).toString());
-  print((get_shortest_path(g, 4, 8)).toString());
-  print((get_shortest_path(g, 0, 1)).toString());
+  print(_str(get_shortest_path(g, 0, 3)));
+  print(_str(get_shortest_path(g, 4, 10)));
+  print(_str(get_shortest_path(g, 4, 8)));
+  print(_str(get_shortest_path(g, 0, 1)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

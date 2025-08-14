@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 class QueueNode {
   String node;
@@ -86,7 +86,7 @@ MSTResult prims_algo(Map<String, Map<String, int>> graph) {
   }
   queue = new_q;
   dist[start] = 0;
-  for (var neighbour in graph[start]!.keys) {
+  for (String neighbour in (graph[start] ?? {}).keys) {
     int w = (graph[start] ?? {})[neighbour]!;
     if ((dist[neighbour] ?? 0) > (dist[start] ?? 0) + w) {
     dist[neighbour] = (dist[start] ?? 0) + w;
@@ -121,7 +121,7 @@ MSTResult prims_algo(Map<String, Map<String, int>> graph) {
     q = q + 1;
   }
     queue = tmp;
-    for (var neighbour in graph[node]!.keys) {
+    for (String neighbour in (graph[node] ?? {}).keys) {
     int w = (graph[node] ?? {})[neighbour]!;
     if ((dist[neighbour] ?? 0) > (dist[node] ?? 0) + w) {
     dist[neighbour] = (dist[node] ?? 0) + w;

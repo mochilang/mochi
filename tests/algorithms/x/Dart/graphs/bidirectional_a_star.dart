@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Pos {
   int y;
@@ -78,10 +83,10 @@ double heuristic(Pos a, Pos b) {
   int dy = a.y - b.y;
   int dx = a.x - b.x;
   if (HEURISTIC == 1) {
-    return dy.abs() + dx.abs() as double;
+    return (dy.abs() + dx.abs()).toDouble();
   }
-  double dyf = dy as double;
-  double dxf = dx as double;
+  double dyf = (dy).toDouble();
+  double dxf = (dx).toDouble();
   return sqrtApprox(dyf * dyf + dxf * dxf);
 }
 
@@ -212,7 +217,7 @@ List<Pos> astar(Pos start, Pos goal) {
     if (idx_open == 0 - 1 || tentative_g < open[idx_open].g_cost) {
     List<Pos> new_path = append_pos_list(current.path, pos);
     double h = heuristic(pos, goal);
-    double f = (tentative_g as double) + h;
+    double f = ((tentative_g).toDouble()) + h;
     if (idx_open != 0 - 1) {
     open = remove_node_at(open, idx_open);
   };
@@ -264,7 +269,7 @@ List<Pos> bidirectional_astar(Pos start, Pos goal) {
   }
     int tentative_g = current_f.g_cost + 1;
     double h = heuristic(pos, current_b.pos);
-    double f = (tentative_g as double) + h;
+    double f = ((tentative_g).toDouble()) + h;
     int idx_open = open_index_of_pos(open_f, pos);
     if (idx_open == 0 - 1 || tentative_g < open_f[idx_open].g_cost) {
     List<Pos> new_path = append_pos_list(current_f.path, pos);
@@ -285,7 +290,7 @@ List<Pos> bidirectional_astar(Pos start, Pos goal) {
   }
     int tentative_g = current_b.g_cost + 1;
     double h = heuristic(pos, current_f.pos);
-    double f = (tentative_g as double) + h;
+    double f = ((tentative_g).toDouble()) + h;
     int idx_open = open_index_of_pos(open_b, pos);
     if (idx_open == 0 - 1 || tentative_g < open_b[idx_open].g_cost) {
     List<Pos> new_path = append_pos_list(current_b.path, pos);
@@ -304,10 +309,10 @@ String path_to_string(List<Pos> path) {
   if (path.length == 0) {
     return "[]";
   }
-  String s = "[(" + (path[0].y).toString() + ", " + (path[0].x).toString() + ")";
+  String s = "[(" + _str(path[0].y) + ", " + _str(path[0].x) + ")";
   int i = 1;
   while (i < path.length) {
-    s = s + ", (" + (path[i].y).toString() + ", " + (path[i].x).toString() + ")";
+    s = s + ", (" + _str(path[i].y) + ", " + _str(path[i].x) + ")";
     i = i + 1;
   }
   s = s + "]";

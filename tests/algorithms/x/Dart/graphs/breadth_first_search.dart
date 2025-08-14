@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,24 +33,29 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 void add_edge(Map<int, List<int>> graph, int from, int to) {
   if (graph.containsKey(from)) {
-    graph[from] = ([...graph[from], to] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    graph[from] = [...(graph[from]!), to];
   } else {
     graph[from] = [to];
   }
 }
 
 void print_graph(Map<int, List<int>> graph) {
-  for (var v in graph.keys) {
+  for (dynamic v in graph.keys) {
     List<int> adj = graph[(v).toInt()]!;
-    String line = (v).toString() + "  :  ";
+    String line = _str(v) + "  :  ";
     int i = 0;
     while (i < adj.length) {
-    line = line + (adj[i]).toString();
+    line = line + _str(adj[i]);
     if (i < adj.length - 1) {
     line = line + " -> ";
   }

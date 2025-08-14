@@ -46,7 +46,7 @@ List<int>? topological_sort(Map<int, List<int>> graph) {
     indegree = [...indegree, 0];
     i = i + 1;
   }
-  for (var edges in graph.values.toList()) {
+  for (dynamic edges in graph.values.toList()) {
     int j = 0;
     while (j < edges.length) {
     dynamic v = edges[j];

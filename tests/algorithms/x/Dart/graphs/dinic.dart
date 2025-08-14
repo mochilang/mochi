@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Dinic {
   int n;
@@ -74,7 +79,7 @@ Dinic new_dinic(int n) {
     ptr = [...ptr, 0];
     q = [...q, 0];
     List<List<int>> edges = <List<int>>[];
-    adj = ([...adj, edges] as List).map((e) => ((e as List).map((e) => (e as List<int>)).toList() as List<List<int>>)).toList();
+    adj = ([...adj, edges] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e as List<int>)).toList() as List<List<int>>)).toList();
     i = i + 1;
   }
   return Dinic(n: n, lvl: lvl, ptr: ptr, q: q, adj: adj);
@@ -86,8 +91,8 @@ dynamic add_edge(Dinic g, int a, int b, int c, int rcap) {
   List<List<int>> list_b = adj[b];
   List<int> e1 = [b, list_b.length, c, 0];
   List<int> e2 = [a, list_a.length, rcap, 0];
-  list_a = ([...list_a, e1] as List).map((e) => (e as List<int>)).toList();
-  list_b = ([...list_b, e2] as List).map((e) => (e as List<int>)).toList();
+  list_a = ([...list_a, e1] as List<dynamic>).map((e) => (e as List<int>)).toList();
+  list_b = ([...list_b, e2] as List<dynamic>).map((e) => (e as List<int>)).toList();
   while (adj.length <= a) { adj.add(<List<int>>[]); } adj[a] = list_a;
   while (adj.length <= b) { adj.add(<List<int>>[]); } adj[b] = list_b;
   g.adj = adj;
@@ -209,7 +214,7 @@ void main() {
     add_edge(graph, v, v + 4, 1, 0);
     v = v + 1;
   }
-  print((max_flow(graph, source, sink)).toString());
+  print(_str(max_flow(graph, source, sink)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

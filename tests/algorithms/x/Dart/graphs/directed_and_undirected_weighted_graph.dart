@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 class DirectedGraph {
   Map<int, List<List<int>>> graph;
@@ -255,7 +255,7 @@ List<int> dg_cycle_util(DirectedGraph g, int node, Map<int, bool> visited, Map<i
     if (!visited.containsKey(neigh)) {
     res = dg_cycle_util(g, neigh, visited, rec, res);
   } else {
-    if (rec[neigh]!) {
+    if ((rec[neigh] ?? false)) {
     if (!list_contains_int(res, neigh)) {
     res = [...res, neigh];
   };
@@ -294,7 +294,7 @@ bool dg_has_cycle_util(DirectedGraph g, int node, Map<int, bool> visited, Map<in
     return true;
   };
   } else {
-    if (rec[neigh]!) {
+    if ((rec[neigh] ?? false)) {
     return true;
   };
   }
