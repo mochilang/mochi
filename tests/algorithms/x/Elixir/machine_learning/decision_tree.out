@@ -1,0 +1,66 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:71:8: Main.mean/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │       {i, total} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:96:8: Main.mean_squared_error/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {best_split, i, min_error} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:148:20: Main.train_tree/4
+
+     warning: variable "min_error" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {best_split, i, min_error} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:148:23: Main.train_tree/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 209 │       {i, y} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:209:8: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 227 │       {i, test_cases} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:227:8: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 244 │       {i, predictions} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:244:8: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 262 │       {i, sum_err} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:262:8: Main.main/0
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {v, x} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:192:8: Main.main/0
+
+Test values: [-0.7841243352741003, 0.04955055844038725, 0.6372422501444817, -0.20744953956454992, 0.5222999956458807, -0.3413255298510194, 0.30170902982354164, -0.03555064182728529, 0.774067522957921, 0.24346484523266554]
+Predictions: [-0.6978555945443465, 0.024994271356095155, 0.5686625172226896, -0.19618931896610323, 0.46832344130787834, -0.3569046771315844, 0.3002556398852492, -0.029991750904008754, 0.6942664304694428, 0.2473730348943608]
+Average error: 0.0022447959365602572
