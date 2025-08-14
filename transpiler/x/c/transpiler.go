@@ -673,6 +673,14 @@ func (c *ContinueStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "continue;\n")
 }
 
+type BlockStmt struct{ Stmts []Stmt }
+
+func (b *BlockStmt) emit(w io.Writer, indent int) {
+	for _, s := range b.Stmts {
+		s.emit(w, indent)
+	}
+}
+
 type RawStmt struct{ Code string }
 
 func (r *RawStmt) emit(w io.Writer, indent int) {
@@ -6813,6 +6821,17 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		currentVarName = ""
 		return stmt, nil
 	case s.Return != nil:
+		if m := detectMatchExpr(s.Return.Value); m != nil {
+			for _, c := range m.Cases {
+				if len(c.Block) > 0 {
+					stmt, err := compileMatchReturn(env, m)
+					if err != nil {
+						return nil, err
+					}
+					return stmt, nil
+				}
+			}
+		}
 		return &ReturnStmt{Expr: convertExpr(s.Return.Value)}, nil
 	case s.While != nil:
 		cond := convertExpr(s.While.Cond)
@@ -7199,6 +7218,55 @@ func detectFunExpr(e *parser.Expr) *parser.FunExpr {
 		return nil
 	}
 	return u.Value.Target.FunExpr
+}
+
+func detectMatchExpr(e *parser.Expr) *parser.MatchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return nil
+	}
+	return u.Value.Target.Match
+}
+
+func compileMatchReturn(env *types.Env, m *parser.MatchExpr) (Stmt, error) {
+	target := convertExpr(m.Target)
+	var top *IfStmt
+	var cur *IfStmt
+	for _, c := range m.Cases {
+		var body []Stmt
+		var err error
+		if len(c.Block) > 0 {
+			body, err = compileStmts(env, c.Block)
+			if err != nil {
+				return nil, err
+			}
+		} else if c.Result != nil {
+			body = []Stmt{&ReturnStmt{Expr: convertExpr(c.Result)}}
+		}
+		if id, ok := types.SimpleStringKey(c.Pattern); ok && id == "_" {
+			if cur == nil {
+				return &BlockStmt{Stmts: body}, nil
+			}
+			cur.Else = body
+			break
+		}
+		cond := &BinaryExpr{Op: "==", Left: target, Right: convertExpr(c.Pattern)}
+		if top == nil {
+			top = &IfStmt{Cond: cond, Then: body}
+			cur = top
+		} else {
+			nxt := &IfStmt{Cond: cond, Then: body}
+			cur.Else = []Stmt{nxt}
+			cur = nxt
+		}
+	}
+	if top == nil {
+		return &BlockStmt{}, nil
+	}
+	return top, nil
 }
 
 func gatherVarsExpr(e *parser.Expr, vars map[string]struct{}) {
