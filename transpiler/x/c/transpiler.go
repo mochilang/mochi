@@ -149,7 +149,11 @@ func SetBenchMain(v bool) { benchMain = v }
 func emitLenExpr(w io.Writer, e Expr) {
 	switch v := e.(type) {
 	case *VarRef:
-		io.WriteString(w, v.Name+"_len")
+		if t := inferExprType(currentEnv, v); strings.HasPrefix(t, "Map") {
+			io.WriteString(w, v.Name+".len")
+		} else {
+			io.WriteString(w, v.Name+"_len")
+		}
 	case *FieldExpr:
 		typ := inferExprType(currentEnv, v.Target)
 		base := strings.TrimPrefix(typ, "struct ")
@@ -178,7 +182,7 @@ func emitLenExpr(w io.Writer, e Expr) {
 		fmt.Fprintf(w, "%d", len(v.Elems))
 	case *IndexExpr:
 		if vr, ok := v.Target.(*VarRef); ok {
-			if varTypes[vr.Name] == "MapIL" {
+			if t := inferExprType(currentEnv, vr); strings.HasPrefix(t, "Map") {
 				io.WriteString(w, vr.Name+".lens[")
 				v.Index.emitExpr(w)
 				io.WriteString(w, "]")
@@ -188,10 +192,17 @@ func emitLenExpr(w io.Writer, e Expr) {
 				io.WriteString(w, "]")
 			}
 		} else if fe, ok := v.Target.(*FieldExpr); ok {
-			fe.Target.emitExpr(w)
-			io.WriteString(w, "."+fe.Name+"_lens[")
-			v.Index.emitExpr(w)
-			io.WriteString(w, "]")
+			if t := inferExprType(currentEnv, fe); strings.HasPrefix(t, "Map") {
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+".lens[")
+				v.Index.emitExpr(w)
+				io.WriteString(w, "]")
+			} else {
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+"_lens[")
+				v.Index.emitExpr(w)
+				io.WriteString(w, "]")
+			}
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -1615,18 +1626,12 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	} else if strings.HasPrefix(typ, "Map") {
 		if vr, ok := d.Value.(*VarRef); ok {
 			fmt.Fprintf(w, "%s %s = %s;\n", typ, d.Name, vr.Name)
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = %s.len;\n", d.Name, vr.Name)
 			return
 		}
-		if fe, ok := d.Value.(*FieldExpr); ok {
+		if _, ok := d.Value.(*FieldExpr); ok {
 			fmt.Fprintf(w, "%s %s = ", typ, d.Name)
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
-			fe.Target.emitExpr(w)
-			fmt.Fprintf(w, ".%s.len;\n", fe.Name)
 			return
 		}
 		io.WriteString(w, typ+" ")
@@ -1640,8 +1645,6 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "){0}")
 		}
 		io.WriteString(w, ";\n")
-		writeIndent(w, indent)
-		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
 		return
 	} else {
 		io.WriteString(w, typ)
@@ -4411,11 +4414,16 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needMapSetII {
-		buf.WriteString("static void map_set_ii(int keys[], int vals[], size_t *len, int key, int val) {\n")
-		buf.WriteString("    for (size_t i = 0; i < *len; i++) {\n")
-		buf.WriteString("        if (keys[i] == key) { vals[i] = val; return; }\n")
+		buf.WriteString("static void map_set_ii(MapII *m, int key, int val) {\n")
+		buf.WriteString("    for (size_t i = 0; i < m->len; i++) {\n")
+		buf.WriteString("        if (m->keys[i] == key) { m->vals[i] = val; return; }\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    keys[*len] = key; vals[*len] = val; (*len)++;\n")
+		buf.WriteString("    if (m->len >= m->cap) {\n")
+		buf.WriteString("        m->cap = m->cap ? m->cap * 2 : 16;\n")
+		buf.WriteString("        m->keys = realloc(m->keys, m->cap * sizeof(int));\n")
+		buf.WriteString("        m->vals = realloc(m->vals, m->cap * sizeof(int));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    m->keys[m->len] = key; m->vals[m->len] = val; m->len++;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needMapGetIS {
@@ -6626,16 +6634,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if keyT == "int" && valT == "int" {
 				needMapSetII = true
 				var buf bytes.Buffer
-				buf.WriteString("map_set_ii(")
-				if varTypes[s.Assign.Name] == "MapII" {
-					buf.WriteString(s.Assign.Name + ".keys, ")
-					buf.WriteString(s.Assign.Name + ".vals, &")
-					buf.WriteString(s.Assign.Name + ".len, ")
-				} else {
-					buf.WriteString(s.Assign.Name + "_keys, ")
-					buf.WriteString(s.Assign.Name + "_vals, &")
-					buf.WriteString(s.Assign.Name + "_len, ")
-				}
+				buf.WriteString("map_set_ii(&")
+				buf.WriteString(s.Assign.Name)
+				buf.WriteString(", ")
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
 				valExpr.emitExpr(&buf)
