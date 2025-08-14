@@ -120,8 +120,12 @@ const helperSHA256 = `
 local function _sha256(bs)
   local tmp = os.tmpname()
   local f = assert(io.open(tmp, 'wb'))
-  for i = 1, #bs do
-    f:write(string.char(bs[i]))
+  if type(bs) == 'string' then
+    f:write(bs)
+  else
+    for i = 1, #bs do
+      f:write(string.char(bs[i]))
+    end
   end
   f:close()
   local p = io.popen('sha256sum ' .. tmp)
