@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 List<int> naive_string_search(String text, String pattern) {
@@ -44,7 +47,7 @@ List<int> naive_string_search(String text, String pattern) {
     bool match_found = true;
     int j = 0;
     while (j < pat_len) {
-    if (text.substring(i + j, i + j + 1) != pattern.substring(j, j + 1)) {
+    if (_substr(text, i + j, i + j + 1) != _substr(pattern, j, j + 1)) {
     match_found = false;
     break;
   }

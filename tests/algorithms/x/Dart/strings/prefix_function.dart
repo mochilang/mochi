@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,18 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
+}
 
 List<int> prefix_function(String s) {
   List<int> pi = <int>[];
@@ -48,10 +56,10 @@ List<int> prefix_function(String s) {
   i = 1;
   while (i < s.length) {
     int j = pi[i - 1];
-    while (j > 0 && s.substring(i, i + 1) != s.substring(j, j + 1)) {
+    while (j > 0 && _substr(s, i, i + 1) != _substr(s, j, j + 1)) {
     j = pi[j - 1];
   }
-    if (s.substring(i, i + 1) == s.substring(j, j + 1)) {
+    if (_substr(s, i, i + 1) == _substr(s, j, j + 1)) {
     j = j + 1;
   }
     while (pi.length <= i) { pi.add(0); } pi[i] = j;
@@ -92,25 +100,25 @@ void test_prefix_function() {
   List<int> expected1 = [0, 1, 0, 0, 0, 1, 2, 3, 4];
   List<int> r1 = prefix_function(s1);
   if (!list_eq_int(r1, expected1)) {
-    throw Exception("prefix_function aabcdaabc failed");
+    _error("prefix_function aabcdaabc failed");
   }
   String s2 = "asdasdad";
   List<int> expected2 = [0, 0, 0, 1, 2, 3, 4, 0];
   List<int> r2 = prefix_function(s2);
   if (!list_eq_int(r2, expected2)) {
-    throw Exception("prefix_function asdasdad failed");
+    _error("prefix_function asdasdad failed");
   }
 }
 
 void test_longest_prefix() {
   if (longest_prefix("aabcdaabc") != 4) {
-    throw Exception("longest_prefix example1 failed");
+    _error("longest_prefix example1 failed");
   }
   if (longest_prefix("asdasdad") != 4) {
-    throw Exception("longest_prefix example2 failed");
+    _error("longest_prefix example2 failed");
   }
   if (longest_prefix("abcab") != 2) {
-    throw Exception("longest_prefix example3 failed");
+    _error("longest_prefix example3 failed");
   }
 }
 

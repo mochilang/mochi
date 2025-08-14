@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,13 +33,21 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 bool contains(String chars, String ch) {
   int i = 0;
   while (i < chars.length) {
-    if (chars.substring(i, i + 1) == ch) {
+    if (_substr(chars, i, i + 1) == ch) {
     return true;
   }
     i = i + 1;
@@ -51,7 +59,7 @@ String substring(String s, int start, int end) {
   String res = "";
   int i = start;
   while (i < end) {
-    res = res + s.substring(i, i + 1);
+    res = res + _substr(s, i, i + 1);
     i = i + 1;
   }
   return res;
@@ -60,10 +68,10 @@ String substring(String s, int start, int end) {
 String strip_chars(String user_string, String characters) {
   int start = 0;
   int end = user_string.length;
-  while (start < end && characters.contains(user_string.substring(start, start + 1))) {
+  while (start < end && contains(characters, _substr(user_string, start, start + 1))) {
     start = start + 1;
   }
-  while (end > start && characters.contains(user_string.substring(end - 1, end - 1 + 1))) {
+  while (end > start && contains(characters, _substr(user_string, end - 1, end - 1 + 1))) {
     end = end - 1;
   }
   return _substr(user_string, start, end);
@@ -75,16 +83,16 @@ String strip(String user_string) {
 
 void test_strip() {
   if (strip("   hello   ") != "hello") {
-    throw Exception("test1 failed");
+    _error("test1 failed");
   }
   if (strip_chars("...world...", ".") != "world") {
-    throw Exception("test2 failed");
+    _error("test2 failed");
   }
   if (strip_chars("123hello123", "123") != "hello") {
-    throw Exception("test3 failed");
+    _error("test3 failed");
   }
   if (strip("") != "") {
-    throw Exception("test4 failed");
+    _error("test4 failed");
   }
 }
 

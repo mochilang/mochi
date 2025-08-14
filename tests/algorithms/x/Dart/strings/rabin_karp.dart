@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 int alphabet_size = 256;
@@ -41,7 +44,7 @@ int modulus = 1000003;
 int index_of_char(String s, String ch) {
   int i = 0;
   while (i < s.length) {
-    if (s.substring(i, i + 1) == ch) {
+    if (_substr(s, i, i + 1) == ch) {
     return i;
   }
     i = i + 1;
@@ -88,8 +91,8 @@ bool rabin_karp(String pattern, String text) {
   int modulus_power = 1;
   int i = 0;
   while (i < p_len) {
-    p_hash = (ord(pattern.substring(i, i + 1)) + p_hash * alphabet_size) % modulus;
-    t_hash = (ord(text.substring(i, i + 1)) + t_hash * alphabet_size) % modulus;
+    p_hash = (ord(_substr(pattern, i, i + 1)) + p_hash * alphabet_size) % modulus;
+    t_hash = (ord(_substr(text, i, i + 1)) + t_hash * alphabet_size) % modulus;
     if (i != p_len - 1) {
     modulus_power = modulus_power * alphabet_size % modulus;
   }
@@ -104,7 +107,7 @@ bool rabin_karp(String pattern, String text) {
     j = j + 1;
     continue;
   }
-    t_hash = ((t_hash - ord(text.substring(j, j + 1)) * modulus_power) * alphabet_size + ord(text.substring(j + p_len, j + p_len + 1))) % modulus;
+    t_hash = ((t_hash - ord(_substr(text, j, j + 1)) * modulus_power) * alphabet_size + ord(_substr(text, j + p_len, j + p_len + 1))) % modulus;
     if (t_hash < 0) {
     t_hash = t_hash + modulus;
   }

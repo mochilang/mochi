@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,22 +33,25 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String strip_and_remove_spaces(String s) {
   int start = 0;
   int end = s.length - 1;
-  while (start < s.length && s.substring(start, start + 1) == " ") {
+  while (start < s.length && _substr(s, start, start + 1) == " ") {
     start = start + 1;
   }
-  while (end >= start && s.substring(end, end + 1) == " ") {
+  while (end >= start && _substr(s, end, end + 1) == " ") {
     end = end - 1;
   }
   String res = "";
   int i = start;
   while (i <= end) {
-    String ch = s.substring(i, i + 1);
+    String ch = _substr(s, i, i + 1);
     if (ch != " ") {
     res = res + ch;
   }
@@ -68,15 +71,15 @@ bool check_anagrams(String a, String b) {
   Map<String, int> count = <String, int>{};
   int i = 0;
   while (i < s1.length) {
-    String c1 = s1.substring(i, i + 1);
-    String c2 = s2.substring(i, i + 1);
+    String c1 = _substr(s1, i, i + 1);
+    String c2 = _substr(s2, i, i + 1);
     if (count.containsKey(c1)) {
-    count[c1] = ((count[c1] ?? 0) + 1).toInt();
+    count[c1] = (count[c1] ?? 0) + 1;
   } else {
     count[c1] = 1;
   }
     if (count.containsKey(c2)) {
-    count[c2] = ((count[c2] ?? 0) - 1).toInt();
+    count[c2] = (count[c2] ?? 0) - 1;
   } else {
     count[c2] = -1;
   }

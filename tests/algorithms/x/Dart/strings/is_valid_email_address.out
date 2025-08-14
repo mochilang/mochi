@@ -1,6 +1,19 @@
-../../../tests/algorithms/x/Dart/strings/is_valid_email_address.dart:87:7: Error: 'i' is already declared in this scope.
-  int i = 0;
-      ^
-../../../tests/algorithms/x/Dart/strings/is_valid_email_address.dart:74:7: Context: Previous declaration of 'i'.
-  int i = 0;
-      ^
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+false
+false
+false
+false
+false
+false
+false

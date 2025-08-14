@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 int ord(String ch) {
   String lower = "abcdefghijklmnopqrstuvwxyz";
@@ -44,21 +47,21 @@ int ord(String ch) {
   String digits = "0123456789";
   int i = 0;
   while (i < lower.length) {
-    if (lower.substring(i, i + 1) == ch) {
+    if (_substr(lower, i, i + 1) == ch) {
     return 97 + i;
   }
     i = i + 1;
   }
   i = 0;
   while (i < upper.length) {
-    if (upper.substring(i, i + 1) == ch) {
+    if (_substr(upper, i, i + 1) == ch) {
     return 65 + i;
   }
     i = i + 1;
   }
   i = 0;
   while (i < digits.length) {
-    if (digits.substring(i, i + 1) == ch) {
+    if (_substr(digits, i, i + 1) == ch) {
     return 48 + i;
   }
     i = i + 1;
@@ -102,7 +105,7 @@ bool is_contains_unique_chars(String input_str) {
   int bitmap = 0;
   int i = 0;
   while (i < input_str.length) {
-    int code = ord(input_str.substring(i, i + 1));
+    int code = ord(_substr(input_str, i, i + 1));
     if (rshift(bitmap, code) % 2 == 1) {
     return false;
   }

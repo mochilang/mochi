@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,15 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 String DIGITS = "0123456789";
@@ -45,12 +53,12 @@ String to_upper(String s) {
   String res = "";
   int i = 0;
   while (i < s.length) {
-    String ch = s.substring(i, i + 1);
+    String ch = _substr(s, i, i + 1);
     int j = 0;
     String converted = ch;
     while (j < LOWER.length) {
-    if (LOWER.substring(j, j + 1) == ch) {
-    converted = UPPER.substring(j, j + 1);
+    if (_substr(LOWER, j, j + 1) == ch) {
+    converted = _substr(UPPER, j, j + 1);
     break;
   }
     j = j + 1;
@@ -64,7 +72,7 @@ String to_upper(String s) {
 bool is_digit(String ch) {
   int i = 0;
   while (i < DIGITS.length) {
-    if (DIGITS.substring(i, i + 1) == ch) {
+    if (_substr(DIGITS, i, i + 1) == ch) {
     return true;
   }
     i = i + 1;
@@ -77,7 +85,7 @@ String clean_id(String spanish_id) {
   String cleaned = "";
   int i = 0;
   while (i < upper_id.length) {
-    String ch = upper_id.substring(i, i + 1);
+    String ch = _substr(upper_id, i, i + 1);
     if (ch != "-") {
     cleaned = cleaned + ch;
   }
@@ -89,21 +97,21 @@ String clean_id(String spanish_id) {
 bool is_spain_national_id(String spanish_id) {
   String sid = clean_id(spanish_id);
   if (sid.length != 9) {
-    throw Exception(ERROR_MSG);
+    _error(ERROR_MSG);
   }
   int i = 0;
   while (i < 8) {
-    if (!is_digit(sid.substring(i, i + 1))) {
-    throw Exception(ERROR_MSG);
+    if (!is_digit(_substr(sid, i, i + 1))) {
+    _error(ERROR_MSG);
   }
     i = i + 1;
   }
   int number = int.parse(_substr(sid, 0, 8));
-  String letter = sid.substring(8, 8 + 1);
+  String letter = _substr(sid, 8, 8 + 1);
   if (is_digit(letter)) {
-    throw Exception(ERROR_MSG);
+    _error(ERROR_MSG);
   }
-  String expected = LOOKUP_LETTERS.substring(number % 23, number % 23 + 1);
+  String expected = _substr(LOOKUP_LETTERS, number % 23, number % 23 + 1);
   return letter == expected;
 }
 
