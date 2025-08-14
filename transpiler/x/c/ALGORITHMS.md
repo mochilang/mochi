@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (493/1077) - Last updated 2025-08-14 10:36 +0700:
+Checklist of programs that currently transpile and run (485/1077) - Last updated 2025-08-14 13:13 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -399,12 +399,12 @@ Checklist of programs that currently transpile and run (493/1077) - Last updated
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 358us | 1.6 MB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 444us | 1.5 MB |
 | 394 | graphs/a_star | ✓ | 266us | 1.4 MB |
-| 395 | graphs/ant_colony_optimization_algorithms |  |  |  |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 3.24ms | 1.9 MB |
 | 396 | graphs/articulation_points |  |  |  |
 | 397 | graphs/basic_graphs |  |  |  |
-| 398 | graphs/bellman_ford | ✓ | 539us | 1.6 MB |
+| 398 | graphs/bellman_ford | ✓ | 516us | 1.7 MB |
 | 399 | graphs/bi_directional_dijkstra |  |  |  |
-| 400 | graphs/bidirectional_a_star | ✓ | 802us | 1.6 MB |
+| 400 | graphs/bidirectional_a_star | ✓ | 464us | 1.7 MB |
 | 401 | graphs/bidirectional_breadth_first_search |  |  |  |
 | 402 | graphs/bidirectional_search |  |  |  |
 | 403 | graphs/boruvka |  |  |  |
@@ -414,40 +414,40 @@ Checklist of programs that currently transpile and run (493/1077) - Last updated
 | 407 | graphs/breadth_first_search_shortest_path_2 |  |  |  |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |  |  |  |
 | 409 | graphs/check_bipatrite |  |  |  |
-| 410 | graphs/check_cycle | ✓ | 207us | 1.5 MB |
+| 410 | graphs/check_cycle | ✓ | 320us | 1.6 MB |
 | 411 | graphs/connected_components |  |  |  |
 | 412 | graphs/deep_clone_graph |  |  |  |
 | 413 | graphs/depth_first_search |  |  |  |
 | 414 | graphs/depth_first_search_2 |  |  |  |
 | 415 | graphs/dijkstra |  |  |  |
-| 416 | graphs/dijkstra_2 | ✓ | 274us | 1.5 MB |
-| 417 | graphs/dijkstra_algorithm | ✓ | 198us | 1.4 MB |
-| 418 | graphs/dijkstra_alternate | ✓ | 197us | 1.5 MB |
+| 416 | graphs/dijkstra_2 | ✓ | 413us | 1.6 MB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 327us | 1.5 MB |
+| 418 | graphs/dijkstra_alternate | ✓ | 685us | 1.4 MB |
 | 419 | graphs/dijkstra_binary_grid |  |  |  |
 | 420 | graphs/dinic |  |  |  |
 | 421 | graphs/directed_and_undirected_weighted_graph |  |  |  |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 219us | 1.6 MB |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink |  |  |  |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |  |  |  |
 | 424 | graphs/even_tree |  |  |  |
 | 425 | graphs/finding_bridges |  |  |  |
 | 426 | graphs/frequent_pattern_graph_miner |  |  |  |
-| 427 | graphs/g_topological_sort | ✓ | 181us | 1.6 MB |
-| 428 | graphs/gale_shapley_bigraph | ✓ | 731us | 1.5 MB |
+| 427 | graphs/g_topological_sort |  |  |  |
+| 428 | graphs/gale_shapley_bigraph |  |  |  |
 | 429 | graphs/graph_adjacency_list |  |  |  |
 | 430 | graphs/graph_adjacency_matrix |  |  |  |
 | 431 | graphs/graph_list |  |  |  |
-| 432 | graphs/graphs_floyd_warshall | ✓ | 507us | 1.6 MB |
+| 432 | graphs/graphs_floyd_warshall |  |  |  |
 | 433 | graphs/greedy_best_first |  |  |  |
 | 434 | graphs/greedy_min_vertex_cover |  |  |  |
-| 435 | graphs/kahns_algorithm_long | ✓ | 387us | 1.4 MB |
+| 435 | graphs/kahns_algorithm_long |  |  |  |
 | 436 | graphs/kahns_algorithm_topo |  |  |  |
 | 437 | graphs/karger |  |  |  |
 | 438 | graphs/lanczos_eigenvectors |  |  |  |
-| 439 | graphs/markov_chain | ✓ | 643us | 1.6 MB |
+| 439 | graphs/markov_chain |  |  |  |
 | 440 | graphs/matching_min_vertex_cover |  |  |  |
-| 441 | graphs/minimum_path_sum | ✓ | 304us | 1.6 MB |
-| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 271us | 1.5 MB |
-| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 222us | 1.5 MB |
+| 441 | graphs/minimum_path_sum |  |  |  |
+| 442 | graphs/minimum_spanning_tree_boruvka |  |  |  |
+| 443 | graphs/minimum_spanning_tree_kruskal |  |  |  |
 | 444 | graphs/minimum_spanning_tree_kruskal2 |  |  |  |
 | 445 | graphs/minimum_spanning_tree_prims |  |  |  |
 | 446 | graphs/minimum_spanning_tree_prims2 |  |  |  |

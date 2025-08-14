@@ -2615,7 +2615,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, vr.Name+".lens, ")
 			io.WriteString(w, vr.Name+".len, ")
 			i.Index.emitExpr(w)
-			if currentVarName != "" {
+			if currentVarName != "" && strings.HasSuffix(varTypes[currentVarName], "*") {
 				io.WriteString(w, ", &")
 				io.WriteString(w, currentVarName)
 				io.WriteString(w, "_len)")
@@ -2633,7 +2633,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, vr.Name+"_lens, ")
 			io.WriteString(w, vr.Name+"_len, ")
 			i.Index.emitExpr(w)
-			if currentVarName != "" {
+			if currentVarName != "" && strings.HasSuffix(varTypes[currentVarName], "*") {
 				io.WriteString(w, ", &")
 				io.WriteString(w, currentVarName)
 				io.WriteString(w, "_len)")
@@ -2706,7 +2706,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 		i.Target.emitExpr(w)
 		io.WriteString(w, ".len, ")
 		i.Index.emitExpr(w)
-		if currentVarName != "" {
+		if currentVarName != "" && strings.HasSuffix(varTypes[currentVarName], "*") {
 			io.WriteString(w, ", &")
 			io.WriteString(w, currentVarName)
 			io.WriteString(w, "_len)")
@@ -2734,9 +2734,13 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 		i.Target.emitExpr(w)
 		io.WriteString(w, ".len, ")
 		i.Index.emitExpr(w)
-		io.WriteString(w, ", &")
-		io.WriteString(w, currentVarName)
-		io.WriteString(w, "_len)")
+		if currentVarName != "" && strings.HasSuffix(varTypes[currentVarName], "*") {
+			io.WriteString(w, ", &")
+			io.WriteString(w, currentVarName)
+			io.WriteString(w, "_len)")
+		} else {
+			io.WriteString(w, ", NULL)")
+		}
 		return
 	}
 	if t := inferExprType(currentEnv, i.Target); t == "MapSD" {
@@ -9162,8 +9166,17 @@ func isConstExpr(e Expr) bool {
 	if _, ok := evalString(e); ok {
 		return true
 	}
-	if _, ok := evalList(e); ok {
-		return false
+	// Lists with constant elements can be emitted at global scope by
+	// generating static arrays. Treat such list literals as constant so
+	// map literals containing lists (e.g. map<int, list<int>>) can be
+	// hoisted out of main.
+	if lst, ok := e.(*ListLit); ok {
+		for _, el := range lst.Elems {
+			if !isConstExpr(el) {
+				return false
+			}
+		}
+		return true
 	}
 	if s, ok := e.(*StructLit); ok {
 		for _, f := range s.Fields {
