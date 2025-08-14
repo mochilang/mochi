@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-14 18:16 +0700
+Last updated: 2025-08-14 22:54 +0700
 
-## Program Checklist (309/1077)
+## Program Checklist (311/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -416,8 +416,8 @@ Last updated: 2025-08-14 18:16 +0700
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 294µs | 256.0 KB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 2.652ms | 768.0 KB |
 | 409 | graphs/check_bipatrite | ✓ | 426µs | 256.0 KB |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 410 | graphs/check_cycle | ✓ | 586µs | 256.0 KB |
+| 411 | graphs/connected_components | ✓ | 1.541ms | 512.0 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search |   |  |  |
 | 414 | graphs/depth_first_search_2 |   |  |  |
