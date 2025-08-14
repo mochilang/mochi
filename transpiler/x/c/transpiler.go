@@ -50,6 +50,7 @@ var (
 	needStrListListInt      bool
 	needStrListDouble       bool
 	needStrListListDouble   bool
+	needStrMapIL            bool
 	needJSONListListInt     bool
 	needJSONMapSD           bool
 	needUpper               bool
@@ -2525,6 +2526,13 @@ func (s *StructLit) emitExpr(w io.Writer) {
 									printed = true
 								}
 							}
+						} else if _, ok := mt.Key.(types.IntType); ok {
+							if lt, ok2 := mt.Value.(types.ListType); ok2 {
+								if _, ok3 := lt.Elem.(types.IntType); ok3 {
+									io.WriteString(w, "(MapIL){0}")
+									printed = true
+								}
+							}
 						}
 					} else if sl, okm := f.Value.(*StructLit); okm && len(sl.Fields) == 0 {
 						if _, ok := mt.Key.(types.StringType); ok {
@@ -2534,6 +2542,13 @@ func (s *StructLit) emitExpr(w io.Writer) {
 							} else if lt, ok2 := mt.Value.(types.ListType); ok2 {
 								if _, ok3 := lt.Elem.(types.StringType); ok3 {
 									io.WriteString(w, "(MapSL){0}")
+									printed = true
+								}
+							}
+						} else if _, ok := mt.Key.(types.IntType); ok {
+							if lt, ok2 := mt.Value.(types.ListType); ok2 {
+								if _, ok3 := lt.Elem.(types.IntType); ok3 {
+									io.WriteString(w, "(MapIL){0}")
 									printed = true
 								}
 							}
@@ -3370,6 +3385,23 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			return
 		}
 		t := inferExprType(currentEnv, arg)
+		if t == "MapIL" {
+			needStrMapIL = true
+			needStrListInt = true
+			needStrConcat = true
+			if _, ok := arg.(*CallExpr); ok {
+				tmp := fmt.Sprintf("__tmp%d", tempCounter)
+				tempCounter++
+				io.WriteString(w, "({MapIL "+tmp+" = ")
+				arg.emitExpr(w)
+				io.WriteString(w, "; char *__res = str_map_il("+tmp+"); __res;})")
+			} else {
+				io.WriteString(w, "str_map_il(")
+				arg.emitExpr(w)
+				io.WriteString(w, ")")
+			}
+			return
+		}
 		if t == "bigint" {
 			needStrBigInt = true
 			io.WriteString(w, "str_bigint(")
@@ -4459,6 +4491,24 @@ func (p *Program) Emit() []byte {
 	if needMapGetIL || needMapSetIL {
 		buf.WriteString("typedef struct { int *keys; void **vals; size_t *lens; size_t len; size_t cap; } MapIL;\n\n")
 	}
+	if needStrMapIL {
+		buf.WriteString("static char* str_map_il(MapIL m) {\n")
+		buf.WriteString("    char *res = strdup(\"map[\");\n")
+		buf.WriteString("    for (size_t i = 0; i < m.len; i++) {\n")
+		buf.WriteString("        char *k = str_int(m.keys[i]);\n")
+		buf.WriteString("        char *v = str_list_int(m.vals[i], m.lens[i]);\n")
+		buf.WriteString("        char *kv = str_concat(k, \":\");\n")
+		buf.WriteString("        kv = str_concat(kv, \"[\");\n")
+		buf.WriteString("        kv = str_concat(kv, v);\n")
+		buf.WriteString("        kv = str_concat(kv, \"]\");\n")
+		buf.WriteString("        res = str_concat(res, kv);\n")
+		buf.WriteString("        if (i + 1 < m.len) res = str_concat(res, \" \");\n")
+		buf.WriteString("        free(k); free(v); free(kv);\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    res = str_concat(res, \"]\");\n")
+		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needMapGetSS || needMapSetSS {
 		buf.WriteString("typedef struct { const char **keys; const char **vals; size_t len; size_t cap; } MapSS;\n\n")
 	}
@@ -4619,11 +4669,17 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needMapSetIL {
-		buf.WriteString("static void map_set_il(int keys[], void *vals[], size_t lens[], size_t *len, int key, void *val, size_t val_len) {\n")
+		buf.WriteString("static void map_set_il(int **keys, void ***vals, size_t **lens, size_t *len, size_t *cap, int key, void *val, size_t val_len) {\n")
 		buf.WriteString("    for (size_t i = 0; i < *len; i++) {\n")
-		buf.WriteString("        if (keys[i] == key) { vals[i] = val; lens[i] = val_len; return; }\n")
+		buf.WriteString("        if ((*keys)[i] == key) { (*vals)[i] = val; (*lens)[i] = val_len; return; }\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    keys[*len] = key; vals[*len] = val; lens[*len] = val_len; (*len)++;\n")
+		buf.WriteString("    if (*len >= *cap) {\n")
+		buf.WriteString("        *cap = *cap ? *cap * 2 : 16;\n")
+		buf.WriteString("        *keys = realloc(*keys, *cap * sizeof(int));\n")
+		buf.WriteString("        *vals = realloc(*vals, *cap * sizeof(void*));\n")
+		buf.WriteString("        *lens = realloc(*lens, *cap * sizeof(size_t));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    (*keys)[*len] = key; (*vals)[*len] = val; (*lens)[*len] = val_len; (*len)++;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needListAppendInt {
@@ -5271,6 +5327,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needStrListListInt = false
 	needStrListDouble = false
 	needStrListListDouble = false
+	needStrMapIL = false
 	needJSONListListInt = false
 	needJSONMapSD = false
 	needUpper = false
@@ -5282,6 +5339,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMapGetSL = false
 	needMapSetSL = false
 	needMapLenSL = false
+	needMapGetIL = false
+	needMapSetIL = false
 	needMapGetSS = false
 	needMapSetSS = false
 	needMapGetII = false
@@ -6761,17 +6820,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				needMapSetIL = true
 				var buf bytes.Buffer
 				buf.WriteString("map_set_il(")
-				if strings.HasPrefix(varTypes[s.Assign.Name], "MapIL") {
-					buf.WriteString(mapField(s.Assign.Name, "keys") + ", ")
-					buf.WriteString(mapField(s.Assign.Name, "vals") + ", ")
-					buf.WriteString(mapField(s.Assign.Name, "lens") + ", &")
-					buf.WriteString(mapField(s.Assign.Name, "len") + ", ")
-				} else {
-					buf.WriteString(s.Assign.Name + "_keys, ")
-					buf.WriteString(s.Assign.Name + "_vals, ")
-					buf.WriteString(s.Assign.Name + "_lens, &")
-					buf.WriteString(s.Assign.Name + "_len, ")
-				}
+				buf.WriteString("&" + mapField(s.Assign.Name, "keys") + ", &")
+				buf.WriteString(mapField(s.Assign.Name, "vals") + ", &")
+				buf.WriteString(mapField(s.Assign.Name, "lens") + ", &")
+				buf.WriteString(mapField(s.Assign.Name, "len") + ", &")
+				buf.WriteString(mapField(s.Assign.Name, "cap") + ", ")
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
 				valExpr.emitExpr(&buf)
