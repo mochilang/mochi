@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 920/1077
-Last updated: 2025-08-13 16:45 +0700
+Completed programs: 921/1077
+Last updated: 2025-08-14 10:00 +0700
 
 Checklist:
 
@@ -409,7 +409,7 @@ Checklist:
 | 400 | graphs/bidirectional_a_star | ✓ | 3µs | 8.8 MB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 4µs | 8.8 MB |
 | 402 | graphs/bidirectional_search | ✓ | 10µs | 8.7 MB |
-| 403 | graphs/boruvka | error |  |  |
+| 403 | graphs/boruvka | ✓ | 183.317ms | 8.7 MB |
 | 404 | graphs/breadth_first_search | ✓ | 9µs | 8.7 MB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 7µs | 8.7 MB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 4µs | 8.7 MB |
