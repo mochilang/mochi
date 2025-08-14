@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-14 18:16 +0700
+Last updated: 2025-08-14 22:13 +0700
 
-## Program Checklist (309/1077)
+## Program Checklist (335/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -416,55 +416,55 @@ Last updated: 2025-08-14 18:16 +0700
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 294µs | 256.0 KB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 2.652ms | 768.0 KB |
 | 409 | graphs/check_bipatrite | ✓ | 426µs | 256.0 KB |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 410 | graphs/check_cycle | ✓ | 1.05ms | 256.0 KB |
+| 411 | graphs/connected_components | ✓ | 2.157ms | 512.0 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
+| 413 | graphs/depth_first_search | ✓ | 1.139ms | 384.0 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 2.054ms | 644.0 KB |
+| 415 | graphs/dijkstra | ✓ | 1.733ms | 384.0 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 918µs | 256.0 KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 959µs | 256.0 KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 1.499ms | 384.0 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 10.927ms | 2.1 MB |
 | 420 | graphs/dinic |   |  |  |
 | 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 972µs | 256.0 KB |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 13.467ms | 3.0 MB |
+| 424 | graphs/even_tree | ✓ | 1.287ms | 384.0 KB |
 | 425 | graphs/finding_bridges |   |  |  |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
+| 427 | graphs/g_topological_sort | ✓ | 1.846ms | 640.0 KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 966µs | 384.0 KB |
 | 429 | graphs/graph_adjacency_list |   |  |  |
 | 430 | graphs/graph_adjacency_matrix |   |  |  |
 | 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 1.46ms | 384.0 KB |
 | 433 | graphs/greedy_best_first |   |  |  |
 | 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
+| 435 | graphs/kahns_algorithm_long | ✓ | 870µs | 256.0 KB |
 | 436 | graphs/kahns_algorithm_topo |   |  |  |
 | 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 2.786ms | 896.0 KB |
+| 439 | graphs/markov_chain | ✓ | 3.106ms | 256.0 KB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 1.208ms | 392.0 KB |
 | 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 1.205ms | 384.0 KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 2.558ms | 640.0 KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 1.694ms | 384.0 KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 1.773ms | 516.0 KB |
 | 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
-| 447 | graphs/multi_heuristic_astar |   |  |  |
+| 447 | graphs/multi_heuristic_astar | ✓ | 1.477ms | 384.0 KB |
 | 448 | graphs/page_rank |   |  |  |
 | 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator | ✓ | 1.275ms | 640.0 KB |
-| 451 | graphs/scc_kosaraju | ✓ | 895µs | 384.0 KB |
-| 452 | graphs/strongly_connected_components | ✓ | 2.171ms | 640.0 KB |
+| 450 | graphs/random_graph_generator | ✓ | 1.38ms | 384.0 KB |
+| 451 | graphs/scc_kosaraju | ✓ | 930µs | 256.0 KB |
+| 452 | graphs/strongly_connected_components | ✓ | 2.156ms | 768.0 KB |
 | 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.735ms | 384.0 KB |
 | 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
 | 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 724µs | 512.0 KB |
 | 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
 | 460 | greedy_methods/gas_station |   |  |  |
 | 461 | greedy_methods/minimum_coin_change |   |  |  |

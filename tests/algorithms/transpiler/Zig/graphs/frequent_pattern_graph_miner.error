@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/frequent_pattern_graph_miner.zig:112:17: error: use of undeclared identifier 'toi'
+            if (toi(table[_idx(table.len, j)].get("count").?) > toi(table[_idx(table.len, max_i)].get("count").?)) {
+                ^~~
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/frequent_pattern_graph_miner.zig:216:16: error: unused function parameter
+fn create_edge(nodes: NodesData, graph_param: *std.StringHashMap([][]const u8), gkeys: [][]const u8, clusters: ClusterData, c1: i64, maxk: i64) [][]const u8 {
+               ^~~~~

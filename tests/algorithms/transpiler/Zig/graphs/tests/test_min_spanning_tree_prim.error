@@ -1,0 +1,15 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/tests/test_min_spanning_tree_prim.zig:71:53: error: expected type '[]test_min_spanning_tree_prim.Neighbor', found '*[0]i64'
+            adjacency.put(u, @constCast((&[_]i64{}))[0..]) catch unreachable;
+                             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/tests/test_min_spanning_tree_prim.zig:71:53: note: pointer type child 'i64' cannot cast into pointer type child 'test_min_spanning_tree_prim.Neighbor'
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/tests/test_min_spanning_tree_prim.zig:13:18: note: struct declared here
+const Neighbor = struct {
+                 ^~~~~~
+/opt/zig-0.14.0/lib/std/hash_map.zig:321:48: note: parameter type declared here
+        pub fn put(self: *Self, key: K, value: V) Allocator.Error!void {
+                                               ^
+referenced by:
+    main: /workspace/mochi/tests/algorithms/transpiler/Zig/graphs/tests/test_min_spanning_tree_prim.zig:104:68
+    main: /opt/zig-0.14.0/lib/std/start.zig:647:22
+    3 reference(s) hidden; use '-freference-trace=5' to see all references

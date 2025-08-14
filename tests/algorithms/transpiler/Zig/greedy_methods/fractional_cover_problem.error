@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/greedy_methods/fractional_cover_problem.zig:36:70: error: unused function parameter
+    std.sort.sort(struct{key: f64, val: Item}, tmp, {}, struct{fn lt(ctx: void, a: struct{key: f64, val: Item}, b: struct{key: f64, val: Item}) bool { return a.key > b.key; } }.lt);
+                                                                     ^~~
+/workspace/mochi/tests/algorithms/transpiler/Zig/greedy_methods/fractional_cover_problem.zig:36:13: error: root source file struct 'sort' has no member named 'sort'
+    std.sort.sort(struct{key: f64, val: Item}, tmp, {}, struct{fn lt(ctx: void, a: struct{key: f64, val: Item}, b: struct{key: f64, val: Item}) bool { return a.key > b.key; } }.lt);
+    ~~~~~~~~^~~~~
+/opt/zig-0.14.0/lib/std/sort.zig:1:1: note: struct declared here
+const std = @import("std.zig");
+^~~~~
+referenced by:
+    main: /workspace/mochi/tests/algorithms/transpiler/Zig/greedy_methods/fractional_cover_problem.zig:61:57
+    main: /opt/zig-0.14.0/lib/std/start.zig:647:22
+    3 reference(s) hidden; use '-freference-trace=5' to see all references

@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/greedy_min_vertex_cover.zig:36:39: error: use of undeclared identifier 'v'
+            const key: i64 = @as(i64, v);
+                                      ^
