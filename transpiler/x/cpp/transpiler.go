@@ -2988,43 +2988,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	if b.Op == "*" {
-		lt := exprType(b.Left)
-		rt := exprType(b.Right)
-		if lt == "double" && rt == "double" {
-			if reflect.DeepEqual(b.Left, b.Right) {
-				if currentProgram != nil {
-					currentProgram.addInclude("<cmath>")
-				}
-				io.WriteString(w, "std::pow(")
-				b.Left.emit(w)
-				io.WriteString(w, ", 2)")
-				return
-			}
-			if bl, ok := b.Left.(*BinaryExpr); ok && bl.Op == "*" && reflect.DeepEqual(bl.Right, b.Right) {
-				if currentProgram != nil {
-					currentProgram.addInclude("<cmath>")
-				}
-				io.WriteString(w, "(")
-				bl.Left.emit(w)
-				io.WriteString(w, " * std::pow(")
-				b.Right.emit(w)
-				io.WriteString(w, ", 2))")
-				return
-			}
-			if br, ok := b.Right.(*BinaryExpr); ok && br.Op == "*" && reflect.DeepEqual(br.Right, b.Left) {
-				if currentProgram != nil {
-					currentProgram.addInclude("<cmath>")
-				}
-				io.WriteString(w, "(")
-				b.Left.emit(w)
-				io.WriteString(w, " * std::pow(")
-				br.Right.emit(w)
-				io.WriteString(w, ", 2))")
-				return
-			}
-		}
-	}
+	// Emit multiplication using the original operands without converting
+	// repeated factors into std::pow calls. The previous implementation
+	// tried to optimise expressions like `x * x` or `(a * b) * b` by
+	// rewriting them into `std::pow` invocations. This added an
+	// unnecessary dependency on <cmath> and produced less efficient code
+	// for simple multiplications. By removing that transformation, the
+	// generated C++ more closely matches the source Mochi program and
+	// avoids emitting `std::pow` unless the source explicitly uses the
+	// exponent operator.
 	if b.Op == "/" {
 		lt := exprType(b.Left)
 		rt := exprType(b.Right)
