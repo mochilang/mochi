@@ -1,0 +1,84 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c: In function ‘city_select’:
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:206:43: error: ‘cities_keys’ undeclared (first use in this function)
+  206 |         double dist = distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, city, NULL), cities_lens[city], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, current, NULL), cities_lens[current]);
+      |                                           ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:206:43: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:206:56: error: ‘cities_vals’ undeclared (first use in this function)
+  206 |         double dist = distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, city, NULL), cities_lens[city], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, current, NULL), cities_lens[current]);
+      |                                                        ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:206:69: error: ‘cities_lens’ undeclared (first use in this function)
+  206 |         double dist = distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, city, NULL), cities_lens[city], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, current, NULL), cities_lens[current]);
+      |                                                                     ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:206:82: error: ‘cities_len’ undeclared (first use in this function); did you mean ‘cities’?
+  206 |         double dist = distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, city, NULL), cities_lens[city], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, current, NULL), cities_lens[current]);
+      |                                                                                  ^~~~~~~~~~
+      |                                                                                  cities
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c: In function ‘pheromone_update’:
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:233:49: error: ‘cities_keys’ undeclared (first use in this function)
+  233 |             total = total + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                 ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:233:62: error: ‘cities_vals’ undeclared (first use in this function)
+  233 |             total = total + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                              ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:233:75: error: ‘cities_lens’ undeclared (first use in this function)
+  233 |             total = total + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                                           ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:233:88: error: ‘cities_len’ undeclared (first use in this function); did you mean ‘cities’?
+  233 |             total = total + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                                                        ^~~~~~~~~~
+      |                                                                                        cities
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:233:198: error: ‘total_len’ undeclared (first use in this function)
+  233 |             total = total + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &total_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                                                                                                                                                                      ^~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c: In function ‘ant_colony’:
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:264:19: error: ‘cities_len’ undeclared (first use in this function); did you mean ‘cities’?
+  264 |     long long n = cities_len;
+      |                   ^~~~~~~~~~
+      |                   cities
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:327:51: error: ‘cities_keys’ undeclared (first use in this function)
+  327 |                 dist = dist + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &dist_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &dist_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                   ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:327:64: error: ‘cities_vals’ undeclared (first use in this function)
+  327 |                 dist = dist + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &dist_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &dist_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                                ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:327:77: error: ‘cities_lens’ undeclared (first use in this function)
+  327 |                 dist = dist + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &dist_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &dist_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                                             ^~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:327:200: error: ‘dist_len’ undeclared (first use in this function); did you mean ‘strlen’?
+  327 |                 dist = dist + distance(map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &dist_len), cities_lens[route[(int)({long long _mochi_idx = r; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]], map_get_il(cities_keys, cities_vals, cities_lens, cities_len, route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})], &dist_len), cities_lens[route[(int)({long long _mochi_idx = r + 1LL; _mochi_idx < 0 ? route_len + _mochi_idx : _mochi_idx;})]]);
+      |                                                                                                                                                                                                        ^~~~~~~~
+      |                                                                                                                                                                                                        strlen
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:41: error: initializer element is not constant
+  355 |         static void* cities_vals[24] = {cities_vals_0, cities_vals_1, cities_vals_2, cities_vals_3, cities_vals_4, cities_vals_5, cities_vals_6, cities_vals_7};
+      |                                         ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:41: note: (near initialization for ‘cities_vals[0]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:56: error: initializer element is not constant
+  355 |         static void* cities_vals[24] = {cities_vals_0, cities_vals_1, cities_vals_2, cities_vals_3, cities_vals_4, cities_vals_5, cities_vals_6, cities_vals_7};
+      |                                                        ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:56: note: (near initialization for ‘cities_vals[1]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:71: error: initializer element is not constant
+  355 |         static void* cities_vals[24] = {cities_vals_0, cities_vals_1, cities_vals_2, cities_vals_3, cities_vals_4, cities_vals_5, cities_vals_6, cities_vals_7};
+      |                                                                       ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:71: note: (near initialization for ‘cities_vals[2]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:86: error: initializer element is not constant
+  355 |         static void* cities_vals[24] = {cities_vals_0, cities_vals_1, cities_vals_2, cities_vals_3, cities_vals_4, cities_vals_5, cities_vals_6, cities_vals_7};
+      |                                                                                      ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:86: note: (near initialization for ‘cities_vals[3]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:101: error: initializer element is not constant
+  355 |         static void* cities_vals[24] = {cities_vals_0, cities_vals_1, cities_vals_2, cities_vals_3, cities_vals_4, cities_vals_5, cities_vals_6, cities_vals_7};
+      |                                                                                                     ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:101: note: (near initialization for ‘cities_vals[4]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:116: error: initializer element is not constant
+  355 |         static void* cities_vals[24] = {cities_vals_0, cities_vals_1, cities_vals_2, cities_vals_3, cities_vals_4, cities_vals_5, cities_vals_6, cities_vals_7};
+      |                                                                                                                    ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:116: note: (near initialization for ‘cities_vals[5]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:131: error: initializer element is not constant
+  355 |         static void* cities_vals[24] = {cities_vals_0, cities_vals_1, cities_vals_2, cities_vals_3, cities_vals_4, cities_vals_5, cities_vals_6, cities_vals_7};
+      |                                                                                                                                   ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:131: note: (near initialization for ‘cities_vals[6]’)
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:146: error: initializer element is not constant
+  355 |         static void* cities_vals[24] = {cities_vals_0, cities_vals_1, cities_vals_2, cities_vals_3, cities_vals_4, cities_vals_5, cities_vals_6, cities_vals_7};
+      |                                                                                                                                                  ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/ant_colony_optimization_algorithms.c:355:146: note: (near initialization for ‘cities_vals[7]’)
