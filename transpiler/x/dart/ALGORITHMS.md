@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-13 16:30 GMT+7
+Last updated: 2025-08-14 10:10 GMT+7
 
-## Algorithms Golden Test Checklist (912/1077)
+## Algorithms Golden Test Checklist (915/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -403,9 +403,9 @@ Last updated: 2025-08-13 16:30 GMT+7
 | 394 | graphs/a_star | ✓ | 20.703ms | 5.4 MB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 74.346ms | 360.0 KB |
 | 396 | graphs/articulation_points | ✓ | 10.985ms | 4.0 MB |
-| 397 | graphs/basic_graphs | error |  |  |
-| 398 | graphs/bellman_ford | error |  |  |
-| 399 | graphs/bi_directional_dijkstra | error |  |  |
+| 397 | graphs/basic_graphs | ✓ | 15.859ms | 5.5 MB |
+| 398 | graphs/bellman_ford | ✓ | 8.618ms | 2.9 MB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 9.821ms | 2.6 MB |
 | 400 | graphs/bidirectional_a_star | error |  |  |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 14.198ms | 4.5 MB |
 | 402 | graphs/bidirectional_search | error |  |  |

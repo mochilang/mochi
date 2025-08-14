@@ -495,14 +495,15 @@ func (f *ForInStmt) emit(out io.Writer) error {
 	}
 	if f.Iterable != nil {
 		typ := inferType(f.Iterable)
-		if strings.HasPrefix(typ, "Map<") {
+		nonOpt := strings.TrimSuffix(typ, "?")
+		if strings.HasPrefix(nonOpt, "Map<") {
 			if err := f.Iterable.emit(out); err != nil {
 				return err
 			}
 			if _, err := io.WriteString(out, ".keys"); err != nil {
 				return err
 			}
-		} else if typ == "String" || typ == "String?" {
+		} else if nonOpt == "String" {
 			if err := f.Iterable.emit(out); err != nil {
 				return err
 			}
@@ -517,6 +518,11 @@ func (f *ForInStmt) emit(out io.Writer) error {
 		} else {
 			if err := f.Iterable.emit(out); err != nil {
 				return err
+			}
+			if strings.HasSuffix(typ, "?") {
+				if _, err := io.WriteString(out, "!"); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -3989,17 +3995,17 @@ func inferType(e Expr) string {
 	case *SortExpr:
 		return inferType(ex.List)
 	case *BinaryExpr:
+		lt := strings.TrimSuffix(inferType(ex.Left), "?")
+		rt := strings.TrimSuffix(inferType(ex.Right), "?")
 		switch ex.Op {
 		case "+":
-			lt := inferType(ex.Left)
-			rt := inferType(ex.Right)
 			if lt == "String" || rt == "String" {
 				return "String"
 			}
 			if lt == "BigInt" || rt == "BigInt" {
 				return "BigInt"
 			}
-			if lt == "int" && rt == "int" {
+			if (lt == "int" && (rt == "int" || rt == "dynamic")) || (rt == "int" && lt == "dynamic") {
 				return "int"
 			}
 			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
@@ -4007,12 +4013,10 @@ func inferType(e Expr) string {
 			}
 			return "num"
 		case "-", "*", "%":
-			lt := inferType(ex.Left)
-			rt := inferType(ex.Right)
 			if lt == "BigInt" || rt == "BigInt" {
 				return "BigInt"
 			}
-			if lt == "int" && rt == "int" {
+			if (lt == "int" && (rt == "int" || rt == "dynamic")) || (rt == "int" && lt == "dynamic") {
 				return "int"
 			}
 			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
@@ -4020,12 +4024,10 @@ func inferType(e Expr) string {
 			}
 			return "num"
 		case "/":
-			lt := inferType(ex.Left)
-			rt := inferType(ex.Right)
 			if lt == "BigInt" || rt == "BigInt" {
 				return "BigInt"
 			}
-			if lt == "int" && rt == "int" {
+			if (lt == "int" && (rt == "int" || rt == "dynamic")) || (rt == "int" && lt == "dynamic") {
 				return "int"
 			}
 			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
@@ -4035,14 +4037,12 @@ func inferType(e Expr) string {
 		case "<", "<=", ">", ">=", "&&", "||":
 			return "bool"
 		case "==", "!=":
-			lt := inferType(ex.Left)
-			rt := inferType(ex.Right)
 			if strings.HasPrefix(lt, "List<") && strings.HasPrefix(rt, "List<") {
 				usesJSON = true
 			}
 			return "bool"
 		case "union", "union_all", "except", "intersect":
-			return inferType(ex.Left)
+			return lt
 		default:
 			return "dynamic"
 		}
@@ -4871,11 +4871,11 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	}
 	if iex, ok := iter.(*IndexExpr); ok {
 		if strings.HasPrefix(strings.TrimSuffix(inferType(iex.Target), "?"), "Map<") {
-			iex.NoBang = true
+			// keep default bang to treat missing keys as error
 		}
 	}
 	elem := "dynamic"
-	t := inferType(iter)
+	t := strings.TrimSuffix(inferType(iter), "?")
 	if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
 		elem = strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
 	} else if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
