@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-14 15:53 GMT+7
+Last updated: 2025-08-14 16:24 GMT+7
 
 ## Algorithms Golden Test Checklist (1019/1077)
 | Index | Name | Status | Duration | Memory |
@@ -567,7 +567,7 @@ Last updated: 2025-08-14 15:53 GMT+7
 | 558 | maths/entropy | ✓ | 4.0ms | 172.02KB |
 | 559 | maths/euclidean_distance | ✓ | 3.0ms | 14.84KB |
 | 560 | maths/euler_method | ✓ | 18.0ms | 3.66MB |
-| 561 | maths/euler_modified | ✓ | 18.0ms | 1.58MB |
+| 561 | maths/euler_modified | ✓ | 1.0µs | 1.57MB |
 | 562 | maths/eulers_totient | ✓ | 3.0ms | 23.85KB |
 | 563 | maths/extended_euclidean_algorithm | ✓ | 3.0ms | 17.62KB |
 | 564 | maths/factorial | ✓ | 3.0ms | 16.35KB |
