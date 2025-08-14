@@ -3863,6 +3863,8 @@ func (i *IfExpr) emit(w io.Writer) {
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	defer func() { benchMain = false }()
+	// reset state for each program to ensure deterministic output
+	tmpCounter = 0
 	useNow = false
 	useMem = false
 	usesLookupHost = false
