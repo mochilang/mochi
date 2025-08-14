@@ -3724,7 +3724,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			vinfo.ref = true
 		}
 		stmt := Stmt(&LetStmt{Name: st.Let.Name, Expr: expr})
-		if vinfo.ref || strings.HasPrefix(typ, "list-") || strings.HasPrefix(typ, "map") {
+		if vinfo.ref || strings.HasPrefix(typ, "list-") || strings.HasPrefix(typ, "map") || structFields[typ] != nil {
 			vinfo.ref = true
 			stmt = &VarStmt{Name: st.Let.Name, Expr: expr, Typ: typ}
 		}
