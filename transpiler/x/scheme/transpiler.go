@@ -56,6 +56,16 @@ var externFuncs map[string]struct{}
 // output a JSON object with duration and memory statistics on completion.
 func SetBenchMain(v bool) { benchMain = v }
 
+// WithBenchMain enables benchmark output while executing f and restores the
+// previous configuration after f returns. This helper is convenient for tests
+// that need to toggle benchmarking without manually resetting the global flag.
+func WithBenchMain(f func()) {
+        prev := benchMain
+        benchMain = true
+        defer func() { benchMain = prev }()
+        f()
+}
+
 func pushLoop(breakSym Symbol, cont Node) {
 	breakStack = append(breakStack, breakSym)
 	continueStack = append(continueStack, cont)
