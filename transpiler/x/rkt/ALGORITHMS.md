@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-13 09:47 UTC
+Last updated: 2025-08-13 10:08 UTC
 
-## Algorithms Golden Test Checklist (867/1077)
+## Algorithms Golden Test Checklist (869/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -403,7 +403,7 @@ Last updated: 2025-08-13 09:47 UTC
 | 394 | graphs/a_star | ✓ | 235µs | 194.3 KB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 46.932ms |  |
 | 396 | graphs/articulation_points | ✓ | 204µs | 335.6 KB |
-| 397 | graphs/basic_graphs | ✓ |  |  |
+| 397 | graphs/basic_graphs | ✓ | 235µs | 179.6 KB |
 | 398 | graphs/bellman_ford | ✓ | 9m31.223891s | 4.7 KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 9m31.223891s | 62.6 KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 9m31.223891s | 2.7 KB |
@@ -412,15 +412,15 @@ Last updated: 2025-08-13 09:47 UTC
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 9m31.223891s | 6.0 KB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 9m31.223891s | 30.5 KB |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 38µs | 18.1 KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 9m31.223891s | 384 B |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite | ✓ |  |  |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 142µs | 137.5 KB |
+| 409 | graphs/check_bipatrite | ✓ | 34µs | 10.8 KB |
 | 410 | graphs/check_cycle | ✓ | 9m31.223891s | 36.8 KB |
 | 411 | graphs/connected_components | ✓ | 9m31.223891s | 117.0 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search | ✓ | 9m31.223891s | 1.0 KB |
-| 414 | graphs/depth_first_search_2 | ✓ |  |  |
+| 414 | graphs/depth_first_search_2 | ✓ | 151µs | 56.2 KB |
 | 415 | graphs/dijkstra | ✓ | 9m31.223891s | 45.3 KB |
 | 416 | graphs/dijkstra_2 | ✓ | 9m31.223891s | 34.3 KB |
 | 417 | graphs/dijkstra_algorithm |   |  |  |

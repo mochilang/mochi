@@ -850,15 +850,7 @@ type MatchExpr struct {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-	if i.IsString {
-		io.WriteString(w, "(substring ")
-		i.Target.emit(w)
-		io.WriteString(w, " ")
-		i.Index.emit(w)
-		io.WriteString(w, " (+ ")
-		i.Index.emit(w)
-		io.WriteString(w, " 1))")
-	} else if i.IsMap {
+	if i.IsMap {
 		io.WriteString(w, "(if ")
 		i.Target.emit(w)
 		io.WriteString(w, " (hash-ref ")
@@ -872,6 +864,20 @@ func (i *IndexExpr) emit(w io.Writer) {
 			io.WriteString(w, "#f")
 		}
 		io.WriteString(w, ") #f)")
+	} else if i.IsString {
+		io.WriteString(w, "(if (hash? ")
+		i.Target.emit(w)
+		io.WriteString(w, ") (hash-ref ")
+		i.Target.emit(w)
+		io.WriteString(w, " ")
+		i.Index.emit(w)
+		io.WriteString(w, " #f) (substring ")
+		i.Target.emit(w)
+		io.WriteString(w, " (int ")
+		i.Index.emit(w)
+		io.WriteString(w, ") (+ (int ")
+		i.Index.emit(w)
+		io.WriteString(w, ") 1)))")
 	} else {
 		io.WriteString(w, "(if ")
 		i.Target.emit(w)
@@ -1925,7 +1931,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			e = zeroValue(st.Var.Type, env)
 		}
 		if env != nil {
-			if _, ok := env.Types()[st.Var.Name]; ok {
+			if _, ok := env.Types()[st.Var.Name]; ok && env.Parent() != nil {
 				// Existing variable (e.g., parameter) -> assignment.
 				return &AssignStmt{Name: st.Var.Name, Expr: e}, nil
 			}
@@ -2962,8 +2968,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			isStr := types.IsStringType(t)
 			isMap := types.IsMapType(t)
+			isStr := false
+			if !isMap {
+				isStr = types.IsStringType(t)
+			}
 			var def Expr
 			if isMap {
 				if mt, ok := t.(types.MapType); ok {
