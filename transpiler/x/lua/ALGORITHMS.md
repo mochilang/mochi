@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-14 16:14 GMT+7
+Last updated: 2025-08-14 16:38 GMT+7
 
-## Algorithms Golden Test Checklist (1038/1077)
+## Algorithms Golden Test Checklist (1039/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -503,7 +503,7 @@ Last updated: 2025-08-14 16:14 GMT+7
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 954µs | 12.8 KB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 377µs | 1.3 KB |
 | 496 | linear_programming/simplex | ✓ | 193µs | 1.9 KB |
-| 497 | machine_learning/apriori_algorithm | error |  |  |
+| 497 | machine_learning/apriori_algorithm | ✓ | 210µs | 3.3 KB |
 | 498 | machine_learning/astar | error |  |  |
 | 499 | machine_learning/automatic_differentiation | ✓ | 137µs | 1.0 KB |
 | 500 | machine_learning/data_transformations | ✓ | 250µs | 1.2 KB |
