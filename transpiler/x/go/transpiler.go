@@ -3003,9 +3003,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		varDecls[st.Let.Name] = vd
 		return vd, nil
 	case st.Var != nil:
-		var typ string
-		var declaredType types.Type
-		if vd, ok := varDecls[st.Var.Name]; ok && vd.Global {
+		if vd, ok := varDecls[st.Var.Name]; ok {
 			if st.Var.Value != nil {
 				e, err := compileExpr(st.Var.Value, env, st.Var.Name)
 				if err != nil {
@@ -3019,6 +3017,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return nil, nil
 		}
+		var typ string
+		var declaredType types.Type
 		if t, ok := env.Types()[st.Var.Name]; ok {
 			if !types.IsAnyType(t) {
 				typ = toGoTypeFromType(t)
@@ -4843,6 +4843,14 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		return nil, nil
 	}
 	child := types.NewEnv(env)
+	origVarDecls := varDecls
+	if origVarDecls != nil {
+		tmp := make(map[string]*VarDecl, len(origVarDecls))
+		for k, v := range origVarDecls {
+			tmp[k] = v
+		}
+		varDecls = tmp
+	}
 	// Register this function's type in the outer environment so that nested
 	// references (including recursive ones) use the correct signature. Any
 	// existing entry is replaced to ensure inner functions aren't shadowed by
@@ -4871,11 +4879,23 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		if rn := safeName(p.Name); rn != p.Name {
 			varNameMap[p.Name] = rn
 		}
+		if varDecls != nil {
+			name := p.Name
+			if rn, ok := varNameMap[p.Name]; ok {
+				name = rn
+			}
+			vtyp := toGoType(p.Type, env)
+			if vtyp == "" && p.Type != nil {
+				vtyp = toGoTypeFromType(types.ResolveTypeRef(p.Type, env))
+			}
+			varDecls[p.Name] = &VarDecl{Name: name, Type: vtyp}
+		}
 	}
 	prevRet := currentRetType
 	retHint := toGoType(fn.Return, env)
 	currentRetType = retHint
 	body, err := compileStmts(fn.Body, child)
+	varDecls = origVarDecls
 	currentRetType = prevRet
 	if err != nil {
 		return nil, err
@@ -4930,9 +4950,6 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 		params[i] = ParamDecl{Name: pname, Type: typ}
-		if varDecls != nil {
-			varDecls[p.Name] = &VarDecl{Name: pname, Type: typ}
-		}
 	}
 	ret := toGoType(fn.Return, env)
 	if ret == "" && fn.Return != nil {
