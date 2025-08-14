@@ -1,4 +1,4 @@
-// Generated 2025-08-07 16:27 +0700
+// Generated 2025-08-14 15:50 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -44,31 +44,31 @@ let rec join (xs: string array) =
         let mutable s: string = ""
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
-            s <- s + (_idx xs (i))
+            s <- s + (_idx xs (int i))
             i <- i + 1
         __ret <- s
         raise Return
         __ret
     with
         | Return -> __ret
-let rec breadth_first_search (graph: System.Collections.Generic.IDictionary<string, string array>) (start: string) =
+and breadth_first_search (graph: System.Collections.Generic.IDictionary<string, string array>) (start: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable graph = graph
     let mutable start = start
     try
         let mutable explored: System.Collections.Generic.IDictionary<string, bool> = _dictCreate []
-        explored.[start] <- true
-        let mutable result: string array = [|start|]
-        let mutable queue: string array = [|start|]
+        explored <- _dictAdd (explored) (string (start)) (true)
+        let mutable result: string array = unbox<string array> [|start|]
+        let mutable queue: string array = unbox<string array> [|start|]
         while (Seq.length (queue)) > 0 do
-            let v: string = _idx queue (0)
+            let v: string = _idx queue (int 0)
             queue <- Array.sub queue 1 ((Seq.length (queue)) - 1)
             let children: string array = _dictGet graph ((string (v)))
             let mutable i: int = 0
             while i < (Seq.length (children)) do
-                let w: string = _idx children (i)
+                let w: string = _idx children (int i)
                 if not (explored.ContainsKey(w)) then
-                    explored.[w] <- true
+                    explored <- _dictAdd (explored) (string (w)) (true)
                     result <- Array.append result [|w|]
                     queue <- Array.append queue [|w|]
                 i <- i + 1
@@ -77,25 +77,25 @@ let rec breadth_first_search (graph: System.Collections.Generic.IDictionary<stri
         __ret
     with
         | Return -> __ret
-let rec breadth_first_search_with_deque (graph: System.Collections.Generic.IDictionary<string, string array>) (start: string) =
+and breadth_first_search_with_deque (graph: System.Collections.Generic.IDictionary<string, string array>) (start: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable graph = graph
     let mutable start = start
     try
         let mutable visited: System.Collections.Generic.IDictionary<string, bool> = _dictCreate []
-        visited.[start] <- true
-        let mutable result: string array = [|start|]
-        let mutable queue: string array = [|start|]
+        visited <- _dictAdd (visited) (string (start)) (true)
+        let mutable result: string array = unbox<string array> [|start|]
+        let mutable queue: string array = unbox<string array> [|start|]
         let mutable head: int = 0
         while head < (Seq.length (queue)) do
-            let v: string = _idx queue (head)
+            let v: string = _idx queue (int head)
             head <- head + 1
             let children: string array = _dictGet graph ((string (v)))
             let mutable i: int = 0
             while i < (Seq.length (children)) do
-                let child: string = _idx children (i)
+                let child: string = _idx children (int i)
                 if not (visited.ContainsKey(child)) then
-                    visited.[child] <- true
+                    visited <- _dictAdd (visited) (string (child)) (true)
                     result <- Array.append result [|child|]
                     queue <- Array.append queue [|child|]
                 i <- i + 1
@@ -105,8 +105,8 @@ let rec breadth_first_search_with_deque (graph: System.Collections.Generic.IDict
     with
         | Return -> __ret
 let G: System.Collections.Generic.IDictionary<string, string array> = _dictCreate [("A", [|"B"; "C"|]); ("B", [|"A"; "D"; "E"|]); ("C", [|"A"; "F"|]); ("D", [|"B"|]); ("E", [|"B"; "F"|]); ("F", [|"C"; "E"|])]
-printfn "%s" (join (breadth_first_search (G) ("A")))
-printfn "%s" (join (breadth_first_search_with_deque (G) ("A")))
+ignore (printfn "%s" (join (breadth_first_search (G) ("A"))))
+ignore (printfn "%s" (join (breadth_first_search_with_deque (G) ("A"))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
