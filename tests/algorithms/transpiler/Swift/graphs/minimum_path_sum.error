@@ -1,5 +1,5 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:97:72: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:97:72: warning: conditional downcast from 'Int?' to 'Int' does nothing
  95 |     let _benchStart = _now()
  96 |     func fill_row(_ current_row: inout [Int], _ row_above: [Int]) -> [Int] {
  97 |         current_row = _set(current_row, 0, _int(((_idx(current_row, 0) as? Int ?? 0) &+ (_idx(row_above, 0) as? Int ?? 0))))
@@ -7,7 +7,7 @@ exit status 1
  98 |         var cell_n = 1
  99 |         while (cell_n < _int(((current_row).count))) {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:97:109: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:97:109: warning: conditional downcast from 'Int?' to 'Int' does nothing
  95 |     let _benchStart = _now()
  96 |     func fill_row(_ current_row: inout [Int], _ row_above: [Int]) -> [Int] {
  97 |         current_row = _set(current_row, 0, _int(((_idx(current_row, 0) as? Int ?? 0) &+ (_idx(row_above, 0) as? Int ?? 0))))
@@ -15,7 +15,7 @@ exit status 1
  98 |         var cell_n = 1
  99 |         while (cell_n < _int(((current_row).count))) {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:100:58: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:100:58: warning: conditional downcast from 'Int?' to 'Int' does nothing
  98 |         var cell_n = 1
  99 |         while (cell_n < _int(((current_row).count))) {
 100 |             let left = (_idx(current_row, (cell_n &- 1)) as? Int ?? 0)
@@ -23,7 +23,7 @@ exit status 1
 101 |             let up = (_idx(row_above, cell_n) as? Int ?? 0)
 102 |             if (left < up) {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:101:47: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:101:47: warning: conditional downcast from 'Int?' to 'Int' does nothing
  99 |         while (cell_n < _int(((current_row).count))) {
 100 |             let left = (_idx(current_row, (cell_n &- 1)) as? Int ?? 0)
 101 |             let up = (_idx(row_above, cell_n) as? Int ?? 0)
@@ -31,7 +31,7 @@ exit status 1
 102 |             if (left < up) {
 103 |                 current_row = _set(current_row, cell_n, _int(((_idx(current_row, cell_n) as? Int ?? 0) &+ left)))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:103:90: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:103:90: warning: conditional downcast from 'Int?' to 'Int' does nothing
 101 |             let up = (_idx(row_above, cell_n) as? Int ?? 0)
 102 |             if (left < up) {
 103 |                 current_row = _set(current_row, cell_n, _int(((_idx(current_row, cell_n) as? Int ?? 0) &+ left)))
@@ -39,7 +39,7 @@ exit status 1
 104 |             } else {
 105 |                 current_row = _set(current_row, cell_n, _int(((_idx(current_row, cell_n) as? Int ?? 0) &+ up)))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:105:90: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:105:90: warning: conditional downcast from 'Int?' to 'Int' does nothing
 103 |                 current_row = _set(current_row, cell_n, _int(((_idx(current_row, cell_n) as? Int ?? 0) &+ left)))
 104 |             } else {
 105 |                 current_row = _set(current_row, cell_n, _int(((_idx(current_row, cell_n) as? Int ?? 0) &+ up)))
@@ -47,7 +47,7 @@ exit status 1
 106 |             }
 107 |             cell_n = _int((cell_n &+ 1))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:112:67: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:112:67: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
 110 |     }
 111 |     func min_path_sum(_ grid: inout [[Int]]) -> Int {
 112 |         if ((_int(((grid).count)) == 0) || (_int((((_idx(grid, 0) as! [Int])).count)) == 0)) {
@@ -55,7 +55,7 @@ exit status 1
 113 |             _ = fatalError("The grid does not contain the appropriate information")
 114 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:116:47: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:116:47: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
 114 |         }
 115 |         var cell_n = 1
 116 |         while (cell_n < _int((((_idx(grid, 0) as! [Int])).count))) {
@@ -63,7 +63,7 @@ exit status 1
 117 |             var _tmp2 = (_idx(grid, 0) as! [Int])
 118 |             _tmp2 = _set(_tmp2, cell_n, _int(((_idx(_idx(grid, 0)!, cell_n) as? Int ?? 0) &+ (_idx(_idx(grid, 0)!, (cell_n &- 1)) as? Int ?? 0))))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:117:40: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:117:40: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
 115 |         var cell_n = 1
 116 |         while (cell_n < _int((((_idx(grid, 0) as! [Int])).count))) {
 117 |             var _tmp2 = (_idx(grid, 0) as! [Int])
@@ -71,7 +71,7 @@ exit status 1
 118 |             _tmp2 = _set(_tmp2, cell_n, _int(((_idx(_idx(grid, 0)!, cell_n) as? Int ?? 0) &+ (_idx(_idx(grid, 0)!, (cell_n &- 1)) as? Int ?? 0))))
 119 |             grid = _set(grid, 0, (_tmp2 as! [Int]))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:118:77: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:118:77: warning: conditional downcast from 'Int?' to 'Int' does nothing
 116 |         while (cell_n < _int((((_idx(grid, 0) as! [Int])).count))) {
 117 |             var _tmp2 = (_idx(grid, 0) as! [Int])
 118 |             _tmp2 = _set(_tmp2, cell_n, _int(((_idx(_idx(grid, 0)!, cell_n) as? Int ?? 0) &+ (_idx(_idx(grid, 0)!, (cell_n &- 1)) as? Int ?? 0))))
@@ -79,7 +79,7 @@ exit status 1
 119 |             grid = _set(grid, 0, (_tmp2 as! [Int]))
 120 |             cell_n = _int((cell_n &+ 1))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:118:131: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:118:131: warning: conditional downcast from 'Int?' to 'Int' does nothing
 116 |         while (cell_n < _int((((_idx(grid, 0) as! [Int])).count))) {
 117 |             var _tmp2 = (_idx(grid, 0) as! [Int])
 118 |             _tmp2 = _set(_tmp2, cell_n, _int(((_idx(_idx(grid, 0)!, cell_n) as? Int ?? 0) &+ (_idx(_idx(grid, 0)!, (cell_n &- 1)) as? Int ?? 0))))
@@ -87,7 +87,7 @@ exit status 1
 119 |             grid = _set(grid, 0, (_tmp2 as! [Int]))
 120 |             cell_n = _int((cell_n &+ 1))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:119:41: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:119:41: warning: forced cast of '[Int]' to same type has no effect
 117 |             var _tmp2 = (_idx(grid, 0) as! [Int])
 118 |             _tmp2 = _set(_tmp2, cell_n, _int(((_idx(_idx(grid, 0)!, cell_n) as? Int ?? 0) &+ (_idx(_idx(grid, 0)!, (cell_n &- 1)) as? Int ?? 0))))
 119 |             grid = _set(grid, 0, (_tmp2 as! [Int]))
@@ -95,7 +95,7 @@ exit status 1
 120 |             cell_n = _int((cell_n &+ 1))
 121 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:122:40: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:122:40: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
 120 |             cell_n = _int((cell_n &+ 1))
 121 |         }
 122 |         var row_above = (_idx(grid, 0) as! [Int])
@@ -103,7 +103,7 @@ exit status 1
 123 |         var row_n = 1
 124 |         while (row_n < _int(((grid).count))) {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:125:57: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:125:57: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
 123 |         var row_n = 1
 124 |         while (row_n < _int(((grid).count))) {
 125 |             let current_row: [Int] = (_idx(grid, row_n) as! [Int])
@@ -111,7 +111,7 @@ exit status 1
 126 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
 127 |             row_above = (_idx(grid, row_n) as! [Int])
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:126:48: error: cannot pass immutable value as inout argument: 'current_row' is a 'let' constant
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:126:48: error: cannot pass immutable value as inout argument: 'current_row' is a 'let' constant
 123 |         var row_n = 1
 124 |         while (row_n < _int(((grid).count))) {
 125 |             let current_row: [Int] = (_idx(grid, row_n) as! [Int])
@@ -121,7 +121,7 @@ exit status 1
 127 |             row_above = (_idx(grid, row_n) as! [Int])
 128 |             row_n = _int((row_n &+ 1))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:126:73: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:126:73: warning: forced cast of '[Int]' to same type has no effect
 124 |         while (row_n < _int(((grid).count))) {
 125 |             let current_row: [Int] = (_idx(grid, row_n) as! [Int])
 126 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
@@ -129,7 +129,7 @@ exit status 1
 127 |             row_above = (_idx(grid, row_n) as! [Int])
 128 |             row_n = _int((row_n &+ 1))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:126:85: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:126:85: warning: forced cast of '[Int]' to same type has no effect
 124 |         while (row_n < _int(((grid).count))) {
 125 |             let current_row: [Int] = (_idx(grid, row_n) as! [Int])
 126 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
@@ -137,7 +137,7 @@ exit status 1
 127 |             row_above = (_idx(grid, row_n) as! [Int])
 128 |             row_n = _int((row_n &+ 1))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:127:44: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:127:44: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
 125 |             let current_row: [Int] = (_idx(grid, row_n) as! [Int])
 126 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
 127 |             row_above = (_idx(grid, row_n) as! [Int])
@@ -145,7 +145,7 @@ exit status 1
 128 |             row_n = _int((row_n &+ 1))
 129 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:130:87: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:130:87: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
 128 |             row_n = _int((row_n &+ 1))
 129 |         }
 130 |         return (_idx(_idx(grid, (_int(((grid).count)) &- 1))!, (_int((((_idx(grid, 0) as! [Int])).count)) &- 1)) as? Int ?? 0)
@@ -153,7 +153,7 @@ exit status 1
 131 |     }
 132 |     var grid1: [[Int]] = ({
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:130:114: warning: conditional downcast from 'Int?' to 'Int' does nothing
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:130:114: warning: conditional downcast from 'Int?' to 'Int' does nothing
 128 |             row_n = _int((row_n &+ 1))
 129 |         }
 130 |         return (_idx(_idx(grid, (_int(((grid).count)) &- 1))!, (_int((((_idx(grid, 0) as! [Int])).count)) &- 1)) as? Int ?? 0)
@@ -161,7 +161,7 @@ exit status 1
 131 |     }
 132 |     var grid1: [[Int]] = ({
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:140:13: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:140:13: warning: forced cast of '[Int]' to same type has no effect
 138 |             _arr = _append(_arr, 1)
 139 |             return _arr
 140 |         }() as! [Int]))
@@ -169,7 +169,7 @@ exit status 1
 141 |         _arr = _append(_arr, ({
 142 |             var _arr: [Int] = []
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:147:13: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:147:13: warning: forced cast of '[Int]' to same type has no effect
 145 |             _arr = _append(_arr, 1)
 146 |             return _arr
 147 |         }() as! [Int]))
@@ -177,7 +177,7 @@ exit status 1
 148 |         _arr = _append(_arr, ({
 149 |             var _arr: [Int] = []
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:154:13: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:154:13: warning: forced cast of '[Int]' to same type has no effect
 152 |             _arr = _append(_arr, 1)
 153 |             return _arr
 154 |         }() as! [Int]))
@@ -185,7 +185,7 @@ exit status 1
 155 |         return _arr
 156 |     }() as! [[Int]])
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:156:9: warning: forced cast of '[[Int]]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:156:9: warning: forced cast of '[[Int]]' to same type has no effect
 154 |         }() as! [Int]))
 155 |         return _arr
 156 |     }() as! [[Int]])
@@ -193,7 +193,7 @@ exit status 1
 157 |     print(_p(_p(_int(min_path_sum(&grid1)))))
 158 |     var grid2: [[Int]] = ({
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:168:13: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:168:13: warning: forced cast of '[Int]' to same type has no effect
 166 |             _arr = _append(_arr, 7)
 167 |             return _arr
 168 |         }() as! [Int]))
@@ -201,7 +201,7 @@ exit status 1
 169 |         _arr = _append(_arr, ({
 170 |             var _arr: [Int] = []
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:177:13: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:177:13: warning: forced cast of '[Int]' to same type has no effect
 175 |             _arr = _append(_arr, 2)
 176 |             return _arr
 177 |         }() as! [Int]))
@@ -209,7 +209,7 @@ exit status 1
 178 |         _arr = _append(_arr, ({
 179 |             var _arr: [Int] = []
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:186:13: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:186:13: warning: forced cast of '[Int]' to same type has no effect
 184 |             _arr = _append(_arr, 1)
 185 |             return _arr
 186 |         }() as! [Int]))
@@ -217,7 +217,7 @@ exit status 1
 187 |         _arr = _append(_arr, ({
 188 |             var _arr: [Int] = []
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:195:13: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:195:13: warning: forced cast of '[Int]' to same type has no effect
 193 |             _arr = _append(_arr, 0)
 194 |             return _arr
 195 |         }() as! [Int]))
@@ -225,7 +225,7 @@ exit status 1
 196 |         _arr = _append(_arr, ({
 197 |             var _arr: [Int] = []
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:204:13: warning: forced cast of '[Int]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:204:13: warning: forced cast of '[Int]' to same type has no effect
 202 |             _arr = _append(_arr, 7)
 203 |             return _arr
 204 |         }() as! [Int]))
@@ -233,7 +233,7 @@ exit status 1
 205 |         return _arr
 206 |     }() as! [[Int]])
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum1417375522/001/main.swift:206:9: warning: forced cast of '[[Int]]' to same type has no effect
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3689464293/001/main.swift:206:9: warning: forced cast of '[[Int]]' to same type has no effect
 204 |         }() as! [Int]))
 205 |         return _arr
 206 |     }() as! [[Int]])
