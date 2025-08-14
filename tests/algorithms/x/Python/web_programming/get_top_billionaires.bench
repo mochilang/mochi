@@ -1,0 +1,13 @@
+{
+  "duration_us": 173725,
+  "memory_bytes": 24387584,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/get_top_billionaires.py", line 123, in <module>
+    display_billionaires(get_forbes_real_time_billionaires())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/get_top_billionaires.py", line 114, in get_forbes_real_time_billionaires
+    for person in response.personList.personsLists:
+                  ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'personList'

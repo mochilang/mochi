@@ -1,0 +1,20 @@
+run: exit status 1
+{
+  "duration_us": 305651,
+  "memory_bytes": 24215552,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/get_top_hn_posts.py", line 117, in <module>
+    print(hackernews_top_stories_as_markdown(5))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/get_top_hn_posts.py", line 105, in hackernews_top_stories_as_markdown
+    stories = hackernews_top_stories(max_stories)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/get_top_hn_posts.py", line 101, in hackernews_top_stories
+    stories = _append(stories, get_hackernews_story(ids[i]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/get_top_hn_posts.py", line 91, in get_hackernews_story
+    if story.url == "":
+       ^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'url'

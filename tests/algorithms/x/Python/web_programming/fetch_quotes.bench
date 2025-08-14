@@ -1,0 +1,15 @@
+{
+  "duration_us": 263524,
+  "memory_bytes": 24223744,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/fetch_quotes.py", line 79, in <module>
+    print([dataclasses.asdict(_x) for _x in response])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/web_programming/fetch_quotes.py", line 79, in <listcomp>
+    print([dataclasses.asdict(_x) for _x in response])
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.pyenv/versions/3.11.12/lib/python3.11/dataclasses.py", line 1285, in asdict
+    raise TypeError("asdict() should be called on dataclass instances")
+TypeError: asdict() should be called on dataclass instances
