@@ -1953,29 +1953,25 @@ type MapGetExpr struct {
 }
 
 func (mg *MapGetExpr) emit(w io.Writer) {
+	io.WriteString(w, "(match List.assoc_opt (")
+	mg.Key.emit(w)
+	io.WriteString(w, ") (")
+	mg.Map.emit(w)
+	io.WriteString(w, ") with Some v -> ")
 	if mg.Dyn {
-		io.WriteString(w, "(try (Obj.obj (List.assoc (")
-		mg.Key.emit(w)
-		io.WriteString(w, ") (")
-		mg.Map.emit(w)
-		io.WriteString(w, ") : ")
+		io.WriteString(w, "(Obj.obj (v : Obj.t) : ")
 		if isDynamicMapType(mg.Typ) {
 			io.WriteString(w, "(string * Obj.t) list")
 		} else {
 			io.WriteString(w, ocamlType(mg.Typ))
 		}
-		io.WriteString(w, ") with Not_found -> ")
-		mg.Default.emit(w)
 		io.WriteString(w, ")")
 	} else {
-		io.WriteString(w, "(try List.assoc (")
-		mg.Key.emit(w)
-		io.WriteString(w, ") (")
-		mg.Map.emit(w)
-		io.WriteString(w, ") with Not_found -> ")
-		mg.Default.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "v")
 	}
+	io.WriteString(w, " | None -> ")
+	mg.Default.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (mg *MapGetExpr) emitPrint(w io.Writer) {
