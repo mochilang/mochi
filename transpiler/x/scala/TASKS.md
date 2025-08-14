@@ -1,3 +1,2075 @@
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-13 16:45 +0700)
+- fix(scala): ensure positive benchmark duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
 ## Progress (2025-08-12 16:13 +0700)
 - zig: adapt to Zig 0.12 type info
 - Regenerated golden files - 93/105 vm valid programs passing
