@@ -5,78 +5,45 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-var g_var_1: std.AutoHashMap(i64,[]i64) = std.AutoHashMap(i64,[]i64).init(std.heap.page_allocator);
+var graph_var: std.AutoHashMap(i64,[]i64) = std.AutoHashMap(i64,[]i64).init(std.heap.page_allocator);
 
-fn add_edge(graph_param: *std.AutoHashMap(i64,[]i64), from: i64, to: i64) void {
-    if (graph_param.contains(from)) {
-        graph_param.put(from, blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, graph_param.get(from).?)) catch |err| handleError(err); _tmp.append(to) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }) catch unreachable;
-    } else {
-        graph_param.put(from, blk0: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.append(to) catch unreachable; break :blk0 (_tmp.toOwnedSlice() catch unreachable); }) catch unreachable;
-    }
-}
-
-fn print_graph(graph: *const std.AutoHashMap(i64,[]i64)) void {
-    for (blk: { var it = graph.keyIterator(); var arr = std.ArrayList(i64).init(std.heap.page_allocator); while (it.next()) |k| { arr.append(k.*) catch unreachable; } break :blk arr.toOwnedSlice() catch unreachable; }) |__it0| {
-        const v = __it0;
-        const adj: []i64 = graph.get(v).?;
-        var line: []const u8 = _concat_string(_str(v), "  :  ");
-        line = line;
-        var i: i64 = 0;
-        i = i;
-        while (i < @as(i64, @intCast(adj.len))) {
-            line = _concat_string(line, _str(adj[_idx(adj.len, i)]));
-            if (i < @as(i64, @intCast(adj.len)) - 1) {
-                line = _concat_string(line, " -> ");
-            }
-            i = i + 1;
-        }
-        std.debug.print("{s}\n", .{line});
-    }
-}
-
-fn bfs(graph: *const std.AutoHashMap(i64,[]i64), start: i64) []i64 {
-    var visited: std.AutoHashMap(i64,bool) = std.AutoHashMap(i64, bool).init(std.heap.page_allocator);
+fn is_bipartite_bfs(graph_param: *const std.AutoHashMap(i64,[]i64)) bool {
+    var visited: std.AutoHashMap(i64,i64) = std.AutoHashMap(i64, i64).init(std.heap.page_allocator);
     visited = visited;
-    var queue: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-    queue = queue;
-    var order: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-    order = order;
-    queue = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, queue)) catch |err| handleError(err); _tmp.append(start) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
-    visited.put(start, true) catch unreachable;
-    var head: i64 = 0;
-    head = head;
-    while (head < @as(i64, @intCast(queue.len))) {
-        const vertex: i64 = queue[_idx(queue.len, head)];
-        head = head + 1;
-        order = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, order)) catch |err| handleError(err); _tmp.append(vertex) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
-        const neighbors: []i64 = graph.get(vertex).?;
-        var i: i64 = 0;
-        i = i;
-        while (i < @as(i64, @intCast(neighbors.len))) {
-            const neighbor: i64 = neighbors[_idx(neighbors.len, i)];
-            if (!(visited.contains(neighbor))) {
-                visited.put(neighbor, true) catch unreachable;
-                queue = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, queue)) catch |err| handleError(err); _tmp.append(neighbor) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+    var __mapit1 = graph_param.keyIterator();
+    while (__mapit1.next()) |__it0| {
+        const node = __it0.*;
+        if (!(visited.contains(node))) {
+            var queue: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
+            queue = queue;
+            queue = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, queue)) catch |err| handleError(err); _tmp.append(node) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+            visited.put(node, 0) catch unreachable;
+            while (@as(i64, @intCast(queue.len)) > 0) {
+                const curr: i64 = queue[_idx(queue.len, 0)];
+                queue = queue[@as(usize, @intCast(1))..@min(@as(usize, @intCast(@as(i64, @intCast(queue.len)))), @as(usize, @intCast(queue.len)))];
+                for (graph_param.get(curr).?) |__it2| {
+                    const neighbor = __it2;
+                    if (!(visited.contains(neighbor))) {
+                        visited.put(neighbor, 1 - visited.get(curr).?) catch unreachable;
+                        queue = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, queue)) catch |err| handleError(err); _tmp.append(neighbor) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+                    } else {
+                        if (visited.get(neighbor).? == visited.get(curr).?) {
+                            return false;
+                        }
+                    }
+                }
             }
-            i = i + 1;
         }
     }
-    return order;
+    return true;
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        g_var_1 = std.AutoHashMap(i64, []i64).init(std.heap.page_allocator);
-        add_edge(&g_var_1, 0, 1);
-        add_edge(&g_var_1, 0, 2);
-        add_edge(&g_var_1, 1, 2);
-        add_edge(&g_var_1, 2, 0);
-        add_edge(&g_var_1, 2, 3);
-        add_edge(&g_var_1, 3, 3);
-        print_graph(&g_var_1);
-        std.debug.print("{s}\n", .{_str(bfs(&g_var_1, 2))});
+        graph_var = blk0: { var m = std.AutoHashMap(i64, []i64).init(std.heap.page_allocator); m.put(0, @constCast(&([2]i64{1, 3}))[0..]) catch unreachable; m.put(1, @constCast(&([2]i64{0, 2}))[0..]) catch unreachable; m.put(2, @constCast(&([2]i64{1, 3}))[0..]) catch unreachable; m.put(3, @constCast(&([2]i64{0, 2}))[0..]) catch unreachable; break :blk0 m; };
+        std.debug.print("{s}\n", .{_str(is_bipartite_bfs(&graph_var))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
@@ -163,15 +130,6 @@ fn _str(v: anytype) []const u8 {
     else => {},
     }
     return std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{v}) catch unreachable;
-}
-
-fn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {
-    const alloc = std.heap.page_allocator;
-    var out = alloc.alloc(u8, lhs.len + rhs.len + 1) catch unreachable;
-    std.mem.copyForwards(u8, out[0..lhs.len], lhs);
-    std.mem.copyForwards(u8, out[lhs.len..lhs.len + rhs.len], rhs);
-    out[lhs.len + rhs.len] = 0;
-    return out[0..lhs.len + rhs.len];
 }
 
 fn _mem() i64 {

@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-14 18:07 +0700
+Last updated: 2025-08-14 18:16 +0700
 
-## Program Checklist (304/1077)
+## Program Checklist (309/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -410,12 +410,12 @@ Last updated: 2025-08-14 18:07 +0700
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 47.195ms | 6.6 MB |
 | 402 | graphs/bidirectional_search | ✓ | 2.091ms | 512.0 KB |
 | 403 | graphs/boruvka | ✓ | 5.389ms | 772.0 KB |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 989µs | 384.0 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 877µs | 516.0 KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 624µs | 384.0 KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 294µs | 256.0 KB |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 2.652ms | 768.0 KB |
+| 409 | graphs/check_bipatrite | ✓ | 426µs | 256.0 KB |
 | 410 | graphs/check_cycle |   |  |  |
 | 411 | graphs/connected_components |   |  |  |
 | 412 | graphs/deep_clone_graph |   |  |  |
