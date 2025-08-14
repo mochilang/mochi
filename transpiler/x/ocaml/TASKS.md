@@ -1,7 +1,10 @@
-## Progress (2025-08-12 13:56 +0700)
-- ocaml: handle negative list indices (1a86a5d0b1)
+## Progress (2025-08-14 16:16 +0700)
+- ocaml: handle struct refs (351ef0c637)
 
 - VM valid programs compiled: 102/105
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
 
 - ocaml: handle negative list indices (1a86a5d0b1)
 
