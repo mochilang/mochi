@@ -1,10 +1,7 @@
 compile: exit status 1
 /workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/fetch_well_rx_price.cpp:86:215: warning: multi-character character constant [-Wmultichar]
-   86 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+   86 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << " : "; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                       ^~~~
-/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/fetch_well_rx_price.cpp:86:251: warning: multi-character character constant [-Wmultichar]
-   86 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
-      |                                                                                                                                                                                                                                                           ^~~~
 /workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/fetch_well_rx_price.cpp: In function ‘int main()’:
 /workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/fetch_well_rx_price.cpp:208:34: error: no match for ‘operator!=’ (operand types are ‘std::vector<std::map<std::__cxx11::basic_string<char>, std::__cxx11::basic_string<char> > >’ and ‘double’)
   208 |         if ((pharmacy_price_list != any_to_double(nullptr))) {

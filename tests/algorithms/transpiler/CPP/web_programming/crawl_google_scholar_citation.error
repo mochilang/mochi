@@ -1,0 +1,8 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/crawl_google_scholar_citation.cpp:86:215: warning: multi-character character constant [-Wmultichar]
+   86 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << " : "; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/crawl_google_scholar_citation.cpp: In function ‘int main()’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/crawl_google_scholar_citation.cpp:206:14: error: ‘__name__’ was not declared in this scope
+  206 |         if ((__name__ == std::string("__main__"))) {
+      |              ^~~~~~~~
