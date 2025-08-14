@@ -1205,7 +1205,9 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "_idx(")
 		if be, ok := ie.Base.(*IndexExpr); ok {
 			be.emit(w)
-			fmt.Fprint(w, "!")
+			if !be.Force {
+				fmt.Fprint(w, "!")
+			}
 		} else {
 			ie.Base.emit(w)
 		}
@@ -1557,9 +1559,21 @@ func (c *CallExpr) emit(w io.Writer) {
 
 	var emitNoCast func(Expr)
 	emitNoCast = func(e Expr) {
-		if ce, ok := e.(*CastExpr); ok {
-			emitNoCast(ce.Expr)
+		switch v := e.(type) {
+		case *CastExpr:
+			emitNoCast(v.Expr)
 			return
+		case *IndexExpr:
+			if !v.KeyString && !v.KeyAny && !v.Map {
+				emitNoCast(v.Base)
+				fmt.Fprint(w, "[")
+				v.Index.emit(w)
+				fmt.Fprint(w, "]")
+				if v.Force {
+					fmt.Fprint(w, "!")
+				}
+				return
+			}
 		}
 		e.emit(w)
 	}
@@ -2594,6 +2608,8 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 			}
 		case st.Expr != nil:
 			scanExpr(st.Expr.Expr)
+		case st.Expect != nil:
+			scanExpr(st.Expect.Value)
 		case st.Return != nil:
 			scanExpr(st.Return.Value)
 		case st.Let != nil:
