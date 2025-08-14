@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (485/1077) - Last updated 2025-08-14 13:13 +0700:
+Checklist of programs that currently transpile and run (486/1077) - Last updated 2025-08-14 14:01 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -400,9 +400,9 @@ Checklist of programs that currently transpile and run (485/1077) - Last updated
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 444us | 1.5 MB |
 | 394 | graphs/a_star | ✓ | 266us | 1.4 MB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 3.24ms | 1.9 MB |
-| 396 | graphs/articulation_points |  |  |  |
+| 396 | graphs/articulation_points | ✓ | 383us | 1.5 MB |
 | 397 | graphs/basic_graphs |  |  |  |
-| 398 | graphs/bellman_ford | ✓ | 516us | 1.7 MB |
+| 398 | graphs/bellman_ford | ✓ | 511us | 1.6 MB |
 | 399 | graphs/bi_directional_dijkstra |  |  |  |
 | 400 | graphs/bidirectional_a_star | ✓ | 464us | 1.7 MB |
 | 401 | graphs/bidirectional_breadth_first_search |  |  |  |

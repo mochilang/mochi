@@ -3736,7 +3736,8 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if (exprIsString(b.Left) || exprIsString(b.Right) || inferExprType(currentEnv, b.Left) == "const char*" || inferExprType(currentEnv, b.Right) == "const char*") &&
+	if ((exprIsString(b.Left) || inferExprType(currentEnv, b.Left) == "const char*") &&
+		(exprIsString(b.Right) || inferExprType(currentEnv, b.Right) == "const char*")) &&
 		(b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
 		if _, ok := b.Left.(*NullLit); ok {
 			b.Left.emitExpr(w)
@@ -6035,9 +6036,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			buf.WriteString("};\n")
 			if strings.HasSuffix(valT, "[]") {
 				base := strings.TrimSuffix(valT, "[]")
+				elemDecl := base
+				if strings.HasSuffix(base, "[]") {
+					elemDecl = strings.TrimSuffix(base, "[]") + "*"
+				}
 				for i, it := range m.Items {
 					if lst, ok := it.Value.(*ListLit); ok {
-						fmt.Fprintf(&buf, "%s %s_vals_%d[%d] = {", base, s.Let.Name, i, len(lst.Elems))
+						fmt.Fprintf(&buf, "%s %s_vals_%d[%d] = {", elemDecl, s.Let.Name, i, len(lst.Elems))
 						for j, e := range lst.Elems {
 							if j > 0 {
 								buf.WriteString(", ")
@@ -6336,9 +6341,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			buf.WriteString("};\n")
 			if strings.HasSuffix(valT, "[]") {
 				base := strings.TrimSuffix(valT, "[]")
+				elemDecl := base
+				if strings.HasSuffix(base, "[]") {
+					elemDecl = strings.TrimSuffix(base, "[]") + "*"
+				}
 				for i, it := range m.Items {
 					if lst, ok := it.Value.(*ListLit); ok {
-						fmt.Fprintf(&buf, "%s %s_vals_%d[%d] = {", base, s.Var.Name, i, len(lst.Elems))
+						fmt.Fprintf(&buf, "%s %s_vals_%d[%d] = {", elemDecl, s.Var.Name, i, len(lst.Elems))
 						for j, e := range lst.Elems {
 							if j > 0 {
 								buf.WriteString(", ")
