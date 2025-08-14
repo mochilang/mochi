@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 972/1077
-Last updated: 2025-08-14 10:33 +0700
+Completed programs: 973/1077
+Last updated: 2025-08-14 15:57 +0700
 
 Checklist:
 
@@ -21,7 +21,7 @@ Checklist:
 | 12 | backtracking/n_queens_math | ✓ | 232.0µs | 3.68MB |
 | 13 | backtracking/power_sum | ✓ | 267.0µs | 3.62MB |
 | 14 | backtracking/rat_in_maze | ✓ | 291.0µs | 3.47MB |
-| 15 | backtracking/sudoku |   |  |  |
+| 15 | backtracking/sudoku | ✓ | 12.0ms | 3.76MB |
 | 16 | backtracking/sum_of_subsets |   |  |  |
 | 17 | backtracking/word_break |   |  |  |
 | 18 | backtracking/word_ladder |   |  |  |

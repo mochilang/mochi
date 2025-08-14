@@ -3754,14 +3754,33 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ") {\n")
 		}
 	} else {
-		io.WriteString(w, "for (int ")
+		loopType := "int"
+		t := exprType(f.Start)
+		if t == "" {
+			t = exprType(f.End)
+		}
+		switch t {
+		case "int64_t", "double", "size_t":
+			loopType = t
+		}
+		io.WriteString(w, "for (")
+		io.WriteString(w, loopType)
+		io.WriteString(w, " ")
 		io.WriteString(w, safeName(f.Var))
 		io.WriteString(w, " = ")
-		f.Start.emit(w)
+		if loopType == "size_t" {
+			emitIndex(w, f.Start)
+		} else {
+			f.Start.emit(w)
+		}
 		io.WriteString(w, "; ")
 		io.WriteString(w, safeName(f.Var))
 		io.WriteString(w, " < ")
-		f.End.emit(w)
+		if loopType == "size_t" {
+			emitIndex(w, f.End)
+		} else {
+			f.End.emit(w)
+		}
 		io.WriteString(w, "; ")
 		io.WriteString(w, safeName(f.Var))
 		io.WriteString(w, "++ ) {\n")
