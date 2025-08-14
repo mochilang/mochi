@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 1052/1077
-Last updated: 2025-08-14 10:00 +0700
+Completed programs: 1057/1077
+Last updated: 2025-08-14 15:48 +0700
 
 Checklist:
 
@@ -411,7 +411,7 @@ Checklist:
 | 402 | graphs/bidirectional_search | ✓ | 1ms | 21.1 KB |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 1ms | 11.7 KB |
-| 405 | graphs/breadth_first_search_2 | ✓ | 1ms | 11.8 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 79µs | 14.3 KB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 1ms | 12.8 KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1ms | 11.4 KB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 1ms | 27.2 KB |
@@ -428,10 +428,10 @@ Checklist:
 | 419 | graphs/dijkstra_binary_grid | ✓ | 1ms | 49.0 KB |
 | 420 | graphs/dinic | ✓ | 1ms | 86.8 KB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 1ms | 27.1 KB |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 98µs | 14.7 KB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1ms | 48.3 KB |
 | 424 | graphs/even_tree | ✓ | 1ms | 12.4 KB |
-| 425 | graphs/finding_bridges |   |  |  |
+| 425 | graphs/finding_bridges | ✓ | 178µs | 39.3 KB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 1ms | 122.5 KB |
 | 427 | graphs/g_topological_sort | ✓ | 1ms | 17.7 KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 1ms | 12.6 KB |
@@ -459,7 +459,7 @@ Checklist:
 | 450 | graphs/random_graph_generator | ✓ | 1ms | 12.0 KB |
 | 451 | graphs/scc_kosaraju | ✓ | 1ms | 12.7 KB |
 | 452 | graphs/strongly_connected_components | ✓ | 1ms | 18.6 KB |
-| 453 | graphs/tarjans_scc |   |  |  |
+| 453 | graphs/tarjans_scc | ✓ | 89µs | 19.5 KB |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1ms | 13.8 KB |
 | 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 1ms | 30.8 KB |
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 1ms | 9.0 KB |
@@ -517,7 +517,7 @@ Checklist:
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 183.317ms | 21.0 KB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 183.317ms | 116.1 KB |
 | 510 | machine_learning/linear_regression | ✓ | 183.317ms | 18.3 KB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   | 1ms | 31.2 KB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 518µs | 37.5 KB |
 | 512 | machine_learning/logistic_regression | ✓ | 183.317ms | 213.2 KB |
 | 513 | machine_learning/loss_functions | ✓ | 183.317ms | 16.9 KB |
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 183.317ms | 25.0 KB |
@@ -545,7 +545,7 @@ Checklist:
 | 536 | maths/average_median | ✓ | 183.317ms | 9.6 KB |
 | 537 | maths/average_mode | ✓ | 183.317ms | 20.9 KB |
 | 538 | maths/bailey_borwein_plouffe | ✓ | 183.317ms | 72.8 KB |
-| 539 | maths/base_neg2_conversion |   |  |  |
+| 539 | maths/base_neg2_conversion | ✓ | 62µs | 11.1 KB |
 | 540 | maths/basic_maths | ✓ | 183.317ms | 11.0 KB |
 | 541 | maths/binary_exponentiation | ✓ | 183.317ms | 9.8 KB |
 | 542 | maths/binary_multiplication | ✓ | 183.317ms | 9.2 KB |

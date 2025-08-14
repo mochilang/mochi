@@ -125,63 +125,93 @@ end
 __name__ = '__main__'
 start_mem = _mem()
 start = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
-  def join(xs)
-    s = ""
+  def abs(x)
+    if x < 0.0
+      return -x
+    end
+    return x
+  end
+  def pow_int(base, exp)
+    result = 1.0
     i = 0
-    while i < _len(xs)
-      s = _add(s, (__tmp1 = xs; __tmp1.is_a?(Hash) ? __tmp1[i] : _idx(__tmp1, i)))
+    while i < exp
+      result = result * base
       i = _add(i, 1)
     end
-    return s
-  end
-  def breadth_first_search(graph, start)
-    explored = {}
-    explored[start] = true
-    result = [start]
-    queue = [start]
-    while _len(queue) > 0
-      v = (__tmp2 = queue; __tmp2.is_a?(Hash) ? __tmp2[0] : _idx(__tmp2, 0))
-      queue = queue[1..._len(queue)]
-      children = (__tmp3 = graph; __tmp3.is_a?(Hash) ? __tmp3[v] : _idx(__tmp3, v))
-      i = 0
-      while i < _len(children)
-        w = (__tmp4 = children; __tmp4.is_a?(Hash) ? __tmp4[i] : _idx(__tmp4, i))
-        if !(_has(explored, w))
-          explored[w] = true
-          result = (result + [w])
-          queue = (queue + [w])
-        end
-        i = _add(i, 1)
-      end
-    end
     return result
   end
-  def breadth_first_search_with_deque(graph, start)
-    visited = {}
-    visited[start] = true
-    result = [start]
-    queue = [start]
-    head = 0
-    while head < _len(queue)
-      v = (__tmp5 = queue; __tmp5.is_a?(Hash) ? __tmp5[head] : _idx(__tmp5, head))
-      head = _add(head, 1)
-      children = (__tmp6 = graph; __tmp6.is_a?(Hash) ? __tmp6[v] : _idx(__tmp6, v))
-      i = 0
-      while i < _len(children)
-        child = (__tmp7 = children; __tmp7.is_a?(Hash) ? __tmp7[i] : _idx(__tmp7, i))
-        if !(_has(visited, child))
-          visited[child] = true
-          result = (result + [child])
-          queue = (queue + [child])
-        end
-        i = _add(i, 1)
-      end
+  def nth_root(x, n)
+    if _eq(x, 0.0)
+      return 0.0
     end
-    return result
+    guess = x
+    i = 0
+    while i < 10
+      denom = pow_int(guess, n - 1)
+      guess = (_add(((n - 1)).to_f * guess, x / denom)) / ((n).to_f)
+      i = _add(i, 1)
+    end
+    return guess
   end
-  $G = {"A" => ["B", "C"], "B" => ["A", "D", "E"], "C" => ["A", "F"], "D" => ["B"], "E" => ["B", "F"], "F" => ["C", "E"]}
-  puts(join(breadth_first_search($G, "A")))
-  puts(join(breadth_first_search_with_deque($G, "A")))
+  def round_nearest(x)
+    if x >= 0.0
+      n = ((_add(x, 0.5))).to_i
+      return (n).to_f
+    end
+    n = ((x - 0.5)).to_i
+    return (n).to_f
+  end
+  def compute_geometric_mean(nums)
+    if _eq(_len(nums), 0)
+      panic("no numbers")
+    end
+    product = 1.0
+    i = 0
+    while i < _len(nums)
+      product = product * (__tmp1 = nums; __tmp1.is_a?(Hash) ? __tmp1[i] : _idx(__tmp1, i))
+      i = _add(i, 1)
+    end
+    if product < 0.0 && _eq(_len(nums) % 2, 0)
+      panic("Cannot Compute Geometric Mean for these numbers.")
+    end
+    mean = nth_root(product.abs(), _len(nums))
+    if product < 0.0
+      mean = -mean
+    end
+    possible = round_nearest(mean)
+    if _eq(pow_int(possible, _len(nums)), product)
+      mean = possible
+    end
+    return mean
+  end
+  def test_compute_geometric_mean()
+    eps = 0.0001
+    m1 = compute_geometric_mean([2.0, 8.0])
+    if (m1 - 4.0).abs() > eps
+      panic("test1 failed")
+    end
+    m2 = compute_geometric_mean([5.0, 125.0])
+    if (m2 - 25.0).abs() > eps
+      panic("test2 failed")
+    end
+    m3 = compute_geometric_mean([1.0, 0.0])
+    if (m3 - 0.0).abs() > eps
+      panic("test3 failed")
+    end
+    m4 = compute_geometric_mean([1.0, 5.0, 25.0, 5.0])
+    if (m4 - 5.0).abs() > eps
+      panic("test4 failed")
+    end
+    m5 = compute_geometric_mean([-5.0, 25.0, 1.0])
+    if (_add(m5, 5.0)).abs() > eps
+      panic("test5 failed")
+    end
+  end
+  def main()
+    test_compute_geometric_mean()
+    puts(compute_geometric_mean([-3.0, -27.0]))
+  end
+  main()
 end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}
