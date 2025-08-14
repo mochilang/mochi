@@ -6475,13 +6475,17 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			return &MaxExpr{List: args[0], IsFloat: isFloat}, nil
 		case "keys":
-			mt, _ := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType)
-			usesSort = true
-			return &KeysExpr{Map: args[0], KeyType: toGoTypeFromType(mt.Key)}, nil
+			if mt, ok := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType); ok {
+				usesSort = true
+				return &KeysExpr{Map: args[0], KeyType: toGoTypeFromType(mt.Key)}, nil
+			}
+			return &CallExpr{Func: name, Args: args}, nil
 		case "values":
-			mt, _ := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType)
-			usesSort = true
-			return &ValuesExpr{Map: args[0], ValueType: toGoTypeFromType(mt.Value)}, nil
+			if mt, ok := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType); ok {
+				usesSort = true
+				return &ValuesExpr{Map: args[0], ValueType: toGoTypeFromType(mt.Value)}, nil
+			}
+			return &CallExpr{Func: name, Args: args}, nil
 		case "exists":
 			at := types.TypeOfExpr(p.Call.Args[0], env)
 			if _, ok := at.(types.AnyType); ok {
