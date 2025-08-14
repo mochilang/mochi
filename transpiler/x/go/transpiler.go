@@ -5448,11 +5448,19 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							if lNull && !rNull {
 								if _, ok := typesList[i+1].(types.StringType); ok {
 									left = &StringLit{Value: ""}
+								} else if isIntType(typesList[i+1]) {
+									left = &IntLit{Value: -1}
+								} else if _, ok := typesList[i+1].(types.FloatType); ok {
+									left = &FloatLit{Value: -1}
 								}
 							}
 							if rNull && !lNull {
 								if _, ok := typesList[i].(types.StringType); ok {
 									right = &StringLit{Value: ""}
+								} else if isIntType(typesList[i]) {
+									right = &IntLit{Value: -1}
+								} else if _, ok := typesList[i].(types.FloatType); ok {
+									right = &FloatLit{Value: -1}
 								}
 							}
 							if !(ops[i].Op == "==" || ops[i].Op == "!=") || (!lNull && !rNull) {
@@ -6570,6 +6578,14 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 							}
 						}
 						for i := 1; i < len(args); i++ {
+							if _, ok2 := args[i].(*NullLit); ok2 {
+								if et == "int" {
+									args[i] = &IntLit{Value: -1}
+								} else if et == "float64" {
+									args[i] = &FloatLit{Value: -1}
+								}
+								continue
+							}
 							at := types.TypeOfExpr(p.Call.Args[i], env)
 							if types.IsAnyType(at) {
 								args[i] = &AssertExpr{Expr: args[i], Type: et}
@@ -6969,6 +6985,18 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
 		if p.Lit.Null {
+			// Determine the expected type of this null literal. If it's used
+			// in a numeric context (e.g. assigned to an int), emit a sentinel
+			// value instead of Go's nil so the generated code remains
+			// compilable while preserving "empty" semantics.
+			if t := types.TypeOfPrimary(p, env); t != nil {
+				switch t.(type) {
+				case types.IntType, types.Int64Type:
+					return &IntLit{Value: -1}, nil
+				case types.FloatType:
+					return &FloatLit{Value: -1}, nil
+				}
+			}
 			return &NullLit{}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
