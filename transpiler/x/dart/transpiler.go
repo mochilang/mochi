@@ -2855,6 +2855,9 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) error {
 	valType := inferType(c.Value)
 	if c.Type == "double" {
+		if valType == "double" {
+			return c.Value.emit(w)
+		}
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 class CalcResult {
@@ -74,7 +77,7 @@ CalcResult calc_profit(List<int> profit, List<int> weight, int max_weight) {
     int k = 0;
     while (k < profit.length) {
     if (!used[k]) {
-    double ratio = (profit[k] as double) / (weight[k] as double);
+    double ratio = ((profit[k]).toDouble()) / ((weight[k]).toDouble());
     if (ratio > max_ratio) {
     max_ratio = ratio;
     idx = k;
@@ -88,9 +91,9 @@ CalcResult calc_profit(List<int> profit, List<int> weight, int max_weight) {
     while (used.length <= idx) { used.add(false); } used[idx] = true;
     if (max_weight - limit >= weight[idx]) {
     limit = limit + weight[idx];
-    gain = gain + (profit[idx] as double);
+    gain = gain + ((profit[idx]).toDouble());
   } else {
-    gain = gain + (max_weight - limit as double) / (weight[idx] as double) * (profit[idx] as double);
+    gain = gain + ((max_weight - limit).toDouble()) / ((weight[idx]).toDouble()) * ((profit[idx]).toDouble());
     break;
   }
   }

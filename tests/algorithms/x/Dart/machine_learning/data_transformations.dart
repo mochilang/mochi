@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,15 +33,25 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double floor(double x) {
-  int i = x as int;
-  if ((i as double) > x) {
+  int i = (x).toInt();
+  if (((i).toDouble()) > x) {
     i = i - 1;
   }
-  return i as double;
+  return (i).toDouble();
 }
 
 double pow10(int n) {
@@ -56,7 +66,7 @@ double pow10(int n) {
 
 double round(double x, int n) {
   double m = pow10(n);
-  double y = floor(x * m + 0.5) as double;
+  double y = (floor(x * m + 0.5)).toDouble();
   return y / m;
 }
 
@@ -78,13 +88,13 @@ double mean(List<double> data) {
     total = total + data[i];
     i = i + 1;
   }
-  return total / (n as double);
+  return total / ((n).toDouble());
 }
 
 double stdev(List<double> data) {
   int n = data.length;
   if (n <= 1) {
-    throw Exception("data length must be > 1");
+    _error("data length must be > 1");
   }
   double m = mean(data);
   double sum_sq = 0.0;
@@ -94,12 +104,12 @@ double stdev(List<double> data) {
     sum_sq = sum_sq + diff * diff;
     i = i + 1;
   }
-  return sqrtApprox(sum_sq / (n - 1 as double));
+  return sqrtApprox(sum_sq / ((n - 1).toDouble()));
 }
 
 List<double> normalization(List<double> data, int ndigits) {
-  double x_min = data.reduce((a, b) => a < b ? a : b) as double;
-  double x_max = data.reduce((a, b) => a > b ? a : b) as double;
+  double x_min = (data.reduce((a, b) => a < b ? a : b)).toDouble();
+  double x_max = (data.reduce((a, b) => a > b ? a : b)).toDouble();
   double denom = x_max - x_min;
   List<double> result = <double>[];
   int i = 0;
@@ -133,10 +143,10 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((normalization([2.0, 7.0, 10.0, 20.0, 30.0, 50.0], 3)).toString());
-  print((normalization([5.0, 10.0, 15.0, 20.0, 25.0], 3)).toString());
-  print((standardization([2.0, 7.0, 10.0, 20.0, 30.0, 50.0], 3)).toString());
-  print((standardization([5.0, 10.0, 15.0, 20.0, 25.0], 3)).toString());
+  print(_str(normalization([2.0, 7.0, 10.0, 20.0, 30.0, 50.0], 3)));
+  print(_str(normalization([5.0, 10.0, 15.0, 20.0, 25.0], 3)));
+  print(_str(standardization([2.0, 7.0, 10.0, 20.0, 30.0, 50.0], 3)));
+  print(_str(standardization([5.0, 10.0, 15.0, 20.0, 25.0], 3)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

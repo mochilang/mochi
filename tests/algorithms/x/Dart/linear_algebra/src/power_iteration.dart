@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class PowerResult {
   double eigenvalue;
@@ -116,7 +121,7 @@ PowerResult power_iteration(List<List<double>> matrix, List<double> vector, doub
     List<double> mv = mat_vec_mult(matrix, v);
     lambda = dot(v, mv);
     dynamic denom = (lambda != 0.0 ? lambda.abs() : 1.0);
-    err = (lambda - lambda_prev).abs() ~/ denom;
+    err = (lambda - lambda_prev).abs() / denom;
     lambda_prev = lambda;
     iterations = iterations + 1;
   }
@@ -133,8 +138,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((result.eigenvalue).toString());
-  print((result.eigenvector).toString());
+  print(_str(result.eigenvalue));
+  print(_str(result.eigenvector));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

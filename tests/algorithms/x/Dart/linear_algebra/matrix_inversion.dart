@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,15 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 List<List<double>> invert_matrix(List<List<double>> matrix) {
@@ -56,7 +64,7 @@ List<List<double>> invert_matrix(List<List<double>> matrix) {
   }
     k = k + 1;
   }
-    aug = ([...aug, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    aug = ([...aug, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   int col = 0;
@@ -71,7 +79,7 @@ List<List<double>> invert_matrix(List<List<double>> matrix) {
     r = r + 1;
   }
     if (aug[pivot_row][col] == 0.0) {
-    throw Exception("Matrix is not invertible");
+    _error("Matrix is not invertible");
   }
     if (pivot_row != col) {
     List<double> temp = aug[col];
@@ -107,7 +115,7 @@ List<List<double>> invert_matrix(List<List<double>> matrix) {
     row = [...row, aug[r3][c3 + n]];
     c3 = c3 + 1;
   }
-    inv = ([...inv, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    inv = ([...inv, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     r3 = r3 + 1;
   }
   return inv;

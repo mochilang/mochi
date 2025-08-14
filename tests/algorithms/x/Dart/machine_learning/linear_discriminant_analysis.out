@@ -1,3 +1,2 @@
-../../../tests/algorithms/x/Dart/machine_learning/linear_discriminant_analysis.dart:29:28: Error: Unexpected token 'as'.
-  return x - (x / m as int as double) * m;
-                           ^^
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+100.0

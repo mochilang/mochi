@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 class PointLabel {
@@ -109,8 +112,7 @@ String classify(KNN knn, List<double> pred_point, int k) {
     j = j + 1;
   }
     votes = [...votes, distances[min_index].label];
-    distances[min_index]!.dist = 1;
-    e18;
+    distances[min_index]!.dist = 1000000000000000000.0;
     count = count + 1;
   }
   List<int> tally = <int>[];

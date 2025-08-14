@@ -1,3 +1,4 @@
+run: exit status 254
 ../../../tests/algorithms/x/Dart/machine_learning/multilayer_perceptron_classifier.dart:82:43: Error: Undefined name '_error'.
     double d1 = h1 * (1.0 - h1) * w2[0] * _error;
                                           ^^^^^^

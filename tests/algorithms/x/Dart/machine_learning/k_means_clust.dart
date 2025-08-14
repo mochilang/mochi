@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class KMeansResult {
   List<List<double>> centroids;
@@ -78,7 +83,7 @@ List<List<double>> revise_centroids(List<List<double>> data, int k, List<int> as
     for (int j = 0; j < dim; j++) {
     row = [...row, 0.0];
   }
-    sums = ([...sums, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    sums = ([...sums, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     counts = [...counts, 0];
   }
   for (int i = 0; i < data.length; i++) {
@@ -93,14 +98,14 @@ List<List<double>> revise_centroids(List<List<double>> data, int k, List<int> as
     List<double> row = <double>[];
     if (counts[i] > 0) {
     for (int j = 0; j < dim; j++) {
-    row = [...row, sums[i][j] / (counts[i] as double)];
+    row = [...row, sums[i][j] / ((counts[i]).toDouble())];
   };
   } else {
     for (int j = 0; j < dim; j++) {
     row = [...row, 0.0];
   };
   }
-    centroids = ([...centroids, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    centroids = ([...centroids, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
   }
   return centroids;
 }
@@ -157,9 +162,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((result.centroids).toString());
-  print((result.assignments).toString());
-  print((result.heterogeneity).toString());
+  print(_str(result.centroids));
+  print(_str(result.assignments));
+  print(_str(result.heterogeneity));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

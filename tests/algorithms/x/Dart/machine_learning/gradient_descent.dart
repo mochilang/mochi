@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class DataPoint {
   List<double> x;
@@ -80,7 +85,7 @@ double summation_of_cost_derivative(int index, List<double> params, List<DataPoi
 }
 
 double get_cost_derivative(int index, List<double> params, List<DataPoint> data) {
-  return summation_of_cost_derivative(index, params, data) / (data.length as double);
+  return summation_of_cost_derivative(index, params, data) / ((data.length).toDouble());
 }
 
 bool allclose(List<double> a, List<double> b, double atol, double rtol) {
@@ -112,7 +117,7 @@ List<double> run_gradient_descent(List<DataPoint> train_data, List<double> initi
     i = i + 1;
   }
     if (allclose(params, temp, absolute_error_limit, relative_error_limit)) {
-    print("Number of iterations:" + (j).toString());
+    print("Number of iterations:" + _str(j));
     break;
   }
     params = temp;
@@ -124,8 +129,8 @@ void test_gradient_descent(List<DataPoint> test_data, List<double> params) {
   int i = 0;
   while (i < test_data.length) {
     DataPoint dp = test_data[i];
-    print("Actual output value:" + (dp.y).toString());
-    print("Hypothesis output:" + (hypothesis_value(dp.x, params)).toString());
+    print("Actual output value:" + _str(dp.y));
+    print("Hypothesis output:" + _str(hypothesis_value(dp.x, params)));
     i = i + 1;
   }
 }

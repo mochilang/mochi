@@ -1,1 +1,15 @@
-[0, 0, 1]
+../../../tests/algorithms/x/Dart/machine_learning/multilayer_perceptron_classifier.dart:59:43: Error: Undefined name '_error'.
+    double d1 = h1 * (1.0 - h1) * w2[0] * _error;
+                                          ^^^^^^
+../../../tests/algorithms/x/Dart/machine_learning/multilayer_perceptron_classifier.dart:60:43: Error: Undefined name '_error'.
+    double d2 = h2 * (1.0 - h2) * w2[1] * _error;
+                                          ^^^^^^
+../../../tests/algorithms/x/Dart/machine_learning/multilayer_perceptron_classifier.dart:61:64: Error: Undefined name '_error'.
+    while (w2.length <= 0) { w2.add(0); } w2[0] = w2[0] - lr * _error * h1;
+                                                               ^^^^^^
+../../../tests/algorithms/x/Dart/machine_learning/multilayer_perceptron_classifier.dart:62:64: Error: Undefined name '_error'.
+    while (w2.length <= 1) { w2.add(0); } w2[1] = w2[1] - lr * _error * h2;
+                                                               ^^^^^^
+../../../tests/algorithms/x/Dart/machine_learning/multilayer_perceptron_classifier.dart:63:20: Error: Undefined name '_error'.
+    b2 = b2 - lr * _error;
+                   ^^^^^^

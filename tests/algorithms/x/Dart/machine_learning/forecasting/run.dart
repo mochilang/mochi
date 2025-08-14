@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 double int_to_float(int x) {
@@ -89,7 +92,7 @@ List<List<double>> transpose(List<List<double>> m) {
     row = [...row, m[i][j]];
     i = i + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     j = j + 1;
   }
   return res;
@@ -114,7 +117,7 @@ List<List<double>> matmul(List<List<double>> a, List<List<double>> b) {
     row = [...row, s];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return res;
@@ -140,7 +143,7 @@ List<List<double>> identity(int n) {
     row = [...row, (i == j ? 1.0 : 0.0)];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return res;
@@ -189,7 +192,7 @@ double linear_regression_prediction(List<double> train_dt, List<double> train_us
   List<List<double>> X = <List<double>>[];
   int i = 0;
   while (i < train_dt.length) {
-    X = ([...X, [1.0, train_dt[i], train_mtch[i]]] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    X = ([...X, [1.0, train_dt[i], train_mtch[i]]] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   List<double> beta = normal_equation(X, train_usr);
@@ -202,7 +205,7 @@ double sarimax_predictor(List<double> train_user, List<double> train_match, List
   List<double> y = <double>[];
   int i = 1;
   while (i < n) {
-    X = ([...X, [1.0, train_user[i - 1], train_match[i]]] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    X = ([...X, [1.0, train_user[i - 1], train_match[i]]] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     y = [...y, train_user[i]];
     i = i + 1;
   }

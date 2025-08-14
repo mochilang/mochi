@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 bool contains_int(List<int> xs, int x) {
@@ -69,7 +79,7 @@ double pow_int_float(int base, int exp) {
   double result = 1.0;
   int i = 0;
   while (i < exp) {
-    result = result * (base as double);
+    result = result * ((base).toDouble());
     i = i + 1;
   }
   return result;
@@ -77,12 +87,12 @@ double pow_int_float(int base, int exp) {
 
 String points_to_polynomial(List<List<int>> coordinates) {
   if (coordinates.length == 0) {
-    throw Exception("The program cannot work out a fitting polynomial.");
+    _error("The program cannot work out a fitting polynomial.");
   }
   int i = 0;
   while (i < coordinates.length) {
     if (coordinates[i].length != 2) {
-    throw Exception("The program cannot work out a fitting polynomial.");
+    _error("The program cannot work out a fitting polynomial.");
   }
     i = i + 1;
   }
@@ -91,7 +101,7 @@ String points_to_polynomial(List<List<int>> coordinates) {
     int k = j + 1;
     while (k < coordinates.length) {
     if (coordinates[j][0] == coordinates[k][0] && coordinates[j][1] == coordinates[k][1]) {
-    throw Exception("The program cannot work out a fitting polynomial.");
+    _error("The program cannot work out a fitting polynomial.");
   }
     k = k + 1;
   }
@@ -107,10 +117,10 @@ String points_to_polynomial(List<List<int>> coordinates) {
     i = i + 1;
   }
   if (set_x.length == 1) {
-    return "x=" + (coordinates[0][0]).toString();
+    return "x=" + _str(coordinates[0][0]);
   }
   if (set_x.length != coordinates.length) {
-    throw Exception("The program cannot work out a fitting polynomial.");
+    _error("The program cannot work out a fitting polynomial.");
   }
   int n = coordinates.length;
   List<List<double>> matrix = <List<double>>[];
@@ -123,13 +133,13 @@ String points_to_polynomial(List<List<int>> coordinates) {
     line = [...line, power];
     col = col + 1;
   }
-    matrix = ([...matrix, line] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    matrix = ([...matrix, line] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     row = row + 1;
   }
   List<double> vector = <double>[];
   row = 0;
   while (row < n) {
-    vector = [...vector, coordinates[row][1] as double];
+    vector = [...vector, (coordinates[row][1]).toDouble()];
     row = row + 1;
   }
   int count = 0;
@@ -153,7 +163,7 @@ String points_to_polynomial(List<List<int>> coordinates) {
   count = 0;
   while (count < n) {
     double value = vector[count] / matrix[count][count];
-    solution = [...solution, (value).toString()];
+    solution = [...solution, _str(value)];
     count = count + 1;
   }
   String solved = "f(x)=";
@@ -164,7 +174,7 @@ String points_to_polynomial(List<List<int>> coordinates) {
     if (parts.length > 1) {
     coeff = parts[0] + "*10^" + parts[1];
   }
-    solved = solved + "x^" + (n - (count + 1)).toString() + "*" + coeff;
+    solved = solved + "x^" + _str(n - (count + 1)) + "*" + coeff;
     if (count + 1 != n) {
     solved = solved + "+";
   }

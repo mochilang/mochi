@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class OptionMatrix {
@@ -56,7 +66,7 @@ List<List<double>> identity(int n) {
   }
     j = j + 1;
   }
-    mat = ([...mat, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    mat = ([...mat, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return mat;
@@ -74,7 +84,7 @@ List<List<double>> transpose(List<List<double>> mat) {
     row = [...row, mat[i][j]];
     i = i + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     j = j + 1;
   }
   return res;
@@ -99,7 +109,7 @@ List<List<double>> matmul(List<List<double>> a, List<List<double>> b) {
     row = [...row, sum];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return res;
@@ -117,7 +127,7 @@ List<List<double>> mat_sub(List<List<double>> a, List<List<double>> b) {
     row = [...row, a[i][j] - b[i][j]];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return res;
@@ -138,7 +148,7 @@ List<List<double>> inverse(List<List<double>> mat) {
     List<double> pivot_row = aug[col];
     double pivot = pivot_row[col];
     if (pivot == 0.0) {
-    throw Exception("matrix is singular");
+    _error("matrix is singular");
   }
     int j = 0;
     while (j < 2 * n) {
@@ -171,7 +181,7 @@ List<List<double>> inverse(List<List<double>> mat) {
     row = [...row, aug[r][c]];
     c = c + 1;
   }
-    inv = ([...inv, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    inv = ([...inv, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     r = r + 1;
   }
   return inv;
@@ -181,13 +191,13 @@ List<List<double>> schur_complement(List<List<double>> mat_a, List<List<double>>
   int a_rows = mat_a.length;
   int a_cols = mat_a[0].length;
   if (a_rows != a_cols) {
-    throw Exception("Matrix A must be square");
+    _error("Matrix A must be square");
   }
   if (a_rows != mat_b.length) {
-    throw Exception("Expected the same number of rows for A and B");
+    _error("Expected the same number of rows for A and B");
   }
   if (mat_b[0].length != mat_c[0].length) {
-    throw Exception("Expected the same number of columns for B and C");
+    _error("Expected the same number of columns for B and C");
   }
   List<List<double>> a_inv = <List<double>>[];
   if (pseudo_inv.ok) {
@@ -208,7 +218,7 @@ void print_matrix(List<List<double>> mat) {
     int j = 0;
     List<double> row = mat[i];
     while (j < row.length) {
-    line = line + (row[j]).toString();
+    line = line + _str(row[j]);
     if (j + 1 < row.length) {
     line = line + " ";
   }

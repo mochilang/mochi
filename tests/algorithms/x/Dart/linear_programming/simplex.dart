@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 List<List<double>> pivot(List<List<double>> t, int row, int col) {
   List<double> pivotRow = <double>[];
@@ -107,7 +112,7 @@ Map<String, double> interpret(List<List<double>> t, int nVars) {
   }
   }
     if (nzCount == 1 && t[nzRow][i] == 1.0) {
-    result["x" + (i + 1).toString()] = t[nzRow][lastCol];
+    result["x" + _str(i + 1)] = t[nzRow][lastCol];
   }
   }
   return result;
@@ -137,11 +142,11 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print("P: " + (res["P"]).toString());
+  print("P: " + _str((res["P"]!)));
   for (int i = 0; i < 2; i++) {
-    String key = "x" + (i + 1).toString();
+    String key = "x" + _str(i + 1);
     if (res.containsKey(key)) {
-    print(key + ": " + (res[key]).toString());
+    print(key + ": " + _str((res[key]!)));
   }
   }
   _benchSw.stop();

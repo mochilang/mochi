@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,23 +33,31 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double calc_profit(List<int> profit, List<int> weight, int max_weight) {
   if (profit.length != weight.length) {
-    throw Exception("The length of profit and weight must be same.");
+    _error("The length of profit and weight must be same.");
   }
   if (max_weight <= 0) {
-    throw Exception("max_weight must greater than zero.");
+    _error("max_weight must greater than zero.");
   }
   int i = 0;
   while (i < profit.length) {
     if (profit[i] < 0) {
-    throw Exception("Profit can not be negative.");
+    _error("Profit can not be negative.");
   }
     if (weight[i] < 0) {
-    throw Exception("Weight can not be negative.");
+    _error("Weight can not be negative.");
   }
     i = i + 1;
   }
@@ -69,7 +77,7 @@ double calc_profit(List<int> profit, List<int> weight, int max_weight) {
     int k = 0;
     while (k < n) {
     if (!used[k]) {
-    double ratio = (profit[k] as double) / (weight[k] as double);
+    double ratio = ((profit[k]).toDouble()) / ((weight[k]).toDouble());
     if (ratio > maxRatio) {
     maxRatio = ratio;
     maxIndex = k;
@@ -83,9 +91,9 @@ double calc_profit(List<int> profit, List<int> weight, int max_weight) {
     while (used.length <= maxIndex) { used.add(false); } used[maxIndex] = true;
     if (max_weight - limit >= weight[maxIndex]) {
     limit = limit + weight[maxIndex];
-    gain = gain + (profit[maxIndex] as double);
+    gain = gain + ((profit[maxIndex]).toDouble());
   } else {
-    gain = gain + (max_weight - limit as double) / (weight[maxIndex] as double) * (profit[maxIndex] as double);
+    gain = gain + ((max_weight - limit).toDouble()) / ((weight[maxIndex]).toDouble()) * ((profit[maxIndex]).toDouble());
     break;
   }
     count = count + 1;
