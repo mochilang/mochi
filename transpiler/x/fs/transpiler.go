@@ -1068,26 +1068,24 @@ func (m *MapLit) emit(w io.Writer) {
 	usesDictCreate = true
 	neededOpens["System.Collections.Generic"] = true
 	io.WriteString(w, "_dictCreate")
+	base := ""
 	same := true
 	if len(m.Types) == 0 {
 		m.Types = make([]string, len(m.Items))
-		prev := ""
 		for i, kv := range m.Items {
 			t := inferType(kv[1])
 			m.Types[i] = t
-			if i == 0 {
-				prev = t
-			} else if t != prev {
-				same = false
-			}
 		}
-	} else {
-		prev := m.Types[0]
-		for _, t := range m.Types[1:] {
-			if t != prev {
-				same = false
-				break
-			}
+	}
+	for _, t := range m.Types {
+		if t == "obj" {
+			continue
+		}
+		if base == "" {
+			base = t
+		} else if t != base {
+			same = false
+			break
 		}
 	}
 	io.WriteString(w, " [")
@@ -1095,10 +1093,25 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, "(")
 		kv[0].emit(w)
 		io.WriteString(w, ", ")
-		if !same && m.Types[i] != "obj" {
-			io.WriteString(w, "box ")
+		if same && base != "" {
+			if m.Types[i] == "obj" {
+				if ll, ok := kv[1].(*ListLit); ok && len(ll.Elems) == 0 && strings.HasSuffix(base, " array") {
+					elem := strings.TrimSuffix(base, " array")
+					io.WriteString(w, "Array.empty<")
+					io.WriteString(w, elem)
+					io.WriteString(w, ">")
+				} else {
+					kv[1].emit(w)
+				}
+			} else {
+				kv[1].emit(w)
+			}
+		} else {
+			if !same && m.Types[i] != "obj" {
+				io.WriteString(w, "box ")
+			}
+			kv[1].emit(w)
 		}
-		kv[1].emit(w)
 		io.WriteString(w, ")")
 		if i < len(m.Items)-1 {
 			io.WriteString(w, "; ")
@@ -3220,7 +3233,48 @@ func (c *CastExpr) emit(w io.Writer) {
 			}
 		}
 	default:
-		if ll, ok := c.Expr.(*ListLit); ok && c.Type == "obj array" {
+		if strings.HasPrefix(c.Type, "System.Collections.Generic.IDictionary<") {
+			if ml, ok := c.Expr.(*MapLit); ok {
+				types := strings.TrimSuffix(strings.TrimPrefix(c.Type, "System.Collections.Generic.IDictionary<"), ">")
+				io.WriteString(w, "_dictCreate<")
+				io.WriteString(w, types)
+				io.WriteString(w, "> [")
+				parts := strings.SplitN(types, ",", 2)
+				valT := ""
+				if len(parts) == 2 {
+					valT = strings.TrimSpace(parts[1])
+				}
+				for i, kv := range ml.Items {
+					io.WriteString(w, "(")
+					kv[0].emit(w)
+					io.WriteString(w, ", ")
+					if ll, ok := kv[1].(*ListLit); ok && len(ll.Elems) == 0 && strings.HasSuffix(valT, "array") {
+						elem := strings.TrimSpace(strings.TrimSuffix(valT, "array"))
+						io.WriteString(w, "Array.empty<")
+						io.WriteString(w, elem)
+						io.WriteString(w, ">")
+					} else {
+						kv[1].emit(w)
+					}
+					io.WriteString(w, ")")
+					if i < len(ml.Items)-1 {
+						io.WriteString(w, "; ")
+					}
+				}
+				io.WriteString(w, "]")
+			} else {
+				io.WriteString(w, "unbox<")
+				io.WriteString(w, c.Type)
+				io.WriteString(w, "> ")
+				if needsParen(c.Expr) {
+					io.WriteString(w, "(")
+					c.Expr.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					c.Expr.emit(w)
+				}
+			}
+		} else if ll, ok := c.Expr.(*ListLit); ok && c.Type == "obj array" {
 			io.WriteString(w, "[|")
 			for i, e := range ll.Elems {
 				io.WriteString(w, "box (")
@@ -4486,16 +4540,16 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			t := inferType(expr)
-                        if ix, ok := idx.(*IndexExpr); ok {
-                                // Re-associate only when we're already indexing the base
-                                // expression (i.e. a[b][c]). For cases like a[b[c]] we want
-                                // to preserve the inner index expression.
-                                if isIndexExpr(expr) {
-                                        expr = &IndexExpr{Target: expr, Index: ix.Target}
-                                        expr = &IndexExpr{Target: expr, Index: ix.Index}
-                                        continue
-                                }
-                        }
+			if ix, ok := idx.(*IndexExpr); ok {
+				// Re-associate only when we're already indexing the base
+				// expression (i.e. a[b][c]). For cases like a[b[c]] we want
+				// to preserve the inner index expression.
+				if isIndexExpr(expr) {
+					expr = &IndexExpr{Target: expr, Index: ix.Target}
+					expr = &IndexExpr{Target: expr, Index: ix.Index}
+					continue
+				}
+			}
 			if isMapType(t) {
 				usesDictGet = true
 			} else {
@@ -4647,10 +4701,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
-                               case "float":
-                                       usesStr = true
-                                       wrapped := &CallExpr{Func: "_str", Args: []Expr{args[0]}}
-                                       return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
+				case "float":
+					usesStr = true
+					wrapped := &CallExpr{Func: "_str", Args: []Expr{args[0]}}
+					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
 				case "string":
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{args[0]}}, nil
 				default:
@@ -4669,9 +4723,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
 				case "int":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
-                               case "float":
-                                       usesStr = true
-                                       elems[i] = &CallExpr{Func: "_str", Args: []Expr{a}}
+				case "float":
+					usesStr = true
+					elems[i] = &CallExpr{Func: "_str", Args: []Expr{a}}
 				case "string":
 					elems[i] = &CallExpr{Func: "sprintf \"%s\"", Args: []Expr{a}}
 				case "array":
@@ -4692,10 +4746,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{b}}, nil
 				case "int":
 					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{args[0]}}, nil
-                               case "float":
-                                       usesStr = true
-                                       wrapped := &CallExpr{Func: "_str", Args: []Expr{args[0]}}
-                                       return &CallExpr{Func: "printf \"%s\"", Args: []Expr{wrapped}}, nil
+				case "float":
+					usesStr = true
+					wrapped := &CallExpr{Func: "_str", Args: []Expr{args[0]}}
+					return &CallExpr{Func: "printf \"%s\"", Args: []Expr{wrapped}}, nil
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
 					concat := &CallExpr{Func: "String.concat \" \"", Args: []Expr{&CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
@@ -5108,9 +5162,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		if !same {
-			for i := range items {
-				items[i][1] = &CallExpr{Func: "box", Args: []Expr{items[i][1]}}
-				types[i] = "obj"
+			base := ""
+			for _, t := range types {
+				if t == "obj" || t == "array" {
+					continue
+				}
+				if base == "" {
+					base = t
+				} else if t != base {
+					base = ""
+					break
+				}
+			}
+			if base != "" {
+				for i := range items {
+					if types[i] == "obj" {
+						items[i][1] = &CastExpr{Expr: items[i][1], Type: base}
+						types[i] = base
+					}
+				}
+				same = true
+			} else {
+				for i := range items {
+					items[i][1] = &CallExpr{Func: "box", Args: []Expr{items[i][1]}}
+					types[i] = "obj"
+				}
 			}
 		}
 		usesDictCreate = true
