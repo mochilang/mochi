@@ -1634,7 +1634,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "input":
 		if len(c.Args) == 0 {
-			fmt.Fprint(w, "(readLine() ?? \"\")")
+			fmt.Fprint(w, "(readLine() ?? \"0\")")
 			return
 		}
 	case "padStart":

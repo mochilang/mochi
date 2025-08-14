@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 872/1077
-Last updated: 2025-08-14 18:14 +0700
+Completed programs: 933/1077
+Last updated: 2025-08-14 18:22 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -837,70 +837,70 @@ Last updated: 2025-08-14 18:14 +0700
 | 828 | project_euler/problem_010/sol2 |   |  |  |
 | 829 | project_euler/problem_010/sol3 | ✓ | 46.582ms | 3.2 MB |
 | 830 | project_euler/problem_011/sol1 | ✓ | 1.117ms | 3.2 MB |
-| 831 | project_euler/problem_011/sol2 |   |  |  |
-| 832 | project_euler/problem_012/sol1 |   |  |  |
-| 833 | project_euler/problem_012/sol2 |   |  |  |
-| 834 | project_euler/problem_013/sol1 |   |  |  |
-| 835 | project_euler/problem_014/sol1 |   |  |  |
-| 836 | project_euler/problem_014/sol2 |   |  |  |
-| 837 | project_euler/problem_015/sol1 |   |  |  |
-| 838 | project_euler/problem_016/sol1 |   |  |  |
-| 839 | project_euler/problem_016/sol2 |   |  |  |
-| 840 | project_euler/problem_017/sol1 |   |  |  |
-| 841 | project_euler/problem_018/solution |   |  |  |
-| 842 | project_euler/problem_019/sol1 |   |  |  |
-| 843 | project_euler/problem_020/sol1 |   |  |  |
-| 844 | project_euler/problem_020/sol2 |   |  |  |
-| 845 | project_euler/problem_020/sol3 |   |  |  |
-| 846 | project_euler/problem_020/sol4 |   |  |  |
-| 847 | project_euler/problem_021/sol1 |   |  |  |
-| 848 | project_euler/problem_022/sol1 |   |  |  |
-| 849 | project_euler/problem_022/sol2 |   |  |  |
-| 850 | project_euler/problem_023/sol1 |   |  |  |
-| 851 | project_euler/problem_024/sol1 |   |  |  |
-| 852 | project_euler/problem_025/sol1 |   |  |  |
-| 853 | project_euler/problem_025/sol2 |   |  |  |
-| 854 | project_euler/problem_025/sol3 |   |  |  |
-| 855 | project_euler/problem_026/sol1 |   |  |  |
-| 856 | project_euler/problem_027/sol1 |   |  |  |
-| 857 | project_euler/problem_028/sol1 |   |  |  |
-| 858 | project_euler/problem_029/sol1 |   |  |  |
-| 859 | project_euler/problem_030/sol1 |   |  |  |
-| 860 | project_euler/problem_031/sol1 |   |  |  |
-| 861 | project_euler/problem_031/sol2 |   |  |  |
-| 862 | project_euler/problem_032/sol32 |   |  |  |
-| 863 | project_euler/problem_033/sol1 |   |  |  |
-| 864 | project_euler/problem_034/sol1 |   |  |  |
-| 865 | project_euler/problem_035/sol1 |   |  |  |
-| 866 | project_euler/problem_036/sol1 |   |  |  |
-| 867 | project_euler/problem_037/sol1 |   |  |  |
-| 868 | project_euler/problem_038/sol1 |   |  |  |
-| 869 | project_euler/problem_039/sol1 |   |  |  |
-| 870 | project_euler/problem_040/sol1 |   |  |  |
-| 871 | project_euler/problem_041/sol1 |   |  |  |
+| 831 | project_euler/problem_011/sol2 | ✓ | 1.292ms | 3.1 MB |
+| 832 | project_euler/problem_012/sol1 | ✓ | 1.04507s | 2.9 MB |
+| 833 | project_euler/problem_012/sol2 | ✓ | 1.061541s | 3.2 MB |
+| 834 | project_euler/problem_013/sol1 | ✓ | 27.898ms | 3.1 MB |
+| 835 | project_euler/problem_014/sol1 | ✓ | 30.596ms | 3.4 MB |
+| 836 | project_euler/problem_014/sol2 | ✓ | 1.383ms | 3.2 MB |
+| 837 | project_euler/problem_015/sol1 | ✓ | 509µs | 3.1 MB |
+| 838 | project_euler/problem_016/sol1 | ✓ | 719µs | 3.0 MB |
+| 839 | project_euler/problem_016/sol2 | ✓ | 112.81ms | 3.3 MB |
+| 840 | project_euler/problem_017/sol1 | ✓ | 1.259ms | 2.9 MB |
+| 841 | project_euler/problem_018/solution | ✓ | 723µs | 2.9 MB |
+| 842 | project_euler/problem_019/sol1 | ✓ | 1.718ms | 2.9 MB |
+| 843 | project_euler/problem_020/sol1 | ✓ | 498µs | 3.0 MB |
+| 844 | project_euler/problem_020/sol2 | ✓ | 535µs | 3.2 MB |
+| 845 | project_euler/problem_020/sol3 | ✓ | 669µs | 3.2 MB |
+| 846 | project_euler/problem_020/sol4 | ✓ | 508µs | 3.2 MB |
+| 847 | project_euler/problem_021/sol1 | ✓ | 674.305ms | 3.3 MB |
+| 848 | project_euler/problem_022/sol1 | ✓ | 429µs | 3.2 MB |
+| 849 | project_euler/problem_022/sol2 | ✓ |  |  |
+| 850 | project_euler/problem_023/sol1 | ✓ | 16.071009s | 3.6 MB |
+| 851 | project_euler/problem_024/sol1 | ✓ | 396µs | 2.9 MB |
+| 852 | project_euler/problem_025/sol1 | ✓ | 440µs | 2.9 MB |
+| 853 | project_euler/problem_025/sol2 | ✓ | 410µs | 3.0 MB |
+| 854 | project_euler/problem_025/sol3 | ✓ |  |  |
+| 855 | project_euler/problem_026/sol1 | ✓ | 1.278656s | 3.1 MB |
+| 856 | project_euler/problem_027/sol1 | ✓ | 1.676896s | 3.2 MB |
+| 857 | project_euler/problem_028/sol1 | ✓ | 512µs | 3.1 MB |
+| 858 | project_euler/problem_029/sol1 | ✓ |  |  |
+| 859 | project_euler/problem_030/sol1 | ✓ | 1.718032s | 3.2 MB |
+| 860 | project_euler/problem_031/sol1 | ✓ | 407µs | 3.3 MB |
+| 861 | project_euler/problem_031/sol2 | ✓ | 4.116ms | 3.2 MB |
+| 862 | project_euler/problem_032/sol32 | ✓ |  |  |
+| 863 | project_euler/problem_033/sol1 | ✓ | 1.001ms | 3.4 MB |
+| 864 | project_euler/problem_034/sol1 | ✓ | 5.106464s | 3.2 MB |
+| 865 | project_euler/problem_035/sol1 | ✓ | 19.074ms | 3.4 MB |
+| 866 | project_euler/problem_036/sol1 | ✓ | 25.971391s | 3.2 MB |
+| 867 | project_euler/problem_037/sol1 | ✓ | 2.565937s | 3.2 MB |
+| 868 | project_euler/problem_038/sol1 | ✓ | 3.684ms | 3.0 MB |
+| 869 | project_euler/problem_039/sol1 | ✓ | 2.303767s | 3.2 MB |
+| 870 | project_euler/problem_040/sol1 | ✓ | 1.160102s | 3.1 MB |
+| 871 | project_euler/problem_041/sol1 | ✓ | 119.439ms | 3.2 MB |
 | 872 | project_euler/problem_042/solution42 |   |  |  |
-| 873 | project_euler/problem_043/sol1 |   |  |  |
-| 874 | project_euler/problem_044/sol1 |   |  |  |
-| 875 | project_euler/problem_045/sol1 |   |  |  |
-| 876 | project_euler/problem_046/sol1 |   |  |  |
-| 877 | project_euler/problem_047/sol1 |   |  |  |
-| 878 | project_euler/problem_048/sol1 |   |  |  |
+| 873 | project_euler/problem_043/sol1 | ✓ | 19.368652s | 3.2 MB |
+| 874 | project_euler/problem_044/sol1 | ✓ | 21.486592s | 3.3 MB |
+| 875 | project_euler/problem_045/sol1 | ✓ |  |  |
+| 876 | project_euler/problem_046/sol1 | ✓ |  |  |
+| 877 | project_euler/problem_047/sol1 | ✓ |  |  |
+| 878 | project_euler/problem_048/sol1 | ✓ | 5.018ms | 3.3 MB |
 | 879 | project_euler/problem_049/sol1 |   |  |  |
-| 880 | project_euler/problem_050/sol1 |   |  |  |
-| 881 | project_euler/problem_051/sol1 |   |  |  |
-| 882 | project_euler/problem_052/sol1 |   |  |  |
-| 883 | project_euler/problem_053/sol1 |   |  |  |
-| 884 | project_euler/problem_054/sol1 |   |  |  |
-| 885 | project_euler/problem_054/test_poker_hand |   |  |  |
+| 880 | project_euler/problem_050/sol1 | ✓ |  |  |
+| 881 | project_euler/problem_051/sol1 | ✓ | 1.069ms | 3.3 MB |
+| 882 | project_euler/problem_052/sol1 | ✓ | 1.842373s | 3.2 MB |
+| 883 | project_euler/problem_053/sol1 | ✓ | 9.042ms | 2.9 MB |
+| 884 | project_euler/problem_054/sol1 | ✓ |  |  |
+| 885 | project_euler/problem_054/test_poker_hand | ✓ | 1.376ms | 3.6 MB |
 | 886 | project_euler/problem_055/sol1 |   |  |  |
-| 887 | project_euler/problem_056/sol1 |   |  |  |
-| 888 | project_euler/problem_057/sol1 |   |  |  |
-| 889 | project_euler/problem_058/sol1 |   |  |  |
-| 890 | project_euler/problem_059/sol1 |   |  |  |
-| 891 | project_euler/problem_062/sol1 |   |  |  |
-| 892 | project_euler/problem_063/sol1 |   |  |  |
-| 893 | project_euler/problem_064/sol1 |   |  |  |
-| 894 | project_euler/problem_065/sol1 |   |  |  |
+| 887 | project_euler/problem_056/sol1 | ✓ |  |  |
+| 888 | project_euler/problem_057/sol1 | ✓ | 2.266ms | 3.0 MB |
+| 889 | project_euler/problem_058/sol1 | ✓ | 6.813861s | 3.1 MB |
+| 890 | project_euler/problem_059/sol1 | ✓ |  |  |
+| 891 | project_euler/problem_062/sol1 | ✓ | 1.733096s | 3.9 MB |
+| 892 | project_euler/problem_063/sol1 | ✓ | 1.359ms | 3.2 MB |
+| 893 | project_euler/problem_064/sol1 | ✓ |  |  |
+| 894 | project_euler/problem_065/sol1 | ✓ | 433µs | 3.0 MB |
 | 895 | project_euler/problem_067/sol1 |   |  |  |
 | 896 | project_euler/problem_067/sol2 |   |  |  |
 | 897 | project_euler/problem_068/sol1 |   |  |  |

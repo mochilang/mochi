@@ -1,0 +1,232 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:120:36: warning: conditional cast from 'Int' to 'Int' always succeeds
+118 |         while (left <= right) {
+119 |             let middle = (_int((left &+ right)) / 2)
+120 |             if ((_idx(arr, middle) as? Int ?? 0) == target) {
+    |                                    `- warning: conditional cast from 'Int' to 'Int' always succeeds
+121 |                 return true
+122 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:123:36: warning: conditional cast from 'Int' to 'Int' always succeeds
+121 |                 return true
+122 |             }
+123 |             if ((_idx(arr, middle) as? Int ?? 0) < target) {
+    |                                    `- warning: conditional cast from 'Int' to 'Int' always succeeds
+124 |                 left = _int((middle &+ 1))
+125 |             } else {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:137:35: warning: conditional cast from 'Int' to 'Int' always succeeds
+135 |             var j = (i &+ 1)
+136 |             while (j < _int(((arr).count))) {
+137 |                 if ((_idx(arr, j) as? Int ?? 0) < (_idx(arr, i) as? Int ?? 0)) {
+    |                                   `- warning: conditional cast from 'Int' to 'Int' always succeeds
+138 |                     let tmp = (_idx(arr, i) as? Int ?? 0)
+139 |                     arr = _set(arr, i, (_idx(arr, j) as? Int ?? 0))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:137:65: warning: conditional cast from 'Int' to 'Int' always succeeds
+135 |             var j = (i &+ 1)
+136 |             while (j < _int(((arr).count))) {
+137 |                 if ((_idx(arr, j) as? Int ?? 0) < (_idx(arr, i) as? Int ?? 0)) {
+    |                                                                 `- warning: conditional cast from 'Int' to 'Int' always succeeds
+138 |                     let tmp = (_idx(arr, i) as? Int ?? 0)
+139 |                     arr = _set(arr, i, (_idx(arr, j) as? Int ?? 0))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:138:45: warning: conditional cast from 'Int' to 'Int' always succeeds
+136 |             while (j < _int(((arr).count))) {
+137 |                 if ((_idx(arr, j) as? Int ?? 0) < (_idx(arr, i) as? Int ?? 0)) {
+138 |                     let tmp = (_idx(arr, i) as? Int ?? 0)
+    |                                             `- warning: conditional cast from 'Int' to 'Int' always succeeds
+139 |                     arr = _set(arr, i, (_idx(arr, j) as? Int ?? 0))
+140 |                     arr = _set(arr, j, Int(tmp))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:139:54: warning: conditional cast from 'Int' to 'Int' always succeeds
+137 |                 if ((_idx(arr, j) as? Int ?? 0) < (_idx(arr, i) as? Int ?? 0)) {
+138 |                     let tmp = (_idx(arr, i) as? Int ?? 0)
+139 |                     arr = _set(arr, i, (_idx(arr, j) as? Int ?? 0))
+    |                                                      `- warning: conditional cast from 'Int' to 'Int' always succeeds
+140 |                     arr = _set(arr, j, Int(tmp))
+141 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:153:60: warning: forced cast of 'String' to same type has no effect
+151 |         var i = 0
+152 |         while (i < _int(((s).count))) {
+153 |             d = (_append(d, _int(_int((String(Array(s)[i]) as! String)))) as! [Int])
+    |                                                            `- warning: forced cast of 'String' to same type has no effect
+154 |             i = _int((i &+ 1))
+155 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:168:41: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+166 |                             while (e < _int(((d).count))) {
+167 |                                 if (((e != a) && (e != b)) && (e != c)) {
+168 |                                     let val = (((((_idx(d, a) as? Int ?? 0) &* 1000) &+ ((_idx(d, b) as? Int ?? 0) &* 100)) &+ ((_idx(d, c) as? Int ?? 0) &* 10)) &+ (_idx(d, e) as? Int ?? 0))
+    |                                         `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+169 |                                     res = (_append(res, val) as! [Int])
+170 |                                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:192:30: warning: conditional cast from 'Int' to 'Int' always succeeds
+190 |         var i = 0
+191 |         while (i < _int(((xs).count))) {
+192 |             if ((_idx(xs, i) as? Int ?? 0) == v) {
+    |                              `- warning: conditional cast from 'Int' to 'Int' always succeeds
+193 |                 return true
+194 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:211:47: warning: conditional cast from 'Int' to 'Int' always succeeds
+209 |         var i = 0
+210 |         while (i < _int(((prime_list).count))) {
+211 |             let number = (_idx(prime_list, i) as? Int ?? 0)
+    |                                               `- warning: conditional cast from 'Int' to 'Int' always succeeds
+212 |             var tmp: [Int] = ([] as! [Int])
+213 |             let perms: [Int] = (permutations_of_number(number) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:213:64: warning: forced cast of '[Int]' to same type has no effect
+211 |             let number = (_idx(prime_list, i) as? Int ?? 0)
+212 |             var tmp: [Int] = ([] as! [Int])
+213 |             let perms: [Int] = (permutations_of_number(number) as! [Int])
+    |                                                                `- warning: forced cast of '[Int]' to same type has no effect
+214 |             var j = 0
+215 |             while (j < _int(((perms).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:216:45: warning: conditional cast from 'Int' to 'Int' always succeeds
+214 |             var j = 0
+215 |             while (j < _int(((perms).count))) {
+216 |                 let prime = (_idx(perms, j) as? Int ?? 0)
+    |                                             `- warning: conditional cast from 'Int' to 'Int' always succeeds
+217 |                 if ((((prime % 2 + 2) % 2) != 0) && search(prime, (prime_list as! [Int]))) {
+218 |                     tmp = (_append(tmp, prime) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:217:79: warning: forced cast of '[Int]' to same type has no effect
+215 |             while (j < _int(((perms).count))) {
+216 |                 let prime = (_idx(perms, j) as? Int ?? 0)
+217 |                 if ((((prime % 2 + 2) % 2) != 0) && search(prime, (prime_list as! [Int]))) {
+    |                                                                               `- warning: forced cast of '[Int]' to same type has no effect
+218 |                     tmp = (_append(tmp, prime) as! [Int])
+219 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:222:34: warning: forced cast of '[Int]' to same type has no effect
+220 |                 j = _int((j &+ 1))
+221 |             }
+222 |             tmp = (sort_int((tmp as! [Int])) as! [Int])
+    |                                  `- warning: forced cast of '[Int]' to same type has no effect
+223 |             if (_int(((tmp).count)) >= 3) {
+224 |                 candidates = (_append(candidates, tmp) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:222:46: warning: forced cast of '[Int]' to same type has no effect
+220 |                 j = _int((j &+ 1))
+221 |             }
+222 |             tmp = (sort_int((tmp as! [Int])) as! [Int])
+    |                                              `- warning: forced cast of '[Int]' to same type has no effect
+223 |             if (_int(((tmp).count)) >= 3) {
+224 |                 candidates = (_append(candidates, tmp) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:231:57: warning: forced cast of '[Int]' to same type has no effect
+229 |         i = 0
+230 |         while (i < _int(((candidates).count))) {
+231 |             let candidate: [Int] = (_idx(candidates, i) as! [Int])
+    |                                                         `- warning: forced cast of '[Int]' to same type has no effect
+232 |             var found = false
+233 |             var a = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:239:53: warning: conditional cast from 'Int' to 'Int' always succeeds
+237 |                     var c = (b &+ 1)
+238 |                     while (c < _int(((candidate).count))) {
+239 |                         let x = (_idx(candidate, a) as? Int ?? 0)
+    |                                                     `- warning: conditional cast from 'Int' to 'Int' always succeeds
+240 |                         let y = (_idx(candidate, b) as? Int ?? 0)
+241 |                         let z = (_idx(candidate, c) as? Int ?? 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:240:53: warning: conditional cast from 'Int' to 'Int' always succeeds
+238 |                     while (c < _int(((candidate).count))) {
+239 |                         let x = (_idx(candidate, a) as? Int ?? 0)
+240 |                         let y = (_idx(candidate, b) as? Int ?? 0)
+    |                                                     `- warning: conditional cast from 'Int' to 'Int' always succeeds
+241 |                         let z = (_idx(candidate, c) as? Int ?? 0)
+242 |                         if ((((_int(abs_int((x &- y))) == _int(abs_int((y &- z)))) && (x != y)) && (x != z)) && (y != z)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:241:53: warning: conditional cast from 'Int' to 'Int' always succeeds
+239 |                         let x = (_idx(candidate, a) as? Int ?? 0)
+240 |                         let y = (_idx(candidate, b) as? Int ?? 0)
+241 |                         let z = (_idx(candidate, c) as? Int ?? 0)
+    |                                                     `- warning: conditional cast from 'Int' to 'Int' always succeeds
+242 |                         if ((((_int(abs_int((x &- y))) == _int(abs_int((y &- z)))) && (x != y)) && (x != z)) && (y != z)) {
+243 |                             let triple: [Int] = (sort_int(({
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:249:33: warning: forced cast of '[Int]' to same type has no effect
+247 |                                 _arr = _append(_arr, z)
+248 |                                 return _arr
+249 |                             }() as! [Int])) as! [Int])
+    |                                 `- warning: forced cast of '[Int]' to same type has no effect
+250 |                             passed = (_append(passed, triple) as! [[Int]])
+251 |                             found = true
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:249:45: warning: forced cast of '[Int]' to same type has no effect
+247 |                                 _arr = _append(_arr, z)
+248 |                                 return _arr
+249 |                             }() as! [Int])) as! [Int])
+    |                                             `- warning: forced cast of '[Int]' to same type has no effect
+250 |                             passed = (_append(passed, triple) as! [[Int]])
+251 |                             found = true
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:271:47: warning: forced cast of '[Int]' to same type has no effect
+269 |         i = 0
+270 |         while (i < _int(((passed).count))) {
+271 |             let seq: [Int] = (_idx(passed, i) as! [Int])
+    |                                               `- warning: forced cast of '[Int]' to same type has no effect
+272 |             let val = _int(_int(((_p((_idx(seq, 0) as? Int ?? 0)) + _p((_idx(seq, 1) as? Int ?? 0))) + _p((_idx(seq, 2) as? Int ?? 0)))))
+273 |             if (!contains_int((answer_nums as! [Int]), val)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:272:52: warning: conditional cast from 'Int' to 'Int' always succeeds
+270 |         while (i < _int(((passed).count))) {
+271 |             let seq: [Int] = (_idx(passed, i) as! [Int])
+272 |             let val = _int(_int(((_p((_idx(seq, 0) as? Int ?? 0)) + _p((_idx(seq, 1) as? Int ?? 0))) + _p((_idx(seq, 2) as? Int ?? 0)))))
+    |                                                    `- warning: conditional cast from 'Int' to 'Int' always succeeds
+273 |             if (!contains_int((answer_nums as! [Int]), val)) {
+274 |                 answer_nums = (_append(answer_nums, val) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:272:86: warning: conditional cast from 'Int' to 'Int' always succeeds
+270 |         while (i < _int(((passed).count))) {
+271 |             let seq: [Int] = (_idx(passed, i) as! [Int])
+272 |             let val = _int(_int(((_p((_idx(seq, 0) as? Int ?? 0)) + _p((_idx(seq, 1) as? Int ?? 0))) + _p((_idx(seq, 2) as? Int ?? 0)))))
+    |                                                                                      `- warning: conditional cast from 'Int' to 'Int' always succeeds
+273 |             if (!contains_int((answer_nums as! [Int]), val)) {
+274 |                 answer_nums = (_append(answer_nums, val) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:272:121: warning: conditional cast from 'Int' to 'Int' always succeeds
+270 |         while (i < _int(((passed).count))) {
+271 |             let seq: [Int] = (_idx(passed, i) as! [Int])
+272 |             let val = _int(_int(((_p((_idx(seq, 0) as? Int ?? 0)) + _p((_idx(seq, 1) as? Int ?? 0))) + _p((_idx(seq, 2) as? Int ?? 0)))))
+    |                                                                                                                         `- warning: conditional cast from 'Int' to 'Int' always succeeds
+273 |             if (!contains_int((answer_nums as! [Int]), val)) {
+274 |                 answer_nums = (_append(answer_nums, val) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:273:44: warning: forced cast of '[Int]' to same type has no effect
+271 |             let seq: [Int] = (_idx(passed, i) as! [Int])
+272 |             let val = _int(_int(((_p((_idx(seq, 0) as? Int ?? 0)) + _p((_idx(seq, 1) as? Int ?? 0))) + _p((_idx(seq, 2) as? Int ?? 0)))))
+273 |             if (!contains_int((answer_nums as! [Int]), val)) {
+    |                                            `- warning: forced cast of '[Int]' to same type has no effect
+274 |                 answer_nums = (_append(answer_nums, val) as! [Int])
+275 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:278:45: warning: conditional cast from 'Int' to 'Int' always succeeds
+276 |             i = _int((i &+ 1))
+277 |         }
+278 |         var max_val = (_idx(answer_nums, 0) as? Int ?? 0)
+    |                                             `- warning: conditional cast from 'Int' to 'Int' always succeeds
+279 |         i = 1
+280 |         while (i < _int(((answer_nums).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:281:39: warning: conditional cast from 'Int' to 'Int' always succeeds
+279 |         i = 1
+280 |         while (i < _int(((answer_nums).count))) {
+281 |             if ((_idx(answer_nums, i) as? Int ?? 0) > max_val) {
+    |                                       `- warning: conditional cast from 'Int' to 'Int' always succeeds
+282 |                 max_val = (_idx(answer_nums, i) as? Int ?? 0)
+283 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden879_project_euler_problem_049_sol12763312269/001/main.swift:282:49: warning: conditional cast from 'Int' to 'Int' always succeeds
+280 |         while (i < _int(((answer_nums).count))) {
+281 |             if ((_idx(answer_nums, i) as? Int ?? 0) > max_val) {
+282 |                 max_val = (_idx(answer_nums, i) as? Int ?? 0)
+    |                                                 `- warning: conditional cast from 'Int' to 'Int' always succeeds
+283 |             }
+284 |             i = _int((i &+ 1))
