@@ -125,8 +125,8 @@ fn main() {
             let alt: i64 = (dist.get(&u).cloned().unwrap_or_default() + w);
             let cur: i64 = if dist.contains_key(&v) { dist.get(&v).cloned().unwrap_or_default() } else { 100000 };
             if (!known.contains(&v) && (alt < cur)) {
-                dist.insert(v.clone(), alt);
-                path.insert(v.clone(), u);
+                dist.insert(v.clone(), alt.clone());
+                path.insert(v.clone(), u.clone());
             }
         }
     }
@@ -234,7 +234,7 @@ fn main() {
             }
             let cur: i64 = if dist.contains_key(&v) { dist.get(&v).cloned().unwrap_or_default() } else { 100000 };
             if (!known.contains(&v) && (w < cur)) {
-                dist.insert(v.clone(), w);
+                dist.insert(v.clone(), w.clone());
             }
         }
     }

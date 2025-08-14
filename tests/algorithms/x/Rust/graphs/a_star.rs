@@ -52,13 +52,13 @@ impl std::fmt::Display for SearchResult {
 fn main() {
         let _start: i64 = _now();
     let DIRECTIONS: Vec<Vec<i64>> = vec![vec![-1, 0].clone(), vec![0, -1].clone(), vec![1, 0].clone(), vec![0, 1].clone()];
-    let mut iabs = move |x: i64| -> i64 {
+    let mut iabs = |x: i64| -> i64 {
     if (x < 0) {
         return -x
     }
     return x
 };
-    let mut search = move |grid: Vec<Vec<i64>>, init: Vec<i64>, goal: Vec<i64>, cost: i64, heuristic: Vec<Vec<i64>>| -> SearchResult {
+    let mut search = |grid: Vec<Vec<i64>>, init: Vec<i64>, goal: Vec<i64>, cost: i64, heuristic: Vec<Vec<i64>>| -> SearchResult {
     let mut closed: Vec<Vec<i64>> = vec![];
     let mut r: i64 = 0;
     while (r < (grid.len() as i64)) {
@@ -157,7 +157,7 @@ fn main() {
     }
     return SearchResult {path: path.clone(), action: action.clone()}
 };
-    let mut mochi_main = move || {
+    let mut mochi_main = || {
     let grid: Vec<Vec<i64>> = vec![vec![0, 1, 0, 0, 0, 0].clone(), vec![0, 1, 0, 0, 0, 0].clone(), vec![0, 1, 0, 0, 0, 0].clone(), vec![0, 1, 0, 0, 1, 0].clone(), vec![0, 0, 0, 0, 1, 0].clone()];
     let init: Vec<i64> = vec![0, 0];
     let goal: Vec<i64> = vec![((grid.len() as i64) - 1), ((grid[0 as usize].clone().len() as i64) - 1)];
