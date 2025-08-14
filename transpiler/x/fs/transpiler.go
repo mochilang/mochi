@@ -3552,6 +3552,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.Structs = structDefs
 	p.Unions = unionDefs
 	p.Aliases = aliasDefs
+	// Ensure collections namespace is opened when dictionary helpers are used.
+	if usesDictAdd || usesDictGet || usesDictCreate {
+		if neededOpens == nil {
+			neededOpens = map[string]bool{}
+		}
+		neededOpens["System.Collections.Generic"] = true
+	}
 	if len(neededOpens) > 0 {
 		opens := make([]Stmt, 0, len(neededOpens))
 		for m := range neededOpens {
