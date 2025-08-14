@@ -502,19 +502,19 @@ type MapLit struct {
 }
 
 func isConstExpr(e Expr) bool {
-        switch v := e.(type) {
-        case *IntLit, *FloatLit, *StringLit, *BoolLit, *NullLit:
-                return true
-        case *ListLit:
-                for _, elem := range v.Elems {
-                        if !isConstExpr(elem) {
-                                return false
-                        }
-                }
-                return true
-        default:
-                return false
-        }
+	switch v := e.(type) {
+	case *IntLit, *FloatLit, *StringLit, *BoolLit, *NullLit:
+		return true
+	case *ListLit:
+		for _, elem := range v.Elems {
+			if !isConstExpr(elem) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
 }
 
 func collectVarsStmt(s Stmt, m map[string]bool) {
@@ -635,32 +635,32 @@ func (ae *AppendExpr) emit(w io.Writer) {
 		elem = zigTypeFromExpr(ae.Value)
 	}
 	elem = strings.TrimPrefix(elem, "const ")
-        tmp := uniqueName("_tmp")
-        fmt.Fprintf(w, "blk: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", tmp, elem)
-        fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
-        ae.List.emit(w)
-        io.WriteString(w, ")) catch |err| handleError(err); ")
-        fmt.Fprintf(w, "%s.append(", tmp)
+	tmp := uniqueName("_tmp")
+	fmt.Fprintf(w, "blk: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", tmp, elem)
+	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
+	ae.List.emit(w)
+	io.WriteString(w, ")) catch |err| handleError(err); ")
+	fmt.Fprintf(w, "%s.append(", tmp)
 	valType := zigTypeFromExpr(ae.Value)
-        if strings.HasPrefix(elem, "[]") {
-                if ll, ok := ae.Value.(*ListLit); ok {
-                        inner := strings.TrimPrefix(elem, "[]")
-                        ll.ElemType = inner
-                        io.WriteString(w, "@constCast(")
-                        ll.emit(w)
-                        io.WriteString(w, ")")
-                } else if strings.HasPrefix(valType, "[]const ") {
-                        io.WriteString(w, "@constCast(")
-                        ae.Value.emit(w)
-                        io.WriteString(w, ")")
-                } else {
-                        ae.Value.emit(w)
-                }
-        } else {
-                ae.Value.emit(w)
-        }
-        io.WriteString(w, ") catch |err| handleError(err); ")
-        fmt.Fprintf(w, "break :blk (%s.toOwnedSlice() catch |err| handleError(err)); }", tmp)
+	if strings.HasPrefix(elem, "[]") {
+		if ll, ok := ae.Value.(*ListLit); ok {
+			inner := strings.TrimPrefix(elem, "[]")
+			ll.ElemType = inner
+			io.WriteString(w, "@constCast(")
+			ll.emit(w)
+			io.WriteString(w, ")")
+		} else if strings.HasPrefix(valType, "[]const ") {
+			io.WriteString(w, "@constCast(")
+			ae.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			ae.Value.emit(w)
+		}
+	} else {
+		ae.Value.emit(w)
+	}
+	io.WriteString(w, ") catch |err| handleError(err); ")
+	fmt.Fprintf(w, "break :blk (%s.toOwnedSlice() catch |err| handleError(err)); }", tmp)
 }
 
 // ConcatExpr concatenates two lists.
@@ -681,23 +681,23 @@ func (ce *ConcatExpr) emit(w io.Writer) {
 		}
 	}
 	elem = strings.TrimPrefix(elem, "const ")
-        tmp := uniqueName("_tmp")
-        fmt.Fprintf(w, "blk: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", tmp, elem)
-        fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
-        if ll, ok := ce.A.(*ListLit); ok {
-                ll.emit(w)
-        } else {
-                ce.A.emit(w)
-        }
-        io.WriteString(w, ")) catch |err| handleError(err); ")
-        fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
-        if ll, ok := ce.B.(*ListLit); ok {
-                ll.emit(w)
-        } else {
-                ce.B.emit(w)
-        }
-        io.WriteString(w, ")) catch |err| handleError(err); ")
-        fmt.Fprintf(w, "break :blk (%s.toOwnedSlice() catch |err| handleError(err)); }", tmp)
+	tmp := uniqueName("_tmp")
+	fmt.Fprintf(w, "blk: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", tmp, elem)
+	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
+	if ll, ok := ce.A.(*ListLit); ok {
+		ll.emit(w)
+	} else {
+		ce.A.emit(w)
+	}
+	io.WriteString(w, ")) catch |err| handleError(err); ")
+	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
+	if ll, ok := ce.B.(*ListLit); ok {
+		ll.emit(w)
+	} else {
+		ce.B.emit(w)
+	}
+	io.WriteString(w, ")) catch |err| handleError(err); ")
+	fmt.Fprintf(w, "break :blk (%s.toOwnedSlice() catch |err| handleError(err)); }", tmp)
 }
 
 type FieldExpr struct {
@@ -1311,18 +1311,18 @@ func (m *MapLit) emit(w io.Writer) {
 			e.Value.emit(w)
 			io.WriteString(w, "}")
 		} else {
-                       if strings.HasPrefix(valType, "[]") {
-                               if ll, ok := e.Value.(*ListLit); ok {
-                                       ll.ElemType = strings.TrimPrefix(valType, "[]")
-                                       io.WriteString(w, "@constCast(")
-                                       ll.emit(w)
-                                       io.WriteString(w, ")")
-                               } else {
-                                       e.Value.emit(w)
-                               }
-                       } else {
-                               e.Value.emit(w)
-                       }
+			if strings.HasPrefix(valType, "[]") {
+				if ll, ok := e.Value.(*ListLit); ok {
+					ll.ElemType = strings.TrimPrefix(valType, "[]")
+					io.WriteString(w, "@constCast(")
+					ll.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					e.Value.emit(w)
+				}
+			} else {
+				e.Value.emit(w)
+			}
 		}
 		io.WriteString(w, ") catch unreachable;")
 	}
@@ -1655,10 +1655,10 @@ func (p *Program) Emit() []byte {
 			buf.WriteString("        };\n")
 			buf.WriteString("    }\n")
 		}
-               buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
-               buf.WriteString("    switch (info) {\n")
-               buf.WriteString("    .pointer => |p| {\n")
-               buf.WriteString("        if (p.size == .slice) {\n")
+		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
+		buf.WriteString("    switch (info) {\n")
+		buf.WriteString("    .pointer => |p| {\n")
+		buf.WriteString("        if (p.size == .slice) {\n")
 		buf.WriteString("            var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
 		buf.WriteString("            defer out.deinit();\n")
 		buf.WriteString("            out.append('[') catch unreachable;\n")
@@ -1670,8 +1670,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("            out.append(']') catch unreachable;\n")
 		buf.WriteString("            return out.toOwnedSlice() catch unreachable;\n")
 		buf.WriteString("        }\n")
-               buf.WriteString("    },\n")
-               buf.WriteString("    .@\"struct\" => |_| {\n")
+		buf.WriteString("    },\n")
+		buf.WriteString("    .@\"struct\" => |_| {\n")
 		buf.WriteString("        if (@hasDecl(@TypeOf(v), \"iterator\")) {\n")
 		buf.WriteString("            const KVPair = struct{ ks: []const u8, vs: []const u8 };\n")
 		buf.WriteString("            var pairs = std.ArrayList(KVPair).init(std.heap.page_allocator);\n")
@@ -1778,8 +1778,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    var it = std.mem.tokenizeScalar(u8, buf[0..n], ' ');\n")
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
-               buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-               buf.WriteString("        return pages * @as(i64, @intCast(std.heap.pageSize()));\n")
+		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
+		buf.WriteString("        return pages * @as(i64, @intCast(std.heap.pageSize()));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -1945,14 +1945,14 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	if len(namesStack) > 0 {
 		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], v.Name)
 	}
-        if strings.HasPrefix(targetType, "const ") {
-                targetType = strings.TrimPrefix(targetType, "const ")
-        }
-        if strings.HasPrefix(targetType, "[") && mut {
-                if end := strings.Index(targetType, "]"); end != -1 {
-                        targetType = "[]" + targetType[end+1:]
-                }
-        }
+	if strings.HasPrefix(targetType, "const ") {
+		targetType = strings.TrimPrefix(targetType, "const ")
+	}
+	if strings.HasPrefix(targetType, "[") && mut {
+		if end := strings.Index(targetType, "]"); end != -1 {
+			targetType = "[]" + targetType[end+1:]
+		}
+	}
 	kw := "const"
 	if mut {
 		kw = "var"
@@ -1960,8 +1960,8 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	if kw == "const" && targetType == "[]u8" {
 		targetType = "[]const u8"
 	}
-        if false {
-        }
+	if false {
+	}
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
 	if targetType != "" {
 		typ := targetType
@@ -1991,47 +1991,47 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		if _, ok := v.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
 			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 		} else {
-               if ll, ok := v.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
-                               elem := strings.TrimPrefix(targetType, "[]")
-                               if strings.HasPrefix(elem, "const ") {
-                                       elem = elem[len("const "):]
-                               }
-                               if len(ll.Elems) == 0 {
-                                       fmt.Fprintf(w, "std.heap.page_allocator.alloc(%s, 0) catch unreachable", elem)
-                               } else {
-                                       allConst := true
-                                       for _, e := range ll.Elems {
-                                               if !isConstExpr(e) {
-                                                       allConst = false
-                                                       break
-                                               }
-                                       }
-                                       if allConst {
-                                               if kw == "var" {
-                                                       fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", elem)
-                                                       ll.emit(w)
-                                                       io.WriteString(w, ") catch unreachable")
-                                               } else {
-                                                       io.WriteString(w, "@constCast(")
-                                                       ll.emit(w)
-                                                       io.WriteString(w, ")")
-                                               }
-                                       } else {
-                                               ll.emit(w)
-                                       }
-                               }
-                       } else {
-                               exprType := zigTypeFromExpr(v.Value)
-                               if strings.HasPrefix(exprType, "*") && !strings.HasPrefix(targetType, "*") {
-                                       v.Value.emit(w)
-                                       io.WriteString(w, ".*")
-                               } else {
-                                       v.Value.emit(w)
-                               }
-                       }
-                       if zigTypeFromExpr(v.Value) == "Value" {
-                               io.WriteString(w, valueAccess(targetType))
-                       }
+			if ll, ok := v.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
+				elem := strings.TrimPrefix(targetType, "[]")
+				if strings.HasPrefix(elem, "const ") {
+					elem = elem[len("const "):]
+				}
+				if len(ll.Elems) == 0 {
+					fmt.Fprintf(w, "std.heap.page_allocator.alloc(%s, 0) catch unreachable", elem)
+				} else {
+					allConst := true
+					for _, e := range ll.Elems {
+						if !isConstExpr(e) {
+							allConst = false
+							break
+						}
+					}
+					if allConst {
+						if kw == "var" {
+							fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", elem)
+							ll.emit(w)
+							io.WriteString(w, ") catch unreachable")
+						} else {
+							io.WriteString(w, "@constCast(")
+							ll.emit(w)
+							io.WriteString(w, ")")
+						}
+					} else {
+						ll.emit(w)
+					}
+				}
+			} else {
+				exprType := zigTypeFromExpr(v.Value)
+				if strings.HasPrefix(exprType, "*") && !strings.HasPrefix(targetType, "*") {
+					v.Value.emit(w)
+					io.WriteString(w, ".*")
+				} else {
+					v.Value.emit(w)
+				}
+			}
+			if zigTypeFromExpr(v.Value) == "Value" {
+				io.WriteString(w, valueAccess(targetType))
+			}
 		}
 	}
 	io.WriteString(w, ";\n")
@@ -2045,33 +2045,33 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
-       writeIndent(w, indent)
-       targetType := varTypes[a.Name]
-       if targetType == "" {
-               if vd, ok2 := varDecls[a.Name]; ok2 {
-                       targetType = vd.Type
-               }
-       }
-       lhs := a.Name
-       if strings.HasPrefix(targetType, "*") {
-               lhs += ".*"
-               targetType = strings.TrimPrefix(targetType, "*")
-       }
-       fmt.Fprintf(w, "%s = ", lhs)
-       if a.Value == nil {
-               io.WriteString(w, "undefined;\n")
-               return
-       }
-       if ll, ok := a.Value.(*ListLit); ok && ll.ElemType == "" {
-               if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasPrefix(vt, "[]") {
-                       ll.ElemType = vt[2:]
-               } else if vd, ok2 := varDecls[a.Name]; ok2 && strings.HasPrefix(vd.Type, "[]") {
-                       ll.ElemType = vd.Type[2:]
-               }
-       }
-       if targetType == "Value" {
-               valType := zigTypeFromExpr(a.Value)
-               switch {
+	writeIndent(w, indent)
+	targetType := varTypes[a.Name]
+	if targetType == "" {
+		if vd, ok2 := varDecls[a.Name]; ok2 {
+			targetType = vd.Type
+		}
+	}
+	lhs := a.Name
+	if strings.HasPrefix(targetType, "*") {
+		lhs += ".*"
+		targetType = strings.TrimPrefix(targetType, "*")
+	}
+	fmt.Fprintf(w, "%s = ", lhs)
+	if a.Value == nil {
+		io.WriteString(w, "undefined;\n")
+		return
+	}
+	if ll, ok := a.Value.(*ListLit); ok && ll.ElemType == "" {
+		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasPrefix(vt, "[]") {
+			ll.ElemType = vt[2:]
+		} else if vd, ok2 := varDecls[a.Name]; ok2 && strings.HasPrefix(vd.Type, "[]") {
+			ll.ElemType = vd.Type[2:]
+		}
+	}
+	if targetType == "Value" {
+		valType := zigTypeFromExpr(a.Value)
+		switch {
 		case strings.HasPrefix(valType, "[]"):
 			fmt.Fprintf(w, "Value{.List = ")
 			a.Value.emit(w)
@@ -2091,13 +2091,13 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			if len(ll.Elems) == 0 {
 				fmt.Fprintf(w, "std.heap.page_allocator.alloc(%s, 0) catch unreachable", elem)
 			} else {
-                               fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", elem)
-                               ll.emit(w)
-                               io.WriteString(w, ") catch unreachable")
-                        }
-                } else {
-                        a.Value.emit(w)
-                }
+				fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", elem)
+				ll.emit(w)
+				io.WriteString(w, ") catch unreachable")
+			}
+		} else {
+			a.Value.emit(w)
+		}
 		if zigTypeFromExpr(a.Value) == "Value" && targetType != "Value" {
 			if suf := valueAccess(targetType); suf != "" {
 				io.WriteString(w, suf)
@@ -2125,33 +2125,33 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, ".put(")
 		idx.Index.emit(w)
 		io.WriteString(w, ", ")
-               if ll, ok := a.Value.(*ListLit); ok && strings.HasPrefix(zigTypeFromExpr(a.Value), "[]") {
-                       allConst := true
-                       for _, e := range ll.Elems {
-                               if !isConstExpr(e) {
-                                       allConst = false
-                                       break
-                               }
-                       }
-                       if allConst {
-                               if len(ll.Elems) == 0 {
-                                       io.WriteString(w, "@constCast(")
-                                       ll.emit(w)
-                                       io.WriteString(w, ")[0..]")
-                               } else {
-                                       io.WriteString(w, "@constCast(&")
-                                       ll.emit(w)
-                                       io.WriteString(w, ")[0..]")
-                               }
-                       } else {
-                               ll.emit(w)
-                       }
-               } else {
-                       a.Value.emit(w)
-               }
-               io.WriteString(w, ") catch unreachable;\n")
-               return
-       }
+		if ll, ok := a.Value.(*ListLit); ok && strings.HasPrefix(zigTypeFromExpr(a.Value), "[]") {
+			allConst := true
+			for _, e := range ll.Elems {
+				if !isConstExpr(e) {
+					allConst = false
+					break
+				}
+			}
+			if allConst {
+				if len(ll.Elems) == 0 {
+					io.WriteString(w, "@constCast(")
+					ll.emit(w)
+					io.WriteString(w, ")[0..]")
+				} else {
+					io.WriteString(w, "@constCast(&")
+					ll.emit(w)
+					io.WriteString(w, ")[0..]")
+				}
+			} else {
+				ll.emit(w)
+			}
+		} else {
+			a.Value.emit(w)
+		}
+		io.WriteString(w, ") catch unreachable;\n")
+		return
+	}
 	a.Target.emit(w)
 	io.WriteString(w, " = ")
 	targetType := zigTypeFromExpr(a.Target)
@@ -2729,97 +2729,97 @@ func precedence(op string) int {
 }
 
 func (l *ListLit) emit(w io.Writer) {
-        if l.ElemType != "" {
-                et := l.ElemType
-                if strings.HasPrefix(et, "const ") {
-                        et = et[len("const "):]
-                }
-               allConst := true
-               for _, e := range l.Elems {
-                       if !isConstExpr(e) {
-                               allConst = false
-                               break
-                       }
-               }
-               if !allConst {
-                       lbl := newLabel()
-                       tmp := uniqueName("_tmp")
-                       fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", lbl, tmp, et)
-                       for _, e := range l.Elems {
-                               fmt.Fprintf(w, "%s.append(", tmp)
-                               if ll, ok := e.(*ListLit); ok {
-                                       ll.ElemType = strings.TrimPrefix(et, "[]")
-                                       io.WriteString(w, "@constCast(")
-                                       ll.emit(w)
-                                       io.WriteString(w, ")")
-                               } else {
-                                       e.emit(w)
-                               }
-                               io.WriteString(w, ") catch unreachable; ")
-                       }
-                       fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch unreachable); }", lbl, tmp)
-                       return
-               }
-                if strings.HasPrefix(et, "[]") {
-                        inner := strings.TrimPrefix(et, "[]")
-                        if len(l.Elems) == 0 {
-                                fmt.Fprintf(w, "(&[_][]%s{})[0..0]", inner)
-                                return
-                        }
-                        fmt.Fprintf(w, "([%d][]%s{", len(l.Elems), inner)
-                        for i, e := range l.Elems {
-                                if i > 0 {
-                                        io.WriteString(w, ", ")
-                                }
-                                if ll, ok := e.(*ListLit); ok {
-                                        ll.ElemType = inner
-                                        io.WriteString(w, "@constCast(")
-                                        ll.emit(w)
-                                        io.WriteString(w, ")")
-                                } else {
-                                        e.emit(w)
-                                }
-                        }
-                        fmt.Fprintf(w, "})[0..%d]", len(l.Elems))
-                        return
-                }
-               if len(l.Elems) == 0 {
-                        // Use slice syntax for empty lists to avoid array
-                        // literal coercion errors (e.g. returning `[]i64`).
-                        // `(&[_]T{})[0..0]` is a zero-length slice of `T`.
-                        fmt.Fprintf(w, "(&[_]%s{})[0..0]", et)
-                        return
-                }
-               fmt.Fprintf(w, "([%d]%s{", len(l.Elems), et)
-               for i, e := range l.Elems {
-                       if i > 0 {
-                               io.WriteString(w, ", ")
-                       }
-                       if l.ElemType == "Value" {
-                               if ll, ok := e.(*ListLit); ok {
-                                       ll.ElemType = "Value"
-                                       io.WriteString(w, "Value{.List = ")
-                                       ll.emit(w)
-                                       io.WriteString(w, "}")
-                               } else if _, ok := e.(*NullLit); ok {
-                                       io.WriteString(w, "Value{.Null = {}}")
-                               } else {
-                                       t := zigTypeFromExpr(e)
-                                       if t == "Value" {
-                                               e.emit(w)
-                                       } else {
-                                               fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
-                                               e.emit(w)
-                                               io.WriteString(w, "}")
-                                       }
-                               }
-                       } else {
-                               e.emit(w)
-                       }
-               }
-               fmt.Fprintf(w, "})[0..%d]", len(l.Elems))
-               return
-       } else if len(l.Elems) > 0 {
+	if l.ElemType != "" {
+		et := l.ElemType
+		if strings.HasPrefix(et, "const ") {
+			et = et[len("const "):]
+		}
+		allConst := true
+		for _, e := range l.Elems {
+			if !isConstExpr(e) {
+				allConst = false
+				break
+			}
+		}
+		if !allConst {
+			lbl := newLabel()
+			tmp := uniqueName("_tmp")
+			fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", lbl, tmp, et)
+			for _, e := range l.Elems {
+				fmt.Fprintf(w, "%s.append(", tmp)
+				if ll, ok := e.(*ListLit); ok {
+					ll.ElemType = strings.TrimPrefix(et, "[]")
+					io.WriteString(w, "@constCast(")
+					ll.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					e.emit(w)
+				}
+				io.WriteString(w, ") catch unreachable; ")
+			}
+			fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch unreachable); }", lbl, tmp)
+			return
+		}
+		if strings.HasPrefix(et, "[]") {
+			inner := strings.TrimPrefix(et, "[]")
+			if len(l.Elems) == 0 {
+				fmt.Fprintf(w, "(&[_][]%s{})[0..0]", inner)
+				return
+			}
+			fmt.Fprintf(w, "([%d][]%s{", len(l.Elems), inner)
+			for i, e := range l.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if ll, ok := e.(*ListLit); ok {
+					ll.ElemType = inner
+					io.WriteString(w, "@constCast(")
+					ll.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					e.emit(w)
+				}
+			}
+			fmt.Fprintf(w, "})[0..%d]", len(l.Elems))
+			return
+		}
+		if len(l.Elems) == 0 {
+			// Use slice syntax for empty lists to avoid array
+			// literal coercion errors (e.g. returning `[]i64`).
+			// `(&[_]T{})[0..0]` is a zero-length slice of `T`.
+			fmt.Fprintf(w, "(&[_]%s{})[0..0]", et)
+			return
+		}
+		fmt.Fprintf(w, "([%d]%s{", len(l.Elems), et)
+		for i, e := range l.Elems {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			if l.ElemType == "Value" {
+				if ll, ok := e.(*ListLit); ok {
+					ll.ElemType = "Value"
+					io.WriteString(w, "Value{.List = ")
+					ll.emit(w)
+					io.WriteString(w, "}")
+				} else if _, ok := e.(*NullLit); ok {
+					io.WriteString(w, "Value{.Null = {}}")
+				} else {
+					t := zigTypeFromExpr(e)
+					if t == "Value" {
+						e.emit(w)
+					} else {
+						fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
+						e.emit(w)
+						io.WriteString(w, "}")
+					}
+				}
+			} else {
+				e.emit(w)
+			}
+		}
+		fmt.Fprintf(w, "})[0..%d]", len(l.Elems))
+		return
+	} else if len(l.Elems) > 0 {
 		if _, ok := l.Elems[0].(*ListLit); ok {
 			if sub, ok := l.Elems[0].(*ListLit); ok {
 				fmt.Fprintf(w, "[%d][%d]i64{", len(l.Elems), len(sub.Elems))
@@ -2841,21 +2841,21 @@ func (l *ListLit) emit(w io.Writer) {
 		}
 		e.emit(w)
 	}
-        if l.ElemType != "" {
-                fmt.Fprintf(w, "})[0..%d]", len(l.Elems))
-        } else {
-                io.WriteString(w, "}")
-        }
+	if l.ElemType != "" {
+		fmt.Fprintf(w, "})[0..%d]", len(l.Elems))
+	} else {
+		io.WriteString(w, "}")
+	}
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-       if i.Map {
-               i.Target.emit(w)
-               io.WriteString(w, ".get(")
-               i.Index.emit(w)
-               io.WriteString(w, ").?")
-               return
-       }
+	if i.Map {
+		i.Target.emit(w)
+		io.WriteString(w, ".get(")
+		i.Index.emit(w)
+		io.WriteString(w, ").?")
+		return
+	}
 	targetType := zigTypeFromExpr(i.Target)
 	if isStringType(targetType) || (i.ElemType == "[]const u8" && !strings.HasPrefix(targetType, "[]")) {
 		i.Target.emit(w)
@@ -3198,20 +3198,20 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 					io.WriteString(w, " break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }")
 				}
 			} else {
-                               exprType := zigTypeFromExpr(r.Value)
-                               if strings.HasPrefix(exprType, "*") && !strings.HasPrefix(currentReturnType, "*") {
-                                       r.Value.emit(w)
-                                       io.WriteString(w, ".*")
-                               } else {
-                                       r.Value.emit(w)
-                               }
-                       }
-                       if zigTypeFromExpr(r.Value) == "Value" {
-                               io.WriteString(w, valueAccess(currentReturnType))
-                       }
-               }
-       }
-       io.WriteString(w, ";\n")
+				exprType := zigTypeFromExpr(r.Value)
+				if strings.HasPrefix(exprType, "*") && !strings.HasPrefix(currentReturnType, "*") {
+					r.Value.emit(w)
+					io.WriteString(w, ".*")
+				} else {
+					r.Value.emit(w)
+				}
+			}
+			if zigTypeFromExpr(r.Value) == "Value" {
+				io.WriteString(w, valueAccess(currentReturnType))
+			}
+		}
+	}
+	io.WriteString(w, ";\n")
 }
 
 func (b *BenchStmt) emit(w io.Writer, indent int) {
@@ -3495,11 +3495,12 @@ func (c *CallExpr) emit(w io.Writer) {
 					if strings.HasPrefix(exp, "[]") {
 						elem := strings.TrimPrefix(exp, "[]")
 						if len(lit.Elems) == 0 {
-							fmt.Fprintf(w, "@constCast(&[_]%s{})", elem)
+							fmt.Fprintf(w, "@constCast((&[_]%s{})[0..0])", elem)
 						} else {
-							io.WriteString(w, "@constCast(&(")
+							lit.ElemType = elem
+							io.WriteString(w, "@constCast(")
 							lit.emit(w)
-							io.WriteString(w, "))[0..]")
+							io.WriteString(w, ")")
 						}
 						continue
 					}
@@ -3510,26 +3511,26 @@ func (c *CallExpr) emit(w io.Writer) {
 						at = vd.Type
 					}
 				}
-                               if exp != at {
-                                       switch {
-                                       case strings.HasPrefix(exp, "*") && !strings.HasPrefix(at, "*"):
-                                               if v, ok := a.(*VarRef); ok {
-                                                       if vd, ok2 := varDecls[v.Name]; ok2 && !vd.Mutable {
-                                                               io.WriteString(w, "@constCast(&")
-                                                               a.emit(w)
-                                                               io.WriteString(w, ")")
-                                                               break
-                                                       }
-                                               }
-                                               io.WriteString(w, "&")
-                                               a.emit(w)
-                                       case !strings.HasPrefix(exp, "*") && strings.HasPrefix(at, "*"):
-                                               a.emit(w)
-                                               io.WriteString(w, ".*")
-                                       case at == "Value":
-                                               a.emit(w)
-                                               io.WriteString(w, valueAccess(exp))
-                                       case exp == "Value":
+				if exp != at {
+					switch {
+					case strings.HasPrefix(exp, "*") && !strings.HasPrefix(at, "*"):
+						if v, ok := a.(*VarRef); ok {
+							if vd, ok2 := varDecls[v.Name]; ok2 && !vd.Mutable {
+								io.WriteString(w, "@constCast(&")
+								a.emit(w)
+								io.WriteString(w, ")")
+								break
+							}
+						}
+						io.WriteString(w, "&")
+						a.emit(w)
+					case !strings.HasPrefix(exp, "*") && strings.HasPrefix(at, "*"):
+						a.emit(w)
+						io.WriteString(w, ".*")
+					case at == "Value":
+						a.emit(w)
+						io.WriteString(w, valueAccess(exp))
+					case exp == "Value":
 						io.WriteString(w, "Value{.")
 						io.WriteString(w, valueTag(at))
 						io.WriteString(w, " = ")
@@ -3553,11 +3554,12 @@ func (c *CallExpr) emit(w io.Writer) {
 						if ll, ok := a.(*ListLit); ok {
 							elem := strings.TrimPrefix(exp, "[]")
 							if len(ll.Elems) == 0 {
-								fmt.Fprintf(w, "@constCast(&[_]%s{})", elem)
+								fmt.Fprintf(w, "@constCast((&[_]%s{})[0..0])", elem)
 							} else {
-								io.WriteString(w, "@constCast(&(")
+								ll.ElemType = elem
+								io.WriteString(w, "@constCast(")
 								ll.emit(w)
-								io.WriteString(w, "))[0..]")
+								io.WriteString(w, ")")
 							}
 						} else {
 							a.emit(w)
@@ -3641,26 +3643,26 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	// is declared later in the source program.
 	for _, st := range prog.Statements {
 		switch {
-               case st.Let != nil:
-                       name := st.Let.Name
-                       if funDepth > 0 && globalNames[name] {
-                               name = name + "_var"
-                       }
-                       alias := uniqueName(name)
-                       aliasStack[len(aliasStack)-1][st.Let.Name] = alias
-                       namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
-                       globalNames[alias] = true
-               case st.Var != nil:
-                       name := st.Var.Name
-                       if funDepth > 0 && globalNames[name] {
-                               name = name + "_var"
-                       }
-                       alias := uniqueName(name)
-                       aliasStack[len(aliasStack)-1][st.Var.Name] = alias
-                       namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
-                       globalNames[alias] = true
-               }
-       }
+		case st.Let != nil:
+			name := st.Let.Name
+			if funDepth > 0 && globalNames[name] {
+				name = name + "_var"
+			}
+			alias := uniqueName(name)
+			aliasStack[len(aliasStack)-1][st.Let.Name] = alias
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+			globalNames[alias] = true
+		case st.Var != nil:
+			name := st.Var.Name
+			if funDepth > 0 && globalNames[name] {
+				name = name + "_var"
+			}
+			alias := uniqueName(name)
+			aliasStack[len(aliasStack)-1][st.Var.Name] = alias
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+			globalNames[alias] = true
+		}
+	}
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -3765,31 +3767,31 @@ func collectMutablesIf(is *parser.IfStmt, m map[string]bool) {
 }
 
 func collectLocalDecls(sts []*parser.Statement, m map[string]bool) {
-       for _, st := range sts {
-               switch {
-               case st.Var != nil:
-                       m[st.Var.Name] = true
-               case st.Let != nil:
-                       m[st.Let.Name] = true
-               case st.If != nil:
-                       collectLocalDeclsIf(st.If, m)
-               case st.While != nil:
-                       collectLocalDecls(st.While.Body, m)
-               case st.For != nil:
-                       collectLocalDecls(st.For.Body, m)
-               }
-       }
+	for _, st := range sts {
+		switch {
+		case st.Var != nil:
+			m[st.Var.Name] = true
+		case st.Let != nil:
+			m[st.Let.Name] = true
+		case st.If != nil:
+			collectLocalDeclsIf(st.If, m)
+		case st.While != nil:
+			collectLocalDecls(st.While.Body, m)
+		case st.For != nil:
+			collectLocalDecls(st.For.Body, m)
+		}
+	}
 }
 
 func collectLocalDeclsIf(is *parser.IfStmt, m map[string]bool) {
-       if is == nil {
-               return
-       }
-       collectLocalDecls(is.Then, m)
-       if is.ElseIf != nil {
-               collectLocalDeclsIf(is.ElseIf, m)
-       }
-       collectLocalDecls(is.Else, m)
+	if is == nil {
+		return
+	}
+	collectLocalDecls(is.Then, m)
+	if is.ElseIf != nil {
+		collectLocalDeclsIf(is.ElseIf, m)
+	}
+	collectLocalDecls(is.Else, m)
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
@@ -4829,26 +4831,26 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 	}
 	body := make([]Stmt, 0, len(fs.Body))
 	pushAliasScope()
-        base := fs.Name
-        if globalNames[base] || varTypes[base] != "" {
-                base = base + "_iter"
-        }
-        alias := uniqueName(base)
-        for globalNames[alias] || varTypes[alias] != "" {
-                alias = uniqueName(base)
-        }
+	base := fs.Name
+	if globalNames[base] || varTypes[base] != "" {
+		base = base + "_iter"
+	}
+	alias := uniqueName(base)
+	for globalNames[alias] || varTypes[alias] != "" {
+		alias = uniqueName(base)
+	}
 	aliasStack[len(aliasStack)-1][fs.Name] = alias
 	namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], fs.Name)
 	varTypes[alias] = elemType
-       for _, s := range fs.Body {
-               st, err := compileStmt(s, prog)
-               if err != nil {
-                       return nil, err
-               }
-               if st != nil {
-                       body = append(body, st)
-               }
-       }
+	for _, s := range fs.Body {
+		st, err := compileStmt(s, prog)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			body = append(body, st)
+		}
+	}
 	popAliasScope()
 	return &ForStmt{Name: alias, Start: start, End: end, Iterable: iter, Body: body, ElemType: elemType}, nil
 }
@@ -5193,10 +5195,10 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	aliasStack[0][fn.Name] = zigName
 	names := make([]string, len(fn.Params))
 	params := make([]Param, len(fn.Params))
-       mutables := map[string]bool{}
-       collectMutables(fn.Body, mutables)
-       locals := map[string]bool{}
-       collectLocalDecls(fn.Body, locals)
+	mutables := map[string]bool{}
+	collectMutables(fn.Body, mutables)
+	locals := map[string]bool{}
+	collectLocalDecls(fn.Body, locals)
 	localMutablesStack = append(localMutablesStack, mutables)
 	defer func() { localMutablesStack = localMutablesStack[:len(localMutablesStack)-1] }()
 	pushAliasScope()
@@ -5204,8 +5206,8 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	defer popAliasScope()
 	preStmts := []Stmt{}
 	paramTypes := make([]string, len(fn.Params))
-       for i, p := range fn.Params {
-               mutable := (!locals[p.Name]) && (mutables[p.Name] || varMut[fn.Name+":"+p.Name])
+	for i, p := range fn.Params {
+		mutable := (!locals[p.Name]) && (mutables[p.Name] || varMut[fn.Name+":"+p.Name])
 		typ := toZigType(p.Type)
 		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
 		isStruct := structDefs[typ] != nil
@@ -5214,36 +5216,36 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		}
 		name := p.Name
 		paramName := name
-               if mutable {
-                        paramName = uniqueName(name + "_param")
-               } else if globalNames[name] || locals[p.Name] {
-                        paramName = uniqueName(name + "_param")
-               } else {
-                        paramName = uniqueName(name)
-               }
-               aliasName := paramName
-               if mutable {
-                        if strings.HasPrefix(typ, "*") {
-                                aliasName = paramName
-                        } else {
-                                aliasName = uniqueName(name + "_var")
-                                namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
-                                vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true, Scope: fn.Name}
-                                preStmts = append(preStmts, vd)
-                                varDecls[p.Name] = vd
-                                varDecls[aliasName] = vd
-                        }
-               }
-               aliases[name] = aliasName
-               params[i] = Param{Name: paramName, Type: typ}
-               names[i] = aliasName
-               varTypes[aliasName] = typ
-               varTypes[name] = typ
-               if locals[p.Name] {
-                        namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], aliasName)
-               } else {
-                        namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], aliasName, name)
-               }
+		if mutable {
+			paramName = uniqueName(name + "_param")
+		} else if globalNames[name] || locals[p.Name] {
+			paramName = uniqueName(name + "_param")
+		} else {
+			paramName = uniqueName(name)
+		}
+		aliasName := paramName
+		if mutable {
+			if strings.HasPrefix(typ, "*") {
+				aliasName = paramName
+			} else {
+				aliasName = uniqueName(name + "_var")
+				namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+				vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true, Scope: fn.Name}
+				preStmts = append(preStmts, vd)
+				varDecls[p.Name] = vd
+				varDecls[aliasName] = vd
+			}
+		}
+		aliases[name] = aliasName
+		params[i] = Param{Name: paramName, Type: typ}
+		names[i] = aliasName
+		varTypes[aliasName] = typ
+		varTypes[name] = typ
+		if locals[p.Name] {
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], aliasName)
+		} else {
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], aliasName, name)
+		}
 		paramTypes[i] = typ
 		if isMap {
 			mapVars[aliasName] = true
@@ -5577,18 +5579,18 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			m := localMutablesStack[len(localMutablesStack)-1]
 			mutable = m[s.Var.Name]
 		}
-               name := s.Var.Name
-               if funDepth > 0 && globalNames[name] {
-                        name = name + "_var"
-               }
-               alias := uniqueName(name)
-               aliasStack[len(aliasStack)-1][s.Var.Name] = alias
-               namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
-               vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable, Scope: currentFunc}
-               if s.Var.Type != nil {
-                       vd.Type = toZigType(s.Var.Type)
-               } else {
-                       vd.Type = zigTypeFromExpr(expr)
+		name := s.Var.Name
+		if funDepth > 0 && globalNames[name] {
+			name = name + "_var"
+		}
+		alias := uniqueName(name)
+		aliasStack[len(aliasStack)-1][s.Var.Name] = alias
+		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable, Scope: currentFunc}
+		if s.Var.Type != nil {
+			vd.Type = toZigType(s.Var.Type)
+		} else {
+			vd.Type = zigTypeFromExpr(expr)
 		}
 		varTypes[s.Var.Name] = vd.Type
 		varDecls[s.Var.Name] = vd
@@ -5660,14 +5662,14 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if funDepth == 0 {
 			varTypes[s.Var.Name] = typ
 		}
-               varTypes[alias] = typ
-               if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
-                        mapVars[s.Var.Name] = true
-                        mapVars[alias] = true
-               } else {
-                        mapVars[s.Var.Name] = false
-                        mapVars[alias] = false
-               }
+		varTypes[alias] = typ
+		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
+			mapVars[s.Var.Name] = true
+			mapVars[alias] = true
+		} else {
+			mapVars[s.Var.Name] = false
+			mapVars[alias] = false
+		}
 		if funDepth <= 1 && !isConstExpr(expr) {
 			vd.Value = nil
 			globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})
@@ -6186,14 +6188,14 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			if t.Value != nil {
 				walkExpr(t.Value)
 			}
-               case *AssignStmt:
-                       key := scope + ":" + t.Name
-                       muts[key] = true
-                       muts[":"+t.Name] = true
-                       if globalNames[t.Name] {
-                               muts[":"+t.Name] = true
-                       }
-                       walkExpr(t.Value)
+		case *AssignStmt:
+			key := scope + ":" + t.Name
+			muts[key] = true
+			muts[":"+t.Name] = true
+			if globalNames[t.Name] {
+				muts[":"+t.Name] = true
+			}
+			walkExpr(t.Value)
 		case *IndexAssignStmt:
 			if s, ok := exprToString(t.Target); ok {
 				base := strings.SplitN(s, ".", 2)[0]

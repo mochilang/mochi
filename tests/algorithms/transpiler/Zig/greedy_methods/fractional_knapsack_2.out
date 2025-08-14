@@ -1,0 +1,3 @@
+fractional_knapsack_2.KnapsackResult{ .max_value = 2.5e1, .fractions = { 1e0, 1e0, 1e0, 1e0, 1e0 } }
+fractional_knapsack_2.KnapsackResult{ .max_value = 1.6e1, .fractions = { 1e0, 1e0, 1e0, 1e0 } }
+fractional_knapsack_2.KnapsackResult{ .max_value = 0e0, .fractions = {  } }
