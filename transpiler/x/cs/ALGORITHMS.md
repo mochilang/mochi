@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-14 18:35 GMT+7
+Last updated: 2025-08-14 22:25 GMT+7
 
 ## Algorithms Golden Test Checklist (1022/1077)
 | Index | Name | Status | Duration | Memory |
@@ -431,7 +431,7 @@ Last updated: 2025-08-14 18:35 GMT+7
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 1.0µs | 16.53KB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1.0µs | 161.93KB |
 | 424 | graphs/even_tree | ✓ | 1.0µs | 23.29KB |
-| 425 | graphs/finding_bridges | ✓ | 1.0µs | 58.38KB |
+| 425 | graphs/finding_bridges | ✓ | 1.0µs | 58.49KB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 1.0µs | 112.94KB |
 | 427 | graphs/g_topological_sort | ✓ | 1.0µs | 25.05KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 1.0µs | 24.53KB |
@@ -440,9 +440,9 @@ Last updated: 2025-08-14 18:35 GMT+7
 | 431 | graphs/graph_list | ✓ | 1.0µs | 23.88KB |
 | 432 | graphs/graphs_floyd_warshall | ✓ | 1.0µs | 17.60KB |
 | 433 | graphs/greedy_best_first | ✓ | 1.0µs | 339.06KB |
-| 434 | graphs/greedy_min_vertex_cover | ✓ | 1.0µs | 19.80KB |
-| 435 | graphs/kahns_algorithm_long | ✓ | 1.0µs | 23.60KB |
-| 436 | graphs/kahns_algorithm_topo | ✓ | 1.0µs | 23.98KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 1.0µs | 19.91KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 1.0µs | 23.71KB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 1.0µs | 24.09KB |
 | 437 | graphs/karger | ✓ | 1.0µs | 14.61KB |
 | 438 | graphs/lanczos_eigenvectors | ✓ | 1.0µs | 16.63KB |
 | 439 | graphs/markov_chain | ✓ | 1.0µs | 18.42KB |
@@ -457,24 +457,24 @@ Last updated: 2025-08-14 18:35 GMT+7
 | 448 | graphs/page_rank | ✓ | 1.0µs | 26.54KB |
 | 449 | graphs/prim | ✓ | 1.0µs | 31.34KB |
 | 450 | graphs/random_graph_generator | ✓ | 1.0µs | 21.44KB |
-| 451 | graphs/scc_kosaraju | ✓ | 1.0µs | 24.16KB |
+| 451 | graphs/scc_kosaraju | ✓ | 1.0µs | 24.27KB |
 | 452 | graphs/strongly_connected_components | ✓ | 1.0µs | 34.33KB |
 | 453 | graphs/tarjans_scc | ✓ | 1.0µs | 35.44KB |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.0µs | 27.63KB |
 | 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 1.0µs | 36.20KB |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 2.0ms | 16.65KB |
-| 457 | greedy_methods/fractional_cover_problem | ✓ | 3.0ms | 16.32KB |
-| 458 | greedy_methods/fractional_knapsack | ✓ | 2.0ms | 15.40KB |
-| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 3.0ms | 20.55KB |
-| 460 | greedy_methods/gas_station | ✓ | 2.0ms | 18.88KB |
-| 461 | greedy_methods/minimum_coin_change | ✓ | 2.0ms | 22.30KB |
-| 462 | greedy_methods/minimum_waiting_time | ✓ | 2.0ms | 17.05KB |
-| 463 | greedy_methods/optimal_merge_pattern | ✓ | 2.0ms | 21.93KB |
-| 464 | greedy_methods/smallest_range | ✓ | 3.0ms | 24.20KB |
-| 465 | hashes/adler32 | ✓ | 2.0ms | 27.30KB |
-| 466 | hashes/chaos_machine | ✓ | 2.0ms | 58.77KB |
-| 467 | hashes/djb2 | ✓ | 2.0ms | 36.97KB |
-| 468 | hashes/elf | ✓ | 2.0ms | 35.18KB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 1.0µs | 16.78KB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 1.0µs | 15.95KB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 1.0µs | 13.54KB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 1.0µs | 23.80KB |
+| 460 | greedy_methods/gas_station | ✓ | 1.0µs | 18.03KB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 1.0µs | 28.83KB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 1.0µs | 17.18KB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 1.0µs | 27.96KB |
+| 464 | greedy_methods/smallest_range | ✓ | 1.0µs | 30.85KB |
+| 465 | hashes/adler32 | ✓ | 1.0µs | 27.43KB |
+| 466 | hashes/chaos_machine | ✓ | 1.0µs | 58.31KB |
+| 467 | hashes/djb2 | ✓ | 1.0µs | 37.10KB |
+| 468 | hashes/elf | ✓ | 1.0µs | 35.31KB |
 | 469 | hashes/enigma_machine | ✓ | 1.0ms | 455.48KB |
 | 470 | hashes/fletcher16 | ✓ | 1.0µs | 43.66KB |
 | 471 | hashes/hamming_code | error |  |  |
