@@ -85,6 +85,11 @@ mochi_to_int(V) ->
     end.
 `
 
+const helperToi = `
+toi(V) ->
+    mochi_to_int(V).
+`
+
 // mochi_to_float converts any Erlang number to a float.
 // The helper name is prefixed to avoid clashing with user-defined functions.
 const helperToFloat = `
@@ -3379,7 +3384,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	ctx := newContext(base)
 	useNow = false
 	useLookupHost = false
-	useToInt = false
+	useToInt = true
 	useToFloat = false
 	useMemberHelper = false
 	usePadStart = false
@@ -4687,6 +4692,17 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			useToFloat = true
 			return &CallExpr{Func: "mochi_to_float", Args: []Expr{arg}}, nil
 		}
+		if name == "toi" && len(pf.Target.Selector.Tail) == 0 {
+			if len(pf.Ops[0].Call.Args) != 1 {
+				return nil, fmt.Errorf("toi expects 1 arg")
+			}
+			arg, err := convertExpr(pf.Ops[0].Call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			useToInt = true
+			return &CallExpr{Func: "mochi_to_int", Args: []Expr{arg}}, nil
+		}
 		if mod, ok := ctx.autoModule(name); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 {
 			f := pf.Target.Selector.Tail[0]
 			switch f {
@@ -4792,13 +4808,35 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 					}
 					args[j] = ae
 				}
-				if nr, ok := expr.(*NameRef); ok {
+				if fr, ok := expr.(*FunRef); ok {
+					if fr.Name == "toi" {
+						if len(args) != 1 {
+							return nil, fmt.Errorf("toi expects 1 arg")
+						}
+						useToInt = true
+						expr = &CallExpr{Func: "mochi_to_int", Args: args}
+					} else if fr.Name == "to_float" {
+						if len(args) != 1 {
+							return nil, fmt.Errorf("to_float expects 1 arg")
+						}
+						useToFloat = true
+						expr = &CallExpr{Func: "mochi_to_float", Args: args}
+					} else {
+						expr = &ApplyExpr{Fun: expr, Args: args}
+					}
+				} else if nr, ok := expr.(*NameRef); ok {
 					if nr.Name == "to_float" {
 						if len(args) != 1 {
 							return nil, fmt.Errorf("to_float expects 1 arg")
 						}
 						useToFloat = true
 						expr = &CallExpr{Func: "mochi_to_float", Args: args}
+					} else if nr.Name == "toi" {
+						if len(args) != 1 {
+							return nil, fmt.Errorf("toi expects 1 arg")
+						}
+						useToInt = true
+						expr = &CallExpr{Func: "mochi_to_int", Args: args}
 					} else {
 						ce := &CallExpr{Func: nr.Name, Args: args}
 						expr = ce
@@ -6550,6 +6588,8 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseToInt {
 		buf.WriteString(helperToInt)
+		buf.WriteString("\n")
+		buf.WriteString(helperToi)
 		buf.WriteString("\n")
 	}
 	if p.UseToFloat {

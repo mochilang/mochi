@@ -1,3 +1,471 @@
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 09:59 +0700)
+- fix fs float print (c9c5e4bde0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-13 16:41 +0700)
 - fs transpiler: handle nested map indexing (f942880281)
 - Regenerated golden files - 103/105 vm valid programs passing
