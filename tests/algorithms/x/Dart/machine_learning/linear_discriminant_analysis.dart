@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 double PI = 3.141592653589793;
@@ -45,11 +48,11 @@ int rand() {
 }
 
 double random() {
-  return (rand() as double) / 2147483648.0;
+  return ((rand()).toDouble()) / 2147483648.0;
 }
 
 double _mod(double x, double m) {
-  return x - (x / m as int as double) * m;
+  return x - (((x / m).toInt()).toDouble()) * m;
 }
 
 double cos(double x) {
@@ -79,7 +82,7 @@ double ln(double x) {
   double sum = 0.0;
   int n = 1;
   while (n <= 19) {
-    sum = sum + term / (n as double);
+    sum = sum + term / ((n).toDouble());
     term = term * t * t;
     n = n + 2;
   }
@@ -122,11 +125,11 @@ double calculate_mean(int instance_count, List<double> items) {
     total = total + items[i];
     i = i + 1;
   }
-  return total / (instance_count as double);
+  return total / ((instance_count).toDouble());
 }
 
 double calculate_probabilities(int instance_count, int total_count) {
-  return (instance_count as double) / (total_count as double);
+  return ((instance_count).toDouble()) / ((total_count).toDouble());
 }
 
 double calculate_variance(List<List<double>> items, List<double> means, int total_count) {
@@ -148,7 +151,7 @@ double calculate_variance(List<List<double>> items, List<double> means, int tota
     k = k + 1;
   }
   int n_classes = means.length;
-  return 1.0 / (total_count - n_classes as double) * sum_sq;
+  return 1.0 / ((total_count - n_classes).toDouble()) * sum_sq;
 }
 
 List<int> predict_y_values(List<List<double>> x_items, List<double> means, double variance, List<double> probabilities) {
@@ -191,7 +194,7 @@ double accuracy(List<int> actual_y, List<int> predicted_y) {
   }
     i = i + 1;
   }
-  return (correct as double) / (actual_y.length as double) * 100.0;
+  return ((correct).toDouble()) / ((actual_y.length).toDouble()) * 100.0;
 }
 
 void _main() {
@@ -202,7 +205,7 @@ void _main() {
   List<List<double>> x = <List<double>>[];
   int i = 0;
   while (i < counts.length) {
-    x = ([...x, gaussian_distribution(means[i], std_dev, counts[i])] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    x = ([...x, gaussian_distribution(means[i], std_dev, counts[i])] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   List<int> y = y_generator(counts.length, counts);

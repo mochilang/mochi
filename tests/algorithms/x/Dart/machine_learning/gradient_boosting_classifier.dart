@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Stump {
   int feature;
@@ -49,7 +54,7 @@ double exp_approx(double x) {
   double sum = 1.0;
   int i = 1;
   while (i < 10) {
-    term = term * x / (i as double);
+    term = term * x / ((i).toDouble());
     sum = sum + term;
     i = i + 1;
   }
@@ -145,22 +150,22 @@ Stump train_stump(List<List<double>> features, List<double> residuals) {
   }
     double left_val = 0.0;
     if (count_left != 0) {
-    left_val = sum_left / (count_left as double);
+    left_val = sum_left / ((count_left).toDouble());
   }
     double right_val = 0.0;
     if (count_right != 0) {
-    right_val = sum_right / (count_right as double);
+    right_val = sum_right / ((count_right).toDouble());
   }
     double error = 0.0;
     i = 0;
     while (i < n_samples) {
     double pred = (features[i][j] <= t ? left_val : right_val);
     double diff = residuals[i] - pred;
-    error = error + diff * diff;
+    _error = _error + diff * diff;
     i = i + 1;
   }
-    if (error < best_error) {
-    best_error = error;
+    if (_error < best_error) {
+    best_error = _error;
     best_feature = j;
     best_threshold = t;
     best_left = left_val;
@@ -202,7 +207,7 @@ double accuracy(List<double> preds, List<double> target) {
   }
     i = i + 1;
   }
-  return (correct as double) / (n as double);
+  return ((correct).toDouble()) / ((n).toDouble());
 }
 
 List<List<double>> features = [[1.0], [2.0], [3.0], [4.0]];
@@ -217,7 +222,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print("Accuracy: " + (acc).toString());
+  print("Accuracy: " + _str(acc));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Point {
   int x;
@@ -112,7 +117,7 @@ List<Point> astar(int x_limit, int y_limit, Point start, Point goal) {
   }
     List<Point> neighbours = get_neighbours(current.pos, x_limit, y_limit);
     for (Point np in neighbours) {
-    if (closed.contains(np)) {
+    if (contains(closed, np)) {
     continue;
   }
     int g = current.g + 1;
@@ -157,7 +162,7 @@ List<List<int>> create_world(int x_limit, int y_limit) {
     row = [...row, 0];
     j = j + 1;
   }
-    world = ([...world, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    world = ([...world, row] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return world;
@@ -171,7 +176,7 @@ void mark_path(List<List<int>> world, List<Point> path) {
 
 void print_world(List<List<int>> world) {
   for (List<int> row in world) {
-    print((row).toString());
+    print(_str(row));
   }
 }
 
@@ -188,7 +193,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print("path from (" + (start.x).toString() + ", " + (start.y).toString() + ") to (" + (goal.x).toString() + ", " + (goal.y).toString() + ")");
+  print("path from (" + _str(start.x) + ", " + _str(start.y) + ") to (" + _str(goal.x) + ", " + _str(goal.y) + ")");
   mark_path(world, path);
   print_world(world);
   _benchSw.stop();

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class LU {
@@ -49,7 +59,7 @@ LU lu_decomposition(List<List<double>> mat) {
   }
   int m = mat[0].length;
   if (n != m) {
-    throw Exception("Matrix must be square");
+    _error("Matrix must be square");
   }
   List<List<double>> lower = <List<double>>[];
   List<List<double>> upper = <List<double>>[];
@@ -63,8 +73,8 @@ LU lu_decomposition(List<List<double>> mat) {
     urow = [...urow, 0.0];
     j = j + 1;
   }
-    lower = ([...lower, lrow] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
-    upper = ([...upper, urow] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    lower = ([...lower, lrow] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
+    upper = ([...upper, urow] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   i = 0;
@@ -78,7 +88,7 @@ LU lu_decomposition(List<List<double>> mat) {
     k = k + 1;
   }
     if (upper[j1][j1] == 0.0) {
-    throw Exception("No LU decomposition exists");
+    _error("No LU decomposition exists");
   }
     while (lower[i]!.length <= j1) { lower[i]!.add(0); } lower[i]![j1] = (mat[i][j1] - total) / upper[j1][j1];
     j1 = j1 + 1;
@@ -106,7 +116,7 @@ void print_matrix(List<List<double>> mat) {
     String line = "";
     int j = 0;
     while (j < mat[i].length) {
-    line = line + (mat[i][j]).toString();
+    line = line + _str(mat[i][j]);
     if (j + 1 < mat[i].length) {
     line = line + " ";
   }

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String int_to_string(int n) {
@@ -66,17 +69,17 @@ String float_to_string(double x, int dec) {
     neg = true;
     _num = -_num;
   }
-  int int_part = _num as int;
+  int int_part = (_num).toInt();
   String res = int_to_string(int_part);
   if (dec > 0) {
     res = res + ".";
-    double frac = _num - (int_part as double);
+    double frac = _num - ((int_part).toDouble());
     int i = 0;
     while (i < dec) {
     frac = frac * 10.0;
-    int digit = frac as int;
+    int digit = (frac).toInt();
     res = res + _substr("0123456789", digit, digit + 1);
-    frac = frac - (digit as double);
+    frac = frac - ((digit).toDouble());
     i = i + 1;
   };
   }
@@ -142,7 +145,7 @@ List<double> vector_scalar_mul(List<int> v, double s) {
   List<double> res = <double>[];
   int i = 0;
   while (i < v.length) {
-    res = [...res, (v[i] as double) * s];
+    res = [...res, ((v[i]).toDouble()) * s];
     i = i + 1;
   }
   return res;
@@ -185,7 +188,7 @@ double euclidean_length(List<int> v) {
   double sum = 0.0;
   int i = 0;
   while (i < v.length) {
-    double val = v[i] as double;
+    double val = (v[i]).toDouble();
     sum = sum + val * val;
     i = i + 1;
   }
@@ -264,7 +267,7 @@ List<List<int>> submatrix(List<List<int>> m, int row, int col) {
   }
     j = j + 1;
   };
-    res = ([...res, r] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    res = ([...res, r] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
     i = i + 1;
   }
@@ -331,7 +334,7 @@ List<List<int>> matrix_mul_scalar(List<List<int>> m, int s) {
     row = [...row, m[i][j] * s];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return res;
@@ -355,7 +358,7 @@ List<List<int>> matrix_add(List<List<int>> a, List<List<int>> b) {
     row = [...row, a[i][j] + b[i][j]];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return res;
@@ -371,7 +374,7 @@ List<List<int>> matrix_sub(List<List<int>> a, List<List<int>> b) {
     row = [...row, a[i][j] - b[i][j]];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return res;
@@ -381,7 +384,7 @@ List<List<int>> square_zero_matrix(int n) {
   List<List<int>> m = <List<int>>[];
   int i = 0;
   while (i < n) {
-    m = ([...m, zero_vector(n)] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    m = ([...m, zero_vector(n)] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return m;

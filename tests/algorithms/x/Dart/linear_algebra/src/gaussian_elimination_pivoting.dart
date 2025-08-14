@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 void panic(String msg) {
@@ -58,7 +68,7 @@ List<List<double>> copy_matrix(List<List<double>> src) {
     row = [...row, row_src[j]];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return res;
@@ -69,7 +79,7 @@ List<double> solve_linear_system(List<List<double>> matrix) {
   int num_rows = ab.length;
   int num_cols = ab[0].length - 1;
   if (num_rows != num_cols) {
-    throw Exception("Matrix is not square");
+    _error("Matrix is not square");
     return List<double>.from([]);
   }
   int column_num = 0;
@@ -84,7 +94,7 @@ List<double> solve_linear_system(List<List<double>> matrix) {
     i = i + 1;
   }
     if (abs_float(ab[column_num][column_num]) < 0.00000001) {
-    throw Exception("Matrix is singular");
+    _error("Matrix is singular");
     return List<double>.from([]);
   }
     if (column_num != 0) {
@@ -131,8 +141,8 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   print("Matrix:");
-  print((example_matrix).toString());
-  print((solution).toString());
+  print(_str(example_matrix));
+  print(_str(solution));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

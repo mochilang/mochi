@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 double expApprox(double x) {
@@ -47,7 +50,7 @@ double expApprox(double x) {
   double sum = 1.0;
   int n = 1;
   while (n < 30) {
-    term = term * y / (n as double);
+    term = term * y / ((n).toDouble());
     sum = sum + term;
     n = n + 1;
   }
@@ -101,7 +104,7 @@ List<double> logistic_reg(double alpha, List<List<double>> x, List<double> y, in
   }
     int k2 = 0;
     while (k2 < n) {
-    while (theta.length <= k2) { theta.add(0); } theta[k2] = theta[k2] - alpha * grad[k2] / (m as double);
+    while (theta.length <= k2) { theta.add(0); } theta[k2] = theta[k2] - alpha * grad[k2] / ((m).toDouble());
     k2 = k2 + 1;
   }
     iter = iter + 1;

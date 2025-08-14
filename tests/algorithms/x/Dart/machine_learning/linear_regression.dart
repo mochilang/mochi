@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 double dot(List<double> x, List<double> y) {
   double sum = 0.0;
@@ -59,7 +64,7 @@ List<double> run_steep_gradient_descent(List<List<double>> data_x, List<double> 
     double error = prediction - data_y[i];
     int k = 0;
     while (k < theta.length) {
-    while (gradients.length <= k) { gradients.add(0); } gradients[k] = gradients[k] + error * data_x[i][k];
+    while (gradients.length <= k) { gradients.add(0); } gradients[k] = gradients[k] + _error * data_x[i][k];
     k = k + 1;
   }
     i = i + 1;
@@ -100,7 +105,7 @@ List<double> run_linear_regression(List<List<double>> data_x, List<double> data_
   while (iter < iterations) {
     theta = run_steep_gradient_descent(data_x, data_y, len_data, alpha, theta);
     double error = sum_of_square_error(data_x, data_y, len_data, theta);
-    print("At Iteration " + (iter + 1).toString() + " - Error is " + (error).toString());
+    print("At Iteration " + _str(iter + 1) + " - Error is " + _str(_error));
     iter = iter + 1;
   }
   return theta;
@@ -141,10 +146,10 @@ void main() {
   var _benchSw = Stopwatch()..start();
   print("Resultant Feature vector :");
   while (i < theta.length) {
-    print((theta[i]).toString());
+    print(_str(theta[i]));
     i = i + 1;
   }
-  print("Mean Absolute Error : " + (mae).toString());
+  print("Mean Absolute Error : " + _str(mae));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,15 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 
@@ -53,7 +61,7 @@ double expApprox(double x) {
   double term = 1.0;
   int n = 1;
   while (n < 20) {
-    term = term * x / (n as double);
+    term = term * x / ((n).toDouble());
     sum = sum + term;
     n = n + 1;
   }
@@ -72,7 +80,7 @@ List<List<double>> transpose(List<List<double>> mat) {
     row = [...row, mat[j][i]];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return res;
@@ -97,7 +105,7 @@ List<List<double>> matMul(List<List<double>> a, List<List<double>> b) {
     row = [...row, sum];
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ([...res, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return res;
@@ -123,14 +131,14 @@ List<List<double>> matInv(List<List<double>> mat) {
   }
     j = j + 1;
   }
-    aug = ([...aug, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    aug = ([...aug, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   int col = 0;
   while (col < n) {
     double pivot = aug[col][col];
     if (pivot == 0.0) {
-    throw Exception("Matrix is singular");
+    _error("Matrix is singular");
   }
     int j = 0;
     while (j < 2 * n) {
@@ -160,7 +168,7 @@ List<List<double>> matInv(List<List<double>> mat) {
     row = [...row, aug[i][j + n]];
     j = j + 1;
   }
-    inv = ([...inv, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    inv = ([...inv, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return inv;
@@ -181,7 +189,7 @@ List<List<double>> weight_matrix(List<double> point, List<List<double>> x_train,
   }
     j = j + 1;
   }
-    weights = ([...weights, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    weights = ([...weights, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   int j = 0;
@@ -208,7 +216,7 @@ List<List<double>> local_weight(List<double> point, List<List<double>> x_train, 
   List<List<double>> y_col = <List<double>>[];
   int i = 0;
   while (i < y_train.length) {
-    y_col = ([...y_col, [y_train[i]]] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    y_col = ([...y_col, [y_train[i]]] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   List<List<double>> x_t_w_y = matMul(x_t_w, y_col);

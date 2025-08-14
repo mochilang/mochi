@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Dual {
   double value;
@@ -82,10 +87,10 @@ void _main() {
   Dual c = add(a, b);
   Dual d = mul(a, b);
   Dual e = div(c, d);
-  print((e.deriv).toString());
+  print(_str(e.deriv));
   Dual x = dual(2.0, 1.0);
   Dual y = power(x, 3);
-  print((y.deriv).toString());
+  print(_str(y.deriv));
 }
 
 void _start() {

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 List<List<double>> retroactive_resolution(List<List<double>> coefficients, List<List<double>> vector) {
@@ -43,7 +46,7 @@ List<List<double>> retroactive_resolution(List<List<double>> coefficients, List<
   while (i < rows) {
     List<double> inner = <double>[];
     inner = [...inner, 0.0];
-    x = ([...x, inner] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    x = ([...x, inner] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   int r = rows - 1;
@@ -64,7 +67,7 @@ List<List<double>> gaussian_elimination(List<List<double>> coefficients, List<Li
   int rows = coefficients.length;
   int columns = coefficients[0].length;
   if (rows != columns) {
-    return ([] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    return ([] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
   }
   List<List<double>> augmented = <List<double>>[];
   int i = 0;
@@ -76,7 +79,7 @@ List<List<double>> gaussian_elimination(List<List<double>> coefficients, List<Li
     j = j + 1;
   }
     row = [...row, vector[i][0]];
-    augmented = ([...augmented, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    augmented = ([...augmented, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   int row_idx = 0;
@@ -104,8 +107,8 @@ List<List<double>> gaussian_elimination(List<List<double>> coefficients, List<Li
     row = [...row, augmented[r][c]];
     c = c + 1;
   }
-    coeffs = ([...coeffs, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
-    vec = ([...vec, [augmented[r][columns]]] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    coeffs = ([...coeffs, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
+    vec = ([...vec, [augmented[r][columns]]] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     r = r + 1;
   }
   List<List<double>> x = retroactive_resolution(coeffs, vec);

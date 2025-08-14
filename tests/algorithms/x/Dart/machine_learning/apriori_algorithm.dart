@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Itemset {
   List<String> items;
@@ -101,7 +106,7 @@ List<List<String>> slice_list(List<List<String>> xs, int start) {
   List<List<String>> res = <List<String>>[];
   int i = start;
   while (i < xs.length) {
-    res = ([...res, xs[i]] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    res = ([...res, xs[i]] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
     i = i + 1;
   }
   return res;
@@ -120,19 +125,19 @@ List<List<List<String>>> combinations_lists(List<List<String>> xs, int k) {
     List<List<List<String>>> tail_combos = combinations_lists(tail, k - 1);
     for (List<List<String>> combo in tail_combos) {
     List<List<String>> new_combo = <List<String>>[];
-    new_combo = ([...new_combo, head] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    new_combo = ([...new_combo, head] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
     for (List<String> c in combo) {
-    new_combo = ([...new_combo, c] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    new_combo = ([...new_combo, c] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
   }
-    result = ([...result, new_combo] as List).map((e) => ((e as List).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
+    result = ([...result, new_combo] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
   }
     i = i + 1;
   }
   return result;
 }
 
-List<List<List<String>>> prune(List<List<String>> itemset, List<List<List<String>>> candidates, int length) {
-  List<List<List<String>>> pruned = <List<List<String>>>[];
+List<List<String>> prune(List<List<String>> itemset, List<List<List<String>>> candidates, int length) {
+  List<List<String>> pruned = <List<String>>[];
   for (List<List<String>> candidate in candidates) {
     bool is_subsequence = true;
     for (List<String> item in candidate) {
@@ -142,7 +147,15 @@ List<List<List<String>>> prune(List<List<String>> itemset, List<List<List<String
   }
   }
     if (is_subsequence) {
-    pruned = ([...pruned, candidate] as List).map((e) => ((e as List).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
+    List<String> merged = <String>[];
+    for (List<String> item in candidate) {
+    for (String s in item) {
+    if (!contains_string(merged, s)) {
+    merged = [...merged, s];
+  }
+  }
+  };
+    pruned = ([...pruned, merged] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
   }
   }
   return pruned;
@@ -190,7 +203,7 @@ List<Itemset> apriori(List<List<String>> data, int min_support) {
     for (String v in transaction) {
     t = [...t, v];
   }
-    itemset = ([...itemset, t] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    itemset = ([...itemset, t] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
   }
   List<Itemset> frequent = <Itemset>[];
   int length = 1;
@@ -215,7 +228,7 @@ List<Itemset> apriori(List<List<String>> data, int min_support) {
     int k = 0;
     while (k < itemset.length) {
     if (counts[k] >= min_support) {
-    new_itemset = ([...new_itemset, itemset[k]] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    new_itemset = ([...new_itemset, itemset[k]] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
   }
     k = k + 1;
   }
@@ -228,7 +241,7 @@ List<Itemset> apriori(List<List<String>> data, int min_support) {
   }
     length = length + 1;
     List<List<List<String>>> combos = combinations_lists(itemset, length);
-    itemset = (prune(itemset, combos, length) as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    itemset = prune(itemset, combos, length);
   }
   return frequent;
 }
@@ -242,7 +255,7 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   for (Itemset fi in frequent_itemsets) {
-    print(itemset_to_string(fi.items) + ": " + (fi.support).toString());
+    print(itemset_to_string(fi.items) + ": " + _str(fi.support));
   }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

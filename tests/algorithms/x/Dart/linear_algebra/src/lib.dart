@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 class Vector {
   List<double> components;
@@ -78,8 +83,8 @@ double arcsin_taylor(double x) {
   double sum = x;
   int n = 1;
   while (n < 10) {
-    double _num = (2.0 * (n as double) - 1.0) * (2.0 * (n as double) - 1.0) * x * x * term;
-    double den = 2.0 * (n as double) * (2.0 * (n as double) + 1.0);
+    double _num = (2.0 * ((n).toDouble()) - 1.0) * (2.0 * ((n).toDouble()) - 1.0) * x * x * term;
+    double den = 2.0 * ((n).toDouble()) * (2.0 * ((n).toDouble()) + 1.0);
     term = _num / den;
     sum = sum + term;
     n = n + 1;
@@ -99,7 +104,7 @@ String vector_to_string(Vector v) {
   String s = "(";
   int i = 0;
   while (i < v.components.length) {
-    s = s + (v.components[i]).toString();
+    s = s + _str(v.components[i]);
     if (i < v.components.length - 1) {
     s = s + ",";
   }
@@ -248,7 +253,7 @@ Vector random_vector(int n, int a, int b) {
   List<double> res = <double>[];
   int i = 0;
   while (i < n) {
-    res = [...res, random_int(a, b) as double];
+    res = [...res, (random_int(a, b)).toDouble()];
     i = i + 1;
   }
   return Vector(components: res);
@@ -261,7 +266,7 @@ String matrix_to_string(Matrix m) {
     ans = ans + "|";
     int j = 0;
     while (j < m.width) {
-    ans = ans + (m.data[i][j]).toString();
+    ans = ans + _str(m.data[i][j]);
     if (j < m.width - 1) {
     ans = ans + ",";
   }
@@ -286,7 +291,7 @@ Matrix matrix_add(Matrix a, Matrix b) {
     row = [...row, a.data[i][j] + b.data[i][j]];
     j = j + 1;
   }
-    mat = ([...mat, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    mat = ([...mat, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: mat, width: a.width, height: a.height);
@@ -305,7 +310,7 @@ Matrix matrix_sub(Matrix a, Matrix b) {
     row = [...row, a.data[i][j] - b.data[i][j]];
     j = j + 1;
   }
-    mat = ([...mat, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    mat = ([...mat, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: mat, width: a.width, height: a.height);
@@ -340,7 +345,7 @@ Matrix matrix_mul_scalar(Matrix m, double s) {
     row = [...row, m.data[i][j] * s];
     j = j + 1;
   }
-    mat = ([...mat, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    mat = ([...mat, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: mat, width: m.width, height: m.height);
@@ -372,7 +377,7 @@ double matrix_minor(Matrix m, int x, int y) {
   }
     j = j + 1;
   };
-    minor = ([...minor, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    minor = ([...minor, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
   }
     i = i + 1;
   }
@@ -417,7 +422,7 @@ Matrix square_zero_matrix(int n) {
     row = [...row, 0.0];
     j = j + 1;
   }
-    mat = ([...mat, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    mat = ([...mat, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: mat, width: n, height: n);
@@ -430,10 +435,10 @@ Matrix random_matrix(int w, int h, int a, int b) {
     List<double> row = <double>[];
     int j = 0;
     while (j < w) {
-    row = [...row, random_int(a, b) as double];
+    row = [...row, (random_int(a, b)).toDouble()];
     j = j + 1;
   }
-    mat = ([...mat, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    mat = ([...mat, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return Matrix(data: mat, width: w, height: h);
@@ -443,10 +448,10 @@ void _main() {
   Vector v1 = Vector(components: [1.0, 2.0, 3.0]);
   Vector v2 = Vector(components: [4.0, 5.0, 6.0]);
   print(vector_to_string(vector_add(v1, v2)));
-  print((vector_dot(v1, v2)).toString());
-  print((vector_euclidean_length(v1)).toString());
+  print(_str(vector_dot(v1, v2)));
+  print(_str(vector_euclidean_length(v1)));
   Matrix m = Matrix(data: [[1.0, 2.0], [3.0, 4.0]], width: 2, height: 2);
-  print((matrix_determinant(m)).toString());
+  print(_str(matrix_determinant(m)));
 }
 
 void _start() {

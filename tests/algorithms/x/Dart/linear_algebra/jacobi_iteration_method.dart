@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,15 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double absf(double x) {
@@ -53,7 +61,7 @@ bool strictly_diagonally_dominant(List<List<double>> matrix) {
     j = j + 1;
   }
     if (absf(matrix[i][i]) <= sum) {
-    throw Exception("Coefficient matrix is not strictly diagonally dominant");
+    _error("Coefficient matrix is not strictly diagonally dominant");
   }
     i = i + 1;
   }
@@ -63,23 +71,23 @@ bool strictly_diagonally_dominant(List<List<double>> matrix) {
 List<double> jacobi_iteration_method(List<List<double>> coefficient, List<double> constant, List<double> init_val, int iterations) {
   int n = coefficient.length;
   if (n == 0) {
-    throw Exception("Coefficient matrix cannot be empty");
+    _error("Coefficient matrix cannot be empty");
   }
   if (constant.length != n) {
-    throw Exception("Constant vector length must equal number of rows in coefficient matrix");
+    _error("Constant vector length must equal number of rows in coefficient matrix");
   }
   if (init_val.length != n) {
-    throw Exception("Initial values count must match matrix size");
+    _error("Initial values count must match matrix size");
   }
   int r = 0;
   while (r < n) {
     if (coefficient[r].length != n) {
-    throw Exception("Coefficient matrix must be square");
+    _error("Coefficient matrix must be square");
   }
     r = r + 1;
   }
   if (iterations <= 0) {
-    throw Exception("Iterations must be at least 1");
+    _error("Iterations must be at least 1");
   }
   strictly_diagonally_dominant(coefficient);
   List<double> x = init_val;

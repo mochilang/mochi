@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,13 +33,18 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) => v.toString();
 
 double PI = 3.141592653589793;
 double TWO_PI = 6.283185307179586;
 double _mod(double x, double m) {
-  return x - (x / m as int as double) * m;
+  return x - (((x / m).toInt()).toDouble()) * m;
 }
 
 double sin(double x) {
@@ -54,7 +59,7 @@ double sin(double x) {
 int seed = 123456789;
 double rand() {
   seed = (1103515245 * seed + 12345) % 2147483648;
-  return (seed as double) / 2147483648.0;
+  return ((seed).toDouble()) / 2147483648.0;
 }
 
 double mean(List<double> vals) {
@@ -157,9 +162,9 @@ void _main() {
     i = i + 1;
   }
   double avg_error = sum_err / test_cases.length;
-  print("Test values: " + (test_cases).toString());
-  print("Predictions: " + (predictions).toString());
-  print("Average error: " + (avg_error).toString());
+  print("Test values: " + _str(test_cases));
+  print("Predictions: " + _str(predictions));
+  print("Average error: " + _str(avg_error));
 }
 
 void _start() {
