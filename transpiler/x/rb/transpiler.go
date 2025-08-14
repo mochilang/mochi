@@ -85,6 +85,7 @@ end
 
 const helperAppend = `
 def _append(arr, x)
+  x = x.clone if x.is_a?(Array)
   (arr || []) + [x]
 end
 `
