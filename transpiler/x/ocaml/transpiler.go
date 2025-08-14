@@ -4938,34 +4938,36 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
                        if ft, ok := mapFieldType(typ, op.Field.Name); ok {
                                expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn, KeyTyp: "string"}
                                typ = ft
-                               if dyn && strings.HasPrefix(ft, "map") {
-                                       typ = "map"
-                               }
                        } else {
                                expr = &MapIndexExpr{Map: expr, Key: key, Typ: "", Dyn: true, KeyTyp: "string"}
                                typ = ""
                        }
 			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.End == nil && op.Index.Step == nil:
-			idxExpr, idxTyp, err := convertExpr(op.Index.Start, env, vars)
-			if err != nil {
-				return nil, "", err
-			}
-			dyn := isDynamicMapType(typ)
-			if sl, ok := idxExpr.(*StringLit); ok {
-				if ft, ok := mapFieldType(typ, sl.Value); ok {
-					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft, Dyn: dyn, KeyTyp: "string"}
-					typ = ft
-				} else if strings.HasPrefix(typ, "map-") {
-					valTyp := strings.TrimPrefix(typ, "map-")
-					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
-					typ = valTyp
-				} else {
-					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "", Dyn: true, KeyTyp: "string"}
-					typ = ""
-				}
-			} else if strings.HasPrefix(typ, "map-") {
-				valTyp := strings.TrimPrefix(typ, "map-")
+                       idxExpr, idxTyp, err := convertExpr(op.Index.Start, env, vars)
+                       if err != nil {
+                               return nil, "", err
+                       }
+                       dyn := isDynamicMapType(typ)
+                       if !dyn {
+                               if mi, ok := expr.(*MapIndexExpr); ok && mi.Dyn {
+                                       dyn = true
+                               }
+                       }
+                       if sl, ok := idxExpr.(*StringLit); ok {
+                               if ft, ok := mapFieldType(typ, sl.Value); ok {
+                                       expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft, Dyn: dyn, KeyTyp: "string"}
+                                       typ = ft
+                               } else if strings.HasPrefix(typ, "map-") {
+                                       valTyp := strings.TrimPrefix(typ, "map-")
+                                       expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
+                                       typ = valTyp
+                               } else {
+                                       expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "", Dyn: true, KeyTyp: "string"}
+                                       typ = ""
+                               }
+                       } else if strings.HasPrefix(typ, "map-") {
+                               valTyp := strings.TrimPrefix(typ, "map-")
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: idxTyp}
 				typ = valTyp
 			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
@@ -6192,18 +6194,20 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &AbsBuiltin{Value: val, Typ: resTyp}, resTyp, nil
 	}
-	if c.Func == "floor" && len(c.Args) == 1 {
-		arg, typ, err := convertExpr(c.Args[0], env, vars)
-		if err != nil {
-			return nil, "", err
-		}
-		if typ == "int" {
-			arg = &CastExpr{Expr: arg, Type: "int_to_float"}
-		} else if typ != "float" {
-			return nil, "", fmt.Errorf("floor expects numeric")
-		}
-		return &FuncCall{Name: "floor", Args: []Expr{arg}, Ret: "float"}, "float", nil
-	}
+       if c.Func == "floor" && len(c.Args) == 1 {
+               if _, ok := env.GetFunc("floor"); !ok {
+                       arg, typ, err := convertExpr(c.Args[0], env, vars)
+                       if err != nil {
+                               return nil, "", err
+                       }
+                       if typ == "int" {
+                               arg = &CastExpr{Expr: arg, Type: "int_to_float"}
+                       } else if typ != "float" {
+                               return nil, "", fmt.Errorf("floor expects numeric")
+                       }
+                       return &FuncCall{Name: "floor", Args: []Expr{arg}, Ret: "float"}, "float", nil
+               }
+       }
 	if c.Func == "int" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
