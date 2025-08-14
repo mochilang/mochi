@@ -2218,12 +2218,24 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	needsMD5 = false
 	useNow = false
 	useLookupHost = false
+	replaceContinue = false
+	loopCounter = 0
+	breakStack = nil
+	continueStack = nil
+	needsPadStart = false
+	needsSHA256 = false
+	needsRepeat = false
+	needsParseIntStr = false
+	needsEnviron = false
 	needsSubprocess = false
+	needsStr = false
 	mapEntryTypes = make(map[string]map[string]string)
 	builtinAliases = map[string]string{"Object": "js_object"}
 	localVarTypes = make(map[string]string)
 	fieldStructs = make(map[string]string)
 	varDecls = make(map[string]*VarStmt)
+	returnTypeStack = nil
+	funCtxStack = nil
 	assignedVars = make(map[string]bool)
 	gatherAssigned(prog.Statements, assignedVars)
 	for _, st := range prog.Statements {
