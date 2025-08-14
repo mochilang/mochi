@@ -2502,7 +2502,7 @@ func precomputeFuncInfo(p *parser.Program, env *types.Env) {
 			ptrMap := map[int]bool{}
 			for i, p := range fn.Params {
 				if t, err := child.GetVar(p.Name); err == nil {
-					if _, ok := t.(types.StructType); ok && paramNeedsPointer(p.Name, body) {
+					if _, ok := t.(types.StructType); ok && paramNeedsPointer(p.Name, body) && !returnsParam(p.Name, body) {
 						ptrMap[i] = true
 					}
 				}
@@ -3518,6 +3518,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if ll, ok := val.(*ListLit); ok {
 			updateListLitType(ll, tgtType)
+		}
+		if fe, ok := target.(*FieldExpr); ok {
+			if ix, ok := fe.X.(*IndexExpr); ok && ix.AllowNegative {
+				if vr, ok := ix.X.(*VarRef); ok {
+					usesSetIndex = true
+					tmpName := fmt.Sprintf("_tmp%d", structCount)
+					structCount++
+					decl := &VarDecl{Name: tmpName, Value: &IndexExpr{X: ix.X, Index: ix.Index, AllowNegative: ix.AllowNegative}}
+					setField := &SetStmt{Target: &FieldExpr{X: &VarRef{Name: tmpName}, Name: fe.Name}, Value: val}
+					setIdx := &IndexAssignStmt{Name: vr.Name, Index: ix.Index, Value: &VarRef{Name: tmpName}, AllowNegative: ix.AllowNegative}
+					return &StmtList{List: []Stmt{decl, setField, setIdx}}, nil
+				}
+			}
 		}
 		return &SetStmt{Target: target, Value: val}, nil
 	case st.If != nil:
@@ -5047,7 +5060,7 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	for i, p := range fn.Params {
 		if t, err := child.GetVar(p.Name); err == nil {
 			if _, ok := t.(types.StructType); ok {
-				if paramNeedsPointer(p.Name, body) {
+				if paramNeedsPointer(p.Name, body) && !returnsParam(p.Name, body) {
 					ptrParams[i] = true
 				}
 			}
@@ -5140,6 +5153,12 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	if name == "fmt" {
 		name = "fmt_"
+	}
+	if name == "len" {
+		name = "len_"
+	}
+	if name == "init" {
+		name = "init_"
 	}
 	name = safeName(name)
 	if _, ok := imports[name]; ok {
@@ -6364,6 +6383,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			name = "len"
 		case "len":
+			if len(args) == 0 {
+				// user-defined len with no arguments
+				return &CallExpr{Func: name, Args: nil}, nil
+			}
 			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
 				usesLenAny = true
 				return &CallExpr{Func: "_len", Args: []Expr{args[0]}}, nil
@@ -8711,6 +8734,46 @@ func paramNeedsPointer(name string, stmts []Stmt) bool {
 			}
 		case *StmtList:
 			if paramNeedsPointer(name, s.List) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func returnsParam(name string, stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ReturnStmt:
+			if exprUses(name, s.Value) {
+				return true
+			}
+		case *IfStmt:
+			if returnsParam(name, s.Then) || returnsParam(name, s.Else) {
+				return true
+			}
+		case *WhileStmt:
+			if returnsParam(name, s.Body) {
+				return true
+			}
+		case *ForRangeStmt:
+			if returnsParam(name, s.Body) {
+				return true
+			}
+		case *ForEachStmt:
+			if returnsParam(name, s.Body) {
+				return true
+			}
+		case *BenchStmt:
+			if returnsParam(name, s.Body) {
+				return true
+			}
+		case *TestBlockStmt:
+			if returnsParam(name, s.Body) {
+				return true
+			}
+		case *StmtList:
+			if returnsParam(name, s.List) {
 				return true
 			}
 		}
