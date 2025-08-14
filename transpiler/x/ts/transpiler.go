@@ -1837,13 +1837,18 @@ func (f *ForRangeStmt) emit(w io.Writer) {
 func (f *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (const ")
 	io.WriteString(w, safeName(f.Name))
-	if f.Keys {
-		io.WriteString(w, " in ")
-	} else {
-		io.WriteString(w, " of ")
-	}
+	io.WriteString(w, " of ")
 	if f.Iterable != nil {
+		useKeys = true
+		io.WriteString(w, "(Array.isArray(")
 		f.Iterable.emit(w)
+		io.WriteString(w, ") || typeof ")
+		f.Iterable.emit(w)
+		io.WriteString(w, " === 'string' ? ")
+		f.Iterable.emit(w)
+		io.WriteString(w, " : _keys(")
+		f.Iterable.emit(w)
+		io.WriteString(w, "))")
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range f.Body {
@@ -3378,31 +3383,31 @@ func isIntType(t types.Type) bool {
 }
 
 func isIntLitExpr(e Expr) bool {
-        switch v := e.(type) {
-        case *NumberLit:
-                return !strings.Contains(v.Value, ".")
-        case *UnaryExpr:
-                if v.Op == "-" {
-                        if lit, ok := v.Expr.(*NumberLit); ok {
-                                return !strings.Contains(lit.Value, ".")
-                        }
-                }
-        }
-        return false
+	switch v := e.(type) {
+	case *NumberLit:
+		return !strings.Contains(v.Value, ".")
+	case *UnaryExpr:
+		if v.Op == "-" {
+			if lit, ok := v.Expr.(*NumberLit); ok {
+				return !strings.Contains(lit.Value, ".")
+			}
+		}
+	}
+	return false
 }
 
 func isFloatLitExpr(e Expr) bool {
-        switch v := e.(type) {
-        case *NumberLit:
-                return strings.Contains(v.Value, ".")
-        case *UnaryExpr:
-                if v.Op == "-" {
-                        if lit, ok := v.Expr.(*NumberLit); ok {
-                                return strings.Contains(lit.Value, ".")
-                        }
-                }
-        }
-        return false
+	switch v := e.(type) {
+	case *NumberLit:
+		return strings.Contains(v.Value, ".")
+	case *UnaryExpr:
+		if v.Op == "-" {
+			if lit, ok := v.Expr.(*NumberLit); ok {
+				return strings.Contains(lit.Value, ".")
+			}
+		}
+	}
+	return false
 }
 
 func isVarIntExpr(e Expr) bool {
@@ -3415,34 +3420,34 @@ func isVarIntExpr(e Expr) bool {
 }
 
 func isBigIntExpr(e Expr) bool {
-        switch v := e.(type) {
-        case *CallExpr:
-                return v.Func == "BigInt"
-        case *NumberLit:
-                return strings.HasSuffix(v.Value, "n")
-        case *IntDivExpr:
-                return v.Big
-        }
-        return false
+	switch v := e.(type) {
+	case *CallExpr:
+		return v.Func == "BigInt"
+	case *NumberLit:
+		return strings.HasSuffix(v.Value, "n")
+	case *IntDivExpr:
+		return v.Big
+	}
+	return false
 }
 
 // adjustNumericType coerces numeric literals that lack decimal points to int type.
 func adjustNumericType(e Expr, t types.Type) types.Type {
-        switch v := e.(type) {
-        case *NumberLit:
-                if !strings.ContainsAny(v.Value, ".eE") {
-                        return types.IntType{}
-                }
-        case *UnaryExpr:
-                if v.Op == "-" {
-                        if lit, ok := v.Expr.(*NumberLit); ok {
-                                if !strings.ContainsAny(lit.Value, ".eE") {
-                                        return types.IntType{}
-                                }
-                        }
-                }
-        }
-        return t
+	switch v := e.(type) {
+	case *NumberLit:
+		if !strings.ContainsAny(v.Value, ".eE") {
+			return types.IntType{}
+		}
+	case *UnaryExpr:
+		if v.Op == "-" {
+			if lit, ok := v.Expr.(*NumberLit); ok {
+				if !strings.ContainsAny(lit.Value, ".eE") {
+					return types.IntType{}
+				}
+			}
+		}
+	}
+	return t
 }
 
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
@@ -3454,38 +3459,38 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	opnodes := []*parser.BinaryOp{}
 	typesArr := []types.Type{}
 
-        first, err := convertUnary(b.Left)
-        if err != nil {
-                return nil, err
-        }
-        operands = append(operands, first)
-        if transpileEnv != nil {
-                t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, transpileEnv)
-                t = adjustNumericType(first, t)
-                typesArr = append(typesArr, t)
-        } else {
-                t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, nil)
-                t = adjustNumericType(first, t)
-                typesArr = append(typesArr, t)
-        }
-        for _, r := range b.Right {
-                o, err := convertPostfix(r.Right)
-                if err != nil {
-                        return nil, err
-                }
-                operands = append(operands, o)
-                ops = append(ops, r.Op)
-                opnodes = append(opnodes, r)
-                if transpileEnv != nil {
-                        t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: r.Right}}}, transpileEnv)
-                        t = adjustNumericType(o, t)
-                        typesArr = append(typesArr, t)
-                } else {
-                        t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: r.Right}}}, nil)
-                        t = adjustNumericType(o, t)
-                        typesArr = append(typesArr, t)
-                }
-        }
+	first, err := convertUnary(b.Left)
+	if err != nil {
+		return nil, err
+	}
+	operands = append(operands, first)
+	if transpileEnv != nil {
+		t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, transpileEnv)
+		t = adjustNumericType(first, t)
+		typesArr = append(typesArr, t)
+	} else {
+		t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, nil)
+		t = adjustNumericType(first, t)
+		typesArr = append(typesArr, t)
+	}
+	for _, r := range b.Right {
+		o, err := convertPostfix(r.Right)
+		if err != nil {
+			return nil, err
+		}
+		operands = append(operands, o)
+		ops = append(ops, r.Op)
+		opnodes = append(opnodes, r)
+		if transpileEnv != nil {
+			t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: r.Right}}}, transpileEnv)
+			t = adjustNumericType(o, t)
+			typesArr = append(typesArr, t)
+		} else {
+			t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: r.Right}}}, nil)
+			t = adjustNumericType(o, t)
+			typesArr = append(typesArr, t)
+		}
+	}
 
 	levels := [][]string{
 		{"*", "/", "%"},
@@ -3579,7 +3584,10 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			if isMap {
 				operands[i] = &BinaryExpr{Left: operands[i], Op: "in", Right: operands[i+1]}
 			} else {
-				operands[i] = &MethodCallExpr{Target: operands[i+1], Method: "includes", Args: []Expr{operands[i]}}
+				cond := &CallExpr{Func: "Array.isArray", Args: []Expr{operands[i+1]}}
+				thenExpr := &MethodCallExpr{Target: operands[i+1], Method: "includes", Args: []Expr{operands[i]}}
+				elseExpr := &BinaryExpr{Left: operands[i], Op: "in", Right: operands[i+1]}
+				operands[i] = &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
 			}
 		case "union":
 			if opnodes[i].All {
@@ -3627,7 +3635,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				expr := &BinaryExpr{Left: operands[i], Op: "%", Right: operands[i+1]}
 				operands[i] = &CallExpr{Func: "Number", Args: []Expr{expr}}
 				typesArr[i] = types.IntType{}
-                        } else if ops[i] == "/" && ((isIntType(typesArr[i]) && isIntType(typesArr[i+1])) || isIntLitExpr(operands[i+1]) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
+			} else if ops[i] == "/" && ((isIntType(typesArr[i]) && isIntType(typesArr[i+1])) || isIntLitExpr(operands[i+1]) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
 				if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
 					operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1], Big: true}
 					typesArr[i] = types.BigIntType{}
@@ -3789,8 +3797,9 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 				if err != nil {
 					return nil, err
 				}
+				idxType := types.ExprType(idxExpr, transpileEnv)
 				if keyStr, isStr := literalString(idxExpr); !isStr {
-					if isMapIntKey(partial) || (!isMapExpr(partial) && !isStructExpr(partial)) {
+					if isMapIntKey(partial) || (!isMapExpr(partial) && !isStructExpr(partial) && isIntType(idxType)) {
 						if be, ok := idx.(*BinaryExpr); ok && be.Op == "*" && isMapIntKey(partial) {
 							be.Left = &CallExpr{Func: "Math.trunc", Args: []Expr{be.Left}}
 							idx = be
@@ -3801,7 +3810,7 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 				} else {
 					_ = keyStr // avoid unused variable warnings
 				}
-				raw := isMapExpr(partial) || isStructExpr(partial)
+				raw := isMapExpr(partial) || isStructExpr(partial) || !isIntType(idxType)
 				expr = &IndexExpr{Target: expr, Index: idx, Raw: raw}
 			}
 		case op.Call != nil:
@@ -4237,7 +4246,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "_has", Args: []Expr{args[0], args[1]}}, nil
 				}
 			}
-			return &MethodCallExpr{Target: args[0], Method: "includes", Args: []Expr{args[1]}}, nil
+			cond := &CallExpr{Func: "Array.isArray", Args: []Expr{args[0]}}
+			thenExpr := &MethodCallExpr{Target: args[0], Method: "includes", Args: []Expr{args[1]}}
+			elseExpr := &BinaryExpr{Left: args[1], Op: "in", Right: args[0]}
+			return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 		case "padStart":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("padStart expects three arguments")
