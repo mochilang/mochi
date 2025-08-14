@@ -72,7 +72,7 @@ ExpandResult expand_search(Map<int, List<int>> graph, List<int> queue, int head,
     v[neighbor] = true;
     p[neighbor] = current;
     q = [...q, neighbor];
-    if (opposite_visited[neighbor]) {
+    if ((opposite_visited[neighbor] ?? false)) {
     return ExpandResult(queue: q, head: head, parents: p, visited: v, intersection: neighbor, found: true);
   }
     i = i + 1;
