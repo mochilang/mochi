@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/minimum_spanning_tree_prims2.zig:73:27: error: no member named 'weight' in '[]minimum_spanning_tree_prims2.QueueNode'
+                    queue.weight = dist_var_1.get(neighbour).?;
+                          ^~~~~~
+referenced by:
+    main: /workspace/mochi/tests/algorithms/transpiler/Zig/graphs/minimum_spanning_tree_prims2.zig:137:29
+    main: /opt/zig-0.14.0/lib/std/start.zig:647:22
+    3 reference(s) hidden; use '-freference-trace=5' to see all references

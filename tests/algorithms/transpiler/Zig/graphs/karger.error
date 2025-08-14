@@ -1,0 +1,11 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/karger.zig:53:115: error: expected type 'i64', found '[]const u8'
+        contracted.put(node, blk0: { var _tmp_1 = std.ArrayList(i64).init(std.heap.page_allocator); _tmp_1.append(node) catch unreachable; break :blk0 (_tmp_1.toOwnedSlice() catch unreachable); }) catch unreachable;
+                                                                                                                  ^~~~
+/opt/zig-0.14.0/lib/std/array_list.zig:260:42: note: parameter type declared here
+        pub fn append(self: *Self, item: T) Allocator.Error!void {
+                                         ^
+referenced by:
+    main: /workspace/mochi/tests/algorithms/transpiler/Zig/graphs/karger.zig:179:37
+    main: /opt/zig-0.14.0/lib/std/start.zig:647:22
+    3 reference(s) hidden; use '-freference-trace=5' to see all references

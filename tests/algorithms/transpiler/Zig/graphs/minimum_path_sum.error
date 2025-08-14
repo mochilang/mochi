@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/minimum_path_sum.zig:34:18: error: expected '.', found '('
+        _ = error("The grid does not contain the appropriate information");
+                 ^

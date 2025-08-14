@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/kahns_algorithm_topo.zig:60:16: error: use of undeclared identifier 'Value'
+        return Value{.Null = {}};
+               ^~~~~
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/kahns_algorithm_topo.zig:115:23: error: use of undeclared identifier 'Value'
+    if (@TypeOf(v) == Value) {
+                      ^~~~~
