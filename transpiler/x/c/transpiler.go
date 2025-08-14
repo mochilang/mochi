@@ -181,6 +181,11 @@ func emitLenExpr(w io.Writer, e Expr) {
 			io.WriteString(w, vr.Name+"_lens[")
 			v.Index.emitExpr(w)
 			io.WriteString(w, "]")
+		} else if fe, ok := v.Target.(*FieldExpr); ok {
+			fe.Target.emitExpr(w)
+			io.WriteString(w, "."+fe.Name+"_lens[")
+			v.Index.emitExpr(w)
+			io.WriteString(w, "]")
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -399,6 +404,39 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 			}
 			exprs = append(exprs, a)
 		default:
+			if p.Types[i] == "" {
+				ft := inferExprType(currentEnv, a)
+				ftc := strings.ReplaceAll(ft, " ", "")
+				if strings.HasSuffix(ftc, "*") {
+					base := strings.TrimSuffix(ftc, "*")
+					switch base {
+					case "longlong":
+						writeIndent(w, indent)
+						io.WriteString(w, "puts(str_list_int(")
+						a.emitExpr(w)
+						io.WriteString(w, ", ")
+						emitLenExpr(w, a)
+						io.WriteString(w, "));\n")
+						continue
+					case "double":
+						writeIndent(w, indent)
+						io.WriteString(w, "puts(str_list_double(")
+						a.emitExpr(w)
+						io.WriteString(w, ", ")
+						emitLenExpr(w, a)
+						io.WriteString(w, "));\n")
+						continue
+					case "constchar*":
+						writeIndent(w, indent)
+						io.WriteString(w, "puts(str_list_str(")
+						a.emitExpr(w)
+						io.WriteString(w, ", ")
+						emitLenExpr(w, a)
+						io.WriteString(w, "));\n")
+						continue
+					}
+				}
+			}
 			switch p.Types[i] {
 			case "list_int":
 				writeIndent(w, indent)
@@ -2258,7 +2296,7 @@ type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emitExpr(w io.Writer) {
 	if math.Trunc(f.Value) == f.Value {
-		fmt.Fprintf(w, "%.1f", f.Value)
+		fmt.Fprintf(w, "%.0fLL", f.Value)
 	} else {
 		fmt.Fprintf(w, "%g", f.Value)
 	}
@@ -2311,7 +2349,7 @@ func (l *ListLit) emitExpr(w io.Writer) {
 		io.WriteString(w, "NULL")
 		return
 	}
-	elemType := "int"
+	elemType := "long long"
 	if t := inferExprType(currentEnv, l.Elems[0]); t != "" {
 		elemType = t
 	} else if exprIsString(l.Elems[0]) {
@@ -5475,6 +5513,45 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 									needStrListStr = true
 								}
 							}
+						}
+					}
+					if tname == "" {
+						ft := inferExprType(env, ix.Target)
+						if ft == "" {
+							ft = inferExprType(currentEnv, ix.Target)
+						}
+						ftc := strings.ReplaceAll(ft, " ", "")
+						switch {
+						case strings.HasSuffix(ftc, "**"):
+							base := strings.TrimSuffix(ftc, "**")
+							switch base {
+							case "longlong":
+								tname = "list_int"
+								needStrListInt = true
+							case "double":
+								tname = "list_double"
+								needStrListDouble = true
+							case "constchar*":
+								tname = "list_str"
+								needStrListStr = true
+							}
+						case strings.HasSuffix(ftc, "*"):
+							base := strings.TrimSuffix(ftc, "*")
+							switch base {
+							case "longlong":
+								tname = "list_int"
+								needStrListInt = true
+							case "double":
+								tname = "list_double"
+								needStrListDouble = true
+							case "constchar*":
+								tname = "list_str"
+								needStrListStr = true
+							}
+						}
+						if tname == "" {
+							tname = "list_int"
+							needStrListInt = true
 						}
 					}
 				default:
@@ -9207,6 +9284,9 @@ func inferExprType(env *types.Env, e Expr) string {
 	case *IntLit:
 		return "long long"
 	case *FloatLit:
+		if math.Trunc(v.Value) == v.Value {
+			return "long long"
+		}
 		return "double"
 	case *ListLit:
 		if len(v.Elems) > 0 {
@@ -9318,6 +9398,9 @@ func inferExprType(env *types.Env, e Expr) string {
 				return "long long"
 			}
 			return elem
+		}
+		if strings.HasSuffix(tname, "*") {
+			return strings.TrimSuffix(tname, "*")
 		}
 		if tname == "const char*" {
 			return "const char*"
