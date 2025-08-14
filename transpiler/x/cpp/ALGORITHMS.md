@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 970/1077
-Last updated: 2025-08-14 10:04 +0700
+Completed programs: 972/1077
+Last updated: 2025-08-14 10:33 +0700
 
 Checklist:
 
@@ -15,10 +15,10 @@ Checklist:
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 272.0µs | 3.57MB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 3.0µs | 3.42MB |
 | 8 | backtracking/knight_tour | ✓ | 151.0µs | 3.50MB |
-| 9 | backtracking/match_word_pattern |   |  |  |
+| 9 | backtracking/match_word_pattern | ✓ | 562.0µs | 3.52MB |
 | 10 | backtracking/minimax | ✓ | 272.0µs | 3.55MB |
 | 11 | backtracking/n_queens | ✓ | 387.0µs | 3.57MB |
-| 12 | backtracking/n_queens_math |   |  |  |
+| 12 | backtracking/n_queens_math | ✓ | 232.0µs | 3.68MB |
 | 13 | backtracking/power_sum | ✓ | 267.0µs | 3.62MB |
 | 14 | backtracking/rat_in_maze | ✓ | 291.0µs | 3.47MB |
 | 15 | backtracking/sudoku |   |  |  |
