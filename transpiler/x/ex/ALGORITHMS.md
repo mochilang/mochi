@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-14 17:16 GMT+7
+Last updated: 2025-08-14 17:53 GMT+7
 
-## Algorithms Golden Test Checklist (833/1077)
+## Algorithms Golden Test Checklist (835/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -504,10 +504,10 @@ Last updated: 2025-08-14 17:16 GMT+7
 | 495 | linear_algebra/src/transformations_2d | ✓ | 1.84ms | 18.7 MB |
 | 496 | linear_programming/simplex | ✓ | 6.18ms | 25.0 MB |
 | 497 | machine_learning/apriori_algorithm | ✓ | 7.60ms | 25.0 MB |
-| 498 | machine_learning/astar | error |  |  |
+| 498 | machine_learning/astar | ✓ |  |  |
 | 499 | machine_learning/automatic_differentiation | ✓ | 1.50ms | 17.3 MB |
 | 500 | machine_learning/data_transformations | ✓ | 6.69ms | 25.1 MB |
-| 501 | machine_learning/decision_tree | error |  |  |
+| 501 | machine_learning/decision_tree | ✓ | 346.74ms | 269.3 MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 115us | 0 B |
 | 503 | machine_learning/forecasting/run | ✓ | 8.21ms | 32.7 MB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
