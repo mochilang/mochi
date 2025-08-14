@@ -1,10 +1,27 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function contains($xs, $x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_contains($xs, $x) {
   global $demo_graph;
   $i = 0;
   while ($i < count($xs)) {
@@ -14,8 +31,8 @@ function contains($xs, $x) {
   $i = $i + 1;
 };
   return false;
-}
-function contains_key($m, $key) {
+};
+  function contains_key($m, $key) {
   global $demo_graph;
   foreach (array_keys($m) as $k) {
   if ($k == $key) {
@@ -23,8 +40,8 @@ function contains_key($m, $key) {
 }
 };
   return false;
-}
-function bfs_shortest_path($graph, $start, $goal) {
+};
+  function bfs_shortest_path($graph, $start, $goal) {
   global $demo_graph;
   $explored = [];
   $queue = [[$start]];
@@ -35,7 +52,7 @@ function bfs_shortest_path($graph, $start, $goal) {
   $path = $queue[0];
   $queue = array_slice($queue, 1, count($queue) - 1);
   $node = $path[count($path) - 1];
-  if (!contains($explored, $node)) {
+  if (!mochi_contains($explored, $node)) {
   $neighbours = $graph[$node];
   $i = 0;
   while ($i < count($neighbours)) {
@@ -52,8 +69,8 @@ function bfs_shortest_path($graph, $start, $goal) {
 }
 };
   return [];
-}
-function bfs_shortest_path_distance($graph, $start, $target) {
+};
+  function bfs_shortest_path_distance($graph, $start, $target) {
   global $demo_graph;
   if ((contains_key($graph, $start) == false) || (contains_key($graph, $target) == false)) {
   return -1;
@@ -78,7 +95,7 @@ function bfs_shortest_path_distance($graph, $start, $target) {
   $i = 0;
   while ($i < count($adj)) {
   $next = $adj[$i];
-  if (!contains($visited, $next)) {
+  if (!mochi_contains($visited, $next)) {
   $visited = _append($visited, $next);
   $queue = _append($queue, $next);
   $dist[$next] = $dist[$node] + 1;
@@ -87,5 +104,13 @@ function bfs_shortest_path_distance($graph, $start, $target) {
 };
 };
   return $dist[$target];
-}
-$demo_graph = ['A' => ['B', 'C', 'E'], 'B' => ['A', 'D', 'E'], 'C' => ['A', 'F', 'G'], 'D' => ['B'], 'E' => ['A', 'B', 'D'], 'F' => ['C'], 'G' => ['C']];
+};
+  $demo_graph = ['A' => ['B', 'C', 'E'], 'B' => ['A', 'D', 'E'], 'C' => ['A', 'F', 'G'], 'D' => ['B'], 'E' => ['A', 'B', 'D'], 'F' => ['C'], 'G' => ['C']];
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

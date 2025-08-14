@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function make_matrix($n) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function make_matrix($n) {
   global $g1, $g2, $g3, $g4, $g5, $max_node;
   $matrix = [];
   $i = 0;
@@ -35,8 +52,8 @@ function make_matrix($n) {
   $i = $i + 1;
 };
   return $matrix;
-}
-function dfs($u, $graph, &$visited_edge, $path) {
+};
+  function dfs($u, $graph, &$visited_edge, $path) {
   global $g1, $g2, $g3, $g4, $g5, $max_node;
   $path = _append($path, $u);
   if (array_key_exists($u, $graph)) {
@@ -53,8 +70,8 @@ function dfs($u, $graph, &$visited_edge, $path) {
 };
 }
   return $path;
-}
-function check_circuit_or_path($graph, $max_node) {
+};
+  function check_circuit_or_path($graph, $max_node) {
   global $g1, $g2, $g3, $g4, $g5;
   $odd_degree_nodes = 0;
   $odd_node = -1;
@@ -75,8 +92,8 @@ function check_circuit_or_path($graph, $max_node) {
   return ['status' => 2, 'odd_node' => $odd_node];
 }
   return ['status' => 3, 'odd_node' => $odd_node];
-}
-function check_euler($graph, $max_node) {
+};
+  function check_euler($graph, $max_node) {
   global $g1, $g2, $g3, $g4, $g5;
   $visited_edge = make_matrix($max_node);
   $res = check_circuit_or_path($graph, $max_node);
@@ -95,15 +112,23 @@ function check_euler($graph, $max_node) {
 }
   $path = dfs($start_node, $graph, $visited_edge, []);
   echo rtrim(_str($path)), PHP_EOL;
-}
-$g1 = [1 => [2, 3, 4], 2 => [1, 3], 3 => [1, 2], 4 => [1, 5], 5 => [4]];
-$g2 = [1 => [2, 3, 4, 5], 2 => [1, 3], 3 => [1, 2], 4 => [1, 5], 5 => [1, 4]];
-$g3 = [1 => [2, 3, 4], 2 => [1, 3, 4], 3 => [1, 2], 4 => [1, 2, 5], 5 => [4]];
-$g4 = [1 => [2, 3], 2 => [1, 3], 3 => [1, 2]];
-$g5 = [1 => [], 2 => []];
-$max_node = 10;
-check_euler($g1, $max_node);
-check_euler($g2, $max_node);
-check_euler($g3, $max_node);
-check_euler($g4, $max_node);
-check_euler($g5, $max_node);
+};
+  $g1 = [1 => [2, 3, 4], 2 => [1, 3], 3 => [1, 2], 4 => [1, 5], 5 => [4]];
+  $g2 = [1 => [2, 3, 4, 5], 2 => [1, 3], 3 => [1, 2], 4 => [1, 5], 5 => [1, 4]];
+  $g3 = [1 => [2, 3, 4], 2 => [1, 3, 4], 3 => [1, 2], 4 => [1, 2, 5], 5 => [4]];
+  $g4 = [1 => [2, 3], 2 => [1, 3], 3 => [1, 2]];
+  $g5 = [1 => [], 2 => []];
+  $max_node = 10;
+  check_euler($g1, $max_node);
+  check_euler($g2, $max_node);
+  check_euler($g3, $max_node);
+  check_euler($g4, $max_node);
+  check_euler($g5, $max_node);
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function expand_search($graph, $queue, $head, $parents, $visited, $opposite_visited) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function expand_search($graph, $queue, $head, $parents, $visited, $opposite_visited) {
   if ($head >= count($queue)) {
   return ['queue' => $queue, 'head' => $head, 'parents' => $parents, 'visited' => $visited, 'intersection' => 0 - 1, 'found' => false];
 }
@@ -46,8 +63,8 @@ function expand_search($graph, $queue, $head, $parents, $visited, $opposite_visi
   $i = $i + 1;
 };
   return ['queue' => $q, 'head' => $head, 'parents' => $p, 'visited' => $v, 'intersection' => 0 - 1, 'found' => false];
-}
-function construct_path($current, $parents) {
+};
+  function construct_path($current, $parents) {
   $path = [];
   $node = $current;
   while ($node != 0 - 1) {
@@ -55,8 +72,8 @@ function construct_path($current, $parents) {
   $node = $parents[$node];
 };
   return $path;
-}
-function reverse_list($xs) {
+};
+  function reverse_list($xs) {
   $res = [];
   $i = count($xs);
   while ($i > 0) {
@@ -64,8 +81,8 @@ function reverse_list($xs) {
   $res = _append($res, $xs[$i]);
 };
   return $res;
-}
-function bidirectional_search($g, $start, $goal) {
+};
+  function bidirectional_search($g, $start, $goal) {
   if ($start == $goal) {
   return ['path' => [$start], 'ok' => true];
 }
@@ -116,8 +133,8 @@ function bidirectional_search($g, $start, $goal) {
   $j = $j + 1;
 };
   return ['path' => $result, 'ok' => true];
-}
-function is_edge($g, $u, $v) {
+};
+  function is_edge($g, $u, $v) {
   $neighbors = $g[$u];
   $i = 0;
   while ($i < count($neighbors)) {
@@ -127,8 +144,8 @@ function is_edge($g, $u, $v) {
   $i = $i + 1;
 };
   return false;
-}
-function path_exists($g, $path) {
+};
+  function path_exists($g, $path) {
   if (count($path) == 0) {
   return false;
 }
@@ -140,20 +157,28 @@ function path_exists($g, $path) {
   $i = $i + 1;
 };
   return true;
-}
-function print_path($g, $s, $t) {
+};
+  function print_path($g, $s, $t) {
   $res = bidirectional_search($g, $s, $t);
   if ($res['ok'] && path_exists($g, $res['path'])) {
   echo rtrim('Path from ' . _str($s) . ' to ' . _str($t) . ': ' . _str($res['path'])), PHP_EOL;
 } else {
   echo rtrim('Path from ' . _str($s) . ' to ' . _str($t) . ': None'), PHP_EOL;
 }
-}
-function main() {
+};
+  function main() {
   $graph = [0 => [1, 2], 1 => [0, 3, 4], 2 => [0, 5, 6], 3 => [1, 7], 4 => [1, 8], 5 => [2, 9], 6 => [2, 10], 7 => [3, 11], 8 => [4, 11], 9 => [5, 11], 10 => [6, 11], 11 => [7, 8, 9, 10]];
   print_path($graph, 0, 11);
   print_path($graph, 5, 5);
   $disconnected = [0 => [1, 2], 1 => [0], 2 => [0], 3 => [4], 4 => [3]];
   print_path($disconnected, 0, 3);
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

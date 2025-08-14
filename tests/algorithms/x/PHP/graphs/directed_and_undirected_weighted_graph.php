@@ -16,6 +16,7 @@ function _now() {
     return hrtime(true);
 }
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -40,7 +41,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function list_contains_int($xs, $x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function list_contains_int($xs, $x) {
   $i = 0;
   while ($i < count($xs)) {
   if ($xs[$i] == $x) {
@@ -49,8 +52,8 @@ function list_contains_int($xs, $x) {
   $i = $i + 1;
 };
   return false;
-}
-function edge_exists($edges, $w, $v) {
+};
+  function edge_exists($edges, $w, $v) {
   $i = 0;
   while ($i < count($edges)) {
   if ($edges[$i][0] == $w && $edges[$i][1] == $v) {
@@ -59,20 +62,20 @@ function edge_exists($edges, $w, $v) {
   $i = $i + 1;
 };
   return false;
-}
-function first_key($m) {
+};
+  function first_key($m) {
   foreach (array_keys($m) as $k) {
   return $k;
 };
   return 0;
-}
-function rand_range($low, $high) {
+};
+  function rand_range($low, $high) {
   return (fmod(_now(), ($high - $low))) + $low;
-}
-function dg_make_graph() {
+};
+  function dg_make_graph() {
   return ['graph' => []];
-}
-function dg_add_pair(&$g, $u, $v, $w) {
+};
+  function dg_add_pair(&$g, $u, $v, $w) {
   if (isset($g['graph'][$u])) {
   $edges = $g['graph'][$u];
   if (!edge_exists($edges, $w, $v)) {
@@ -91,8 +94,8 @@ function dg_add_pair(&$g, $u, $v, $w) {
   $m1[$v] = [];
   $g['graph'] = $m1;
 }
-}
-function dg_remove_pair(&$g, $u, $v) {
+};
+  function dg_remove_pair(&$g, $u, $v) {
   if (isset($g['graph'][$u])) {
   $edges = $g['graph'][$u];
   $new_edges = [];
@@ -107,15 +110,15 @@ function dg_remove_pair(&$g, $u, $v) {
   $m[$u] = $new_edges;
   $g['graph'] = $m;
 }
-}
-function dg_all_nodes($g) {
+};
+  function dg_all_nodes($g) {
   $res = [];
   foreach (array_keys($g['graph']) as $k) {
   $res = _append($res, $k);
 };
   return $res;
-}
-function dg_dfs_util($g, $node, &$visited, $order, $d) {
+};
+  function dg_dfs_util($g, $node, &$visited, $order, $d) {
   $visited[$node] = true;
   $order = _append($order, $node);
   if ($d != (-1) && $node == $d) {
@@ -134,8 +137,8 @@ function dg_dfs_util($g, $node, &$visited, $order, $d) {
   $i = $i + 1;
 };
   return $order;
-}
-function dg_dfs($g, $s, $d) {
+};
+  function dg_dfs($g, $s, $d) {
   if ($s == $d) {
   return [];
 }
@@ -144,8 +147,8 @@ function dg_dfs($g, $s, $d) {
   $order = [];
   $order = dg_dfs_util($g, $start, $visited, $order, $d);
   return $order;
-}
-function dg_bfs($g, $s) {
+};
+  function dg_bfs($g, $s) {
   $queue = [];
   $visited = [];
   $order = [];
@@ -168,8 +171,8 @@ function dg_bfs($g, $s) {
 };
 };
   return $order;
-}
-function dg_in_degree($g, $u) {
+};
+  function dg_in_degree($g, $u) {
   $count = 0;
   foreach (array_keys($g['graph']) as $k) {
   $edges = $g['graph'][$k];
@@ -182,14 +185,14 @@ function dg_in_degree($g, $u) {
 };
 };
   return $count;
-}
-function dg_out_degree($g, $u) {
+};
+  function dg_out_degree($g, $u) {
   if (isset($g['graph'][$u])) {
   return _len($g['graph'][$u]);
 }
   return 0;
-}
-function dg_topo_util($g, $node, &$visited, $stack) {
+};
+  function dg_topo_util($g, $node, &$visited, $stack) {
   $visited[$node] = true;
   $edges = $g['graph'][$node];
   $i = 0;
@@ -202,8 +205,8 @@ function dg_topo_util($g, $node, &$visited, $stack) {
 };
   $stack = _append($stack, $node);
   return $stack;
-}
-function dg_topological_sort($g) {
+};
+  function dg_topological_sort($g) {
   $visited = [];
   $stack = [];
   foreach (array_keys($g['graph']) as $k) {
@@ -218,8 +221,8 @@ function dg_topological_sort($g) {
   $i = $i - 1;
 };
   return $res;
-}
-function dg_cycle_util($g, $node, &$visited, &$rec, $res) {
+};
+  function dg_cycle_util($g, $node, &$visited, &$rec, $res) {
   $visited[$node] = true;
   $rec[$node] = true;
   $edges = $g['graph'][$node];
@@ -242,8 +245,8 @@ function dg_cycle_util($g, $node, &$visited, &$rec, $res) {
 };
   $rec[$node] = false;
   return $res;
-}
-function dg_cycle_nodes($g) {
+};
+  function dg_cycle_nodes($g) {
   $visited = [];
   $rec = [];
   $res = [];
@@ -253,8 +256,8 @@ function dg_cycle_nodes($g) {
 }
 };
   return $res;
-}
-function dg_has_cycle_util($g, $node, &$visited, &$rec) {
+};
+  function dg_has_cycle_util($g, $node, &$visited, &$rec) {
   $visited[$node] = true;
   $rec[$node] = true;
   $edges = $g['graph'][$node];
@@ -274,8 +277,8 @@ function dg_has_cycle_util($g, $node, &$visited, &$rec) {
 };
   $rec[$node] = false;
   return false;
-}
-function dg_has_cycle($g) {
+};
+  function dg_has_cycle($g) {
   $visited = [];
   $rec = [];
   foreach (array_keys($g['graph']) as $k) {
@@ -286,8 +289,8 @@ function dg_has_cycle($g) {
 }
 };
   return false;
-}
-function dg_fill_graph_randomly(&$g, $c) {
+};
+  function dg_fill_graph_randomly(&$g, $c) {
   $count = $c;
   if ($count == (-1)) {
   $count = rand_range(10, 10010);
@@ -305,23 +308,23 @@ function dg_fill_graph_randomly(&$g, $c) {
 };
   $i = $i + 1;
 };
-}
-function dg_dfs_time($g, $s, $e) {
+};
+  function dg_dfs_time($g, $s, $e) {
   $begin = _now();
   dg_dfs($g, $s, $e);
   $end = _now();
   return $end - $begin;
-}
-function dg_bfs_time($g, $s) {
+};
+  function dg_bfs_time($g, $s) {
   $begin = _now();
   dg_bfs($g, $s);
   $end = _now();
   return $end - $begin;
-}
-function g_make_graph() {
+};
+  function g_make_graph() {
   return ['graph' => []];
-}
-function g_add_pair(&$g, $u, $v, $w) {
+};
+  function g_add_pair(&$g, $u, $v, $w) {
   if (isset($g['graph'][$u])) {
   $edges = $g['graph'][$u];
   if (!edge_exists($edges, $w, $v)) {
@@ -348,8 +351,8 @@ function g_add_pair(&$g, $u, $v, $w) {
   $m3[$v] = [[$w, $u]];
   $g['graph'] = $m3;
 }
-}
-function g_remove_pair(&$g, $u, $v) {
+};
+  function g_remove_pair(&$g, $u, $v) {
   if (isset($g['graph'][$u])) {
   $edges = $g['graph'][$u];
   $new_edges = [];
@@ -378,15 +381,15 @@ function g_remove_pair(&$g, $u, $v) {
   $m2[$v] = $new_edges2;
   $g['graph'] = $m2;
 }
-}
-function g_all_nodes($g) {
+};
+  function g_all_nodes($g) {
   $res = [];
   foreach (array_keys($g['graph']) as $k) {
   $res = _append($res, $k);
 };
   return $res;
-}
-function g_dfs_util($g, $node, &$visited, $order, $d) {
+};
+  function g_dfs_util($g, $node, &$visited, $order, $d) {
   $visited[$node] = true;
   $order = _append($order, $node);
   if ($d != (-1) && $node == $d) {
@@ -405,8 +408,8 @@ function g_dfs_util($g, $node, &$visited, $order, $d) {
   $i = $i + 1;
 };
   return $order;
-}
-function g_dfs($g, $s, $d) {
+};
+  function g_dfs($g, $s, $d) {
   if ($s == $d) {
   return [];
 }
@@ -415,8 +418,8 @@ function g_dfs($g, $s, $d) {
   $order = [];
   $order = g_dfs_util($g, $start, $visited, $order, $d);
   return $order;
-}
-function g_bfs($g, $s) {
+};
+  function g_bfs($g, $s) {
   $queue = [];
   $visited = [];
   $order = [];
@@ -439,14 +442,14 @@ function g_bfs($g, $s) {
 };
 };
   return $order;
-}
-function g_degree($g, $u) {
+};
+  function g_degree($g, $u) {
   if (isset($g['graph'][$u])) {
   return _len($g['graph'][$u]);
 }
   return 0;
-}
-function g_cycle_util($g, $node, &$visited, $parent, $res) {
+};
+  function g_cycle_util($g, $node, &$visited, $parent, $res) {
   $visited[$node] = true;
   $edges = $g['graph'][$node];
   $i = 0;
@@ -467,8 +470,8 @@ function g_cycle_util($g, $node, &$visited, $parent, $res) {
   $i = $i + 1;
 };
   return $res;
-}
-function g_cycle_nodes($g) {
+};
+  function g_cycle_nodes($g) {
   $visited = [];
   $res = [];
   foreach (array_keys($g['graph']) as $k) {
@@ -477,8 +480,8 @@ function g_cycle_nodes($g) {
 }
 };
   return $res;
-}
-function g_has_cycle_util($g, $node, &$visited, $parent) {
+};
+  function g_has_cycle_util($g, $node, &$visited, $parent) {
   $visited[$node] = true;
   $edges = $g['graph'][$node];
   $i = 0;
@@ -496,8 +499,8 @@ function g_has_cycle_util($g, $node, &$visited, $parent) {
   $i = $i + 1;
 };
   return false;
-}
-function g_has_cycle($g) {
+};
+  function g_has_cycle($g) {
   $visited = [];
   foreach (array_keys($g['graph']) as $k) {
   if (!(array_key_exists($k, $visited))) {
@@ -507,8 +510,8 @@ function g_has_cycle($g) {
 }
 };
   return false;
-}
-function g_fill_graph_randomly(&$g, $c) {
+};
+  function g_fill_graph_randomly(&$g, $c) {
   $count = $c;
   if ($count == (-1)) {
   $count = rand_range(10, 10010);
@@ -526,20 +529,20 @@ function g_fill_graph_randomly(&$g, $c) {
 };
   $i = $i + 1;
 };
-}
-function g_dfs_time($g, $s, $e) {
+};
+  function g_dfs_time($g, $s, $e) {
   $begin = _now();
   g_dfs($g, $s, $e);
   $end = _now();
   return $end - $begin;
-}
-function g_bfs_time($g, $s) {
+};
+  function g_bfs_time($g, $s) {
   $begin = _now();
   g_bfs($g, $s);
   $end = _now();
   return $end - $begin;
-}
-function main() {
+};
+  function main() {
   $dg = dg_make_graph();
   dg_add_pair($dg, 0, 1, 5);
   dg_add_pair($dg, 0, 2, 3);
@@ -559,5 +562,13 @@ function main() {
   echo rtrim(_str(g_bfs($ug, -2))), PHP_EOL;
   echo rtrim(_str(g_degree($ug, 1))), PHP_EOL;
   echo rtrim(_str(g_has_cycle($ug))), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,11 +35,13 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function mochi_key($p) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_key($p) {
   global $grid1, $grid2;
   return _str($p['x']) . ',' . _str($p['y']);
-}
-function path_to_string($path) {
+};
+  function path_to_string($path) {
   global $grid1, $grid2;
   $s = '[';
   $i = 0;
@@ -38,8 +55,8 @@ function path_to_string($path) {
 };
   $s = $s . ']';
   return $s;
-}
-function dijkstra($grid, $source, $destination, $allow_diagonal) {
+};
+  function dijkstra($grid, $source, $destination, $allow_diagonal) {
   global $grid1, $grid2;
   $rows = count($grid);
   $cols = count($grid[0]);
@@ -97,13 +114,21 @@ function dijkstra($grid, $source, $destination, $allow_diagonal) {
   return ['distance' => $dist_map[$dest_key], 'path' => $path];
 }
   return ['distance' => $INF, 'path' => []];
-}
-function print_result($res) {
+};
+  function print_result($res) {
   global $grid1, $grid2;
   echo rtrim(_str($res['distance']) . ', ' . path_to_string($res['path'])), PHP_EOL;
-}
-$grid1 = [[1, 1, 1], [0, 1, 0], [0, 1, 1]];
-print_result(dijkstra($grid1, ['x' => 0, 'y' => 0], ['x' => 2, 'y' => 2], false));
-print_result(dijkstra($grid1, ['x' => 0, 'y' => 0], ['x' => 2, 'y' => 2], true));
-$grid2 = [[1, 1, 1], [0, 0, 1], [0, 1, 1]];
-print_result(dijkstra($grid2, ['x' => 0, 'y' => 0], ['x' => 2, 'y' => 2], false));
+};
+  $grid1 = [[1, 1, 1], [0, 1, 0], [0, 1, 1]];
+  print_result(dijkstra($grid1, ['x' => 0, 'y' => 0], ['x' => 2, 'y' => 2], false));
+  print_result(dijkstra($grid1, ['x' => 0, 'y' => 0], ['x' => 2, 'y' => 2], true));
+  $grid2 = [[1, 1, 1], [0, 0, 1], [0, 1, 1]];
+  print_result(dijkstra($grid2, ['x' => 0, 'y' => 0], ['x' => 2, 'y' => 2], false));
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

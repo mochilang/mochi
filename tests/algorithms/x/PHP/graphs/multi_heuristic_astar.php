@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,22 +35,24 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$W1 = 1.0;
-$W2 = 1.0;
-$n = 20;
-$n_heuristic = 3;
-$INF = 1000000000.0;
-$t = 1;
-function pos_equal($a, $b) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $W1 = 1.0;
+  $W2 = 1.0;
+  $n = 20;
+  $n_heuristic = 3;
+  $INF = 1000000000.0;
+  $t = 1;
+  function pos_equal($a, $b) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   return $a['x'] == $b['x'] && $a['y'] == $b['y'];
-}
-function pos_key($p) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function pos_key($p) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   return _str($p['x']) . ',' . _str($p['y']);
-}
-function sqrtApprox($x) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function sqrtApprox($x) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   if ($x <= 0.0) {
   return 0.0;
 }
@@ -46,31 +63,31 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function consistent_heuristic($p, $goal) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start;
+};
+  function consistent_heuristic($p, $goal) {
+  global $INF, $W1, $W2, $blocks, $n, $n_heuristic, $start, $t;
   $dx = floatval(($p['x'] - $goal['x']));
   $dy = floatval(($p['y'] - $goal['y']));
   return sqrtApprox($dx * $dx + $dy * $dy);
-}
-function iabs($x) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function iabs($x) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   if ($x < 0) {
   return -$x;
 }
   return $x;
-}
-function heuristic_1($p, $goal) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start;
+};
+  function heuristic_1($p, $goal) {
+  global $INF, $W1, $W2, $blocks, $n, $n_heuristic, $start, $t;
   return floatval((iabs($p['x'] - $goal['x']) + iabs($p['y'] - $goal['y'])));
-}
-function heuristic_2($p, $goal) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start;
+};
+  function heuristic_2($p, $goal) {
+  global $INF, $W1, $W2, $blocks, $n, $n_heuristic, $start, $t;
   $h = consistent_heuristic($p, $goal);
   return $h / (floatval($t));
-}
-function heuristic($i, $p, $goal) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start;
+};
+  function heuristic($i, $p, $goal) {
+  global $INF, $W1, $W2, $blocks, $n, $n_heuristic, $start, $t;
   if ($i == 0) {
   return consistent_heuristic($p, $goal);
 }
@@ -78,14 +95,14 @@ function heuristic($i, $p, $goal) {
   return heuristic_1($p, $goal);
 }
   return heuristic_2($p, $goal);
-}
-function key_fn($start, $i, $goal, $g_func) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks;
+};
+  function key_fn($start, $i, $goal, $g_func) {
+  global $INF, $W1, $W2, $blocks, $n, $n_heuristic, $t;
   $g = $g_func[pos_key($start)];
   return $g + $W1 * heuristic($i, $start, $goal);
-}
-function valid($p) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function valid($p) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   if ($p['x'] < 0 || $p['x'] > $n - 1) {
   return false;
 }
@@ -93,10 +110,10 @@ function valid($p) {
   return false;
 }
   return true;
-}
-$blocks = [['x' => 0, 'y' => 1], ['x' => 1, 'y' => 1], ['x' => 2, 'y' => 1], ['x' => 3, 'y' => 1], ['x' => 4, 'y' => 1], ['x' => 5, 'y' => 1], ['x' => 6, 'y' => 1], ['x' => 7, 'y' => 1], ['x' => 8, 'y' => 1], ['x' => 9, 'y' => 1], ['x' => 10, 'y' => 1], ['x' => 11, 'y' => 1], ['x' => 12, 'y' => 1], ['x' => 13, 'y' => 1], ['x' => 14, 'y' => 1], ['x' => 15, 'y' => 1], ['x' => 16, 'y' => 1], ['x' => 17, 'y' => 1], ['x' => 18, 'y' => 1], ['x' => 19, 'y' => 1]];
-function in_blocks($p) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  $blocks = [['x' => 0, 'y' => 1], ['x' => 1, 'y' => 1], ['x' => 2, 'y' => 1], ['x' => 3, 'y' => 1], ['x' => 4, 'y' => 1], ['x' => 5, 'y' => 1], ['x' => 6, 'y' => 1], ['x' => 7, 'y' => 1], ['x' => 8, 'y' => 1], ['x' => 9, 'y' => 1], ['x' => 10, 'y' => 1], ['x' => 11, 'y' => 1], ['x' => 12, 'y' => 1], ['x' => 13, 'y' => 1], ['x' => 14, 'y' => 1], ['x' => 15, 'y' => 1], ['x' => 16, 'y' => 1], ['x' => 17, 'y' => 1], ['x' => 18, 'y' => 1], ['x' => 19, 'y' => 1]];
+  function in_blocks($p) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   $i = 0;
   while ($i < count($blocks)) {
   if (pos_equal($blocks[$i], $p)) {
@@ -105,9 +122,9 @@ function in_blocks($p) {
   $i = $i + 1;
 };
   return false;
-}
-function pq_put(&$pq, $node, $pri) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function pq_put($pq, $node, $pri) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   $updated = false;
   $i = 0;
   while ($i < count($pq)) {
@@ -120,12 +137,12 @@ function pq_put(&$pq, $node, $pri) {
   $i = $i + 1;
 };
   if (!$updated) {
-  $pq = _append($pq, ['pos' => $node, $pri => $pri]);
+  $pq = _append($pq, ['pos' => $node, 'pri' => $pri]);
 }
   return $pq;
-}
-function pq_minkey($pq) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function pq_minkey($pq) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   if (count($pq) == 0) {
   return $INF;
 }
@@ -140,9 +157,9 @@ function pq_minkey($pq) {
   $i = $i + 1;
 };
   return $m;
-}
-function pq_pop_min($pq) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function pq_pop_min($pq) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   $best = $pq[0];
   $idx = 0;
   $i = 1;
@@ -162,9 +179,9 @@ function pq_pop_min($pq) {
   $i = $i + 1;
 };
   return ['pq' => $new_pq, 'node' => $best];
-}
-function pq_remove($pq, $node) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function pq_remove($pq, $node) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   $new_pq = [];
   $i = 0;
   while ($i < count($pq)) {
@@ -174,9 +191,9 @@ function pq_remove($pq, $node) {
   $i = $i + 1;
 };
   return $new_pq;
-}
-function reconstruct($back_pointer, $goal, $start) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks;
+};
+  function reconstruct($back_pointer, $goal, $start) {
+  global $INF, $W1, $W2, $blocks, $n, $n_heuristic, $t;
   $path = [];
   $current = $goal;
   $key = pos_key($current);
@@ -193,17 +210,17 @@ function reconstruct($back_pointer, $goal, $start) {
   $i = $i - 1;
 };
   return $rev;
-}
-function neighbours($p) {
-  global $W1, $W2, $n, $n_heuristic, $INF, $t, $blocks, $start, $goal;
+};
+  function neighbours($p) {
+  global $INF, $W1, $W2, $blocks, $goal, $n, $n_heuristic, $start, $t;
   $left = ['x' => $p['x'] - 1, 'y' => $p['y']];
   $right = ['x' => $p['x'] + 1, 'y' => $p['y']];
   $up = ['x' => $p['x'], 'y' => $p['y'] + 1];
   $down = ['x' => $p['x'], 'y' => $p['y'] - 1];
   return [$left, $right, $up, $down];
-}
-function multi_a_star($start, $goal, $n_heuristic) {
-  global $W1, $W2, $n, $INF, $t, $blocks;
+};
+  function multi_a_star($start, $goal, $n_heuristic) {
+  global $INF, $W1, $W2, $blocks, $n, $t;
   $g_function = [];
   $back_pointer = [];
   $visited = [];
@@ -280,7 +297,15 @@ function multi_a_star($start, $goal, $n_heuristic) {
 };
 };
   echo rtrim('No path found to goal'), PHP_EOL;
-}
-$start = ['x' => 0, 'y' => 0];
-$goal = ['x' => $n - 1, 'y' => $n - 1];
-multi_a_star($start, $goal, $n_heuristic);
+};
+  $start = ['x' => 0, 'y' => 0];
+  $goal = ['x' => $n - 1, 'y' => $n - 1];
+  multi_a_star($start, $goal, $n_heuristic);
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
