@@ -1,3 +1,271 @@
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-14 17:45 +0700)
+- c transpiler: support map list for-loops (9457ff5dfd)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-14 17:09 +0700)
 - zig: handle shadowed params and list types (5cabcd7927)
 - Regenerated golden files - 103/105 vm valid programs passing
