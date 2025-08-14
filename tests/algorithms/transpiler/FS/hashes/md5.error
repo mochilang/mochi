@@ -1,0 +1,30 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/md5.fs(280,18): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/md5.fs(368,22): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/md5.fs(372,44): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/md5.fs(376,22): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/md5.fs(378,49): error FS0001: The type 'obj' does not support a conversion to the type 'int64'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/hashes/md5.fs(379,43): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    

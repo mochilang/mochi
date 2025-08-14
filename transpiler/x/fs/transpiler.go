@@ -1268,18 +1268,31 @@ func (s *StructLit) emit(w io.Writer) {
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
-	io.WriteString(w, "[ for ")
+	arrayMode := strings.Contains(inferType(q.Src), "array")
+	if arrayMode {
+		io.WriteString(w, "[| for ")
+	} else {
+		io.WriteString(w, "[ for ")
+	}
 	io.WriteString(w, fsIdent(q.Var))
 	io.WriteString(w, " in ")
 	src := q.Src
+	sortFunc := "List.sortBy"
+	skipFunc := "List.skip"
+	takeFunc := "List.take"
+	if arrayMode {
+		sortFunc = "Array.sortBy"
+		skipFunc = "Array.skip"
+		takeFunc = "Array.take"
+	}
 	if q.Sort != nil {
-		src = &CallExpr{Func: "List.sortBy", Args: []Expr{&LambdaExpr{Params: []string{fsIdent(q.Var)}, Expr: q.Sort}, src}}
+		src = &CallExpr{Func: sortFunc, Args: []Expr{&LambdaExpr{Params: []string{fsIdent(q.Var)}, Expr: q.Sort}, src}}
 	}
 	if q.Skip != nil {
-		src = &CallExpr{Func: "List.skip", Args: []Expr{q.Skip, src}}
+		src = &CallExpr{Func: skipFunc, Args: []Expr{q.Skip, src}}
 	}
 	if q.Take != nil {
-		src = &CallExpr{Func: "List.take", Args: []Expr{q.Take, src}}
+		src = &CallExpr{Func: takeFunc, Args: []Expr{q.Take, src}}
 	}
 	src.emit(w)
 	io.WriteString(w, " do")
@@ -1309,7 +1322,11 @@ func (q *QueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, " yield ")
 	q.Select.emit(w)
-	io.WriteString(w, " ]")
+	if arrayMode {
+		io.WriteString(w, " |]")
+	} else {
+		io.WriteString(w, " ]")
+	}
 }
 
 func (g *GroupQueryExpr) emit(w io.Writer) {
@@ -1889,7 +1906,24 @@ func (s *LetStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, " = ")
 	if s.Expr != nil {
-		s.Expr.emit(w)
+		et := inferType(s.Expr)
+		cast := false
+		if s.Type == "int" && et == "int64" {
+			cast = true
+		} else if s.Type == "int" {
+			if id, ok := s.Expr.(*IdentExpr); ok {
+				if vt, ok2 := varTypes[id.Name]; ok2 && vt == "int64" {
+					cast = true
+				}
+			}
+		}
+		if cast {
+			io.WriteString(w, "int (")
+			s.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			s.Expr.emit(w)
+		}
 	} else {
 		if strings.HasSuffix(s.Type, " array") {
 			base := strings.TrimSuffix(s.Type, " array")
@@ -2640,6 +2674,22 @@ type IndexExpr struct {
 
 func (i *IndexExpr) emit(w io.Writer) {
 	t := inferType(i.Target)
+	// If indexing a struct with a string literal key, emit field access
+	if sl, ok := i.Index.(*StringLit); ok {
+		base := strings.TrimSuffix(strings.TrimSuffix(t, " list"), " array")
+		if _, ok2 := structFieldType(base, sl.Value); ok2 {
+			if needsParen(i.Target) {
+				io.WriteString(w, "(")
+				i.Target.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				i.Target.emit(w)
+			}
+			io.WriteString(w, ".")
+			io.WriteString(w, fsIdent(sl.Value))
+			return
+		}
+	}
 	// If the target is a map, use dictionary helpers
 	if isMapType(t) {
 		usesDictGet = true
@@ -4231,6 +4281,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				if vt, err := transpileEnv.GetVar(p.Name); err == nil {
 					paramTypes[i] = fsType(vt)
 				}
+			}
+		}
+		for i, p := range st.Fun.Params {
+			if paramTypes[i] != "" {
+				varTypes[p.Name] = paramTypes[i]
 			}
 		}
 		var retType string
