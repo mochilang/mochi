@@ -139,6 +139,17 @@ func uniqueWhileName() string {
 	return fmt.Sprintf("while_fun_%d", loopCounter)
 }
 
+// isLoopCounter reports whether the given variable name is a common loop
+// counter that is typically not used after the loop ends.
+func isLoopCounter(name string) bool {
+	switch name {
+	case "i", "j", "k":
+		return true
+	default:
+		return false
+	}
+}
+
 func isBigRat(t types.Type) bool {
 	_, ok := t.(types.BigRatType)
 	return ok
@@ -463,7 +474,11 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 				if i > 0 {
 					io.WriteString(w, ", ")
 				}
-				io.WriteString(w, sanitizeIdent(v))
+				if isLoopCounter(v) {
+					io.WriteString(w, "_")
+				} else {
+					io.WriteString(w, sanitizeIdent(v))
+				}
 			}
 			io.WriteString(w, "} = ")
 		}
@@ -481,7 +496,11 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 				if i > 0 {
 					io.WriteString(w, ", ")
 				}
-				io.WriteString(w, sanitizeIdent(v))
+				if isLoopCounter(v) {
+					io.WriteString(w, "_")
+				} else {
+					io.WriteString(w, sanitizeIdent(v))
+				}
 			}
 			io.WriteString(w, "}\n")
 		}
@@ -498,14 +517,22 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 				if i > 0 {
 					io.WriteString(w, ", ")
 				}
-				io.WriteString(w, sanitizeIdent(v))
+				if isLoopCounter(v) {
+					io.WriteString(w, "_")
+				} else {
+					io.WriteString(w, sanitizeIdent(v))
+				}
 			}
 			io.WriteString(w, "}} -> {")
 			for i, v := range wst.Vars {
 				if i > 0 {
 					io.WriteString(w, ", ")
 				}
-				io.WriteString(w, sanitizeIdent(v))
+				if isLoopCounter(v) {
+					io.WriteString(w, "0")
+				} else {
+					io.WriteString(w, sanitizeIdent(v))
+				}
 			}
 			io.WriteString(w, "}\n")
 		} else {
@@ -583,8 +610,13 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, "end\n")
 	} else if len(wst.Vars) == 1 {
-		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
-		io.WriteString(w, " = try do\n")
+		v := wst.Vars[0]
+		if isLoopCounter(v) {
+			io.WriteString(w, "_ = try do\n")
+		} else {
+			io.WriteString(w, sanitizeIdent(v))
+			io.WriteString(w, " = try do\n")
+		}
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -592,7 +624,11 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, ".(")
 		io.WriteString(w, name)
 		io.WriteString(w, ", ")
-		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
+		if isLoopCounter(v) {
+			io.WriteString(w, sanitizeIdent(v))
+		} else {
+			io.WriteString(w, sanitizeIdent(v))
+		}
 		io.WriteString(w, ")\n")
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
@@ -602,9 +638,17 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "{:break, {")
-		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
+		if isLoopCounter(v) {
+			io.WriteString(w, "_")
+		} else {
+			io.WriteString(w, sanitizeIdent(v))
+		}
 		io.WriteString(w, "}} -> ")
-		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
+		if isLoopCounter(v) {
+			io.WriteString(w, "0")
+		} else {
+			io.WriteString(w, sanitizeIdent(v))
+		}
 		io.WriteString(w, "\n")
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
@@ -616,7 +660,11 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, sanitizeIdent(v))
+			if isLoopCounter(v) {
+				io.WriteString(w, "_")
+			} else {
+				io.WriteString(w, sanitizeIdent(v))
+			}
 		}
 		io.WriteString(w, "} = try do\n")
 		for i := 0; i < indent+2; i++ {
@@ -642,14 +690,22 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, sanitizeIdent(v))
+			if isLoopCounter(v) {
+				io.WriteString(w, "_")
+			} else {
+				io.WriteString(w, sanitizeIdent(v))
+			}
 		}
 		io.WriteString(w, "}} -> {")
 		for i, v := range wst.Vars {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, sanitizeIdent(v))
+			if isLoopCounter(v) {
+				io.WriteString(w, "0")
+			} else {
+				io.WriteString(w, sanitizeIdent(v))
+			}
 		}
 		io.WriteString(w, "}\n")
 		for i := 0; i < indent+1; i++ {
