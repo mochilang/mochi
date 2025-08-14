@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 979/1077
-Last updated: 2025-08-14 17:45 +0700
+Completed programs: 980/1077
+Last updated: 2025-08-14 18:16 +0700
 
 Checklist:
 
@@ -1021,7 +1021,7 @@ Checklist:
 | 1012 | strings/is_spain_national_id | ✓ | 320.0µs | 3.64MB |
 | 1013 | strings/is_srilankan_phone_number | ✓ | 231.0µs | 3.68MB |
 | 1014 | strings/is_valid_email_address | ✓ | 1.0ms | 3.59MB |
-| 1015 | strings/jaro_winkler |   |  |  |
+| 1015 | strings/jaro_winkler | ✓ | 596.0µs | 3.80MB |
 | 1016 | strings/join |   |  |  |
 | 1017 | strings/knuth_morris_pratt |   |  |  |
 | 1018 | strings/levenshtein_distance |   |  |  |
