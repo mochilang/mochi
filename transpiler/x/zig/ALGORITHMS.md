@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-14 22:13 +0700
+Last updated: 2025-08-15 06:31 +0700
 
-## Program Checklist (335/1077)
+## Program Checklist (336/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -416,13 +416,13 @@ Last updated: 2025-08-14 22:13 +0700
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 294µs | 256.0 KB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 2.652ms | 768.0 KB |
 | 409 | graphs/check_bipatrite | ✓ | 426µs | 256.0 KB |
-| 410 | graphs/check_cycle | ✓ | 1.05ms | 256.0 KB |
-| 411 | graphs/connected_components | ✓ | 2.157ms | 512.0 KB |
+| 410 | graphs/check_cycle | ✓ | 475µs | 384.0 KB |
+| 411 | graphs/connected_components | ✓ | 1.359ms | 512.0 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search | ✓ | 1.139ms | 384.0 KB |
-| 414 | graphs/depth_first_search_2 | ✓ | 2.054ms | 644.0 KB |
-| 415 | graphs/dijkstra | ✓ | 1.733ms | 384.0 KB |
-| 416 | graphs/dijkstra_2 | ✓ | 918µs | 256.0 KB |
+| 413 | graphs/depth_first_search | ✓ | 889µs | 384.0 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 1.522ms | 644.0 KB |
+| 415 | graphs/dijkstra | ✓ | 1.093ms | 384.0 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 531µs | 384.0 KB |
 | 417 | graphs/dijkstra_algorithm | ✓ | 959µs | 256.0 KB |
 | 418 | graphs/dijkstra_alternate | ✓ | 1.499ms | 384.0 KB |
 | 419 | graphs/dijkstra_binary_grid | ✓ | 10.927ms | 2.1 MB |
@@ -456,8 +456,8 @@ Last updated: 2025-08-14 22:13 +0700
 | 447 | graphs/multi_heuristic_astar | ✓ | 1.477ms | 384.0 KB |
 | 448 | graphs/page_rank |   |  |  |
 | 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator | ✓ | 1.38ms | 384.0 KB |
-| 451 | graphs/scc_kosaraju | ✓ | 930µs | 256.0 KB |
+| 450 | graphs/random_graph_generator | ✓ | 1.275ms | 640.0 KB |
+| 451 | graphs/scc_kosaraju | ✓ | 895µs | 384.0 KB |
 | 452 | graphs/strongly_connected_components | ✓ | 2.156ms | 768.0 KB |
 | 453 | graphs/tarjans_scc |   |  |  |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.735ms | 384.0 KB |
@@ -465,7 +465,7 @@ Last updated: 2025-08-14 22:13 +0700
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
 | 457 | greedy_methods/fractional_cover_problem |   |  |  |
 | 458 | greedy_methods/fractional_knapsack | ✓ | 724µs | 512.0 KB |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 671µs | 384.0 KB |
 | 460 | greedy_methods/gas_station |   |  |  |
 | 461 | greedy_methods/minimum_coin_change |   |  |  |
 | 462 | greedy_methods/minimum_waiting_time |   |  |  |

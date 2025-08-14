@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/greedy_methods/fractional_knapsack_2.zig:88:110: error: slice of single-item pointer must be bounded
-        std.debug.print("{s}\n", .{_str(fractional_knapsack(@constCast(&(([4]f64{1.0, 3.0, 5.0, 7.0})[0..4]))[0..], @constCast(&(([4]f64{0.9, 0.7, 0.5, 0.3})[0..4]))[0..], 30.0))});
-                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
-referenced by:
-    main: /opt/zig-0.14.0/lib/std/start.zig:647:22
-    comptime: /opt/zig-0.14.0/lib/std/start.zig:58:30
-    2 reference(s) hidden; use '-freference-trace=4' to see all references
