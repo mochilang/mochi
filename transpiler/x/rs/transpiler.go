@@ -1928,16 +1928,24 @@ func (p *PadStartExpr) emit(w io.Writer) {
 type StringCastExpr struct{ Expr Expr }
 
 func (s *StringCastExpr) emit(w io.Writer) {
+	if inner, ok := s.Expr.(*StringCastExpr); ok {
+		inner.emit(w)
+		return
+	}
 	t := inferType(s.Expr)
 	if t == "String" {
 		if nr, ok := s.Expr.(*NameRef); ok && cloneVars[nr.Name] {
 			s.Expr.emit(w)
 			return
 		}
-		if _, ok := s.Expr.(*StringLit); ok {
-			io.WriteString(w, "String::from(")
-			s.Expr.emit(w)
-			io.WriteString(w, ")")
+		if sl, ok := s.Expr.(*StringLit); ok {
+			if sl.Value == "" {
+				io.WriteString(w, "String::new()")
+			} else {
+				io.WriteString(w, "String::from(")
+				sl.emit(w)
+				io.WriteString(w, ")")
+			}
 			return
 		}
 		s.Expr.emit(w)
