@@ -1,8 +1,3 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/hashes/chaos_machine.py", line 109, in <module>
-    machine = push(machine, i)
-              ^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/hashes/chaos_machine.py", line 57, in push
-    e = (1.0 * seed) // value
-        ~~~~~~~~~~~~~^^~~~~~~
-ZeroDivisionError: float floor division by zero
+1376507091
+[0.9892361047, 0.7704991433, 0.0275411443, 0.7912152576, 0.6498201831]
+[3.003537909507121, 3.0953851259177156, 3.229435217392222, 3.7410858330035808, 3.5950057502634536]

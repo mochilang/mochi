@@ -48,6 +48,7 @@ var (
 	usesSetIndex      bool
 	usesPanic         bool
 	funcDepth         int
+	renamedVars       map[string]string
 )
 
 const helperNow = `
@@ -192,6 +193,76 @@ var pyKeywords = map[string]bool{
 	"yield":    true,
 }
 
+var pyBuiltins = map[string]bool{
+	"abs":          true,
+	"all":          true,
+	"any":          true,
+	"ascii":        true,
+	"bin":          true,
+	"bool":         true,
+	"bytearray":    true,
+	"bytes":        true,
+	"callable":     true,
+	"chr":          true,
+	"classmethod":  true,
+	"compile":      true,
+	"complex":      true,
+	"delattr":      true,
+	"dict":         true,
+	"dir":          true,
+	"divmod":       true,
+	"enumerate":    true,
+	"eval":         true,
+	"exec":         true,
+	"filter":       true,
+	"float":        true,
+	"format":       true,
+	"frozenset":    true,
+	"getattr":      true,
+	"globals":      true,
+	"hasattr":      true,
+	"hash":         true,
+	"help":         true,
+	"hex":          true,
+	"id":           true,
+	"input":        true,
+	"int":          true,
+	"isinstance":   true,
+	"issubclass":   true,
+	"iter":         true,
+	"len":          true,
+	"list":         true,
+	"locals":       true,
+	"map":          true,
+	"max":          true,
+	"memoryview":   true,
+	"min":          true,
+	"next":         true,
+	"object":       true,
+	"oct":          true,
+	"open":         true,
+	"ord":          true,
+	"pow":          true,
+	"print":        true,
+	"property":     true,
+	"range":        true,
+	"repr":         true,
+	"reversed":     true,
+	"round":        true,
+	"set":          true,
+	"setattr":      true,
+	"slice":        true,
+	"sorted":       true,
+	"staticmethod": true,
+	"str":          true,
+	"sum":          true,
+	"super":        true,
+	"tuple":        true,
+	"type":         true,
+	"vars":         true,
+	"zip":          true,
+}
+
 func isBuiltinType(name string) bool {
 	switch name {
 	case "int", "int64", "float", "bool", "string":
@@ -204,9 +275,6 @@ func isBuiltinType(name string) bool {
 func safeName(n string) string {
 	if n == "" {
 		return "_"
-	}
-	if pyKeywords[n] {
-		return n + "_"
 	}
 	var buf strings.Builder
 	for i, r := range n {
@@ -223,7 +291,18 @@ func safeName(n string) string {
 	}
 	out := buf.String()
 	if out == "" {
-		return "_"
+		out = "_"
+	}
+	if pyKeywords[out] || pyBuiltins[out] {
+		out += "_"
+	}
+	return out
+}
+
+func safeVarName(n string) string {
+	out := safeName(n)
+	if renamedVars != nil {
+		renamedVars[n] = out
 	}
 	return out
 }
@@ -452,6 +531,14 @@ func (n *Name) emit(w io.Writer) error {
 		_, err := io.WriteString(w, "sys."+n.Name)
 		return err
 	default:
+		if v, ok := renamedVars[n.Name]; ok {
+			_, err := io.WriteString(w, v)
+			return err
+		}
+		if pyBuiltins[n.Name] {
+			_, err := io.WriteString(w, n.Name)
+			return err
+		}
 		_, err := io.WriteString(w, safeName(n.Name))
 		return err
 	}
@@ -1041,7 +1128,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *AssignStmt:
-		if _, err := io.WriteString(w, indent+safeName(st.Name)+" = "); err != nil {
+		if _, err := io.WriteString(w, indent+safeVarName(st.Name)+" = "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Expr); err != nil {
@@ -1050,7 +1137,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *LetStmt:
-		if _, err := io.WriteString(w, indent+safeName(st.Name)+" = "); err != nil {
+		if _, err := io.WriteString(w, indent+safeVarName(st.Name)+" = "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Expr); err != nil {
@@ -1059,7 +1146,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *VarStmt:
-		if _, err := io.WriteString(w, indent+safeName(st.Name)+" = "); err != nil {
+		if _, err := io.WriteString(w, indent+safeVarName(st.Name)+" = "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Expr); err != nil {
@@ -1084,7 +1171,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		return nil
 	case *ForStmt:
-		if _, err := io.WriteString(w, indent+"for "+safeName(st.Var)+" in "); err != nil {
+		if _, err := io.WriteString(w, indent+"for "+safeVarName(st.Var)+" in "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Iter); err != nil {
@@ -1176,7 +1263,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		if _, err := io.WriteString(w, indent+"@dataclass\n"); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, indent+"class "+safeName(st.Name)+":\n"); err != nil {
+		if _, err := io.WriteString(w, indent+"class "+safeVarName(st.Name)+":\n"); err != nil {
 			return err
 		}
 		if len(st.Fields) == 0 && len(st.Methods) == 0 {
@@ -1235,7 +1322,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 				}
 			}
 			if useSet {
-				if _, err := io.WriteString(w, indent+safeName(name.Name)+" = _set_index("); err != nil {
+				if _, err := io.WriteString(w, indent+safeVarName(name.Name)+" = _set_index("); err != nil {
 					return err
 				}
 				if err := emitExpr(w, st.Target); err != nil {
@@ -1281,7 +1368,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *FuncDef:
-		if _, err := io.WriteString(w, indent+"def "+safeName(st.Name)+"("); err != nil {
+		if _, err := io.WriteString(w, indent+"def "+safeVarName(st.Name)+"("); err != nil {
 			return err
 		}
 		for i, p := range st.Params {
@@ -1290,7 +1377,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 					return err
 				}
 			}
-			if _, err := io.WriteString(w, safeName(p)); err != nil {
+			if _, err := io.WriteString(w, safeVarName(p)); err != nil {
 				return err
 			}
 		}
@@ -1890,7 +1977,7 @@ func isLikelyIntExpr(e Expr) bool {
 				return isIntLike(t)
 			}
 		}
-		return false
+		return true
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
 			return true
@@ -3207,7 +3294,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			// already emitted above
 			continue
 		case *DataClassDef:
-			if _, err := io.WriteString(w, "@dataclass\nclass "+safeName(st.Name)+":\n"); err != nil {
+			if _, err := io.WriteString(w, "@dataclass\nclass "+safeVarName(st.Name)+":\n"); err != nil {
 				return err
 			}
 			if len(st.Fields) == 0 && len(st.Methods) == 0 {
@@ -3239,7 +3326,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 				return err
 			}
 		case *LetStmt:
-			if _, err := io.WriteString(w, safeName(st.Name)+" = "); err != nil {
+			if _, err := io.WriteString(w, safeVarName(st.Name)+" = "); err != nil {
 				return err
 			}
 			if err := emitExpr(w, st.Expr); err != nil {
@@ -3249,7 +3336,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 				return err
 			}
 		case *VarStmt:
-			if _, err := io.WriteString(w, safeName(st.Name)+" = "); err != nil {
+			if _, err := io.WriteString(w, safeVarName(st.Name)+" = "); err != nil {
 				return err
 			}
 			if err := emitExpr(w, st.Expr); err != nil {
@@ -3274,7 +3361,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 				}
 			}
 		case *ForStmt:
-			if _, err := io.WriteString(w, "for "+safeName(st.Var)+" in "); err != nil {
+			if _, err := io.WriteString(w, "for "+safeVarName(st.Var)+" in "); err != nil {
 				return err
 			}
 			if err := emitExpr(w, st.Iter); err != nil {
@@ -3484,6 +3571,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesSetIndex = false
 	usesPanic = false
 	p := &Program{}
+	renamedVars = map[string]string{}
 	for _, st := range prog.Statements {
 		switch {
 		case st.Expr != nil:
@@ -3943,7 +4031,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			}
 			var params []string
 			for _, p := range st.Fun.Params {
-				params = append(params, safeName(p.Name))
+				params = append(params, safeVarName(p.Name))
 			}
 			genv := env.Parent()
 			if genv == nil {
@@ -4424,7 +4512,7 @@ func detectGlobals(stmts []Stmt, local, global *types.Env) []string {
 	}
 	out := make([]string, 0, len(names))
 	for n := range names {
-		out = append(out, safeName(n))
+		out = append(out, safeVarName(n))
 	}
 	sort.Strings(out)
 	return out
@@ -4462,7 +4550,7 @@ func detectNonlocals(stmts []Stmt, local, parent *types.Env) []string {
 	}
 	out := make([]string, 0, len(names))
 	for n := range names {
-		out = append(out, safeName(n))
+		out = append(out, safeVarName(n))
 	}
 	sort.Strings(out)
 	return out
