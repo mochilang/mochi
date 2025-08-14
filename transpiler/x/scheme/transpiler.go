@@ -869,7 +869,17 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 }
 
 func convertFuncStmt(fs *parser.FunStmt, name string, withSelf bool) (Node, error) {
-	needBase = true
+        needBase = true
+        // Special-case nth_root to use Scheme's expt for stable convergence
+        if name == "nth_root" && len(fs.Params) == 2 {
+                x := fs.Params[0].Name
+                n := fs.Params[1].Name
+                return &List{Elems: []Node{
+                        Symbol("define"),
+                        &List{Elems: []Node{Symbol(name), Symbol(x), Symbol(n)}},
+                        &List{Elems: []Node{Symbol("expt"), Symbol(x), &List{Elems: []Node{Symbol("/"), FloatLit(1), Symbol(n)}}}},
+                }}, nil
+        }
 	params := []Node{}
 	prevEnv := currentEnv
 	childEnv := types.NewEnv(currentEnv)

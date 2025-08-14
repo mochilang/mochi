@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-14 17:19 GMT+7
+Last updated: 2025-08-14 18:45 GMT+7
 
-## Algorithms Golden Test Checklist (869/1077)
+## Algorithms Golden Test Checklist (872/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -581,56 +581,56 @@ Last updated: 2025-08-14 17:19 GMT+7
 | 572 | maths/gamma | ✓ | 5.374s | 13.5 MB |
 | 573 | maths/gaussian | ✓ | 0s | 12.5 MB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 1ms | 12.3 MB |
-| 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes | ✓ | 1ms | 12.9 MB |
-| 577 | maths/greatest_common_divisor | ✓ | 1ms | 12.8 MB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 1ms | 13.3 MB |
-| 579 | maths/integer_square_root | ✓ | 0s | 12.6 MB |
-| 580 | maths/interquartile_range | ✓ | 1ms | 13.7 MB |
-| 581 | maths/is_int_palindrome | ✓ | 0s | 12.7 MB |
-| 582 | maths/is_ip_v4_address_valid | ✓ | 4ms | 13.6 MB |
-| 583 | maths/is_square_free | ✓ | 0s | 12.7 MB |
-| 584 | maths/jaccard_similarity | ✓ | 1ms | 12.4 MB |
-| 585 | maths/joint_probability_distribution | ✓ | 1ms | 13.6 MB |
-| 586 | maths/josephus_problem | ✓ | 0s | 12.7 MB |
-| 587 | maths/juggler_sequence | ✓ | 0s | 12.8 MB |
-| 588 | maths/karatsuba | ✓ | 2ms | 12.3 MB |
-| 589 | maths/kth_lexicographic_permutation | ✓ | 1ms | 13.5 MB |
-| 590 | maths/largest_of_very_large_numbers | ✓ | 0s | 12.7 MB |
-| 591 | maths/least_common_multiple | ✓ | 0s | 12.5 MB |
-| 592 | maths/line_length | ✓ | 35ms | 12.5 MB |
-| 593 | maths/liouville_lambda | ✓ | 0s | 12.6 MB |
-| 594 | maths/lucas_lehmer_primality_test | ✓ | 0s | 12.4 MB |
-| 595 | maths/lucas_series | ✓ | 235ms | 12.4 MB |
-| 596 | maths/maclaurin_series | ✓ | 5ms | 13.0 MB |
-| 597 | maths/manhattan_distance | ✓ | 0s | 12.4 MB |
-| 598 | maths/matrix_exponentiation | ✓ | 2ms | 13.9 MB |
-| 599 | maths/max_sum_sliding_window | ✓ | 0s | 13.1 MB |
+| 575 | maths/geometric_mean | ✓ | 0s | 13.1 MB |
+| 576 | maths/germain_primes | ✓ | 0s | 12.7 MB |
+| 577 | maths/greatest_common_divisor | ✓ | 1ms | 12.4 MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 1ms | 12.3 MB |
+| 579 | maths/integer_square_root | ✓ | 0s | 12.5 MB |
+| 580 | maths/interquartile_range | ✓ | 0s | 13.3 MB |
+| 581 | maths/is_int_palindrome | ✓ | 0s | 12.2 MB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 2ms | 12.4 MB |
+| 583 | maths/is_square_free | ✓ | 0s | 12.0 MB |
+| 584 | maths/jaccard_similarity | ✓ | 1ms | 12.3 MB |
+| 585 | maths/joint_probability_distribution | ✓ | 3ms | 13.3 MB |
+| 586 | maths/josephus_problem | ✓ | 0s | 12.3 MB |
+| 587 | maths/juggler_sequence | ✓ | 1ms | 12.3 MB |
+| 588 | maths/karatsuba | ✓ | 2ms | 12.6 MB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 0s | 13.0 MB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 0s | 12.3 MB |
+| 591 | maths/least_common_multiple | ✓ | 1ms | 12.3 MB |
+| 592 | maths/line_length | ✓ | 40ms | 12.3 MB |
+| 593 | maths/liouville_lambda | ✓ | 0s | 12.1 MB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 1ms | 12.1 MB |
+| 595 | maths/lucas_series | ✓ | 249ms | 11.9 MB |
+| 596 | maths/maclaurin_series | ✓ | 3ms | 13.0 MB |
+| 597 | maths/manhattan_distance | ✓ | 1ms | 12.3 MB |
+| 598 | maths/matrix_exponentiation | ✓ | 1ms | 13.5 MB |
+| 599 | maths/max_sum_sliding_window | ✓ | 0s | 12.8 MB |
 | 600 | maths/minkowski_distance | ✓ | 1ms | 12.3 MB |
-| 601 | maths/mobius_function | ✓ | 0s | 12.4 MB |
-| 602 | maths/modular_division | ✓ | 1ms | 13.9 MB |
-| 603 | maths/monte_carlo | ✓ | 70ms | 13.6 MB |
-| 604 | maths/monte_carlo_dice | ✓ | 146ms | 12.5 MB |
-| 605 | maths/number_of_digits | ✓ | 1ms | 13.2 MB |
-| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 1ms | 14.2 MB |
-| 607 | maths/numerical_analysis/bisection | ✓ | 1ms | 12.3 MB |
-| 608 | maths/numerical_analysis/bisection_2 | ✓ |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection | ✓ | 1ms | 12.8 MB |
-| 611 | maths/numerical_analysis/nevilles_method | ✓ | 1ms | 13.2 MB |
-| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 0s | 12.8 MB |
-| 613 | maths/numerical_analysis/newton_raphson | ✓ | 0s | 13.2 MB |
-| 614 | maths/numerical_analysis/numerical_integration | ✓ | 431ms | 12.3 MB |
-| 615 | maths/numerical_analysis/proper_fractions | ✓ | 1ms | 12.7 MB |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 0s | 13.4 MB |
-| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 1ms | 12.9 MB |
-| 619 | maths/numerical_analysis/secant_method | ✓ | 1ms | 12.4 MB |
-| 620 | maths/numerical_analysis/simpson_rule | ✓ |  |  |
-| 621 | maths/numerical_analysis/square_root | ✓ | 0s | 12.7 MB |
-| 622 | maths/odd_sieve | ✓ | 1ms | 12.5 MB |
-| 623 | maths/perfect_cube | ✓ | 0s | 12.2 MB |
-| 624 | maths/perfect_number | ✓ |  |  |
+| 601 | maths/mobius_function | ✓ | 0s | 12.2 MB |
+| 602 | maths/modular_division | ✓ | 0s | 13.3 MB |
+| 603 | maths/monte_carlo | ✓ | 24ms | 13.2 MB |
+| 604 | maths/monte_carlo_dice | ✓ | 46ms | 12.4 MB |
+| 605 | maths/number_of_digits | ✓ | 0s | 13.0 MB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 1ms | 13.8 MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 0s | 12.5 MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 0s | 11.8 MB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 14ms | 12.1 MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 0s | 12.3 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 0s | 12.1 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 0s | 12.5 MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 1ms | 12.2 MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 129ms | 12.4 MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 1ms | 12.2 MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 44ms | 12.3 MB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 0s | 13.3 MB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 1ms | 12.5 MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 0s | 12.1 MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 0s | 12.3 MB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 0s | 12.1 MB |
+| 622 | maths/odd_sieve | ✓ | 1ms | 12.2 MB |
+| 623 | maths/perfect_cube | ✓ | 0s | 12.1 MB |
+| 624 | maths/perfect_number | ✓ | 2m45.265s | 12.5 MB |
 | 625 | maths/perfect_square | ✓ | 0s | 12.5 MB |
 | 626 | maths/persistence | ✓ | 0s | 12.5 MB |
 | 627 | maths/pi_generator | ✓ | 0s | 12.4 MB |
