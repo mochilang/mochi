@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-14 09:19 UTC
+Last updated: 2025-08-14 09:50 UTC
 
-## Algorithms Golden Test Checklist (1054/1077)
+## Algorithms Golden Test Checklist (1055/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -503,7 +503,7 @@ Last updated: 2025-08-14 09:19 UTC
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 571.223ms | 446.6 KB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 571.223ms | 293.1 KB |
 | 496 | linear_programming/simplex | ✓ | 571.223ms | 337.6 KB |
-| 497 | machine_learning/apriori_algorithm | ✓ | 571.223ms | 71.8 KB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 571.223ms | 82.8 KB |
 | 498 | machine_learning/astar | ✓ | 571.223ms | 92.8 KB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 571.223ms | 19.3 KB |
 | 500 | machine_learning/data_transformations | ✓ | 571.223ms | 292.8 KB |
@@ -545,7 +545,7 @@ Last updated: 2025-08-14 09:19 UTC
 | 536 | maths/average_median | ✓ | 571.223ms | 296.1 KB |
 | 537 | maths/average_mode | ✓ | 571.223ms | 106.4 KB |
 | 538 | maths/bailey_borwein_plouffe | ✓ | 571.223ms | 184.4 KB |
-| 539 | maths/base_neg2_conversion |   |  |  |
+| 539 | maths/base_neg2_conversion | ✓ | 571.223ms | 22.7 KB |
 | 540 | maths/basic_maths | ✓ | 571.223ms | 26.9 KB |
 | 541 | maths/binary_exponentiation | ✓ | 571.223ms | 22.9 KB |
 | 542 | maths/binary_multiplication | ✓ | 571.223ms | 22.4 KB |
