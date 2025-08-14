@@ -98,6 +98,7 @@ var (
 	varDecls           map[string]*VarDecl
 	fetchFuncs         map[string]bool
 	funcPtrParams      map[string]map[int]bool
+	funcParamTypes     map[string][]string
 	testHeaderVarAdded bool
 )
 
@@ -833,6 +834,15 @@ func (a *AddrExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "&")
 	if a.Expr != nil {
 		a.Expr.emit(w)
+	}
+}
+
+type DerefExpr struct{ Expr Expr }
+
+func (d *DerefExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "*")
+	if d.Expr != nil {
+		d.Expr.emit(w)
 	}
 }
 
@@ -2446,6 +2456,61 @@ func (a *AssertExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, ".(%s)", a.Type)
 }
 
+func precomputeFuncInfo(p *parser.Program, env *types.Env) {
+	funcPtrParams = map[string]map[int]bool{}
+	funcParamTypes = map[string][]string{}
+	origVarDecls := varDecls
+	for _, st := range p.Statements {
+		if st.Fun != nil {
+			fn := st.Fun
+			child := types.NewEnv(env)
+			tmpDecls := map[string]*VarDecl{}
+			varDecls = tmpDecls
+			for _, p := range fn.Params {
+				if p.Type != nil {
+					child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
+				} else if t, err := env.GetVar(p.Name); err == nil {
+					child.SetVar(p.Name, t, true)
+				} else {
+					child.SetVar(p.Name, types.AnyType{}, true)
+				}
+				vtyp := toGoType(p.Type, env)
+				if vtyp == "" && p.Type != nil {
+					vtyp = toGoTypeFromType(types.ResolveTypeRef(p.Type, env))
+				}
+				tmpDecls[p.Name] = &VarDecl{Name: p.Name, Type: vtyp}
+			}
+			body, err := compileStmts(fn.Body, child)
+			if err != nil {
+				continue
+			}
+			ptrMap := map[int]bool{}
+			for i, p := range fn.Params {
+				if t, err := child.GetVar(p.Name); err == nil {
+					if _, ok := t.(types.StructType); ok && paramNeedsPointer(p.Name, body) {
+						ptrMap[i] = true
+					}
+				}
+			}
+			typesList := make([]string, len(fn.Params))
+			for i, p := range fn.Params {
+				typ := toGoType(p.Type, env)
+				if typ == "" && p.Type != nil {
+					typ = toGoTypeFromType(types.ResolveTypeRef(p.Type, env))
+				}
+				if ptrMap[i] && typ != "" && !strings.HasPrefix(typ, "*") {
+					typ = "*" + typ
+				}
+				typesList[i] = typ
+			}
+			name := safeName(fn.Name)
+			funcPtrParams[name] = ptrMap
+			funcParamTypes[name] = typesList
+		}
+	}
+	varDecls = origVarDecls
+}
+
 // Transpile converts a Mochi program to a minimal Go AST.
 func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	usesStrings = false
@@ -2484,6 +2549,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	varNameMap = map[string]string{}
 	varDecls = map[string]*VarDecl{}
 	fetchFuncs = map[string]bool{}
+	imports = map[string]string{}
+	precomputeFuncInfo(p, env)
 	for name, st := range env.Structs() {
 		_ = name
 		for fn, ft := range st.Fields {
@@ -2492,7 +2559,6 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 			}
 		}
 	}
-	imports = map[string]string{}
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -3415,8 +3481,28 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if isBigIntType(types.TypeOfPostfix(pf, env)) {
+		var tgtType types.Type
+		if st.Assign.Name != "" {
+			if bt, err := env.GetVar(st.Assign.Name); err == nil {
+				tgtType = bt
+				for _, f := range st.Assign.Field {
+					if stt, ok := tgtType.(types.StructType); ok {
+						tgtType = stt.Fields[f.Name]
+					}
+				}
+			}
+		}
+		if tgtType == nil {
+			tgtType = types.TypeOfPostfix(pf, env)
+		}
+		if isBigIntType(tgtType) {
 			val = ensureBigIntExpr(val, types.TypeOfExpr(st.Assign.Value, env))
+		}
+		if ml, ok := val.(*MapLit); ok {
+			updateMapLitTypes(ml, tgtType)
+		}
+		if ll, ok := val.(*ListLit); ok {
+			updateListLitType(ll, tgtType)
 		}
 		return &SetStmt{Target: target, Value: val}, nil
 	case st.If != nil:
@@ -4892,7 +4978,8 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		retT = types.ResolveTypeRef(fn.Return, env)
 	}
 	env.SetVar(fn.Name, types.FuncType{Params: paramTypes, Return: retT}, false)
-	for _, p := range fn.Params {
+	prePtr := funcPtrParams[fn.Name]
+	for i, p := range fn.Params {
 		if p.Type != nil {
 			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
 		} else if t, err := env.GetVar(p.Name); err == nil {
@@ -4911,6 +4998,9 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 			vtyp := toGoType(p.Type, env)
 			if vtyp == "" && p.Type != nil {
 				vtyp = toGoTypeFromType(types.ResolveTypeRef(p.Type, env))
+			}
+			if prePtr != nil && prePtr[i] && vtyp != "" && !strings.HasPrefix(vtyp, "*") {
+				vtyp = "*" + vtyp
 			}
 			varDecls[p.Name] = &VarDecl{Name: name, Type: vtyp}
 		}
@@ -4948,7 +5038,11 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 	}
+	for i := range prePtr {
+		ptrParams[i] = true
+	}
 	params := make([]ParamDecl, len(fn.Params))
+	typesList := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := toGoType(p.Type, env)
 		if typ == "" && p.Type != nil {
@@ -4974,6 +5068,7 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 		params[i] = ParamDecl{Name: pname, Type: typ}
+		typesList[i] = typ
 	}
 	ret := toGoType(fn.Return, env)
 	if ret == "" && fn.Return != nil {
@@ -5038,12 +5133,14 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	if name != origName {
 		varNameMap[origName] = name
 	}
-	if len(ptrParams) > 0 {
-		if funcPtrParams == nil {
-			funcPtrParams = map[string]map[int]bool{}
-		}
-		funcPtrParams[name] = ptrParams
+	if funcPtrParams == nil {
+		funcPtrParams = map[string]map[int]bool{}
 	}
+	funcPtrParams[name] = ptrParams
+	if funcParamTypes == nil {
+		funcParamTypes = map[string][]string{}
+	}
+	funcParamTypes[name] = typesList
 	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body}, nil
 }
 
@@ -6578,6 +6675,17 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 						}
 					} else if _, ok := args[i].(*FieldExpr); ok {
 						args[i] = &AddrExpr{Expr: args[i]}
+					}
+				}
+			}
+		}
+		if pts := funcParamTypes[name]; pts != nil {
+			for i := range args {
+				if i < len(pts) && !strings.HasPrefix(pts[i], "*") {
+					if vr, ok := args[i].(*VarRef); ok {
+						if vd, ok2 := varDecls[vr.Name]; ok2 && strings.HasPrefix(vd.Type, "*") {
+							args[i] = &DerefExpr{Expr: args[i]}
+						}
 					}
 				}
 			}
