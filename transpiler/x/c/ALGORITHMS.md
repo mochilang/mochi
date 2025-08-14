@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (433/1077) - Last updated 2025-08-13 16:58 +0700:
+Checklist of programs that currently transpile and run (434/1077) - Last updated 2025-08-14 09:46 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -354,7 +354,7 @@ Checklist of programs that currently transpile and run (433/1077) - Last updated
 | 347 | dynamic_programming/viterbi |  |  |  |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 2.69ms | 1.4 MB |
 | 349 | dynamic_programming/word_break | ✓ | 236us | 1.4 MB |
-| 350 | electronics/apparent_power |  |  |  |
+| 350 | electronics/apparent_power | ✓ | 0us | 1.6 MB |
 | 351 | electronics/builtin_voltage |  |  |  |
 | 352 | electronics/capacitor_equivalence |  |  |  |
 | 353 | electronics/carrier_concentration |  |  |  |
