@@ -45,6 +45,7 @@ var (
 	usesAppend        bool
 	usesConcat        bool
 	usesStr           bool
+	usesToi           bool
 	usesSetIndex      bool
 	usesPanic         bool
 	funcDepth         int
@@ -155,6 +156,11 @@ def _str(v):
             return str(int(v))
         return format(v, ".15g")
     return str(v)
+`
+
+const helperToi = `
+def _toi(v):
+    return int(v)
 `
 
 var pyKeywords = map[string]bool{
@@ -3282,6 +3288,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesToi {
+		if _, err := io.WriteString(w, helperToi+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesSetIndex {
 		if _, err := io.WriteString(w, helperSetIndex+"\n"); err != nil {
 			return err
@@ -3568,6 +3579,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesAppend = false
 	usesConcat = false
 	usesStr = false
+	usesToi = false
 	usesSetIndex = false
 	usesPanic = false
 	p := &Program{}
@@ -5168,7 +5180,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 							var kwargs []Expr
 							for i := range d.Keys {
 								if k, ok := d.Keys[i].(*StringLit); ok {
-									kwargs = append(kwargs, &KeywordArg{Name: k.Value, Value: d.Values[i]})
+									kwargs = append(kwargs, &KeywordArg{Name: safeName(k.Value), Value: d.Values[i]})
 								}
 							}
 							expr = &CallExpr{Func: &Name{Name: name}, Args: kwargs}
@@ -5322,6 +5334,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				usesStr = true
 				return &CallExpr{Func: &Name{Name: "_str"}, Args: args}, nil
+			}
+		case "toi":
+			if len(args) == 1 {
+				usesToi = true
+				return &CallExpr{Func: &Name{Name: "_toi"}, Args: args}, nil
 			}
 		case "split":
 			if len(args) == 2 {
@@ -5516,7 +5533,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					if err != nil {
 						return nil, err
 					}
-					args = append(args, &KeywordArg{Name: f.Name, Value: ve})
+					args = append(args, &KeywordArg{Name: safeName(f.Name), Value: ve})
 				}
 				return &CallExpr{Func: &Name{Name: p.Struct.Name}, Args: args}, nil
 			}

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-14 16:28 GMT+7
+Last updated: 2025-08-14 17:21 GMT+7
 
-## Algorithms Golden Test Checklist (959/1077)
+## Algorithms Golden Test Checklist (961/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -407,9 +407,9 @@ Last updated: 2025-08-14 16:28 GMT+7
 | 398 | graphs/bellman_ford | ✓ | 704.0µs | 12.63MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 1.0ms | 13.88MB |
 | 400 | graphs/bidirectional_a_star | ✓ | 3.0ms | 14.39MB |
-| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 14.30MB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 14.62MB |
 | 402 | graphs/bidirectional_search | ✓ | 141.0µs | 14.11MB |
-| 403 | graphs/boruvka | error |  |  |
+| 403 | graphs/boruvka | ✓ | 126.0µs | 13.80MB |
 | 404 | graphs/breadth_first_search | ✓ | 42.0µs | 12.86MB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 31.0µs | 12.94MB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 1.0ms | 12.75MB |
@@ -432,7 +432,7 @@ Last updated: 2025-08-14 16:28 GMT+7
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1.0ms | 13.94MB |
 | 424 | graphs/even_tree | ✓ | 39.0µs | 12.95MB |
 | 425 | graphs/finding_bridges | ✓ | 1.0ms | 13.75MB |
-| 426 | graphs/frequent_pattern_graph_miner | error |  |  |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 434.0µs | 14.75MB |
 | 427 | graphs/g_topological_sort | ✓ | 89.0µs | 13.24MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 52.0µs | 13.59MB |
 | 429 | graphs/graph_adjacency_list | ✓ | 75.0µs | 14.14MB |
