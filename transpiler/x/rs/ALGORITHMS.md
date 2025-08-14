@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-14 10:06 GMT+7
+Last updated: 2025-08-14 16:07 GMT+7
 
-## Algorithms Golden Test Checklist (751/1077)
+## Algorithms Golden Test Checklist (754/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -411,13 +411,13 @@ Last updated: 2025-08-14 10:06 GMT+7
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
+| 405 | graphs/breadth_first_search_2 | ✓ | 191µs | 2.2 MB |
 | 406 | graphs/breadth_first_search_shortest_path |   |  |  |
 | 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
 | 409 | graphs/check_bipatrite |   |  |  |
 | 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 411 | graphs/connected_components | ✓ | 87µs | 1.9 MB |
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search |   |  |  |
 | 414 | graphs/depth_first_search_2 |   |  |  |
@@ -428,7 +428,7 @@ Last updated: 2025-08-14 10:06 GMT+7
 | 419 | graphs/dijkstra_binary_grid |   |  |  |
 | 420 | graphs/dinic |   |  |  |
 | 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 96µs | 2.2 MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
 | 424 | graphs/even_tree |   |  |  |
 | 425 | graphs/finding_bridges |   |  |  |

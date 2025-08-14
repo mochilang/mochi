@@ -3771,28 +3771,14 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = inferType(e)
 		}
 		vd := &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}
-		if funcDepth == 0 && len(localVarStack) == 0 && isConstExpr(e) {
-			vd.Global = true
-			newName := "g_" + stmt.Var.Name
-			globalRenames[stmt.Var.Name] = newName
-			globalRenameBack[newName] = stmt.Var.Name
-			vd.Name = newName
-			globalVars[newName] = true
-			varTypes[newName] = typ
-			if strings.HasPrefix(typ, "HashMap") {
-				useLazy = true
-				useRefCell = true
-			}
-		} else {
-			if funcDepth == 0 && len(localVarStack) == 0 {
-				topLevelNonConstLet = true
-			}
-			if len(localVarStack) > 0 {
-				localVarStack[len(localVarStack)-1][stmt.Var.Name] = true
-			}
-			if currentFuncLocals != nil {
-				currentFuncLocals[stmt.Var.Name] = true
-			}
+		if funcDepth == 0 && len(localVarStack) == 0 {
+			topLevelNonConstLet = true
+		}
+		if len(localVarStack) > 0 {
+			localVarStack[len(localVarStack)-1][stmt.Var.Name] = true
+		}
+		if currentFuncLocals != nil {
+			currentFuncLocals[stmt.Var.Name] = true
 		}
 		return vd, nil
 	case stmt.Assign != nil:
@@ -3841,6 +3827,12 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			return &IndexAssignStmt{Target: target, Value: val}, nil
 		}
 		newType := inferType(val)
+		if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 {
+			if ot, ok2 := varTypes[stmt.Assign.Name]; ok2 {
+				newType = ot
+				val = &ListLit{Elems: []Expr{}}
+			}
+		}
 		if oldType, ok := varTypes[stmt.Assign.Name]; ok && oldType != "" && newType != "" {
 			baseType := newType
 			if strings.HasPrefix(baseType, "&mut ") {
@@ -3883,7 +3875,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			stringVars[stmt.Assign.Name] = true
 		}
 		if t := inferType(val); t != "" && !updated {
-			varTypes[stmt.Assign.Name] = t
+			if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 {
+				// retain existing type when assigning empty list
+			} else {
+				varTypes[stmt.Assign.Name] = t
+			}
 		}
 		if vt, ok := varTypes[stmt.Assign.Name]; ok && vt == "String" {
 			if _, ok := val.(*StringLit); ok {
@@ -4381,7 +4377,7 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 }
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
-	nested := funcDepth > 0 || (funcDepth == 0 && topLevelNonConstLet)
+	nested := funcDepth > 0
 	funcDepth++
 	prevVarTypes := varTypes
 	prevMapVars := mapVars
@@ -4619,53 +4615,62 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	vtCopy := copyStringMap(varTypes)
 	svCopy := copyBoolMap(stringVars)
 	mvCopy := copyBoolMap(mapVars)
-	if nested {
+	caps := collectCaptures(body, params, localsCopy, name)
+	useClosure := nested || (topLevelNonConstLet && len(caps) > 0)
+	if useClosure {
 		var flit *FunLit
-		if containsCallStmts(body, name) {
-			caps := collectCaptures(body, params, localsCopy, name)
-			if len(caps) > 0 {
-				addCaptureArgs(body, name, caps)
-				capParams := make([]Param, len(caps))
-				for i, c := range caps {
-					ct := varTypes[c]
-					if t, ok := currentParamTypes[c]; ok && t != "" {
-						ct = t
-					}
-					if ct == "" {
-						ct = "i64"
-					}
-					paramType := ct
-					if strings.HasPrefix(ct, "&") {
-						paramType = ct
-					} else if ct == "i64" || ct == "f64" || ct == "bool" {
-						paramType = ct
-					} else if ct == "String" {
-						if isVarMutated(body, c) {
-							paramType = "&mut String"
-						} else {
-							paramType = "&str"
-						}
-					} else if strings.HasPrefix(ct, "Vec<") || strings.HasPrefix(ct, "HashMap<") || ct == "Trie" || strings.HasPrefix(ct, "Option<") || strings.HasPrefix(ct, "Box<") || strings.HasPrefix(ct, "Rc<") || strings.HasPrefix(ct, "RefCell<") || strings.HasSuffix(ct, "]") || strings.HasSuffix(ct, ">") {
-						if isVarMutated(body, c) {
-							paramType = "&mut " + ct
-						} else {
-							paramType = "&" + ct
-						}
-					} else {
-						if isVarMutated(body, c) {
-							paramType = "&mut " + ct
-						} else {
-							paramType = "&" + ct
-						}
-					}
-					capParams[i] = Param{Name: c, Type: paramType}
+		if len(caps) > 0 {
+			addCaptureArgs(body, name, caps)
+			capParams := make([]Param, len(caps))
+			for i, c := range caps {
+				ct := varTypes[c]
+				if t, ok := currentParamTypes[c]; ok && t != "" {
+					ct = t
 				}
-				flit = &FunLit{Params: params, Return: ret, Body: body, Name: name, Captures: capParams}
+				if ct == "" {
+					ct = "i64"
+				}
+				paramType := ct
+				if strings.HasPrefix(ct, "&") {
+					paramType = ct
+				} else if ct == "i64" || ct == "f64" || ct == "bool" {
+					paramType = ct
+				} else if ct == "String" {
+					if isVarMutated(body, c) {
+						paramType = "&mut String"
+					} else {
+						paramType = "&str"
+					}
+				} else if strings.HasPrefix(ct, "Vec<") || strings.HasPrefix(ct, "HashMap<") || ct == "Trie" || strings.HasPrefix(ct, "Option<") || strings.HasPrefix(ct, "Box<") || strings.HasPrefix(ct, "Rc<") || strings.HasPrefix(ct, "RefCell<") || strings.HasSuffix(ct, "]") || strings.HasSuffix(ct, ">") {
+					if isVarMutated(body, c) {
+						paramType = "&mut " + ct
+					} else {
+						paramType = "&" + ct
+					}
+				} else {
+					if isVarMutated(body, c) {
+						paramType = "&mut " + ct
+					} else {
+						paramType = "&" + ct
+					}
+				}
+				capParams[i] = Param{Name: c, Type: paramType}
 			}
+			flit = &FunLit{Params: params, Return: ret, Body: body, Name: name, Captures: capParams}
 		}
 		if flit == nil {
 			flit = &FunLit{Params: params, Return: ret, Body: body}
 		}
+		// record closure type for capture analysis
+		paramSig := make([]string, len(params))
+		for i, p := range params {
+			paramSig[i] = p.Type
+		}
+		varTypes[name] = fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(paramSig, ", "), ret)
+		prevVarTypes[name] = varTypes[name]
+		delete(funReturns, name)
+		delete(funParams, name)
+		delete(funParamTypes, name)
 		// Nested functions are stored as variables. Make them mutable so
 		// they can be borrowed mutably for `FnMut` callbacks.
 		vd := &VarDecl{Name: name, Expr: flit, Mutable: true}
@@ -6650,6 +6655,7 @@ func collectNamesExpr(names map[string]bool, e Expr) {
 	case *NameRef:
 		names[ex.Name] = true
 	case *CallExpr:
+		names[ex.Func] = true
 		for _, a := range ex.Args {
 			collectNamesExpr(names, a)
 		}
