@@ -1,5 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/matrix/rotate_matrix.erl:106:19: Warning: variable 'Size_3' exported from 'case' (line 78, column 9)
-%  106| {Mat_2, Row_size, Size_3, Y_2} = Fun_2(Mat, Row_size, Size_3, Y),
+/workspace/mochi/tests/algorithms/x/Erlang/matrix/rotate_matrix.erl:119:19: Warning: variable 'Size_3' exported from 'case' (line 91, column 9)
+%  119| {Mat_2, Row_size, Size_3, Y_2} = Fun_2(Mat, Row_size, Size_3, Y),
 %     |                   ^
 
 "\norigin:\n"
