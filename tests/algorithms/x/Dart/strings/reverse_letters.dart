@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,15 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 List<String> split(String s, String sep) {
@@ -41,7 +49,7 @@ List<String> split(String s, String sep) {
   String current = "";
   int i = 0;
   while (i < s.length) {
-    String ch = s.substring(i, i + 1);
+    String ch = _substr(s, i, i + 1);
     if (ch == sep) {
     res = [...res, current];
     current = "";
@@ -71,7 +79,7 @@ String reverse_str(String s) {
   String res = "";
   int i = s.length - 1;
   while (i >= 0) {
-    res = res + s.substring(i, i + 1);
+    res = res + _substr(s, i, i + 1);
     i = i - 1;
   }
   return res;
@@ -95,16 +103,16 @@ String reverse_letters(String sentence, int length) {
 
 void test_reverse_letters() {
   if (reverse_letters("Hey wollef sroirraw", 3) != "Hey fellow warriors") {
-    throw Exception("test1 failed");
+    _error("test1 failed");
   }
   if (reverse_letters("nohtyP is nohtyP", 2) != "Python is Python") {
-    throw Exception("test2 failed");
+    _error("test2 failed");
   }
   if (reverse_letters("1 12 123 1234 54321 654321", 0) != "1 21 321 4321 12345 123456") {
-    throw Exception("test3 failed");
+    _error("test3 failed");
   }
   if (reverse_letters("racecar", 0) != "racecar") {
-    throw Exception("test4 failed");
+    _error("test4 failed");
   }
 }
 

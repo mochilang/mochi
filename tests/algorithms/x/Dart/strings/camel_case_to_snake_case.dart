@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String LOWER = "abcdefghijklmnopqrstuvwxyz";
@@ -42,7 +45,7 @@ String DIGITS = "0123456789";
 bool is_lower(String ch) {
   int i = 0;
   while (i < LOWER.length) {
-    if (LOWER.substring(i, i + 1) == ch) {
+    if (_substr(LOWER, i, i + 1) == ch) {
     return true;
   }
     i = i + 1;
@@ -53,7 +56,7 @@ bool is_lower(String ch) {
 bool is_upper(String ch) {
   int i = 0;
   while (i < UPPER.length) {
-    if (UPPER.substring(i, i + 1) == ch) {
+    if (_substr(UPPER, i, i + 1) == ch) {
     return true;
   }
     i = i + 1;
@@ -64,7 +67,7 @@ bool is_upper(String ch) {
 bool is_digit(String ch) {
   int i = 0;
   while (i < DIGITS.length) {
-    if (DIGITS.substring(i, i + 1) == ch) {
+    if (_substr(DIGITS, i, i + 1) == ch) {
     return true;
   }
     i = i + 1;
@@ -95,8 +98,8 @@ bool is_alnum(String ch) {
 String to_lower(String ch) {
   int i = 0;
   while (i < UPPER.length) {
-    if (UPPER.substring(i, i + 1) == ch) {
-    return LOWER.substring(i, i + 1);
+    if (_substr(UPPER, i, i + 1) == ch) {
+    return _substr(LOWER, i, i + 1);
   }
     i = i + 1;
   }
@@ -109,7 +112,7 @@ String camel_to_snake_case(String input_str) {
   bool prev_is_digit = false;
   bool prev_is_alpha = false;
   while (i < input_str.length) {
-    String ch = input_str.substring(i, i + 1);
+    String ch = _substr(input_str, i, i + 1);
     if (is_upper(ch)) {
     snake_str = snake_str + "_" + to_lower(ch);
   } else {
@@ -131,7 +134,7 @@ String camel_to_snake_case(String input_str) {
     prev_is_alpha = is_alpha(ch);
     i = i + 1;
   }
-  if (snake_str.length > 0 && snake_str.substring(0, 0 + 1) == "_") {
+  if (snake_str.length > 0 && _substr(snake_str, 0, 0 + 1) == "_") {
     snake_str = _substr(snake_str, 1, snake_str.length);
   }
   return snake_str;

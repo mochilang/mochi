@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String ETAOIN = "ETAOINSHRDLCUMWFGYPBVKJXQZ";
@@ -62,7 +65,7 @@ Map<String, int> get_letter_count(String message) {
   while (j < msg.length) {
     String ch = _substr(msg, j, j + 1);
     if (LETTERS.contains(ch)) {
-    letter_count[ch] = ((letter_count[ch] ?? 0) + 1).toInt();
+    letter_count[ch] = (letter_count[ch] ?? 0) + 1;
   }
     j = j + 1;
   }

@@ -61,6 +61,31 @@ String _md5hex(String s) {
 }
 `
 
+const helperReadFile = `
+String _read_file(String path) {
+  var f = File(path);
+  if (!f.existsSync()) {
+    var dir = File.fromUri(Platform.script).parent;
+    var alt = dir.uri.resolve(path).toFilePath();
+    f = File(alt);
+    if (!f.existsSync()) {
+      var dirPath = dir.path;
+      var base = 'tests/algorithms/x/Dart/';
+      var idx = dirPath.indexOf(base);
+      var rel = '';
+      if (idx >= 0) {
+        rel = dirPath.substring(idx + base.length);
+      }
+      alt = dir.uri
+          .resolve('../../../../github/TheAlgorithms/Mochi/' + rel + path)
+          .toFilePath();
+      f = File(alt);
+    }
+  }
+  return f.existsSync() ? f.readAsStringSync() : '';
+}
+`
+
 const helperFetch = `
 dynamic _fetch(String url) {
   if (url.startsWith('file://')) {
@@ -142,6 +167,7 @@ var (
 	useBigRat         bool
 	useSHA256         bool
 	useMD5            bool
+	useReadFile       bool
 	useFetch          bool
 	useError          bool
 	useJSONPrint      bool
@@ -4137,6 +4163,8 @@ func inferType(e Expr) string {
 				}
 			case "json":
 				return "void"
+			case "_read_file":
+				return "String"
 			default:
 				if rt, ok := funcReturnTypes[n.Name]; ok {
 					return rt
@@ -4504,12 +4532,12 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if (useNow || useInput || useSHA256 || useEnv || useFetch || useMD5) && !added["dart:io"] {
+	if (useNow || useInput || useSHA256 || useEnv || useFetch || useMD5 || useReadFile) && !added["dart:io"] {
 		if _, err := io.WriteString(w, "import 'dart:io';\n"); err != nil {
 			return err
 		}
 	}
-	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 || useEnv || useFetch || useMD5 {
+	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 || useEnv || useFetch || useMD5 || useReadFile {
 		if _, err := io.WriteString(w, "\n"); err != nil {
 			return err
 		}
@@ -4601,6 +4629,11 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if useMD5 {
 		if _, err := io.WriteString(w, helperMD5+"\n"); err != nil {
+			return err
+		}
+	}
+	if useReadFile {
+		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
 			return err
 		}
 	}
@@ -4808,6 +4841,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useBigRat = false
 	useSHA256 = false
 	useMD5 = false
+	useReadFile = false
 	useFetch = false
 	useError = false
 	useJSONPrint = false
@@ -5300,11 +5334,19 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
 			typ = strings.TrimSuffix(typ, "?")
 		}
+		valType := ""
+		if e != nil {
+			valType = inferType(e)
+		}
 		if _, ok := localVarTypes[name]; ok {
 			return &AssignStmt{Target: &Name{Name: name}, Value: e}, nil
 		}
 		if typ != "" {
 			localVarTypes[name] = typ
+		} else if valType != "" {
+			localVarTypes[name] = valType
+		} else {
+			localVarTypes[name] = "dynamic"
 		}
 		return &VarStmt{Name: name, Type: typ, Value: e}, nil
 	case st.Assign != nil:
@@ -6149,6 +6191,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: &Name{"_denom"}, Args: []Expr{arg}}, nil
 			}
 			return &IntLit{Value: 1}, nil
+		}
+		if p.Call.Func == "read_file" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			useReadFile = true
+			return &CallExpr{Func: &Name{Name: "_read_file"}, Args: []Expr{arg}}, nil
+		}
+		if p.Call.Func == "not" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &UnaryExpr{Op: "!", X: arg}, nil
 		}
 		if p.Call.Func == "upper" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])

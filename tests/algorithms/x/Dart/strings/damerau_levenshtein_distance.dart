@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 int damerau_levenshtein_distance(String first_string, String second_string) {
   int len1 = first_string.length;
@@ -47,7 +50,7 @@ int damerau_levenshtein_distance(String first_string, String second_string) {
     for (int _2 = 0; _2 < len2 + 1; _2++) {
     row = [...row, 0];
   }
-    dp_matrix = ([...dp_matrix, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    dp_matrix = ([...dp_matrix, row] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
   for (int i = 0; i < len1 + 1; i++) {
     List<int> row = dp_matrix[i];

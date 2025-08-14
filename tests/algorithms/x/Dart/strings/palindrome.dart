@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,18 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
+}
 
 class Case {
   String text;
@@ -48,7 +56,7 @@ String reverse(String s) {
   String res = "";
   int i = s.length - 1;
   while (i >= 0) {
-    res = res + s.substring(i, i + 1);
+    res = res + _substr(s, i, i + 1);
     i = i - 1;
   }
   return res;
@@ -58,7 +66,7 @@ bool is_palindrome(String s) {
   int start_i = 0;
   int end_i = s.length - 1;
   while (start_i < end_i) {
-    if (s.substring(start_i, start_i + 1) == s.substring(end_i, end_i + 1)) {
+    if (_substr(s, start_i, start_i + 1) == _substr(s, end_i, end_i + 1)) {
     start_i = start_i + 1;
     end_i = end_i - 1;
   } else {
@@ -73,7 +81,7 @@ bool is_palindrome_traversal(String s) {
   int n = s.length;
   int i = 0;
   while (i < end) {
-    if (s.substring(i, i + 1) != s.substring(n - i - 1, n - i - 1 + 1)) {
+    if (_substr(s, i, i + 1) != _substr(s, n - i - 1, n - i - 1 + 1)) {
     return false;
   }
     i = i + 1;
@@ -85,7 +93,7 @@ bool is_palindrome_recursive(String s) {
   if (s.length <= 1) {
     return true;
   }
-  if (s.substring(0, 0 + 1) == s.substring(s.length - 1, s.length - 1 + 1)) {
+  if (_substr(s, 0, 0 + 1) == _substr(s, s.length - 1, s.length - 1 + 1)) {
     return is_palindrome_recursive(_substr(s, 1, s.length - 1));
   }
   return false;
@@ -105,7 +113,7 @@ void _main() {
     bool r3 = is_palindrome_recursive(s);
     bool r4 = is_palindrome_slice(s);
     if (r1 != expected || r2 != expected || r3 != expected || r4 != expected) {
-    throw Exception("algorithm mismatch");
+    _error("algorithm mismatch");
   }
     print(s + " " + _str(expected));
   }

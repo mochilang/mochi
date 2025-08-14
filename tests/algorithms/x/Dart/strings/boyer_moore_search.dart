@@ -39,20 +39,49 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) => v.toString();
+int match_in_pattern(String pat, String ch) {
+  int i = pat.length - 1;
+  while (i >= 0) {
+    if (_substr(pat, i, i + 1) == ch) {
+    return i;
+  }
+    i = i - 1;
+  }
+  return -1;
+}
 
-List<String> words = ["depart", "detergent", "daring", "dog", "deer", "deal"];
-List<String> autocomplete_using_trie(String prefix) {
-  List<String> result = <String>[];
+int mismatch_in_text(String text, String pat, int current_pos) {
+  int i = pat.length - 1;
+  while (i >= 0) {
+    if (_substr(pat, i, i + 1) != _substr(text, current_pos + i, current_pos + i + 1)) {
+    return current_pos + i;
+  }
+    i = i - 1;
+  }
+  return -1;
+}
+
+List<int> bad_character_heuristic(String text, String pat) {
+  int textLen = text.length;
+  int patLen = pat.length;
+  List<int> positions = <int>[];
   int i = 0;
-  while (i < words.length) {
-    String w = words[i];
-    if (_substr(w, 0, prefix.length) == prefix) {
-    result = [...result, w + " "];
-  }
+  while (i <= textLen - patLen) {
+    int mismatch_index = mismatch_in_text(text, pat, i);
+    if (mismatch_index < 0) {
+    positions = [...positions, i];
     i = i + 1;
+  } else {
+    String ch = _substr(text, mismatch_index, mismatch_index + 1);
+    int match_index = match_in_pattern(pat, ch);
+    if (match_index < 0) {
+    i = mismatch_index + 1;
+  } else {
+    i = mismatch_index - match_index;
+  };
   }
-  return result;
+  }
+  return positions;
 }
 
 void main() {
@@ -62,7 +91,6 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print(_str(autocomplete_using_trie("de")));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

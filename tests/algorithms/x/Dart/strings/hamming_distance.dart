@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,19 +33,27 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
+}
 
 int hamming_distance(String a, String b) {
   if (a.length != b.length) {
-    throw Exception("String lengths must match!");
+    _error("String lengths must match!");
   }
   int i = 0;
   int count = 0;
   while (i < a.length) {
-    if (a.substring(i, i + 1) != b.substring(i, i + 1)) {
+    if (_substr(a, i, i + 1) != _substr(b, i, i + 1)) {
     count = count + 1;
   }
     i = i + 1;

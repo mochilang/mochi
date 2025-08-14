@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 bool starts_with(String s, String prefix) {
   if (s.length < prefix.length) {
@@ -48,7 +51,7 @@ bool starts_with(String s, String prefix) {
 bool all_digits(String s) {
   int i = 0;
   while (i < s.length) {
-    String c = s.substring(i, i + 1);
+    String c = _substr(s, i, i + 1);
     if (c.compareTo("0") < 0 || c.compareTo("9") > 0) {
     return false;
   }
@@ -79,17 +82,17 @@ bool is_sri_lankan_phone_number(String phone) {
   if (p.length != 9 && p.length != 10) {
     return false;
   }
-  if (p.substring(0, 0 + 1) != "7") {
+  if (_substr(p, 0, 0 + 1) != "7") {
     return false;
   }
-  String second = p.substring(1, 1 + 1);
+  String second = _substr(p, 1, 1 + 1);
   List<String> allowed = ["0", "1", "2", "4", "5", "6", "7", "8"];
   if (!allowed.contains(second)) {
     return false;
   }
   int idx = 2;
   if (p.length == 10) {
-    String sep = p.substring(2, 2 + 1);
+    String sep = _substr(p, 2, 2 + 1);
     if (sep != "-" && sep != " ") {
     return false;
   };

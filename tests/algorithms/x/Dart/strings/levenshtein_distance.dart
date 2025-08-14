@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 List<int> range_list(int n) {
   List<int> lst = <int>[];
@@ -69,12 +72,12 @@ int levenshtein_distance(String first_word, String second_word) {
   List<int> previous_row = range_list(second_word.length + 1);
   int i = 0;
   while (i < first_word.length) {
-    String c1 = first_word.substring(i, i + 1);
+    String c1 = _substr(first_word, i, i + 1);
     List<int> current_row = <int>[];
     current_row = [...current_row, i + 1];
     int j = 0;
     while (j < second_word.length) {
-    String c2 = second_word.substring(j, j + 1);
+    String c2 = _substr(second_word, j, j + 1);
     int insertions = previous_row[j + 1] + 1;
     int deletions = current_row[j] + 1;
     int substitutions = previous_row[j] + (c1 == c2 ? 0 : 1);
@@ -98,7 +101,7 @@ int levenshtein_distance_optimized(String first_word, String second_word) {
   List<int> previous_row = range_list(second_word.length + 1);
   int i = 0;
   while (i < first_word.length) {
-    String c1 = first_word.substring(i, i + 1);
+    String c1 = _substr(first_word, i, i + 1);
     List<int> current_row = <int>[];
     current_row = [...current_row, i + 1];
     int k = 0;
@@ -108,7 +111,7 @@ int levenshtein_distance_optimized(String first_word, String second_word) {
   }
     int j = 0;
     while (j < second_word.length) {
-    String c2 = second_word.substring(j, j + 1);
+    String c2 = _substr(second_word, j, j + 1);
     int insertions = previous_row[j + 1] + 1;
     int deletions = current_row[j] + 1;
     int substitutions = previous_row[j] + (c1 == c2 ? 0 : 1);
