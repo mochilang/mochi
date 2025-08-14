@@ -7600,6 +7600,7 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("func _setIndex[T any](s []T, i any, v T) {\n")
 		buf.WriteString("    idx := func(v any) int { switch vv := v.(type) { case int: return vv; case int64: return int(vv); case float64: return int(vv); case float32: return int(vv); default: return v.(int) } }(i)\n")
 		buf.WriteString("    if idx < 0 { idx += len(s) }\n")
+		buf.WriteString("    if idx < 0 || idx >= len(s) { return }\n")
 		buf.WriteString("    s[idx] = v\n")
 		buf.WriteString("}\n\n")
 	}
