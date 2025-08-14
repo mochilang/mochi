@@ -1175,17 +1175,16 @@ func (m *MapAssignStmt) emit(w io.Writer) {
 		if t == "" {
 			t = inferType(m.Expr)
 		}
-		if t != "Variant" && t != "any" {
-			if strings.HasPrefix(t, "^") || isArrayType(t) || isRecordType(t) {
-				io.WriteString(w, "Variant(PtrUInt(")
-				m.Expr.emit(w)
-				io.WriteString(w, "))")
-			} else {
-				io.WriteString(w, "Variant(")
-				m.Expr.emit(w)
-				io.WriteString(w, ")")
-			}
-		} else {
+		switch {
+		case strings.HasPrefix(t, "^"):
+			io.WriteString(w, "Variant(PtrUInt(")
+			m.Expr.emit(w)
+			io.WriteString(w, "))")
+		case t == "Variant" || t == "any":
+			io.WriteString(w, "Variant(")
+			m.Expr.emit(w)
+			io.WriteString(w, ")")
+		default:
 			m.Expr.emit(w)
 		}
 	}
@@ -5117,9 +5116,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		keyType := "string"
 		valType := "Variant"
 		varsSet := map[string]struct{}{}
-		allInts := true
-		allStrings := true
 		allNums := true
+		unique := map[string]struct{}{}
 		for _, it := range p.Map.Items {
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
@@ -5141,20 +5139,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			vType := inferType(val)
 			items = append(items, MapItem{Key: keyExpr, Value: val, Type: vType})
 			collectVarNames(val, varsSet)
-			if vType != "integer" {
-				allInts = false
-			}
-			if vType != "string" {
-				allStrings = false
-			}
+			unique[vType] = struct{}{}
 			if vType != "integer" && vType != "real" {
 				allNums = false
 			}
 		}
-		if allInts {
-			valType = "integer"
-		} else if allStrings {
-			valType = "string"
+		if len(unique) == 1 {
+			for t := range unique {
+				valType = t
+				break
+			}
+			if strings.HasPrefix(valType, "array of ") {
+				elem := strings.TrimPrefix(valType, "array of ")
+				valType = currProg.addArrayAlias(elem)
+			}
 		} else if allNums {
 			valType = "real"
 			for i, it := range items {
@@ -5846,7 +5844,7 @@ func addMapConstructors(p *Program) {
 				elem := strings.TrimPrefix(typ, "array of ")
 				typ = currProg.addArrayAlias(elem)
 			}
-			if isArrayType(typ) || isRecordType(typ) {
+			if (isArrayType(typ) || isRecordType(typ)) && m.ValType == "Variant" {
 				anonCounter++
 				ptr := fmt.Sprintf("_ptr%d", anonCounter)
 				locals = append(locals, VarDecl{Name: ptr, Type: "^" + typ})
@@ -5854,7 +5852,7 @@ func addMapConstructors(p *Program) {
 				body = append(body, &AssignStmt{Name: ptr + "^", Expr: it.Value})
 				body = append(body, &MapAssignStmt{Name: "Result", Key: it.Key, Expr: &VarRef{Name: ptr}, Type: "^" + typ})
 			} else {
-				body = append(body, &MapAssignStmt{Name: "Result", Key: it.Key, Expr: it.Value, Type: typ})
+				body = append(body, &MapAssignStmt{Name: "Result", Key: it.Key, Expr: it.Value, Type: m.ValType})
 			}
 		}
 		fn := FunDecl{Name: m.Name, Params: m.Params, ReturnType: fmt.Sprintf("specialize TFPGMap<%s, %s>", m.KeyType, m.ValType), Locals: locals, Body: body}
