@@ -1,8 +1,0 @@
-compile: exit status 1
-/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/co2_emission.cpp:87:215: warning: multi-character character constant [-Wmultichar]
-   87 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << " : "; any_to_stream(os, p.second); } os << '}'; }
-      |                                                                                                                                                                                                                       ^~~~
-/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/co2_emission.cpp: In function ‘Response _fetch_Response(const std::string&)’:
-/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/co2_emission.cpp:191:58: error: too many initializers for ‘Response’
-  191 |         return Response{1, 1, "delectus aut autem", false};
-      |                                                          ^
