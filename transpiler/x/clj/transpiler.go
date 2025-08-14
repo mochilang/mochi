@@ -2908,25 +2908,26 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 	callNode := &List{Elems: elems}
 	if sym, ok := elems[0].(Symbol); ok {
 		if mps, ok := funcMutatedParams[string(sym)]; ok && len(mps) > 0 {
-			bindings := &Vector{Elems: []Node{Symbol("__res"), callNode}}
-			bodyElems := []Node{}
-			for _, mp := range mps {
-				if mp.Index < len(c.Args) {
-					if argName, ok := identName(c.Args[mp.Index]); ok {
-						assign := &List{Elems: []Node{Symbol("set!"), Symbol(argName), Symbol(mp.Name)}}
-						if funDepth == 1 && currentFun == "main" {
-							assign = &List{Elems: []Node{
-								Symbol("alter-var-root"),
-								&List{Elems: []Node{Symbol("var"), Symbol(argName)}},
-								&List{Elems: []Node{Symbol("constantly"), Symbol(mp.Name)}},
-							}}
-						}
-						bodyElems = append(bodyElems, assign)
-					}
-				}
-			}
-			bodyElems = append(bodyElems, Symbol("__res"))
-			callNode = &List{Elems: []Node{Symbol("let"), bindings, &List{Elems: append([]Node{Symbol("do")}, bodyElems...)}}}
+                        bindings := &Vector{Elems: []Node{Symbol("__res"), callNode}}
+                        bodyElems := []Node{}
+                        for _, mp := range mps {
+                                if mp.Index < len(c.Args) {
+                                        if argName, ok := identName(c.Args[mp.Index]); ok {
+                                                assignVal := Symbol("__res")
+                                                assign := &List{Elems: []Node{Symbol("set!"), Symbol(argName), assignVal}}
+                                                if funDepth == 1 && currentFun == "main" {
+                                                        assign = &List{Elems: []Node{
+                                                                Symbol("alter-var-root"),
+                                                                &List{Elems: []Node{Symbol("var"), Symbol(argName)}},
+                                                                &List{Elems: []Node{Symbol("constantly"), assignVal}},
+                                                        }}
+                                                }
+                                                bodyElems = append(bodyElems, assign)
+                                        }
+                                }
+                        }
+                        bodyElems = append(bodyElems, Symbol("__res"))
+                        callNode = &List{Elems: []Node{Symbol("let"), bindings, &List{Elems: append([]Node{Symbol("do")}, bodyElems...)}}}
 		} else if transpileEnv != nil {
 			if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
 				callArity := len(elems) - 1
