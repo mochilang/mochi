@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
 Completed programs: 921/1077
-Last updated: 2025-08-14 15:52 +0700
+Last updated: 2025-08-14 16:09 +0700
 
 Checklist:
 
@@ -413,7 +413,7 @@ Checklist:
 | 404 | graphs/breadth_first_search | ✓ | 9µs | 8.7 MB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 183.317ms | 8.7 MB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 4µs | 8.7 MB |
-| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ |  |  |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 183.317ms | 8.7 MB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 9µs | 8.7 MB |
 | 409 | graphs/check_bipatrite | ✓ | 7µs | 8.7 MB |
 | 410 | graphs/check_cycle | ✓ | 4µs | 8.7 MB |
