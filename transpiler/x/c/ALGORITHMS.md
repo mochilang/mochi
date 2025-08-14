@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (491/1077) - Last updated 2025-08-14 17:04 +0700:
+Checklist of programs that currently transpile and run (494/1077) - Last updated 2025-08-14 17:21 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -409,9 +409,9 @@ Checklist of programs that currently transpile and run (491/1077) - Last updated
 | 402 | graphs/bidirectional_search | ✓ | 414us | 1.4 MB |
 | 403 | graphs/boruvka | ✓ | 365us | 1.5 MB |
 | 404 | graphs/breadth_first_search | ✓ | 186us | 1.4 MB |
-| 405 | graphs/breadth_first_search_2 |  |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |  |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |  |  |  |
+| 405 | graphs/breadth_first_search_2 | ✓ | 260us | 1.6 MB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 205us | 1.5 MB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ |  |  |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |  |  |  |
 | 409 | graphs/check_bipatrite |  |  |  |
 | 410 | graphs/check_cycle | ✓ | 320us | 1.6 MB |
