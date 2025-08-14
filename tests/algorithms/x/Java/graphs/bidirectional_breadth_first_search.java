@@ -1,6 +1,6 @@
 public class Main {
-    static int[][] grid;
-    static int[][] delta;
+    static long[][] grid;
+    static long[][] delta;
     static class Node {
         String pos;
         String[] path;
@@ -19,81 +19,81 @@ public class Main {
     static String[] path1;
     static String[] path2;
 
-    static String key(int y, int x) {
+    static String key(long y, long x) {
         return _p(y) + "," + _p(x);
     }
 
-    static int parse_int(String s) {
-        int value = 0;
-        int i = 0;
-        while (i < _runeLen(s)) {
-            String c = s.substring(i, i+1);
-            value = value * 10 + (Integer.parseInt(c));
-            i = i + 1;
+    static long parse_int(String s) {
+        long value = 0L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(_runeLen(s))) {
+            String c_1 = s.substring((int)((long)(i_1)), (int)((long)(i_1))+1);
+            value = (long)((long)((long)(value) * 10L) + (long)((Integer.parseInt(c_1))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return value;
     }
 
-    static int[] parse_key(String k) {
-        int idx = 0;
-        while (idx < _runeLen(k) && !(_substr(k, idx, idx + 1).equals(","))) {
-            idx = idx + 1;
+    static long[] parse_key(String k) {
+        long idx = 0L;
+        while ((long)(idx) < (long)(_runeLen(k)) && !(_substr(k, (int)((long)(idx)), (int)((long)((long)(idx) + 1L))).equals(","))) {
+            idx = (long)((long)(idx) + 1L);
         }
-        int y = parse_int(_substr(k, 0, idx));
-        int x = parse_int(_substr(k, idx + 1, _runeLen(k)));
-        return new int[]{y, x};
+        long y_1 = (long)(parse_int(_substr(k, (int)((long)(0)), (int)((long)(idx)))));
+        long x_1 = (long)(parse_int(_substr(k, (int)((long)((long)(idx) + 1L)), (int)((long)(_runeLen(k))))));
+        return new long[]{y_1, x_1};
     }
 
     static String[] neighbors(String pos) {
-        int[] coords = ((int[])(parse_key(pos)));
-        int y_1 = coords[0];
-        int x_1 = coords[1];
-        String[] res = ((String[])(new String[]{}));
-        int i_1 = 0;
-        while (i_1 < delta.length) {
-            int ny = y_1 + delta[i_1][0];
-            int nx = x_1 + delta[i_1][1];
-            if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length) {
-                if (grid[ny][nx] == 0) {
-                    res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(key(ny, nx))).toArray(String[]::new)));
+        long[] coords = ((long[])(parse_key(pos)));
+        long y_3 = (long)(coords[(int)((long)(0))]);
+        long x_3 = (long)(coords[(int)((long)(1))]);
+        String[] res_1 = ((String[])(new String[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(delta.length)) {
+            long ny_1 = (long)((long)(y_3) + (long)(delta[(int)((long)(i_3))][(int)((long)(0))]));
+            long nx_1 = (long)((long)(x_3) + (long)(delta[(int)((long)(i_3))][(int)((long)(1))]));
+            if ((long)(ny_1) >= 0L && (long)(ny_1) < (long)(grid.length) && (long)(nx_1) >= 0L && (long)(nx_1) < (long)(grid[(int)((long)(0))].length)) {
+                if ((long)(grid[(int)((long)(ny_1))][(int)((long)(nx_1))]) == 0L) {
+                    res_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(key((long)(ny_1), (long)(nx_1)))).toArray(String[]::new)));
                 }
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return res;
+        return res_1;
     }
 
     static String[] reverse_list(String[] lst) {
-        String[] res_1 = ((String[])(new String[]{}));
-        int i_2 = lst.length - 1;
-        while (i_2 >= 0) {
-            res_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(lst[i_2])).toArray(String[]::new)));
-            i_2 = i_2 - 1;
+        String[] res_2 = ((String[])(new String[]{}));
+        long i_5 = (long)((long)(lst.length) - 1L);
+        while ((long)(i_5) >= 0L) {
+            res_2 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_2), java.util.stream.Stream.of(lst[(int)((long)(i_5))])).toArray(String[]::new)));
+            i_5 = (long)((long)(i_5) - 1L);
         }
-        return res_1;
+        return res_2;
     }
 
     static String[] bfs(String start, String goal) {
         Node[] queue = ((Node[])(new Node[]{}));
         queue = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue), java.util.stream.Stream.of(new Node(start, new String[]{start}))).toArray(Node[]::new)));
-        int head = 0;
-        java.util.Map<String,Boolean> visited = ((java.util.Map<String,Boolean>)(new java.util.LinkedHashMap<String, Boolean>(java.util.Map.ofEntries(java.util.Map.entry(start, true)))));
-        while (head < queue.length) {
-            Node node = queue[head];
-            head = head + 1;
-            if ((node.pos.equals(goal))) {
-                return node.path;
+        long head_1 = 0L;
+        java.util.Map<String,Boolean> visited_1 = ((java.util.Map<String,Boolean>)(new java.util.LinkedHashMap<String, Boolean>(java.util.Map.ofEntries(java.util.Map.entry(start, true)))));
+        while ((long)(head_1) < (long)(queue.length)) {
+            Node node_1 = queue[(int)((long)(head_1))];
+            head_1 = (long)((long)(head_1) + 1L);
+            if ((node_1.pos.equals(goal))) {
+                return node_1.path;
             }
-            String[] neigh = ((String[])(neighbors(node.pos)));
-            int i_3 = 0;
-            while (i_3 < neigh.length) {
-                String npos = neigh[i_3];
-                if (!(Boolean)(visited.containsKey(npos))) {
-visited.put(npos, true);
-                    String[] new_path = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(node.path), java.util.stream.Stream.of(npos)).toArray(String[]::new)));
-                    queue = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue), java.util.stream.Stream.of(new Node(npos, new_path))).toArray(Node[]::new)));
+            String[] neigh_1 = ((String[])(neighbors(node_1.pos)));
+            long i_7 = 0L;
+            while ((long)(i_7) < (long)(neigh_1.length)) {
+                String npos_1 = neigh_1[(int)((long)(i_7))];
+                if (!(visited_1.containsKey(npos_1))) {
+visited_1.put(npos_1, true);
+                    String[] new_path_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(node_1.path), java.util.stream.Stream.of(npos_1)).toArray(String[]::new)));
+                    queue = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue), java.util.stream.Stream.of(new Node(npos_1, new_path_1))).toArray(Node[]::new)));
                 }
-                i_3 = i_3 + 1;
+                i_7 = (long)((long)(i_7) + 1L);
             }
         }
         return new String[]{};
@@ -101,86 +101,86 @@ visited.put(npos, true);
 
     static String[] bidirectional_bfs(String start, String goal) {
         Node[] queue_f = ((Node[])(new Node[]{}));
-        Node[] queue_b = ((Node[])(new Node[]{}));
+        Node[] queue_b_1 = ((Node[])(new Node[]{}));
         queue_f = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_f), java.util.stream.Stream.of(new Node(start, new String[]{start}))).toArray(Node[]::new)));
-        queue_b = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_b), java.util.stream.Stream.of(new Node(goal, new String[]{goal}))).toArray(Node[]::new)));
-        int head_f = 0;
-        int head_b = 0;
-        java.util.Map<String,String[]> visited_f = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>(java.util.Map.ofEntries(java.util.Map.entry(start, ((String[])(new String[]{start})))))));
-        java.util.Map<String,String[]> visited_b = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>(java.util.Map.ofEntries(java.util.Map.entry(goal, ((String[])(new String[]{goal})))))));
-        while (head_f < queue_f.length && head_b < queue_b.length) {
-            Node node_f = queue_f[head_f];
-            head_f = head_f + 1;
-            String[] neigh_f = ((String[])(neighbors(node_f.pos)));
-            int i_4 = 0;
-            while (i_4 < neigh_f.length) {
-                String npos_1 = neigh_f[i_4];
-                if (!(Boolean)(visited_f.containsKey(npos_1))) {
-                    String[] new_path_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(node_f.path), java.util.stream.Stream.of(npos_1)).toArray(String[]::new)));
-visited_f.put(npos_1, ((String[])(new_path_1)));
-                    if (((Boolean)(visited_b.containsKey(npos_1)))) {
-                        String[] rev = ((String[])(reverse_list((String[])(((String[])(visited_b).get(npos_1))))));
-                        int j = 1;
-                        while (j < rev.length) {
-                            new_path_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_path_1), java.util.stream.Stream.of(rev[j])).toArray(String[]::new)));
-                            j = j + 1;
+        queue_b_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_b_1), java.util.stream.Stream.of(new Node(goal, new String[]{goal}))).toArray(Node[]::new)));
+        long head_f_1 = 0L;
+        long head_b_1 = 0L;
+        java.util.Map<String,String[]> visited_f_1 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>(java.util.Map.ofEntries(java.util.Map.entry(start, ((String[])(new String[]{start})))))));
+        java.util.Map<String,String[]> visited_b_1 = ((java.util.Map<String,String[]>)(new java.util.LinkedHashMap<String, String[]>(java.util.Map.ofEntries(java.util.Map.entry(goal, ((String[])(new String[]{goal})))))));
+        while ((long)(head_f_1) < (long)(queue_f.length) && (long)(head_b_1) < (long)(queue_b_1.length)) {
+            Node node_f_1 = queue_f[(int)((long)(head_f_1))];
+            head_f_1 = (long)((long)(head_f_1) + 1L);
+            String[] neigh_f_1 = ((String[])(neighbors(node_f_1.pos)));
+            long i_9 = 0L;
+            while ((long)(i_9) < (long)(neigh_f_1.length)) {
+                String npos_3 = neigh_f_1[(int)((long)(i_9))];
+                if (!(visited_f_1.containsKey(npos_3))) {
+                    String[] new_path_3 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(node_f_1.path), java.util.stream.Stream.of(npos_3)).toArray(String[]::new)));
+visited_f_1.put(npos_3, ((String[])(new_path_3)));
+                    if (visited_b_1.containsKey(npos_3)) {
+                        String[] rev_1 = ((String[])(reverse_list((String[])(((String[])(visited_b_1).get(npos_3))))));
+                        long j_2 = 1L;
+                        while ((long)(j_2) < (long)(rev_1.length)) {
+                            new_path_3 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_path_3), java.util.stream.Stream.of(rev_1[(int)((long)(j_2))])).toArray(String[]::new)));
+                            j_2 = (long)((long)(j_2) + 1L);
                         }
-                        return new_path_1;
+                        return new_path_3;
                     }
-                    queue_f = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_f), java.util.stream.Stream.of(new Node(npos_1, new_path_1))).toArray(Node[]::new)));
+                    queue_f = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_f), java.util.stream.Stream.of(new Node(npos_3, new_path_3))).toArray(Node[]::new)));
                 }
-                i_4 = i_4 + 1;
+                i_9 = (long)((long)(i_9) + 1L);
             }
-            Node node_b = queue_b[head_b];
-            head_b = head_b + 1;
-            String[] neigh_b = ((String[])(neighbors(node_b.pos)));
-            int j_1 = 0;
-            while (j_1 < neigh_b.length) {
-                String nposb = neigh_b[j_1];
-                if (!(Boolean)(visited_b.containsKey(nposb))) {
-                    String[] new_path_b = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(node_b.path), java.util.stream.Stream.of(nposb)).toArray(String[]::new)));
-visited_b.put(nposb, ((String[])(new_path_b)));
-                    if (((Boolean)(visited_f.containsKey(nposb)))) {
-                        String[] path_f = (String[])(((String[])(visited_f).get(nposb)));
-                        new_path_b = ((String[])(reverse_list(((String[])(new_path_b)))));
-                        int t = 1;
-                        while (t < new_path_b.length) {
-                            path_f = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(path_f), java.util.stream.Stream.of(new_path_b[t])).toArray(String[]::new)));
-                            t = t + 1;
+            Node node_b_1 = queue_b_1[(int)((long)(head_b_1))];
+            head_b_1 = (long)((long)(head_b_1) + 1L);
+            String[] neigh_b_1 = ((String[])(neighbors(node_b_1.pos)));
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(neigh_b_1.length)) {
+                String nposb_1 = neigh_b_1[(int)((long)(j_3))];
+                if (!(visited_b_1.containsKey(nposb_1))) {
+                    String[] new_path_b_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(node_b_1.path), java.util.stream.Stream.of(nposb_1)).toArray(String[]::new)));
+visited_b_1.put(nposb_1, ((String[])(new_path_b_1)));
+                    if (visited_f_1.containsKey(nposb_1)) {
+                        String[] path_f_1 = (String[])(((String[])(visited_f_1).get(nposb_1)));
+                        new_path_b_1 = ((String[])(reverse_list(((String[])(new_path_b_1)))));
+                        long t_1 = 1L;
+                        while ((long)(t_1) < (long)(new_path_b_1.length)) {
+                            path_f_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(path_f_1), java.util.stream.Stream.of(new_path_b_1[(int)((long)(t_1))])).toArray(String[]::new)));
+                            t_1 = (long)((long)(t_1) + 1L);
                         }
-                        return path_f;
+                        return path_f_1;
                     }
-                    queue_b = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_b), java.util.stream.Stream.of(new Node(nposb, new_path_b))).toArray(Node[]::new)));
+                    queue_b_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_b_1), java.util.stream.Stream.of(new Node(nposb_1, new_path_b_1))).toArray(Node[]::new)));
                 }
-                j_1 = j_1 + 1;
+                j_3 = (long)((long)(j_3) + 1L);
             }
         }
         return new String[]{start};
     }
 
     static String path_to_string(String[] path) {
-        if (path.length == 0) {
+        if ((long)(path.length) == 0L) {
             return "[]";
         }
-        int[] first = ((int[])(parse_key(path[0])));
-        String s = "[(" + _p(_geti(first, 0)) + ", " + _p(_geti(first, 1)) + ")";
-        int i_5 = 1;
-        while (i_5 < path.length) {
-            int[] c_1 = ((int[])(parse_key(path[i_5])));
-            s = s + ", (" + _p(_geti(c_1, 0)) + ", " + _p(_geti(c_1, 1)) + ")";
-            i_5 = i_5 + 1;
+        long[] first_1 = ((long[])(parse_key(path[(int)((long)(0))])));
+        String s_1 = "[(" + _p(_geti(first_1, ((Number)(0)).intValue())) + ", " + _p(_geti(first_1, ((Number)(1)).intValue())) + ")";
+        long i_11 = 1L;
+        while ((long)(i_11) < (long)(path.length)) {
+            long[] c_3 = ((long[])(parse_key(path[(int)((long)(i_11))])));
+            s_1 = s_1 + ", (" + _p(_geti(c_3, ((Number)(0)).intValue())) + ", " + _p(_geti(c_3, ((Number)(1)).intValue())) + ")";
+            i_11 = (long)((long)(i_11) + 1L);
         }
-        s = s + "]";
-        return s;
+        s_1 = s_1 + "]";
+        return s_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            grid = ((int[][])(new int[][]{new int[]{0, 0, 0, 0, 0, 0, 0}, new int[]{0, 1, 0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0}, new int[]{0, 0, 1, 0, 0, 0, 0}, new int[]{1, 0, 1, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 1, 0, 0}}));
-            delta = ((int[][])(new int[][]{new int[]{-1, 0}, new int[]{0, -1}, new int[]{1, 0}, new int[]{0, 1}}));
-            start = String.valueOf(key(0, 0));
-            goal = String.valueOf(key(grid.length - 1, grid[0].length - 1));
+            grid = ((long[][])(new long[][]{new long[]{0, 0, 0, 0, 0, 0, 0}, new long[]{0, 1, 0, 0, 0, 0, 0}, new long[]{0, 0, 0, 0, 0, 0, 0}, new long[]{0, 0, 1, 0, 0, 0, 0}, new long[]{1, 0, 1, 0, 0, 0, 0}, new long[]{0, 0, 0, 0, 0, 0, 0}, new long[]{0, 0, 0, 0, 1, 0, 0}}));
+            delta = ((long[][])(new long[][]{new long[]{-1, 0}, new long[]{0, -1}, new long[]{1, 0}, new long[]{0, 1}}));
+            start = String.valueOf(key(0L, 0L));
+            goal = String.valueOf(key((long)((long)(grid.length) - 1L), (long)((long)(grid[(int)((long)(0))].length) - 1L)));
             path1 = ((String[])(bfs(start, goal)));
             System.out.println(path_to_string(((String[])(path1))));
             path2 = ((String[])(bidirectional_bfs(start, goal)));
@@ -223,6 +223,10 @@ visited_b.put(nposb, ((String[])(new_path_b)));
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
@@ -241,10 +245,14 @@ visited_b.put(nposb, ((String[])(new_path_b)));
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
