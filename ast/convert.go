@@ -550,7 +550,14 @@ func FromPrimary(p *parser.Primary) *Node {
 			} else {
 				cn.Children = append(cn.Children, &Node{Kind: "_"})
 			}
-			cn.Children = append(cn.Children, FromExpr(c.Result))
+			if c.Result != nil {
+				if c.Result.Expr != nil {
+					cn.Children = append(cn.Children, FromExpr(c.Result.Expr))
+				} else {
+					block := &Node{Kind: "block", Children: mapStatements(c.Result.Block)}
+					cn.Children = append(cn.Children, block)
+				}
+			}
 			n.Children = append(n.Children, cn)
 		}
 		return n
