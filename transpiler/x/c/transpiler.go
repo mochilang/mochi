@@ -72,6 +72,7 @@ var (
 	needMapSetIS            bool
 	needMapGetSL            bool
 	needMapSetSL            bool
+	needMapLenSL            bool
 	needMapGetIL            bool
 	needMapSetIL            bool
 	needMapGetSS            bool
@@ -183,9 +184,17 @@ func emitLenExpr(w io.Writer, e Expr) {
 	case *IndexExpr:
 		if vr, ok := v.Target.(*VarRef); ok {
 			if t := inferExprType(currentEnv, vr); strings.HasPrefix(t, "Map") {
-				io.WriteString(w, vr.Name+".lens[")
-				v.Index.emitExpr(w)
-				io.WriteString(w, "]")
+				if t == "MapSL" {
+					needMapLenSL = true
+					io.WriteString(w, "map_get_slen(")
+					io.WriteString(w, vr.Name+".keys, "+vr.Name+".lens, "+vr.Name+".len, ")
+					v.Index.emitExpr(w)
+					io.WriteString(w, ")")
+				} else {
+					io.WriteString(w, vr.Name+".lens[")
+					v.Index.emitExpr(w)
+					io.WriteString(w, "]")
+				}
 			} else {
 				io.WriteString(w, vr.Name+"_lens[")
 				v.Index.emitExpr(w)
@@ -193,10 +202,23 @@ func emitLenExpr(w io.Writer, e Expr) {
 			}
 		} else if fe, ok := v.Target.(*FieldExpr); ok {
 			if t := inferExprType(currentEnv, fe); strings.HasPrefix(t, "Map") {
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".lens[")
-				v.Index.emitExpr(w)
-				io.WriteString(w, "]")
+				if t == "MapSL" {
+					needMapLenSL = true
+					io.WriteString(w, "map_get_slen(")
+					fe.Target.emitExpr(w)
+					io.WriteString(w, "."+fe.Name+".keys, ")
+					fe.Target.emitExpr(w)
+					io.WriteString(w, "."+fe.Name+".lens, ")
+					fe.Target.emitExpr(w)
+					io.WriteString(w, "."+fe.Name+".len, ")
+					v.Index.emitExpr(w)
+					io.WriteString(w, ")")
+				} else {
+					fe.Target.emitExpr(w)
+					io.WriteString(w, "."+fe.Name+".lens[")
+					v.Index.emitExpr(w)
+					io.WriteString(w, "]")
+				}
 			} else {
 				fe.Target.emitExpr(w)
 				io.WriteString(w, "."+fe.Name+"_lens[")
@@ -1098,7 +1120,7 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 			writeIndent(w, indent)
 			io.WriteString(w, "{\n")
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "static const char* %s_keys[%d] = {", tmp, len(v.Fields))
+			fmt.Fprintf(w, "const char* %s_keys[%d] = {", tmp, len(v.Fields))
 			for i, f := range v.Fields {
 				if i > 0 {
 					io.WriteString(w, ", ")
@@ -1107,7 +1129,7 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 			}
 			io.WriteString(w, "};\n")
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "static double %s_vals[%d] = {", tmp, len(v.Fields))
+			fmt.Fprintf(w, "double %s_vals[%d] = {", tmp, len(v.Fields))
 			for i, f := range v.Fields {
 				if i > 0 {
 					io.WriteString(w, ", ")
@@ -2956,7 +2978,11 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					}
 					c.Args[0].emitExpr(w)
 					io.WriteString(w, ", &")
-					fmt.Fprintf(w, "%s_lens[(int)(", vr.Name)
+					if strings.HasPrefix(inferExprType(currentEnv, vr), "Map") {
+						fmt.Fprintf(w, "%s.lens[(int)(", vr.Name)
+					} else {
+						fmt.Fprintf(w, "%s_lens[(int)(", vr.Name)
+					}
 					ie.Index.emitExpr(w)
 					io.WriteString(w, ")], ")
 					if len(c.Args) > 1 && c.Args[1] != nil {
@@ -2976,7 +3002,11 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				}
 				c.Args[0].emitExpr(w)
 				io.WriteString(w, ", ")
-				fmt.Fprintf(w, "%s_lens[(int)(", vr.Name)
+				if strings.HasPrefix(inferExprType(currentEnv, vr), "Map") {
+					fmt.Fprintf(w, "%s.lens[(int)(", vr.Name)
+				} else {
+					fmt.Fprintf(w, "%s_lens[(int)(", vr.Name)
+				}
 				ie.Index.emitExpr(w)
 				io.WriteString(w, ")], ")
 				if len(c.Args) > 1 && c.Args[1] != nil {
@@ -4475,6 +4505,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    if (out_len) *out_len = 0;\n")
 		buf.WriteString("    return NULL;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needMapLenSL {
+		buf.WriteString("static size_t map_get_slen(const char *keys[], const size_t lens[], size_t len, const char *key) {\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        if (strcmp(keys[i], key) == 0) return lens[i];\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needMapSetSL {
@@ -6070,15 +6108,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				varTypes[s.Let.Name] = "int"
 			}
 			var buf bytes.Buffer
-			fmt.Fprintf(&buf, "static %s %s_keys[%d] = {", keyT, s.Let.Name, len(m.Items)+16)
+			fmt.Fprintf(&buf, "%s %s_keys[%d] = {", keyT, s.Let.Name, len(m.Items)+16)
 			for i, it := range m.Items {
 				if i > 0 {
 					buf.WriteString(", ")
 				}
 				if ks, ok := evalString(it.Key); ok {
 					fmt.Fprintf(&buf, "\"%s\"", escape(ks))
-				} else if vr, ok := it.Key.(*VarRef); ok {
-					fmt.Fprintf(&buf, "\"%s\"", escape(vr.Name))
 				} else {
 					it.Key.emitExpr(&buf)
 				}
@@ -6092,7 +6128,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				for i, it := range m.Items {
 					if lst, ok := it.Value.(*ListLit); ok {
-						fmt.Fprintf(&buf, "static %s %s_vals_%d[%d] = {", elemDecl, s.Let.Name, i, len(lst.Elems))
+						fmt.Fprintf(&buf, "%s %s_vals_%d[%d] = {", elemDecl, s.Let.Name, i, len(lst.Elems))
 						for j, e := range lst.Elems {
 							if j > 0 {
 								buf.WriteString(", ")
@@ -6102,7 +6138,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-				fmt.Fprintf(&buf, "static void* %s_vals[%d] = {", s.Let.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "void* %s_vals[%d] = {", s.Let.Name, len(m.Items)+16)
 				for i := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6110,7 +6146,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					fmt.Fprintf(&buf, "%s_vals_%d", s.Let.Name, i)
 				}
 				buf.WriteString("};\n")
-				fmt.Fprintf(&buf, "static size_t %s_lens[%d] = {", s.Let.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "size_t %s_lens[%d] = {", s.Let.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6123,7 +6159,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				buf.WriteString("};\n")
 			} else if valT == "const char*" {
-				fmt.Fprintf(&buf, "static const char* %s_vals[%d] = {", s.Let.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "const char* %s_vals[%d] = {", s.Let.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6132,7 +6168,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				buf.WriteString("};\n")
 			} else {
-				fmt.Fprintf(&buf, "static %s %s_vals[%d] = {", valT, s.Let.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "%s %s_vals[%d] = {", valT, s.Let.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6375,7 +6411,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 			}
 			var buf bytes.Buffer
-			fmt.Fprintf(&buf, "static %s %s_keys[%d] = {", keyT, s.Var.Name, len(m.Items)+16)
+			fmt.Fprintf(&buf, "%s %s_keys[%d] = {", keyT, s.Var.Name, len(m.Items)+16)
 			for i, it := range m.Items {
 				if i > 0 {
 					buf.WriteString(", ")
@@ -6397,7 +6433,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				for i, it := range m.Items {
 					if lst, ok := it.Value.(*ListLit); ok {
-						fmt.Fprintf(&buf, "static %s %s_vals_%d[%d] = {", elemDecl, s.Var.Name, i, len(lst.Elems))
+						fmt.Fprintf(&buf, "%s %s_vals_%d[%d] = {", elemDecl, s.Var.Name, i, len(lst.Elems))
 						for j, e := range lst.Elems {
 							if j > 0 {
 								buf.WriteString(", ")
@@ -6407,7 +6443,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-				fmt.Fprintf(&buf, "static void* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "void* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
 				for i := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6415,7 +6451,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					fmt.Fprintf(&buf, "%s_vals_%d", s.Var.Name, i)
 				}
 				buf.WriteString("};\n")
-				fmt.Fprintf(&buf, "static size_t %s_lens[%d] = {", s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "size_t %s_lens[%d] = {", s.Var.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6428,7 +6464,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				buf.WriteString("};\n")
 			} else if valT == "const char*" {
-				fmt.Fprintf(&buf, "static const char* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "const char* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6437,7 +6473,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				buf.WriteString("};\n")
 			} else {
-				fmt.Fprintf(&buf, "static %s %s_vals[%d] = {", valT, s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "%s %s_vals[%d] = {", valT, s.Var.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
