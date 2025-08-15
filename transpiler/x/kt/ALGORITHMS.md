@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-14 17:20 GMT+7
+Last updated: 2025-08-15 10:08 GMT+7
 
 ## Algorithms Golden Test Checklist (548/1077)
 | Index | Name | Status | Duration | Memory |
@@ -431,7 +431,7 @@ Last updated: 2025-08-14 17:20 GMT+7
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
 | 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
+| 425 | graphs/finding_bridges | error |  |  |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |
 | 427 | graphs/g_topological_sort |   |  |  |
 | 428 | graphs/gale_shapley_bigraph |   |  |  |

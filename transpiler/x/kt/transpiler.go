@@ -954,7 +954,11 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 }
 
 // MapLit represents a Kotlin map literal.
-type MapLit struct{ Items []MapItem }
+type MapLit struct {
+	Items   []MapItem
+	KeyType string
+	ValType string
+}
 
 type MapItem struct {
 	Key   Expr
@@ -962,34 +966,38 @@ type MapItem struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	keyType := "Any?"
-	valType := "Any?"
-	if len(m.Items) > 0 {
-		keyType = guessType(m.Items[0].Key)
-		if keyType == "" {
-			keyType = "Any?"
-		}
-		valType = guessType(m.Items[0].Value)
-		if valType == "" {
-			valType = "Any?"
-		}
-		for _, it := range m.Items[1:] {
-			k := guessType(it.Key)
-			v := guessType(it.Value)
-			if k != keyType {
+	keyType := m.KeyType
+	valType := m.ValType
+	if keyType == "" || valType == "" {
+		keyType = "Any?"
+		valType = "Any?"
+		if len(m.Items) > 0 {
+			keyType = guessType(m.Items[0].Key)
+			if keyType == "" {
 				keyType = "Any?"
 			}
-			if valType == "Int" && v == "Long" {
-				valType = "Long"
-			} else if valType == "Long" && v == "Int" {
-				// keep Long
-			} else if v != valType {
-				if strings.HasPrefix(valType, "MutableList<") && v == "MutableList<Any>" {
-					// keep valType
-				} else if valType == "MutableList<Any>" && strings.HasPrefix(v, "MutableList<") {
-					valType = v
-				} else {
-					valType = "Any?"
+			valType = guessType(m.Items[0].Value)
+			if valType == "" {
+				valType = "Any?"
+			}
+			for _, it := range m.Items[1:] {
+				k := guessType(it.Key)
+				v := guessType(it.Value)
+				if k != keyType {
+					keyType = "Any?"
+				}
+				if valType == "Int" && v == "Long" {
+					valType = "Long"
+				} else if valType == "Long" && v == "Int" {
+					// keep Long
+				} else if v != valType {
+					if strings.HasPrefix(valType, "MutableList<") && v == "MutableList<Any>" {
+						// keep valType
+					} else if valType == "MutableList<Any>" && strings.HasPrefix(v, "MutableList<") {
+						valType = v
+					} else {
+						valType = "Any?"
+					}
 				}
 			}
 		}
@@ -3064,6 +3072,17 @@ func guessType(e Expr) string {
 			}
 			return "MutableMap<" + k + ", " + val + ">"
 		}
+		kt := v.KeyType
+		vt := v.ValType
+		if kt != "" || vt != "" {
+			if kt == "" {
+				kt = "Any?"
+			}
+			if vt == "" {
+				vt = "Any?"
+			}
+			return "MutableMap<" + kt + ", " + vt + ">"
+		}
 		return "MutableMap<Any?, Any?>"
 	case *ValuesExpr:
 		base := guessType(v.Map)
@@ -4635,20 +4654,18 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		return nil, err
 	}
 	var elem types.Type = types.AnyType{}
-	if name := simpleVarName(fs.Source); name != "" {
-		if t, err := env.GetVar(name); err == nil {
-			switch tt := t.(type) {
-			case types.ListType:
-				elem = tt.Elem
-			case types.StringType:
-				elem = types.StringType{}
-			case types.MapType:
-				elem = tt.Key
-				iter = &FieldExpr{Receiver: iter, Name: "keys"}
-			}
+	if t := types.CheckExprType(fs.Source, env); t != nil {
+		switch tt := t.(type) {
+		case types.ListType:
+			elem = tt.Elem
+		case types.StringType:
+			elem = types.StringType{}
+		case types.MapType:
+			elem = tt.Key
+			iter = &FieldExpr{Receiver: iter, Name: "keys"}
 		}
-	} else {
-		if t := types.CheckExprType(fs.Source, env); t != nil {
+	} else if name := simpleVarName(fs.Source); name != "" {
+		if t, err := env.GetVar(name); err == nil {
 			switch tt := t.(type) {
 			case types.ListType:
 				elem = tt.Elem
@@ -6209,6 +6226,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 						}
 						for i := 0; i < len(args) && i < len(ft.Params); i++ {
 							tname := kotlinTypeFromType(ft.Params[i])
+							if ml, ok := args[i].(*MapLit); ok && len(ml.Items) == 0 {
+								if mt, ok := ft.Params[i].(types.MapType); ok {
+									ml.KeyType = kotlinTypeFromType(mt.Key)
+									ml.ValType = kotlinTypeFromType(mt.Value)
+								}
+							}
 							if tname != "" && tname != "Any" && tname != guessType(args[i]) {
 								args[i] = &CastExpr{Value: args[i], Type: tname}
 							}
