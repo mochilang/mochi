@@ -1631,15 +1631,18 @@ func applyBinOp(op string, left, right Node) Node {
 	sym := binOp[op]
 	switch sym {
 	case "+":
-		if isStringNode(left) || isStringNode(right) {
-			return &List{Elems: []Node{Symbol("str"), left, right}}
-		}
 		if isVectorNode(left) || isVectorNode(right) {
 			cat := &List{Elems: []Node{Symbol("concat"), left, right}}
 			return &List{Elems: []Node{Symbol("vec"), cat}}
 		}
-		// use + which supports arbitrary precision integers
-		return &List{Elems: []Node{Symbol("+"), left, right}}
+		if isStringNode(left) || isStringNode(right) {
+			return &List{Elems: []Node{Symbol("str"), left, right}}
+		}
+		if isNumberNode(left) || isNumberNode(right) {
+			// use + which supports arbitrary precision integers
+			return &List{Elems: []Node{Symbol("+"), left, right}}
+		}
+		return &List{Elems: []Node{Symbol("str"), left, right}}
 	case "union":
 		setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
 		u := &List{Elems: []Node{Symbol("clojure.set/union"), setFn(left), setFn(right)}}
@@ -1932,22 +1935,7 @@ func isMapNode(n Node) bool {
 }
 
 func isNumberNode(n Node) bool {
-	switch t := n.(type) {
-	case IntLit:
-		return true
-	case FloatLit:
-		return true
-	case Symbol:
-		if transpileEnv != nil {
-			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
-				switch typ.(type) {
-				case types.IntType, types.FloatType:
-					return true
-				}
-			}
-		}
-	}
-	return false
+	return isIntNode(n) || isFloatNode(n)
 }
 
 func isIntNode(n Node) bool {
@@ -2942,21 +2930,21 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			bindings := &Vector{Elems: []Node{Symbol("__res"), callNode}}
 			bodyElems := []Node{}
 			for _, mp := range mps {
-                                if mp.Index < len(c.Args) {
-                                        if argName, ok := identName(c.Args[mp.Index]); ok {
-                                                assignVal := Symbol(mp.Name)
-                                                assign := &List{Elems: []Node{Symbol("set!"), Symbol(argName), assignVal}}
-                                                if funDepth == 1 && currentFun == "main" {
-                                                        assign = &List{Elems: []Node{
-                                                                Symbol("alter-var-root"),
-                                                                &List{Elems: []Node{Symbol("var"), Symbol(argName)}},
-                                                                &List{Elems: []Node{Symbol("constantly"), assignVal}},
-                                                        }}
-                                                }
-                                                bodyElems = append(bodyElems, assign)
-                                        }
-                                }
-                        }
+				if mp.Index < len(c.Args) {
+					if argName, ok := identName(c.Args[mp.Index]); ok {
+						assignVal := Symbol(mp.Name)
+						assign := &List{Elems: []Node{Symbol("set!"), Symbol(argName), assignVal}}
+						if funDepth == 1 && currentFun == "main" {
+							assign = &List{Elems: []Node{
+								Symbol("alter-var-root"),
+								&List{Elems: []Node{Symbol("var"), Symbol(argName)}},
+								&List{Elems: []Node{Symbol("constantly"), assignVal}},
+							}}
+						}
+						bodyElems = append(bodyElems, assign)
+					}
+				}
+			}
 			bodyElems = append(bodyElems, Symbol("__res"))
 			callNode = &List{Elems: []Node{Symbol("let"), bindings, &List{Elems: append([]Node{Symbol("do")}, bodyElems...)}}}
 		} else if transpileEnv != nil {

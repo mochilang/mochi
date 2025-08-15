@@ -1,5 +1,1 @@
-Execution error (ClassCastException) at main/partition-graph (karger.clj:97).
-class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
-
-Full report at:
-/tmp/clojure-15565788965664076916.edn
+{(5, 1), (5, 3), (5, 4), (5, 7), (2, 1), (2, 3), (2, 4)}

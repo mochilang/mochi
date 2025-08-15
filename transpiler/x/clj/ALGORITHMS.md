@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-15 10:24 GMT+7
+Last updated: 2025-08-15 11:28 GMT+7
 
-## Algorithms Golden Test Checklist (779/1077)
+## Algorithms Golden Test Checklist (780/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -443,7 +443,7 @@ Last updated: 2025-08-15 10:24 GMT+7
 | 434 | graphs/greedy_min_vertex_cover | error | 81.089ms | 21.01MB |
 | 435 | graphs/kahns_algorithm_long | ✓ | 45.263ms | 21.87MB |
 | 436 | graphs/kahns_algorithm_topo | ✓ | 72.199ms | 21.12MB |
-| 437 | graphs/karger | error |  |  |
+| 437 | graphs/karger | ✓ | 61.321ms | 25.29MB |
 | 438 | graphs/lanczos_eigenvectors | ✓ | 61.249ms | 35.48MB |
 | 439 | graphs/markov_chain | ✓ | 575.329ms | 22.64MB |
 | 440 | graphs/matching_min_vertex_cover | ✓ | 64.609ms | 21.87MB |
