@@ -357,6 +357,7 @@ func (*ReturnStmt) isStmt() {}
 type FuncDef struct {
 	Name      string
 	Params    []string
+	Renamed   map[string]string
 	Nonlocals []string
 	Globals   []string
 	Body      []Stmt
@@ -1374,46 +1375,59 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *FuncDef:
+		prevRenamed := renamedVars
+		renamedVars = st.Renamed
 		if _, err := io.WriteString(w, indent+"def "+safeVarName(st.Name)+"("); err != nil {
+			renamedVars = prevRenamed
 			return err
 		}
 		for i, p := range st.Params {
 			if i > 0 {
 				if _, err := io.WriteString(w, ", "); err != nil {
+					renamedVars = prevRenamed
 					return err
 				}
 			}
 			if _, err := io.WriteString(w, safeVarName(p)); err != nil {
+				renamedVars = prevRenamed
 				return err
 			}
 		}
 		if _, err := io.WriteString(w, "):\n"); err != nil {
+			renamedVars = prevRenamed
 			return err
 		}
 		if len(st.Globals) > 0 {
 			if _, err := io.WriteString(w, indent+"    global "+strings.Join(st.Globals, ", ")+"\n"); err != nil {
+				renamedVars = prevRenamed
 				return err
 			}
 		}
 		if len(st.Nonlocals) > 0 {
 			if _, err := io.WriteString(w, indent+"    nonlocal "+strings.Join(st.Nonlocals, ", ")+"\n"); err != nil {
+				renamedVars = prevRenamed
 				return err
 			}
 		}
 		funcDepth++
 		if len(st.Body) == 0 {
 			if _, err := io.WriteString(w, indent+"    pass\n"); err != nil {
+				renamedVars = prevRenamed
 				return err
 			}
 			funcDepth--
+			renamedVars = prevRenamed
 			return nil
 		}
 		for _, bs := range st.Body {
 			if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+				funcDepth--
+				renamedVars = prevRenamed
 				return err
 			}
 		}
 		funcDepth--
+		renamedVars = prevRenamed
 		return nil
 	case *SaveStmt:
 		if st.Format == "jsonl" {
@@ -3510,29 +3524,37 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 				return err
 			}
 		case *FuncDef:
+			prevRenamed := renamedVars
+			renamedVars = st.Renamed
 			if _, err := io.WriteString(w, "def "+st.Name+"("); err != nil {
+				renamedVars = prevRenamed
 				return err
 			}
 			for i, p := range st.Params {
 				if i > 0 {
 					if _, err := io.WriteString(w, ", "); err != nil {
+						renamedVars = prevRenamed
 						return err
 					}
 				}
 				if _, err := io.WriteString(w, p); err != nil {
+					renamedVars = prevRenamed
 					return err
 				}
 			}
 			if _, err := io.WriteString(w, "):\n"); err != nil {
+				renamedVars = prevRenamed
 				return err
 			}
 			if len(st.Globals) > 0 {
 				if _, err := io.WriteString(w, "    global "+strings.Join(st.Globals, ", ")+"\n"); err != nil {
+					renamedVars = prevRenamed
 					return err
 				}
 			}
 			if len(st.Nonlocals) > 0 {
 				if _, err := io.WriteString(w, "    nonlocal "+strings.Join(st.Nonlocals, ", ")+"\n"); err != nil {
+					renamedVars = prevRenamed
 					return err
 				}
 			}
@@ -3540,6 +3562,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			if len(st.Body) == 0 {
 				if _, err := io.WriteString(w, "    pass\n"); err != nil {
 					funcDepth--
+					renamedVars = prevRenamed
 					return err
 				}
 				funcDepth--
@@ -3547,11 +3570,13 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 				for _, bs := range st.Body {
 					if err := emitStmtIndent(w, bs, "    "); err != nil {
 						funcDepth--
+						renamedVars = prevRenamed
 						return err
 					}
 				}
 				funcDepth--
 			}
+			renamedVars = prevRenamed
 		case *SaveStmt:
 			if err := emitStmtIndent(w, st, ""); err != nil {
 				return err
@@ -4033,6 +4058,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 		case st.ExternType != nil:
 			continue
 		case st.Fun != nil:
+			oldRenamed := renamedVars
+			renamedVars = map[string]string{}
+
 			fenv := types.NewEnv(env)
 			for _, p := range st.Fun.Params {
 				var pt types.Type = types.AnyType{}
@@ -4043,6 +4071,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			}
 			body, err := convertStmts(st.Fun.Body, fenv)
 			if err != nil {
+				renamedVars = oldRenamed
 				return nil, err
 			}
 			var params []string
@@ -4056,7 +4085,12 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			globals := detectGlobals(body, fenv, genv)
 			nonlocals := detectNonlocals(body, fenv, env)
 			nonlocals = filterNames(nonlocals, globals)
-			p.Stmts = append(p.Stmts, &FuncDef{Name: st.Fun.Name, Params: params, Nonlocals: nonlocals, Globals: globals, Body: body})
+			renamed := map[string]string{}
+			for k, v := range renamedVars {
+				renamed[k] = v
+			}
+			p.Stmts = append(p.Stmts, &FuncDef{Name: st.Fun.Name, Params: params, Renamed: renamed, Nonlocals: nonlocals, Globals: globals, Body: body})
+			renamedVars = oldRenamed
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
