@@ -337,6 +337,30 @@ func javaType(t string) string {
 	}
 }
 
+// canonicalType normalizes type names used during inference so that
+// synonymous types (e.g. float and double) can be compared reliably.
+func canonicalType(t string) string {
+	switch t {
+	case "float", "float64":
+		return "double"
+	case "String":
+		return "string"
+	default:
+		return t
+	}
+}
+
+// sameType reports whether two type names should be considered equivalent
+// for the purposes of literal inference.
+func sameType(a, b string) bool {
+	a = canonicalType(a)
+	b = canonicalType(b)
+	if a == b {
+		return true
+	}
+	return false
+}
+
 func javaBoxType(t string) string {
 	switch t {
 	case "int", "long":
@@ -794,17 +818,18 @@ func inferType(e Expr) string {
 				}
 				if t == "" {
 					t = et
-				} else if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
+				} else if !sameType(t, et) {
 					same = false
 					break
 				}
 			}
 			if same && t != "" {
+				t = canonicalType(t)
 				if strings.HasSuffix(t, "[]") {
 					return t + "[]"
 				}
 				switch t {
-				case "string", "String":
+				case "string":
 					return "string[]"
 				case "boolean":
 					return "bool[]"
@@ -1019,6 +1044,13 @@ func inferType(e Expr) string {
 		}
 		if v, ok := varDecls[ex.Name]; ok {
 			return v.Type
+		}
+		if topEnv != nil {
+			if v, err := topEnv.GetVar(ex.Name); err == nil {
+				if tt := toJavaTypeFromType(v); tt != "" {
+					return tt
+				}
+			}
 		}
 	}
 	return ""
@@ -2209,7 +2241,7 @@ func (l *ListLit) emit(w io.Writer) {
 			same := true
 			for _, el := range l.Elems[1:] {
 				et := inferType(el)
-				if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
+				if !sameType(t, et) {
 					same = false
 					break
 				}
@@ -2258,16 +2290,18 @@ func (l *ListLit) emit(w io.Writer) {
 			if et == "" {
 				continue
 			}
-			if et != "double" && et != "float" && et != "int" && et != "long" {
+			ct := canonicalType(et)
+			if ct != "double" && ct != "int" && ct != "long" {
 				numeric = false
 			}
 			if t == "" {
 				t = et
-			} else if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
+			} else if !sameType(t, et) {
 				same = false
 			}
 		}
 		if same && t != "" {
+			t = canonicalType(t)
 			arrType = javaType(t)
 			if l.ElemType == "Object" {
 				l.ElemType = t
@@ -4458,6 +4492,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					t = fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), ret)
 				}
 			}
+			if (t == "" || strings.HasPrefix(t, "Object")) && e != nil {
+				if it := inferType(e); it != "" && !strings.HasPrefix(it, "Object") {
+					t = it
+				}
+			}
 			alias := declareAlias(s.Let.Name)
 			vs := &VarStmt{Name: alias, Type: t, Expr: e}
 			varDecls[alias] = vs
@@ -6127,20 +6166,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &MethodCallExpr{Target: args[0], Name: "indexOf", Args: []Expr{args[1]}}, nil
 			}
 		}
-               if name == "parseIntStr" && (len(args) == 1 || len(args) == 2) {
-                       if len(args) == 1 {
-                               return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0]}}, nil
-                       }
-                       return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0], args[1]}}, nil
-               }
-               if name == "toi" && len(args) == 1 {
-                       val := &CallExpr{Func: "String.valueOf", Args: []Expr{args[0]}}
-                       return &CallExpr{Func: "Integer.parseInt", Args: []Expr{val}}, nil
-               }
-               if name == "padStart" && len(args) == 3 {
-                       needPadStart = true
-                       return &CallExpr{Func: "_padStart", Args: args}, nil
-               }
+		if name == "parseIntStr" && (len(args) == 1 || len(args) == 2) {
+			if len(args) == 1 {
+				return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0]}}, nil
+			}
+			return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0], args[1]}}, nil
+		}
+		if name == "toi" && len(args) == 1 {
+			val := &CallExpr{Func: "String.valueOf", Args: []Expr{args[0]}}
+			return &CallExpr{Func: "Integer.parseInt", Args: []Expr{val}}, nil
+		}
+		if name == "padStart" && len(args) == 3 {
+			needPadStart = true
+			return &CallExpr{Func: "_padStart", Args: args}, nil
+		}
 		if name == "repeat" && len(args) == 2 {
 			needRepeat = true
 			return &CallExpr{Func: "_repeat", Args: args}, nil
