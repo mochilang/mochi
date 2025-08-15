@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (509/1077) - Last updated 2025-08-15 21:09 +0700:
+Checklist of programs that currently transpile and run (512/1077) - Last updated 2025-08-15 22:19 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -438,9 +438,9 @@ Checklist of programs that currently transpile and run (509/1077) - Last updated
 | 431 | graphs/graph_list | ✓ | 330us | 1.5 MB |
 | 432 | graphs/graphs_floyd_warshall | ✓ | 557us | 1.4 MB |
 | 433 | graphs/greedy_best_first | ✓ | 751us | 1.6 MB |
-| 434 | graphs/greedy_min_vertex_cover |  |  |  |
-| 435 | graphs/kahns_algorithm_long |  |  |  |
-| 436 | graphs/kahns_algorithm_topo |  |  |  |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 205us | 1.6 MB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 403us | 1.5 MB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 283us | 1.4 MB |
 | 437 | graphs/karger |  |  |  |
 | 438 | graphs/lanczos_eigenvectors |  |  |  |
 | 439 | graphs/markov_chain |  |  |  |

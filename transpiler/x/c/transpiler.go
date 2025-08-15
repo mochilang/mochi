@@ -76,6 +76,7 @@ var (
 	needMapLenSL            bool
 	needMapGetIL            bool
 	needMapSetIL            bool
+	needMapLenIL            bool
 	needMapGetSS            bool
 	needMapSetSS            bool
 	needMapGetII            bool
@@ -203,6 +204,15 @@ func emitLenExpr(w io.Writer, e Expr) {
 				io.WriteString(w, mapField(vr.Name, "len")+", ")
 				v.Index.emitExpr(w)
 				io.WriteString(w, ")")
+			} else if strings.HasPrefix(t, "MapIL") || (mapKeyTypes[vr.Name] == "int" && strings.HasPrefix(mapValTypes[vr.Name], "long long")) {
+				needMapLenIL = true
+				io.WriteString(w, "map_len_il(")
+				io.WriteString(w, mapField(vr.Name, "keys")+", ")
+				io.WriteString(w, mapField(vr.Name, "vals")+", ")
+				io.WriteString(w, mapField(vr.Name, "lens")+", ")
+				io.WriteString(w, mapField(vr.Name, "len")+", ")
+				v.Index.emitExpr(w)
+				io.WriteString(w, ")")
 			} else if strings.HasPrefix(t, "Map") || mapKeyTypes[vr.Name] != "" {
 				io.WriteString(w, mapField(vr.Name, "lens")+"[")
 				v.Index.emitExpr(w)
@@ -219,6 +229,19 @@ func emitLenExpr(w io.Writer, e Expr) {
 				io.WriteString(w, "map_len_sl(")
 				fe.Target.emitExpr(w)
 				io.WriteString(w, "."+fe.Name+".keys, ")
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+".lens, ")
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+".len, ")
+				v.Index.emitExpr(w)
+				io.WriteString(w, ")")
+			} else if strings.HasPrefix(t, "MapIL") {
+				needMapLenIL = true
+				io.WriteString(w, "map_len_il(")
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+".keys, ")
+				fe.Target.emitExpr(w)
+				io.WriteString(w, "."+fe.Name+".vals, ")
 				fe.Target.emitExpr(w)
 				io.WriteString(w, "."+fe.Name+".lens, ")
 				fe.Target.emitExpr(w)
@@ -1146,6 +1169,13 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		fmt.Fprintf(w, "return %s_data;\n", tmp)
 		writeIndent(w, indent)
 		io.WriteString(w, "}\n")
+		return
+	}
+	if _, ok := r.Expr.(*NullLit); ok && strings.HasSuffix(currentFuncReturn, "[]") {
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "%s_len = 0;\n", currentFuncName)
+		writeIndent(w, indent)
+		io.WriteString(w, "return NULL;\n")
 		return
 	}
 	if currentFuncReturn == "MapSD" {
@@ -4762,7 +4792,7 @@ func (p *Program) Emit() []byte {
 	if needMapGetSL || needMapSetSL || needMapLenSL {
 		buf.WriteString("typedef struct { const char **keys; void **vals; size_t *lens; size_t len; size_t cap; } MapSL;\n\n")
 	}
-	if needMapGetIL || needMapSetIL {
+	if needMapGetIL || needMapSetIL || needMapLenIL {
 		buf.WriteString("typedef struct { int *keys; void **vals; size_t *lens; size_t len; size_t cap; } MapIL;\n\n")
 	}
 	if needStrMapIL {
@@ -4951,6 +4981,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    if (out_len) *out_len = 0;\n")
 		buf.WriteString("    return NULL;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needMapLenIL {
+		buf.WriteString("static size_t map_len_il(const int keys[], void *const vals[], const size_t lens[], size_t len, int key) {\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        if (keys[i] == key) { if (vals[i] == NULL) return 0; return lens[i]; }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needMapSetIL {
@@ -5634,6 +5672,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMapLenSL = false
 	needMapGetIL = false
 	needMapSetIL = false
+	needMapLenIL = false
 	needMapGetSS = false
 	needMapSetSS = false
 	needMapGetII = false
@@ -7360,6 +7399,43 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					lenVar = name + ".len"
 				}
 				return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
+			}
+			if name := callVarName(s.For.Source, "values"); name != "" && isMapVar(name) {
+				body, err := compileStmts(env, s.For.Body)
+				if err != nil {
+					return nil, err
+				}
+				valT := mapValTypes[name]
+				elemType := valT
+				base := strings.TrimSuffix(strings.TrimSuffix(valT, "*"), "[]")
+				if strings.HasSuffix(valT, "*") || strings.HasSuffix(valT, "[]") {
+					switch base {
+					case "long long":
+						env.SetVarDeep(s.For.Name, types.ListType{Elem: types.IntType{}}, true)
+					case "double":
+						env.SetVarDeep(s.For.Name, types.ListType{Elem: types.FloatType{}}, true)
+					case "const char*":
+						env.SetVarDeep(s.For.Name, types.ListType{Elem: types.StringType{}}, true)
+					default:
+						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+					}
+					elemType = base + "[]"
+				} else {
+					switch valT {
+					case "long long":
+						env.SetVarDeep(s.For.Name, types.IntType{}, true)
+					case "double":
+						env.SetVarDeep(s.For.Name, types.FloatType{}, true)
+					case "const char*":
+						env.SetVarDeep(s.For.Name, types.StringType{}, true)
+					default:
+						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+					}
+				}
+				tmp := fmt.Sprintf("%s_vals", name)
+				pre := &RawStmt{Code: fmt.Sprintf("%s **%s = (%s**)%s;\nsize_t *%s_lens = %s;", base, tmp, base, mapField(name, "vals"), tmp, mapField(name, "lens"))}
+				forStmt := &ForStmt{Var: s.For.Name, ListVar: tmp, LenVar: mapField(name, "len"), ElemType: elemType, Body: body}
+				return &BlockStmt{Stmts: []Stmt{pre, forStmt}}, nil
 			}
 			if keys, ok2 := convertMapKeysExpr(s.For.Source); ok2 {
 				list = keys
