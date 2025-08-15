@@ -1917,14 +1917,20 @@ io.WriteString(w, ocamlType(mi.Typ))
 		io.WriteString(w, zeroValue(mi.Typ))
 		io.WriteString(w, ")")
 	} else {
-		io.WriteString(w, "(match List.assoc_opt (__str (")
-		mi.Key.emit(w)
-		io.WriteString(w, ")) (")
-		mi.Map.emit(w)
-		io.WriteString(w, ") with Some v -> v | None -> ")
-		io.WriteString(w, zeroValue(mi.Typ))
-		io.WriteString(w, ")")
-	}
+               io.WriteString(w, "(match List.assoc_opt (__str (")
+               mi.Key.emit(w)
+               io.WriteString(w, ")) (")
+               mi.Map.emit(w)
+               io.WriteString(w, ") with Some v -> v | None -> ")
+               def := zeroValue(mi.Typ)
+               if def == "\"\"" {
+                       if n, ok := mi.Map.(*Name); ok && strings.HasPrefix(n.Typ, "map-list") {
+                               def = "[]"
+                       }
+               }
+               io.WriteString(w, def)
+               io.WriteString(w, ")")
+       }
 }
 
 func (mi *MapIndexExpr) emitPrint(w io.Writer) {
@@ -3746,12 +3752,15 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		var expr Expr
 		var typ string
 		var valTyp string
-		if st.Var.Type != nil {
-			typ = typeRefString(st.Var.Type)
-			if ts := typeString(types.ResolveTypeRef(st.Var.Type, env)); ts != "" {
-				typ = ts
-			}
-		}
+               if st.Var.Type != nil {
+                       typ = typeRefString(st.Var.Type)
+                       if ts := typeString(types.ResolveTypeRef(st.Var.Type, env)); ts != "" {
+                               // Only overwrite when the resolved type adds information.
+                               if typ == "" || (!strings.Contains(typ, "-") && typ != "map" && typ != "list") {
+                                       typ = ts
+                               }
+                       }
+               }
 		if st.Var.Value != nil {
 			valExpr, typVal, err := convertExpr(st.Var.Value, env, vars)
 			if err != nil {
@@ -4960,6 +4969,19 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
                                        typ = ft
                                } else if strings.HasPrefix(typ, "map-") {
                                        valTyp := strings.TrimPrefix(typ, "map-")
+                                       expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
+                                       typ = valTyp
+                               } else if typ == "map" || strings.HasPrefix(typ, "map{") {
+                                       valTyp := "dyn"
+                                       if strings.HasPrefix(typ, "map{") {
+                                               inner := strings.TrimSuffix(strings.TrimPrefix(typ, "map{"), "}")
+                                               if i := strings.Index(inner, ":"); i >= 0 {
+                                                       valTyp = strings.TrimSpace(inner[i+1:])
+                                                       if j := strings.Index(valTyp, ","); j >= 0 {
+                                                               valTyp = valTyp[:j]
+                                                       }
+                                               }
+                                       }
                                        expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
                                        typ = valTyp
                                } else {

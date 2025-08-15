@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 826/1077
-Last updated: 2025-08-14 18:14 +0700
+Completed programs: 827/1077
+Last updated: 2025-08-15 10:25 +0700
 
 Checklist:
 
@@ -432,8 +432,8 @@ Checklist:
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 720.0µs | 106.80KB |
 | 424 | graphs/even_tree | ✓ |  |  |
 | 425 | graphs/finding_bridges | ✓ | 586.0µs | 58.26KB |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort | ✓ | 347.0µs | 14.23KB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 1.0ms | 192.70KB |
+| 427 | graphs/g_topological_sort | ✓ | 287.0µs | 15.49KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 222.0µs | 7.48KB |
 | 429 | graphs/graph_adjacency_list | ✓ | 158.0µs | 12.41KB |
 | 430 | graphs/graph_adjacency_matrix | ✓ |  |  |
