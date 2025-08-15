@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-15 10:07 GMT+7
+Last updated: 2025-08-15 22:42 GMT+7
 
-## Algorithms Golden Test Checklist (758/1077)
+## Algorithms Golden Test Checklist (769/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -483,18 +483,18 @@ Last updated: 2025-08-15 10:07 GMT+7
 | 474 | hashes/sdbm |   |  |  |
 | 475 | hashes/sha1 |   |  |  |
 | 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
-| 482 | linear_algebra/gaussian_elimination |   |  |  |
-| 483 | linear_algebra/jacobi_iteration_method |   |  |  |
-| 484 | linear_algebra/lu_decomposition |   |  |  |
-| 485 | linear_algebra/matrix_inversion |   |  |  |
-| 486 | linear_algebra/src/conjugate_gradient |   |  |  |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
-| 488 | linear_algebra/src/lib |   |  |  |
+| 477 | knapsack/greedy_knapsack | ✓ | 58µs | 2.1 MB |
+| 478 | knapsack/knapsack | ✓ | 107µs | 2.2 MB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 52µs | 2.1 MB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 39µs | 2.1 MB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 28µs | 2.0 MB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 110µs | 2.1 MB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 70µs | 2.0 MB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 116µs | 2.2 MB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 105µs | 2.2 MB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 87µs | 2.1 MB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 98µs | 2.1 MB |
+| 488 | linear_algebra/src/lib | error |  |  |
 | 489 | linear_algebra/src/polynom_for_points |   |  |  |
 | 490 | linear_algebra/src/power_iteration |   |  |  |
 | 491 | linear_algebra/src/rank_of_matrix |   |  |  |
