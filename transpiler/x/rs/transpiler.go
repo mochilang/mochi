@@ -7186,6 +7186,12 @@ func rustTypeFromType(t types.Type) string {
 		return rustIdent(tt.Name)
 	case types.VoidType:
 		return "()"
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = rustTypeFromType(p)
+		}
+		return fmt.Sprintf("fn(%s) -> %s", strings.Join(params, ", "), rustTypeFromType(tt.Return))
 	}
 	return "i64"
 }

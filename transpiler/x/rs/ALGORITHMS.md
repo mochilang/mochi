@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-14 22:43 GMT+7
+Last updated: 2025-08-15 10:07 GMT+7
 
-## Algorithms Golden Test Checklist (757/1077)
+## Algorithms Golden Test Checklist (758/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -431,8 +431,8 @@ Last updated: 2025-08-14 22:43 GMT+7
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 96µs | 2.2 MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
 | 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
+| 425 | graphs/finding_bridges | ✓ | 183µs | 2.1 MB |
+| 426 | graphs/frequent_pattern_graph_miner | error |  |  |
 | 427 | graphs/g_topological_sort |   |  |  |
 | 428 | graphs/gale_shapley_bigraph |   |  |  |
 | 429 | graphs/graph_adjacency_list |   |  |  |
