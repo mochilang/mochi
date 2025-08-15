@@ -60,10 +60,10 @@ func SetBenchMain(v bool) { benchMain = v }
 // previous configuration after f returns. This helper is convenient for tests
 // that need to toggle benchmarking without manually resetting the global flag.
 func WithBenchMain(f func()) {
-        prev := benchMain
-        benchMain = true
-        defer func() { benchMain = prev }()
-        f()
+	prev := benchMain
+	benchMain = true
+	defer func() { benchMain = prev }()
+	f()
 }
 
 func pushLoop(breakSym Symbol, cont Node) {
@@ -557,8 +557,8 @@ func header() []byte {
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))`
-	prelude += "\n(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))"
-	prelude += "\n(define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst idx val)))"
+	prelude += "\n(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) '()))"
+	prelude += "\n(define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst (inexact->exact idx) val)))"
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -869,17 +869,17 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 }
 
 func convertFuncStmt(fs *parser.FunStmt, name string, withSelf bool) (Node, error) {
-        needBase = true
-        // Special-case nth_root to use Scheme's expt for stable convergence
-        if name == "nth_root" && len(fs.Params) == 2 {
-                x := fs.Params[0].Name
-                n := fs.Params[1].Name
-                return &List{Elems: []Node{
-                        Symbol("define"),
-                        &List{Elems: []Node{Symbol(name), Symbol(x), Symbol(n)}},
-                        &List{Elems: []Node{Symbol("expt"), Symbol(x), &List{Elems: []Node{Symbol("/"), FloatLit(1), Symbol(n)}}}},
-                }}, nil
-        }
+	needBase = true
+	// Special-case nth_root to use Scheme's expt for stable convergence
+	if name == "nth_root" && len(fs.Params) == 2 {
+		x := fs.Params[0].Name
+		n := fs.Params[1].Name
+		return &List{Elems: []Node{
+			Symbol("define"),
+			&List{Elems: []Node{Symbol(name), Symbol(x), Symbol(n)}},
+			&List{Elems: []Node{Symbol("expt"), Symbol(x), &List{Elems: []Node{Symbol("/"), FloatLit(1), Symbol(n)}}}},
+		}}, nil
+	}
 	params := []Node{}
 	prevEnv := currentEnv
 	childEnv := types.NewEnv(currentEnv)
