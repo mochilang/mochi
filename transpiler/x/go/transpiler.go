@@ -2993,7 +2993,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "list" && len(st.Let.Type.Generic.Args) == 1 {
 					ll.ElemType = toGoType(st.Let.Type.Generic.Args[0], env)
 					typ = "[]" + ll.ElemType
-					if mt, ok2 := types.ResolveTypeRef(st.Let.Type.Generic.Args[0], env).(types.MapType); ok2 {
+					if lt, ok2 := types.ResolveTypeRef(st.Let.Type.Generic.Args[0], env).(types.ListType); ok2 {
+						for _, el := range ll.Elems {
+							if inner, ok3 := el.(*ListLit); ok3 {
+								updateListLitType(inner, lt)
+							}
+						}
+					} else if mt, ok2 := types.ResolveTypeRef(st.Let.Type.Generic.Args[0], env).(types.MapType); ok2 {
 						for _, el := range ll.Elems {
 							if ml, ok3 := el.(*MapLit); ok3 {
 								updateMapLitTypes(ml, mt)
@@ -3123,11 +3129,6 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				name = "_init"
 			}
 			name = safeName(name)
-			if !global {
-				if _, err := topEnv.GetVar(origName); err == nil {
-					name = name + "_"
-				}
-			}
 			if name != origName {
 				varNameMap[origName] = name
 			}
@@ -3168,19 +3169,25 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		varDecls[st.Let.Name] = vd
 		return vd, nil
 	case st.Var != nil:
+		// If a variable with the same name already exists in the current
+		// scope (env.Types), treat the statement as an assignment. This
+		// allows proper handling of shadowed globals where a new local
+		// variable is declared using `var`.
 		if vd, ok := varDecls[st.Var.Name]; ok {
-			if st.Var.Value != nil {
-				e, err := compileExpr(st.Var.Value, env, st.Var.Name)
-				if err != nil {
-					return nil, err
+			if _, ok2 := env.Types()[st.Var.Name]; ok2 {
+				if st.Var.Value != nil {
+					e, err := compileExpr(st.Var.Value, env, st.Var.Name)
+					if err != nil {
+						return nil, err
+					}
+					name := vd.Name
+					if rn, ok := varNameMap[name]; ok {
+						name = rn
+					}
+					return &AssignStmt{Name: name, Value: e}, nil
 				}
-				name := vd.Name
-				if rn, ok := varNameMap[name]; ok {
-					name = rn
-				}
-				return &AssignStmt{Name: name, Value: e}, nil
+				return nil, nil
 			}
-			return nil, nil
 		}
 		var typ string
 		var declaredType types.Type
@@ -3195,13 +3202,6 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			declaredType = types.ResolveTypeRef(st.Var.Type, env)
 			env.SetVar(st.Var.Name, declaredType, true)
 		} else if env == topEnv {
-			if t, err := env.GetVar(st.Var.Name); err == nil {
-				if _, ok := t.(types.FuncType); !ok {
-					typ = toGoTypeFromType(t)
-					declaredType = t
-				}
-			}
-		} else {
 			if t, err := env.GetVar(st.Var.Name); err == nil {
 				if _, ok := t.(types.FuncType); !ok {
 					typ = toGoTypeFromType(t)
@@ -3291,7 +3291,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
 					ll.ElemType = toGoType(st.Var.Type.Generic.Args[0], env)
 					typ = "[]" + ll.ElemType
-					if mt, ok2 := types.ResolveTypeRef(st.Var.Type.Generic.Args[0], env).(types.MapType); ok2 {
+					if lt, ok2 := types.ResolveTypeRef(st.Var.Type.Generic.Args[0], env).(types.ListType); ok2 {
+						for _, el := range ll.Elems {
+							if inner, ok3 := el.(*ListLit); ok3 {
+								updateListLitType(inner, lt)
+							}
+						}
+					} else if mt, ok2 := types.ResolveTypeRef(st.Var.Type.Generic.Args[0], env).(types.MapType); ok2 {
 						for _, el := range ll.Elems {
 							if ml, ok3 := el.(*MapLit); ok3 {
 								updateMapLitTypes(ml, mt)
@@ -7794,9 +7800,17 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSHA256 {
-		buf.WriteString("func _sha256(bs []int) []int {\n")
-		buf.WriteString("    b := make([]byte, len(bs))\n")
-		buf.WriteString("    for i, v := range bs { b[i] = byte(v) }\n")
+		buf.WriteString("func _sha256(v any) []int {\n")
+		buf.WriteString("    var b []byte\n")
+		buf.WriteString("    switch t := v.(type) {\n")
+		buf.WriteString("    case []int:\n")
+		buf.WriteString("        b = make([]byte, len(t))\n")
+		buf.WriteString("        for i, v := range t { b[i] = byte(v) }\n")
+		buf.WriteString("    case string:\n")
+		buf.WriteString("        b = []byte(t)\n")
+		buf.WriteString("    default:\n")
+		buf.WriteString("        return nil\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("    h := sha256.Sum256(b)\n")
 		buf.WriteString("    out := make([]int, len(h))\n")
 		buf.WriteString("    for i, v := range h[:] { out[i] = int(v) }\n")
