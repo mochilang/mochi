@@ -1806,10 +1806,17 @@ func (f *Func) emit(w io.Writer) {
 			}
 		}
 		key := f.Name + ":" + orig
-		if u, ok := varUses[key]; ok {
-			if u == 0 && !varMut[key] {
-				name = "_"
+		u, ok := varUses[key]
+		mut := varMut[key]
+		if !ok {
+			key = f.Name + ":" + p.Name
+			u, ok = varUses[key]
+			if m, okm := varMut[key]; okm {
+				mut = m
 			}
+		}
+		if (!ok || u == 0) && !mut {
+			name = "_"
 		}
 		fmt.Fprintf(w, "%s: %s", name, p.Type)
 	}
@@ -2132,6 +2139,14 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 							} else {
 								ll.ElemType = valType
 							}
+						} else if start := strings.Index(vt, "("); start != -1 {
+							valType := strings.TrimSuffix(vt[start+1:], ")")
+							valType = strings.TrimSpace(valType)
+							if strings.HasPrefix(valType, "[]") {
+								ll.ElemType = valType[2:]
+							} else {
+								ll.ElemType = valType
+							}
 						}
 					}
 				}
@@ -2149,9 +2164,9 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 					ll.emit(w)
 					io.WriteString(w, ")[0..]")
 				} else {
-					io.WriteString(w, "@constCast(&")
+					io.WriteString(w, "@constCast(")
 					ll.emit(w)
-					io.WriteString(w, ")[0..]")
+					io.WriteString(w, ")")
 				}
 			} else {
 				ll.emit(w)
@@ -3067,7 +3082,8 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		}
 		typ = strings.TrimPrefix(typ, "*")
 		typ = strings.TrimPrefix(typ, "const ")
-		if strings.HasPrefix(typ, "std.AutoHashMap") || strings.HasPrefix(typ, "std.StringHashMap") || strings.HasPrefix(typ, "hash_map.HashMap(") || strings.Contains(typ, "HashMap(") {
+		isMap := strings.HasPrefix(typ, "std.AutoHashMap") || strings.HasPrefix(typ, "std.StringHashMap") || strings.HasPrefix(typ, "hash_map.HashMap(") || (strings.Contains(typ, "HashMap(") && !strings.HasPrefix(typ, "[]"))
+		if isMap {
 			iterVar := fmt.Sprintf("__mapit%d", loopCounter)
 			loopCounter++
 			io.WriteString(w, "var ")
@@ -4345,6 +4361,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			funcReturns["@panic"] = ""
 			return &CallExpr{Func: "@panic", Args: args}, nil
+		case "toi":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("toi expects one argument")
+			}
+			return &CastExpr{Value: args[0], Type: "i64"}, nil
 		case "sum":
 			if len(args) == 1 {
 				if list, ok := args[0].(*ListLit); ok {
