@@ -2167,9 +2167,21 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, " = ")
 	if a.Value != nil {
 		prevVar := currentVarName
+		prevType := currentVarType
 		currentVarName = a.Name
+		if len(a.Fields) > 0 {
+			if baseType, ok := varTypes[a.Name]; ok {
+				tname := strings.TrimSuffix(baseType, "*")
+				if st, ok2 := structTypes[tname]; ok2 {
+					if ft, ok3 := st.Fields[a.Fields[len(a.Fields)-1]]; ok3 {
+						currentVarType = ft
+					}
+				}
+			}
+		}
 		a.Value.emitExpr(w)
 		currentVarName = prevVar
+		currentVarType = prevType
 	}
 	io.WriteString(w, ";\n")
 
@@ -2707,6 +2719,9 @@ func (s *StructLit) emitExpr(w io.Writer) {
 									io.WriteString(w, "(MapIL){0}")
 									printed = true
 								}
+							} else if _, ok2 := mt.Value.(types.IntType); ok2 {
+								io.WriteString(w, "(MapII){0}")
+								printed = true
 							}
 						}
 					} else if sl, okm := f.Value.(*StructLit); okm && len(sl.Fields) == 0 {
@@ -2726,6 +2741,9 @@ func (s *StructLit) emitExpr(w io.Writer) {
 									io.WriteString(w, "(MapIL){0}")
 									printed = true
 								}
+							} else if _, ok2 := mt.Value.(types.IntType); ok2 {
+								io.WriteString(w, "(MapII){0}")
+								printed = true
 							}
 						}
 					}
@@ -2748,7 +2766,17 @@ type MapLit struct{ Items []MapItem }
 
 func (m *MapLit) emitExpr(w io.Writer) {
 	if len(m.Items) == 0 {
-		io.WriteString(w, "(MapIL){0}")
+		typ := "MapIL"
+		if currentVarType != nil {
+			if mt, ok := currentVarType.(types.MapType); ok {
+				typ = cTypeFromMochiType(mt)
+			}
+		} else if currentVarName != "" {
+			if t, ok := varTypes[currentVarName]; ok {
+				typ = t
+			}
+		}
+		io.WriteString(w, "("+typ+"){0}")
 		return
 	}
 	keyT := inferExprType(currentEnv, m.Items[0].Key)
@@ -6543,7 +6571,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-                               fmt.Fprintf(&buf, "%svoid* %s_vals[%d] = {", staticStr, s.Let.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "%svoid* %s_vals[%d] = {", staticStr, s.Let.Name, len(m.Items)+16)
 				for i := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6852,6 +6880,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					var buf bytes.Buffer
 					fmt.Fprintf(&buf, "MapIS %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
 					return &RawStmt{Code: buf.String()}, nil
+				} else if valT == "int" && keyT == "int" {
+					var buf bytes.Buffer
+					fmt.Fprintf(&buf, "MapII %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
+					return &RawStmt{Code: buf.String()}, nil
 				}
 			}
 			var buf bytes.Buffer
@@ -6892,7 +6924,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-                               fmt.Fprintf(&buf, "%svoid* %s_vals[%d] = {", staticStr, s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "%svoid* %s_vals[%d] = {", staticStr, s.Var.Name, len(m.Items)+16)
 				for i := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
