@@ -1982,8 +1982,9 @@ func isLikelyIntExpr(e Expr) bool {
 			if t, err := currentEnv.GetVar(ex.Name); err == nil {
 				return isIntLike(t)
 			}
+			return false
 		}
-		return true
+		return false
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
 			return true
@@ -2017,6 +2018,9 @@ func replaceIntDiv(e Expr) Expr {
 	case *BinaryExpr:
 		ex.Left = replaceIntDiv(ex.Left)
 		ex.Right = replaceIntDiv(ex.Right)
+		if ex.Op == "/" && isLikelyIntExpr(ex.Left) && isLikelyIntExpr(ex.Right) {
+			ex.Op = "//"
+		}
 		return ex
 	case *UnaryExpr:
 		ex.Expr = replaceIntDiv(ex.Expr)
