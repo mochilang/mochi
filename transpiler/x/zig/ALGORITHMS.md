@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-15 06:45 +0700
+Last updated: 2025-08-15 10:23 +0700
 
-## Program Checklist (337/1077)
+## Program Checklist (341/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -419,26 +419,26 @@ Last updated: 2025-08-15 06:45 +0700
 | 410 | graphs/check_cycle | ✓ | 1.05ms | 256.0 KB |
 | 411 | graphs/connected_components | ✓ | 2.157ms | 512.0 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search | ✓ | 1.109ms | 384.0 KB |
-| 414 | graphs/depth_first_search_2 | ✓ | 1.72ms | 512.0 KB |
-| 415 | graphs/dijkstra | ✓ | 1.731ms | 516.0 KB |
-| 416 | graphs/dijkstra_2 | ✓ | 941µs | 384.0 KB |
-| 417 | graphs/dijkstra_algorithm | ✓ | 809µs | 256.0 KB |
-| 418 | graphs/dijkstra_alternate | ✓ | 1.534ms | 512.0 KB |
-| 419 | graphs/dijkstra_binary_grid | ✓ | 8.773ms | 2.2 MB |
+| 413 | graphs/depth_first_search | ✓ | 1.139ms | 384.0 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 2.054ms | 644.0 KB |
+| 415 | graphs/dijkstra | ✓ | 1.733ms | 384.0 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 918µs | 256.0 KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 959µs | 256.0 KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 1.499ms | 384.0 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 10.927ms | 2.1 MB |
 | 420 | graphs/dinic | ✓ | 14.011ms | 3.0 MB |
 | 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 972µs | 256.0 KB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 13.467ms | 3.0 MB |
 | 424 | graphs/even_tree | ✓ | 1.287ms | 384.0 KB |
 | 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort | ✓ | 1.846ms | 640.0 KB |
-| 428 | graphs/gale_shapley_bigraph | ✓ | 966µs | 384.0 KB |
-| 429 | graphs/graph_adjacency_list |   |  |  |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall | ✓ | 1.46ms | 384.0 KB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 12.002ms | 3.4 MB |
+| 427 | graphs/g_topological_sort | ✓ | 1.43ms | 640.0 KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 797µs | 512.0 KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 1.269ms | 384.0 KB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 907µs | 384.0 KB |
+| 431 | graphs/graph_list | ✓ | 1.395ms | 512.0 KB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 1.11ms | 384.0 KB |
 | 433 | graphs/greedy_best_first |   |  |  |
 | 434 | graphs/greedy_min_vertex_cover |   |  |  |
 | 435 | graphs/kahns_algorithm_long | ✓ | 870µs | 256.0 KB |

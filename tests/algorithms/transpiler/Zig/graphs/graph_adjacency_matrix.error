@@ -1,7 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/graph_adjacency_matrix.zig:17:9: error: local variable shadows declaration of 'g_var_1'
-    var g_var_1: Graph = .{ .directed = directed, .vertex_to_index = std.AutoHashMap(i64, i64).init(std.heap.page_allocator), .adj_matrix = (&[_][]i64{})[0..0] };
-        ^~~~~~~
-/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/graph_adjacency_matrix.zig:14:1: note: declared here
-var g_var_1: Graph = undefined;
-^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
