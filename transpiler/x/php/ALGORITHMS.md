@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-15 10:10 GMT+7
+Last updated: 2025-08-15 10:29 GMT+7
 
-## Algorithms Golden Test Checklist (987/1077)
+## Algorithms Golden Test Checklist (988/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -481,7 +481,7 @@ Last updated: 2025-08-15 10:10 GMT+7
 | 472 | hashes/luhn | ✓ | 66µs | 38.5 KB |
 | 473 | hashes/md5 | ✓ | 1µs | 103.9 KB |
 | 474 | hashes/sdbm | ✓ | 237µs | 38.9 KB |
-| 475 | hashes/sha1 | error |  |  |
+| 475 | hashes/sha1 | ✓ | 11.715ms | 90.0 KB |
 | 476 | hashes/sha256 | ✓ |  |  |
 | 477 | knapsack/greedy_knapsack | ✓ |  |  |
 | 478 | knapsack/knapsack | ✓ |  |  |
