@@ -56,6 +56,11 @@ var externFuncs map[string]struct{}
 // output a JSON object with duration and memory statistics on completion.
 func SetBenchMain(v bool) { benchMain = v }
 
+// BenchMainEnabled reports whether benchmarking mode is currently enabled.
+// This helper is useful when transpilation or tests need to inspect the state
+// without mutating it.
+func BenchMainEnabled() bool { return benchMain }
+
 // WithBenchMain enables benchmark output while executing f and restores the
 // previous configuration after f returns. This helper is convenient for tests
 // that need to toggle benchmarking without manually resetting the global flag.
