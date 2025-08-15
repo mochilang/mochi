@@ -655,7 +655,8 @@ func (s *AssignStmt) emit(w io.Writer) {
 		if n, ok2 := s.Target.(*Name); ok2 {
 			if t, ok3 := localVarTypes[n.Name]; ok3 {
 				typ = t
-			} else if vs, ok3 := varDecls[n.Name]; ok3 && vs.Type != "" {
+			}
+			if vs, ok3 := varDecls[n.Name]; ok3 && vs.Type != "" && (typ == "" || typ == "Any" || typ == "ArrayBuffer[Any]") {
 				typ = vs.Type
 			}
 		}
@@ -1277,9 +1278,11 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		case *Name:
 			if t, ok2 := localVarTypes[v.Name]; ok2 {
 				container = t
-			} else if vs, ok2 := varDecls[v.Name]; ok2 && vs.Type != "" {
+			}
+			if vs, ok2 := varDecls[v.Name]; ok2 && vs.Type != "" && (container == "" || container == "Any" || container == "ArrayBuffer[Any]") {
 				container = vs.Type
-			} else {
+			}
+			if container == "" {
 				container = "Any"
 			}
 		case *CastExpr:
@@ -2131,7 +2134,8 @@ func Emit(p *Program) []byte {
 	}
 	if needsStr {
 		buf.WriteString("  private def _str(x: Any): String = x match {\n")
-		buf.WriteString("    case d: Double => if (d.isWhole()) d.toLong.toString else d.toString\n")
+		buf.WriteString("    case m: scala.collection.Map[_, _] => scala.collection.immutable.ListMap(m.toSeq.sortBy(_._1.toString): _*).toString.replace(\"ListMap\", \"Map\")\n")
+		buf.WriteString("    case d: Double => if (d.isWhole) d.toLong.toString else d.toString\n")
 		buf.WriteString("    case other => String.valueOf(other)\n")
 		buf.WriteString("  }\n\n")
 	}
@@ -2762,10 +2766,14 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		} else if targetType == "Int" && valType == "BigInt" {
 			e = &FieldExpr{Receiver: e, Name: "toInt"}
 		}
-		if n, ok := target.(*Name); ok && valType != "" && valType != "Any" {
-			localVarTypes[n.Name] = valType
-			if vs, ok2 := varDecls[n.Name]; ok2 {
-				vs.Type = valType
+		if n, ok := target.(*Name); ok {
+			if valType != "" && valType != "Any" && valType != "ArrayBuffer[Any]" {
+				localVarTypes[n.Name] = valType
+				if vs, ok2 := varDecls[n.Name]; ok2 {
+					vs.Type = valType
+				}
+			} else if vs, ok2 := varDecls[n.Name]; ok2 && vs.Type != "" {
+				localVarTypes[n.Name] = vs.Type
 			}
 		}
 		return &AssignStmt{Target: target, Value: e}, nil
@@ -3758,11 +3766,15 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "print":
 		if len(args) == 1 {
-			return &CallExpr{Fn: &Name{Name: "println"}, Args: args}, nil
+			needsStr = true
+			strCall := &CallExpr{Fn: &Name{Name: "_str"}, Args: args}
+			return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{strCall}}, nil
 		}
 		list := &CallExpr{Fn: &Name{Name: "List"}, Args: args}
 		join := &CallExpr{Fn: &FieldExpr{Receiver: list, Name: "mkString"}, Args: []Expr{&StringLit{Value: " "}}}
-		return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{join}}, nil
+		needsStr = true
+		strCall := &CallExpr{Fn: &Name{Name: "_str"}, Args: []Expr{join}}
+		return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{strCall}}, nil
 	case "stdout.write":
 		if len(args) == 1 {
 			return &CallExpr{Fn: &Name{Name: "print"}, Args: args}, nil
