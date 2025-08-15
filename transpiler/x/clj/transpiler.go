@@ -1751,7 +1751,7 @@ func isStringNode(n Node) bool {
 					return true
 				}
 			}
-			if i := strings.Index(name, "_"); i >= 0 {
+			if i := strings.LastIndex(name, "_"); i >= 0 {
 				if typ, err := transpileEnv.GetVar(name[i+1:]); err == nil {
 					if _, ok := typ.(types.StringType); ok {
 						return true
@@ -1781,20 +1781,36 @@ func isStringListNode(n Node) bool {
 				switch sym {
 				case "fields":
 					return true
+				case "keys":
+					if len(t.Elems) >= 2 {
+						if isMapNode(t.Elems[1]) {
+							return true
+						}
+					}
 				case "nth", "get":
 					if len(t.Elems) >= 2 {
 						if isStringListNode(t.Elems[1]) {
 							return true
 						}
 						if s, ok := t.Elems[1].(Symbol); ok {
-							if stringListVars != nil && stringListVars[string(s)] {
+							name := string(s)
+							if stringListVars != nil && stringListVars[name] {
 								return true
 							}
 							if transpileEnv != nil {
-								if typ, err := transpileEnv.GetVar(string(s)); err == nil {
+								if typ, err := transpileEnv.GetVar(name); err == nil {
 									if lt, ok := typ.(types.ListType); ok {
 										if _, ok := lt.Elem.(types.StringType); ok {
 											return true
+										}
+									}
+								}
+								if i := strings.LastIndex(name, "_"); i >= 0 {
+									if typ, err := transpileEnv.GetVar(name[i+1:]); err == nil {
+										if lt, ok := typ.(types.ListType); ok {
+											if _, ok := lt.Elem.(types.StringType); ok {
+												return true
+											}
 										}
 									}
 								}
@@ -1805,13 +1821,14 @@ func isStringListNode(n Node) bool {
 			}
 		}
 	case Symbol:
+		name := string(t)
 		if stringListVars != nil {
-			if stringListVars[string(t)] {
+			if stringListVars[name] {
 				return true
 			}
 		}
 		if transpileEnv != nil {
-			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+			if typ, err := transpileEnv.GetVar(name); err == nil {
 				if lt, ok := typ.(types.ListType); ok {
 					if _, ok := lt.Elem.(types.StringType); ok {
 						return true
@@ -1819,6 +1836,20 @@ func isStringListNode(n Node) bool {
 					if inner, ok := lt.Elem.(types.ListType); ok {
 						if _, ok := inner.Elem.(types.StringType); ok {
 							return true
+						}
+					}
+				}
+			}
+			if i := strings.LastIndex(name, "_"); i >= 0 {
+				if typ, err := transpileEnv.GetVar(name[i+1:]); err == nil {
+					if lt, ok := typ.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StringType); ok {
+							return true
+						}
+						if inner, ok := lt.Elem.(types.ListType); ok {
+							if _, ok := inner.Elem.(types.StringType); ok {
+								return true
+							}
 						}
 					}
 				}
@@ -2908,26 +2939,26 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 	callNode := &List{Elems: elems}
 	if sym, ok := elems[0].(Symbol); ok {
 		if mps, ok := funcMutatedParams[string(sym)]; ok && len(mps) > 0 {
-                        bindings := &Vector{Elems: []Node{Symbol("__res"), callNode}}
-                        bodyElems := []Node{}
-                        for _, mp := range mps {
-                                if mp.Index < len(c.Args) {
-                                        if argName, ok := identName(c.Args[mp.Index]); ok {
-                                                assignVal := Symbol("__res")
-                                                assign := &List{Elems: []Node{Symbol("set!"), Symbol(argName), assignVal}}
-                                                if funDepth == 1 && currentFun == "main" {
-                                                        assign = &List{Elems: []Node{
-                                                                Symbol("alter-var-root"),
-                                                                &List{Elems: []Node{Symbol("var"), Symbol(argName)}},
-                                                                &List{Elems: []Node{Symbol("constantly"), assignVal}},
-                                                        }}
-                                                }
-                                                bodyElems = append(bodyElems, assign)
-                                        }
-                                }
-                        }
-                        bodyElems = append(bodyElems, Symbol("__res"))
-                        callNode = &List{Elems: []Node{Symbol("let"), bindings, &List{Elems: append([]Node{Symbol("do")}, bodyElems...)}}}
+			bindings := &Vector{Elems: []Node{Symbol("__res"), callNode}}
+			bodyElems := []Node{}
+			for _, mp := range mps {
+				if mp.Index < len(c.Args) {
+					if argName, ok := identName(c.Args[mp.Index]); ok {
+						assignVal := Symbol("__res")
+						assign := &List{Elems: []Node{Symbol("set!"), Symbol(argName), assignVal}}
+						if funDepth == 1 && currentFun == "main" {
+							assign = &List{Elems: []Node{
+								Symbol("alter-var-root"),
+								&List{Elems: []Node{Symbol("var"), Symbol(argName)}},
+								&List{Elems: []Node{Symbol("constantly"), assignVal}},
+							}}
+						}
+						bodyElems = append(bodyElems, assign)
+					}
+				}
+			}
+			bodyElems = append(bodyElems, Symbol("__res"))
+			callNode = &List{Elems: []Node{Symbol("let"), bindings, &List{Elems: append([]Node{Symbol("do")}, bodyElems...)}}}
 		} else if transpileEnv != nil {
 			if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
 				callArity := len(elems) - 1
