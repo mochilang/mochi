@@ -5045,8 +5045,9 @@ func Emit(prog *Program) []byte {
 	if usesDict {
 		buf.WriteString("using System.Collections.Generic;\n")
 	}
-	// Always include LINQ for array operations.
-	buf.WriteString("using System.Linq;\n")
+	if usesLinq {
+		buf.WriteString("using System.Linq;\n")
+	}
 	if usesJson {
 		buf.WriteString("using System.Text.Json;\n")
 	}
