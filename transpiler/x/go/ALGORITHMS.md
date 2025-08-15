@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 772/1077
-Last updated: 2025-08-15 06:31 +0700
+Completed programs: 773/1077
+Last updated: 2025-08-15 10:16 +0700
 
 Checklist:
 
@@ -499,7 +499,7 @@ Checklist:
 | 490 | linear_algebra/src/power_iteration |   |  |  |
 | 491 | linear_algebra/src/rank_of_matrix |   |  |  |
 | 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
-| 493 | linear_algebra/src/schur_complement |   |  |  |
+| 493 | linear_algebra/src/schur_complement | ✓ | 366.0µs | 1.93KB |
 | 494 | linear_algebra/src/test_linear_algebra |   |  |  |
 | 495 | linear_algebra/src/transformations_2d |   |  |  |
 | 496 | linear_programming/simplex |   |  |  |

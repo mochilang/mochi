@@ -2900,6 +2900,24 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 				typ = toGoTypeFromType(valType)
+				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" && (typ == "" || typ == "[]any") {
+					if len(ce.Args) > 0 {
+						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
+							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+								typ = vd.Type
+							}
+						} else if idx, ok2 := ce.Args[0].(*IndexExpr); ok2 {
+							if vr2, ok3 := idx.X.(*VarRef); ok3 {
+								if vd, ok4 := varDecls[vr2.Name]; ok4 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+									typ = vd.Type[2:]
+								}
+							}
+						}
+						if strings.HasPrefix(typ, "[]") && typ != "[]any" {
+							valType = types.ListType{Elem: toTypeFromGoType(typ[2:])}
+						}
+					}
+				}
 				if _, ok := valType.(types.FuncType); ok {
 					if env != topEnv {
 						typ = ""
@@ -2927,6 +2945,24 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 				typ = toGoTypeFromType(valType)
+				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" && (typ == "" || typ == "[]any") {
+					if len(ce.Args) > 0 {
+						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
+							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+								typ = vd.Type
+							}
+						} else if idx, ok2 := ce.Args[0].(*IndexExpr); ok2 {
+							if vr2, ok3 := idx.X.(*VarRef); ok3 {
+								if vd, ok4 := varDecls[vr2.Name]; ok4 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+									typ = vd.Type[2:]
+								}
+							}
+						}
+						if strings.HasPrefix(typ, "[]") && typ != "[]any" {
+							valType = types.ListType{Elem: toTypeFromGoType(typ[2:])}
+						}
+					}
+				}
 			}
 			if as, ok := e.(*AssertExpr); ok && (typ == "" || typ == "any") && types.IsAnyType(valType) {
 				typ = as.Type
