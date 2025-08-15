@@ -151,6 +151,18 @@ mochi_index_of(S, Ch) when is_list(S) ->
         0 -> -1;
         N -> N - 1
     end;
+mochi_index_of(S, Ch) when is_binary(S) ->
+    Key = case Ch of
+        <<_/binary>> -> Ch;
+        C when is_integer(C) -> <<C>>;
+        [C|_] when is_list(C) -> list_to_binary([hd(C)]);
+        [C|_] -> <<C>>;
+        _ -> <<>>
+    end,
+    case binary:match(S, Key) of
+        {Pos, _} -> Pos;
+        nomatch -> -1
+    end;
 mochi_index_of(_, _) -> -1.
 `
 
