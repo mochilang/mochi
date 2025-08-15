@@ -777,6 +777,24 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if len(c.Args) == 2 && c.Func == "nth_root" {
+		imports["math"] = "math"
+		fmt.Fprint(w, "math.Pow(")
+		c.Args[0].emit(w)
+		fmt.Fprint(w, ", 1.0/float64(")
+		c.Args[1].emit(w)
+		fmt.Fprint(w, "))")
+		return
+	}
+	if len(c.Args) == 2 && c.Func == "pow_int" {
+		imports["math"] = "math"
+		fmt.Fprint(w, "math.Pow(")
+		c.Args[0].emit(w)
+		fmt.Fprint(w, ", float64(")
+		c.Args[1].emit(w)
+		fmt.Fprint(w, "))")
+		return
+	}
 	if len(c.Args) == 1 && (c.Func == "int" || (c.Func == "" && funcIsInt(c.FuncExpr))) {
 		fmt.Fprint(w, "(")
 		c.Args[0].emit(w)

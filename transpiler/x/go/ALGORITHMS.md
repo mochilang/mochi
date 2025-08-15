@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 826/1077
-Last updated: 2025-08-15 10:59 +0700
+Completed programs: 827/1077
+Last updated: 2025-08-15 11:13 +0700
 
 Checklist:
 
@@ -581,7 +581,7 @@ Checklist:
 | 572 | maths/gamma | ✓ | 16.0ms | 1.05KB |
 | 573 | maths/gaussian | ✓ | 367.0µs | 1000B |
 | 574 | maths/gcd_of_n_numbers | ✓ | 338.0µs | 1000B |
-| 575 | maths/geometric_mean |   |  |  |
+| 575 | maths/geometric_mean | ✓ | 284.0µs | 968B |
 | 576 | maths/germain_primes | ✓ | 265.0µs | 936B |
 | 577 | maths/greatest_common_divisor | ✓ | 379.0µs | 1.16KB |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 549.0µs | 1.10KB |
