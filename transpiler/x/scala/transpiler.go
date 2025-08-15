@@ -256,6 +256,12 @@ func gatherAssigned(stmts []*parser.Statement, m map[string]bool) {
 		if st.Assign != nil {
 			m[st.Assign.Name] = true
 		}
+		if st.Let != nil {
+			m[st.Let.Name] = true
+		}
+		if st.Var != nil {
+			m[st.Var.Name] = true
+		}
 		if st.If != nil {
 			gatherAssigned(st.If.Then, m)
 			if st.If.ElseIf != nil {
@@ -1271,6 +1277,8 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		case *Name:
 			if t, ok2 := localVarTypes[v.Name]; ok2 {
 				container = t
+			} else if vs, ok2 := varDecls[v.Name]; ok2 && vs.Type != "" {
+				container = vs.Type
 			} else {
 				container = "Any"
 			}
@@ -1283,6 +1291,9 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		default:
 			container = "Any"
 		}
+	}
+	if idx.Type == "" {
+		idx.Type = elementType(container)
 	}
 	idxType := inferTypeWithEnv(idx.Index, nil)
 	castIndex := strings.HasPrefix(container, "ArrayBuffer[") || container == "String" || (container == "Any" && !idx.ForceMap && idxType != "BigInt")
@@ -2120,7 +2131,7 @@ func Emit(p *Program) []byte {
 	}
 	if needsStr {
 		buf.WriteString("  private def _str(x: Any): String = x match {\n")
-		buf.WriteString("    case d: Double => d.toString\n")
+		buf.WriteString("    case d: Double => if (d.isWhole()) d.toLong.toString else d.toString\n")
 		buf.WriteString("    case other => String.valueOf(other)\n")
 		buf.WriteString("  }\n\n")
 	}
@@ -3063,12 +3074,15 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp, env *types.Env) (Expr, erro
 			if n, ok := base.(*Name); ok {
 				if t, ok2 := localVarTypes[n.Name]; ok2 {
 					ct = t
+				} else if vs, ok2 := varDecls[n.Name]; ok2 && vs.Type != "" {
+					ct = vs.Type
 				}
 			}
 			if ct == "" || ct == "Any" {
 				if iePrev, ok := base.(*IndexExpr); ok {
 					ct = iePrev.Type
 				} else if _, ok := idx.(*StringLit); ok {
+					// assume map when indexing by string
 					forceMap = true
 				}
 			}
@@ -3769,7 +3783,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			name = "_str"
 			needsStr = true
 		}
-	case "int":
+	case "int", "toi":
 		if len(args) == 1 {
 			needsBigInt = true
 			return &CastExpr{Value: args[0], Type: "int"}, nil
@@ -4006,10 +4020,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 					break
 				}
 			}
-			// Return sorted keys to match deterministic iteration
+			// Return sorted keys wrapped in ArrayBuffer for deterministic iteration
 			ks := &FieldExpr{Receiver: args[0], Name: "keys"}
 			seq := &FieldExpr{Receiver: ks, Name: "toSeq"}
-			return &FieldExpr{Receiver: seq, Name: "sorted"}, nil
+			sorted := &FieldExpr{Receiver: seq, Name: "sorted"}
+			return &CallExpr{Fn: &Name{Name: "ArrayBuffer"}, Args: []Expr{&SpreadExpr{Value: sorted}}}, nil
 		}
 	case "values":
 		if len(args) == 1 {

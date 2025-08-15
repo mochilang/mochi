@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 921/1077
-Last updated: 2025-08-14 17:09 +0700
+Completed programs: 924/1077
+Last updated: 2025-08-15 09:59 +0700
 
 Checklist:
 
@@ -431,8 +431,8 @@ Checklist:
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | error |  |  |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 10µs | 8.7 MB |
 | 424 | graphs/even_tree | error |  |  |
-| 425 | graphs/finding_bridges | error |  |  |
-| 426 | graphs/frequent_pattern_graph_miner | error |  |  |
+| 425 | graphs/finding_bridges | ✓ | 183.317ms | 8.7 MB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 183.317ms | 8.8 MB |
 | 427 | graphs/g_topological_sort | ✓ | 5µs | 8.7 MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 7µs | 8.7 MB |
 | 429 | graphs/graph_adjacency_list | ✓ | 12µs | 8.7 MB |
@@ -443,7 +443,7 @@ Checklist:
 | 434 | graphs/greedy_min_vertex_cover | ✓ | 10µs | 8.8 MB |
 | 435 | graphs/kahns_algorithm_long | ✓ | 4µs | 8.7 MB |
 | 436 | graphs/kahns_algorithm_topo | ✓ | 8µs | 8.7 MB |
-| 437 | graphs/karger | error |  |  |
+| 437 | graphs/karger | ✓ | 183.317ms | 8.7 MB |
 | 438 | graphs/lanczos_eigenvectors | ✓ | 3µs | 8.8 MB |
 | 439 | graphs/markov_chain | ✓ | 60µs | 8.7 MB |
 | 440 | graphs/matching_min_vertex_cover | ✓ | 3µs | 8.7 MB |
@@ -452,19 +452,19 @@ Checklist:
 | 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 4µs | 8.7 MB |
 | 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 6µs | 8.7 MB |
 | 445 | graphs/minimum_spanning_tree_prims | ✓ | 3µs | 8.7 MB |
-| 446 | graphs/minimum_spanning_tree_prims2 | error |  |  |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 183.317ms | 8.8 MB |
 | 447 | graphs/multi_heuristic_astar | ✓ | 8µs | 8.7 MB |
 | 448 | graphs/page_rank | ✓ | 10µs | 8.7 MB |
 | 449 | graphs/prim | ✓ | 12µs | 8.7 MB |
 | 450 | graphs/random_graph_generator | ✓ | 41µs | 8.7 MB |
 | 451 | graphs/scc_kosaraju | ✓ | 9µs | 8.7 MB |
-| 452 | graphs/strongly_connected_components | ✓ | 12µs | 8.7 MB |
+| 452 | graphs/strongly_connected_components | error | 12µs | 8.7 MB |
 | 453 | graphs/tarjans_scc | ✓ | 9µs | 8.7 MB |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 13µs | 8.7 MB |
 | 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 16µs | 8.7 MB |
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 5µs | 8.7 MB |
-| 457 | greedy_methods/fractional_cover_problem | ✓ | 10µs | 8.7 MB |
-| 458 | greedy_methods/fractional_knapsack | ✓ | 2µs | 8.7 MB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 183.317ms | 8.7 MB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 183.317ms | 8.7 MB |
 | 459 | greedy_methods/fractional_knapsack_2 | ✓ | 7µs | 8.7 MB |
 | 460 | greedy_methods/gas_station | ✓ | 3µs | 8.7 MB |
 | 461 | greedy_methods/minimum_coin_change | ✓ | 5µs | 8.7 MB |
