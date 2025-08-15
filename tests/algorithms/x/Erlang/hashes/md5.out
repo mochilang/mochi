@@ -1,3 +1,3 @@
-/workspace/mochi/tests/algorithms/x/Erlang/hashes/md5.erl:220:2: Warning: variable 'Hex_4' exported from 'case' (line 204, column 9)
-%  220| {Hex_4, I_5, J_2, Le_2} = Fun_7(Hex_4, I_5, J, Le),
+/workspace/mochi/tests/algorithms/x/Erlang/hashes/md5.erl:231:2: Warning: variable 'Hex_4' exported from 'case' (line 215, column 9)
+%  231| {Hex_4, I_5, J_2, Le_2} = Fun_7(Hex_4, I_5, J, Le),
 %     |  ^
