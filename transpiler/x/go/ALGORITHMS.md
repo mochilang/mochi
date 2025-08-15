@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 772/1077
-Last updated: 2025-08-15 06:31 +0700
+Completed programs: 826/1077
+Last updated: 2025-08-15 10:25 +0700
 
 Checklist:
 
@@ -498,75 +498,75 @@ Checklist:
 | 489 | linear_algebra/src/polynom_for_points |   |  |  |
 | 490 | linear_algebra/src/power_iteration |   |  |  |
 | 491 | linear_algebra/src/rank_of_matrix |   |  |  |
-| 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
-| 493 | linear_algebra/src/schur_complement |   |  |  |
-| 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations | ✓ | 551.0µs | 1.95KB |
-| 501 | machine_learning/decision_tree |   |  |  |
-| 502 | machine_learning/dimensionality_reduction |   |  |  |
-| 503 | machine_learning/forecasting/run |   |  |  |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 472.0µs | 1.93KB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 404.0µs | 1.93KB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 480.0µs | 9.66KB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 197.0µs | 4.26KB |
+| 496 | linear_programming/simplex | ✓ | 343.0µs | 2.33KB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 525.0µs | 2.34KB |
+| 498 | machine_learning/astar | ✓ | 678.0µs | 10.90KB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 242.0µs | 1000B |
+| 500 | machine_learning/data_transformations | ✓ | 514.0µs | 1.95KB |
+| 501 | machine_learning/decision_tree | ✓ | 1.0ms | 21.20KB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 281.0µs | 936B |
+| 503 | machine_learning/forecasting/run | ✓ | 509.0µs | 3.86KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
-| 507 | machine_learning/k_means_clust |   |  |  |
-| 508 | machine_learning/k_nearest_neighbours |   |  |  |
-| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
-| 510 | machine_learning/linear_regression |   |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
-| 512 | machine_learning/logistic_regression |   |  |  |
-| 513 | machine_learning/loss_functions |   |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
-| 515 | machine_learning/mfcc |   |  |  |
-| 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
-| 517 | machine_learning/polynomial_regression |   |  |  |
-| 518 | machine_learning/principle_component_analysis |   |  |  |
-| 519 | machine_learning/scoring_functions |   |  |  |
-| 520 | machine_learning/self_organizing_map |   |  |  |
-| 521 | machine_learning/sequential_minimum_optimization |   |  |  |
-| 522 | machine_learning/similarity_search |   |  |  |
-| 523 | machine_learning/support_vector_machines |   |  |  |
-| 524 | machine_learning/word_frequency_functions |   |  |  |
-| 525 | machine_learning/xgboost_classifier |   |  |  |
-| 526 | machine_learning/xgboost_regressor |   |  |  |
-| 527 | maths/abs |   |  |  |
-| 528 | maths/addition_without_arithmetic |   |  |  |
-| 529 | maths/aliquot_sum |   |  |  |
-| 530 | maths/allocation_number |   |  |  |
-| 531 | maths/arc_length |   |  |  |
-| 532 | maths/area |   |  |  |
-| 533 | maths/area_under_curve |   |  |  |
-| 534 | maths/average_absolute_deviation |   |  |  |
-| 535 | maths/average_mean |   |  |  |
-| 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode | ✓ | 1.0ms | 4.73KB |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 269.0µs | 2.52KB |
+| 506 | machine_learning/gradient_descent | ✓ | 3.0ms | 329.52KB |
+| 507 | machine_learning/k_means_clust | ✓ | 657.0µs | 3.11KB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 413.0µs | 2.16KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 498.0µs | 11.76KB |
+| 510 | machine_learning/linear_regression | ✓ | 493.0µs | 2.79KB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 638.0µs | 8.69KB |
+| 512 | machine_learning/logistic_regression | ✓ | 1.0ms | 24.77KB |
+| 513 | machine_learning/loss_functions | ✓ | 397.0µs | 2.16KB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 3.0ms | 330.07KB |
+| 515 | machine_learning/mfcc | ✓ | 528.0µs | 3.41KB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 4.0ms | 1.45KB |
+| 517 | machine_learning/polynomial_regression | ✓ | 530.0µs | 4.90KB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 724.0µs | 7.32KB |
+| 519 | machine_learning/scoring_functions | ✓ | 239.0µs | 1.23KB |
+| 520 | machine_learning/self_organizing_map | ✓ | 298.0µs | 2.18KB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 211.0µs | 1.27KB |
+| 522 | machine_learning/similarity_search | ✓ | 477.0µs | 1.52KB |
+| 523 | machine_learning/support_vector_machines | ✓ | 438.0µs | 1.13KB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 1.0ms | 223.80KB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 460.0µs | 4.33KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 517.0µs | 3.54KB |
+| 527 | maths/abs | ✓ | 231.0µs | 1016B |
+| 528 | maths/addition_without_arithmetic | ✓ | 239.0µs | 1.05KB |
+| 529 | maths/aliquot_sum | ✓ | 300.0µs | 1016B |
+| 530 | maths/allocation_number | ✓ | 484.0µs | 2.11KB |
+| 531 | maths/arc_length | ✓ | 462.0µs | 1.07KB |
+| 532 | maths/area | ✓ | 363.0µs | 2.27KB |
+| 533 | maths/area_under_curve | ✓ | 697.0µs | 1.48KB |
+| 534 | maths/average_absolute_deviation | ✓ | 283.0µs | 1.01KB |
+| 535 | maths/average_mean | ✓ | 422.0µs | 1.01KB |
+| 536 | maths/average_median | ✓ | 476.0µs | 1000B |
+| 537 | maths/average_mode | ✓ | 549.0µs | 5.05KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 255.0ms | 1.02KB |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
-| 543 | maths/binomial_coefficient |   |  |  |
-| 544 | maths/binomial_distribution |   |  |  |
-| 545 | maths/ceil |   |  |  |
-| 546 | maths/chebyshev_distance |   |  |  |
-| 547 | maths/check_polygon |   |  |  |
-| 548 | maths/chinese_remainder_theorem |   |  |  |
-| 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence | ✓ | 834.0µs | 1.53KB |
-| 551 | maths/combinations | ✓ | 402.0µs | 1.62KB |
-| 552 | maths/continued_fraction | ✓ | 280.0µs | 1.27KB |
-| 553 | maths/decimal_isolate | ✓ | 355.0µs | 1.18KB |
-| 554 | maths/decimal_to_fraction | ✓ | 752.0µs | 1.52KB |
-| 555 | maths/dodecahedron | ✓ | 362.0µs | 1.02KB |
-| 556 | maths/double_factorial | ✓ | 196.0µs | 936B |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 443.0µs | 3.30KB |
-| 558 | maths/entropy | ✓ | 20.0ms | 694.99KB |
-| 559 | maths/euclidean_distance | ✓ | 378.0µs | 1.12KB |
-| 560 | maths/euler_method | ✓ | 725.0µs | 16.96KB |
+| 540 | maths/basic_maths | ✓ | 621.0µs | 1.20KB |
+| 541 | maths/binary_exponentiation | ✓ | 240.0µs | 1000B |
+| 542 | maths/binary_multiplication | ✓ | 338.0µs | 1000B |
+| 543 | maths/binomial_coefficient | ✓ | 357.0µs | 1.05KB |
+| 544 | maths/binomial_distribution | ✓ | 339.0µs | 1.13KB |
+| 545 | maths/ceil | ✓ | 343.0µs | 1.04KB |
+| 546 | maths/chebyshev_distance | ✓ | 461.0µs | 1000B |
+| 547 | maths/check_polygon | ✓ | 575.0µs | 1.11KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 223.0µs | 1.07KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 495.0µs | 1.09KB |
+| 550 | maths/collatz_sequence | ✓ | 310.0µs | 1.53KB |
+| 551 | maths/combinations | ✓ | 464.0µs | 1.62KB |
+| 552 | maths/continued_fraction | ✓ | 193.0µs | 1.27KB |
+| 553 | maths/decimal_isolate | ✓ | 414.0µs | 1.18KB |
+| 554 | maths/decimal_to_fraction | ✓ | 545.0µs | 1.52KB |
+| 555 | maths/dodecahedron | ✓ | 510.0µs | 1.03KB |
+| 556 | maths/double_factorial | ✓ | 402.0µs | 936B |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 326.0µs | 3.30KB |
+| 558 | maths/entropy | ✓ | 15.0ms | 720.96KB |
+| 559 | maths/euclidean_distance | ✓ | 305.0µs | 1.12KB |
+| 560 | maths/euler_method | ✓ | 539.0µs | 16.96KB |
 | 561 | maths/euler_modified | ✓ | 673.0µs | 1.19KB |
 | 562 | maths/eulers_totient | ✓ | 305.0µs | 2.10KB |
 | 563 | maths/extended_euclidean_algorithm | ✓ | 485.0µs | 984B |

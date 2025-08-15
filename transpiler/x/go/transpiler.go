@@ -2892,9 +2892,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" {
 					if len(ce.Args) > 0 {
-						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
-							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+						switch arg := ce.Args[0].(type) {
+						case *VarRef:
+							if vd, ok3 := varDecls[arg.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
 								valType = types.ListType{Elem: toTypeFromGoType(vd.Type[2:])}
+							}
+						case *IndexExpr:
+							if vr, ok3 := arg.X.(*VarRef); ok3 {
+								if vd, ok4 := varDecls[vr.Name]; ok4 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+									if lt, ok5 := toTypeFromGoType(vd.Type).(types.ListType); ok5 {
+										if inner, ok6 := lt.Elem.(types.ListType); ok6 {
+											valType = types.ListType{Elem: inner.Elem}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -2919,9 +2930,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" {
 					if len(ce.Args) > 0 {
-						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
-							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+						switch arg := ce.Args[0].(type) {
+						case *VarRef:
+							if vd, ok3 := varDecls[arg.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
 								valType = types.ListType{Elem: toTypeFromGoType(vd.Type[2:])}
+							}
+						case *IndexExpr:
+							if vr, ok3 := arg.X.(*VarRef); ok3 {
+								if vd, ok4 := varDecls[vr.Name]; ok4 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+									if lt, ok5 := toTypeFromGoType(vd.Type).(types.ListType); ok5 {
+										if inner, ok6 := lt.Elem.(types.ListType); ok6 {
+											valType = types.ListType{Elem: inner.Elem}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -3167,9 +3189,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" {
 					if len(ce.Args) > 0 {
-						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
-							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+						switch arg := ce.Args[0].(type) {
+						case *VarRef:
+							if vd, ok3 := varDecls[arg.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
 								valType = types.ListType{Elem: toTypeFromGoType(vd.Type[2:])}
+							}
+						case *IndexExpr:
+							if vr, ok3 := arg.X.(*VarRef); ok3 {
+								if vd, ok4 := varDecls[vr.Name]; ok4 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+									if lt, ok5 := toTypeFromGoType(vd.Type).(types.ListType); ok5 {
+										if inner, ok6 := lt.Elem.(types.ListType); ok6 {
+											valType = types.ListType{Elem: inner.Elem}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -3184,9 +3217,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				valType = types.TypeOfExpr(st.Var.Value, env)
 				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" {
 					if len(ce.Args) > 0 {
-						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
-							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+						switch arg := ce.Args[0].(type) {
+						case *VarRef:
+							if vd, ok3 := varDecls[arg.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
 								valType = types.ListType{Elem: toTypeFromGoType(vd.Type[2:])}
+							}
+						case *IndexExpr:
+							if vr, ok3 := arg.X.(*VarRef); ok3 {
+								if vd, ok4 := varDecls[vr.Name]; ok4 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+									if lt, ok5 := toTypeFromGoType(vd.Type).(types.ListType); ok5 {
+										if inner, ok6 := lt.Elem.(types.ListType); ok6 {
+											valType = types.ListType{Elem: inner.Elem}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -5715,7 +5759,7 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 								newExpr = &CallExpr{Func: "math.Mod", Args: []Expr{left, right}}
 							} else {
 								usesMod = true
-								newExpr = &CallExpr{Func: "_mod", Args: []Expr{left, right}}
+								newExpr = &CallExpr{Func: "_modi", Args: []Expr{left, right}}
 							}
 						}
 					}
@@ -7560,7 +7604,7 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseMod {
-		buf.WriteString("func _mod(a, b int) int {\n")
+		buf.WriteString("func _modi(a, b int) int {\n")
 		buf.WriteString("    if b == 0 { return 0 }\n")
 		buf.WriteString("    r := a % b\n")
 		buf.WriteString("    if (r < 0 && b > 0) || (r > 0 && b < 0) {\n")
@@ -8572,6 +8616,14 @@ func exprUses(name string, e Expr) bool {
 		return exprUses(name, t.Expr)
 	case *AssertExpr:
 		return exprUses(name, t.Expr)
+	case *IfExpr:
+		if exprUses(name, t.Cond) || exprUses(name, t.Then) {
+			return true
+		}
+		if t.Else != nil && exprUses(name, t.Else) {
+			return true
+		}
+		return false
 	case *ListLit:
 		for _, el := range t.Elems {
 			if exprUses(name, el) {
