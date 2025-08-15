@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-14 10:17 UTC
+Last updated: 2025-08-15 03:23 UTC
 
 ## Algorithms Golden Test Checklist (884/1077)
 | Index | Name | Status | Duration | Memory |
@@ -506,7 +506,7 @@ Last updated: 2025-08-14 10:17 UTC
 | 497 | machine_learning/apriori_algorithm |   |  |  |
 | 498 | machine_learning/astar | ✓ | 9m31.223891s | 12.2 KB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 9m31.223891s | 10.6 KB |
-| 500 | machine_learning/data_transformations | ✓ | 1.686ms |  |
+| 500 | machine_learning/data_transformations | ✓ | 128µs | 131.2 KB |
 | 501 | machine_learning/decision_tree | ✓ | 647.464ms | 4.6 MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 7µs | 1.1 KB |
 | 503 | machine_learning/forecasting/run | ✓ | 196µs | 225.7 KB |
