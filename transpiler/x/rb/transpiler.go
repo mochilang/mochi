@@ -196,7 +196,7 @@ end
 
 const helperPow = `
 def _pow(a, b)
-  a ** b
+  (a.nil? ? 0 : a) ** (b.nil? ? 0 : b)
 end
 `
 
