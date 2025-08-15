@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:03 +0700
+// Generated 2025-08-15 11:16 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -42,12 +42,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Graph = {
     mutable _directed: bool
     mutable _vertex_to_index: System.Collections.Generic.IDictionary<int, int>
@@ -63,22 +66,22 @@ let rec make_graph (vertices: int array) (edges: int array array) (_directed: bo
     let mutable edges = edges
     let mutable _directed = _directed
     try
-        let mutable g: Graph = { _directed = _directed; _vertex_to_index = _dictCreate []; _adj_matrix = [||] }
+        let mutable g: Graph = { _directed = _directed; _vertex_to_index = _dictCreate<int, int> []; _adj_matrix = Array.empty<int array> }
         let mutable i: int = 0
         while i < (Seq.length (vertices)) do
-            add_vertex (g) (_idx vertices (i))
+            ignore (add_vertex (g) (_idx vertices (int i)))
             i <- i + 1
         let mutable j: int = 0
         while j < (Seq.length (edges)) do
-            let e: int array = _idx edges (j)
-            add_edge (g) (_idx e (0)) (_idx e (1))
+            let e: int array = _idx edges (int j)
+            ignore (add_edge (g) (_idx e (int 0)) (_idx e (int 1)))
             j <- j + 1
         __ret <- g
         raise Return
         __ret
     with
         | Return -> __ret
-let rec contains_vertex (g: Graph) (v: int) =
+and contains_vertex (g: Graph) (v: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable g = g
     let mutable v = v
@@ -88,19 +91,19 @@ let rec contains_vertex (g: Graph) (v: int) =
         __ret
     with
         | Return -> __ret
-let rec add_vertex (g: Graph) (v: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and add_vertex (g: Graph) (v: int) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable g = g
     let mutable v = v
     try
         if contains_vertex (g) (v) then
-            failwith ("vertex already exists")
+            ignore (failwith ("vertex already exists"))
         let mutable matrix: int array array = g._adj_matrix
         let mutable i: int = 0
         while i < (Seq.length (matrix)) do
-            matrix.[i] <- Array.append (_idx matrix (i)) [|0|]
+            matrix.[i] <- Array.append (_idx matrix (int i)) [|0|]
             i <- i + 1
-        let mutable row: int array = [||]
+        let mutable row: int array = Array.empty<int>
         let mutable j: int = 0
         while j < ((Seq.length (matrix)) + 1) do
             row <- Array.append row [|0|]
@@ -108,12 +111,12 @@ let rec add_vertex (g: Graph) (v: int) =
         matrix <- Array.append matrix [|row|]
         g._adj_matrix <- matrix
         let mutable idx_map: System.Collections.Generic.IDictionary<int, int> = g._vertex_to_index
-        idx_map.[v] <- (Seq.length (matrix)) - 1
+        idx_map <- _dictAdd (idx_map) (v) ((Seq.length (matrix)) - 1)
         g._vertex_to_index <- idx_map
         __ret
     with
         | Return -> __ret
-let rec remove_key (m: System.Collections.Generic.IDictionary<int, int>) (k: int) =
+and remove_key (m: System.Collections.Generic.IDictionary<int, int>) (k: int) =
     let mutable __ret : System.Collections.Generic.IDictionary<int, int> = Unchecked.defaultof<System.Collections.Generic.IDictionary<int, int>>
     let mutable m = m
     let mutable k = k
@@ -121,13 +124,13 @@ let rec remove_key (m: System.Collections.Generic.IDictionary<int, int>) (k: int
         let mutable out: System.Collections.Generic.IDictionary<int, int> = _dictCreate []
         for key in m.Keys do
             if key <> k then
-                out.[key] <- _dictGet m (key)
+                out <- _dictAdd (out) (key) (_dictGet m (key))
         __ret <- out
         raise Return
         __ret
     with
         | Return -> __ret
-let rec decrement_indices (m: System.Collections.Generic.IDictionary<int, int>) (start: int) =
+and decrement_indices (m: System.Collections.Generic.IDictionary<int, int>) (start: int) =
     let mutable __ret : System.Collections.Generic.IDictionary<int, int> = Unchecked.defaultof<System.Collections.Generic.IDictionary<int, int>>
     let mutable m = m
     let mutable start = start
@@ -136,32 +139,32 @@ let rec decrement_indices (m: System.Collections.Generic.IDictionary<int, int>) 
         for key in m.Keys do
             let idx: int = _dictGet m (key)
             if idx > start then
-                out.[key] <- idx - 1
+                out <- _dictAdd (out) (key) (idx - 1)
             else
-                out.[key] <- idx
+                out <- _dictAdd (out) (key) (idx)
         __ret <- out
         raise Return
         __ret
     with
         | Return -> __ret
-let rec remove_vertex (g: Graph) (v: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and remove_vertex (g: Graph) (v: int) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable g = g
     let mutable v = v
     try
         if not (contains_vertex (g) (v)) then
-            failwith ("vertex does not exist")
+            ignore (failwith ("vertex does not exist"))
         let idx: int = _dictGet (g._vertex_to_index) (v)
-        let mutable new_matrix: int array array = [||]
+        let mutable new_matrix: int array array = Array.empty<int array>
         let mutable i: int = 0
         while i < (Seq.length (g._adj_matrix)) do
             if i <> idx then
-                let mutable row: int array = _idx (g._adj_matrix) (i)
-                let mutable new_row: int array = [||]
+                let mutable row: int array = _idx (g._adj_matrix) (int i)
+                let mutable new_row: int array = Array.empty<int>
                 let mutable j: int = 0
                 while j < (Seq.length (row)) do
                     if j <> idx then
-                        new_row <- Array.append new_row [|(_idx row (j))|]
+                        new_row <- Array.append new_row [|(_idx row (int j))|]
                     j <- j + 1
                 new_matrix <- Array.append new_matrix [|new_row|]
             i <- i + 1
@@ -171,14 +174,14 @@ let rec remove_vertex (g: Graph) (v: int) =
         __ret
     with
         | Return -> __ret
-let rec add_edge (g: Graph) (u: int) (v: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and add_edge (g: Graph) (u: int) (v: int) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable g = g
     let mutable u = u
     let mutable v = v
     try
         if not ((contains_vertex (g) (u)) && (contains_vertex (g) (v))) then
-            failwith ("missing vertex")
+            ignore (failwith ("missing vertex"))
         let mutable i: int = _dictGet (g._vertex_to_index) (u)
         let mutable j: int = _dictGet (g._vertex_to_index) (v)
         let mutable matrix: int array array = g._adj_matrix
@@ -189,14 +192,14 @@ let rec add_edge (g: Graph) (u: int) (v: int) =
         __ret
     with
         | Return -> __ret
-let rec remove_edge (g: Graph) (u: int) (v: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and remove_edge (g: Graph) (u: int) (v: int) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable g = g
     let mutable u = u
     let mutable v = v
     try
         if not ((contains_vertex (g) (u)) && (contains_vertex (g) (v))) then
-            failwith ("missing vertex")
+            ignore (failwith ("missing vertex"))
         let mutable i: int = _dictGet (g._vertex_to_index) (u)
         let mutable j: int = _dictGet (g._vertex_to_index) (v)
         let mutable matrix: int array array = g._adj_matrix
@@ -207,39 +210,39 @@ let rec remove_edge (g: Graph) (u: int) (v: int) =
         __ret
     with
         | Return -> __ret
-let rec contains_edge (g: Graph) (u: int) (v: int) =
+and contains_edge (g: Graph) (u: int) (v: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable g = g
     let mutable u = u
     let mutable v = v
     try
         if not ((contains_vertex (g) (u)) && (contains_vertex (g) (v))) then
-            failwith ("missing vertex")
+            ignore (failwith ("missing vertex"))
         let mutable i: int = _dictGet (g._vertex_to_index) (u)
         let mutable j: int = _dictGet (g._vertex_to_index) (v)
         let mutable matrix: int array array = g._adj_matrix
-        __ret <- (_idx (_idx matrix (i)) (j)) = 1
+        __ret <- (_idx (_idx matrix (int i)) (int j)) = 1
         raise Return
         __ret
     with
         | Return -> __ret
-let rec clear_graph (g: Graph) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and clear_graph (g: Graph) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable g = g
     try
-        g._vertex_to_index <- _dictCreate []
-        g._adj_matrix <- [||]
+        g._vertex_to_index <- _dictCreate<int, int> []
+        g._adj_matrix <- Array.empty<int array>
         __ret
     with
         | Return -> __ret
 let mutable g: Graph = make_graph (unbox<int array> [|1; 2; 3|]) ([|[|1; 2|]; [|2; 3|]|]) (false)
-printfn "%s" (_str (g._adj_matrix))
-printfn "%s" (_str (contains_edge (g) (1) (2)))
-printfn "%s" (_str (contains_edge (g) (2) (1)))
-remove_edge (g) (1) (2)
-printfn "%s" (_str (contains_edge (g) (1) (2)))
-remove_vertex (g) (2)
-printfn "%s" (_str (g._adj_matrix))
+ignore (printfn "%s" (_str (g._adj_matrix)))
+ignore (printfn "%s" (_str (contains_edge (g) (1) (2))))
+ignore (printfn "%s" (_str (contains_edge (g) (2) (1))))
+ignore (remove_edge (g) (1) (2))
+ignore (printfn "%s" (_str (contains_edge (g) (1) (2))))
+ignore (remove_vertex (g) (2))
+ignore (printfn "%s" (_str (g._adj_matrix)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

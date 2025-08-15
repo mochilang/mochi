@@ -1,4 +1,4 @@
-// Generated 2025-08-14 16:28 +0700
+// Generated 2025-08-15 11:16 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -22,12 +22,15 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Item = {
     mutable _weight: int
     mutable _value: int

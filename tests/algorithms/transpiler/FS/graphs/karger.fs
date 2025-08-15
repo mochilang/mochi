@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:03 +0700
+// Generated 2025-08-15 11:16 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -52,14 +52,14 @@ let rec rand_int (n: int) =
         __ret
     with
         | Return -> __ret
-let rec contains (list: string array) (value: string) =
+and contains (list: string array) (value: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable list = list
     let mutable value = value
     try
         let mutable i: int = 0
         while i < (Seq.length (list)) do
-            if (_idx list (i)) = value then
+            if (_idx list (int i)) = value then
                 __ret <- true
                 raise Return
             i <- i + 1
@@ -68,96 +68,96 @@ let rec contains (list: string array) (value: string) =
         __ret
     with
         | Return -> __ret
-let rec remove_all (list: string array) (value: string) =
+and remove_all (list: string array) (value: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable list = list
     let mutable value = value
     try
-        let mutable res: string array = [||]
+        let mutable res: string array = Array.empty<string>
         let mutable i: int = 0
         while i < (Seq.length (list)) do
-            if (_idx list (i)) <> value then
-                res <- Array.append res [|(_idx list (i))|]
+            if (_idx list (int i)) <> value then
+                res <- Array.append res [|(_idx list (int i))|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec partition_graph (graph: System.Collections.Generic.IDictionary<string, string array>) =
+and partition_graph (graph: System.Collections.Generic.IDictionary<string, string array>) =
     let mutable __ret : Pair array = Unchecked.defaultof<Pair array>
     let mutable graph = graph
     try
         let mutable contracted: System.Collections.Generic.IDictionary<string, string array> = _dictCreate []
-        for node in graph.Keys do
-            contracted.[node] <- [|node|]
+        for node in Seq.map string (unbox<string array> (Seq.toArray (graph.Keys))) do
+            contracted <- _dictAdd (contracted) (string (node)) (unbox<string array> [|node|])
         let mutable graph_copy: System.Collections.Generic.IDictionary<string, string array> = _dictCreate []
-        for node in graph.Keys do
-            let mutable lst: string array = [||]
+        for node in Seq.map string (unbox<string array> (Seq.toArray (graph.Keys))) do
+            let mutable lst: string array = Array.empty<string>
             let mutable neigh: string array = _dictGet graph ((string (node)))
             let mutable i: int = 0
             while i < (Seq.length (neigh)) do
-                lst <- Array.append lst [|(_idx neigh (i))|]
+                lst <- Array.append lst [|(_idx neigh (int i))|]
                 i <- i + 1
-            graph_copy.[node] <- lst
-        let mutable nodes: obj = box (graph_copy.Keys)
+            graph_copy <- _dictAdd (graph_copy) (string (node)) (lst)
+        let mutable nodes: string array = unbox<string array> (Seq.toArray (graph_copy.Keys))
         while (Seq.length (nodes)) > 2 do
-            let u: obj = _idx nodes (rand_int (Seq.length (nodes)))
+            let u: string = _idx nodes (int (rand_int (Seq.length (nodes))))
             let u_neighbors: string array = _dictGet graph_copy ((string (u)))
-            let v: string = _idx u_neighbors (rand_int (Seq.length (u_neighbors)))
-            let uv: string = (unbox<string> u) + v
-            let mutable uv_neighbors: string array = [||]
+            let v: string = _idx u_neighbors (int (rand_int (Seq.length (u_neighbors))))
+            let uv: string = u + v
+            let mutable uv_neighbors: string array = Array.empty<string>
             let mutable i: int = 0
             while i < (Seq.length (_dictGet graph_copy ((string (u))))) do
-                let n: string = _idx (_dictGet graph_copy ((string (u)))) (i)
-                if ((n <> (unbox<string> u)) && (n <> v)) && ((contains (uv_neighbors) (n)) = false) then
+                let n: string = _idx (_dictGet graph_copy ((string (u)))) (int i)
+                if ((n <> u) && (n <> v)) && ((contains (uv_neighbors) (n)) = false) then
                     uv_neighbors <- Array.append uv_neighbors [|n|]
                 i <- i + 1
             i <- 0
             while i < (Seq.length (_dictGet graph_copy ((string (v))))) do
-                let n: string = _idx (_dictGet graph_copy ((string (v)))) (i)
-                if ((n <> (unbox<string> u)) && (n <> v)) && ((contains (uv_neighbors) (n)) = false) then
+                let n: string = _idx (_dictGet graph_copy ((string (v)))) (int i)
+                if ((n <> u) && (n <> v)) && ((contains (uv_neighbors) (n)) = false) then
                     uv_neighbors <- Array.append uv_neighbors [|n|]
                 i <- i + 1
-            graph_copy.[uv] <- uv_neighbors
+            graph_copy <- _dictAdd (graph_copy) (string (uv)) (uv_neighbors)
             let mutable k: int = 0
             while k < (Seq.length (uv_neighbors)) do
-                let nb: string = _idx uv_neighbors (k)
-                graph_copy.[nb] <- Array.append (_dictGet graph_copy ((string (nb)))) [|uv|]
-                graph_copy.[nb] <- remove_all (_dictGet graph_copy ((string (nb)))) (unbox<string> u)
-                graph_copy.[nb] <- remove_all (_dictGet graph_copy ((string (nb)))) (v)
+                let nb: string = _idx uv_neighbors (int k)
+                graph_copy <- _dictAdd (graph_copy) (string (nb)) (Array.append (_dictGet graph_copy ((string (nb)))) [|uv|])
+                graph_copy <- _dictAdd (graph_copy) (string (nb)) (remove_all (_dictGet graph_copy ((string (nb)))) (u))
+                graph_copy <- _dictAdd (graph_copy) (string (nb)) (remove_all (_dictGet graph_copy ((string (nb)))) (v))
                 k <- k + 1
-            let mutable group: string array = [||]
+            let mutable group: string array = Array.empty<string>
             i <- 0
             while i < (Seq.length (_dictGet contracted ((string (u))))) do
-                group <- Array.append group [|(_idx (_dictGet contracted ((string (u)))) (i))|]
+                group <- Array.append group [|(_idx (_dictGet contracted ((string (u)))) (int i))|]
                 i <- i + 1
             i <- 0
             while i < (Seq.length (_dictGet contracted ((string (v))))) do
-                let ``val``: string = _idx (_dictGet contracted ((string (v)))) (i)
+                let ``val``: string = _idx (_dictGet contracted ((string (v)))) (int i)
                 if (contains (group) (``val``)) = false then
                     group <- Array.append group [|``val``|]
                 i <- i + 1
-            contracted.[uv] <- group
-            nodes <- box (remove_all (unbox<string array> nodes) (unbox<string> u))
-            nodes <- box (remove_all (unbox<string array> nodes) (v))
+            contracted <- _dictAdd (contracted) (string (uv)) (group)
+            nodes <- remove_all (nodes) (u)
+            nodes <- remove_all (nodes) (v)
             nodes <- Array.append nodes [|uv|]
-        let mutable groups: string array array = [||]
+        let mutable groups: string array array = Array.empty<string array>
         let mutable j: int = 0
-        while j < (int ((unbox<System.Array> nodes).Length)) do
-            let n: obj = box (((nodes :?> System.Array).GetValue(j)))
+        while j < (Seq.length (nodes)) do
+            let n: string = _idx nodes (int j)
             groups <- Array.append groups [|(_dictGet contracted ((string (n))))|]
             j <- j + 1
-        let groupA: string array = _idx groups (0)
-        let groupB: string array = _idx groups (1)
-        let mutable cut: Pair array = [||]
+        let groupA: string array = _idx groups (int 0)
+        let groupB: string array = _idx groups (int 1)
+        let mutable cut: Pair array = Array.empty<Pair>
         j <- 0
         while j < (Seq.length (groupA)) do
-            let node: string = _idx groupA (j)
+            let node: string = _idx groupA (int j)
             let mutable neigh: string array = _dictGet graph ((string (node)))
             let mutable l: int = 0
             while l < (Seq.length (neigh)) do
-                let nb: string = _idx neigh (l)
+                let nb: string = _idx neigh (int l)
                 if contains (groupB) (nb) then
                     cut <- Array.append cut [|{ _a = node; _b = nb }|]
                 l <- l + 1
@@ -167,14 +167,14 @@ let rec partition_graph (graph: System.Collections.Generic.IDictionary<string, s
         __ret
     with
         | Return -> __ret
-let rec cut_to_string (cut: Pair array) =
+and cut_to_string (cut: Pair array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable cut = cut
     try
         let mutable s: string = "{"
         let mutable i: int = 0
         while i < (Seq.length (cut)) do
-            let p: Pair = _idx cut (i)
+            let p: Pair = _idx cut (int i)
             s <- ((((s + "(") + (p._a)) + ", ") + (p._b)) + ")"
             if i < ((Seq.length (cut)) - 1) then
                 s <- s + ", "
@@ -187,7 +187,7 @@ let rec cut_to_string (cut: Pair array) =
         | Return -> __ret
 let TEST_GRAPH: System.Collections.Generic.IDictionary<string, string array> = _dictCreate [("1", [|"2"; "3"; "4"; "5"|]); ("2", [|"1"; "3"; "4"; "5"|]); ("3", [|"1"; "2"; "4"; "5"; "10"|]); ("4", [|"1"; "2"; "3"; "5"; "6"|]); ("5", [|"1"; "2"; "3"; "4"; "7"|]); ("6", [|"7"; "8"; "9"; "10"; "4"|]); ("7", [|"6"; "8"; "9"; "10"; "5"|]); ("8", [|"6"; "7"; "9"; "10"|]); ("9", [|"6"; "7"; "8"; "10"|]); ("10", [|"6"; "7"; "8"; "9"; "3"|])]
 let result: Pair array = partition_graph (TEST_GRAPH)
-printfn "%s" (cut_to_string (result))
+ignore (printfn "%s" (cut_to_string (result)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

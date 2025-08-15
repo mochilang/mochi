@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:03 +0700
+// Generated 2025-08-15 11:16 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -45,12 +33,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type LanczosResult = {
     mutable _t: float array array
     mutable _q: float array array
@@ -71,7 +62,7 @@ let rec rand () =
         __ret
     with
         | Return -> __ret
-let rec random () =
+and random () =
     let mutable __ret : float = Unchecked.defaultof<float>
     try
         __ret <- (1.0 * (float (rand()))) / 2147483648.0
@@ -79,7 +70,7 @@ let rec random () =
         __ret
     with
         | Return -> __ret
-let rec sqrtApprox (x: float) =
+and sqrtApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -96,7 +87,7 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec absf (x: float) =
+and absf (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -105,7 +96,7 @@ let rec absf (x: float) =
         __ret
     with
         | Return -> __ret
-let rec dot (a: float array) (b: float array) =
+and dot (a: float array) (b: float array) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable a = a
     let mutable b = b
@@ -113,67 +104,67 @@ let rec dot (a: float array) (b: float array) =
         let mutable s: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            s <- s + ((_idx a (i)) * (_idx b (i)))
+            s <- s + ((_idx a (int i)) * (_idx b (int i)))
             i <- i + 1
         __ret <- s
         raise Return
         __ret
     with
         | Return -> __ret
-let rec vector_scale (v: float array) (s: float) =
+and vector_scale (v: float array) (s: float) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable v = v
     let mutable s = s
     try
-        let mutable res: float array = [||]
+        let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (v)) do
-            res <- Array.append res [|((_idx v (i)) * s)|]
+            res <- Array.append res [|((_idx v (int i)) * s)|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec vector_sub (a: float array) (b: float array) =
+and vector_sub (a: float array) (b: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable a = a
     let mutable b = b
     try
-        let mutable res: float array = [||]
+        let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            res <- Array.append res [|((_idx a (i)) - (_idx b (i)))|]
+            res <- Array.append res [|((_idx a (int i)) - (_idx b (int i)))|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec vector_add (a: float array) (b: float array) =
+and vector_add (a: float array) (b: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable a = a
     let mutable b = b
     try
-        let mutable res: float array = [||]
+        let mutable res: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            res <- Array.append res [|((_idx a (i)) + (_idx b (i)))|]
+            res <- Array.append res [|((_idx a (int i)) + (_idx b (int i)))|]
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec zeros_matrix (r: int) (c: int) =
+and zeros_matrix (r: int) (c: int) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable r = r
     let mutable c = c
     try
-        let mutable m: float array array = [||]
+        let mutable m: float array array = Array.empty<float array>
         let mutable i: int = 0
         while i < r do
-            let mutable row: float array = [||]
+            let mutable row: float array = Array.empty<float>
             let mutable j: int = 0
             while j < c do
                 row <- Array.append row [|0.0|]
@@ -185,53 +176,53 @@ let rec zeros_matrix (r: int) (c: int) =
         __ret
     with
         | Return -> __ret
-let rec column (m: float array array) (idx: int) =
+and column (m: float array array) (idx: int) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable m = m
     let mutable idx = idx
     try
-        let mutable col: float array = [||]
+        let mutable col: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (m)) do
-            col <- Array.append col [|(_idx (_idx m (i)) (idx))|]
+            col <- Array.append col [|(_idx (_idx m (int i)) (int idx))|]
             i <- i + 1
         __ret <- col
         raise Return
         __ret
     with
         | Return -> __ret
-let rec validate_adjacency_list (graph: int array array) =
+and validate_adjacency_list (graph: int array array) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable graph = graph
     try
         let mutable i: int = 0
         while i < (Seq.length (graph)) do
             let mutable j: int = 0
-            while j < (Seq.length (_idx graph (i))) do
-                let mutable v: int = _idx (_idx graph (i)) (j)
+            while j < (Seq.length (_idx graph (int i))) do
+                let mutable v: int = _idx (_idx graph (int i)) (int j)
                 if (v < 0) || (v >= (Seq.length (graph))) then
-                    failwith ("Invalid neighbor")
+                    ignore (failwith ("Invalid neighbor"))
                 j <- j + 1
             i <- i + 1
         __ret
     with
         | Return -> __ret
-let rec multiply_matrix_vector (graph: int array array) (vector: float array) =
+and multiply_matrix_vector (graph: int array array) (vector: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable graph = graph
     let mutable vector = vector
     try
         let n: int = Seq.length (graph)
         if (Seq.length (vector)) <> n then
-            failwith ("Vector length must match number of nodes")
-        let mutable result: float array = [||]
+            ignore (failwith ("Vector length must match number of nodes"))
+        let mutable result: float array = Array.empty<float>
         let mutable i: int = 0
         while i < n do
             let mutable sum: float = 0.0
             let mutable j: int = 0
-            while j < (Seq.length (_idx graph (i))) do
-                let nb: int = _idx (_idx graph (i)) (j)
-                sum <- sum + (_idx vector (nb))
+            while j < (Seq.length (_idx graph (int i))) do
+                let nb: int = _idx (_idx graph (int i)) (int j)
+                sum <- sum + (_idx vector (int nb))
                 j <- j + 1
             result <- Array.append result [|sum|]
             i <- i + 1
@@ -240,17 +231,17 @@ let rec multiply_matrix_vector (graph: int array array) (vector: float array) =
         __ret
     with
         | Return -> __ret
-let rec lanczos_iteration (graph: int array array) (k: int) =
+and lanczos_iteration (graph: int array array) (k: int) =
     let mutable __ret : LanczosResult = Unchecked.defaultof<LanczosResult>
     let mutable graph = graph
     let mutable k = k
     try
         let n: int = Seq.length (graph)
         if (k < 1) || (k > n) then
-            failwith ("invalid number of eigenvectors")
+            ignore (failwith ("invalid number of eigenvectors"))
         let mutable _q: float array array = zeros_matrix (n) (k)
         let mutable _t: float array array = zeros_matrix (k) (k)
-        let mutable v: float array = [||]
+        let mutable v: float array = Array.empty<float>
         let mutable i: int = 0
         while i < n do
             v <- Array.append v [|(random())|]
@@ -258,12 +249,12 @@ let rec lanczos_iteration (graph: int array array) (k: int) =
         let mutable ss: float = 0.0
         i <- 0
         while i < n do
-            ss <- ss + ((_idx v (i)) * (_idx v (i)))
+            ss <- ss + ((_idx v (int i)) * (_idx v (int i)))
             i <- i + 1
         let vnorm: float = sqrtApprox (ss)
         i <- 0
         while i < n do
-            _q.[i].[0] <- (_idx v (i)) / vnorm
+            _q.[i].[0] <- (_idx v (int i)) / vnorm
             i <- i + 1
         let mutable beta: float = 0.0
         let mutable j: int = 0
@@ -276,18 +267,18 @@ let rec lanczos_iteration (graph: int array array) (k: int) =
             let mutable ss2: float = 0.0
             let mutable p: int = 0
             while p < n do
-                ss2 <- ss2 + ((_idx w (p)) * (_idx w (p)))
+                ss2 <- ss2 + ((_idx w (int p)) * (_idx w (int p)))
                 p <- p + 1
             beta <- sqrtApprox (ss2)
             _t.[j].[j] <- alpha
             if j < (k - 1) then
-                _t.[j].[j + 1] <- beta
-                _t.[j + 1].[j] <- beta
+                _t.[j].[(j + 1)] <- beta
+                _t.[(j + 1)].[j] <- beta
                 if beta > 0.0000000001 then
                     let mutable wnorm: float array = vector_scale (w) (1.0 / beta)
                     let mutable r: int = 0
                     while r < n do
-                        _q.[r].[j + 1] <- _idx wnorm (r)
+                        _q.[r].[(j + 1)] <- _idx wnorm (int r)
                         r <- r + 1
             j <- j + 1
         __ret <- { _t = _t; _q = _q }
@@ -295,7 +286,7 @@ let rec lanczos_iteration (graph: int array array) (k: int) =
         __ret
     with
         | Return -> __ret
-let rec jacobi_eigen (a_in: float array array) (max_iter: int) =
+and jacobi_eigen (a_in: float array array) (max_iter: int) =
     let mutable __ret : EigenResult = Unchecked.defaultof<EigenResult>
     let mutable a_in = a_in
     let mutable max_iter = max_iter
@@ -313,12 +304,12 @@ let rec jacobi_eigen (a_in: float array array) (max_iter: int) =
                 try
                     let mutable p: int = 0
                     let mutable _q: int = 1
-                    let mutable max: float = absf (_idx (_idx a (p)) (_q))
+                    let mutable max: float = absf (_idx (_idx a (int p)) (int _q))
                     i <- 0
                     while i < n do
                         let mutable j: int = i + 1
                         while j < n do
-                            let ``val``: float = absf (_idx (_idx a (i)) (j))
+                            let ``val``: float = absf (_idx (_idx a (int i)) (int j))
                             if ``val`` > max then
                                 max <- ``val``
                                 p <- i
@@ -327,9 +318,9 @@ let rec jacobi_eigen (a_in: float array array) (max_iter: int) =
                         i <- i + 1
                     if max < 0.00000001 then
                         raise Break
-                    let app: float = _idx (_idx a (p)) (p)
-                    let aqq: float = _idx (_idx a (_q)) (_q)
-                    let apq: float = _idx (_idx a (p)) (_q)
+                    let app: float = _idx (_idx a (int p)) (int p)
+                    let aqq: float = _idx (_idx a (int _q)) (int _q)
+                    let apq: float = _idx (_idx a (int p)) (int _q)
                     let theta: float = (aqq - app) / (2.0 * apq)
                     let mutable _t: float = 1.0 / ((absf (theta)) + (sqrtApprox ((theta * theta) + 1.0)))
                     if theta < 0.0 then
@@ -344,17 +335,17 @@ let rec jacobi_eigen (a_in: float array array) (max_iter: int) =
                     let mutable k: int = 0
                     while k < n do
                         if (k <> p) && (k <> _q) then
-                            let akp: float = _idx (_idx a (k)) (p)
-                            let akq: float = _idx (_idx a (k)) (_q)
+                            let akp: float = _idx (_idx a (int k)) (int p)
+                            let akq: float = _idx (_idx a (int k)) (int _q)
                             a.[k].[p] <- akp - (s * (akq + (tau * akp)))
-                            a.[p].[k] <- _idx (_idx a (k)) (p)
+                            a.[p].[k] <- _idx (_idx a (int k)) (int p)
                             a.[k].[_q] <- akq + (s * (akp - (tau * akq)))
-                            a.[_q].[k] <- _idx (_idx a (k)) (_q)
+                            a.[_q].[k] <- _idx (_idx a (int k)) (int _q)
                         k <- k + 1
                     k <- 0
                     while k < n do
-                        let vkp: float = _idx (_idx v (k)) (p)
-                        let vkq: float = _idx (_idx v (k)) (_q)
+                        let vkp: float = _idx (_idx v (int k)) (int p)
+                        let vkq: float = _idx (_idx v (int k)) (int _q)
                         v.[k].[p] <- vkp - (s * (vkq + (tau * vkp)))
                         v.[k].[_q] <- vkq + (s * (vkp - (tau * vkq)))
                         k <- k + 1
@@ -365,23 +356,23 @@ let rec jacobi_eigen (a_in: float array array) (max_iter: int) =
         with
         | Break -> ()
         | Continue -> ()
-        let mutable eigenvalues: float array = [||]
+        let mutable eigenvalues: float array = Array.empty<float>
         i <- 0
         while i < n do
-            eigenvalues <- Array.append eigenvalues [|(_idx (_idx a (i)) (i))|]
+            eigenvalues <- Array.append eigenvalues [|(_idx (_idx a (int i)) (int i))|]
             i <- i + 1
         __ret <- { _values = eigenvalues; _vectors = v }
         raise Return
         __ret
     with
         | Return -> __ret
-let rec matmul (a: float array array) (b: float array array) =
+and matmul (a: float array array) (b: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable a = a
     let mutable b = b
     try
         let rows: int = Seq.length (a)
-        let cols: int = Seq.length (_idx b (0))
+        let cols: int = Seq.length (_idx b (int 0))
         let inner: int = Seq.length (b)
         let mutable m: float array array = zeros_matrix (rows) (cols)
         let mutable i: int = 0
@@ -391,7 +382,7 @@ let rec matmul (a: float array array) (b: float array array) =
                 let mutable s: float = 0.0
                 let mutable k: int = 0
                 while k < inner do
-                    s <- s + ((_idx (_idx a (i)) (k)) * (_idx (_idx b (k)) (j)))
+                    s <- s + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
                     k <- k + 1
                 m.[i].[j] <- s
                 j <- j + 1
@@ -401,7 +392,7 @@ let rec matmul (a: float array array) (b: float array array) =
         __ret
     with
         | Return -> __ret
-let rec sort_eigenpairs (vals: float array) (vecs: float array array) =
+and sort_eigenpairs (vals: float array) (vecs: float array array) =
     let mutable __ret : EigenResult = Unchecked.defaultof<EigenResult>
     let mutable vals = vals
     let mutable vecs = vecs
@@ -413,15 +404,15 @@ let rec sort_eigenpairs (vals: float array) (vecs: float array array) =
         while i < n do
             let mutable j: int = 0
             while j < (n - 1) do
-                if (_idx _values (j)) < (_idx _values (j + 1)) then
-                    let tmp: float = _idx _values (j)
-                    _values.[j] <- _idx _values (j + 1)
-                    _values.[j + 1] <- tmp
+                if (_idx _values (int j)) < (_idx _values (int (j + 1))) then
+                    let tmp: float = _idx _values (int j)
+                    _values.[j] <- _idx _values (int (j + 1))
+                    _values.[(j + 1)] <- tmp
                     let mutable r: int = 0
                     while r < (Seq.length (_vectors)) do
-                        let tv: float = _idx (_idx _vectors (r)) (j)
-                        _vectors.[r].[j] <- _idx (_idx _vectors (r)) (j + 1)
-                        _vectors.[r].[j + 1] <- tv
+                        let tv: float = _idx (_idx _vectors (int r)) (int j)
+                        _vectors.[r].[j] <- _idx (_idx _vectors (int r)) (int (j + 1))
+                        _vectors.[r].[(j + 1)] <- tv
                         r <- r + 1
                 j <- j + 1
             i <- i + 1
@@ -430,7 +421,7 @@ let rec sort_eigenpairs (vals: float array) (vecs: float array array) =
         __ret
     with
         | Return -> __ret
-let rec find_lanczos_eigenvectors (graph: int array array) (k: int) =
+and find_lanczos_eigenvectors (graph: int array array) (k: int) =
     let mutable __ret : EigenResult = Unchecked.defaultof<EigenResult>
     let mutable graph = graph
     let mutable k = k
@@ -445,14 +436,14 @@ let rec find_lanczos_eigenvectors (graph: int array array) (k: int) =
         __ret
     with
         | Return -> __ret
-let rec list_to_string (arr: float array) =
+and list_to_string (arr: float array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable arr = arr
     try
         let mutable s: string = "["
         let mutable i: int = 0
         while i < (Seq.length (arr)) do
-            s <- s + (_str (_idx arr (i)))
+            s <- s + (_str (_idx arr (int i)))
             if i < ((Seq.length (arr)) - 1) then
                 s <- s + ", "
             i <- i + 1
@@ -461,14 +452,14 @@ let rec list_to_string (arr: float array) =
         __ret
     with
         | Return -> __ret
-let rec matrix_to_string (m: float array array) =
+and matrix_to_string (m: float array array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable m = m
     try
         let mutable s: string = "["
         let mutable i: int = 0
         while i < (Seq.length (m)) do
-            s <- s + (list_to_string (_idx m (i)))
+            s <- s + (list_to_string (_idx m (int i)))
             if i < ((Seq.length (m)) - 1) then
                 s <- s + "; "
             i <- i + 1
@@ -479,8 +470,8 @@ let rec matrix_to_string (m: float array array) =
         | Return -> __ret
 let graph: int array array = [|[|1; 2|]; [|0; 2|]; [|0; 1|]|]
 let mutable result: EigenResult = find_lanczos_eigenvectors (graph) (2)
-printfn "%s" (list_to_string (result._values))
-printfn "%s" (matrix_to_string (result._vectors))
+ignore (printfn "%s" (list_to_string (result._values)))
+ignore (printfn "%s" (matrix_to_string (result._vectors)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

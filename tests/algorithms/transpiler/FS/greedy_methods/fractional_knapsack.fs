@@ -1,4 +1,4 @@
-// Generated 2025-08-13 16:58 +0700
+// Generated 2025-08-15 11:16 +0700
 
 exception Break
 exception Continue
@@ -33,12 +33,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Item = {
     mutable _value: float
     mutable _weight: float

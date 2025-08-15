@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:03 +0700
+// Generated 2025-08-15 11:16 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -42,12 +42,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Node = {
     mutable _name: string
     mutable _inbound: string array
@@ -61,12 +64,12 @@ let rec node_to_string (n: Node) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable n = n
     try
-        __ret <- ((((("<node=" + (n._name)) + " inbound=") + (n._inbound)) + " outbound=") + (n._outbound)) + ">"
+        __ret <- ((((("<node=" + (n._name)) + " inbound=") + (_str (n._inbound))) + " outbound=") + (_str (n._outbound))) + ">"
         raise Return
         __ret
     with
         | Return -> __ret
-let rec page_rank (nodes: Node array) (limit: int) (d: float) =
+and page_rank (nodes: Node array) (limit: int) (d: float) =
     let mutable __ret : System.Collections.Generic.IDictionary<string, float> = Unchecked.defaultof<System.Collections.Generic.IDictionary<string, float>>
     let mutable nodes = nodes
     let mutable limit = limit
@@ -74,48 +77,48 @@ let rec page_rank (nodes: Node array) (limit: int) (d: float) =
     try
         let mutable ranks: System.Collections.Generic.IDictionary<string, float> = _dictCreate []
         for n in nodes do
-            ranks.[n._name] <- 1.0
+            ranks <- _dictAdd (ranks) (string (n._name)) (1.0)
         let mutable outbounds: System.Collections.Generic.IDictionary<string, float> = _dictCreate []
         for n in nodes do
-            outbounds.[n._name] <- 1.0 * (float (Seq.length (n._outbound)))
+            outbounds <- _dictAdd (outbounds) (string (n._name)) (1.0 * (float (Seq.length (n._outbound))))
         let mutable i: int = 0
         while i < limit do
-            printfn "%s" (("======= Iteration " + (_str (i + 1))) + " =======")
+            ignore (printfn "%s" (("======= Iteration " + (_str (i + 1))) + " ======="))
             for n in nodes do
                 let mutable sum_val: float = 0.0
                 for ib in Seq.map string (n._inbound) do
                     sum_val <- sum_val + ((_dictGet ranks ((string (ib)))) / (_dictGet outbounds ((string (ib)))))
-                ranks.[n._name] <- (1.0 - d) + (d * sum_val)
-            printfn "%A" (ranks)
+                ranks <- _dictAdd (ranks) (string (n._name)) ((1.0 - d) + (d * sum_val))
+            ignore (printfn "%A" (ranks))
             i <- i + 1
         __ret <- ranks
         raise Return
         __ret
     with
         | Return -> __ret
-let names: string array = [|"A"; "B"; "C"|]
+let names: string array = unbox<string array> [|"A"; "B"; "C"|]
 let graph: int array array = [|[|0; 1; 1|]; [|0; 0; 1|]; [|1; 0; 0|]|]
-let mutable nodes: Node array = [||]
+let mutable nodes: Node array = Array.empty<Node>
 for _name in Seq.map string (names) do
-    nodes <- Array.append nodes [|{ _name = _name; _inbound = [||]; _outbound = [||] }|]
+    nodes <- Array.append nodes [|{ _name = _name; _inbound = Array.empty<string>; _outbound = Array.empty<string> }|]
 let mutable ri: int = 0
 while ri < (Seq.length (graph)) do
-    let mutable row: int array = _idx graph (ri)
+    let mutable row: int array = _idx graph (int ri)
     let mutable ci: int = 0
     while ci < (Seq.length (row)) do
-        if (_idx row (ci)) = 1 then
-            let mutable n_in: Node = _idx nodes (ci)
-            n_in._inbound <- Array.append (n_in._inbound) [|(_idx names (ri))|]
-            nodes <- _arrset nodes (ci) (n_in)
-            let mutable n_out: Node = _idx nodes (ri)
-            n_out._outbound <- Array.append (n_out._outbound) [|(_idx names (ci))|]
-            nodes <- _arrset nodes (ri) (n_out)
+        if (_idx row (int ci)) = 1 then
+            let mutable n_in: Node = _idx nodes (int ci)
+            n_in._inbound <- Array.append (n_in._inbound) [|(_idx names (int ri))|]
+            nodes <- _arrset nodes (int ci) (n_in)
+            let mutable n_out: Node = _idx nodes (int ri)
+            n_out._outbound <- Array.append (n_out._outbound) [|(_idx names (int ci))|]
+            nodes <- _arrset nodes (int ri) (n_out)
         ci <- ci + 1
     ri <- ri + 1
-printfn "%s" ("======= Nodes =======")
+ignore (printfn "%s" ("======= Nodes ======="))
 for n in nodes do
-    printfn "%A" (n)
-page_rank (nodes) (3) (0.85)
+    ignore (printfn "%A" (n))
+ignore (page_rank (nodes) (3) (0.85))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
