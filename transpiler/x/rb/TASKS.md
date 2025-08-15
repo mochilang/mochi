@@ -1,3 +1,13 @@
+## Progress (2025-08-15 10:22 +0700)
+- Commit 4ed9accf8c: support function types in rust transpiler
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-15 10:22 +0700)
+- Commit 4ed9accf8c: support function types in rust transpiler
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-14 21:50 +0700)
 - Commit 7222434715: ruby: add pow helper and update algorithm outputs
 - Generated Ruby for 104/105 programs
