@@ -1,7 +1,0 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:132:9: Error: Method not found: 'toi'.
-    if (toi((table[j]["count"] ?? "")).compareTo(toi((table[max_i]["count"] ?? ""))) > 0) {
-        ^^^
-../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:132:50: Error: Method not found: 'toi'.
-    if (toi((table[j]["count"] ?? "")).compareTo(toi((table[max_i]["count"] ?? ""))) > 0) {
-                                                 ^^^

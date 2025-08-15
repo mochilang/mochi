@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-14 18:41 GMT+7
+Last updated: 2025-08-15 10:07 GMT+7
 
-## Algorithms Golden Test Checklist (943/1077)
+## Algorithms Golden Test Checklist (944/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -432,7 +432,7 @@ Last updated: 2025-08-14 18:41 GMT+7
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 42.858ms | 9.1 MB |
 | 424 | graphs/even_tree | ✓ | 36.334ms | 8.9 MB |
 | 425 | graphs/finding_bridges | ✓ | 35.596ms | 8.9 MB |
-| 426 | graphs/frequent_pattern_graph_miner | error |  |  |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 22.398ms | 5.5 MB |
 | 427 | graphs/g_topological_sort | ✓ | 23.326ms | 2.5 MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 37.587ms | 10.0 MB |
 | 429 | graphs/graph_adjacency_list | ✓ | 33.034ms | 3.7 MB |

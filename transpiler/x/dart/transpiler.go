@@ -5948,6 +5948,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CastExpr{Value: v, Type: "int"}, nil
 		}
+		if p.Call.Func == "toi" && len(p.Call.Args) == 1 {
+			v, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
+		}
 		if p.Call.Func == "parseIntStr" && (len(p.Call.Args) == 1 || len(p.Call.Args) == 2) {
 			arg, err := convertExpr(p.Call.Args[0])
 			if err != nil {

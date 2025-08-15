@@ -129,7 +129,7 @@ List<Map<String, String>> get_frequency_table(List<List<List<String>>> edge_arra
     int max_i = i;
     int j = i + 1;
     while (j < table.length) {
-    if (toi((table[j]["count"] ?? "")).compareTo(toi((table[max_i]["count"] ?? ""))) > 0) {
+    if (int.parse((table[j]["count"] ?? "")) > int.parse((table[max_i]["count"] ?? ""))) {
     max_i = j;
   }
     j = j + 1;
