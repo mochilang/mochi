@@ -1280,6 +1280,57 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	if vr, ok := d.Value.(*VarRef); ok && vr.Name == d.Name {
 		return
 	}
+	if cexpr, ok := d.Value.(*CondExpr); ok {
+		// Emit conditionals as explicit if/else blocks to avoid type
+		// mismatches in ternary expressions, especially when each
+		// branch allocates composite values like lists.
+		declType := typ
+		if strings.HasSuffix(typ, "[]") {
+			declType = strings.TrimSuffix(typ, "[]") + "*"
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s %s;\n", declType, d.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len;\n", d.Name)
+		} else {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s %s;\n", declType, d.Name)
+		}
+		writeIndent(w, indent)
+		io.WriteString(w, "if (")
+		if cexpr.Cond != nil {
+			cexpr.Cond.emitExpr(w)
+		}
+		io.WriteString(w, ") {\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, d.Name+" = ")
+		if cexpr.Then != nil {
+			cexpr.Then.emitExpr(w)
+		}
+		io.WriteString(w, ";\n")
+		if strings.HasSuffix(typ, "[]") {
+			if lst, ok := cexpr.Then.(*ListLit); ok {
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_len = %d;\n", d.Name, len(lst.Elems))
+			}
+		}
+		writeIndent(w, indent)
+		io.WriteString(w, "} else {\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, d.Name+" = ")
+		if cexpr.Else != nil {
+			cexpr.Else.emitExpr(w)
+		}
+		io.WriteString(w, ";\n")
+		if strings.HasSuffix(typ, "[]") {
+			if lst, ok := cexpr.Else.(*ListLit); ok {
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_len = %d;\n", d.Name, len(lst.Elems))
+			}
+		}
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
+		return
+	}
 	writeIndent(w, indent)
 	if strings.HasSuffix(typ, "[][][]") || strings.HasSuffix(typ, "***") {
 		base := strings.TrimSuffix(typ, "[][][]")
@@ -9752,9 +9803,10 @@ func isConstExpr(e Expr) bool {
 		return true
 	}
 	if m, ok := e.(*MapLit); ok {
-		if len(m.Items) == 0 {
-			return false
-		}
+		// Treat map literals with constant values as constant so they can be
+		// initialized at global scope. Even empty map literals are considered
+		// constant, allowing declarations like `var m: map<int,int> = {}` to
+		// be hoisted out of `main`.
 		for _, it := range m.Items {
 			if !isConstExpr(it.Value) {
 				return false

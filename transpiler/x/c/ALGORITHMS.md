@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (499/1077) - Last updated 2025-08-14 21:29 +0700:
+Checklist of programs that currently transpile and run (502/1077) - Last updated 2025-08-15 06:45 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -426,9 +426,9 @@ Checklist of programs that currently transpile and run (499/1077) - Last updated
 | 419 | graphs/dijkstra_binary_grid |  |  |  |
 | 420 | graphs/dinic |  |  |  |
 | 421 | graphs/directed_and_undirected_weighted_graph |  |  |  |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |  |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |  |  |  |
-| 424 | graphs/even_tree |  |  |  |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 246us | 1.6 MB |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 237us | 1.5 MB |
+| 424 | graphs/even_tree | ✓ | 437us | 1.4 MB |
 | 425 | graphs/finding_bridges |  |  |  |
 | 426 | graphs/frequent_pattern_graph_miner |  |  |  |
 | 427 | graphs/g_topological_sort |  |  |  |

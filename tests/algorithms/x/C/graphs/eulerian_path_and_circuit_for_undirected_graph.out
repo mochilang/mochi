@@ -1,0 +1,10 @@
+graph is not Eulerian
+no path
+graph has a Euler cycle
+[1 2 3 1]
+graph is not Eulerian
+no path
+graph has a Euler cycle
+[1 2 3 3]
+graph has a Euler cycle
+[1]
