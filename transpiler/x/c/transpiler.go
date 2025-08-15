@@ -6543,7 +6543,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-				fmt.Fprintf(&buf, "void* %s_vals[%d] = {", s.Let.Name, len(m.Items)+16)
+                               fmt.Fprintf(&buf, "%svoid* %s_vals[%d] = {", staticStr, s.Let.Name, len(m.Items)+16)
 				for i := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6892,7 +6892,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						buf.WriteString("};\n")
 					}
 				}
-				fmt.Fprintf(&buf, "void* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
+                               fmt.Fprintf(&buf, "%svoid* %s_vals[%d] = {", staticStr, s.Var.Name, len(m.Items)+16)
 				for i := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
