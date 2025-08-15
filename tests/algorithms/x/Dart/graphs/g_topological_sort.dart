@@ -100,7 +100,7 @@ String format_list(List<int> xs) {
 
 void _main() {
   Map<int, String> clothes = {0: "underwear", 1: "pants", 2: "belt", 3: "suit", 4: "shoe", 5: "socks", 6: "shirt", 7: "tie", 8: "watch"};
-  List<List<int>> graph = [[1, 4], [2, 4], [3], [], [], [4], [2, 7], [3], []];
+  List<List<int>> graph = [[1, 4], [2, 4], [3], <int>[], <int>[], [4], [2, 7], [3], <int>[]];
   List<int> stack = topological_sort(graph);
   print(format_list(stack));
   print_stack(stack, clothes);

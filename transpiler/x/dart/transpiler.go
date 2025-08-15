@@ -710,9 +710,9 @@ func (s *VarStmt) emit(w io.Writer) error {
 			typ = "dynamic"
 		}
 	}
-	if ll, ok := s.Value.(*ListLit); ok {
-		typ = preciseListType(ll)
-	}
+        if ll, ok := s.Value.(*ListLit); ok && s.Type == "" {
+                typ = preciseListType(ll)
+        }
 	if inFunc && s.Type == "" && typ != "dynamic" {
 		valType := inferType(s.Value)
 		if valType != "" && valType != typ {
@@ -992,9 +992,9 @@ func (s *LetStmt) emit(w io.Writer) error {
 			}
 		}
 	}
-	if ll, ok := s.Value.(*ListLit); ok {
-		typ = preciseListType(ll)
-	}
+        if ll, ok := s.Value.(*ListLit); ok && s.Type == "" {
+                typ = preciseListType(ll)
+        }
 	if s.Value == nil {
 		nextStructHint = ""
 		localVarTypes[s.Name] = typ
@@ -1072,12 +1072,12 @@ func (s *ReturnStmt) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "return"); err != nil {
 		return err
 	}
-	if s.Value != nil {
-		if _, err := io.WriteString(w, " "); err != nil {
-			return err
-		}
-		valType := inferType(s.Value)
-		if currentRetType == "int" && (valType == "num" || valType == "BigInt") {
+        if s.Value != nil {
+                if _, err := io.WriteString(w, " "); err != nil {
+                        return err
+                }
+                valType := inferType(s.Value)
+                if currentRetType == "int" && (valType == "num" || valType == "BigInt") {
 			if _, err := io.WriteString(w, "("); err != nil {
 				return err
 			}
@@ -1097,17 +1097,24 @@ func (s *ReturnStmt) emit(w io.Writer) error {
 			if _, err := io.WriteString(w, ")!"); err != nil {
 				return err
 			}
-		} else if strings.HasPrefix(currentRetType, "List<") && valType != currentRetType {
-			if err := emitListConversion(w, s.Value, currentRetType); err != nil {
-				return err
-			}
-		} else {
-			if err := s.Value.emit(w); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
+                } else if strings.HasPrefix(strings.TrimSuffix(currentRetType, "?"), "List<") && valType != currentRetType {
+                        if n, ok := s.Value.(*Name); ok && n.Name == "null" {
+                                if _, err := io.WriteString(w, "null"); err != nil {
+                                        return err
+                                }
+                        } else {
+                                target := strings.TrimSuffix(currentRetType, "?")
+                                if err := emitListConversion(w, s.Value, target); err != nil {
+                                        return err
+                                }
+                        }
+                } else {
+                        if err := s.Value.emit(w); err != nil {
+                                return err
+                        }
+                }
+        }
+        return nil
 }
 
 // BreakStmt represents a `break` statement.
@@ -1767,31 +1774,31 @@ func (p *PanicExpr) emit(w io.Writer) error { return nil }
 
 func (c *CallExpr) emit(w io.Writer) error {
 	if sel, ok := c.Func.(*SelectorExpr); ok {
-		if sel.Field == "keys" && len(c.Args) == 0 {
-			if strings.HasPrefix(inferType(sel.Receiver), "Map<") {
-				if err := sel.Receiver.emit(w); err != nil {
-					return err
-				}
-				if _, err := io.WriteString(w, ".keys"); err != nil {
-					return err
-				}
-				return nil
-			}
-		}
+                if sel.Field == "keys" && len(c.Args) == 0 {
+                        if strings.HasPrefix(inferType(sel.Receiver), "Map<") {
+                                if err := sel.Receiver.emit(w); err != nil {
+                                        return err
+                                }
+                                if _, err := io.WriteString(w, ".keys.toList()"); err != nil {
+                                        return err
+                                }
+                                return nil
+                        }
+                }
 		if sel.Field == "padStart" && len(c.Args) == 2 {
 			sel.Field = "padLeft"
 		}
 	}
 	if n, ok := c.Func.(*Name); ok {
-		if n.Name == "keys" && len(c.Args) == 1 {
-			if strings.HasPrefix(inferType(c.Args[0]), "Map<") {
-				if err := c.Args[0].emit(w); err != nil {
-					return err
-				}
-				_, err := io.WriteString(w, ".keys")
-				return err
-			}
-		}
+                if n.Name == "keys" && len(c.Args) == 1 {
+                        if strings.HasPrefix(inferType(c.Args[0]), "Map<") {
+                                if err := c.Args[0].emit(w); err != nil {
+                                        return err
+                                }
+                                _, err := io.WriteString(w, ".keys.toList()")
+                                return err
+                        }
+                }
 		if n.Name == "contains" && len(c.Args) == 2 {
 			applyBuiltin := true
 			if currentEnv != nil {
@@ -1920,21 +1927,28 @@ type SelectorExpr struct {
 }
 
 func (s *SelectorExpr) emit(w io.Writer) error {
-	t := inferType(s.Receiver)
-	if strings.HasPrefix(t, "Map<") {
-		if err := s.Receiver.emit(w); err != nil {
-			return err
-		}
-		_, err := fmt.Fprintf(w, "[%q]", s.Field)
-		return err
-	}
-	if iex, ok := s.Receiver.(*IndexExpr); ok {
-		oldBang := iex.NoBang
-		oldSuf := iex.NoSuffix
-		if tt := inferType(iex.Target); strings.HasPrefix(strings.TrimSuffix(tt, "?"), "Map<") {
-			kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(tt, "?"), "Map<"), ">")
-			parts := strings.SplitN(kv, ",", 2)
-			needBang := false
+        t := inferType(s.Receiver)
+        optional := strings.HasSuffix(t, "?")
+        nonOpt := strings.TrimSuffix(t, "?")
+        if strings.HasPrefix(nonOpt, "Map<") {
+                if err := s.Receiver.emit(w); err != nil {
+                        return err
+                }
+                if optional {
+                        if _, err := io.WriteString(w, "?"); err != nil {
+                                return err
+                        }
+                }
+                _, err := fmt.Fprintf(w, "[%q]", s.Field)
+                return err
+        }
+        if iex, ok := s.Receiver.(*IndexExpr); ok {
+                oldBang := iex.NoBang
+                oldSuf := iex.NoSuffix
+                if tt := inferType(iex.Target); strings.HasPrefix(strings.TrimSuffix(tt, "?"), "Map<") {
+                        kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(tt, "?"), "Map<"), ">")
+                        parts := strings.SplitN(kv, ",", 2)
+                        needBang := false
 			if len(parts) == 2 {
 				vt := strings.TrimSpace(parts[1])
 				if !strings.HasSuffix(vt, "?") {
@@ -1946,23 +1960,27 @@ func (s *SelectorExpr) emit(w io.Writer) error {
 		}
 		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 	}
-	if precedence(s.Receiver) > 0 {
-		if _, err := io.WriteString(w, "("); err != nil {
-			return err
-		}
-		if err := s.Receiver.emit(w); err != nil {
-			return err
-		}
-		if _, err := io.WriteString(w, ")"); err != nil {
-			return err
-		}
-	} else {
-		if err := s.Receiver.emit(w); err != nil {
-			return err
-		}
-	}
-	_, err := io.WriteString(w, "."+s.Field)
-	return err
+        if precedence(s.Receiver) > 0 {
+                if _, err := io.WriteString(w, "("); err != nil {
+                        return err
+                }
+                if err := s.Receiver.emit(w); err != nil {
+                        return err
+                }
+                if _, err := io.WriteString(w, ")"); err != nil {
+                        return err
+                }
+        } else {
+                if err := s.Receiver.emit(w); err != nil {
+                        return err
+                }
+        }
+        if optional {
+                _, err := io.WriteString(w, "?."+s.Field)
+                return err
+        }
+        _, err := io.WriteString(w, "."+s.Field)
+        return err
 }
 
 type StringLit struct{ Value string }
@@ -2779,16 +2797,35 @@ func (s *StrExpr) emit(w io.Writer) error {
 type FormatList struct{ List Expr }
 
 func (f *FormatList) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "\"[\" + "); err != nil {
-		return err
-	}
-	if err := f.List.emit(w); err != nil {
-		return err
-	}
-	if _, err := io.WriteString(w, ".join(', ') + \"]\""); err != nil {
-		return err
-	}
-	return nil
+        t := inferType(f.List)
+        if strings.HasSuffix(t, "?") {
+                if _, err := io.WriteString(w, "("); err != nil {
+                        return err
+                }
+                if err := f.List.emit(w); err != nil {
+                        return err
+                }
+                if _, err := io.WriteString(w, " == null ? \"null\" : (\"[\" + "); err != nil {
+                        return err
+                }
+                if err := f.List.emit(w); err != nil {
+                        return err
+                }
+                if _, err := io.WriteString(w, "!.join(', ') + \"]\"))"); err != nil {
+                        return err
+                }
+                return nil
+        }
+        if _, err := io.WriteString(w, "\"[\" + "); err != nil {
+                return err
+        }
+        if err := f.List.emit(w); err != nil {
+                return err
+        }
+        if _, err := io.WriteString(w, ".join(', ') + \"]\""); err != nil {
+                return err
+        }
+        return nil
 }
 
 // NowExpr returns a deterministic timestamp similar to the VM's now() builtin.

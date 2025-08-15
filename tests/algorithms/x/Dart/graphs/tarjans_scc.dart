@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 List<List<int>> tarjan(List<List<int>> g) {
   int n = g.length;
@@ -68,7 +68,7 @@ List<List<int>> tarjan(List<List<int>> g) {
     while (lowlink_of.length <= v) { lowlink_of.add(0); } lowlink_of[v] = lowlink_of[w];
   };
   } else {
-    if (on_stack[w]) {
+    if ((on_stack[w] ?? false)) {
     if (lowlink_of[w] < lowlink_of[v]) {
     while (lowlink_of.length <= v) { lowlink_of.add(0); } lowlink_of[v] = lowlink_of[w];
   };

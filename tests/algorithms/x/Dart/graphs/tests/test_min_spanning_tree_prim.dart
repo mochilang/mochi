@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 class Neighbor {
   int node;
@@ -67,10 +67,10 @@ List<EdgePair> prims_algorithm(Map<int, List<Neighbor>> adjacency) {
     int best_v = 0;
     int best_cost = 2147483647;
     for (int u_str in adjacency.keys) {
-    int u = u_str as int;
-    if (visited[u]!) {
-    for (var n in adjacency[u]!) {
-    if (!(visited[(n.node).toInt()] ?? false) && n.cost.compareTo(best_cost) < 0) {
+    int u = (u_str).toInt();
+    if ((visited[u] ?? false)) {
+    for (Neighbor n in (adjacency[u]!)) {
+    if (!(visited[n.node] ?? false) && n.cost < best_cost) {
     best_cost = n.cost;
     best_u = u;
     best_v = n.node;

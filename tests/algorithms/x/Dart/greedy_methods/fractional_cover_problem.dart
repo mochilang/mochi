@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 
 Never _error(String msg) {
@@ -53,7 +53,7 @@ class Item {
 }
 
 double ratio(Item item) {
-  return (item.value.toDouble()) / (item.weight.toDouble());
+  return ((item.value).toDouble()) / ((item.weight).toDouble());
 }
 
 double fractional_cover(List<Item> items, int capacity) {
@@ -67,7 +67,7 @@ double fractional_cover(List<Item> items, int capacity) {
   while (idx < sorted.length && remaining > 0) {
     Item item = sorted[idx];
     int take = (item.weight < remaining ? item.weight : remaining);
-    total = total + (take.toDouble()) * ratio(item);
+    total = total + ((take).toDouble()) * ratio(item);
     remaining = remaining - take;
     idx = idx + 1;
   }

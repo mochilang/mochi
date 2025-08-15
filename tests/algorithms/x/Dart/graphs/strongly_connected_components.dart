@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 List<int> topology_sort(List<List<int>> graph, int vert, List<bool> visited) {
   while (visited.length <= vert) { visited.add(false); } visited[vert] = true;
@@ -103,7 +103,7 @@ List<List<int>> strongly_connected_components(List<List<int>> graph) {
 }
 
 void _main() {
-  List<List<int>> test_graph_1 = [[2, 3], [0], [1], [4], []];
+  List<List<int>> test_graph_1 = [[2, 3], [0], [1], [4], <int>[]];
   List<List<int>> test_graph_2 = [[1, 2, 3], [2], [0], [4], [5], [3]];
   print(_str(strongly_connected_components(test_graph_1)));
   print(_str(strongly_connected_components(test_graph_2)));

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) => v.toString();
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 int MOD = 4294967296;
@@ -51,7 +61,7 @@ int ord(String ch) {
 
 String to_little_endian(String s) {
   if (s.length != 32) {
-    throw Exception("Input must be of length 32");
+    _error("Input must be of length 32");
   }
   return _substr(s, 24, 32) + _substr(s, 16, 24) + _substr(s, 8, 16) + _substr(s, 0, 8);
 }
@@ -60,7 +70,7 @@ String int_to_bits(int n, int width) {
   String bits = "";
   int _num = n;
   while (_num > 0) {
-    bits = (_num % 2).toString() + bits;
+    bits = _str(_num % 2) + bits;
     _num = _num ~/ 2;
   }
   while (bits.length < width) {
@@ -103,7 +113,7 @@ String to_hex(int n) {
 
 String reformat_hex(int i) {
   if (i < 0) {
-    throw Exception("Input must be non-negative");
+    _error("Input must be non-negative");
   }
   String hex = to_hex(i);
   while (hex.length < 8) {
@@ -140,7 +150,7 @@ String preprocess(String message) {
 
 List<List<int>> get_block_words(String bit_string) {
   if (bit_string.length % 512 != 0) {
-    throw Exception("Input must have length that's a multiple of 512");
+    _error("Input must have length that's a multiple of 512");
   }
   List<List<int>> blocks = <List<int>>[];
   int pos = 0;
@@ -148,12 +158,12 @@ List<List<int>> get_block_words(String bit_string) {
     List<int> block = <int>[];
     int i = 0;
     while (i < 512) {
-    String part = _substr(bit_string, pos + i, pos + i + 32);
-    int word = bits_to_int(to_little_endian(part));
+    String _part = _substr(bit_string, pos + i, pos + i + 32);
+    int word = bits_to_int(to_little_endian(_part));
     block = [...block, word];
     i = i + 32;
   }
-    blocks = ([...blocks, block] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    blocks = ([...blocks, block] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     pos = pos + 512;
   }
   return blocks;
@@ -219,7 +229,7 @@ int bit_xor(int a, int b) {
 
 int not_32(int i) {
   if (i < 0) {
-    throw Exception("Input must be non-negative");
+    _error("Input must be non-negative");
   }
   return 4294967295 - i;
 }
@@ -250,10 +260,10 @@ int rshift(int _num, int k) {
 
 int left_rotate_32(int i, int shift) {
   if (i < 0) {
-    throw Exception("Input must be non-negative");
+    _error("Input must be non-negative");
   }
   if (shift < 0) {
-    throw Exception("Shift must be non-negative");
+    _error("Shift must be non-negative");
   }
   int left = lshift(i, shift);
   int right = rshift(i, 32 - shift);

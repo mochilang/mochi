@@ -57,7 +57,7 @@ List<int> greedy_min_vertex_cover(Map<int, List<int>> graph) {
   while (true) {
     int max_v = 0;
     int max_deg = 0;
-    for (var v in g.keys) {
+    for (int v in g.keys) {
     int key = (v).toInt();
     int deg = (g[key]!).length;
     if (deg > max_deg) {
