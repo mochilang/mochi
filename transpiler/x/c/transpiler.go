@@ -456,7 +456,31 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 			if p.Types[i] == "" {
 				ft := inferExprType(currentEnv, a)
 				ftc := strings.ReplaceAll(ft, " ", "")
-				if strings.HasSuffix(ftc, "*") {
+				if strings.HasSuffix(ftc, "**") {
+					base := strings.TrimSuffix(ftc, "**")
+					switch base {
+					case "longlong":
+						writeIndent(w, indent)
+						io.WriteString(w, "puts(str_list_list_int(")
+						a.emitExpr(w)
+						io.WriteString(w, ", ")
+						emitLenExpr(w, a)
+						io.WriteString(w, ", ")
+						emitLensExpr(w, a)
+						io.WriteString(w, "));\n")
+						continue
+					case "double":
+						writeIndent(w, indent)
+						io.WriteString(w, "puts(str_list_list_double(")
+						a.emitExpr(w)
+						io.WriteString(w, ", ")
+						emitLenExpr(w, a)
+						io.WriteString(w, ", ")
+						emitLensExpr(w, a)
+						io.WriteString(w, "));\n")
+						continue
+					}
+				} else if strings.HasSuffix(ftc, "*") {
 					base := strings.TrimSuffix(ftc, "*")
 					switch base {
 					case "longlong":
@@ -1209,6 +1233,41 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 			}
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "MapSI %s = { %s_keys, %s_vals, %d, %d };\n", tmp, tmp, tmp, len(v.Items), len(v.Items)+16)
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "return %s;\n", tmp)
+			writeIndent(w, indent)
+			io.WriteString(w, "}\n")
+			return
+		}
+	}
+	if currentFuncReturn == "MapIL" {
+		if v, ok := r.Expr.(*MapLit); ok {
+			tmp := fmt.Sprintf("__ret%d", tempCounter)
+			tempCounter++
+			writeIndent(w, indent)
+			io.WriteString(w, "{\n")
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "long long *%s_keys = malloc(%d * sizeof(long long));\n", tmp, len(v.Items))
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "void **%s_vals = malloc(%d * sizeof(void*));\n", tmp, len(v.Items))
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "size_t *%s_lens = malloc(%d * sizeof(size_t));\n", tmp, len(v.Items))
+			for i, it := range v.Items {
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_keys[%d] = ", tmp, i)
+				it.Key.emitExpr(w)
+				io.WriteString(w, ";\n")
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_vals[%d] = ", tmp, i)
+				it.Value.emitExpr(w)
+				io.WriteString(w, ";\n")
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_lens[%d] = ", tmp, i)
+				emitLenExpr(w, it.Value)
+				io.WriteString(w, ";\n")
+			}
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "MapIL %s = { %s_keys, %s_vals, %s_lens, %d, %d };\n", tmp, tmp, tmp, tmp, len(v.Items), len(v.Items)+16)
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "return %s;\n", tmp)
 			writeIndent(w, indent)
@@ -2683,18 +2742,33 @@ type MapItem struct {
 type MapLit struct{ Items []MapItem }
 
 func (m *MapLit) emitExpr(w io.Writer) {
-	io.WriteString(w, "{ ")
-	for i, it := range m.Items {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		io.WriteString(w, "{")
-		it.Key.emitExpr(w)
-		io.WriteString(w, ": ")
-		it.Value.emitExpr(w)
-		io.WriteString(w, "}")
+	if len(m.Items) == 0 {
+		io.WriteString(w, "(MapIL){0}")
+		return
 	}
-	io.WriteString(w, " }")
+	keyT := inferExprType(currentEnv, m.Items[0].Key)
+	valT := inferExprType(currentEnv, m.Items[0].Value)
+	if keyT == "long long" && strings.HasSuffix(valT, "[]") {
+		tmp := fmt.Sprintf("__map%d", tempCounter)
+		tempCounter++
+		fmt.Fprintf(w, "({long long *%s_keys = malloc(%d * sizeof(long long)); ", tmp, len(m.Items))
+		fmt.Fprintf(w, "void **%s_vals = malloc(%d * sizeof(void*)); ", tmp, len(m.Items))
+		fmt.Fprintf(w, "size_t *%s_lens = malloc(%d * sizeof(size_t)); ", tmp, len(m.Items))
+		for i, it := range m.Items {
+			fmt.Fprintf(w, "%s_keys[%d] = ", tmp, i)
+			it.Key.emitExpr(w)
+			io.WriteString(w, "; ")
+			fmt.Fprintf(w, "%s_vals[%d] = ", tmp, i)
+			it.Value.emitExpr(w)
+			io.WriteString(w, "; ")
+			fmt.Fprintf(w, "%s_lens[%d] = ", tmp, i)
+			emitLenExpr(w, it.Value)
+			io.WriteString(w, "; ")
+		}
+		fmt.Fprintf(w, "MapIL %s = { %s_keys, %s_vals, %s_lens, %d, %d }; %s;})", tmp, tmp, tmp, tmp, len(m.Items), len(m.Items)+16, tmp)
+		return
+	}
+	io.WriteString(w, "(MapIL){0}")
 }
 
 type FieldExpr struct {
