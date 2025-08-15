@@ -5,6 +5,9 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -15,7 +18,7 @@ function _intdiv($a, $b) {
 $MOD = 4294967296;
 $ASCII = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 function mochi_ord($ch) {
-  global $MOD, $ASCII;
+  global $ASCII, $MOD;
   $i = 0;
   while ($i < strlen($ASCII)) {
   if (substr($ASCII, $i, $i + 1 - $i) == $ch) {
@@ -26,7 +29,7 @@ function mochi_ord($ch) {
   return 0;
 }
 function pow2($n) {
-  global $MOD, $ASCII;
+  global $ASCII, $MOD;
   $res = 1;
   $i = 0;
   while ($i < $n) {
@@ -36,7 +39,7 @@ function pow2($n) {
   return $res;
 }
 function bit_and($a, $b) {
-  global $MOD, $ASCII;
+  global $ASCII, $MOD;
   $x = $a;
   $y = $b;
   $res = 0;
@@ -54,7 +57,7 @@ function bit_and($a, $b) {
   return $res;
 }
 function bit_or($a, $b) {
-  global $MOD, $ASCII;
+  global $ASCII, $MOD;
   $x = $a;
   $y = $b;
   $res = 0;
@@ -74,7 +77,7 @@ function bit_or($a, $b) {
   return $res;
 }
 function bit_xor($a, $b) {
-  global $MOD, $ASCII;
+  global $ASCII, $MOD;
   $x = $a;
   $y = $b;
   $res = 0;
@@ -94,17 +97,17 @@ function bit_xor($a, $b) {
   return $res;
 }
 function bit_not($a) {
-  global $MOD, $ASCII;
+  global $ASCII, $MOD;
   return ($MOD - 1) - $a;
 }
 function rotate_left($n, $b) {
-  global $MOD, $ASCII;
+  global $ASCII, $MOD;
   $left = fmod(($n * pow2($b)), $MOD);
   $right = $n / pow2(32 - $b);
   return ($left + $right) % $MOD;
 }
 function to_hex32($n) {
-  global $MOD, $ASCII;
+  global $ASCII, $MOD;
   $digits = '0123456789abcdef';
   $num = $n;
   $s = '';
@@ -124,8 +127,8 @@ function to_hex32($n) {
 }
   return $s;
 }
-function sha1($message) {
-  global $MOD, $ASCII;
+function mochi_sha1($message) {
+  global $ASCII, $MOD;
   $bytes = [];
   $i = 0;
   while ($i < strlen($message)) {
@@ -227,7 +230,7 @@ function sha1($message) {
   return to_hex32($h0) . to_hex32($h1) . to_hex32($h2) . to_hex32($h3) . to_hex32($h4);
 }
 function main() {
-  global $MOD, $ASCII;
-  echo rtrim(sha1('Test String')), PHP_EOL;
+  global $ASCII, $MOD;
+  echo rtrim(json_encode(mochi_sha1('Test String'), 1344)), PHP_EOL;
 }
 main();

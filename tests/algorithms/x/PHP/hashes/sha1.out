@@ -1,1 +1,418 @@
-Fatal error: Cannot redeclare function sha1() in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 127
+Deprecated: Implicit conversion from float 2048272872.4769006 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1084680420.2525468 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3537686448.823682 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4096545744.953801 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2169360840.5050936 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2780405601.6473637 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3898124193.907603 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 43754273.010187335 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3210702099.74755 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1375510155.320261 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2693716259.6271796 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2531687814.5894547 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2707594887.630411 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 175017012.0407493 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 156362654.036406 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3334449717.776362 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1005981438.2342232 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3629089859.8449636 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1799412444.4189584 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4178280339.9728317 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 544266586.126722 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2350437713.547254 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1320854911.3075354 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1800445323.4191988 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1350491967.314436 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2749334626.6401296 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 66585062.01550304 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1811587644.4217932 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1463306306.3407025 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2254693740.524962 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 802151494.1867654 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1160902526.2702937 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 223861987.05212194 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1521043433.3541455 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 468970044.1091906 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 662546490.1542611 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3333875484.7762284 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4121988884.9597254 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 753671288.1754777 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2517635862.5861826 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1455626845.3389146 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2093022111.4873197 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2991022365.6964016 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 944761455.2199694 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2231570703.519578 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 155973687.03631544 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1819798884.4237049 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 420963612.0980132 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2455349610.5716805 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3670536784.8546133 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3962180162.922517 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4055287894.9441953 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1799106679.4188871 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 226684143.05277902 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3487319599.811955 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 838302661.1951826 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4139679114.9638443 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2737392414.6373487 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3576836907.832797 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1813597960.4222612 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1120079364.260789 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2446886367.5697103 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3151403602.733743 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1640613147.381985 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3903086636.908758 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2079550178.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2202109182.5127187 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1506887872.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1220071329.28407 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4245062409.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 717164288.1669779 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1116828063.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1496301707.3483849 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 853458849.1987114 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1462205521.3404462 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1113963903.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2715345310.6322155 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2729332472.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1519048450.353681 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3320173293.773038 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1728338082.40241 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3683371941.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 861331247.2005444 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1154353329.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1430538076.3330731 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1583787454.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3773041422.8784795 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3098183822.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2869895403.6681995 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1480989808.3448198 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3612745281.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3795948985.8838134 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3769666616.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3641918369.84795 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1942258475.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1246860172.2903073 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1135748743.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1055926246.245852 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1018242520.2370781 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3430801487.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1842176353.428915 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2960745035.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1677436443.3905587 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3269171906.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1706603113.3973496 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2905138793.6764054 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3536548196.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1638477993.3814878 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3545911756.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3626161745.8442817 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1388532321.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 503280077.11717904 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2746238380.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3161206496.736026 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2587623139.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 872342247.203108 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3245922397.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2389764775.5564103 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3462921669.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2772084577.6454263 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1327292885.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 261872885.06097203 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3276436814.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 116335489.02708647 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3927914425.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 358315208.0834268 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4272627883.9947987 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2418718441.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1382445242.3218756 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1476220481.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 877912883.2044051 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1956957409.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3542790952.82487 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1718134726.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2090868059.486818 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1369855334.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1671917760.3892736 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3069788218.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2036069441.4740593 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2160545505.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3483749732.811124 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2196944872.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3848668614.896088 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3382659994.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1301970979.3031387 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2378877963.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 237042055.05519065 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1184576768.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 205781062.04791212 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 893141332.2079507 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2350417904.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2916806515.679122 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2825549954.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2689614979.626225 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3881547230.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2475451812.576361 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4293437006.999644 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1227299019.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3366235760.783763 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2650788172.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2806061609.653337 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3784395100.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 379780536.08842456 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1397654068.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 833037949.1939567 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1882015227.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3438896886.8006806 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 4200812108.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2932938688.682878 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3986289357.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 208944576.04864872 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2170397231.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1863159829.4338007 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2149116027.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1187320694.2764447 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3225419653.7509766 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3968698918.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3349606437.779891 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3718175372.865705 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1267682784.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2767970006.6444683 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2771591394.6453114 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2907305917.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2655024455.618171 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3309987393.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1191004616.2773023 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2403107050.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 947159022.2205276 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2425223827.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1942936484.4523752 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3698387199.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3996730895.9305615 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1223138743.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3808851440.8868175 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2058203851.479213 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3787853035.75 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 209123293.04869032 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2532662117.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 389467949.09068006 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3122195951.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 3206733134.746626 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1512992158.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1998553411.4653244 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2642298298.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 558392246.1300108 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2263760642.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 2427302146.5651503 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1816301767.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+
+Deprecated: Implicit conversion from float 1979092387.4607933 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 107
+"a5103f9c0b7d5ff69ddc38607c74e53d4ac120f2"
