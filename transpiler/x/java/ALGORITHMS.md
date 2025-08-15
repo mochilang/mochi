@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-15 10:08 GMT+7
+Last updated: 2025-08-15 11:30 GMT+7
 
-## Algorithms Golden Test Checklist (946/1077)
+## Algorithms Golden Test Checklist (947/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -431,14 +431,14 @@ Last updated: 2025-08-15 10:08 GMT+7
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 50.0ms | 56.42KB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 62.0ms | 51.08KB |
 | 424 | graphs/even_tree | ✓ | 40.0ms | 48.44KB |
-| 425 | graphs/finding_bridges | ✓ | 31.6ms | 48.87KB |
-| 426 | graphs/frequent_pattern_graph_miner | ✓ | 47.9ms | 110.91KB |
+| 425 | graphs/finding_bridges | ✓ | 31.0ms | 48.87KB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 47.0ms | 110.91KB |
 | 427 | graphs/g_topological_sort | ✓ | 56.0ms | 96.70KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 39.0ms | 47.42KB |
 | 429 | graphs/graph_adjacency_list | ✓ | 39.0ms | 49.36KB |
 | 430 | graphs/graph_adjacency_matrix | error |  |  |
 | 431 | graphs/graph_list | ✓ | 40.0ms | 47.89KB |
-| 432 | graphs/graphs_floyd_warshall | error |  |  |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 71.0ms | 94.23KB |
 | 433 | graphs/greedy_best_first | error | 42.0ms | 89.09KB |
 | 434 | graphs/greedy_min_vertex_cover | ✓ | 41.0ms | 47.88KB |
 | 435 | graphs/kahns_algorithm_long | ✓ | 38.0ms | 47.14KB |
