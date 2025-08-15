@@ -102,15 +102,10 @@ func popAliasScope() {
 	if len(aliasStack) == 0 {
 		return
 	}
-	// decrement nameCounts for names declared in this scope
+	// remove type information for names declared in this scope but keep
+	// nameCounts intact so that generated identifiers remain globally
+	// unique and cannot accidentally shadow names from outer scopes.
 	for _, name := range namesStack[len(namesStack)-1] {
-		if cnt, ok := nameCounts[name]; ok {
-			if cnt <= 1 {
-				delete(nameCounts, name)
-			} else {
-				nameCounts[name] = cnt - 1
-			}
-		}
 		delete(varTypes, name)
 	}
 	aliasStack = aliasStack[:len(aliasStack)-1]
@@ -2126,6 +2121,21 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 		idx.Index.emit(w)
 		io.WriteString(w, ", ")
 		if ll, ok := a.Value.(*ListLit); ok && strings.HasPrefix(zigTypeFromExpr(a.Value), "[]") {
+			if ll.ElemType == "" {
+				if tgtStr, ok2 := exprToString(idx.Target); ok2 {
+					if vt, ok3 := varTypes[tgtStr]; ok3 {
+						if pos := strings.Index(vt, ","); pos != -1 {
+							valType := strings.TrimSuffix(vt[pos+1:], ")")
+							valType = strings.TrimSpace(valType)
+							if strings.HasPrefix(valType, "[]") {
+								ll.ElemType = valType[2:]
+							} else {
+								ll.ElemType = valType
+							}
+						}
+					}
+				}
+			}
 			allConst := true
 			for _, e := range ll.Elems {
 				if !isConstExpr(e) {
@@ -6023,6 +6033,10 @@ func stmtsUse(name string, stmts []Stmt) bool {
 				if exprUses(name, v) {
 					return true
 				}
+			}
+		case *ReturnStmt:
+			if exprUses(name, s.Value) {
+				return true
 			}
 		case *BenchStmt:
 			if stmtsUse(name, s.Body) {

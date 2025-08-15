@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-15 06:31 +0700
+Last updated: 2025-08-15 06:45 +0700
 
-## Program Checklist (336/1077)
+## Program Checklist (337/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -416,17 +416,17 @@ Last updated: 2025-08-15 06:31 +0700
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 294µs | 256.0 KB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 2.652ms | 768.0 KB |
 | 409 | graphs/check_bipatrite | ✓ | 426µs | 256.0 KB |
-| 410 | graphs/check_cycle | ✓ | 475µs | 384.0 KB |
-| 411 | graphs/connected_components | ✓ | 1.359ms | 512.0 KB |
+| 410 | graphs/check_cycle | ✓ | 1.05ms | 256.0 KB |
+| 411 | graphs/connected_components | ✓ | 2.157ms | 512.0 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search | ✓ | 889µs | 384.0 KB |
-| 414 | graphs/depth_first_search_2 | ✓ | 1.522ms | 644.0 KB |
-| 415 | graphs/dijkstra | ✓ | 1.093ms | 384.0 KB |
-| 416 | graphs/dijkstra_2 | ✓ | 531µs | 384.0 KB |
-| 417 | graphs/dijkstra_algorithm | ✓ | 959µs | 256.0 KB |
-| 418 | graphs/dijkstra_alternate | ✓ | 1.499ms | 384.0 KB |
-| 419 | graphs/dijkstra_binary_grid | ✓ | 10.927ms | 2.1 MB |
-| 420 | graphs/dinic |   |  |  |
+| 413 | graphs/depth_first_search | ✓ | 1.109ms | 384.0 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 1.72ms | 512.0 KB |
+| 415 | graphs/dijkstra | ✓ | 1.731ms | 516.0 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 941µs | 384.0 KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 809µs | 256.0 KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 1.534ms | 512.0 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 8.773ms | 2.2 MB |
+| 420 | graphs/dinic | ✓ | 14.011ms | 3.0 MB |
 | 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 972µs | 256.0 KB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 13.467ms | 3.0 MB |
