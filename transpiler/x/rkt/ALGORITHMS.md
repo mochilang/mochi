@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-15 08:32 UTC
+Last updated: 2025-08-15 15:38 UTC
 
-## Algorithms Golden Test Checklist (886/1077)
+## Algorithms Golden Test Checklist (885/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -485,34 +485,34 @@ Last updated: 2025-08-15 08:32 UTC
 | 476 | hashes/sha256 | ✓ | 51µs | 72.9 KB |
 | 477 | knapsack/greedy_knapsack | ✓ | 38µs | 33.5 KB |
 | 478 | knapsack/knapsack | ✓ | 13µs | 7.3 KB |
-| 479 | knapsack/recursive_approach_knapsack | ✓ | 19µs | 18.1 KB |
-| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 44µs | 43.2 KB |
-| 481 | knapsack/tests/test_knapsack | ✓ | 23µs | 15.5 KB |
-| 482 | linear_algebra/gaussian_elimination | ✓ | 77µs | 52.2 KB |
-| 483 | linear_algebra/jacobi_iteration_method | ✓ | 25µs | 2.6 KB |
-| 484 | linear_algebra/lu_decomposition | ✓ | 45µs | 21.7 KB |
-| 485 | linear_algebra/matrix_inversion | ✓ | 67µs | 31.5 KB |
-| 486 | linear_algebra/src/conjugate_gradient | ✓ | 29µs | 5.0 KB |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 40µs | 15.6 KB |
-| 488 | linear_algebra/src/lib | ✓ | 57µs | 24.7 KB |
-| 489 | linear_algebra/src/polynom_for_points | ✓ | 263µs | 394.3 KB |
-| 490 | linear_algebra/src/power_iteration | ✓ | 29µs | 5.8 KB |
-| 491 | linear_algebra/src/rank_of_matrix | ✓ | 2µs | 512 B |
-| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 21µs | 7.1 KB |
-| 493 | linear_algebra/src/schur_complement | ✓ | 58µs | 59.4 KB |
-| 494 | linear_algebra/src/test_linear_algebra | ✓ | 140µs | 305.9 KB |
-| 495 | linear_algebra/src/transformations_2d | ✓ | 57µs | 81.9 KB |
-| 496 | linear_programming/simplex | ✓ | 24µs | 3.8 KB |
-| 497 | machine_learning/apriori_algorithm | ✓ | 14µs | 8.9 KB |
-| 498 | machine_learning/astar | ✓ | 30µs | 12.1 KB |
-| 499 | machine_learning/automatic_differentiation | ✓ | 29µs | 10.8 KB |
-| 500 | machine_learning/data_transformations | ✓ | 82µs | 131.1 KB |
-| 501 | machine_learning/decision_tree | ✓ | 452.63ms | 4.7 MB |
-| 502 | machine_learning/dimensionality_reduction | ✓ | 12µs | 1.1 KB |
-| 503 | machine_learning/forecasting/run | ✓ | 224µs | 223.9 KB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 9m31.223891s | 17.9 KB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 9m31.223891s | 42.6 KB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 9m31.223891s | 15.4 KB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 9m31.223891s | 51.8 KB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 9m31.223891s | 2.5 KB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 9m31.223891s | 20.8 KB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 9m31.223891s | 31.5 KB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 9m31.223891s | 4.8 KB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 9m31.223891s | 15.5 KB |
+| 488 | linear_algebra/src/lib | ✓ | 9m31.223891s | 24.3 KB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 9m31.223891s | 385.9 KB |
+| 490 | linear_algebra/src/power_iteration | ✓ | 9m31.223891s | 5.6 KB |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ | 9m31.223891s | 384 B |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 9m31.223891s | 6.7 KB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 9m31.223891s | 57.9 KB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 9m31.223891s | 230.0 KB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 9m31.223891s | 80.4 KB |
+| 496 | linear_programming/simplex | ✓ | 9m31.223891s | 3.7 KB |
+| 497 | machine_learning/apriori_algorithm |   | 102µs | 9.0 KB |
+| 498 | machine_learning/astar | ✓ | 9m31.223891s | 12.2 KB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 9m31.223891s | 10.6 KB |
+| 500 | machine_learning/data_transformations | ✓ | 128µs | 131.2 KB |
+| 501 | machine_learning/decision_tree | ✓ | 647.464ms | 4.6 MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 7µs | 1.1 KB |
+| 503 | machine_learning/forecasting/run | ✓ | 196µs | 225.7 KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 20µs | 1.1 KB |
-| 506 | machine_learning/gradient_descent | ✓ | 478µs | 1.1 MB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 31µs | 1.1 KB |
+| 506 | machine_learning/gradient_descent | ✓ | 384.016ms |  |
 | 507 | machine_learning/k_means_clust | ✓ | 52µs | 9.5 KB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 86µs | 100.4 KB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 616µs | 2.2 MB |
