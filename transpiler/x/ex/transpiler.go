@@ -352,16 +352,29 @@ type IfStmt struct {
 }
 
 func (s *IfStmt) emit(w io.Writer, indent int) {
+	vars := s.Vars
+	if moduleMode {
+		allGlobal := true
+		for _, v := range vars {
+			if _, ok := globalVars[v]; !ok {
+				allGlobal = false
+				break
+			}
+		}
+		if allGlobal {
+			vars = nil
+		}
+	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	if len(s.Vars) == 1 {
+	if len(vars) == 1 {
 		// Avoid pattern matching for a single mutated variable to reduce warnings
-		io.WriteString(w, sanitizeIdent(s.Vars[0]))
+		io.WriteString(w, sanitizeIdent(vars[0]))
 		io.WriteString(w, " = if ")
-	} else if len(s.Vars) > 1 {
+	} else if len(vars) > 1 {
 		io.WriteString(w, "{")
-		for i, v := range s.Vars {
+		for i, v := range vars {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
@@ -377,18 +390,18 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 		st.emit(w, indent+1)
 		io.WriteString(w, "\n")
 	}
-	if len(s.Vars) == 1 {
+	if len(vars) == 1 {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, sanitizeIdent(s.Vars[0]))
+		io.WriteString(w, sanitizeIdent(vars[0]))
 		io.WriteString(w, "\n")
-	} else if len(s.Vars) > 1 {
+	} else if len(vars) > 1 {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "{")
-		for i, v := range s.Vars {
+		for i, v := range vars {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
@@ -396,7 +409,7 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, "}\n")
 	}
-	if len(s.Else) > 0 || len(s.Vars) > 0 {
+	if len(s.Else) > 0 || len(vars) > 0 {
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -405,18 +418,18 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 			st.emit(w, indent+1)
 			io.WriteString(w, "\n")
 		}
-		if len(s.Vars) == 1 {
+		if len(vars) == 1 {
 			for i := 0; i < indent+1; i++ {
 				io.WriteString(w, "  ")
 			}
-			io.WriteString(w, sanitizeIdent(s.Vars[0]))
+			io.WriteString(w, sanitizeIdent(vars[0]))
 			io.WriteString(w, "\n")
-		} else if len(s.Vars) > 1 {
+		} else if len(vars) > 1 {
 			for i := 0; i < indent+1; i++ {
 				io.WriteString(w, "  ")
 			}
 			io.WriteString(w, "{")
-			for i, v := range s.Vars {
+			for i, v := range vars {
 				if i > 0 {
 					io.WriteString(w, ", ")
 				}
@@ -2035,6 +2048,9 @@ func Emit(p *Program, benchMain bool) []byte {
 	}
 	if usedHelpers["len"] {
 		buf.WriteString(lenHelper(1))
+	}
+	if usedHelpers["toi"] {
+		buf.WriteString(toiHelper(1))
 	}
 	if usedHelpers["bigrat"] {
 		buf.WriteString(bigRatHelper(1))
@@ -4251,6 +4267,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 2 {
 				return &CallExpr{Func: "String.to_integer", Args: args}, nil
 			}
+		case "toi":
+			if len(args) == 1 {
+				usedHelpers["toi"] = true
+				return &CallExpr{Func: "_toi", Args: args}, nil
+			}
 		case "num":
 			if len(args) == 1 {
 				return &CallExpr{Func: "elem", Args: []Expr{args[0], &NumberLit{Value: "0"}}}, nil
@@ -4652,6 +4673,18 @@ func lenHelper(indent int) string {
 	buf.WriteString(pad + "    x == nil -> 0\n")
 	buf.WriteString(pad + "    is_binary(x) -> String.length(x)\n")
 	buf.WriteString(pad + "    true -> length(x)\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func toiHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _toi(v) do\n")
+	buf.WriteString(pad + "  case Integer.parse(to_string(v)) do\n")
+	buf.WriteString(pad + "    {n, _} -> n\n")
+	buf.WriteString(pad + "    :error -> 0\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
