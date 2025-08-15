@@ -6494,9 +6494,19 @@ func inferType(e Expr) string {
 		if t, ok := funReturns[ex.Func]; ok {
 			return t
 		}
+		if vt, ok := varTypes[ex.Func]; ok {
+			if idx := strings.LastIndex(vt, "->"); idx >= 0 {
+				ret := strings.TrimSpace(vt[idx+2:])
+				if strings.HasPrefix(ret, "&") {
+					ret = strings.TrimPrefix(ret, "&")
+				}
+				return ret
+			}
+		}
 		if ex.Func == "format!" {
 			return "String"
 		}
+		return ""
 	case *UnaryExpr:
 		if ex.Op == "!" {
 			return "bool"
@@ -6672,7 +6682,9 @@ func collectNamesExpr(names map[string]bool, e Expr) {
 	case *NameRef:
 		names[ex.Name] = true
 	case *CallExpr:
-		names[ex.Func] = true
+		if ex.Func != "panic" && ex.Func != "error" {
+			names[ex.Func] = true
+		}
 		for _, a := range ex.Args {
 			collectNamesExpr(names, a)
 		}

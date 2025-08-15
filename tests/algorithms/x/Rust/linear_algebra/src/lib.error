@@ -1,0 +1,1713 @@
+error[E0425]: cannot find value `PI` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:116:31
+    |
+116 | |x: f64| -> f64 { acos_taylor(PI, arcsin_taylor, x) }
+    |                               ^^ not found in this scope
+    |
+help: consider importing one of these constants
+    |
+2   + use std::f128::consts::PI;
+    |
+2   + use std::f16::consts::PI;
+    |
+2   + use std::f32::consts::PI;
+    |
+2   + use std::f64::consts::PI;
+    |
+
+error[E0425]: cannot find value `PI` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:253:57
+    |
+253 | |a: Vector, b: Vector, deg: bool| -> f64 { vector_angle(PI, acos_taylor, vector_dot, vector_euclidean_length, a, b, deg) }
+    |                                                         ^^ not found in this scope
+    |
+help: consider importing one of these constants
+    |
+2   + use std::f128::consts::PI;
+    |
+2   + use std::f16::consts::PI;
+    |
+2   + use std::f32::consts::PI;
+    |
+2   + use std::f64::consts::PI;
+    |
+
+error[E0425]: cannot find value `matrix_determinant` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:414:51
+    |
+414 | |m: Matrix, x: i64, y: i64| -> f64 { matrix_minor(matrix_determinant, m, x, y) }
+    |                                                   ^^^^^^^^^^^^^^^^^^ not found in this scope
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:75:12
+   |
+75 |     seed = (((seed * 1103515245) + 12345) % 2147483648);
+   |            ^                                          ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+75 -     seed = (((seed * 1103515245) + 12345) % 2147483648);
+75 +     seed = ((seed * 1103515245) + 12345) % 2147483648;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:82:18
+   |
+82 |     let r: i64 = (rand() % ((b - a) + 1));
+   |                  ^                      ^
+   |
+help: remove these parentheses
+   |
+82 -     let r: i64 = (rand() % ((b - a) + 1));
+82 +     let r: i64 = rand() % ((b - a) + 1);
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:83:12
+   |
+83 |     return (a + r)
+   |            ^     ^
+   |
+help: remove these parentheses
+   |
+83 -     return (a + r)
+83 +     return a + r
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:88:8
+   |
+88 |     if (x <= 0.0) {
+   |        ^        ^
+   |
+help: remove these parentheses
+   |
+88 -     if (x <= 0.0) {
+88 +     if x <= 0.0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:93:11
+   |
+93 |     while (i < 20) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+93 -     while (i < 20) {
+93 +     while i < 20 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:94:17
+   |
+94 |         guess = ((guess + (x / guess)) / 2.0);
+   |                 ^                           ^
+   |
+help: remove these parentheses
+   |
+94 -         guess = ((guess + (x / guess)) / 2.0);
+94 +         guess = (guess + (x / guess)) / 2.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:95:13
+   |
+95 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+95 -         i = (i + 1);
+95 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:103:11
+    |
+103 |     while (n < 10) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+103 -     while (n < 10) {
+103 +     while n < 10 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:104:24
+    |
+104 |         let num: f64 = ((((((2.0 * (n as f64)) - 1.0) * ((2.0 * (n as f64)) - 1.0)) * x) * x) * term);
+    |                        ^                                                                            ^
+    |
+help: remove these parentheses
+    |
+104 -         let num: f64 = ((((((2.0 * (n as f64)) - 1.0) * ((2.0 * (n as f64)) - 1.0)) * x) * x) * term);
+104 +         let num: f64 = (((((2.0 * (n as f64)) - 1.0) * ((2.0 * (n as f64)) - 1.0)) * x) * x) * term;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:105:24
+    |
+105 |         let den: f64 = ((2.0 * (n as f64)) * ((2.0 * (n as f64)) + 1.0));
+    |                        ^                                               ^
+    |
+help: remove these parentheses
+    |
+105 -         let den: f64 = ((2.0 * (n as f64)) * ((2.0 * (n as f64)) + 1.0));
+105 +         let den: f64 = (2.0 * (n as f64)) * ((2.0 * (n as f64)) + 1.0);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:106:16
+    |
+106 |         term = (num / den);
+    |                ^         ^
+    |
+help: remove these parentheses
+    |
+106 -         term = (num / den);
+106 +         term = num / den;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:107:15
+    |
+107 |         sum = (sum + term);
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+107 -         sum = (sum + term);
+107 +         sum = sum + term;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:108:13
+    |
+108 |         n = (n + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+108 -         n = (n + 1);
+108 +         n = n + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:114:12
+    |
+114 |     return ((unsafe { g_PI.clone() } / 2.0) - arcsin_taylor(x))
+    |            ^                                                  ^
+    |
+help: remove these parentheses
+    |
+114 -     return ((unsafe { g_PI.clone() } / 2.0) - arcsin_taylor(x))
+114 +     return (unsafe { g_PI.clone() } / 2.0) - arcsin_taylor(x)
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:119:12
+    |
+119 |     return (v.components.clone().len() as i64)
+    |            ^                                 ^
+    |
+help: remove these parentheses
+    |
+119 -     return (v.components.clone().len() as i64)
+119 +     return v.components.clone().len() as i64
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:124:11
+    |
+124 |     while (i < (v.components.clone().len() as i64)) {
+    |           ^                                       ^
+    |
+help: remove these parentheses
+    |
+124 -     while (i < (v.components.clone().len() as i64)) {
+124 +     while i < (v.components.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:126:12
+    |
+126 |         if (i < ((v.components.clone().len() as i64) - 1)) {
+    |            ^                                             ^
+    |
+help: remove these parentheses
+    |
+126 -         if (i < ((v.components.clone().len() as i64) - 1)) {
+126 +         if i < ((v.components.clone().len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:129:13
+    |
+129 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+129 -         i = (i + 1);
+129 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:137:8
+    |
+137 |     if (size != vector_len(b.clone())) {
+    |        ^                             ^
+    |
+help: remove these parentheses
+    |
+137 -     if (size != vector_len(b.clone())) {
+137 +     if size != vector_len(b.clone()) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:142:11
+    |
+142 |     while (i < size) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+142 -     while (i < size) {
+142 +     while i < size {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:143:51
+    |
+143 |         res = { let mut _v = res.clone(); _v.push((a.components.clone()[i as usize] + b.components.clone()[i as usize])); _v };
+    |                                                   ^                                                                   ^
+    |
+help: remove these parentheses
+    |
+143 -         res = { let mut _v = res.clone(); _v.push((a.components.clone()[i as usize] + b.components.clone()[i as usize])); _v };
+143 +         res = { let mut _v = res.clone(); _v.push(a.components.clone()[i as usize] + b.components.clone()[i as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:144:13
+    |
+144 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+144 -         i = (i + 1);
+144 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:153:8
+    |
+153 |     if (size != vector_len(b.clone())) {
+    |        ^                             ^
+    |
+help: remove these parentheses
+    |
+153 -     if (size != vector_len(b.clone())) {
+153 +     if size != vector_len(b.clone()) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:158:11
+    |
+158 |     while (i < size) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+158 -     while (i < size) {
+158 +     while i < size {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:159:51
+    |
+159 |         res = { let mut _v = res.clone(); _v.push((a.components.clone()[i as usize] - b.components.clone()[i as usize])); _v };
+    |                                                   ^                                                                   ^
+    |
+help: remove these parentheses
+    |
+159 -         res = { let mut _v = res.clone(); _v.push((a.components.clone()[i as usize] - b.components.clone()[i as usize])); _v };
+159 +         res = { let mut _v = res.clone(); _v.push(a.components.clone()[i as usize] - b.components.clone()[i as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:160:13
+    |
+160 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+160 -         i = (i + 1);
+160 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:168:8
+    |
+168 |     if (vector_len(a.clone()) != vector_len(b.clone())) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+168 -     if (vector_len(a.clone()) != vector_len(b.clone())) {
+168 +     if vector_len(a.clone()) != vector_len(b.clone()) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:172:11
+    |
+172 |     while (i < vector_len(a.clone())) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+172 -     while (i < vector_len(a.clone())) {
+172 +     while i < vector_len(a.clone()) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:173:12
+    |
+173 |         if (a.components.clone()[i as usize] != b.components.clone()[i as usize]) {
+    |            ^                                                                    ^
+    |
+help: remove these parentheses
+    |
+173 -         if (a.components.clone()[i as usize] != b.components.clone()[i as usize]) {
+173 +         if a.components.clone()[i as usize] != b.components.clone()[i as usize] {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:176:13
+    |
+176 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+176 -         i = (i + 1);
+176 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:186:11
+    |
+186 |     while (i < vector_len(v.clone())) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+186 -     while (i < vector_len(v.clone())) {
+186 +     while i < vector_len(v.clone()) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:187:51
+    |
+187 |         res = { let mut _v = res.clone(); _v.push((v.components.clone()[i as usize] * s)); _v };
+    |                                                   ^                                    ^
+    |
+help: remove these parentheses
+    |
+187 -         res = { let mut _v = res.clone(); _v.push((v.components.clone()[i as usize] * s)); _v };
+187 +         res = { let mut _v = res.clone(); _v.push(v.components.clone()[i as usize] * s); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:188:13
+    |
+188 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+188 -         i = (i + 1);
+188 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:197:8
+    |
+197 |     if (size != vector_len(b.clone())) {
+    |        ^                             ^
+    |
+help: remove these parentheses
+    |
+197 -     if (size != vector_len(b.clone())) {
+197 +     if size != vector_len(b.clone()) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:202:11
+    |
+202 |     while (i < size) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+202 -     while (i < size) {
+202 +     while i < size {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:203:15
+    |
+203 |         sum = (sum + (a.components.clone()[i as usize] * b.components.clone()[i as usize]));
+    |               ^                                                                           ^
+    |
+help: remove these parentheses
+    |
+203 -         sum = (sum + (a.components.clone()[i as usize] * b.components.clone()[i as usize]));
+203 +         sum = sum + (a.components.clone()[i as usize] * b.components.clone()[i as usize]);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:204:13
+    |
+204 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+204 -         i = (i + 1);
+204 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:214:11
+    |
+214 |     while (i < vector_len(v.clone())) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+214 -     while (i < vector_len(v.clone())) {
+214 +     while i < vector_len(v.clone()) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:216:13
+    |
+216 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+216 -         i = (i + 1);
+216 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:234:11
+    |
+234 |     while (i < (v.components.clone().len() as i64)) {
+    |           ^                                       ^
+    |
+help: remove these parentheses
+    |
+234 -     while (i < (v.components.clone().len() as i64)) {
+234 +     while i < (v.components.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:235:15
+    |
+235 |         sum = (sum + (v.components.clone()[i as usize] * v.components.clone()[i as usize]));
+    |               ^                                                                           ^
+    |
+help: remove these parentheses
+    |
+235 -         sum = (sum + (v.components.clone()[i as usize] * v.components.clone()[i as usize]));
+235 +         sum = sum + (v.components.clone()[i as usize] * v.components.clone()[i as usize]);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:236:13
+    |
+236 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+236 -         i = (i + 1);
+236 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:246:20
+    |
+246 |     let den: f64 = (vector_euclidean_length(a.clone()) * vector_euclidean_length(b.clone()));
+    |                    ^                                                                       ^
+    |
+help: remove these parentheses
+    |
+246 -     let den: f64 = (vector_euclidean_length(a.clone()) * vector_euclidean_length(b.clone()));
+246 +     let den: f64 = vector_euclidean_length(a.clone()) * vector_euclidean_length(b.clone());
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:247:36
+    |
+247 |     let mut ang: f64 = acos_taylor((num / den));
+    |                                    ^         ^
+    |
+help: remove these parentheses
+    |
+247 -     let mut ang: f64 = acos_taylor((num / den));
+247 +     let mut ang: f64 = acos_taylor(num / den);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:249:15
+    |
+249 |         ang = ((ang * 180.0) / unsafe { g_PI.clone() });
+    |               ^                                       ^
+    |
+help: remove these parentheses
+    |
+249 -         ang = ((ang * 180.0) / unsafe { g_PI.clone() });
+249 +         ang = (ang * 180.0) / unsafe { g_PI.clone() };
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:258:11
+    |
+258 |     while (i < d) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+258 -     while (i < d) {
+258 +     while i < d {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:260:13
+    |
+260 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+260 -         i = (i + 1);
+260 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:267:11
+    |
+267 |     while (i < d) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+267 -     while (i < d) {
+267 +     while i < d {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:268:12
+    |
+268 |         if (i == pos) {
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+268 -         if (i == pos) {
+268 +         if i == pos {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:273:13
+    |
+273 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+273 -         i = (i + 1);
+273 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:286:11
+    |
+286 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+286 -     while (i < n) {
+286 +     while i < n {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:287:51
+    |
+287 |         res = { let mut _v = res.clone(); _v.push((random_int(a, b) as f64)); _v };
+    |                                                   ^                       ^
+    |
+help: remove these parentheses
+    |
+287 -         res = { let mut _v = res.clone(); _v.push((random_int(a, b) as f64)); _v };
+287 +         res = { let mut _v = res.clone(); _v.push(random_int(a, b) as f64); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:288:13
+    |
+288 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+288 -         i = (i + 1);
+288 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:295:11
+    |
+295 |     while (i < m.height) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+295 -     while (i < m.height) {
+295 +     while i < m.height {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:298:15
+    |
+298 |         while (j < m.width) {
+    |               ^           ^
+    |
+help: remove these parentheses
+    |
+298 -         while (j < m.width) {
+298 +         while j < m.width {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:300:16
+    |
+300 |             if (j < (m.width - 1)) {
+    |                ^                 ^
+    |
+help: remove these parentheses
+    |
+300 -             if (j < (m.width - 1)) {
+300 +             if j < (m.width - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:303:17
+    |
+303 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+303 -             j = (j + 1);
+303 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:306:13
+    |
+306 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+306 -         i = (i + 1);
+306 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:311:8
+    |
+311 |     if ((a.width != b.width) || (a.height != b.height)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+311 -     if ((a.width != b.width) || (a.height != b.height)) {
+311 +     if (a.width != b.width) || (a.height != b.height) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:316:11
+    |
+316 |     while (i < a.height) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+316 -     while (i < a.height) {
+316 +     while i < a.height {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:319:15
+    |
+319 |         while (j < a.width) {
+    |               ^           ^
+    |
+help: remove these parentheses
+    |
+319 -         while (j < a.width) {
+319 +         while j < a.width {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:320:55
+    |
+320 | ....clone(); _v.push((a.data.clone()[i as usize].clone()[j as usize] + b.data.clone()[i as usize].clone()[j as usize])); _v };
+    |                      ^                                                                                               ^
+    |
+help: remove these parentheses
+    |
+320 -             row = { let mut _v = row.clone(); _v.push((a.data.clone()[i as usize].clone()[j as usize] + b.data.clone()[i as usize].clone()[j as usize])); _v };
+320 +             row = { let mut _v = row.clone(); _v.push(a.data.clone()[i as usize].clone()[j as usize] + b.data.clone()[i as usize].clone()[j as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:321:17
+    |
+321 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+321 -             j = (j + 1);
+321 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:324:13
+    |
+324 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+324 -         i = (i + 1);
+324 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:329:8
+    |
+329 |     if ((a.width != b.width) || (a.height != b.height)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+329 -     if ((a.width != b.width) || (a.height != b.height)) {
+329 +     if (a.width != b.width) || (a.height != b.height) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:334:11
+    |
+334 |     while (i < a.height) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+334 -     while (i < a.height) {
+334 +     while i < a.height {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:337:15
+    |
+337 |         while (j < a.width) {
+    |               ^           ^
+    |
+help: remove these parentheses
+    |
+337 -         while (j < a.width) {
+337 +         while j < a.width {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:338:55
+    |
+338 | ....clone(); _v.push((a.data.clone()[i as usize].clone()[j as usize] - b.data.clone()[i as usize].clone()[j as usize])); _v };
+    |                      ^                                                                                               ^
+    |
+help: remove these parentheses
+    |
+338 -             row = { let mut _v = row.clone(); _v.push((a.data.clone()[i as usize].clone()[j as usize] - b.data.clone()[i as usize].clone()[j as usize])); _v };
+338 +             row = { let mut _v = row.clone(); _v.push(a.data.clone()[i as usize].clone()[j as usize] - b.data.clone()[i as usize].clone()[j as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:339:17
+    |
+339 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+339 -             j = (j + 1);
+339 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:342:13
+    |
+342 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+342 -         i = (i + 1);
+342 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:348:8
+    |
+348 |     if ((v.components.clone().len() as i64) != m.width) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+348 -     if ((v.components.clone().len() as i64) != m.width) {
+348 +     if (v.components.clone().len() as i64) != m.width {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:353:11
+    |
+353 |     while (i < m.height) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+353 -     while (i < m.height) {
+353 +     while i < m.height {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:356:15
+    |
+356 |         while (j < m.width) {
+    |               ^           ^
+    |
+help: remove these parentheses
+    |
+356 -         while (j < m.width) {
+356 +         while j < m.width {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:357:19
+    |
+357 |             sum = (sum + (m.data.clone()[i as usize].clone()[j as usize] * v.components.clone()[j as usize]));
+    |                   ^                                                                                         ^
+    |
+help: remove these parentheses
+    |
+357 -             sum = (sum + (m.data.clone()[i as usize].clone()[j as usize] * v.components.clone()[j as usize]));
+357 +             sum = sum + (m.data.clone()[i as usize].clone()[j as usize] * v.components.clone()[j as usize]);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:358:17
+    |
+358 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+358 -             j = (j + 1);
+358 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:361:13
+    |
+361 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+361 -         i = (i + 1);
+361 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:370:11
+    |
+370 |     while (i < m.height) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+370 -     while (i < m.height) {
+370 +     while i < m.height {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:373:15
+    |
+373 |         while (j < m.width) {
+    |               ^           ^
+    |
+help: remove these parentheses
+    |
+373 -         while (j < m.width) {
+373 +         while j < m.width {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:374:55
+    |
+374 |             row = { let mut _v = row.clone(); _v.push((m.data.clone()[i as usize].clone()[j as usize] * s)); _v };
+    |                                                       ^                                                  ^
+    |
+help: remove these parentheses
+    |
+374 -             row = { let mut _v = row.clone(); _v.push((m.data.clone()[i as usize].clone()[j as usize] * s)); _v };
+374 +             row = { let mut _v = row.clone(); _v.push(m.data.clone()[i as usize].clone()[j as usize] * s); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:375:17
+    |
+375 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+375 -             j = (j + 1);
+375 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:378:13
+    |
+378 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+378 -         i = (i + 1);
+378 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:392:8
+    |
+392 |     if (m.height != m.width) {
+    |        ^                   ^
+    |
+help: remove these parentheses
+    |
+392 -     if (m.height != m.width) {
+392 +     if m.height != m.width {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:397:11
+    |
+397 |     while (i < m.height) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+397 -     while (i < m.height) {
+397 +     while i < m.height {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:398:12
+    |
+398 |         if (i != x) {
+    |            ^      ^
+    |
+help: remove these parentheses
+    |
+398 -         if (i != x) {
+398 +         if i != x {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:401:19
+    |
+401 |             while (j < m.width) {
+    |                   ^           ^
+    |
+help: remove these parentheses
+    |
+401 -             while (j < m.width) {
+401 +             while j < m.width {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:402:20
+    |
+402 |                 if (j != y) {
+    |                    ^      ^
+    |
+help: remove these parentheses
+    |
+402 -                 if (j != y) {
+402 +                 if j != y {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:405:21
+    |
+405 |                 j = (j + 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+405 -                 j = (j + 1);
+405 +                 j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:409:13
+    |
+409 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+409 -         i = (i + 1);
+409 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:418:24
+    |
+418 |     let sign: f64 = if (((x + y) % 2) == 0) { 1.0 } else { -1.0 };
+    |                        ^                  ^
+    |
+help: remove these parentheses
+    |
+418 -     let sign: f64 = if (((x + y) % 2) == 0) { 1.0 } else { -1.0 };
+418 +     let sign: f64 = if ((x + y) % 2) == 0 { 1.0 } else { -1.0 };
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:419:12
+    |
+419 |     return (sign * matrix_minor(m.clone(), x, y))
+    |            ^                                    ^
+    |
+help: remove these parentheses
+    |
+419 -     return (sign * matrix_minor(m.clone(), x, y))
+419 +     return sign * matrix_minor(m.clone(), x, y)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:425:8
+    |
+425 |     if (m.height != m.width) {
+    |        ^                   ^
+    |
+help: remove these parentheses
+    |
+425 -     if (m.height != m.width) {
+425 +     if m.height != m.width {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:428:8
+    |
+428 |     if (m.height == 0) {
+    |        ^             ^
+    |
+help: remove these parentheses
+    |
+428 -     if (m.height == 0) {
+428 +     if m.height == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:431:8
+    |
+431 |     if (m.height == 1) {
+    |        ^             ^
+    |
+help: remove these parentheses
+    |
+431 -     if (m.height == 1) {
+431 +     if m.height == 1 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:434:8
+    |
+434 |     if (m.height == 2) {
+    |        ^             ^
+    |
+help: remove these parentheses
+    |
+434 -     if (m.height == 2) {
+434 +     if m.height == 2 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:435:16
+    |
+435 | ...rn ((m.data.clone()[0 as usize].clone()[0 as usize] * m.data.clone()[1 as usize].clone()[1 as usize]) - (m.data.clone()[0 as usize].clone()[1 as usize] * m.data.clone()[1 as usize].clone()[0 as usize]))
+    |       ^                                                                                                                                                                                                     ^
+    |
+help: remove these parentheses
+    |
+435 -         return ((m.data.clone()[0 as usize].clone()[0 as usize] * m.data.clone()[1 as usize].clone()[1 as usize]) - (m.data.clone()[0 as usize].clone()[1 as usize] * m.data.clone()[1 as usize].clone()[0 as usize]))
+435 +         return (m.data.clone()[0 as usize].clone()[0 as usize] * m.data.clone()[1 as usize].clone()[1 as usize]) - (m.data.clone()[0 as usize].clone()[1 as usize] * m.data.clone()[1 as usize].clone()[0 as usize])
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:439:11
+    |
+439 |     while (y < m.width) {
+    |           ^           ^
+    |
+help: remove these parentheses
+    |
+439 -     while (y < m.width) {
+439 +     while y < m.width {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:440:15
+    |
+440 |         sum = (sum + (m.data.clone()[0 as usize].clone()[y as usize] * matrix_cofactor(m.clone(), 0, y)));
+    |               ^                                                                                         ^
+    |
+help: remove these parentheses
+    |
+440 -         sum = (sum + (m.data.clone()[0 as usize].clone()[y as usize] * matrix_cofactor(m.clone(), 0, y)));
+440 +         sum = sum + (m.data.clone()[0 as usize].clone()[y as usize] * matrix_cofactor(m.clone(), 0, y));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:441:13
+    |
+441 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+441 -         y = (y + 1);
+441 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:450:11
+    |
+450 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+450 -     while (i < n) {
+450 +     while i < n {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:453:15
+    |
+453 |         while (j < n) {
+    |               ^     ^
+    |
+help: remove these parentheses
+    |
+453 -         while (j < n) {
+453 +         while j < n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:455:17
+    |
+455 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+455 -             j = (j + 1);
+455 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:458:13
+    |
+458 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+458 -         i = (i + 1);
+458 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:465:11
+    |
+465 |     while (i < h) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+465 -     while (i < h) {
+465 +     while i < h {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:468:15
+    |
+468 |         while (j < w) {
+    |               ^     ^
+    |
+help: remove these parentheses
+    |
+468 -         while (j < w) {
+468 +         while j < w {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:469:55
+    |
+469 |             row = { let mut _v = row.clone(); _v.push((random_int(a, b) as f64)); _v };
+    |                                                       ^                       ^
+    |
+help: remove these parentheses
+    |
+469 -             row = { let mut _v = row.clone(); _v.push((random_int(a, b) as f64)); _v };
+469 +             row = { let mut _v = row.clone(); _v.push(random_int(a, b) as f64); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:470:17
+    |
+470 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+470 -             j = (j + 1);
+470 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:473:13
+    |
+473 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+473 -         i = (i + 1);
+473 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:488:32
+    |
+488 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+488 -         let duration_us: i64 = ((_end - _start) / 1000);
+488 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:85:38
+   |
+78 | || -> i64 { rand(seed) }
+   | --------- the found closure
+...
+85 | |a: i64, b: i64| -> i64 { random_int(rand, a, b) }
+   |                           ---------- ^^^^ expected `&fn() -> i64`, found closure
+   |                           |
+   |                           arguments to this function are incorrect
+   |
+   = note: expected reference `&fn() -> i64`
+                found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:78:1: 78:10}`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:81:4
+   |
+81 | fn random_int(rand: &fn() -> i64, a: i64, b: i64) -> i64 {
+   |    ^^^^^^^^^^ ------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:116:35
+    |
+99  |         let mut arcsin_taylor = |x: f64| -> f64 {
+    |                                 --------------- the found closure
+...
+116 | |x: f64| -> f64 { acos_taylor(PI, arcsin_taylor, x) }
+    |                   -----------     ^^^^^^^^^^^^^ expected `&fn(f64) -> f64`, found closure
+    |                   |
+    |                   arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(f64) -> f64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:99:33: 99:48}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:113:4
+    |
+113 | fn acos_taylor(PI: f64, arcsin_taylor: &fn(f64) -> f64, x: f64) -> f64 {
+    |    ^^^^^^^^^^^          ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:148:47
+    |
+118 |         let mut vector_len = |v: Vector| -> i64 {
+    |                              ------------------ the found closure
+...
+148 | |a: Vector, b: Vector| -> Vector { vector_add(vector_len, a, b) }
+    |                                    ---------- ^^^^^^^^^^ expected `&fn(Vector) -> i64`, found closure
+    |                                    |
+    |                                    arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Vector) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:118:30: 118:48}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:135:4
+    |
+135 | fn vector_add(vector_len: &fn(Vector) -> i64, a: Vector, b: Vector) -> Vector {
+    |    ^^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:164:47
+    |
+118 |         let mut vector_len = |v: Vector| -> i64 {
+    |                              ------------------ the found closure
+...
+164 | |a: Vector, b: Vector| -> Vector { vector_sub(vector_len, a, b) }
+    |                                    ---------- ^^^^^^^^^^ expected `&fn(Vector) -> i64`, found closure
+    |                                    |
+    |                                    arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Vector) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:118:30: 118:48}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:151:4
+    |
+151 | fn vector_sub(vector_len: &fn(Vector) -> i64, a: Vector, b: Vector) -> Vector {
+    |    ^^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:180:44
+    |
+118 |         let mut vector_len = |v: Vector| -> i64 {
+    |                              ------------------ the found closure
+...
+180 | |a: Vector, b: Vector| -> bool { vector_eq(vector_len, a, b) }
+    |                                  --------- ^^^^^^^^^^ expected `&fn(Vector) -> i64`, found closure
+    |                                  |
+    |                                  arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Vector) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:118:30: 118:48}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:167:4
+    |
+167 | fn vector_eq(vector_len: &fn(Vector) -> i64, a: Vector, b: Vector) -> bool {
+    |    ^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:192:51
+    |
+118 |         let mut vector_len = |v: Vector| -> i64 {
+    |                              ------------------ the found closure
+...
+192 | |v: Vector, s: f64| -> Vector { vector_mul_scalar(vector_len, v, s) }
+    |                                 ----------------- ^^^^^^^^^^ expected `&fn(Vector) -> i64`, found closure
+    |                                 |
+    |                                 arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Vector) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:118:30: 118:48}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:183:4
+    |
+183 | fn vector_mul_scalar(vector_len: &fn(Vector) -> i64, v: Vector, s: f64) -> Vector {
+    |    ^^^^^^^^^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:208:44
+    |
+118 |         let mut vector_len = |v: Vector| -> i64 {
+    |                              ------------------ the found closure
+...
+208 | |a: Vector, b: Vector| -> f64 { vector_dot(vector_len, a, b) }
+    |                                 ---------- ^^^^^^^^^^ expected `&fn(Vector) -> i64`, found closure
+    |                                 |
+    |                                 arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Vector) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:118:30: 118:48}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:195:4
+    |
+195 | fn vector_dot(vector_len: &fn(Vector) -> i64, a: Vector, b: Vector) -> f64 {
+    |    ^^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:220:37
+    |
+118 |         let mut vector_len = |v: Vector| -> i64 {
+    |                              ------------------ the found closure
+...
+220 | |v: Vector| -> Vector { vector_copy(vector_len, v) }
+    |                         ----------- ^^^^^^^^^^ expected `&fn(Vector) -> i64`, found closure
+    |                         |
+    |                         arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Vector) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:118:30: 118:48}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:211:4
+    |
+211 | fn vector_copy(vector_len: &fn(Vector) -> i64, v: Vector) -> Vector {
+    |    ^^^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:241:46
+    |
+87  |         let mut sqrtApprox = |x: f64| -> f64 {
+    |                              --------------- the found closure
+...
+241 | |v: Vector| -> f64 { vector_euclidean_length(sqrtApprox, v) }
+    |                      ----------------------- ^^^^^^^^^^ expected `&fn(f64) -> f64`, found closure
+    |                      |
+    |                      arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(f64) -> f64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:87:30: 87:45}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:231:4
+    |
+231 | fn vector_euclidean_length(sqrtApprox: &fn(f64) -> f64, v: Vector) -> f64 {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^ ---------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:253:44
+    |
+116 | |x: f64| -> f64 { acos_taylor(PI, arcsin_taylor, x) }
+    | --------------- the found closure
+...
+208 | |a: Vector, b: Vector| -> f64 { vector_dot(vector_len, a, b) }
+    | ----------------------------- the found closure
+...
+241 | |v: Vector| -> f64 { vector_euclidean_length(sqrtApprox, v) }
+    | ------------------ the found closure
+...
+253 | |a: Vector, b: Vector, deg: bool| -> f64 { vector_angle(PI, acos_taylor, vector_dot, vector_euclidean_length, a, b, deg) }
+    |                                            ^^^^^^^^^^^^
+    |
+note: expected `&fn(f64) -> f64`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:253:61
+    |
+253 | |a: Vector, b: Vector, deg: bool| -> f64 { vector_angle(PI, acos_taylor, vector_dot, vector_euclidean_length, a, b, deg) }
+    |                                                             ^^^^^^^^^^^
+    = note: expected reference `&fn(f64) -> f64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:116:1: 116:16}`
+note: expected `&fn(Vector, Vector) -> f64`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:253:74
+    |
+253 | |a: Vector, b: Vector, deg: bool| -> f64 { vector_angle(PI, acos_taylor, vector_dot, vector_euclidean_length, a, b, deg) }
+    |                                                                          ^^^^^^^^^^
+    = note: expected reference `&fn(Vector, Vector) -> f64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:208:1: 208:30}`
+note: expected `&fn(Vector) -> f64`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:253:86
+    |
+253 | |a: Vector, b: Vector, deg: bool| -> f64 { vector_angle(PI, acos_taylor, vector_dot, vector_euclidean_length, a, b, deg) }
+    |                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(Vector) -> f64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:241:1: 241:19}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:244:4
+    |
+244 | fn vector_angle(PI: f64, acos_taylor: &fn(f64) -> f64, vector_dot: &fn(Vector, Vector) -> f64, vector_euclidean_length: &fn(Vector) -> f64, a...
+    |    ^^^^^^^^^^^^          ----------------------------  --------------------------------------  -------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:281:44
+    |
+148 | |a: Vector, b: Vector| -> Vector { vector_add(vector_len, a, b) }
+    | -------------------------------- the found closure
+...
+192 | |v: Vector, s: f64| -> Vector { vector_mul_scalar(vector_len, v, s) }
+    | ----------------------------- the found closure
+...
+281 | |s: f64, x: Vector, y: Vector| -> Vector { axpy(vector_add, vector_mul_scalar, s, x, y) }
+    |                                            ^^^^
+    |
+note: expected `&fn(Vector, Vector) -> Vector`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:281:49
+    |
+281 | |s: f64, x: Vector, y: Vector| -> Vector { axpy(vector_add, vector_mul_scalar, s, x, y) }
+    |                                                 ^^^^^^^^^^
+    = note: expected reference `&fn(Vector, Vector) -> Vector`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:148:1: 148:33}`
+note: expected `&fn(Vector, f64) -> Vector`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:281:61
+    |
+281 | |s: f64, x: Vector, y: Vector| -> Vector { axpy(vector_add, vector_mul_scalar, s, x, y) }
+    |                                                             ^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(Vector, f64) -> Vector`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:192:1: 192:30}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:278:4
+    |
+278 | fn axpy(vector_add: &fn(Vector, Vector) -> Vector, vector_mul_scalar: &fn(Vector, f64) -> Vector, s: f64, x: Vector, y: Vector) -> Vector {
+    |    ^^^^ -----------------------------------------  ---------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:365:36
+    |
+225 |         let mut vector_change_component = |v: Vector, pos: i64, value: f64| -> Vector {
+    |                                           ------------------------------------------- the found closure
+...
+255 |         let mut zero_vector = |d: i64| -> Vector {
+    |                               ------------------ the found closure
+...
+365 | |m: Matrix, v: Vector| -> Vector { matrix_mul_vector(vector_change_component, zero_vector, m, v) }
+    |                                    ^^^^^^^^^^^^^^^^^
+    |
+note: expected `&fn(Vector, i64, f64) -> Vector`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:365:54
+    |
+365 | |m: Matrix, v: Vector| -> Vector { matrix_mul_vector(vector_change_component, zero_vector, m, v) }
+    |                                                      ^^^^^^^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(Vector, i64, f64) -> Vector`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:225:43: 225:86}`
+note: expected `&fn(i64) -> Vector`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:365:79
+    |
+365 | |m: Matrix, v: Vector| -> Vector { matrix_mul_vector(vector_change_component, zero_vector, m, v) }
+    |                                                                               ^^^^^^^^^^^
+    = note: expected reference `&fn(i64) -> Vector`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:255:31: 255:49}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:347:4
+    |
+347 | fn matrix_mul_vector(vector_change_component: &fn(Vector, i64, f64) -> Vector, zero_vector: &fn(i64) -> Vector, m: Matrix, v: Vector) -> ...
+    |    ^^^^^^^^^^^^^^^^^ --------------------------------------------------------  -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:421:54
+    |
+414 | |m: Matrix, x: i64, y: i64| -> f64 { matrix_minor(matrix_determinant, m, x, y) }
+    | ---------------------------------- the found closure
+...
+421 | |m: Matrix, x: i64, y: i64| -> f64 { matrix_cofactor(matrix_minor, m, x, y) }
+    |                                      --------------- ^^^^^^^^^^^^ expected `&fn(Matrix, i64, i64) -> f64`, found closure
+    |                                      |
+    |                                      arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Matrix, i64, i64) -> f64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:414:1: 414:35}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:417:4
+    |
+417 | fn matrix_cofactor(matrix_minor: &fn(Matrix, i64, i64) -> f64, m: Matrix, x: i64, y: i64) -> f64 {
+    |    ^^^^^^^^^^^^^^^ ------------------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:445:41
+    |
+421 | |m: Matrix, x: i64, y: i64| -> f64 { matrix_cofactor(matrix_minor, m, x, y) }
+    | ---------------------------------- the found closure
+...
+445 | |m: Matrix| -> f64 { matrix_determinant(matrix_cofactor, m) }
+    |                      ------------------ ^^^^^^^^^^^^^^^ expected `&fn(Matrix, i64, i64) -> f64`, found closure
+    |                      |
+    |                      arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Matrix, i64, i64) -> f64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:421:1: 421:35}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:424:4
+    |
+424 | fn matrix_determinant(matrix_cofactor: &fn(Matrix, i64, i64) -> f64, m: Matrix) -> f64 {
+    |    ^^^^^^^^^^^^^^^^^^ ---------------------------------------------
+
+error[E0384]: cannot assign to immutable argument `seed`
+  --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:75:5
+   |
+75 |     seed = (((seed * 1103515245) + 12345) % 2147483648);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ cannot assign to immutable argument
+   |
+help: consider making this binding mutable
+   |
+74 | fn rand(mut seed: i64) -> i64 {
+   |         +++
+
+warning: unused variable: `PI`
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:113:16
+    |
+113 | fn acos_taylor(PI: f64, arcsin_taylor: &fn(f64) -> f64, x: f64) -> f64 {
+    |                ^^ help: if this is intentional, prefix it with an underscore: `_PI`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:114:14
+    |
+114 |     return ((unsafe { g_PI.clone() } / 2.0) - arcsin_taylor(x))
+    |              ^^^^^^ unnecessary `unsafe` block
+    |
+    = note: `#[warn(unused_unsafe)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:238:9
+    |
+238 |     let mut result: f64 = sqrtApprox(sum);
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: unused variable: `PI`
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:244:17
+    |
+244 | fn vector_angle(PI: f64, acos_taylor: &fn(f64) -> f64, vector_dot: &fn(Vector, Vector) -> f64, vector_euclidean_length: &fn(Vector) -> f6...
+    |                 ^^ help: if this is intentional, prefix it with an underscore: `_PI`
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/linear_algebra/src/lib.rs:249:32
+    |
+249 |         ang = ((ang * 180.0) / unsafe { g_PI.clone() });
+    |                                ^^^^^^ unnecessary `unsafe` block
+
+error: aborting due to 18 previous errors; 114 warnings emitted
+
+Some errors have detailed explanations: E0308, E0384, E0425.
+For more information about an error, try `rustc --explain E0308`.
