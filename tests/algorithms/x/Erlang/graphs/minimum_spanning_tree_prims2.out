@@ -1,14 +1,14 @@
-/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:293:106: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
-%  293|     Graph_tmp = lists:sublist(erlang:get('graph'), "a") ++ [#{"b" => 3, "c" => 15}] ++ lists:nthtail("a" + 1, erlang:get('graph')),
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:304:106: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
+%  304|     Graph_tmp = lists:sublist(erlang:get('graph'), "a") ++ [#{"b" => 3, "c" => 15}] ++ lists:nthtail("a" + 1, erlang:get('graph')),
 %     |                                                                                                          ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:295:120: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
-%  295|     Graph_tmp_2 = lists:sublist(erlang:get('graph'), "b") ++ [#{"a" => 3, "c" => 10, "d" => 100}] ++ lists:nthtail("b" + 1, erlang:get('graph')),
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:306:120: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
+%  306|     Graph_tmp_2 = lists:sublist(erlang:get('graph'), "b") ++ [#{"a" => 3, "c" => 10, "d" => 100}] ++ lists:nthtail("b" + 1, erlang:get('graph')),
 %     |                                                                                                                        ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:297:119: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
-%  297|     Graph_tmp_3 = lists:sublist(erlang:get('graph'), "c") ++ [#{"a" => 15, "b" => 10, "d" => 5}] ++ lists:nthtail("c" + 1, erlang:get('graph')),
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:308:119: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
+%  308|     Graph_tmp_3 = lists:sublist(erlang:get('graph'), "c") ++ [#{"a" => 15, "b" => 10, "d" => 5}] ++ lists:nthtail("c" + 1, erlang:get('graph')),
 %     |                                                                                                                       ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:299:109: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
-%  299|     Graph_tmp_4 = lists:sublist(erlang:get('graph'), "d") ++ [#
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:310:109: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
+%  310|     Graph_tmp_4 = lists:sublist(erlang:get('graph'), "d") ++ [#
