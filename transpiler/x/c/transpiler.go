@@ -7200,6 +7200,38 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			buf.WriteString("}\n")
 			return &RawStmt{Code: buf.String()}, nil
 		}
+		if fe, ok := srcExpr.(*FieldExpr); ok {
+			if vr, ok2 := fe.Target.(*VarRef); ok2 {
+				name := mapField(vr.Name, fe.Name)
+				typStr := inferExprType(env, srcExpr)
+				if strings.HasPrefix(typStr, "Map") {
+					body, err := compileStmts(env, s.For.Body)
+					if err != nil {
+						return nil, err
+					}
+					keyT := mapKeyTypes[name]
+					if keyT == "" {
+						if strings.HasPrefix(typStr, "MapS") {
+							keyT = "const char*"
+						} else {
+							keyT = "int"
+						}
+						mapKeyTypes[name] = keyT
+					}
+					switch keyT {
+					case "const char*":
+						env.SetVarDeep(s.For.Name, types.StringType{}, true)
+					case "int":
+						env.SetVarDeep(s.For.Name, types.IntType{}, true)
+					default:
+						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+					}
+					listVar := mapField(name, "keys")
+					lenVar := mapField(name, "len")
+					return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
+				}
+			}
+		}
 		list, ok := convertListExpr(s.For.Source)
 		if !ok {
 			if name := callVarName(s.For.Source, "keys"); name != "" && isMapVar(name) {
@@ -10924,8 +10956,13 @@ func aliasName(name string) string {
 
 func exprVarName(e *parser.Expr) string {
 	if ex := convertExpr(e); ex != nil {
-		if vr, ok := ex.(*VarRef); ok {
-			return vr.Name
+		switch v := ex.(type) {
+		case *VarRef:
+			return v.Name
+		case *FieldExpr:
+			if vr, ok := v.Target.(*VarRef); ok {
+				return mapField(vr.Name, v.Name)
+			}
 		}
 	}
 	return ""
