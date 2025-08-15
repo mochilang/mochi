@@ -1,4 +1,1 @@
-../../../tests/algorithms/x/Dart/graphs/check_cycle.dart:99:26: Error: The argument type 'List<List<dynamic>>' can't be assigned to the parameter type 'List<List<int>>'.
- - 'List' is from 'dart:core'.
-  print_bool(check_cycle(g1));
-                         ^
+{"duration_us":9573,"memory_bytes":3014656,"name":"main"}

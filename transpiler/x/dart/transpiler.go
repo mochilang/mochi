@@ -710,6 +710,9 @@ func (s *VarStmt) emit(w io.Writer) error {
 			typ = "dynamic"
 		}
 	}
+	if ll, ok := s.Value.(*ListLit); ok {
+		typ = preciseListType(ll)
+	}
 	if inFunc && s.Type == "" && typ != "dynamic" {
 		valType := inferType(s.Value)
 		if valType != "" && valType != typ {
@@ -988,6 +991,9 @@ func (s *LetStmt) emit(w io.Writer) error {
 				typ = vt
 			}
 		}
+	}
+	if ll, ok := s.Value.(*ListLit); ok {
+		typ = preciseListType(ll)
 	}
 	if s.Value == nil {
 		nextStructHint = ""
@@ -4305,6 +4311,34 @@ func inferType(e Expr) string {
 	}
 }
 
+func preciseListType(ll *ListLit) string {
+	if len(ll.Elems) == 0 {
+		if ll.ElemType != "" {
+			return "List<" + ll.ElemType + ">"
+		}
+		return "List<dynamic>"
+	}
+	elemType := ""
+	for _, el := range ll.Elems {
+		t := inferType(el)
+		if t == "List<dynamic>" {
+			if sub, ok := el.(*ListLit); ok {
+				t = preciseListType(sub)
+			}
+		}
+		if elemType == "" {
+			elemType = t
+		} else if t != elemType {
+			elemType = "dynamic"
+			break
+		}
+	}
+	if elemType == "" {
+		elemType = "dynamic"
+	}
+	return "List<" + elemType + ">"
+}
+
 func inferReturnType(body []Stmt) string {
 	if len(body) == 0 {
 		return "void"
@@ -6329,7 +6363,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems = append(elems, ex)
 		}
-		return &ListLit{Elems: elems}, nil
+		ll := &ListLit{Elems: elems}
+		if typ := inferType(ll); strings.HasPrefix(typ, "List<") {
+			elem := strings.TrimSuffix(strings.TrimPrefix(typ, "List<"), ">")
+			inner := elem
+			if strings.HasPrefix(inner, "List<") {
+				inner = strings.TrimSuffix(strings.TrimPrefix(inner, "List<"), ">")
+			}
+			for _, el := range ll.Elems {
+				if sub, ok := el.(*ListLit); ok && len(sub.Elems) == 0 && sub.ElemType == "" {
+					sub.ElemType = inner
+				}
+			}
+		}
+		return ll, nil
 	case p.Map != nil:
 		var entries []MapEntry
 		for _, it := range p.Map.Items {
