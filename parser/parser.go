@@ -523,8 +523,8 @@ type IfExpr struct {
 type MatchCase struct {
 	Pos     lexer.Position `json:"pos,omitempty" parser:""`
 	Pattern *Expr          `json:"pattern,omitempty" parser:"@@ '=>'"`
-	Block   []*Statement   `json:"block,omitempty" parser:"[ '{' @@* '}' ]"`
 	Result  *Expr          `json:"result,omitempty" parser:"[ @@ ]"`
+	Block   []*Statement   `json:"block,omitempty" parser:"[ '{' @@* '}' ]"`
 }
 
 type Primary struct {

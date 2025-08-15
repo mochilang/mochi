@@ -2234,6 +2234,14 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				return nil, errTypeMismatch(c.Pos, targetType, pType)
 			}
 		}
+		if c.Result == nil {
+			for _, st := range c.Block {
+				if err := checkStmt(st, caseEnv, expected); err != nil {
+					return nil, err
+				}
+			}
+			continue
+		}
 
 		rType, err := checkExprWithExpected(c.Result, caseEnv, expected)
 		if err != nil {

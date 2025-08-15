@@ -485,7 +485,7 @@ type MatchBlock struct{ Body []Stmt }
 func (m *MatchBlock) emit(w io.Writer) {
 	cap := "[]"
 	if inFunction || inLambda > 0 {
-		cap = "[=]"
+		cap = "[&]"
 	}
 	io.WriteString(w, "("+cap+"{\n")
 	inLambda++
@@ -3490,6 +3490,20 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "]")
 	}
 	io.WriteString(w, " = ")
+	if strings.HasPrefix(valType, "std::shared_ptr<") {
+		if sl, ok := a.Value.(*StructLit); ok {
+			fmt.Fprintf(w, "std::make_shared<%s>(", sl.Name)
+			for i, f := range sl.Fields {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				f.Value.emit(w)
+			}
+			io.WriteString(w, ")")
+			io.WriteString(w, ";\n")
+			return
+		}
+	}
 	a.Value.emit(w)
 	io.WriteString(w, ";\n")
 }
@@ -3574,14 +3588,29 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 				if strings.HasPrefix(r.Type, "std::shared_ptr<") {
 					maker = "std::make_shared"
 				}
-				fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
-				for i, f := range sl.Fields {
-					if i > 0 {
-						io.WriteString(w, ", ")
-					}
-					f.Value.emit(w)
+				inner := strings.TrimSuffix(strings.TrimPrefix(r.Type, "std::shared_ptr<"), ">")
+				if strings.HasPrefix(r.Type, "std::unique_ptr<") {
+					inner = strings.TrimSuffix(strings.TrimPrefix(r.Type, "std::unique_ptr<"), ">")
 				}
-				io.WriteString(w, ")")
+				if strings.HasPrefix(r.Type, "std::shared_ptr<") && r.Type != fmt.Sprintf("std::shared_ptr<%s>", sl.Name) {
+					fmt.Fprintf(w, "std::static_pointer_cast<%s>(%s<%s>(", inner, maker, sl.Name)
+					for i, f := range sl.Fields {
+						if i > 0 {
+							io.WriteString(w, ", ")
+						}
+						f.Value.emit(w)
+					}
+					io.WriteString(w, "))")
+				} else {
+					fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
+					for i, f := range sl.Fields {
+						if i > 0 {
+							io.WriteString(w, ", ")
+						}
+						f.Value.emit(w)
+					}
+					io.WriteString(w, ")")
+				}
 				io.WriteString(w, ";\n")
 				return
 			}
@@ -6336,6 +6365,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &CallExpr{Name: safeName(p.Call.Func), Args: args}, nil
 	case p.Selector != nil:
 		alias := p.Selector.Root
+		if len(p.Selector.Tail) == 0 {
+			if currentEnv != nil {
+				if _, ok := currentEnv.FindUnionByVariant(alias); ok {
+					return &StructLit{Name: alias}, nil
+				}
+			}
+		}
 		if kind, ok := builtinAliases[alias]; ok && len(p.Selector.Tail) == 1 {
 			field := p.Selector.Tail[0]
 			switch kind {
@@ -6604,6 +6640,10 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	tt := guessType(me.Target)
+	if strings.HasPrefix(tt, "std::unique_ptr<") || strings.HasPrefix(tt, "std::shared_ptr<") {
+		target = &PtrGetExpr{Target: target}
+	}
 	var body []Stmt
 	for _, c := range me.Cases {
 		if v, vars, ok := extractVariantPattern(c.Pattern); ok {
@@ -6636,28 +6676,48 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 					}
 				}
 			}
+			for _, st := range c.Block {
+				cs, err := convertStmt(st)
+				if err != nil {
+					return nil, err
+				}
+				then = append(then, cs)
+			}
 			localTypes = nt
-			res, err := convertExpr(c.Result)
-			if err != nil {
-				return nil, err
+			if c.Result != nil {
+				res, err := convertExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+				if currentReturnType == "" || currentReturnType == "void" {
+					then = append(then, &ExprStmt{Expr: res})
+				} else {
+					then = append(then, &ReturnStmt{Value: res, Type: currentReturnType})
+				}
 			}
 			localTypes = old
-			if currentReturnType == "" || currentReturnType == "void" {
-				then = append(then, &ExprStmt{Expr: res})
-			} else {
-				then = append(then, &ReturnStmt{Value: res, Type: currentReturnType})
-			}
 			body = append(body, &IfStmt{Cond: &VarRef{Name: tmp}, Then: then})
 		} else {
-			res, err := convertExpr(c.Result)
-			if err != nil {
-				return nil, err
+			then := []Stmt{}
+			for _, st := range c.Block {
+				cs, err := convertStmt(st)
+				if err != nil {
+					return nil, err
+				}
+				then = append(then, cs)
 			}
-			if currentReturnType == "" || currentReturnType == "void" {
-				body = append(body, &ExprStmt{Expr: res})
-			} else {
-				body = append(body, &ReturnStmt{Value: res, Type: currentReturnType})
+			if c.Result != nil {
+				res, err := convertExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+				if currentReturnType == "" || currentReturnType == "void" {
+					then = append(then, &ExprStmt{Expr: res})
+				} else {
+					then = append(then, &ReturnStmt{Value: res, Type: currentReturnType})
+				}
 			}
+			body = append(body, then...)
 		}
 	}
 	if currentReturnType != "" && currentReturnType != "void" {
