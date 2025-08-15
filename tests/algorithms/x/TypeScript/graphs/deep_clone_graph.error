@@ -1,8 +1,8 @@
-parse: error[P001]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:33:9: unexpected token "var" (expected "}")
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:33:9
+parse: error[P001]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:64:19: unexpected token "=>" (expected "}")
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:64:19
 
- 33 |         var result: Node = Nil
-    |         ^
+ 64 |       N(v, neigh) => {
+    |                   ^
 
 help:
   Check for a missing `{` or `}` to close the block.
