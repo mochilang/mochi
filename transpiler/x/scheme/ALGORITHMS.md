@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-14 18:45 GMT+7
+Last updated: 2025-08-15 10:16 GMT+7
 
 ## Algorithms Golden Test Checklist (872/1077)
 | Index | Name | Status | Duration | Memory |
@@ -431,7 +431,7 @@ Last updated: 2025-08-14 18:45 GMT+7
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 0s | 14.0 MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1ms | 13.3 MB |
 | 424 | graphs/even_tree | ✓ | 0s | 12.3 MB |
-| 425 | graphs/finding_bridges | ✓ | 2ms | 13.5 MB |
+| 425 | graphs/finding_bridges | ✓ | 2ms | 13.7 MB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 11ms | 16.5 MB |
 | 427 | graphs/g_topological_sort | ✓ | 1ms | 13.0 MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 1ms | 13.2 MB |
