@@ -4,7 +4,7 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function sort_by_ratio(&$index, $ratio) {
+function sort_by_ratio($index, $ratio) {
   global $v, $w;
   $i = 1;
   while ($i < count($index)) {

@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _len($x) {
     if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
@@ -41,13 +26,11 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function node_to_string($n) {
+function node_to_string($n) {
   global $ci, $graph, $n_in, $n_out, $names, $nodes, $ri, $row;
   return '<node=' . $n['name'] . ' inbound=' . $n['inbound'] . ' outbound=' . $n['outbound'] . '>';
-};
-  function page_rank($nodes, $limit, $d) {
+}
+function page_rank($nodes, $limit, $d) {
   global $ci, $graph, $n_in, $n_out, $names, $ri, $row;
   $ranks = [];
   foreach ($nodes as $n) {
@@ -71,15 +54,15 @@ $__start = _now();
   $i = $i + 1;
 };
   return $ranks;
-};
-  $names = ['A', 'B', 'C'];
-  $graph = [[0, 1, 1], [0, 0, 1], [1, 0, 0]];
-  $nodes = [];
-  foreach ($names as $name) {
+}
+$names = ['A', 'B', 'C'];
+$graph = [[0, 1, 1], [0, 0, 1], [1, 0, 0]];
+$nodes = [];
+foreach ($names as $name) {
   $nodes = _append($nodes, ['name' => $name, 'inbound' => [], 'outbound' => []]);
 }
-  $ri = 0;
-  while ($ri < count($graph)) {
+$ri = 0;
+while ($ri < count($graph)) {
   $row = $graph[$ri];
   $ci = 0;
   while ($ci < count($row)) {
@@ -95,16 +78,8 @@ $__start = _now();
 };
   $ri = $ri + 1;
 }
-  echo rtrim('======= Nodes ======='), PHP_EOL;
-  foreach ($nodes as $n) {
+echo rtrim('======= Nodes ======='), PHP_EOL;
+foreach ($nodes as $n) {
   echo rtrim(json_encode($n, 1344)), PHP_EOL;
 }
-  page_rank($nodes, 3, 0.85);
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+page_rank($nodes, 3, 0.85);

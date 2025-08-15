@@ -25,7 +25,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "first": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "first": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {}, "toi": {}, "reset": {},
 	"concat": {}, "panic": {}, "error": {}, "ceil": {}, "floor": {},
 }
 
@@ -3319,6 +3319,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("to_float expects 1 arg")
 			}
 			return &CallExpr{Func: "floatval", Args: args}, nil
+		} else if name == "toi" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("toi expects 1 arg")
+			}
+			return &CallExpr{Func: "intval", Args: args}, nil
 		} else if name == "parseIntStr" {
 			if len(args) == 1 {
 				usesParseIntStr = true
