@@ -859,13 +859,14 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		loopName = "_" + fe.Name
 	}
 	fmt.Fprintf(w, "  for (%s <- ", loopName)
-	if strings.HasPrefix(iterType, "Map[") || strings.HasPrefix(iterType, "scala.collection.mutable.Map[") {
-		fe.Iterable.emit(w)
-		fmt.Fprint(w, ".keys")
-	} else {
-		fe.Iterable.emit(w)
-	}
-	fmt.Fprint(w, ") {\n")
+        if strings.HasPrefix(iterType, "Map[") || strings.HasPrefix(iterType, "scala.collection.mutable.Map[") {
+                fmt.Fprint(w, "(")
+                fe.Iterable.emit(w)
+                fmt.Fprint(w, ".keys.toSeq.sorted)")
+        } else {
+                fe.Iterable.emit(w)
+        }
+        fmt.Fprint(w, ") {\n")
 	if iterType == "String" {
 		fmt.Fprintf(w, "    val %s: String = %s.toString\n", fe.Name, loopName)
 	}
@@ -2135,9 +2136,9 @@ func Emit(p *Program) []byte {
 	if needsStr {
 		buf.WriteString("  private def _str(x: Any): String = x match {\n")
 		buf.WriteString("    case m: scala.collection.Map[_, _] => scala.collection.immutable.ListMap(m.toSeq.sortBy(_._1.toString): _*).toString.replace(\"ListMap\", \"Map\")\n")
-		buf.WriteString("    case d: Double => if (d.isWhole) d.toLong.toString else d.toString\n")
-		buf.WriteString("    case other => String.valueOf(other)\n")
-		buf.WriteString("  }\n\n")
+                buf.WriteString("    case d: Double => d.toString\n")
+                buf.WriteString("    case other => String.valueOf(other)\n")
+                buf.WriteString("  }\n\n")
 	}
 	if needsParseIntStr {
 		buf.WriteString("  private def _parseIntStr(s: String, base: BigInt): BigInt = BigInt(s, base.toInt)\n\n")
