@@ -2628,6 +2628,7 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 					}
 				}
 			}
+			scanExpr(st.Assign.Value)
 		case st.Expr != nil:
 			scanExpr(st.Expr.Expr)
 		case st.Expect != nil:
