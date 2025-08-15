@@ -564,7 +564,11 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, name)
 	for _, v := range wst.Vars {
 		io.WriteString(w, ", ")
-		io.WriteString(w, sanitizeIdent(v))
+		if isGlobalVar(v) {
+			fmt.Fprintf(w, "Process.get(:%s)", moduleAttrName(v))
+		} else {
+			io.WriteString(w, sanitizeIdent(v))
+		}
 	}
 	io.WriteString(w, ")\n")
 	for i := 0; i < indent+1; i++ {
@@ -637,8 +641,8 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, ".(")
 		io.WriteString(w, name)
 		io.WriteString(w, ", ")
-		if isLoopCounter(v) {
-			io.WriteString(w, sanitizeIdent(v))
+		if isGlobalVar(v) {
+			fmt.Fprintf(w, "Process.get(:%s)", moduleAttrName(v))
 		} else {
 			io.WriteString(w, sanitizeIdent(v))
 		}
