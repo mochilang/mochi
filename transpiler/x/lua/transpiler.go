@@ -253,6 +253,12 @@ local function _str(v)
     local s = tostring(v)
     s = string.gsub(s, '%.0+$', '')
     return s
+  elseif type(v) == 'table' then
+    local parts = {}
+    for i = 1, #v do
+      parts[#parts+1] = _str(v[i])
+    end
+    return '[' .. table.concat(parts, ', ') .. ']'
   end
   return tostring(v)
 end
