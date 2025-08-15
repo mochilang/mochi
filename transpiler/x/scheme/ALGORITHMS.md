@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-15 10:16 GMT+7
+Last updated: 2025-08-15 10:31 GMT+7
 
-## Algorithms Golden Test Checklist (872/1077)
+## Algorithms Golden Test Checklist (873/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -25,7 +25,7 @@ Last updated: 2025-08-15 10:16 GMT+7
 | 16 | backtracking/sum_of_subsets | ✓ | 1ms | 12.9 MB |
 | 17 | backtracking/word_break | ✓ | 1ms | 12.1 MB |
 | 18 | backtracking/word_ladder | ✓ | 83ms | 13.4 MB |
-| 19 | backtracking/word_search |   |  |  |
+| 19 | backtracking/word_search | ✓ | 2ms | 13.0 MB |
 | 20 | bit_manipulation/binary_and_operator | ✓ | 3ms | 12.5 MB |
 | 21 | bit_manipulation/binary_coded_decimal | ✓ | 1ms | 12.4 MB |
 | 22 | bit_manipulation/binary_count_setbits | ✓ | 0s | 12.4 MB |
