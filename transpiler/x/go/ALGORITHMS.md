@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 830/1077
-Last updated: 2025-08-15 15:17 +0700
+Completed programs: 870/1077
+Last updated: 2025-08-15 21:27 +0700
 
 Checklist:
 
@@ -457,56 +457,56 @@ Checklist:
 | 448 | graphs/page_rank |   |  |  |
 | 449 | graphs/prim |   |  |  |
 | 450 | graphs/random_graph_generator | ✓ | 641.0µs | 2.48KB |
-| 451 | graphs/scc_kosaraju |   |  |  |
-| 452 | graphs/strongly_connected_components |   |  |  |
-| 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 784.0µs | 5.52KB |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
-| 461 | greedy_methods/minimum_coin_change |   |  |  |
-| 462 | greedy_methods/minimum_waiting_time |   |  |  |
-| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
-| 464 | greedy_methods/smallest_range |   |  |  |
-| 465 | hashes/adler32 |   |  |  |
-| 466 | hashes/chaos_machine |   |  |  |
-| 467 | hashes/djb2 |   |  |  |
-| 468 | hashes/elf |   |  |  |
-| 469 | hashes/enigma_machine |   |  |  |
-| 470 | hashes/fletcher16 |   |  |  |
-| 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
-| 482 | linear_algebra/gaussian_elimination |   |  |  |
-| 483 | linear_algebra/jacobi_iteration_method |   |  |  |
-| 484 | linear_algebra/lu_decomposition |   |  |  |
-| 485 | linear_algebra/matrix_inversion |   |  |  |
-| 486 | linear_algebra/src/conjugate_gradient |   |  |  |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
-| 488 | linear_algebra/src/lib |   |  |  |
-| 489 | linear_algebra/src/polynom_for_points |   |  |  |
-| 490 | linear_algebra/src/power_iteration |   |  |  |
-| 491 | linear_algebra/src/rank_of_matrix |   |  |  |
-| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 472.0µs | 1.93KB |
-| 493 | linear_algebra/src/schur_complement | ✓ | 404.0µs | 1.93KB |
-| 494 | linear_algebra/src/test_linear_algebra | ✓ | 480.0µs | 9.66KB |
-| 495 | linear_algebra/src/transformations_2d | ✓ | 197.0µs | 4.26KB |
-| 496 | linear_programming/simplex | ✓ | 343.0µs | 2.33KB |
-| 497 | machine_learning/apriori_algorithm | ✓ | 525.0µs | 2.34KB |
-| 498 | machine_learning/astar | ✓ | 678.0µs | 10.90KB |
-| 499 | machine_learning/automatic_differentiation | ✓ | 242.0µs | 1000B |
-| 500 | machine_learning/data_transformations | ✓ | 514.0µs | 1.95KB |
+| 451 | graphs/scc_kosaraju | ✓ | 861.0µs | 3.88KB |
+| 452 | graphs/strongly_connected_components | ✓ | 746.0µs | 3.09KB |
+| 453 | graphs/tarjans_scc | ✓ | 797.0µs | 3.08KB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.0ms | 2.93KB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 1.0ms | 5.52KB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 399.0µs | 936B |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 404.0µs | 1.98KB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 415.0µs | 1.26KB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 1.0ms | 5.85KB |
+| 460 | greedy_methods/gas_station | ✓ | 310.0µs | 1.30KB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 760.0µs | 1.88KB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 637.0µs | 936B |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 473.0µs | 1.54KB |
+| 464 | greedy_methods/smallest_range | ✓ | 602.0µs | 3.85KB |
+| 465 | hashes/adler32 | ✓ | 566.0µs | 1016B |
+| 466 | hashes/chaos_machine | ✓ | 950.0µs | 4.05KB |
+| 467 | hashes/djb2 | ✓ | 536.0µs | 968B |
+| 468 | hashes/elf | ✓ | 2.0ms | 297.96KB |
+| 469 | hashes/enigma_machine | ✓ | 1.0ms | 52.01KB |
+| 470 | hashes/fletcher16 | ✓ | 5.0ms | 1.01MB |
+| 471 | hashes/hamming_code | ✓ | 1.0ms | 54.34KB |
+| 472 | hashes/luhn | ✓ | 447.0µs | 3.38KB |
+| 473 | hashes/md5 | ✓ | 14.0ms | 2.32MB |
+| 474 | hashes/sdbm | ✓ | 4.0ms | 617.52KB |
+| 475 | hashes/sha1 | ✓ | 2.0ms | 281.98KB |
+| 476 | hashes/sha256 | ✓ | 524.0µs | 4.09KB |
+| 477 | knapsack/greedy_knapsack | ✓ | 415.0µs | 1.02KB |
+| 478 | knapsack/knapsack | ✓ | 479.0µs | 952B |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 403.0µs | 968B |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 535.0µs | 936B |
+| 481 | knapsack/tests/test_knapsack | ✓ | 366.0µs | 936B |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 710.0µs | 4.98KB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 815.0µs | 3.52KB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 646.0µs | 2.05KB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 1.0ms | 4.05KB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 791.0µs | 14.70KB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 908.0µs | 2.62KB |
+| 488 | linear_algebra/src/lib | ✓ | 397.0µs | 1.18KB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 525.0µs | 5.50KB |
+| 490 | linear_algebra/src/power_iteration | ✓ | 773.0µs | 4.25KB |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ | 697.0µs | 1.58KB |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 542.0µs | 1.93KB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 486.0µs | 1.93KB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 758.0µs | 9.66KB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 671.0µs | 4.27KB |
+| 496 | linear_programming/simplex | ✓ | 981.0µs | 2.33KB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 621.0µs | 2.34KB |
+| 498 | machine_learning/astar | ✓ | 779.0µs | 10.90KB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 563.0µs | 1000B |
+| 500 | machine_learning/data_transformations | ✓ | 749.0µs | 1.95KB |
 | 501 | machine_learning/decision_tree | ✓ | 1.0ms | 21.20KB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 281.0µs | 936B |
 | 503 | machine_learning/forecasting/run | ✓ | 509.0µs | 3.86KB |
