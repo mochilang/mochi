@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 933/1077
-Last updated: 2025-08-14 18:22 +0700
+Last updated: 2025-08-15 09:59 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -431,7 +431,7 @@ Last updated: 2025-08-14 18:22 +0700
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 342µs | 3.2 MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1.063ms | 3.5 MB |
 | 424 | graphs/even_tree | ✓ | 516µs | 3.1 MB |
-| 425 | graphs/finding_bridges | ✓ | 571µs | 3.3 MB |
+| 425 | graphs/finding_bridges | ✓ | 779µs | 3.4 MB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 2.15ms | 3.8 MB |
 | 427 | graphs/g_topological_sort | ✓ | 430µs | 3.3 MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 638µs | 3.5 MB |

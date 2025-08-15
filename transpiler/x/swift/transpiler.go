@@ -2541,6 +2541,17 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 			}
 			return
 		}
+		if inFlags, ok := funcInOutParams[fn]; ok {
+			for i, a := range args {
+				if i < len(inFlags) && inFlags[i] {
+					if name := rootNameExpr(a); name != "" {
+						vars[name] = true
+					}
+				}
+				scanExpr(a)
+			}
+			return
+		}
 		for _, a := range args {
 			scanExpr(a)
 		}
@@ -2669,7 +2680,29 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 		case st.Test != nil:
 			findUpdatedVars(env, st.Test.Body, vars, anyVars)
 		case st.Fun != nil:
-			findUpdatedVars(env, st.Fun.Body, vars, anyVars)
+			localVars := map[string]bool{}
+			localAny := map[string]bool{}
+			findUpdatedVars(env, st.Fun.Body, localVars, localAny)
+			mutFlags := make([]bool, len(st.Fun.Params))
+			paramIdx := map[string]int{}
+			for i, p := range st.Fun.Params {
+				paramIdx[p.Name] = i
+			}
+			for name := range localVars {
+				if idx, ok := paramIdx[name]; ok {
+					mutFlags[idx] = true
+				} else {
+					vars[name] = true
+				}
+			}
+			if anyVars != nil {
+				for name := range localAny {
+					if _, ok := paramIdx[name]; !ok {
+						anyVars[name] = true
+					}
+				}
+			}
+			funcMutParams[st.Fun.Name] = mutFlags
 		}
 	}
 }
@@ -2918,7 +2951,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		return &VarDecl{Name: st.Let.Name, Const: true, Type: typ, Expr: ex}, nil
+		constFlag := true
+		if currentUpdated != nil && currentUpdated[st.Let.Name] {
+			constFlag = false
+		}
+		return &VarDecl{Name: st.Let.Name, Const: constFlag, Type: typ, Expr: ex}, nil
 	case st.Var != nil:
 		if currentVars != nil && currentVars[st.Var.Name] {
 			// Variable already declared in this scope; treat as assignment.
