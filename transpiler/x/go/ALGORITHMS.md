@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 827/1077
-Last updated: 2025-08-15 11:13 +0700
+Completed programs: 830/1077
+Last updated: 2025-08-15 15:17 +0700
 
 Checklist:
 
@@ -439,10 +439,10 @@ Checklist:
 | 430 | graphs/graph_adjacency_matrix | ✓ | 878.0µs | 2.52KB |
 | 431 | graphs/graph_list | ✓ | 885.0µs | 3.27KB |
 | 432 | graphs/graphs_floyd_warshall | ✓ | 413.0µs | 1.77KB |
-| 433 | graphs/greedy_best_first |   |  |  |
+| 433 | graphs/greedy_best_first | ✓ | 2.0ms | 81.38KB |
 | 434 | graphs/greedy_min_vertex_cover | ✓ | 802.0µs | 4.09KB |
 | 435 | graphs/kahns_algorithm_long | ✓ | 389.0µs | 1.53KB |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 937.0µs | 4.58KB |
 | 437 | graphs/karger |   |  |  |
 | 438 | graphs/lanczos_eigenvectors |   |  |  |
 | 439 | graphs/markov_chain |   |  |  |
@@ -461,7 +461,7 @@ Checklist:
 | 452 | graphs/strongly_connected_components |   |  |  |
 | 453 | graphs/tarjans_scc |   |  |  |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 784.0µs | 5.52KB |
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
 | 457 | greedy_methods/fractional_cover_problem |   |  |  |
 | 458 | greedy_methods/fractional_knapsack |   |  |  |

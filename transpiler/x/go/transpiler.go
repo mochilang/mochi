@@ -931,6 +931,8 @@ func updateMapLitTypes(ml *MapLit, t types.Type) {
 		for i, v := range ml.Values {
 			if inner, ok := v.(*MapLit); ok {
 				updateMapLitTypes(inner, mt.Value)
+			} else if ll, ok := v.(*ListLit); ok {
+				updateListLitType(ll, mt.Value)
 			} else {
 				if (types.IsIntType(mt.Value) || types.IsInt64Type(mt.Value)) && isBigIntExpr(v) {
 					ml.Values[i] = &BigIntToIntExpr{Value: v}
@@ -1176,12 +1178,18 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		fmt.Fprint(w, " { keys = append(keys, k) }\n")
 		fmt.Fprint(w, "        sort.Slice(keys, func(i, j int) bool { return fmt.Sprint(keys[i]) < fmt.Sprint(keys[j]) })\n")
 		fmt.Fprint(w, "        return keys }() {\n")
+		if fe.Name != "_" {
+			fmt.Fprintf(w, "    _ = %s\n", fe.Name)
+		}
 	} else if fe.StringIter {
 		fmt.Fprint(w, "for _, _ch := range ")
 		if fe.Iterable != nil {
 			fe.Iterable.emit(w)
 		}
 		fmt.Fprintf(w, " {\n    %s := string(_ch)\n", fe.Name)
+		if fe.Name != "_" {
+			fmt.Fprintf(w, "    _ = %s\n", fe.Name)
+		}
 	} else if fe.Name == "_" {
 		fmt.Fprint(w, "for range ")
 		if fe.Iterable != nil {
@@ -1194,6 +1202,9 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 			fe.Iterable.emit(w)
 		}
 		fmt.Fprint(w, " {\n")
+		if fe.Name != "_" {
+			fmt.Fprintf(w, "    _ = %s\n", fe.Name)
+		}
 	}
 	for _, st := range fe.Body {
 		fmt.Fprint(w, "    ")
@@ -2875,6 +2886,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					declaredType = t
 				}
 			}
+		} else {
+			// ensure local variable shadows any outer declaration
+			env.SetVar(st.Let.Name, types.AnyType{}, false)
 		}
 		if st.Let.Value != nil {
 			e, err := compileExpr(st.Let.Value, env, st.Let.Name)
@@ -2929,6 +2943,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 				typ = toGoTypeFromType(valType)
+				if env != topEnv {
+					env.SetVar(st.Let.Name, valType, false)
+				}
 				if _, ok := valType.(types.FuncType); ok {
 					if env != topEnv {
 						typ = ""
@@ -3106,6 +3123,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				name = "_init"
 			}
 			name = safeName(name)
+			if !global {
+				if _, err := topEnv.GetVar(origName); err == nil {
+					name = name + "_"
+				}
+			}
 			if name != origName {
 				varNameMap[origName] = name
 			}
@@ -6504,8 +6526,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			return &CallExpr{Func: "float64", Args: []Expr{args[0]}}, nil
 		case "abs":
+			if _, err := env.GetVar(name); err == nil {
+				return &CallExpr{Func: name, Args: args}, nil
+			}
 			if imports != nil {
 				imports["math"] = "math"
+			}
+			argType := types.TypeOfExpr(p.Call.Args[0], env)
+			if _, ok := argType.(types.IntType); ok {
+				return &CallExpr{Func: "int", Args: []Expr{&CallExpr{Func: "math.Abs", Args: []Expr{&CallExpr{Func: "float64", Args: []Expr{args[0]}}}}}}, nil
 			}
 			return &CallExpr{Func: "math.Abs", Args: []Expr{args[0]}}, nil
 		case "pow":
