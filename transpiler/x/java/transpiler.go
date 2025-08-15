@@ -6127,16 +6127,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &MethodCallExpr{Target: args[0], Name: "indexOf", Args: []Expr{args[1]}}, nil
 			}
 		}
-		if name == "parseIntStr" && (len(args) == 1 || len(args) == 2) {
-			if len(args) == 1 {
-				return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0]}}, nil
-			}
-			return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0], args[1]}}, nil
-		}
-		if name == "padStart" && len(args) == 3 {
-			needPadStart = true
-			return &CallExpr{Func: "_padStart", Args: args}, nil
-		}
+               if name == "parseIntStr" && (len(args) == 1 || len(args) == 2) {
+                       if len(args) == 1 {
+                               return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0]}}, nil
+                       }
+                       return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0], args[1]}}, nil
+               }
+               if name == "toi" && len(args) == 1 {
+                       val := &CallExpr{Func: "String.valueOf", Args: []Expr{args[0]}}
+                       return &CallExpr{Func: "Integer.parseInt", Args: []Expr{val}}, nil
+               }
+               if name == "padStart" && len(args) == 3 {
+                       needPadStart = true
+                       return &CallExpr{Func: "_padStart", Args: args}, nil
+               }
 		if name == "repeat" && len(args) == 2 {
 			needRepeat = true
 			return &CallExpr{Func: "_repeat", Args: args}, nil

@@ -110,7 +110,7 @@ public class Main {
             long max_i_1 = (long)(i_5);
             long j_1 = (long)((long)(i_5) + 1L);
             while ((long)(j_1) < (long)(table_1.length)) {
-                if (String.valueOf(toi(((String)(((java.util.Map)table_1[(int)((long)(j_1))])).get("count")))).compareTo(String.valueOf(toi(((String)(((java.util.Map)table_1[(int)((long)(max_i_1))])).get("count"))))) > 0) {
+                if ((long)(Integer.parseInt(String.valueOf(((String)(((java.util.Map)table_1[(int)((long)(j_1))])).get("count"))))) > (long)(Integer.parseInt(String.valueOf(((String)(((java.util.Map)table_1[(int)((long)(max_i_1))])).get("count")))))) {
                     max_i_1 = (long)(j_1);
                 }
                 j_1 = (long)((long)(j_1) + 1L);
@@ -371,43 +371,9 @@ graph_1.put(code_5, ((String[])(new String[]{"Header"})));
         print_all(nodes_2, ((long[])(support_1)), clusters_2, graph_3, ((String[][][])(freq_subgraph_edge_list_1)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            EDGE_ARRAY = ((String[][][])(new String[][][]{new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"ad", "e5"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"be", "e6"}, new String[]{"bh", "e12"}, new String[]{"cd", "e2"}, new String[]{"ce", "e4"}, new String[]{"de", "e1"}, new String[]{"df", "e8"}, new String[]{"dg", "e5"}, new String[]{"dh", "e10"}, new String[]{"ef", "e3"}, new String[]{"eg", "e2"}, new String[]{"fg", "e6"}, new String[]{"gh", "e6"}, new String[]{"hi", "e3"}}, new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"ad", "e5"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"be", "e6"}, new String[]{"cd", "e2"}, new String[]{"de", "e1"}, new String[]{"df", "e8"}, new String[]{"ef", "e3"}, new String[]{"eg", "e2"}, new String[]{"fg", "e6"}}, new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"de", "e1"}, new String[]{"df", "e8"}, new String[]{"dg", "e5"}, new String[]{"ef", "e3"}, new String[]{"eg", "e2"}, new String[]{"eh", "e12"}, new String[]{"fg", "e6"}, new String[]{"fh", "e10"}, new String[]{"gh", "e6"}}, new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"bh", "e12"}, new String[]{"cd", "e2"}, new String[]{"df", "e8"}, new String[]{"dh", "e10"}}, new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"ad", "e5"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"cd", "e2"}, new String[]{"ce", "e4"}, new String[]{"de", "e1"}, new String[]{"df", "e8"}, new String[]{"dg", "e5"}, new String[]{"ef", "e3"}, new String[]{"eg", "e2"}, new String[]{"fg", "e6"}}}));
-            paths = ((String[][])(new String[][]{}));
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        EDGE_ARRAY = ((String[][][])(new String[][][]{new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"ad", "e5"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"be", "e6"}, new String[]{"bh", "e12"}, new String[]{"cd", "e2"}, new String[]{"ce", "e4"}, new String[]{"de", "e1"}, new String[]{"df", "e8"}, new String[]{"dg", "e5"}, new String[]{"dh", "e10"}, new String[]{"ef", "e3"}, new String[]{"eg", "e2"}, new String[]{"fg", "e6"}, new String[]{"gh", "e6"}, new String[]{"hi", "e3"}}, new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"ad", "e5"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"be", "e6"}, new String[]{"cd", "e2"}, new String[]{"de", "e1"}, new String[]{"df", "e8"}, new String[]{"ef", "e3"}, new String[]{"eg", "e2"}, new String[]{"fg", "e6"}}, new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"de", "e1"}, new String[]{"df", "e8"}, new String[]{"dg", "e5"}, new String[]{"ef", "e3"}, new String[]{"eg", "e2"}, new String[]{"eh", "e12"}, new String[]{"fg", "e6"}, new String[]{"fh", "e10"}, new String[]{"gh", "e6"}}, new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"bh", "e12"}, new String[]{"cd", "e2"}, new String[]{"df", "e8"}, new String[]{"dh", "e10"}}, new String[][]{new String[]{"ab", "e1"}, new String[]{"ac", "e3"}, new String[]{"ad", "e5"}, new String[]{"bc", "e4"}, new String[]{"bd", "e2"}, new String[]{"cd", "e2"}, new String[]{"ce", "e4"}, new String[]{"de", "e1"}, new String[]{"df", "e8"}, new String[]{"dg", "e5"}, new String[]{"ef", "e3"}, new String[]{"eg", "e2"}, new String[]{"fg", "e6"}}}));
+        paths = ((String[][])(new String[][]{}));
+        main();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
