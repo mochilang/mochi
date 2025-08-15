@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 class GasStation {
   int gas_quantity;
@@ -62,8 +62,8 @@ int can_complete_journey(List<GasStation> gas_stations) {
   int total_cost = 0;
   int i = 0;
   while (i < gas_stations.length) {
-    total_gas = (total_gas + gas_stations[i].gas_quantity).toInt();
-    total_cost = (total_cost + gas_stations[i].cost).toInt();
+    total_gas = total_gas + gas_stations[i].gas_quantity;
+    total_cost = total_cost + gas_stations[i].cost;
     i = i + 1;
   }
   if (total_gas < total_cost) {

@@ -58,7 +58,7 @@ List<List<double>> floyd_warshall(List<List<double>> graph) {
   }
   int k = 0;
   while (k < v) {
-    int i = 0;
+    i = 0;
     while (i < v) {
     int j = 0;
     while (j < v) {

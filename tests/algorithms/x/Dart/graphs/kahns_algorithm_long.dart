@@ -94,7 +94,7 @@ int longest_distance(List<List<int>> graph) {
   return max_len;
 }
 
-List<List<int>> graph = [[2, 3, 4], [2, 7], [5], [5, 7], [7], [6], [7], []];
+List<List<int>> graph = [[2, 3, 4], [2, 7], [5], [5, 7], [7], [6], [7], <int>[]];
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();

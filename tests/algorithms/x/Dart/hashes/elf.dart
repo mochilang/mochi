@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 String ascii = " !\"#\$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 int ord(String ch) {
@@ -62,8 +62,8 @@ int bit_and(int a, int b) {
     if (ua % 2 == 1 && ub % 2 == 1) {
     res = res + bit;
   }
-    ua = ua ~/ 2 as int;
-    ub = ub ~/ 2 as int;
+    ua = (ua ~/ 2).toInt();
+    ub = (ub ~/ 2).toInt();
     bit = bit * 2;
   }
   return res;
@@ -80,8 +80,8 @@ int bit_xor(int a, int b) {
     if (abit != bbit) {
     res = res + bit;
   }
-    ua = ua ~/ 2 as int;
-    ub = ub ~/ 2 as int;
+    ua = (ua ~/ 2).toInt();
+    ub = (ub ~/ 2).toInt();
     bit = bit * 2;
   }
   return res;
@@ -96,7 +96,7 @@ int bit_not32(int x) {
     if (ux % 2 == 0) {
     res = res + bit;
   }
-    ux = ux ~/ 2 as int;
+    ux = (ux ~/ 2).toInt();
     bit = bit * 2;
     count = count + 1;
   }
@@ -111,7 +111,7 @@ int elf_hash(String data) {
     hash_ = hash_ * 16 + c;
     int x = bit_and(hash_, 4026531840);
     if (x != 0) {
-    hash_ = bit_xor(hash_, x ~/ 16777216 as int);
+    hash_ = bit_xor(hash_, (x ~/ 16777216).toInt());
   }
     hash_ = bit_and(hash_, bit_not32(x));
     i = i + 1;

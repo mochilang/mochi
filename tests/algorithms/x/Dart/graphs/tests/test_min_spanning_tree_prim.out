@@ -1,7 +1,2 @@
-Unhandled exception:
-Null check operator used on a null value
-#0      prims_algorithm (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:48:19)
-#1      test_prim_successful_result (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:81:27)
-#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:100:9)
-#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+true
+1

@@ -78,9 +78,9 @@ Machine push(Machine m, int seed) {
     double value = buf[i];
     double e = 1.0 * seed / value;
     double next_value = buf[(i + 1) % size] + e;
-    next_value = next_value - 1.0 * int.parse(next_value);
+    next_value = next_value - 1.0 * ((next_value).toInt());
     double r = par[i] + e;
-    r = r - 1.0 * int.parse(r);
+    r = r - 1.0 * ((r).toInt());
     r = r + 3.0;
     while (buf.length <= i) { buf.add(0); } buf[i] = round_dec(r * next_value * (1.0 - next_value), 10);
     while (par.length <= i) { par.add(0); } par[i] = r;
@@ -126,7 +126,7 @@ PullResult pull(Machine m) {
     double value = buf[key];
     while (buf.length <= key) { buf.add(0); } buf[key] = round_dec(r * value * (1.0 - value), 10);
     double new_r = 1.0 * m.time * 0.01 + r * 1.01;
-    new_r = new_r - 1.0 * int.parse(new_r);
+    new_r = new_r - 1.0 * ((new_r).toInt());
     while (par.length <= key) { par.add(0); } par[key] = new_r + 3.0;
     i = i + 1;
   }

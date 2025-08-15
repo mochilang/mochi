@@ -82,16 +82,16 @@ List<int>? topological_sort(Map<int, List<int>> graph) {
   }
   }
   if (processed != graph.length) {
-    return List<int>?>.from(null);
+    return null;
   }
-  return List<int>?>.from(order);
+  return order;
 }
 
 void _main() {
   Map<int, List<int>> graph = {0: [1, 2], 1: [3], 2: [3], 3: [4, 5], 4: [], 5: []};
-  print("[" + topological_sort(graph).join(', ') + "]");
+  print((topological_sort(graph) == null ? "null" : ("[" + topological_sort(graph)!.join(', ') + "]")));
   Map<int, List<int>> cyclic = {0: [1], 1: [2], 2: [0]};
-  print("[" + topological_sort(cyclic).join(', ') + "]");
+  print((topological_sort(cyclic) == null ? "null" : ("[" + topological_sort(cyclic)!.join(', ') + "]")));
 }
 
 void _start() {

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 int MOD = 4294967296;
@@ -182,7 +185,7 @@ String sha1(String message) {
     block = [...block, bytes[pos + j2]];
     j2 = j2 + 1;
   }
-    blocks = ([...blocks, block] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    blocks = ([...blocks, block] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     pos = pos + 64;
   }
   int h0 = 1732584193;

@@ -1,5 +1,1 @@
-../../../tests/algorithms/x/Dart/graphs/karger.dart:93:36: Error: A value of type 'Iterable<String>' can't be assigned to a variable of type 'List<dynamic>'.
- - 'Iterable' is from 'dart:core'.
- - 'List' is from 'dart:core'.
-  List<dynamic> nodes = graph_copy.keys;
-                                   ^
+{"duration_us":35259,"memory_bytes":8790016,"name":"main"}

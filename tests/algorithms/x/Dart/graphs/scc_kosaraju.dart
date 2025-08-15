@@ -40,7 +40,7 @@ dynamic _substr(dynamic s, num start, num end) {
 }
 
 List<int> dfs(int u, List<List<int>> graph, List<bool> visit, List<int> stack) {
-  if (visit[u]) {
+  if ((visit[u] ?? false)) {
     return stack;
   }
   while (visit.length <= u) { visit.add(false); } visit[u] = true;
@@ -52,7 +52,7 @@ List<int> dfs(int u, List<List<int>> graph, List<bool> visit, List<int> stack) {
 }
 
 List<int> dfs2(int u, List<List<int>> reversed_graph, List<bool> visit, List<int> component) {
-  if (visit[u]) {
+  if ((visit[u] ?? false)) {
     return component;
   }
   while (visit.length <= u) { visit.add(false); } visit[u] = true;
@@ -112,7 +112,7 @@ List<List<int>> kosaraju(List<List<int>> graph) {
 }
 
 void _main() {
-  List<List<int>> graph = [[1], [2], [0, 3], [4], []];
+  List<List<int>> graph = [[1], [2], [0, 3], [4], <int>[]];
   List<List<int>> comps = kosaraju(graph);
   int i = 0;
   while (i < comps.length) {
