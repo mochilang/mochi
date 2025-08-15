@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare get_gas_stations can_complete_journey)
@@ -43,15 +46,17 @@
 (defn can_complete_journey [can_complete_journey_gas_stations]
   (binding [can_complete_journey_i nil can_complete_journey_net nil can_complete_journey_start nil can_complete_journey_station nil can_complete_journey_total_cost nil can_complete_journey_total_gas nil] (try (do (set! can_complete_journey_total_gas 0) (set! can_complete_journey_total_cost 0) (set! can_complete_journey_i 0) (while (< can_complete_journey_i (count can_complete_journey_gas_stations)) (do (set! can_complete_journey_total_gas (+ can_complete_journey_total_gas (get (nth can_complete_journey_gas_stations can_complete_journey_i) "gas_quantity"))) (set! can_complete_journey_total_cost (+ can_complete_journey_total_cost (get (nth can_complete_journey_gas_stations can_complete_journey_i) "cost"))) (set! can_complete_journey_i (+ can_complete_journey_i 1)))) (when (< can_complete_journey_total_gas can_complete_journey_total_cost) (throw (ex-info "return" {:v (- 1)}))) (set! can_complete_journey_start 0) (set! can_complete_journey_net 0) (set! can_complete_journey_i 0) (while (< can_complete_journey_i (count can_complete_journey_gas_stations)) (do (set! can_complete_journey_station (nth can_complete_journey_gas_stations can_complete_journey_i)) (set! can_complete_journey_net (- (+ can_complete_journey_net (get can_complete_journey_station "gas_quantity")) (get can_complete_journey_station "cost"))) (when (< can_complete_journey_net 0) (do (set! can_complete_journey_start (+ can_complete_journey_i 1)) (set! can_complete_journey_net 0))) (set! can_complete_journey_i (+ can_complete_journey_i 1)))) (throw (ex-info "return" {:v can_complete_journey_start}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_example1 (get_gas_stations [1 2 3 4 5] [3 4 5 1 2]))
+(def ^:dynamic main_example1 nil)
 
-(def ^:dynamic main_example2 (get_gas_stations [2 3 4] [3 4 3]))
+(def ^:dynamic main_example2 nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_example1) (constantly (get_gas_stations [1 2 3 4 5] [3 4 5 1 2])))
       (println (str (can_complete_journey main_example1)))
+      (alter-var-root (var main_example2) (constantly (get_gas_stations [2 3 4] [3 4 3])))
       (println (str (can_complete_journey main_example2)))
       (System/gc)
       (let [end (System/nanoTime)

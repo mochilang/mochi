@@ -1,5 +1,6 @@
-{
-  "duration_us": 77656,
-  "memory_bytes": 27970920,
-  "name": "main"
-}
+{"1" ["2"], "2" ["1" "3"], "3" ["2" "4"], "4" ["3"]}
+Execution error at main/add-edge (graph_adjacency_list.clj:70).
+vertex missing
+
+Full report at:
+/tmp/clojure-12259606362813688635.edn

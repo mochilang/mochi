@@ -1,6 +1,7 @@
 The shortest path matrix using Floyd Warshall algorithm
 
-0	5	8	9	
-INF	0	3	4	
-INF	INF	0	1	
-INF	INF	INF	0
+Execution error (NumberFormatException) at java.lang.NumberFormatException/forInputString (NumberFormatException.java:67).
+For input string: "0.0"
+
+Full report at:
+/tmp/clojure-5893777848239329204.edn

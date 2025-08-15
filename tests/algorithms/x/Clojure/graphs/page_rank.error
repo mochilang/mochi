@@ -1,6 +1,6 @@
 run: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/graphs/page_rank.clj:63:29).
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/graphs/page_rank.clj:68:29).
 Unable to resolve symbol: main_n in this context
 
 Full report at:
-/tmp/clojure-11739796170034554166.edn
+/tmp/clojure-5743032771203010190.edn

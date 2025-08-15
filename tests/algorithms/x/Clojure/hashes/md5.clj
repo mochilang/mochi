@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare ord to_little_endian int_to_bits bits_to_int to_hex reformat_hex preprocess get_block_words bit_and bit_or bit_xor not_32 sum_32 lshift rshift left_rotate_32 md5_me)
@@ -155,9 +158,9 @@
 
 (def ^:dynamic to_hex_s nil)
 
-(def ^:dynamic main_MOD 4294967296)
+(def ^:dynamic main_MOD nil)
 
-(def ^:dynamic main_ASCII " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~")
+(def ^:dynamic main_ASCII nil)
 
 (defn ord [ord_ch]
   (binding [ord_i nil] (try (do (set! ord_i 0) (while (< ord_i (count main_ASCII)) (do (when (= (subs main_ASCII ord_i (min (+ ord_i 1) (count main_ASCII))) ord_ch) (throw (ex-info "return" {:v (+ 32 ord_i)}))) (set! ord_i (+ ord_i 1)))) (throw (ex-info "return" {:v 0}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -166,13 +169,13 @@
   (try (do (when (not= (count to_little_endian_s) 32) (throw (Exception. "Input must be of length 32"))) (throw (ex-info "return" {:v (str (str (str (subs to_little_endian_s 24 (min 32 (count to_little_endian_s))) (subs to_little_endian_s 16 (min 24 (count to_little_endian_s)))) (subs to_little_endian_s 8 (min 16 (count to_little_endian_s)))) (subs to_little_endian_s 0 (min 8 (count to_little_endian_s))))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn int_to_bits [int_to_bits_n int_to_bits_width]
-  (binding [int_to_bits_bits nil int_to_bits_num nil] (try (do (set! int_to_bits_bits "") (set! int_to_bits_num int_to_bits_n) (while (> int_to_bits_num 0) (do (set! int_to_bits_bits (str (str (mod int_to_bits_num 2)) int_to_bits_bits)) (set! int_to_bits_num (quot int_to_bits_num 2)))) (while (< (count int_to_bits_bits) int_to_bits_width) (set! int_to_bits_bits (str "0" int_to_bits_bits))) (when (> (count int_to_bits_bits) int_to_bits_width) (set! int_to_bits_bits (subs int_to_bits_bits (- (count int_to_bits_bits) int_to_bits_width) (min (count int_to_bits_bits) (count int_to_bits_bits))))) (throw (ex-info "return" {:v int_to_bits_bits}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [int_to_bits_bits nil int_to_bits_num nil] (try (do (set! int_to_bits_bits "") (set! int_to_bits_num int_to_bits_n) (while (> int_to_bits_num 0) (do (set! int_to_bits_bits (str (str (mod int_to_bits_num 2)) int_to_bits_bits)) (set! int_to_bits_num (/ int_to_bits_num 2)))) (while (< (count int_to_bits_bits) int_to_bits_width) (set! int_to_bits_bits (str "0" int_to_bits_bits))) (when (> (count int_to_bits_bits) int_to_bits_width) (set! int_to_bits_bits (subs int_to_bits_bits (- (count int_to_bits_bits) int_to_bits_width) (min (count int_to_bits_bits) (count int_to_bits_bits))))) (throw (ex-info "return" {:v int_to_bits_bits}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn bits_to_int [bits_to_int_bits]
   (binding [bits_to_int_i nil bits_to_int_num nil] (try (do (set! bits_to_int_num 0) (set! bits_to_int_i 0) (while (< bits_to_int_i (count bits_to_int_bits)) (do (if (= (subs bits_to_int_bits bits_to_int_i (min (+ bits_to_int_i 1) (count bits_to_int_bits))) "1") (set! bits_to_int_num (+ (* bits_to_int_num 2) 1)) (set! bits_to_int_num (* bits_to_int_num 2))) (set! bits_to_int_i (+ bits_to_int_i 1)))) (throw (ex-info "return" {:v bits_to_int_num}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn to_hex [to_hex_n]
-  (binding [to_hex_d nil to_hex_digits nil to_hex_num nil to_hex_s nil] (try (do (set! to_hex_digits "0123456789abcdef") (when (= to_hex_n 0) (throw (ex-info "return" {:v "0"}))) (set! to_hex_num to_hex_n) (set! to_hex_s "") (while (> to_hex_num 0) (do (set! to_hex_d (mod to_hex_num 16)) (set! to_hex_s (str (subs to_hex_digits to_hex_d (min (+ to_hex_d 1) (count to_hex_digits))) to_hex_s)) (set! to_hex_num (quot to_hex_num 16)))) (throw (ex-info "return" {:v to_hex_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [to_hex_d nil to_hex_digits nil to_hex_num nil to_hex_s nil] (try (do (set! to_hex_digits "0123456789abcdef") (when (= to_hex_n 0) (throw (ex-info "return" {:v "0"}))) (set! to_hex_num to_hex_n) (set! to_hex_s "") (while (> to_hex_num 0) (do (set! to_hex_d (mod to_hex_num 16)) (set! to_hex_s (str (subs to_hex_digits to_hex_d (min (+ to_hex_d 1) (count to_hex_digits))) to_hex_s)) (set! to_hex_num (/ to_hex_num 16)))) (throw (ex-info "return" {:v to_hex_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn reformat_hex [reformat_hex_i]
   (binding [reformat_hex_hex nil reformat_hex_j nil reformat_hex_le nil] (try (do (when (< reformat_hex_i 0) (throw (Exception. "Input must be non-negative"))) (set! reformat_hex_hex (to_hex reformat_hex_i)) (while (< (count reformat_hex_hex) 8) (set! reformat_hex_hex (str "0" reformat_hex_hex))) (when (> (count reformat_hex_hex) 8) (set! reformat_hex_hex (subs reformat_hex_hex (- (count reformat_hex_hex) 8) (min (count reformat_hex_hex) (count reformat_hex_hex))))) (set! reformat_hex_le "") (set! reformat_hex_j (- (count reformat_hex_hex) 2)) (while (>= reformat_hex_j 0) (do (set! reformat_hex_le (str reformat_hex_le (subs reformat_hex_hex reformat_hex_j (min (+ reformat_hex_j 2) (count reformat_hex_hex))))) (set! reformat_hex_j (- reformat_hex_j 2)))) (throw (ex-info "return" {:v reformat_hex_le}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -184,13 +187,13 @@
   (binding [get_block_words_block nil get_block_words_blocks nil get_block_words_i nil get_block_words_part nil get_block_words_pos nil get_block_words_word nil] (try (do (when (not= (mod (count get_block_words_bit_string) 512) 0) (throw (Exception. "Input must have length that's a multiple of 512"))) (set! get_block_words_blocks []) (set! get_block_words_pos 0) (while (< get_block_words_pos (count get_block_words_bit_string)) (do (set! get_block_words_block []) (set! get_block_words_i 0) (while (< get_block_words_i 512) (do (set! get_block_words_part (subs get_block_words_bit_string (+ get_block_words_pos get_block_words_i) (min (+ (+ get_block_words_pos get_block_words_i) 32) (count get_block_words_bit_string)))) (set! get_block_words_word (bits_to_int (to_little_endian get_block_words_part))) (set! get_block_words_block (conj get_block_words_block get_block_words_word)) (set! get_block_words_i (+ get_block_words_i 32)))) (set! get_block_words_blocks (conj get_block_words_blocks get_block_words_block)) (set! get_block_words_pos (+ get_block_words_pos 512)))) (throw (ex-info "return" {:v get_block_words_blocks}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn bit_and [bit_and_a bit_and_b]
-  (binding [bit_and_bit nil bit_and_i nil bit_and_res nil bit_and_x nil bit_and_y nil] (try (do (set! bit_and_x bit_and_a) (set! bit_and_y bit_and_b) (set! bit_and_res 0) (set! bit_and_bit 1) (set! bit_and_i 0) (while (< bit_and_i 32) (do (when (and (= (mod bit_and_x 2) 1) (= (mod bit_and_y 2) 1)) (set! bit_and_res (+ bit_and_res bit_and_bit))) (set! bit_and_x (quot bit_and_x 2)) (set! bit_and_y (quot bit_and_y 2)) (set! bit_and_bit (* bit_and_bit 2)) (set! bit_and_i (+ bit_and_i 1)))) (throw (ex-info "return" {:v bit_and_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [bit_and_bit nil bit_and_i nil bit_and_res nil bit_and_x nil bit_and_y nil] (try (do (set! bit_and_x bit_and_a) (set! bit_and_y bit_and_b) (set! bit_and_res 0) (set! bit_and_bit 1) (set! bit_and_i 0) (while (< bit_and_i 32) (do (when (and (= (mod bit_and_x 2) 1) (= (mod bit_and_y 2) 1)) (set! bit_and_res (+ bit_and_res bit_and_bit))) (set! bit_and_x (/ bit_and_x 2)) (set! bit_and_y (/ bit_and_y 2)) (set! bit_and_bit (* bit_and_bit 2)) (set! bit_and_i (+ bit_and_i 1)))) (throw (ex-info "return" {:v bit_and_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn bit_or [bit_or_a bit_or_b]
-  (binding [bit_or_abit nil bit_or_bbit nil bit_or_bit nil bit_or_i nil bit_or_res nil bit_or_x nil bit_or_y nil] (try (do (set! bit_or_x bit_or_a) (set! bit_or_y bit_or_b) (set! bit_or_res 0) (set! bit_or_bit 1) (set! bit_or_i 0) (while (< bit_or_i 32) (do (set! bit_or_abit (mod bit_or_x 2)) (set! bit_or_bbit (mod bit_or_y 2)) (when (or (= bit_or_abit 1) (= bit_or_bbit 1)) (set! bit_or_res (+ bit_or_res bit_or_bit))) (set! bit_or_x (quot bit_or_x 2)) (set! bit_or_y (quot bit_or_y 2)) (set! bit_or_bit (* bit_or_bit 2)) (set! bit_or_i (+ bit_or_i 1)))) (throw (ex-info "return" {:v bit_or_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [bit_or_abit nil bit_or_bbit nil bit_or_bit nil bit_or_i nil bit_or_res nil bit_or_x nil bit_or_y nil] (try (do (set! bit_or_x bit_or_a) (set! bit_or_y bit_or_b) (set! bit_or_res 0) (set! bit_or_bit 1) (set! bit_or_i 0) (while (< bit_or_i 32) (do (set! bit_or_abit (mod bit_or_x 2)) (set! bit_or_bbit (mod bit_or_y 2)) (when (or (= bit_or_abit 1) (= bit_or_bbit 1)) (set! bit_or_res (+ bit_or_res bit_or_bit))) (set! bit_or_x (/ bit_or_x 2)) (set! bit_or_y (/ bit_or_y 2)) (set! bit_or_bit (* bit_or_bit 2)) (set! bit_or_i (+ bit_or_i 1)))) (throw (ex-info "return" {:v bit_or_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn bit_xor [bit_xor_a bit_xor_b]
-  (binding [bit_xor_abit nil bit_xor_bbit nil bit_xor_bit nil bit_xor_i nil bit_xor_res nil bit_xor_x nil bit_xor_y nil] (try (do (set! bit_xor_x bit_xor_a) (set! bit_xor_y bit_xor_b) (set! bit_xor_res 0) (set! bit_xor_bit 1) (set! bit_xor_i 0) (while (< bit_xor_i 32) (do (set! bit_xor_abit (mod bit_xor_x 2)) (set! bit_xor_bbit (mod bit_xor_y 2)) (when (= (mod (+ bit_xor_abit bit_xor_bbit) 2) 1) (set! bit_xor_res (+ bit_xor_res bit_xor_bit))) (set! bit_xor_x (quot bit_xor_x 2)) (set! bit_xor_y (quot bit_xor_y 2)) (set! bit_xor_bit (* bit_xor_bit 2)) (set! bit_xor_i (+ bit_xor_i 1)))) (throw (ex-info "return" {:v bit_xor_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [bit_xor_abit nil bit_xor_bbit nil bit_xor_bit nil bit_xor_i nil bit_xor_res nil bit_xor_x nil bit_xor_y nil] (try (do (set! bit_xor_x bit_xor_a) (set! bit_xor_y bit_xor_b) (set! bit_xor_res 0) (set! bit_xor_bit 1) (set! bit_xor_i 0) (while (< bit_xor_i 32) (do (set! bit_xor_abit (mod bit_xor_x 2)) (set! bit_xor_bbit (mod bit_xor_y 2)) (when (= (mod (+ bit_xor_abit bit_xor_bbit) 2) 1) (set! bit_xor_res (+ bit_xor_res bit_xor_bit))) (set! bit_xor_x (/ bit_xor_x 2)) (set! bit_xor_y (/ bit_xor_y 2)) (set! bit_xor_bit (* bit_xor_bit 2)) (set! bit_xor_i (+ bit_xor_i 1)))) (throw (ex-info "return" {:v bit_xor_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn not_32 [not_32_i]
   (try (do (when (< not_32_i 0) (throw (Exception. "Input must be non-negative"))) (throw (ex-info "return" {:v (- 4294967295 not_32_i)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -202,7 +205,7 @@
   (binding [lshift_i nil lshift_result nil] (try (do (set! lshift_result (mod lshift_num main_MOD)) (set! lshift_i 0) (while (< lshift_i lshift_k) (do (set! lshift_result (mod (* lshift_result 2) main_MOD)) (set! lshift_i (+ lshift_i 1)))) (throw (ex-info "return" {:v lshift_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn rshift [rshift_num rshift_k]
-  (binding [rshift_i nil rshift_result nil] (try (do (set! rshift_result rshift_num) (set! rshift_i 0) (while (< rshift_i rshift_k) (do (set! rshift_result (quot rshift_result 2)) (set! rshift_i (+ rshift_i 1)))) (throw (ex-info "return" {:v rshift_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [rshift_i nil rshift_result nil] (try (do (set! rshift_result rshift_num) (set! rshift_i 0) (while (< rshift_i rshift_k) (do (set! rshift_result (/ rshift_result 2)) (set! rshift_i (+ rshift_i 1)))) (throw (ex-info "return" {:v rshift_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn left_rotate_32 [left_rotate_32_i left_rotate_32_shift]
   (binding [left_rotate_32_left nil left_rotate_32_right nil] (try (do (when (< left_rotate_32_i 0) (throw (Exception. "Input must be non-negative"))) (when (< left_rotate_32_shift 0) (throw (Exception. "Shift must be non-negative"))) (set! left_rotate_32_left (lshift left_rotate_32_i left_rotate_32_shift)) (set! left_rotate_32_right (rshift left_rotate_32_i (- 32 left_rotate_32_shift))) (throw (ex-info "return" {:v (mod (+ left_rotate_32_left left_rotate_32_right) main_MOD)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -214,7 +217,8 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-
+      (alter-var-root (var main_MOD) (constantly 4294967296))
+      (alter-var-root (var main_ASCII) (constantly " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

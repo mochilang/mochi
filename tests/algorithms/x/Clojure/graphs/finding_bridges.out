@@ -1,5 +1,5 @@
-Execution error (UnsupportedOperationException) at main/dfs (finding_bridges.clj:58).
-nth not supported on this type: PersistentArrayMap
-
-Full report at:
-/tmp/clojure-1538253959893098082.edn
+[]
+[]
+[]
+[]
+[]

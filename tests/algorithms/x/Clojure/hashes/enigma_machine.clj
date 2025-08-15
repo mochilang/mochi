@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare build_alphabet range_list reversed_range_list index_of_char index_of_int enigma_encrypt)
@@ -65,10 +68,10 @@
 
 (def ^:dynamic rotator_i nil)
 
-(def ^:dynamic main_ASCII " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}")
+(def ^:dynamic main_ASCII nil)
 
 (defn build_alphabet []
-  (binding [build_alphabet_i nil build_alphabet_result nil] (try (do (set! build_alphabet_result []) (set! build_alphabet_i 0) (while (< build_alphabet_i (count main_ASCII)) (do (set! build_alphabet_result (conj build_alphabet_result (nth main_ASCII build_alphabet_i))) (set! build_alphabet_i (+ build_alphabet_i 1)))) (throw (ex-info "return" {:v build_alphabet_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [build_alphabet_i nil build_alphabet_result nil] (try (do (set! build_alphabet_result []) (set! build_alphabet_i 0) (while (< build_alphabet_i (count main_ASCII)) (do (set! build_alphabet_result (conj build_alphabet_result (subs main_ASCII build_alphabet_i (+ build_alphabet_i 1)))) (set! build_alphabet_i (+ build_alphabet_i 1)))) (throw (ex-info "return" {:v build_alphabet_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn range_list [range_list_n]
   (binding [range_list_i nil range_list_lst nil] (try (do (set! range_list_lst []) (set! range_list_i 0) (while (< range_list_i range_list_n) (do (set! range_list_lst (conj range_list_lst range_list_i)) (set! range_list_i (+ range_list_i 1)))) (throw (ex-info "return" {:v range_list_lst}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -89,18 +92,22 @@
   (binding [engine_target nil] (try (do (set! engine_target (index_of_char enigma_encrypt_alphabets engine_ch)) (set! engine_target (nth enigma_encrypt_gear_one engine_target)) (set! engine_target (nth enigma_encrypt_gear_two engine_target)) (set! engine_target (nth enigma_encrypt_gear_three engine_target)) (set! engine_target (nth enigma_encrypt_reflector engine_target)) (set! engine_target (index_of_int enigma_encrypt_gear_three engine_target)) (set! engine_target (index_of_int enigma_encrypt_gear_two engine_target)) (set! engine_target (index_of_int enigma_encrypt_gear_one engine_target)) (rotator enigma_encrypt_message enigma_encrypt_token) (throw (ex-info "return" {:v (nth enigma_encrypt_alphabets engine_target)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn enigma_encrypt [enigma_encrypt_message enigma_encrypt_token]
-  (binding [enigma_encrypt_alphabets nil enigma_encrypt_gear_one nil enigma_encrypt_gear_one_pos nil enigma_encrypt_gear_three nil enigma_encrypt_gear_three_pos nil enigma_encrypt_gear_two nil enigma_encrypt_gear_two_pos nil enigma_encrypt_idx nil enigma_encrypt_n nil enigma_encrypt_reflector nil enigma_encrypt_result nil enigma_encrypt_t nil] (try (do (set! enigma_encrypt_alphabets (build_alphabet)) (set! enigma_encrypt_n (count enigma_encrypt_alphabets)) (set! enigma_encrypt_gear_one (range_list enigma_encrypt_n)) (set! enigma_encrypt_gear_two (range_list enigma_encrypt_n)) (set! enigma_encrypt_gear_three (range_list enigma_encrypt_n)) (set! enigma_encrypt_reflector (reversed_range_list enigma_encrypt_n)) (set! enigma_encrypt_gear_one_pos 0) (set! enigma_encrypt_gear_two_pos 0) (set! enigma_encrypt_gear_three_pos 0) (set! enigma_encrypt_t 0) (while (< enigma_encrypt_t enigma_encrypt_token) (do (rotator enigma_encrypt_message enigma_encrypt_token) (set! enigma_encrypt_t (+ enigma_encrypt_t 1)))) (set! enigma_encrypt_result "") (set! enigma_encrypt_idx 0) (while (< enigma_encrypt_idx (count enigma_encrypt_message)) (do (set! enigma_encrypt_result (+ enigma_encrypt_result (engine enigma_encrypt_message enigma_encrypt_token (nth enigma_encrypt_message enigma_encrypt_idx)))) (set! enigma_encrypt_idx (+ enigma_encrypt_idx 1)))) (throw (ex-info "return" {:v enigma_encrypt_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [enigma_encrypt_alphabets nil enigma_encrypt_gear_one nil enigma_encrypt_gear_one_pos nil enigma_encrypt_gear_three nil enigma_encrypt_gear_three_pos nil enigma_encrypt_gear_two nil enigma_encrypt_gear_two_pos nil enigma_encrypt_idx nil enigma_encrypt_n nil enigma_encrypt_reflector nil enigma_encrypt_result nil enigma_encrypt_t nil] (try (do (set! enigma_encrypt_alphabets (build_alphabet)) (set! enigma_encrypt_n (count enigma_encrypt_alphabets)) (set! enigma_encrypt_gear_one (range_list enigma_encrypt_n)) (set! enigma_encrypt_gear_two (range_list enigma_encrypt_n)) (set! enigma_encrypt_gear_three (range_list enigma_encrypt_n)) (set! enigma_encrypt_reflector (reversed_range_list enigma_encrypt_n)) (set! enigma_encrypt_gear_one_pos 0) (set! enigma_encrypt_gear_two_pos 0) (set! enigma_encrypt_gear_three_pos 0) (set! enigma_encrypt_t 0) (while (< enigma_encrypt_t enigma_encrypt_token) (do (rotator enigma_encrypt_message enigma_encrypt_token) (set! enigma_encrypt_t (+ enigma_encrypt_t 1)))) (set! enigma_encrypt_result "") (set! enigma_encrypt_idx 0) (while (< enigma_encrypt_idx (count enigma_encrypt_message)) (do (set! enigma_encrypt_result (+ enigma_encrypt_result (engine enigma_encrypt_message enigma_encrypt_token (subs enigma_encrypt_message enigma_encrypt_idx (+ enigma_encrypt_idx 1))))) (set! enigma_encrypt_idx (+ enigma_encrypt_idx 1)))) (throw (ex-info "return" {:v enigma_encrypt_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_message "HELLO WORLD")
+(def ^:dynamic main_message nil)
 
-(def ^:dynamic main_token 123)
+(def ^:dynamic main_token nil)
 
-(def ^:dynamic main_encoded (enigma_encrypt main_message main_token))
+(def ^:dynamic main_encoded nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_ASCII) (constantly " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}"))
+      (alter-var-root (var main_message) (constantly "HELLO WORLD"))
+      (alter-var-root (var main_token) (constantly 123))
+      (alter-var-root (var main_encoded) (constantly (enigma_encrypt main_message main_token)))
       (println main_encoded)
       (System/gc)
       (let [end (System/nanoTime)
