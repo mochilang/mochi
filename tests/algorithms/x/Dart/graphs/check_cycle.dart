@@ -59,8 +59,8 @@ bool depth_first_search(List<List<int>> graph, int vertex, List<bool> visited, L
 
 bool check_cycle(List<List<int>> graph) {
   int n = graph.length;
-  List<bool> visited = <bool>[];
-  List<bool> rec_stk = <bool>[];
+  List<dynamic> visited = <dynamic>[];
+  List<dynamic> rec_stk = <dynamic>[];
   int i = 0;
   while (i < n) {
     visited = [...visited, false];
@@ -70,7 +70,7 @@ bool check_cycle(List<List<int>> graph) {
   i = 0;
   while (i < n) {
     if (!visited[i]) {
-    if (depth_first_search(graph, i, visited, rec_stk)) {
+    if (depth_first_search(graph, i, List<bool>.from(visited), List<bool>.from(rec_stk))) {
     return true;
   };
   }
@@ -87,7 +87,7 @@ void print_bool(bool b) {
   }
 }
 
-List<List<dynamic>> g1 = [[], [0, 3], [0, 4], [5], [5], []];
+List<List<int>> g1 = [<int>[], [0, 3], [0, 4], [5], [5], <int>[]];
 List<List<int>> g2 = [[1, 2], [2], [0, 3], [3]];
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
