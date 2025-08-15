@@ -1,0 +1,4 @@
+kotlinc: exit status 1
+/workspace/mochi/tests/algorithms/x/Kotlin/graphs/finding_bridges.kt:111:33: error: type mismatch: inferred type is MutableMap<Any?, Any?> but MutableMap<Int, MutableList<Int>> was expected
+        println(compute_bridges(mutableMapOf<Any?, Any?>()))
+                                ^
