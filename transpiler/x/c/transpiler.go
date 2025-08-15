@@ -1426,6 +1426,19 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					}
 					io.WriteString(w, "};\n")
 					writeIndent(w, indent)
+					fmt.Fprintf(w, "size_t %s_%d_lens[%d] = {", d.Name, i, len(ll.Elems))
+					for j, e2 := range ll.Elems {
+						if j > 0 {
+							io.WriteString(w, ", ")
+						}
+						if ll2, ok3 := e2.(*ListLit); ok3 {
+							fmt.Fprintf(w, "%d", len(ll2.Elems))
+						} else {
+							io.WriteString(w, "0")
+						}
+					}
+					io.WriteString(w, "};\n")
+					writeIndent(w, indent)
 				}
 			}
 			fmt.Fprintf(w, "%s **%s_init[%d] = {", base, d.Name, len(lst.Elems))
@@ -1457,6 +1470,23 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t *%s_lens = %s_lens_init;\n", d.Name, d.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t *%s_lens_lens_init[%d] = {", d.Name, len(lst.Elems))
+			for i := range lst.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if _, ok := lst.Elems[i].(*ListLit); ok {
+					fmt.Fprintf(w, "%s_%d_lens", d.Name, i)
+				} else {
+					io.WriteString(w, "NULL")
+				}
+			}
+			io.WriteString(w, "};\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t **%s_lens_lens = %s_lens_lens_init;\n", d.Name, d.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_lens_len = %d;\n", d.Name, len(lst.Elems))
 			return
 		} else if fe, ok := d.Value.(*FieldExpr); ok {
 			fmt.Fprintf(w, "%s ***%s = ", base, d.Name)
@@ -7106,6 +7136,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				if ce, ok := valExpr.(*CallExpr); ok && ce.Func == "append" && len(ce.Args) == 2 {
 					if ie, ok2 := ce.Args[0].(*IndexExpr); ok2 {
 						if vr, ok3 := ie.Target.(*VarRef); ok3 && vr.Name == s.Assign.Name {
+							needMapGetSL = true
+							needMapLenSL = true
+							needListAppendStr = true
 							tmp := fmt.Sprintf("__tmp%d", tempCounter)
 							tempCounter++
 							tmpLen := fmt.Sprintf("__tmp%d", tempCounter)
