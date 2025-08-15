@@ -161,8 +161,17 @@ func resolveAlias(name string) string {
 }
 
 func isSimpleLiteral(e Expr) bool {
-	switch e.(type) {
+	switch ex := e.(type) {
 	case *IntLit, *FloatLit, *StringLit, *BoolLit:
+		return true
+	case *VarExpr:
+		return true
+	case *ListLit:
+		for _, el := range ex.Elems {
+			if !isSimpleLiteral(el) {
+				return false
+			}
+		}
 		return true
 	default:
 		return false
@@ -4424,6 +4433,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				case *ListLit:
 					if ex.ElemType != "" {
 						t = ex.ElemType + "[]"
+					} else if len(ex.Elems) > 0 {
+						elemT := inferType(ex.Elems[0])
+						same := true
+						for _, el := range ex.Elems[1:] {
+							if inferType(el) != elemT {
+								same = false
+								break
+							}
+						}
+						if same && elemT != "" && elemT != "Object" {
+							t = elemT + "[]"
+							ex.ElemType = elemT
+						}
 					}
 				case *MapLit:
 					if len(ex.Values) > 0 {
@@ -4462,6 +4484,18 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 				if t == "" {
 					t = inferType(e)
+				}
+			}
+			if (t == "" || strings.HasPrefix(t, "Object")) && topEnv != nil {
+				if tt := types.ExprType(s.Let.Value, currentEnv()); tt != nil {
+					if jt := toJavaTypeFromType(tt); jt != "" && !strings.HasPrefix(jt, "Object") {
+						t = jt
+					}
+					if ll, ok := e.(*ListLit); ok {
+						if lt, ok2 := tt.(types.ListType); ok2 {
+							ll.ElemType = toJavaTypeFromType(lt.Elem)
+						}
+					}
 				}
 			}
 			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
