@@ -785,7 +785,7 @@ type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
 	if i.Value > 2147483647 || i.Value < -2147483648 {
-		fmt.Fprintf(w, "%dL", i.Value)
+		fmt.Fprintf(w, "(%dL).toInt()", i.Value)
 	} else {
 		fmt.Fprintf(w, "%d", i.Value)
 	}
@@ -3511,7 +3511,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 			} else {
-				val = &IntLit{Value: 0}
+				if st.Let.Type != nil {
+					tt := types.ResolveTypeRef(st.Let.Type, env)
+					val = &RawExpr{Code: kotlinZeroValue(tt)}
+				} else {
+					val = &IntLit{Value: 0}
+				}
 			}
 			typ := kotlinType(st.Let.Type)
 			if st.Let.Type == nil {
