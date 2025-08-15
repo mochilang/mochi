@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-15 10:08 GMT+7
+Last updated: 2025-08-15 10:22 GMT+7
 
-## Algorithms Golden Test Checklist (837/1077)
+## Algorithms Golden Test Checklist (838/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -426,7 +426,7 @@ Last updated: 2025-08-15 10:08 GMT+7
 | 417 | graphs/dijkstra_algorithm | ✓ | 396us | 12.5 MB |
 | 418 | graphs/dijkstra_alternate | ✓ | 976us | 12.5 MB |
 | 419 | graphs/dijkstra_binary_grid | ✓ | 3.89ms | 17.3 MB |
-| 420 | graphs/dinic | error |  |  |
+| 420 | graphs/dinic | ✓ | 9.56ms | 25.0 MB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 18.50ms | 17.3 MB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 365us | 12.5 MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1.23ms | 17.3 MB |
