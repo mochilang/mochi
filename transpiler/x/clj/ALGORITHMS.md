@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-15 11:28 GMT+7
+Last updated: 2025-08-15 15:32 GMT+7
 
-## Algorithms Golden Test Checklist (780/1077)
+## Algorithms Golden Test Checklist (782/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -432,10 +432,10 @@ Last updated: 2025-08-15 11:28 GMT+7
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 51.653ms | 21.06MB |
 | 424 | graphs/even_tree | ✓ | 41.42ms | 20.93MB |
 | 425 | graphs/finding_bridges | ✓ | 97.715ms | 21.08MB |
-| 426 | graphs/frequent_pattern_graph_miner | error | 73.819ms | 39.17MB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 73.632ms | 39.61MB |
 | 427 | graphs/g_topological_sort | ✓ | 44.021ms | 21.61MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 65.588ms | 21.84MB |
-| 429 | graphs/graph_adjacency_list | error |  |  |
+| 429 | graphs/graph_adjacency_list | ✓ | 55.512ms | 27.29MB |
 | 430 | graphs/graph_adjacency_matrix | error | 73.157ms | 24.73MB |
 | 431 | graphs/graph_list | ✓ | 70.352ms | 21.08MB |
 | 432 | graphs/graphs_floyd_warshall | error | 46.461ms | 21.04MB |
