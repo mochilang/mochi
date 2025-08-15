@@ -1,7 +1,34 @@
-## Progress (2025-08-14 16:42 +0700)
-- ocaml: support untyped let (2da8a7c1f8)
+## Progress (2025-08-15 10:25 +0700)
+- scala: drop obsolete error logs (6fee8d2e97)
 
 - VM valid programs compiled: 102/105
+
+- scala: drop obsolete error logs (6fee8d2e97)
+
+
+- scala: drop obsolete error logs (6fee8d2e97)
+
+
+- scala: drop obsolete error logs (6fee8d2e97)
+
+
+- scala: drop obsolete error logs (6fee8d2e97)
+
+
+- scala: drop obsolete error logs (6fee8d2e97)
+
+
+- scala: drop obsolete error logs (6fee8d2e97)
+
+
+- scala: drop obsolete error logs (6fee8d2e97)
+
+
+- scala: drop obsolete error logs (6fee8d2e97)
+
+
+- ocaml: support untyped let (2da8a7c1f8)
+
 
 - ocaml: support untyped let (2da8a7c1f8)
 
