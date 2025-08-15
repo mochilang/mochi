@@ -196,7 +196,8 @@ end
 
 const helperPow = `
 def _pow(a, b)
-  (a.nil? ? 0 : a) ** (b.nil? ? 0 : b)
+  res = (a.nil? ? 0 : a) ** (b.nil? ? 0 : b)
+  res.is_a?(Float) && res == res.to_i ? res.to_i : res
 end
 `
 
