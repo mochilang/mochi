@@ -2577,6 +2577,8 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "}\n")
 }
 
+// emit renders the benchmarking block and ensures output is written before
+// program exit, which helps tests reliably capture benchmark results.
 func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "{\n")
