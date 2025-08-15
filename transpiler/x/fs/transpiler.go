@@ -2160,6 +2160,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 			return
 		}
+		if inferType(b) == "string" {
+			usesStr = true
+			if lt != "string" {
+				b.Left = &CallExpr{Func: "_str", Args: []Expr{b.Left}}
+			}
+			if rt != "string" {
+				b.Right = &CallExpr{Func: "_str", Args: []Expr{b.Right}}
+			}
+		}
 	}
 	lt := inferType(b.Left)
 	rt := inferType(b.Right)
@@ -4726,7 +4735,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 										if pt == "int" {
 											pts[j] = "int64"
 											if j < len(pnames) {
-												varTypes[pnames[j]] = "int64"
+												name := pnames[j]
+												varTypes[name] = "int64"
+												if lsts, ok := letPtrs[name]; ok {
+													for _, ls := range lsts {
+														if ls.Type == "int" || ls.Type == "" {
+															ls.Type = "int64"
+														}
+													}
+												}
 											}
 										}
 									}
@@ -5084,14 +5101,24 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("keys expects 1 arg")
 			}
 			t := inferType(args[0])
+			var expr Expr
 			if isMapType(t) {
 				if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-					return &FieldExpr{Target: args[0], Name: "Keys"}, nil
+					expr = &FieldExpr{Target: args[0], Name: "Keys"}
+				} else {
+					inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
+					expr = &CallExpr{Func: "List.map fst", Args: []Expr{inner}}
 				}
-				inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
-				return &CallExpr{Func: "List.map fst", Args: []Expr{inner}}, nil
+				expr = &CallExpr{Func: "Seq.toArray", Args: []Expr{expr}}
+				keyT := mapKeyType(t)
+				if keyT == "" {
+					keyT = "obj"
+				}
+				return &CastExpr{Expr: expr, Type: keyT + " array"}, nil
 			}
-			return &CallExpr{Func: "Seq.map fst", Args: args}, nil
+			expr = &CallExpr{Func: "Seq.map fst", Args: args}
+			expr = &CallExpr{Func: "Seq.toArray", Args: []Expr{expr}}
+			return expr, nil
 		case "values":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values expects 1 arg")
