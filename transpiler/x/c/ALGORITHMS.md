@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (506/1077) - Last updated 2025-08-15 15:17 +0700:
+Checklist of programs that currently transpile and run (506/1077) - Last updated 2025-08-15 19:31 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -431,9 +431,9 @@ Checklist of programs that currently transpile and run (506/1077) - Last updated
 | 424 | graphs/even_tree | ✓ | 437us | 1.4 MB |
 | 425 | graphs/finding_bridges | ✓ | 307us | 1.5 MB |
 | 426 | graphs/frequent_pattern_graph_miner |  |  |  |
-| 427 | graphs/g_topological_sort | ✓ | 233us | 1.5 MB |
-| 428 | graphs/gale_shapley_bigraph | ✓ | 300us | 1.6 MB |
-| 429 | graphs/graph_adjacency_list | ✓ | 319us | 1.4 MB |
+| 427 | graphs/g_topological_sort | ✓ | 498us | 1.4 MB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 443us | 1.5 MB |
+| 429 | graphs/graph_adjacency_list | ✓ | 363us | 1.6 MB |
 | 430 | graphs/graph_adjacency_matrix |  |  |  |
 | 431 | graphs/graph_list |  |  |  |
 | 432 | graphs/graphs_floyd_warshall |  |  |  |
