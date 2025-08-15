@@ -1837,18 +1837,25 @@ func (f *ForRangeStmt) emit(w io.Writer) {
 func (f *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (const ")
 	io.WriteString(w, safeName(f.Name))
-	io.WriteString(w, " of ")
-	if f.Iterable != nil {
-		useKeys = true
-		io.WriteString(w, "(Array.isArray(")
-		f.Iterable.emit(w)
-		io.WriteString(w, ") || typeof ")
-		f.Iterable.emit(w)
-		io.WriteString(w, " === 'string' ? ")
-		f.Iterable.emit(w)
-		io.WriteString(w, " : _keys(")
-		f.Iterable.emit(w)
-		io.WriteString(w, "))")
+	if f.Keys {
+		io.WriteString(w, " in ")
+		if f.Iterable != nil {
+			f.Iterable.emit(w)
+		}
+	} else {
+		io.WriteString(w, " of ")
+		if f.Iterable != nil {
+			useKeys = true
+			io.WriteString(w, "(Array.isArray(")
+			f.Iterable.emit(w)
+			io.WriteString(w, ") || typeof ")
+			f.Iterable.emit(w)
+			io.WriteString(w, " === 'string' ? ")
+			f.Iterable.emit(w)
+			io.WriteString(w, " : _keys(")
+			f.Iterable.emit(w)
+			io.WriteString(w, "))")
+		}
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range f.Body {
@@ -2887,7 +2894,7 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 	}
 	// When type information is unavailable but the iterable is an index
 	// expression (e.g. `for x in m[k]`), default to iterating over keys.
-	if !keys && env == nil {
+	if !keys {
 		if _, ok := iterable.(*IndexExpr); ok {
 			keys = true
 		}
