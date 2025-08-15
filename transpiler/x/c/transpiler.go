@@ -216,6 +216,7 @@ func emitLenExpr(w io.Writer, e Expr) {
 			t := inferExprType(currentEnv, fe)
 			if strings.HasPrefix(t, "MapSL") {
 				needMapLenSL = true
+				io.WriteString(w, "map_len_sl(")
 				fe.Target.emitExpr(w)
 				io.WriteString(w, "."+fe.Name+".keys, ")
 				fe.Target.emitExpr(w)
@@ -316,6 +317,10 @@ func emitStrExpr(w io.Writer, e Expr) {
 		io.WriteString(w, "str_float(")
 		e.emitExpr(w)
 		io.WriteString(w, ")")
+		return
+	}
+	if t := inferExprType(currentEnv, e); strings.HasPrefix(t, "Map") {
+		io.WriteString(w, "\"map\"")
 		return
 	}
 	needStrInt = true
@@ -3592,6 +3597,10 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			return
 		}
 		t := inferExprType(currentEnv, arg)
+		if t == "MapSL" {
+			io.WriteString(w, "\"map\"")
+			return
+		}
 		if t == "MapIL" {
 			needStrMapIL = true
 			needStrListInt = true
@@ -7062,6 +7071,37 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				return &RawStmt{Code: buf.String()}, nil
 			}
 			if keyT == "const char*" && strings.HasSuffix(valT, "[]") {
+				if ce, ok := valExpr.(*CallExpr); ok && ce.Func == "append" && len(ce.Args) == 2 {
+					if ie, ok2 := ce.Args[0].(*IndexExpr); ok2 {
+						if vr, ok3 := ie.Target.(*VarRef); ok3 && vr.Name == s.Assign.Name {
+							tmp := fmt.Sprintf("__tmp%d", tempCounter)
+							tempCounter++
+							tmpLen := fmt.Sprintf("__tmp%d", tempCounter)
+							tempCounter++
+							var buf bytes.Buffer
+							buf.WriteString("{\n")
+							fmt.Fprintf(&buf, "const char** %s = map_get_sl(%s, %s, %s, %s, ", tmp, mapField(s.Assign.Name, "keys"), mapField(s.Assign.Name, "vals"), mapField(s.Assign.Name, "lens"), mapField(s.Assign.Name, "len"))
+							ie.Index.emitExpr(&buf)
+							buf.WriteString(", NULL);\n")
+							fmt.Fprintf(&buf, "size_t %s = map_len_sl(%s, %s, %s, ", tmpLen, mapField(s.Assign.Name, "keys"), mapField(s.Assign.Name, "lens"), mapField(s.Assign.Name, "len"))
+							ie.Index.emitExpr(&buf)
+							buf.WriteString(");\n")
+							fmt.Fprintf(&buf, "%s = list_append_str(%s, &%s, ", tmp, tmp, tmpLen)
+							ce.Args[1].emitExpr(&buf)
+							buf.WriteString(");\n")
+							buf.WriteString("map_set_sl(")
+							buf.WriteString(mapField(s.Assign.Name, "keys") + ", ")
+							buf.WriteString(mapField(s.Assign.Name, "vals") + ", ")
+							buf.WriteString(mapField(s.Assign.Name, "lens") + ", &")
+							buf.WriteString(mapField(s.Assign.Name, "len") + ", ")
+							ie.Index.emitExpr(&buf)
+							buf.WriteString(", ")
+							buf.WriteString(tmp + ", " + tmpLen)
+							buf.WriteString(");\n}\n")
+							return &RawStmt{Code: buf.String()}, nil
+						}
+					}
+				}
 				needMapSetSL = true
 				var buf bytes.Buffer
 				buf.WriteString("map_set_sl(")
