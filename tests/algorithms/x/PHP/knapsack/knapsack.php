@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,7 +31,9 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function knapsack($capacity, $weights, $values, $counter) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function knapsack($capacity, $weights, $values, $counter) {
   if ($counter == 0 || $capacity == 0) {
   return 0;
 }
@@ -32,13 +49,21 @@ function knapsack($capacity, $weights, $values, $counter) {
   return $without_new_value;
 };
 }
-}
-function main() {
+};
+  function main() {
   $weights = [10, 20, 30];
   $values = [60, 100, 120];
   $cap = 50;
   $count = count($values);
   $result = knapsack($cap, $weights, $values, $count);
   echo rtrim(_str($result)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

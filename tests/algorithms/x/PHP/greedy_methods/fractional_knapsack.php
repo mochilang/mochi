@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function sort_by_ratio_desc($arr) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function sort_by_ratio_desc($arr) {
   global $result, $vl, $wt;
   $i = 1;
   while ($i < count($arr)) {
@@ -39,8 +56,8 @@ function sort_by_ratio_desc($arr) {
   $i = $i + 1;
 };
   return $arr;
-}
-function sum_first($arr, $k) {
+};
+  function sum_first($arr, $k) {
   global $result, $vl, $wt;
   $s = 0.0;
   $i = 0;
@@ -49,8 +66,8 @@ function sum_first($arr, $k) {
   $i = $i + 1;
 };
   return $s;
-}
-function frac_knapsack($vl, $wt, $w, $n) {
+};
+  function frac_knapsack($vl, $wt, $w, $n) {
   global $result;
   $items = [];
   $i = 0;
@@ -90,8 +107,16 @@ function frac_knapsack($vl, $wt, $w, $n) {
   return sum_first($values, $k) + ($w - $acc[$k - 1]) * $values[$k] / $weights[$k];
 }
   return sum_first($values, $k);
-}
-$vl = [60.0, 100.0, 120.0];
-$wt = [10.0, 20.0, 30.0];
-$result = frac_knapsack($vl, $wt, 50.0, 3);
-echo rtrim(_str($result)), PHP_EOL;
+};
+  $vl = [60.0, 100.0, 120.0];
+  $wt = [10.0, 20.0, 30.0];
+  $result = frac_knapsack($vl, $wt, 50.0, 3);
+  echo rtrim(_str($result)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

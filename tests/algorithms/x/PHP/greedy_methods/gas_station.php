@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function get_gas_stations($gas_quantities, $costs) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function get_gas_stations($gas_quantities, $costs) {
   global $example1, $example2;
   $stations = [];
   $i = 0;
@@ -29,8 +46,8 @@ function get_gas_stations($gas_quantities, $costs) {
   $i = $i + 1;
 };
   return $stations;
-}
-function can_complete_journey($gas_stations) {
+};
+  function can_complete_journey($gas_stations) {
   global $example1, $example2;
   $total_gas = 0;
   $total_cost = 0;
@@ -56,8 +73,16 @@ function can_complete_journey($gas_stations) {
   $i = $i + 1;
 };
   return $start;
-}
-$example1 = get_gas_stations([1, 2, 3, 4, 5], [3, 4, 5, 1, 2]);
-echo rtrim(_str(can_complete_journey($example1))), PHP_EOL;
-$example2 = get_gas_stations([2, 3, 4], [3, 4, 3]);
-echo rtrim(_str(can_complete_journey($example2))), PHP_EOL;
+};
+  $example1 = get_gas_stations([1, 2, 3, 4, 5], [3, 4, 5, 1, 2]);
+  echo rtrim(_str(can_complete_journey($example1))), PHP_EOL;
+  $example2 = get_gas_stations([2, 3, 4], [3, 4, 3]);
+  echo rtrim(_str(can_complete_journey($example2))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

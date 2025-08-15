@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -35,9 +50,11 @@ function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$MOD = 4294967296;
-$ASCII = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
-function mochi_ord($ch) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $MOD = 4294967296;
+  $ASCII = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+  function mochi_ord($ch) {
   global $ASCII, $MOD;
   $i = 0;
   while ($i < strlen($ASCII)) {
@@ -47,15 +64,15 @@ function mochi_ord($ch) {
   $i = $i + 1;
 };
   return 0;
-}
-function to_little_endian($s) {
+};
+  function to_little_endian($s) {
   global $ASCII, $MOD;
   if (strlen($s) != 32) {
   _panic('Input must be of length 32');
 }
   return substr($s, 24, 32 - 24) . substr($s, 16, 24 - 16) . substr($s, 8, 16 - 8) . substr($s, 0, 8);
-}
-function int_to_bits($n, $width) {
+};
+  function int_to_bits($n, $width) {
   global $ASCII, $MOD;
   $bits = '';
   $num = $n;
@@ -70,8 +87,8 @@ function int_to_bits($n, $width) {
   $bits = substr($bits, strlen($bits) - $width, strlen($bits) - (strlen($bits) - $width));
 }
   return $bits;
-}
-function bits_to_int($bits) {
+};
+  function bits_to_int($bits) {
   global $ASCII, $MOD;
   $num = 0;
   $i = 0;
@@ -84,8 +101,8 @@ function bits_to_int($bits) {
   $i = $i + 1;
 };
   return $num;
-}
-function to_hex($n) {
+};
+  function to_hex($n) {
   global $ASCII, $MOD;
   $digits = '0123456789abcdef';
   if ($n == 0) {
@@ -99,8 +116,8 @@ function to_hex($n) {
   $num = _intdiv($num, 16);
 };
   return $s;
-}
-function reformat_hex($i) {
+};
+  function reformat_hex($i) {
   global $ASCII, $MOD;
   if ($i < 0) {
   _panic('Input must be non-negative');
@@ -119,8 +136,8 @@ function reformat_hex($i) {
   $j = $j - 2;
 };
   return $le;
-}
-function preprocess($message) {
+};
+  function preprocess($message) {
   global $ASCII, $MOD;
   $bit_string = '';
   $i = 0;
@@ -136,8 +153,8 @@ function preprocess($message) {
 };
   $bit_string = $bit_string . to_little_endian(substr($start_len, 32, 64 - 32)) . to_little_endian(substr($start_len, 0, 32));
   return $bit_string;
-}
-function get_block_words($bit_string) {
+};
+  function get_block_words($bit_string) {
   global $ASCII, $MOD;
   if (fmod(strlen($bit_string), 512) != 0) {
   _panic('Input must have length that\'s a multiple of 512');
@@ -157,8 +174,8 @@ function get_block_words($bit_string) {
   $pos = $pos + 512;
 };
   return $blocks;
-}
-function bit_and($a, $b) {
+};
+  function bit_and($a, $b) {
   global $ASCII, $MOD;
   $x = $a;
   $y = $b;
@@ -175,8 +192,8 @@ function bit_and($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function bit_or($a, $b) {
+};
+  function bit_or($a, $b) {
   global $ASCII, $MOD;
   $x = $a;
   $y = $b;
@@ -195,8 +212,8 @@ function bit_or($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function bit_xor($a, $b) {
+};
+  function bit_xor($a, $b) {
   global $ASCII, $MOD;
   $x = $a;
   $y = $b;
@@ -215,19 +232,19 @@ function bit_xor($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function not_32($i) {
+};
+  function not_32($i) {
   global $ASCII, $MOD;
   if ($i < 0) {
   _panic('Input must be non-negative');
 }
   return 4294967295 - $i;
-}
-function sum_32($a, $b) {
+};
+  function sum_32($a, $b) {
   global $ASCII, $MOD;
   return ($a + $b) % $MOD;
-}
-function lshift($num, $k) {
+};
+  function lshift($num, $k) {
   global $ASCII, $MOD;
   $result = $num % $MOD;
   $i = 0;
@@ -236,8 +253,8 @@ function lshift($num, $k) {
   $i = $i + 1;
 };
   return $result;
-}
-function rshift($num, $k) {
+};
+  function rshift($num, $k) {
   global $ASCII, $MOD;
   $result = $num;
   $i = 0;
@@ -246,8 +263,8 @@ function rshift($num, $k) {
   $i = $i + 1;
 };
   return $result;
-}
-function left_rotate_32($i, $shift) {
+};
+  function left_rotate_32($i, $shift) {
   global $ASCII, $MOD;
   if ($i < 0) {
   _panic('Input must be non-negative');
@@ -258,8 +275,8 @@ function left_rotate_32($i, $shift) {
   $left = lshift($i, $shift);
   $right = rshift($i, 32 - $shift);
   return ($left + $right) % $MOD;
-}
-function md5_me($message) {
+};
+  function md5_me($message) {
   global $ASCII, $MOD;
   $bit_string = preprocess($message);
   $added_consts = [3614090360, 3905402710, 606105819, 3250441966, 4118548399, 1200080426, 2821735955, 4249261313, 1770035416, 2336552879, 4294925233, 2304563134, 1804603682, 4254626195, 2792965006, 1236535329, 4129170786, 3225465664, 643717713, 3921069994, 3593408605, 38016083, 3634488961, 3889429448, 568446438, 3275163606, 4107603335, 1163531501, 2850285829, 4243563512, 1735328473, 2368359562, 4294588738, 2272392833, 1839030562, 4259657740, 2763975236, 1272893353, 4139469664, 3200236656, 681279174, 3936430074, 3572445317, 76029189, 3654602809, 3873151461, 530742520, 3299628645, 4096336452, 1126891415, 2878612391, 4237533241, 1700485571, 2399980690, 4293915773, 2240044497, 1873313359, 4264355552, 2734768916, 1309151649, 4149444226, 3174756917, 718787259, 3951481745];
@@ -316,4 +333,12 @@ function md5_me($message) {
 };
   $digest = reformat_hex($a0) . reformat_hex($b0) . reformat_hex($c0) . reformat_hex($d0);
   return $digest;
-}
+};
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
