@@ -409,6 +409,9 @@ func fsTypeFromString(s string) string {
 		if strings.HasPrefix(s, "Map<") {
 			return strings.Replace(s, "Map<", "System.Collections.Generic.IDictionary<", 1)
 		}
+		if strings.HasPrefix(s, "map<") {
+			return strings.Replace(s, "map<", "System.Collections.Generic.IDictionary<", 1)
+		}
 		if s == "obj" {
 			return "obj"
 		}
@@ -2451,21 +2454,9 @@ func inferType(e Expr) string {
 		return "array"
 	case *IdentExpr:
 		if t := v.Type; t != "" {
-			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
-				return t
-			}
-			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-				return t
-			}
-			return t
+			return fsTypeFromString(t)
 		}
 		if t, ok := varTypes[v.Name]; ok {
-			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
-				return t
-			}
-			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-				return t
-			}
 			return t
 		}
 		return ""
@@ -3329,6 +3320,11 @@ func (c *CastExpr) emit(w io.Writer) {
 					}
 				}
 				io.WriteString(w, "]")
+			} else if ll, ok := c.Expr.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasSuffix(c.Type, " array") {
+				elem := strings.TrimSuffix(c.Type, " array")
+				io.WriteString(w, "Array.empty<")
+				io.WriteString(w, elem)
+				io.WriteString(w, ">")
 			} else {
 				io.WriteString(w, "unbox<")
 				io.WriteString(w, c.Type)
@@ -4243,7 +4239,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if id, ok := base.(*IdentExpr); ok {
 			t := inferType(id)
 			// Map assignment: use helper to update dictionary
-			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && len(indices) > 0 {
+			// Avoid treating arrays of maps as maps.
+			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && !strings.HasSuffix(t, " array") && len(indices) > 0 {
 				expr := buildMapUpdate(&IdentExpr{Name: id.Name}, indices, val)
 				return &AssignStmt{Name: fsIdent(id.Name), Expr: expr}, nil
 			}
@@ -4376,11 +4373,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		if hasNull && strings.Contains(retType, "int array") {
-			retType = "obj array"
+		if hasNull && strings.Contains(retType, " array") {
 			for _, st := range body {
 				if r, ok := st.(*ReturnStmt); ok {
-					if ce, ok2 := r.Expr.(*CastExpr); ok2 && ce.Type == "int array" {
+					if ce, ok2 := r.Expr.(*CastExpr); ok2 && ce.Type == retType {
 						r.Expr = ce.Expr
 					}
 				}
@@ -5101,7 +5097,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("values expects 1 arg")
 			}
 			t := inferType(args[0])
-			if t == "map" {
+			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
+				return &FieldExpr{Target: args[0], Name: "Values"}, nil
+			}
+			if strings.HasPrefix(t, "Map<") || t == "map" {
 				inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
 				return &CallExpr{Func: "List.map snd", Args: []Expr{inner}}, nil
 			}
