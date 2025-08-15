@@ -595,15 +595,15 @@ func (f *ForInStmt) emit(w io.Writer) {
 		io.WriteString(w, "  )))\n")
 		return
 	}
-	io.WriteString(w, "(let/ec _break (for ([")
+	io.WriteString(w, "(let ([__seq ")
+	f.Iterable.emit(w)
+	io.WriteString(w, "]) (let/ec _break (for ([")
 	io.WriteString(w, sanitizeName(f.Name))
 	io.WriteString(w, " ")
 	if f.Keys {
-		io.WriteString(w, "(in-hash-keys ")
-		f.Iterable.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "(in-hash-keys __seq)")
 	} else {
-		f.Iterable.emit(w)
+		io.WriteString(w, "(if (hash? __seq) (in-hash-keys __seq) __seq)")
 	}
 	io.WriteString(w, "]")
 	if f.Break != nil {
@@ -624,7 +624,7 @@ func (f *ForInStmt) emit(w io.Writer) {
 		}
 	}
 	popContinue()
-	io.WriteString(w, "  )))\n")
+	io.WriteString(w, "  ))))\n")
 }
 
 type ReturnStmt struct{ Expr Expr }
@@ -1065,12 +1065,14 @@ func (i *InExpr) emit(w io.Writer) {
 		i.Elem.emit(w)
 		io.WriteString(w, ")")
 	default:
-		// Member expects a proper list; ensure a list is always provided.
-		io.WriteString(w, "(not (not (member ")
-		i.Elem.emit(w)
-		io.WriteString(w, " (or ")
+		// Fallback: check for hash membership at runtime and otherwise
+		// fall back to list membership. Both operands are evaluated
+		// only once to preserve side effects.
+		io.WriteString(w, "(let ([s ")
 		i.Set.emit(w)
-		io.WriteString(w, " '()))))")
+		io.WriteString(w, "] [e ")
+		i.Elem.emit(w)
+		io.WriteString(w, "]) (if (hash? s) (hash-has-key? s e) (not (not (member e (or s '()))))))")
 	}
 }
 
