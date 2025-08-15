@@ -1,0 +1,1451 @@
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:320:9
+    |
+320 |         paths = { let mut _v = paths.clone(); _v.push(new_path.clone()); _v };
+    |         ^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:320:32
+    |
+320 |         paths = { let mut _v = paths.clone(); _v.push(new_path.clone()); _v };
+    |                                ^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:88:12
+   |
+88 |         if (v.as_str() == item.as_str()) {
+   |            ^                           ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+88 -         if (v.as_str() == item.as_str()) {
+88 +         if v.as_str() == item.as_str() {
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:109:11
+    |
+109 |     while (i < (edge_array.len() as i64)) {
+    |           ^                             ^
+    |
+help: remove these parentheses
+    |
+109 -     while (i < (edge_array.len() as i64)) {
+109 +     while i < (edge_array.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:112:16
+    |
+112 |             if ((*item).clone()[0 as usize] == de) {
+    |                ^                                 ^
+    |
+help: remove these parentheses
+    |
+112 -             if ((*item).clone()[0 as usize] == de) {
+112 +             if (*item).clone()[0 as usize] == de {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:122:13
+    |
+122 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+122 -         i = (i + 1);
+122 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:129:11
+    |
+129 |     while (i < (s.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+129 -     while (i < (s.len() as i64)) {
+129 +     while i < (s.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:130:12
+    |
+130 |         if ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == "1") {
+    |            ^                                                                                                               ^
+    |
+help: remove these parentheses
+    |
+130 -         if ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == "1") {
+130 +         if { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == "1" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:131:17
+    |
+131 |             c = (c + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+131 -             c = (c + 1);
+131 +             c = c + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:133:13
+    |
+133 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+133 -         i = (i + 1);
+133 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:148:11
+    |
+148 |     while (i < (table.len() as i64)) {
+    |           ^                        ^
+    |
+help: remove these parentheses
+    |
+148 -     while (i < (table.len() as i64)) {
+148 +     while i < (table.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:150:26
+    |
+150 |         let mut j: i64 = (i + 1);
+    |                          ^     ^
+    |
+help: remove these parentheses
+    |
+150 -         let mut j: i64 = (i + 1);
+150 +         let mut j: i64 = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:151:15
+    |
+151 |         while (j < (table.len() as i64)) {
+    |               ^                        ^
+    |
+help: remove these parentheses
+    |
+151 -         while (j < (table.len() as i64)) {
+151 +         while j < (table.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:152:16
+    |
+152 |             if (toi(table[j as usize].clone()["count"].clone().clone()) > toi(table[max_i as usize].clone()["count"].clone().clone())) {
+    |                ^                                                                                                                     ^
+    |
+help: remove these parentheses
+    |
+152 -             if (toi(table[j as usize].clone()["count"].clone().clone()) > toi(table[max_i as usize].clone()["count"].clone().clone())) {
+152 +             if toi(table[j as usize].clone()["count"].clone().clone()) > toi(table[max_i as usize].clone()["count"].clone().clone()) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:155:17
+    |
+155 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+155 -             j = (j + 1);
+155 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:160:13
+    |
+160 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+160 -         i = (i + 1);
+160 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:186:11
+    |
+186 |     while (i < (nodes.keys.clone().len() as i64)) {
+    |           ^                                     ^
+    |
+help: remove these parentheses
+    |
+186 -     while (i < (nodes.keys.clone().len() as i64)) {
+186 +     while i < (nodes.keys.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:195:13
+    |
+195 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+195 -         i = (i + 1);
+195 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:204:11
+    |
+204 |     while (i < (clusters.weights.clone().len() as i64)) {
+    |           ^                                           ^
+    |
+help: remove these parentheses
+    |
+204 -     while (i < (clusters.weights.clone().len() as i64)) {
+204 +     while i < (clusters.weights.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:206:51
+    |
+206 |         sup = { let mut _v = sup.clone(); _v.push(((w * 100) / (clusters.weights.clone().len() as i64))); _v };
+    |                                                   ^                                                   ^
+    |
+help: remove these parentheses
+    |
+206 -         sup = { let mut _v = sup.clone(); _v.push(((w * 100) / (clusters.weights.clone().len() as i64))); _v };
+206 +         sup = { let mut _v = sup.clone(); _v.push((w * 100) / (clusters.weights.clone().len() as i64)); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:207:13
+    |
+207 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+207 -         i = (i + 1);
+207 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:213:11
+    |
+213 |     while (i < (a.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+213 -     while (i < (a.len() as i64)) {
+213 +     while i < (a.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:216:12
+    |
+216 |         if ((c1.as_str() == "1") && (c2.as_str() != "1")) {
+    |            ^                                            ^
+    |
+help: remove these parentheses
+    |
+216 -         if ((c1.as_str() == "1") && (c2.as_str() != "1")) {
+216 +         if (c1.as_str() == "1") && (c2.as_str() != "1") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:219:13
+    |
+219 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+219 -         i = (i + 1);
+219 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:226:11
+    |
+226 |     while (i < (clusters.weights.clone().len() as i64)) {
+    |           ^                                           ^
+    |
+help: remove these parentheses
+    |
+226 -     while (i < (clusters.weights.clone().len() as i64)) {
+226 +     while i < (clusters.weights.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:228:12
+    |
+228 |         if (w > m) {
+    |            ^     ^
+    |
+help: remove these parentheses
+    |
+228 -         if (w > m) {
+228 +         if w > m {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:231:13
+    |
+231 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+231 -         i = (i + 1);
+231 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:246:11
+    |
+246 |     while (idx1 < (codes1.len() as i64)) {
+    |           ^                            ^
+    |
+help: remove these parentheses
+    |
+246 -     while (idx1 < (codes1.len() as i64)) {
+246 +     while idx1 < (codes1.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:249:27
+    |
+249 |         let mut c2: i64 = (c1 + 1);
+    |                           ^      ^
+    |
+help: remove these parentheses
+    |
+249 -         let mut c2: i64 = (c1 + 1);
+249 +         let mut c2: i64 = c1 + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:250:15
+    |
+250 |         while (c2 <= maxk) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+250 -         while (c2 <= maxk) {
+250 +         while c2 <= maxk {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:253:19
+    |
+253 |             while (j < (codes2.len() as i64)) {
+    |                   ^                         ^
+    |
+help: remove these parentheses
+    |
+253 -             while (j < (codes2.len() as i64)) {
+253 +             while j < (codes2.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:267:29
+    |
+267 |                     count = (count + 1);
+    |                             ^         ^
+    |
+help: remove these parentheses
+    |
+267 -                     count = (count + 1);
+267 +                     count = count + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:269:21
+    |
+269 |                 j = (j + 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+269 -                 j = (j + 1);
+269 +                 j = j + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:271:16
+    |
+271 |             if (count == 0) {
+    |                ^          ^
+    |
+help: remove these parentheses
+    |
+271 -             if (count == 0) {
+271 +             if count == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:272:22
+    |
+272 |                 c2 = (c2 + 1);
+    |                      ^      ^
+    |
+help: remove these parentheses
+    |
+272 -                 c2 = (c2 + 1);
+272 +                 c2 = c2 + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:277:16
+    |
+277 |         idx1 = (idx1 + 1);
+    |                ^        ^
+    |
+help: remove these parentheses
+    |
+277 -         idx1 = (idx1 + 1);
+277 +         idx1 = idx1 + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:291:11
+    |
+291 |     while (i < (top_codes.len() as i64)) {
+    |           ^                            ^
+    |
+help: remove these parentheses
+    |
+291 -     while (i < (top_codes.len() as i64)) {
+291 +     while i < (top_codes.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:296:13
+    |
+296 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+296 -         i = (i + 1);
+296 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:299:11
+    |
+299 |     while (c < maxk) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+299 -     while (c < maxk) {
+299 +     while c < maxk {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:301:13
+    |
+301 |         c = (c + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+301 -         c = (c + 1);
+301 +         c = c + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:319:8
+    |
+319 |     if (start.as_str() == end.as_str()) {
+    |        ^                              ^
+    |
+help: remove these parentheses
+    |
+319 -     if (start.as_str() == end.as_str()) {
+319 +     if start.as_str() == end.as_str() {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:326:16
+    |
+326 |             if (p.as_str() == node.as_str()) {
+    |                ^                           ^
+    |
+help: remove these parentheses
+    |
+326 -             if (p.as_str() == node.as_str()) {
+326 +             if p.as_str() == node.as_str() {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:339:18
+    |
+339 |     let k: i64 = ((s * (clusters.weights.clone().len() as i64)) / 100);
+    |                  ^                                                   ^
+    |
+help: remove these parentheses
+    |
+339 -     let k: i64 = ((s * (clusters.weights.clone().len() as i64)) / 100);
+339 +     let k: i64 = (s * (clusters.weights.clone().len() as i64)) / 100;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:342:11
+    |
+342 |     while (i < (codes.len() as i64)) {
+    |           ^                        ^
+    |
+help: remove these parentheses
+    |
+342 -     while (i < (codes.len() as i64)) {
+342 +     while i < (codes.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:344:13
+    |
+344 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+344 -         i = (i + 1);
+344 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:358:15
+    |
+358 |         while (j < (((*path).clone().len() as i64) - 1)) {
+    |               ^                                        ^
+    |
+help: remove these parentheses
+    |
+358 -         while (j < (((*path).clone().len() as i64) - 1)) {
+358 +         while j < (((*path).clone().len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:362:19
+    |
+362 |             while (e < (edge_list.len() as i64)) {
+    |                   ^                            ^
+    |
+help: remove these parentheses
+    |
+362 -             while (e < (edge_list.len() as i64)) {
+362 +             while e < (edge_list.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:367:21
+    |
+367 |                 e = (e + 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+367 -                 e = (e + 1);
+367 +                 e = e + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:369:17
+    |
+369 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+369 -             j = (j + 1);
+369 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:380:11
+    |
+380 |     while (i < (nodes.keys.clone().len() as i64)) {
+    |           ^                                     ^
+    |
+help: remove these parentheses
+    |
+380 -     while (i < (nodes.keys.clone().len() as i64)) {
+380 +     while i < (nodes.keys.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:384:13
+    |
+384 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+384 -         i = (i + 1);
+384 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:390:11
+    |
+390 |     while (j < (clusters.weights.clone().len() as i64)) {
+    |           ^                                           ^
+    |
+help: remove these parentheses
+    |
+390 -     while (j < (clusters.weights.clone().len() as i64)) {
+390 +     while j < (clusters.weights.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:393:13
+    |
+393 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+393 -         j = (j + 1);
+393 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:397:11
+    |
+397 |     while (k < (graph.keys.clone().len() as i64)) {
+    |           ^                                     ^
+    |
+help: remove these parentheses
+    |
+397 -     while (k < (graph.keys.clone().len() as i64)) {
+397 +     while k < (graph.keys.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:401:13
+    |
+401 |         k = (k + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+401 -         k = (k + 1);
+401 +         k = k + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:423:28
+    |
+423 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+423 -     let duration_us: i64 = ((_end - _start) / 1000);
+423 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:98:26
+   |
+98 |             let e: i64 = item[0 as usize];
+   |                    ---   ^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+   |                    |
+   |                    expected due to this
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:99:35
+   |
+99 |             if !distinct.contains(&e) {
+   |                          -------- ^^ expected `&String`, found `&i64`
+   |                          |
+   |                          arguments to this method are incorrect
+   |
+   = note: expected reference `&String`
+              found reference `&i64`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:164:71
+    |
+94  |     let mut get_distinct_edge = |edge_array: Vec<Vec<Vec<String>>>| -> Vec<String> {
+    |                                 -------------------------------------------------- the found closure
+...
+106 |     let mut get_bitcode = |edge_array: Vec<Vec<Vec<String>>>, de: String| -> String {
+    |                           --------------------------------------------------------- the found closure
+...
+126 |     let mut count_ones = |s: String| -> i64 {
+    |                          ------------------ the found closure
+...
+164 | |edge_array: Vec<Vec<Vec<String>>>| -> Vec<HashMap<String, String>> { get_frequency_table(count_ones, get_bitcode, get_distinct_edge, edg...
+    |                                                                       ^^^^^^^^^^^^^^^^^^^
+    |
+note: expected `&fn(String) -> i64`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:164:91
+    |
+164 | |edge_array: Vec<Vec<Vec<String>>>| -> Vec<HashMap<String, String>> { get_frequency_table(count_ones, get_bitcode, get_distinct_edge, edg...
+    |                                                                                           ^^^^^^^^^^
+    = note: expected reference `&fn(String) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:126:26: 126:44}`
+note: expected `&fn(Vec<Vec<Vec<String>>>, ...) -> ...`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:164:103
+    |
+164 | |edge_array: Vec<Vec<Vec<String>>>| -> Vec<HashMap<String, String>> { get_frequency_table(count_ones, get_bitcode, get_distinct_edge, edg...
+    |                                                                                                       ^^^^^^^^^^^
+    = note: expected reference `&fn(Vec<Vec<Vec<String>>>, String) -> String`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:106:27: 106:84}`
+note: expected `&fn(Vec<Vec<Vec<String>>>) -> Vec<...>`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:164:116
+    |
+164 | |edge_array: Vec<Vec<Vec<String>>>| -> Vec<HashMap<String, String>> { get_frequency_table(count_ones, get_bitcode, get_distinct_edge, edg...
+    |                                                                                                                    ^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(Vec<Vec<Vec<String>>>) -> Vec<String>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:94:33: 94:83}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:138:4
+    |
+138 | fn get_frequency_table(count_ones: &fn(String) -> i64, get_bitcode: &fn(Vec<Vec<Vec<String>>>, String) -> String, get_distinct_edge: &fn(Vec<Vec<Vec<String>>>) -> Vec<String>, e...
+    |    ^^^^^^^^^^^^^^^^^^^ ------------------------------  ---------------------------------------------------------  ------------------------------------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:170:38
+    |
+170 |         let code: i64 = (*f).clone()["bit" as usize];
+    |                                      ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+    |
+    = note: expected reference `&_`
+                    found type `usize`
+help: consider borrowing here
+    |
+170 |         let code: i64 = (*f).clone()[&("bit" as usize)];
+    |                                      ++              +
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:170:25
+    |
+170 |         let code: i64 = (*f).clone()["bit" as usize];
+    |                   ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+    |                   |
+    |                   expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:171:38
+    |
+171 |         let edge: i64 = (*f).clone()["edge" as usize];
+    |                                      ^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+    |
+    = note: expected reference `&_`
+                    found type `usize`
+help: consider borrowing here
+    |
+171 |         let edge: i64 = (*f).clone()[&("edge" as usize)];
+    |                                      ++               +
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:171:25
+    |
+171 |         let edge: i64 = (*f).clone()["edge" as usize];
+    |                   ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+    |                   |
+    |                   expected due to this
+
+error[E0277]: the trait bound `String: Borrow<i64>` is not satisfied
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:172:31
+    |
+172 |         if nodes.contains_key(&code) {
+    |                  ------------ ^^^^^ the trait `Borrow<i64>` is not implemented for `String`
+    |                  |
+    |                  required by a bound introduced by this call
+    |
+    = help: the trait `Borrow<i64>` is not implemented for `String`
+            but trait `Borrow<str>` is implemented for it
+    = help: for that trait implementation, expected `str`, found `i64`
+note: required by a bound in `HashMap::<K, V, S>::contains_key`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:5
+
+error[E0277]: the trait bound `String: Borrow<i64>` is not satisfied
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:173:65
+    |
+173 | ...   nodes.insert(code.clone(), { let mut _v = nodes.get(&code).cloned().unwrap_or_default().clone(); _v.push(edge.to_string()); _v });
+    |                                                       --- ^^^^^ the trait `Borrow<i64>` is not implemented for `String`
+    |                                                       |
+    |                                                       required by a bound introduced by this call
+    |
+    = help: the trait `Borrow<i64>` is not implemented for `String`
+            but trait `Borrow<str>` is implemented for it
+    = help: for that trait implementation, expected `str`, found `i64`
+note: required by a bound in `HashMap::<K, V, S>::get`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:906:5
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:173:26
+    |
+173 | ...   nodes.insert(code.clone(), { let mut _v = nodes.get(&code).cloned().unwrap_or_default().clone(); _v.push(edge.to_string()); _v });
+    |             ------ ^^^^^-----^^
+    |             |      |    |
+    |             |      |    help: try using a conversion method: `to_string`
+    |             |      expected `String`, found `i64`
+    |             arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:175:45
+    |
+175 |             nodes.insert(code.clone(), vec![edge]);
+    |                                             ^^^^- help: try using a conversion method: `.to_string()`
+    |                                             |
+    |                                             expected `String`, found `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:175:26
+    |
+175 |             nodes.insert(code.clone(), vec![edge]);
+    |                   ------ ^^^^^-----^^
+    |                   |      |    |
+    |                   |      |    help: try using a conversion method: `to_string`
+    |                   |      expected `String`, found `i64`
+    |                   arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:199:49
+    |
+126 |     let mut count_ones = |s: String| -> i64 {
+    |                          ------------------ the found closure
+...
+199 | |nodes: NodesData| -> ClusterData { get_cluster(count_ones, nodes) }
+    |                                     ----------- ^^^^^^^^^^ expected `&fn(String) -> i64`, found closure
+    |                                     |
+    |                                     arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(String) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:126:26: 126:44}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:182:4
+    |
+182 | fn get_cluster(count_ones: &fn(String) -> i64, nodes: NodesData) -> ClusterData {
+    |    ^^^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:281:154
+    |
+235 | ... = |clusters: ClusterData, wt: i64| -> Vec<String> {
+    |       ----------------------------------------------- the found closure
+...
+281 | ...t HashMap<String, Vec<String>>, gkeys: Vec<String>, clusters: ClusterData, c1: i64, maxk: i64| -> Vec<String> { create_edge(get_cluster_codes, n...
+    |                                                                                                                    ----------- ^^^^^^^^^^^^^^^^^ expected `&fn(ClusterData, i64) -> Vec<String>`, found closure
+    |                                                                                                                    |
+    |                                                                                                                    arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(ClusterData, i64) -> Vec<String>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:235:33: 235:80}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:242:4
+    |
+242 | fn create_edge(get_cluster_codes: &fn(ClusterData, i64) -> Vec<String>, nodes: NodesData, graph: &mut HashMap<String, Vec<String>>, gkeys...
+    |    ^^^^^^^^^^^ -------------------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:305:58
+    |
+223 |     let mut max_cluster_key = |clusters: ClusterData| -> i64 {
+    |                               ------------------------------ the found closure
+...
+235 |     let mut get_cluster_codes = |clusters: ClusterData, wt: i64| -> Vec<String> {
+    |                                 ----------------------------------------------- the found closure
+...
+281 | |nodes: NodesData, graph: &mut HashMap<String, Vec<String>>, gkeys: Vec<String>, clusters: ClusterData, c1: i64, maxk: i64| -> Vec<String> { ...
+    | ------------------------------------------------------------------------------------------------------------------------------------------ the found closure
+...
+305 | |clusters: ClusterData, nodes: NodesData| -> GraphData { construct_graph(create_edge, get_cluster_codes, max_cluster_key, clusters, nodes) }
+    |                                                          ^^^^^^^^^^^^^^^
+    |
+note: expected `&fn(..., ..., ..., ..., i64, i64) -> ...`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:305:74
+    |
+305 | |clusters: ClusterData, nodes: NodesData| -> GraphData { construct_graph(create_edge, get_cluster_codes, max_cluster_key, clusters, nodes) }
+    |                                                                          ^^^^^^^^^^^
+    = note: expected reference `&fn(NodesData, HashMap<String, Vec<String>>, Vec<String>, ClusterData, i64, i64) -> Vec<String>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:281:1: 281:139}`
+note: expected `&fn(ClusterData, i64) -> Vec<String>`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:305:87
+    |
+305 | |clusters: ClusterData, nodes: NodesData| -> GraphData { construct_graph(create_edge, get_cluster_codes, max_cluster_key, clusters, nodes) }
+    |                                                                                       ^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(ClusterData, i64) -> Vec<String>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:235:33: 235:80}`
+note: expected `&fn(ClusterData) -> i64`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:305:106
+    |
+305 | |clusters: ClusterData, nodes: NodesData| -> GraphData { construct_graph(create_edge, get_cluster_codes, max_cluster_key, clusters, nodes) }
+    |                                                                                                          ^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(ClusterData) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:223:31: 223:61}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:284:4
+    |
+284 | fn construct_graph(create_edge: &fn(NodesData, HashMap<String, Vec<String>>, Vec<String>, ClusterData, i64, i64) -> Vec<String>, get_cluster_codes: &fn(ClusterData, i64) -> Vec<String>, max_cluster_key: &fn(ClusterData) -> i64, c...
+    |    ^^^^^^^^^^^^^^^ ------------------------------------------------------------------------------------------------------------  -------------------------------------------------------  ----------------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:335:95
+    |
+308 |     let mut copy_list = |lst: Vec<String>| -> Vec<String> {
+    |                         --------------------------------- the found closure
+...
+335 | |graph: HashMap<String, Vec<String>>, start: String, end: String, path: Vec<String>| { my_dfs(copy_list, graph, start, end, path) }
+    |                                                                                        ------ ^^^^^^^^^ expected `&fn(Vec<String>) -> Vec<String>`, found closure
+    |                                                                                        |
+    |                                                                                        arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(Vec<String>) -> Vec<String>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:308:25: 308:58}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:316:4
+    |
+316 | fn my_dfs(copy_list: &fn(Vec<String>) -> Vec<String>, graph: HashMap<String, Vec<String>>, start: String, end: String, path: Vec<String>) {
+    |    ^^^^^^ ------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:347:53
+    |
+235 |     let mut get_cluster_codes = |clusters: ClusterData, wt: i64| -> Vec<String> {
+    |                                 ----------------------------------------------- the found closure
+...
+335 | |graph: HashMap<String, Vec<String>>, start: String, end: String, path: Vec<String>| { my_dfs(copy_list, graph, start, end, path) }
+    | ------------------------------------------------------------------------------------ the found closure
+...
+347 | |s: i64, clusters: ClusterData, graph: GraphData| { find_freq_subgraph_given_support(get_cluster_codes, my_dfs, s, clusters, graph) }
+    |                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: expected `&fn(ClusterData, i64) -> Vec<String>`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:347:86
+    |
+347 | |s: i64, clusters: ClusterData, graph: GraphData| { find_freq_subgraph_given_support(get_cluster_codes, my_dfs, s, clusters, graph) }
+    |                                                                                      ^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(ClusterData, i64) -> Vec<String>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:235:33: 235:80}`
+note: expected `&fn(..., ..., ..., ...) -> i64`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:347:105
+    |
+347 | |s: i64, clusters: ClusterData, graph: GraphData| { find_freq_subgraph_given_support(get_cluster_codes, my_dfs, s, clusters, graph) }
+    |                                                                                                         ^^^^^^
+    = note: expected reference `&fn(HashMap<String, Vec<String>>, String, String, Vec<String>) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:335:1: 335:85}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:338:4
+    |
+338 | fn find_freq_subgraph_given_support(get_cluster_codes: &fn(ClusterData, i64) -> Vec<String>, my_dfs: &fn(HashMap<String, Vec<String>>, String, String, Vec<String>) -> i64, s...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -------------------------------------------------------  -----------------------------------------------------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:375:97
+    |
+349 |     let mut node_edges = |nodes: NodesData, code: String| -> Vec<String> {
+    |                          ----------------------------------------------- the found closure
+...
+375 | |paths: Vec<Vec<String>>, nodes: NodesData| -> Vec<Vec<Vec<String>>> { freq_subgraphs_edge_list(node_edges, paths, nodes) }
+    |                                                                        ------------------------ ^^^^^^^^^^ expected `&fn(NodesData, String) -> Vec<String>`, found closure
+    |                                                                        |
+    |                                                                        arguments to this function are incorrect
+    |
+    = note: expected reference `&fn(NodesData, String) -> Vec<String>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:349:26: 349:73}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:353:4
+    |
+353 | fn freq_subgraphs_edge_list(node_edges: &fn(NodesData, String) -> Vec<String>, paths: Vec<Vec<String>>, nodes: NodesData) -> Vec<Vec<Vec<...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^ -------------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:6
+    |
+164 | |edge_array: Vec<Vec<Vec<String>>>| -> Vec<HashMap<String, String>> { get_frequency_table(count_ones, get_bitcode, get_distinct_edge, edge_array) }
+    | ------------------------------------------------------------------- the found closure
+165 | };
+166 |     let mut get_nodes = |freq_table: Vec<HashMap<String, String>>| -> NodesData {
+    |                         ------------------------------------------------------- the found closure
+...
+199 | |nodes: NodesData| -> ClusterData { get_cluster(count_ones, nodes) }
+    | --------------------------------- the found closure
+200 | };
+201 |     let mut get_support = |clusters: ClusterData| -> Vec<i64> {
+    |                           ----------------------------------- the found closure
+...
+305 | |clusters: ClusterData, nodes: NodesData| -> GraphData { construct_graph(create_edge, get_cluster_codes, max_cluster_key, clusters, nodes) }
+    | ------------------------------------------------------ the found closure
+...
+347 | |s: i64, clusters: ClusterData, graph: GraphData| { find_freq_subgraph_given_support(get_cluster_codes, my_dfs, s, clusters, graph) }
+    | ------------------------------------------------- the found closure
+...
+375 | |paths: Vec<Vec<String>>, nodes: NodesData| -> Vec<Vec<Vec<String>>> { freq_subgraphs_edge_list(node_edges, paths, nodes) }
+    | -------------------------------------------------------------------- the found closure
+376 | };
+377 |     let mut print_all = |nodes: NodesData, support: Vec<i64>, clusters: ClusterData, graph: GraphData, freq_subgraph_edge_list: Vec<Vec<Vec<String>>>| {
+    |                         ------------------------------------------------------------------------------------------------------------------------------ the found closure
+...
+419 | || { mochi_main(EDGE_ARRAY, construct_graph, find_freq_subgraph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table, get_nodes, get...
+    |      ^^^^^^^^^^
+    |
+note: expected `&Vec<Vec<Vec<String>>>`, found `Vec<Vec<Vec<String>>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:17
+    |
+419 | || { mochi_main(EDGE_ARRAY, construct_graph, find_freq_subgraph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table...
+    |                 ^^^^^^^^^^
+    = note: expected reference `&Vec<_>`
+                  found struct `Vec<_>`
+note: expected `&fn(ClusterData, NodesData) -> GraphData`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:29
+    |
+419 | || { mochi_main(EDGE_ARRAY, construct_graph, find_freq_subgraph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table...
+    |                             ^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(ClusterData, NodesData) -> GraphData`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:305:1: 305:55}`
+note: expected `&fn(i64, ClusterData, GraphData) -> i64`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:46
+    |
+419 | || { mochi_main(EDGE_ARRAY, construct_graph, find_freq_subgraph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table...
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(i64, ClusterData, GraphData) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:347:1: 347:50}`
+note: expected `&fn(Vec<Vec<String>>, NodesData) -> ...`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:80
+    |
+419 | || { mochi_main(EDGE_ARRAY, construct_graph, find_freq_subgraph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table...
+    |                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(Vec<Vec<String>>, NodesData) -> Vec<Vec<Vec<String>>>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:375:1: 375:69}`
+note: expected `&fn(NodesData) -> ClusterData`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:106
+    |
+419 | || { mochi_main(EDGE_ARRAY, construct_graph, find_freq_subgraph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table...
+    |                                                                                                          ^^^^^^^^^^^
+    = note: expected reference `&fn(NodesData) -> ClusterData`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:199:1: 199:34}`
+note: expected `&fn(Vec<Vec<Vec<String>>>) -> Vec<...>`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:119
+    |
+419 | ...ph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table, get_nodes, get_support, paths, print_all) }
+    |                                                             ^^^^^^^^^^^^^^^^^^^
+    = note: expected reference `&fn(Vec<Vec<Vec<String>>>) -> Vec<HashMap<String, String>>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:164:1: 164:68}`
+note: expected `&fn(Vec<HashMap<String, String>>) -> ...`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:140
+    |
+419 | ..., freq_subgraphs_edge_list, get_cluster, get_frequency_table, get_nodes, get_support, paths, print_all) }
+    |                                                                  ^^^^^^^^^
+    = note: expected reference `&fn(Vec<HashMap<String, String>>) -> NodesData`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:166:25: 166:80}`
+note: expected `&fn(ClusterData) -> Vec<i64>`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:151
+    |
+419 | ...aphs_edge_list, get_cluster, get_frequency_table, get_nodes, get_support, paths, print_all) }
+    |                                                                 ^^^^^^^^^^^
+    = note: expected reference `&fn(ClusterData) -> Vec<i64>`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:201:27: 201:62}`
+note: expected `&Vec<Vec<String>>`, found `Vec<Vec<String>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:164
+    |
+419 | ...list, get_cluster, get_frequency_table, get_nodes, get_support, paths, print_all) }
+    |                                                                    ^^^^^
+    = note: expected reference `&Vec<_>`
+                  found struct `Vec<_>`
+note: expected `&fn(..., ..., ..., ..., ...) -> i64`, found closure
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:419:171
+    |
+419 | ..._cluster, get_frequency_table, get_nodes, get_support, paths, print_all) }
+    |                                                                  ^^^^^^^^^
+    = note: expected reference `&fn(NodesData, Vec<i64>, ClusterData, GraphData, Vec<Vec<Vec<String>>>) -> i64`
+                 found closure `{closure@/workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:377:25: 377:151}`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:409:4
+    |
+409 | fn mochi_main(EDGE_ARRAY: &Vec<Vec<Vec<String>>>, construct_graph: &fn(ClusterData, NodesData) -> GraphData, find_freq_subgraph_given_support: &fn(i64, ClusterData, GraphData) -> i64, freq_subgraphs_edge_list: &fn(Vec<Vec<String>>, NodesData) -> Vec<Vec<Vec<String>>>, get_cluster: &fn(NodesData) -> ClusterData, get_frequency_table: &fn(Vec<Vec<Vec<String>>>) -> Vec<HashMap<String, String>>, get_nodes: &fn(Vec<HashMap<String, String>>) -> NodesData, get_support: &fn(ClusterData) -> Vec<i64>, paths: &Vec<Vec<String>>, print_all: &fn(NodesData, Vec<i64>, ClusterData, GraphData, Vec<Vec<Vec<String>>>) -> i64) {
+    |    ^^^^^^^^^^ ----------------------------------  ---------------------------------------------------------  -------------------------------------------------------------------------  -----------------------------------------------------------------------------------  ------------------------------------------  -------------------------------------------------------------------------------  ---------------------------------------------------------  -----------------------------------------  ------------------------  -----------------------------------------------------------------------------------------
+help: consider borrowing here
+    |
+419 | || { mochi_main(&EDGE_ARRAY, construct_graph, find_freq_subgraph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table, get_nodes, get_support, paths, print_all) }
+    |                 +
+help: consider borrowing here
+    |
+419 | || { mochi_main(EDGE_ARRAY, construct_graph, find_freq_subgraph_given_support, freq_subgraphs_edge_list, get_cluster, get_frequency_table, get_nodes, get_support, &paths, print_all) }
+    |                                                                                                                                                                    +
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:170:38
+    |
+170 |         let code: i64 = (*f).clone()["bit" as usize];
+    |                                      ^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:171:38
+    |
+171 |         let edge: i64 = (*f).clone()["edge" as usize];
+    |                                      ^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0425]: cannot find function `toi` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:152:17
+    |
+152 |             if (toi(table[j as usize].clone()["count"].clone().clone()) > toi(table[max_i as usize].clone()["count"].clone().clone())) {
+    |                 ^^^ not found in this scope
+
+error[E0425]: cannot find function `toi` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:152:75
+    |
+152 |             if (toi(table[j as usize].clone()["count"].clone().clone()) > toi(table[max_i as usize].clone()["count"].clone().clone())) {
+    |                                                                           ^^^ not found in this scope
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:247:27
+    |
+247 |         let i_code: i64 = codes1[idx1 as usize];
+    |                     ---   ^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+    |                     |
+    |                     expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:254:35
+    |
+254 |                 let j_code: i64 = codes2[j as usize];
+    |                             ---   ^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+    |                             |
+    |                             expected due to this
+
+error[E0277]: the trait bound `String: Borrow<i64>` is not satisfied
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:256:43
+    |
+256 |                     if graph.contains_key(&i_code) {
+    |                              ------------ ^^^^^^^ the trait `Borrow<i64>` is not implemented for `String`
+    |                              |
+    |                              required by a bound introduced by this call
+    |
+    = help: the trait `Borrow<i64>` is not implemented for `String`
+            but trait `Borrow<str>` is implemented for it
+    = help: for that trait implementation, expected `str`, found `i64`
+note: required by a bound in `HashMap::<K, V, S>::contains_key`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:5
+
+error[E0277]: the trait bound `String: Borrow<i64>` is not satisfied
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:257:79
+    |
+257 | ...   graph.insert(i_code.clone(), { let mut _v = graph.get(&i_code).cloned().unwrap_or_default().clone(); _v.push(j_code.to_string()); _...
+    |                                                         --- ^^^^^^^ the trait `Borrow<i64>` is not implemented for `String`
+    |                                                         |
+    |                                                         required by a bound introduced by this call
+    |
+    = help: the trait `Borrow<i64>` is not implemented for `String`
+            but trait `Borrow<str>` is implemented for it
+    = help: for that trait implementation, expected `str`, found `i64`
+note: required by a bound in `HashMap::<K, V, S>::get`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:906:5
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:257:38
+    |
+257 | ...   graph.insert(i_code.clone(), { let mut _v = graph.get(&i_code).cloned().unwrap_or_default().clone(); _v.push(j_code.to_string()); _...
+    |             ------ ^^^^^^^-----^^
+    |             |      |      |
+    |             |      |      help: try using a conversion method: `to_string`
+    |             |      expected `String`, found `i64`
+    |             arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:259:59
+    |
+259 |                         graph.insert(i_code.clone(), vec![j_code]);
+    |                                                           ^^^^^^- help: try using a conversion method: `.to_string()`
+    |                                                           |
+    |                                                           expected `String`, found `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:259:38
+    |
+259 |                         graph.insert(i_code.clone(), vec![j_code]);
+    |                               ------ ^^^^^^^-----^^
+    |                               |      |      |
+    |                               |      |      help: try using a conversion method: `to_string`
+    |                               |      expected `String`, found `i64`
+    |                               arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:260:43
+    |
+260 |                         if !keys.contains(&i_code) {
+    |                                  -------- ^^^^^^^ expected `&String`, found `&i64`
+    |                                  |
+    |                                  arguments to this method are incorrect
+    |
+    = note: expected reference `&String`
+               found reference `&i64`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:264:39
+    |
+264 |                     if !keys.contains(&j_code) {
+    |                              -------- ^^^^^^^ expected `&String`, found `&i64`
+    |                              |
+    |                              arguments to this method are incorrect
+    |
+    = note: expected reference `&String`
+               found reference `&i64`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:292:25
+    |
+292 |         let code: i64 = top_codes[i as usize];
+    |                   ---   ^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+    |                   |
+    |                   expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:294:22
+    |
+294 |         graph.insert(code.clone(), vec![String::from("Header").clone()]);
+    |               ------ ^^^^^-----^^
+    |               |      |    |
+    |               |      |    help: try using a conversion method: `to_string`
+    |               |      expected `String`, found `i64`
+    |               arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:343:56
+    |
+343 |         my_dfs(graph.edges.clone(), codes[i as usize], "Header", vec![]);
+    |         ------                                         ^^^^^^^^- help: try using a conversion method: `.to_string()`
+    |         |                                              |
+    |         |                                              expected `String`, found `&str`
+    |         arguments to this function are incorrect
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:359:29
+    |
+359 |             let code: i64 = (*path).clone()[j as usize];
+    |                       ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+    |                       |
+    |                       expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:360:55
+    |
+360 |             let edge_list = node_edges(nodes.clone(), code);
+    |                             ----------                ^^^^- help: try using a conversion method: `.to_string()`
+    |                             |                         |
+    |                             |                         expected `String`, found `i64`
+    |                             arguments to this function are incorrect
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:363:33
+    |
+363 |                 let edge: i64 = edge_list[e as usize];
+    |                           ---   ^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+    |                           |
+    |                           expected due to this
+
+error[E0599]: no method named `chars` found for reference `&i64` in the current scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:364:56
+    |
+364 |                 let a: String = { let tmp = &edge; tmp.chars().skip(0 as usize).take((1 - 0) as usize).collect::<String>() }.clone();
+    |                                                        ^^^^^ method not found in `&i64`
+
+error[E0599]: no method named `chars` found for reference `&i64` in the current scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:365:56
+    |
+365 |                 let b: String = { let tmp = &edge; tmp.chars().skip(1 as usize).take((2 - 1) as usize).collect::<String>() }.clone();
+    |                                                        ^^^^^ method not found in `&i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:411:47
+    |
+411 |     let nodes: HashMap<String, Vec<String>> = get_nodes(frequency_table);
+    |                ----------------------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, Vec<String>>`, found `NodesData`
+    |                |
+    |                expected due to this
+    |
+    = note: expected struct `HashMap<String, Vec<String>>`
+               found struct `NodesData`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:412:59
+    |
+412 |     let clusters: HashMap<i64, Vec<String>> = get_cluster(nodes);
+    |                                               ----------- ^^^^^ expected `NodesData`, found `HashMap<String, Vec<String>>`
+    |                                               |
+    |                                               arguments to this function are incorrect
+    |
+    = note: expected struct `NodesData`
+               found struct `HashMap<String, Vec<String>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:412:47
+    |
+412 |     let clusters: HashMap<i64, Vec<String>> = get_cluster(nodes);
+    |                   -------------------------   ^^^^^^^^^^^^^^^^^^ expected `HashMap<i64, Vec<String>>`, found `ClusterData`
+    |                   |
+    |                   expected due to this
+    |
+    = note: expected struct `HashMap<i64, Vec<String>>`
+               found struct `ClusterData`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:413:31
+    |
+413 |     let support = get_support(clusters);
+    |                   ----------- ^^^^^^^^ expected `ClusterData`, found `HashMap<i64, Vec<String>>`
+    |                   |
+    |                   arguments to this function are incorrect
+    |
+    = note: expected struct `ClusterData`
+               found struct `HashMap<i64, Vec<String>>`
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:414:47
+    |
+414 |     let graph: HashMap<String, Vec<String>> = construct_graph(clusters, nodes);
+    |                                               ^^^^^^^^^^^^^^^
+    |
+note: expected `ClusterData`, found `HashMap<i64, Vec<String>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:414:63
+    |
+414 |     let graph: HashMap<String, Vec<String>> = construct_graph(clusters, nodes);
+    |                                                               ^^^^^^^^
+    = note: expected struct `ClusterData`
+               found struct `HashMap<i64, Vec<String>>`
+note: expected `NodesData`, found `HashMap<String, Vec<String>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:414:73
+    |
+414 |     let graph: HashMap<String, Vec<String>> = construct_graph(clusters, nodes);
+    |                                                                         ^^^^^
+    = note: expected struct `NodesData`
+               found struct `HashMap<String, Vec<String>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:414:47
+    |
+414 |     let graph: HashMap<String, Vec<String>> = construct_graph(clusters, nodes);
+    |                ----------------------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, Vec<String>>`, found `GraphData`
+    |                |
+    |                expected due to this
+    |
+    = note: expected struct `HashMap<String, Vec<String>>`
+               found struct `GraphData`
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:415:5
+    |
+415 |     find_freq_subgraph_given_support(60, clusters, graph);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: expected `ClusterData`, found `HashMap<i64, Vec<String>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:415:42
+    |
+415 |     find_freq_subgraph_given_support(60, clusters, graph);
+    |                                          ^^^^^^^^
+    = note: expected struct `ClusterData`
+               found struct `HashMap<i64, Vec<String>>`
+note: expected `GraphData`, found `HashMap<String, Vec<String>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:415:52
+    |
+415 |     find_freq_subgraph_given_support(60, clusters, graph);
+    |                                                    ^^^^^
+    = note: expected struct `GraphData`
+               found struct `HashMap<String, Vec<String>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:416:75
+    |
+416 |     let freq_subgraph_edge_list = freq_subgraphs_edge_list(paths.clone(), nodes);
+    |                                   ------------------------                ^^^^^ expected `NodesData`, found `HashMap<String, Vec<String>>`
+    |                                   |
+    |                                   arguments to this function are incorrect
+    |
+    = note: expected struct `NodesData`
+               found struct `HashMap<String, Vec<String>>`
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:417:5
+    |
+417 |     print_all(nodes, support, clusters, graph, freq_subgraph_edge_list);
+    |     ^^^^^^^^^
+    |
+note: expected `NodesData`, found `HashMap<String, Vec<String>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:417:15
+    |
+417 |     print_all(nodes, support, clusters, graph, freq_subgraph_edge_list);
+    |               ^^^^^
+    = note: expected struct `NodesData`
+               found struct `HashMap<String, Vec<String>>`
+note: expected `ClusterData`, found `HashMap<i64, Vec<String>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:417:31
+    |
+417 |     print_all(nodes, support, clusters, graph, freq_subgraph_edge_list);
+    |                               ^^^^^^^^
+    = note: expected struct `ClusterData`
+               found struct `HashMap<i64, Vec<String>>`
+note: expected `GraphData`, found `HashMap<String, Vec<String>>`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:417:41
+    |
+417 |     print_all(nodes, support, clusters, graph, freq_subgraph_edge_list);
+    |                                         ^^^^^
+    = note: expected struct `GraphData`
+               found struct `HashMap<String, Vec<String>>`
+
+error[E0382]: borrow of moved value: `code`
+   --> /workspace/mochi/tests/algorithms/x/Rust/graphs/frequent_pattern_graph_miner.rs:192:46
+    |
+187 |         let code: String = nodes.keys.clone()[i as usize].clone().clone();
+    |             ---- move occurs because `code` has type `String`, which does not implement the `Copy` trait
+188 |         let wt = count_ones(code);
+    |                             ---- value moved here
+...
+192 |             clusters.insert(wt.clone(), vec![code.clone()]);
+    |                                              ^^^^ value borrowed here after move
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+188 |         let wt = count_ones(code.clone());
+    |                                 ++++++++
+
+error: aborting due to 52 previous errors; 54 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0382, E0425, E0434, E0599, E0606.
+For more information about an error, try `rustc --explain E0277`.
