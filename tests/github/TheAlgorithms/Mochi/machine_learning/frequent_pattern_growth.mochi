@@ -12,11 +12,11 @@ least three. The code uses only Mochi features so it can run on runtime/vm
 without any foreign interfaces.
 */
 
-fun make_node(name, count, parent) {
+fun make_node(name: string, count: int, parent: any): any {
   return { "name": name, "count": count, "parent": parent, "children": {}, "node_link": null }
 }
 
-fun update_header(node_to_test, target_node) {
+fun update_header(node_to_test: any, target_node: any) {
   var current = node_to_test
   while current["node_link"] != null {
     current = current["node_link"]
@@ -24,7 +24,7 @@ fun update_header(node_to_test, target_node) {
   current["node_link"] = target_node
 }
 
-fun update_tree(items, in_tree, header_table, count) {
+fun update_tree(items: list<string>, in_tree: any, header_table: any, count: int) {
   let first = items[0]
   var children = in_tree["children"]
   if first in children {
@@ -50,7 +50,7 @@ fun update_tree(items, in_tree, header_table, count) {
   }
 }
 
-fun sort_items(items, header_table) {
+fun sort_items(items: list<string>, header_table: any): list<string> {
   var arr = items
   var i = 0
   while i < len(arr) {
@@ -68,7 +68,7 @@ fun sort_items(items, header_table) {
   return arr
 }
 
-fun create_tree(data_set, min_sup) {
+fun create_tree(data_set: list<list<string>>, min_sup: int): any {
   var counts = {}
   var i = 0
   while i < len(data_set) {
@@ -124,7 +124,7 @@ fun create_tree(data_set, min_sup) {
   return { "tree": fp_tree, "header": header_table }
 }
 
-fun ascend_tree(leaf_node, path) {
+fun ascend_tree(leaf_node: any, path: list<string>): list<string> {
   var prefix = path
   if leaf_node["parent"] != null {
     prefix = append(prefix, leaf_node["name"])
@@ -135,7 +135,7 @@ fun ascend_tree(leaf_node, path) {
   return prefix
 }
 
-fun find_prefix_path(base_pat, tree_node) {
+fun find_prefix_path(base_pat: string, tree_node: any): list<any> {
   var cond_pats = []
   var node = tree_node
   while node != null {
@@ -149,7 +149,7 @@ fun find_prefix_path(base_pat, tree_node) {
   return cond_pats
 }
 
-fun mine_tree(in_tree, header_table, min_sup, pre_fix, freq_item_list) {
+fun mine_tree(in_tree: any, header_table: any, min_sup: int, pre_fix: list<string>, freq_item_list: list<list<string>>): list<list<string>> {
   var freq_list = freq_item_list
   var items = []
   for k in header_table {
@@ -199,7 +199,7 @@ fun mine_tree(in_tree, header_table, min_sup, pre_fix, freq_item_list) {
   return freq_list
 }
 
-fun list_to_string(xs) {
+fun list_to_string(xs: list<string>): string {
   var s = "["
   var i = 0
   while i < len(xs) {
