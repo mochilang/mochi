@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -35,12 +20,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function new_graph() {
+function new_graph() {
   return ['edges' => [], 'num_nodes' => 0];
-};
-  function add_edge($g, $u, $v, $w) {
+}
+function add_edge($g, $u, $v, $w) {
   $es = $g['edges'];
   $es = _append($es, ['u' => $u, 'v' => $v, 'w' => $w]);
   $n = $g['num_nodes'];
@@ -51,8 +34,8 @@ $__start = _now();
   $n = $v;
 }
   return ['edges' => $es, 'num_nodes' => $n];
-};
-  function make_ds($n) {
+}
+function make_ds($n) {
   $parent = [];
   $rank = [];
   $i = 0;
@@ -62,8 +45,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return ['parent' => $parent, 'rank' => $rank];
-};
-  function find_set($ds, $x) {
+}
+function find_set($ds, $x) {
   if ($ds['parent'][$x] == $x) {
   return ['ds' => $ds, 'root' => $x];
 }
@@ -71,8 +54,8 @@ $__start = _now();
   $p = $res['ds']['parent'];
   $p[$x] = $res['root'];
   return ['ds' => ['parent' => $p, 'rank' => $res['ds']['rank']], 'root' => $res['root']];
-};
-  function union_set($ds, $x, $y) {
+}
+function union_set($ds, $x, $y) {
   $fx = find_set($ds, $x);
   $ds1 = $fx['ds'];
   $x_root = $fx['root'];
@@ -93,8 +76,8 @@ $__start = _now();
 };
 }
   return ['parent' => $p, 'rank' => $r];
-};
-  function sort_edges($edges) {
+}
+function sort_edges($edges) {
   $arr = $edges;
   $i = 1;
   while ($i < count($arr)) {
@@ -113,8 +96,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $arr;
-};
-  function kruskal($g) {
+}
+function kruskal($g) {
   $edges = sort_edges($g['edges']);
   $ds = make_ds($g['num_nodes']);
   $mst_edges = [];
@@ -136,14 +119,14 @@ $__start = _now();
 }
 };
   return ['edges' => $mst_edges, 'num_nodes' => $g['num_nodes']];
-};
-  function print_mst($g) {
+}
+function print_mst($g) {
   $es = sort_edges($g['edges']);
   foreach ($es as $e) {
   echo rtrim(_str($e['u']) . '-' . _str($e['v']) . ':' . _str($e['w'])), PHP_EOL;
 };
-};
-  function main() {
+}
+function main() {
   $g = new_graph();
   $g = add_edge($g, 1, 2, 1);
   $g = add_edge($g, 2, 3, 2);
@@ -152,13 +135,5 @@ $__start = _now();
   $g = add_edge($g, 4, 5, 5);
   $mst = kruskal($g);
   print_mst($mst);
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

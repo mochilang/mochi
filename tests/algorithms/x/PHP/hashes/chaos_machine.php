@@ -1,6 +1,9 @@
 <?php
 ini_set('memory_limit', '-1');
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -12,7 +15,7 @@ $K = [0.33, 0.44, 0.55, 0.44, 0.33];
 $t = 3;
 $size = 5;
 function round_dec($x, $n) {
-  global $K, $t, $size, $machine, $res;
+  global $K, $machine, $res, $size, $t;
   $m10 = 1.0;
   $i = 0;
   while ($i < $n) {
@@ -22,12 +25,12 @@ function round_dec($x, $n) {
   $y = $x * $m10 + 0.5;
   return (1.0 * intval($y)) / $m10;
 }
-function reset() {
-  global $K, $t, $size, $machine, $i, $res;
+function mochi_reset() {
+  global $K, $i, $machine, $res, $size, $t;
   return ['buffer' => $K, 'params' => [0.0, 0.0, 0.0, 0.0, 0.0], 'time' => 0];
 }
 function push($m, $seed) {
-  global $K, $t, $size, $machine, $res;
+  global $K, $machine, $res, $size, $t;
   $buf = $m['buffer'];
   $par = $m['params'];
   $i = 0;
@@ -46,7 +49,7 @@ function push($m, $seed) {
   return ['buffer' => $buf, 'params' => $par, 'time' => $m['time'] + 1];
 }
 function mochi_xor($a, $b) {
-  global $K, $t, $size, $machine, $i;
+  global $K, $i, $machine, $size, $t;
   $aa = $a;
   $bb = $b;
   $res = 0;
@@ -64,7 +67,7 @@ function mochi_xor($a, $b) {
   return $res;
 }
 function xorshift($x, $y) {
-  global $K, $t, $size, $machine, $i, $res;
+  global $K, $i, $machine, $res, $size, $t;
   $xv = $x;
   $yv = $y;
   $xv = mochi_xor($xv, _intdiv($yv, 8192));
@@ -73,7 +76,7 @@ function xorshift($x, $y) {
   return $xv;
 }
 function pull($m) {
-  global $K, $t, $size, $machine, $res;
+  global $K, $machine, $res, $size, $t;
   $buf = $m['buffer'];
   $par = $m['params'];
   $key = fmod($m['time'], $size);
@@ -93,7 +96,7 @@ function pull($m) {
   $value = fmod(xorshift($x, $y), 4294967295);
   return ['value' => $value, 'machine' => $new_machine];
 }
-$machine = reset();
+$machine = mochi_reset();
 $i = 0;
 while ($i < 100) {
   $machine = push($machine, $i);

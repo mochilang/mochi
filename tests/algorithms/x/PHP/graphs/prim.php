@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -35,10 +20,8 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  $INF = 1000000000;
-  function connect($graph, $a, $b, $w) {
+$INF = 1000000000;
+function connect($graph, $a, $b, $w) {
   global $INF;
   $u = $a - 1;
   $v = $b - 1;
@@ -46,8 +29,8 @@ $__start = _now();
   $g[$u] = _append($g[$u], [$v, $w]);
   $g[$v] = _append($g[$v], [$u, $w]);
   return $g;
-};
-  function in_list($arr, $x) {
+}
+function in_list($arr, $x) {
   global $INF;
   $i = 0;
   while ($i < count($arr)) {
@@ -57,8 +40,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return false;
-};
-  function prim($graph, $s, $n) {
+}
+function prim($graph, $s, $n) {
   global $INF;
   $dist = [];
   $parent = [];
@@ -103,8 +86,8 @@ $__start = _now();
   $j = $j + 1;
 };
   return $edges;
-};
-  function sort_heap($h, $dist) {
+}
+function sort_heap($h, $dist) {
   global $INF;
   $a = $h;
   $i = 0;
@@ -123,8 +106,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $a;
-};
-  function prim_heap($graph, $s, $n) {
+}
+function prim_heap($graph, $s, $n) {
   global $INF;
   $dist = [];
   $parent = [];
@@ -162,8 +145,8 @@ $__start = _now();
   $j = $j + 1;
 };
   return $edges;
-};
-  function print_edges($edges) {
+}
+function print_edges($edges) {
   global $INF;
   $i = 0;
   while ($i < count($edges)) {
@@ -171,8 +154,8 @@ $__start = _now();
   echo rtrim('(' . _str($e[0]) . ', ' . _str($e[1]) . ')'), PHP_EOL;
   $i = $i + 1;
 };
-};
-  function test_vector() {
+}
+function test_vector() {
   global $INF;
   $x = 5;
   $G = [];
@@ -191,13 +174,5 @@ $__start = _now();
   print_edges($mst);
   $mst_heap = prim_heap($G, 0, $x);
   print_edges($mst_heap);
-};
-  test_vector();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+test_vector();

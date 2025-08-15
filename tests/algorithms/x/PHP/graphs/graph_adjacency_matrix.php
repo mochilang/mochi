@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _len($x) {
     if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
@@ -45,9 +30,7 @@ function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function make_graph($vertices, $edges, $directed) {
+function make_graph($vertices, $edges, $directed) {
   $g = ['directed' => $directed, 'vertex_to_index' => [], 'adj_matrix' => []];
   $i = 0;
   while ($i < count($vertices)) {
@@ -61,11 +44,11 @@ $__start = _now();
   $j = $j + 1;
 };
   return $g;
-};
-  function contains_vertex($g, $v) {
+}
+function contains_vertex($g, $v) {
   return isset($g['vertex_to_index'][$v]);
-};
-  function add_vertex(&$g, $v) {
+}
+function add_vertex(&$g, $v) {
   if (contains_vertex($g, $v)) {
   _panic('vertex already exists');
 }
@@ -86,8 +69,8 @@ $__start = _now();
   $idx_map = $g['vertex_to_index'];
   $idx_map[$v] = count($matrix) - 1;
   $g['vertex_to_index'] = $idx_map;
-};
-  function remove_key($m, $k) {
+}
+function remove_key($m, $k) {
   global $g;
   $out = [];
   foreach (array_keys($m) as $key) {
@@ -96,8 +79,8 @@ $__start = _now();
 }
 };
   return $out;
-};
-  function decrement_indices($m, $start) {
+}
+function decrement_indices($m, $start) {
   global $g;
   $out = [];
   foreach (array_keys($m) as $key) {
@@ -109,8 +92,8 @@ $__start = _now();
 }
 };
   return $out;
-};
-  function remove_vertex(&$g, $v) {
+}
+function remove_vertex(&$g, $v) {
   if (!contains_vertex($g, $v)) {
   _panic('vertex does not exist');
 }
@@ -135,8 +118,8 @@ $__start = _now();
   $g['adj_matrix'] = $new_matrix;
   $m = remove_key($g['vertex_to_index'], $v);
   $g['vertex_to_index'] = decrement_indices($m, $idx);
-};
-  function add_edge(&$g, $u, $v) {
+}
+function add_edge(&$g, $u, $v) {
   if (!(contains_vertex($g, $u) && contains_vertex($g, $v))) {
   _panic('missing vertex');
 }
@@ -148,8 +131,8 @@ $__start = _now();
   $matrix[$j][$i] = 1;
 }
   $g['adj_matrix'] = $matrix;
-};
-  function remove_edge(&$g, $u, $v) {
+}
+function remove_edge(&$g, $u, $v) {
   if (!(contains_vertex($g, $u) && contains_vertex($g, $v))) {
   _panic('missing vertex');
 }
@@ -161,8 +144,8 @@ $__start = _now();
   $matrix[$j][$i] = 0;
 }
   $g['adj_matrix'] = $matrix;
-};
-  function contains_edge($g, $u, $v) {
+}
+function contains_edge($g, $u, $v) {
   if (!(contains_vertex($g, $u) && contains_vertex($g, $v))) {
   _panic('missing vertex');
 }
@@ -170,24 +153,16 @@ $__start = _now();
   $j = ($g['vertex_to_index'])[$v];
   $matrix = $g['adj_matrix'];
   return $matrix[$i][$j] == 1;
-};
-  function clear_graph(&$g) {
+}
+function clear_graph(&$g) {
   $g['vertex_to_index'] = [];
   $g['adj_matrix'] = [];
-};
-  $g = make_graph([1, 2, 3], [[1, 2], [2, 3]], false);
-  echo rtrim(_str($g['adj_matrix'])), PHP_EOL;
-  echo rtrim(_str(contains_edge($g, 1, 2))), PHP_EOL;
-  echo rtrim(_str(contains_edge($g, 2, 1))), PHP_EOL;
-  remove_edge($g, 1, 2);
-  echo rtrim(_str(contains_edge($g, 1, 2))), PHP_EOL;
-  remove_vertex($g, 2);
-  echo rtrim(_str($g['adj_matrix'])), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$g = make_graph([1, 2, 3], [[1, 2], [2, 3]], false);
+echo rtrim(_str($g['adj_matrix'])), PHP_EOL;
+echo rtrim(_str(contains_edge($g, 1, 2))), PHP_EOL;
+echo rtrim(_str(contains_edge($g, 2, 1))), PHP_EOL;
+remove_edge($g, 1, 2);
+echo rtrim(_str(contains_edge($g, 1, 2))), PHP_EOL;
+remove_vertex($g, 2);
+echo rtrim(_str($g['adj_matrix'])), PHP_EOL;

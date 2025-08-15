@@ -1,27 +1,10 @@
 ======= Nodes =======
-{"A":"A","inbound":["C"],"outbound":["B","C"]}
-{"B":"B","inbound":["A"],"outbound":["C"]}
-{"C":"C","inbound":["A","B"],"outbound":["A"]}
-
-Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 36
-
-Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 36
-
-Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 36
-
-Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 40
-
-Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 40
-
-Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 40
+{"name":"A","inbound":["C"],"outbound":["B","C"]}
+{"name":"B","inbound":["A"],"outbound":["C"]}
+{"name":"C","inbound":["A","B"],"outbound":["A"]}
 ======= Iteration 1 =======
-
-Warning: Undefined array key "C" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 48
-
-Warning: Undefined array key "C" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 48
-
-Fatal error: Uncaught DivisionByZeroError: Division by zero in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php:48
-Stack trace:
-#0 /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php(84): page_rank(Array, 3, 0.85)
-#1 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 48
+{'A': 1.0, 'B': 0.575, 'C': 1.06375}
+======= Iteration 2 =======
+{'A': 1.0541874999999998, 'B': 0.5980296875, 'C': 1.106354921875}
+======= Iteration 3 =======
+{'A': 1.09040168359375, 'B': 0.6134207155273438, 'C': 1.134828323725586}

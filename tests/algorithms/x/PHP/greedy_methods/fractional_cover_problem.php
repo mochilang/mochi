@@ -1,6 +1,7 @@
 <?php
 ini_set('memory_limit', '-1');
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -21,6 +22,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 function ratio($item) {
   global $items1, $items2, $items3, $items4;
   return (floatval($item['value'])) / (floatval($item['weight']));
@@ -28,7 +33,7 @@ function ratio($item) {
 function fractional_cover($items, $capacity) {
   global $items1, $items2, $items3, $items4;
   if ($capacity < 0) {
-  $panic('Capacity cannot be negative');
+  _panic('Capacity cannot be negative');
 }
   $total = 0.0;
   $remaining = $capacity;

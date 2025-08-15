@@ -20,8 +20,8 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function sort_by_ratio_desc(&$arr) {
-  global $vl, $wt, $result;
+function sort_by_ratio_desc($arr) {
+  global $result, $vl, $wt;
   $i = 1;
   while ($i < count($arr)) {
   $key = $arr[$i];
@@ -41,7 +41,7 @@ function sort_by_ratio_desc(&$arr) {
   return $arr;
 }
 function sum_first($arr, $k) {
-  global $vl, $wt, $result;
+  global $result, $vl, $wt;
   $s = 0.0;
   $i = 0;
   while ($i < $k && $i < count($arr)) {

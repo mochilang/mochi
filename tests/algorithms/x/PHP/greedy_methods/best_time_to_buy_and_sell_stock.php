@@ -13,12 +13,12 @@ function max_profit($prices) {
   $min_price = $price;
 }
   $profit = $price - $min_price;
-  if ($profit > 'max_profit') {
+  if ($profit > $max_profit) {
   $max_profit = $profit;
 }
   $i = $i + 1;
 };
-  return 'max_profit';
+  return $max_profit;
 }
 echo rtrim(json_encode(max_profit([7, 1, 5, 3, 6, 4]), 1344)), PHP_EOL;
 echo rtrim(json_encode(max_profit([7, 6, 4, 3, 1]), 1344)), PHP_EOL;

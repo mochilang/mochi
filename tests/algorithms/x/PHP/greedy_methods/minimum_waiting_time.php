@@ -1,6 +1,6 @@
 <?php
 ini_set('memory_limit', '-1');
-function insertion_sort(&$a) {
+function insertion_sort($a) {
   $i = 1;
   while ($i < count($a)) {
   $key = $a[$i];
@@ -14,7 +14,7 @@ function insertion_sort(&$a) {
 };
   return $a;
 }
-function minimum_waiting_time(&$queries) {
+function minimum_waiting_time($queries) {
   $n = count($queries);
   if ($n == 0 || $n == 1) {
   return 0;

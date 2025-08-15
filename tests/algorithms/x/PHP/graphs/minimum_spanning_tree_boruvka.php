@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -35,9 +20,7 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function uf_make($n) {
+function uf_make($n) {
   $p = [];
   $r = [];
   $i = 0;
@@ -47,8 +30,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return ['parent' => $p, 'rank' => $r];
-};
-  function uf_find($uf, $x) {
+}
+function uf_find($uf, $x) {
   $p = $uf['parent'];
   if ($p[$x] != $x) {
   $res = uf_find(['parent' => $p, 'rank' => $uf['rank']], $p[$x]);
@@ -57,8 +40,8 @@ $__start = _now();
   return ['root' => $res['root'], 'uf' => ['parent' => $p, 'rank' => $res['uf']['rank']]];
 }
   return ['root' => $x, 'uf' => $uf];
-};
-  function uf_union($uf, $x, $y) {
+}
+function uf_union($uf, $x, $y) {
   $fr1 = uf_find($uf, $x);
   $uf1 = $fr1['uf'];
   $root1 = $fr1['root'];
@@ -81,8 +64,8 @@ $__start = _now();
 };
 }
   return ['parent' => $p, 'rank' => $r];
-};
-  function boruvka($n, $edges) {
+}
+function boruvka($n, $edges) {
   $uf = uf_make($n);
   $num_components = $n;
   $mst = [];
@@ -133,20 +116,12 @@ $__start = _now();
 };
 };
   return $mst;
-};
-  function main() {
+}
+function main() {
   $edges = [['u' => 0, 'v' => 1, 'w' => 1], ['u' => 0, 'v' => 2, 'w' => 2], ['u' => 2, 'v' => 3, 'w' => 3]];
   $mst = boruvka(4, $edges);
   foreach ($mst as $e) {
   echo rtrim(_str($e['u']) . ' - ' . _str($e['v']) . ' : ' . _str($e['w'])), PHP_EOL;
 };
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

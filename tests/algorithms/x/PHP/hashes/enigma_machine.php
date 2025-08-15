@@ -6,7 +6,7 @@ function _append($arr, $x) {
 }
 $ASCII = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}';
 function build_alphabet() {
-  global $ASCII, $message, $token, $encoded;
+  global $ASCII, $encoded, $message, $token;
   $result = [];
   $i = 0;
   while ($i < strlen($ASCII)) {
@@ -16,7 +16,7 @@ function build_alphabet() {
   return $result;
 }
 function range_list($n) {
-  global $ASCII, $message, $token, $encoded;
+  global $ASCII, $encoded, $message, $token;
   $lst = [];
   $i = 0;
   while ($i < $n) {
@@ -26,7 +26,7 @@ function range_list($n) {
   return $lst;
 }
 function reversed_range_list($n) {
-  global $ASCII, $message, $token, $encoded;
+  global $ASCII, $encoded, $message, $token;
   $lst = [];
   $i = $n - 1;
   while ($i >= 0) {
@@ -36,7 +36,7 @@ function reversed_range_list($n) {
   return $lst;
 }
 function index_of_char($lst, $ch) {
-  global $ASCII, $message, $token, $encoded;
+  global $ASCII, $encoded, $message, $token;
   $i = 0;
   while ($i < count($lst)) {
   if ($lst[$i] == $ch) {
@@ -47,7 +47,7 @@ function index_of_char($lst, $ch) {
   return -1;
 }
 function index_of_int($lst, $value) {
-  global $ASCII, $message, $token, $encoded;
+  global $ASCII, $encoded, $message, $token;
   $i = 0;
   while ($i < count($lst)) {
   if ($lst[$i] == $value) {

@@ -46,7 +46,7 @@ function prims_algorithm($adjacency) {
 }
 };
   $visited[$best_v] = true;
-  $mst = _append($mst, [$u => $best_u, 'v' => $best_v]);
+  $mst = _append($mst, ['u' => $best_u, 'v' => $best_v]);
   $count = $count + 1;
 };
   return $mst;

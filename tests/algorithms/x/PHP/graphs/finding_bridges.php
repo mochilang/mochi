@@ -1,27 +1,10 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function dfs($graph, $at, $parent, &$visited, &$ids, &$low, $id, $bridges) {
+function dfs($graph, $at, $parent, &$visited, &$ids, &$low, $id, $bridges) {
   $visited[$at] = true;
   $ids[$at] = $id;
   $low[$at] = $id;
@@ -50,8 +33,8 @@ $__start = _now();
 }
 };
   return ['id' => $current_id, 'bridges' => $res_bridges];
-};
-  function compute_bridges($graph) {
+}
+function compute_bridges($graph) {
   $n = count($graph);
   $visited = [];
   $ids = [];
@@ -75,8 +58,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $bridges;
-};
-  function get_demo_graph($index) {
+}
+function get_demo_graph($index) {
   if ($index == 0) {
   return [0 => [1, 2], 1 => [0, 2], 2 => [0, 1, 3, 5], 3 => [2, 4], 4 => [3], 5 => [2, 6, 8], 6 => [5, 7], 7 => [6, 8], 8 => [5, 7]];
 }
@@ -87,17 +70,9 @@ $__start = _now();
   return [0 => [4], 1 => [6], 2 => [], 3 => [5, 6, 7], 4 => [0, 6], 5 => [3, 8, 9], 6 => [1, 3, 4, 7], 7 => [3, 6, 8, 9], 8 => [5, 7], 9 => [5, 7]];
 }
   return [0 => [1, 3], 1 => [0, 2, 4], 2 => [1, 3, 4], 3 => [0, 2, 4], 4 => [1, 2, 3]];
-};
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges(get_demo_graph(0)), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges(get_demo_graph(1)), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges(get_demo_graph(2)), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges(get_demo_graph(3)), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges([]), 1344)))))), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges(get_demo_graph(0)), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges(get_demo_graph(1)), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges(get_demo_graph(2)), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges(get_demo_graph(3)), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(compute_bridges([]), 1344)))))), PHP_EOL;

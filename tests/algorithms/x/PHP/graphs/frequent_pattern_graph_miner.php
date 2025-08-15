@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _len($x) {
     if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
@@ -41,10 +26,8 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  $EDGE_ARRAY = [[['ab', 'e1'], ['ac', 'e3'], ['ad', 'e5'], ['bc', 'e4'], ['bd', 'e2'], ['be', 'e6'], ['bh', 'e12'], ['cd', 'e2'], ['ce', 'e4'], ['de', 'e1'], ['df', 'e8'], ['dg', 'e5'], ['dh', 'e10'], ['ef', 'e3'], ['eg', 'e2'], ['fg', 'e6'], ['gh', 'e6'], ['hi', 'e3']], [['ab', 'e1'], ['ac', 'e3'], ['ad', 'e5'], ['bc', 'e4'], ['bd', 'e2'], ['be', 'e6'], ['cd', 'e2'], ['de', 'e1'], ['df', 'e8'], ['ef', 'e3'], ['eg', 'e2'], ['fg', 'e6']], [['ab', 'e1'], ['ac', 'e3'], ['bc', 'e4'], ['bd', 'e2'], ['de', 'e1'], ['df', 'e8'], ['dg', 'e5'], ['ef', 'e3'], ['eg', 'e2'], ['eh', 'e12'], ['fg', 'e6'], ['fh', 'e10'], ['gh', 'e6']], [['ab', 'e1'], ['ac', 'e3'], ['bc', 'e4'], ['bd', 'e2'], ['bh', 'e12'], ['cd', 'e2'], ['df', 'e8'], ['dh', 'e10']], [['ab', 'e1'], ['ac', 'e3'], ['ad', 'e5'], ['bc', 'e4'], ['bd', 'e2'], ['cd', 'e2'], ['ce', 'e4'], ['de', 'e1'], ['df', 'e8'], ['dg', 'e5'], ['ef', 'e3'], ['eg', 'e2'], ['fg', 'e6']]];
-  function mochi_contains($lst, $item) {
+$EDGE_ARRAY = [[['ab', 'e1'], ['ac', 'e3'], ['ad', 'e5'], ['bc', 'e4'], ['bd', 'e2'], ['be', 'e6'], ['bh', 'e12'], ['cd', 'e2'], ['ce', 'e4'], ['de', 'e1'], ['df', 'e8'], ['dg', 'e5'], ['dh', 'e10'], ['ef', 'e3'], ['eg', 'e2'], ['fg', 'e6'], ['gh', 'e6'], ['hi', 'e3']], [['ab', 'e1'], ['ac', 'e3'], ['ad', 'e5'], ['bc', 'e4'], ['bd', 'e2'], ['be', 'e6'], ['cd', 'e2'], ['de', 'e1'], ['df', 'e8'], ['ef', 'e3'], ['eg', 'e2'], ['fg', 'e6']], [['ab', 'e1'], ['ac', 'e3'], ['bc', 'e4'], ['bd', 'e2'], ['de', 'e1'], ['df', 'e8'], ['dg', 'e5'], ['ef', 'e3'], ['eg', 'e2'], ['eh', 'e12'], ['fg', 'e6'], ['fh', 'e10'], ['gh', 'e6']], [['ab', 'e1'], ['ac', 'e3'], ['bc', 'e4'], ['bd', 'e2'], ['bh', 'e12'], ['cd', 'e2'], ['df', 'e8'], ['dh', 'e10']], [['ab', 'e1'], ['ac', 'e3'], ['ad', 'e5'], ['bc', 'e4'], ['bd', 'e2'], ['cd', 'e2'], ['ce', 'e4'], ['de', 'e1'], ['df', 'e8'], ['dg', 'e5'], ['ef', 'e3'], ['eg', 'e2'], ['fg', 'e6']]];
+function mochi_contains($lst, $item) {
   global $EDGE_ARRAY, $paths;
   foreach ($lst as $v) {
   if ($v == $item) {
@@ -52,8 +35,8 @@ $__start = _now();
 }
 };
   return false;
-};
-  function get_distinct_edge($edge_array) {
+}
+function get_distinct_edge($edge_array) {
   global $EDGE_ARRAY, $paths;
   $distinct = [];
   foreach ($edge_array as $row) {
@@ -65,8 +48,8 @@ $__start = _now();
 };
 };
   return $distinct;
-};
-  function get_bitcode($edge_array, $de) {
+}
+function get_bitcode($edge_array, $de) {
   global $EDGE_ARRAY, $paths;
   $bitcode = '';
   $i = 0;
@@ -86,8 +69,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $bitcode;
-};
-  function count_ones($s) {
+}
+function count_ones($s) {
   global $EDGE_ARRAY, $paths;
   $c = 0;
   $i = 0;
@@ -98,8 +81,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $c;
-};
-  function get_frequency_table($edge_array) {
+}
+function get_frequency_table($edge_array) {
   global $EDGE_ARRAY, $paths;
   $distinct = get_distinct_edge($edge_array);
   $table = [];
@@ -114,7 +97,7 @@ $__start = _now();
   $max_i = $i;
   $j = $i + 1;
   while ($j < count($table)) {
-  if ($toi($table[$j]['count']) > $toi($table[$max_i]['count'])) {
+  if (intval($table[$j]['count']) > intval($table[$max_i]['count'])) {
   $max_i = $j;
 }
   $j = $j + 1;
@@ -125,8 +108,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $table;
-};
-  function get_nodes($freq_table) {
+}
+function get_nodes($freq_table) {
   global $EDGE_ARRAY, $paths;
   $nodes = [];
   $keys = [];
@@ -141,8 +124,8 @@ $__start = _now();
 }
 };
   return ['map' => $nodes, 'keys' => $keys];
-};
-  function get_cluster($nodes) {
+}
+function get_cluster($nodes) {
   global $EDGE_ARRAY, $paths;
   $clusters = [];
   $weights = [];
@@ -159,8 +142,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return ['clusters' => $clusters, 'weights' => $weights];
-};
-  function get_support($clusters) {
+}
+function get_support($clusters) {
   global $EDGE_ARRAY, $paths;
   $sup = [];
   $i = 0;
@@ -170,8 +153,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $sup;
-};
-  function contains_bits($a, $b) {
+}
+function contains_bits($a, $b) {
   global $EDGE_ARRAY, $paths;
   $i = 0;
   while ($i < strlen($a)) {
@@ -183,8 +166,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return true;
-};
-  function max_cluster_key($clusters) {
+}
+function max_cluster_key($clusters) {
   global $EDGE_ARRAY, $paths;
   $m = 0;
   $i = 0;
@@ -196,15 +179,15 @@ $__start = _now();
   $i = $i + 1;
 };
   return $m;
-};
-  function get_cluster_codes($clusters, $wt) {
+}
+function get_cluster_codes($clusters, $wt) {
   global $EDGE_ARRAY, $paths;
   if (isset($clusters['clusters'][$wt])) {
   return $clusters['clusters'][$wt];
 }
   return [];
-};
-  function create_edge($nodes, &$graph, $gkeys, $clusters, $c1, $maxk) {
+}
+function create_edge($nodes, &$graph, $gkeys, $clusters, $c1, $maxk) {
   global $EDGE_ARRAY, $paths;
   $keys = $gkeys;
   $codes1 = get_cluster_codes($clusters, $c1);
@@ -243,8 +226,8 @@ $__start = _now();
   $idx1 = $idx1 + 1;
 };
   return $keys;
-};
-  function construct_graph($clusters, $nodes) {
+}
+function construct_graph($clusters, $nodes) {
   global $EDGE_ARRAY, $paths;
   $maxk = max_cluster_key($clusters);
   $top_codes = get_cluster_codes($clusters, $maxk);
@@ -265,17 +248,17 @@ $__start = _now();
   $c = $c + 1;
 };
   return ['edges' => $graph, 'keys' => $keys];
-};
-  $paths = [];
-  function copy_list($lst) {
+}
+$paths = [];
+function copy_list($lst) {
   global $EDGE_ARRAY, $paths;
   $n = [];
   foreach ($lst as $v) {
   $n = _append($n, $v);
 };
   return $n;
-};
-  function my_dfs($graph, $start, $end, $path) {
+}
+function my_dfs($graph, $start, $end, $path) {
   global $EDGE_ARRAY, $paths;
   $new_path = copy_list($path);
   $new_path = _append($new_path, $start);
@@ -294,8 +277,8 @@ $__start = _now();
   my_dfs($graph, $node, $end, $new_path);
 }
 };
-};
-  function find_freq_subgraph_given_support($s, $clusters, $graph) {
+}
+function find_freq_subgraph_given_support($s, $clusters, $graph) {
   global $EDGE_ARRAY, $paths;
   $k = $s * _len($clusters['weights']) / 100;
   $codes = get_cluster_codes($clusters, $k);
@@ -304,12 +287,12 @@ $__start = _now();
   my_dfs($graph['edges'], $codes[$i], 'Header', []);
   $i = $i + 1;
 };
-};
-  function node_edges($nodes, $code) {
+}
+function node_edges($nodes, $code) {
   global $EDGE_ARRAY, $paths;
   return $nodes['map'][$code];
-};
-  function freq_subgraphs_edge_list($paths, $nodes) {
+}
+function freq_subgraphs_edge_list($paths, $nodes) {
   global $EDGE_ARRAY;
   $freq_sub_el = [];
   foreach ($paths as $path) {
@@ -331,8 +314,8 @@ $__start = _now();
   $freq_sub_el = _append($freq_sub_el, $el);
 };
   return $freq_sub_el;
-};
-  function print_all($nodes, $support, $clusters, $graph, $freq_subgraph_edge_list) {
+}
+function print_all($nodes, $support, $clusters, $graph, $freq_subgraph_edge_list) {
   global $EDGE_ARRAY, $paths;
   echo rtrim('
 Nodes
@@ -373,8 +356,8 @@ Edge List of Frequent subgraphs
   foreach ($freq_subgraph_edge_list as $el) {
   echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($el, 1344)))))), PHP_EOL;
 };
-};
-  function main() {
+}
+function main() {
   global $EDGE_ARRAY, $paths;
   $frequency_table = get_frequency_table($EDGE_ARRAY);
   $nodes = get_nodes($frequency_table);
@@ -384,13 +367,5 @@ Edge List of Frequent subgraphs
   find_freq_subgraph_given_support(60, $clusters, $graph);
   $freq_subgraph_edge_list = freq_subgraphs_edge_list($paths, $nodes);
   print_all($nodes, $support, $clusters, $graph, $freq_subgraph_edge_list);
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();
