@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 933/1077
-Last updated: 2025-08-15 09:59 +0700
+Completed programs: 934/1077
+Last updated: 2025-08-15 10:26 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -447,7 +447,7 @@ Last updated: 2025-08-15 09:59 +0700
 | 438 | graphs/lanczos_eigenvectors | ✓ | 450µs | 3.3 MB |
 | 439 | graphs/markov_chain | ✓ | 8.146ms | 3.3 MB |
 | 440 | graphs/matching_min_vertex_cover | ✓ | 815µs | 3.3 MB |
-| 441 | graphs/minimum_path_sum |   |  |  |
+| 441 | graphs/minimum_path_sum | ✓ | 335µs | 3.1 MB |
 | 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 412µs | 3.2 MB |
 | 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 430µs | 3.1 MB |
 | 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 315µs | 3.3 MB |
