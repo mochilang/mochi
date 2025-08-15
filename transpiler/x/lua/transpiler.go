@@ -184,6 +184,7 @@ local function _environ()
     end
     p:close()
   end
+  table.sort(t)
   return t
 end
 `

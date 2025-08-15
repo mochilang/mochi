@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-15 10:06 GMT+7
+Last updated: 2025-08-15 10:24 GMT+7
 
-## Algorithms Golden Test Checklist (1041/1077)
+## Algorithms Golden Test Checklist (1042/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -511,56 +511,56 @@ Last updated: 2025-08-15 10:06 GMT+7
 | 502 | machine_learning/dimensionality_reduction | ✓ | 28µs | 104 B |
 | 503 | machine_learning/forecasting/run | ✓ | 173µs | 1.8 KB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 151µs | 2.7 KB |
-| 506 | machine_learning/gradient_descent | ✓ | 180.353ms | 3.1 KB |
-| 507 | machine_learning/k_means_clust | ✓ | 159µs | 2.7 KB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 100µs | 3.1 KB |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 486µs | 1.4 KB |
-| 510 | machine_learning/linear_regression | ✓ | 217µs | 1.9 KB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 196µs | 2.3 KB |
-| 512 | machine_learning/logistic_regression | ✓ | 8.152ms | 1.9 KB |
-| 513 | machine_learning/loss_functions | ✓ | 721µs | 1.8 KB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 12.49ms | 1.9 KB |
-| 515 | machine_learning/mfcc | ✓ | 234µs | 1.7 KB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 25.934ms | 2.4 KB |
-| 517 | machine_learning/polynomial_regression | ✓ | 320µs | 5.5 KB |
-| 518 | machine_learning/principle_component_analysis | ✓ | 160µs | 3.7 KB |
-| 519 | machine_learning/scoring_functions | ✓ | 238µs | 1.3 KB |
-| 520 | machine_learning/self_organizing_map | ✓ | 292µs | 1.1 KB |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 351µs | 2.0 KB |
-| 522 | machine_learning/similarity_search | ✓ | 221µs | 1.9 KB |
-| 523 | machine_learning/support_vector_machines | ✓ | 7.516ms | 2.2 KB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 5.363ms | 1.4 KB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 295µs | 1.2 KB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 146µs | 1.0 KB |
-| 527 | maths/abs | ✓ | 92µs | 1.2 KB |
-| 528 | maths/addition_without_arithmetic | ✓ | 122µs | 928 B |
-| 529 | maths/aliquot_sum | ✓ | 120µs | 784 B |
-| 530 | maths/allocation_number | ✓ | 139µs | 904 B |
-| 531 | maths/arc_length | ✓ | 54µs | 744 B |
-| 532 | maths/area | ✓ | 167µs | 1.6 KB |
-| 533 | maths/area_under_curve | ✓ | 7.639ms | 808 B |
-| 534 | maths/average_absolute_deviation | ✓ | 210µs | 888 B |
-| 535 | maths/average_mean | ✓ | 154µs | 856 B |
-| 536 | maths/average_median | ✓ | 140µs | 912 B |
-| 537 | maths/average_mode | ✓ | 355µs | 1.1 KB |
-| 538 | maths/bailey_borwein_plouffe | error |  |  |
-| 539 | maths/base_neg2_conversion | ✓ | 118µs | 856 B |
-| 540 | maths/basic_maths | ✓ | 96µs | 1.2 KB |
-| 541 | maths/binary_exponentiation | ✓ | 70µs | 472 B |
-| 542 | maths/binary_multiplication | ✓ | 89µs | 936 B |
-| 543 | maths/binomial_coefficient | ✓ | 115µs | 856 B |
-| 544 | maths/binomial_distribution | ✓ | 1µs | 192 B |
-| 545 | maths/ceil | ✓ | 48µs | 944 B |
-| 546 | maths/chebyshev_distance | ✓ | 72µs | 888 B |
-| 547 | maths/check_polygon | ✓ | 103µs | 928 B |
-| 548 | maths/chinese_remainder_theorem | ✓ | 149µs | 1.4 KB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 145µs | 856 B |
-| 550 | maths/collatz_sequence | ✓ | 123µs | 1008 B |
-| 551 | maths/combinations | ✓ | 93µs | 784 B |
-| 552 | maths/continued_fraction | ✓ | 159µs | 928 B |
-| 553 | maths/decimal_isolate | ✓ | 136µs | 1.0 KB |
-| 554 | maths/decimal_to_fraction | ✓ | 242µs | 1.4 KB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 230µs | 2.7 KB |
+| 506 | machine_learning/gradient_descent | ✓ | 250.182ms | 3.1 KB |
+| 507 | machine_learning/k_means_clust | ✓ | 392µs | 2.7 KB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 197µs | 3.1 KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.164ms | 2.6 KB |
+| 510 | machine_learning/linear_regression | ✓ | 370µs | 1.9 KB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 353µs | 2.3 KB |
+| 512 | machine_learning/logistic_regression | ✓ | 11.799ms | 1.9 KB |
+| 513 | machine_learning/loss_functions | ✓ | 524µs | 1.8 KB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 20.062ms | 1.9 KB |
+| 515 | machine_learning/mfcc | ✓ | 414µs | 1.7 KB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 36.898ms | 2.4 KB |
+| 517 | machine_learning/polynomial_regression | ✓ | 410µs | 5.2 KB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 237µs | 3.7 KB |
+| 519 | machine_learning/scoring_functions | ✓ | 178µs | 1.3 KB |
+| 520 | machine_learning/self_organizing_map | ✓ | 155µs | 1.1 KB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 510µs | 2.0 KB |
+| 522 | machine_learning/similarity_search | ✓ | 179µs | 1.9 KB |
+| 523 | machine_learning/support_vector_machines | ✓ | 10.803ms | 2.2 KB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 7.974ms | 1.4 KB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 402µs | 1.2 KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 152µs | 1.0 KB |
+| 527 | maths/abs | ✓ | 85µs | 1.2 KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 174µs | 928 B |
+| 529 | maths/aliquot_sum | ✓ | 114µs | 784 B |
+| 530 | maths/allocation_number | ✓ | 244µs | 864 B |
+| 531 | maths/arc_length | ✓ | 75µs | 744 B |
+| 532 | maths/area | ✓ | 224µs | 1.6 KB |
+| 533 | maths/area_under_curve | ✓ | 10.76ms | 808 B |
+| 534 | maths/average_absolute_deviation | ✓ | 125µs | 888 B |
+| 535 | maths/average_mean | ✓ | 152µs | 856 B |
+| 536 | maths/average_median | ✓ | 102µs | 912 B |
+| 537 | maths/average_mode | ✓ | 563µs | 1.1 KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 4.654435s | 1.0 KB |
+| 539 | maths/base_neg2_conversion | ✓ | 179µs | 2.8 KB |
+| 540 | maths/basic_maths | ✓ | 251µs | 1.2 KB |
+| 541 | maths/binary_exponentiation | ✓ | 151µs | 472 B |
+| 542 | maths/binary_multiplication | ✓ | 174µs | 896 B |
+| 543 | maths/binomial_coefficient | ✓ | 185µs | 856 B |
+| 544 | maths/binomial_distribution | ✓ | 3µs | 192 B |
+| 545 | maths/ceil | ✓ | 76µs | 944 B |
+| 546 | maths/chebyshev_distance | ✓ | 105µs | 888 B |
+| 547 | maths/check_polygon | ✓ | 137µs | 928 B |
+| 548 | maths/chinese_remainder_theorem | ✓ | 249µs | 1.4 KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 77µs | 856 B |
+| 550 | maths/collatz_sequence | ✓ | 208µs | 968 B |
+| 551 | maths/combinations | ✓ | 147µs | 784 B |
+| 552 | maths/continued_fraction | ✓ | 141µs | 888 B |
+| 553 | maths/decimal_isolate | ✓ | 114µs | 1.0 KB |
+| 554 | maths/decimal_to_fraction | ✓ | 386µs | 1.4 KB |
 | 555 | maths/dodecahedron | ✓ | 61µs | 520 B |
 | 556 | maths/double_factorial | ✓ | 87µs | 664 B |
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 329µs | 1.5 KB |
