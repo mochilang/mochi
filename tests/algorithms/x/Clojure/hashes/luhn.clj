@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare is_luhn)
@@ -34,7 +37,7 @@
 (def ^:dynamic is_luhn_n nil)
 
 (defn is_luhn [is_luhn_s]
-  (binding [is_luhn_check_digit nil is_luhn_digit nil is_luhn_doubled nil is_luhn_even nil is_luhn_i nil is_luhn_n nil] (try (do (set! is_luhn_n (count is_luhn_s)) (when (<= is_luhn_n 1) (throw (ex-info "return" {:v false}))) (set! is_luhn_check_digit (Integer/parseInt (subs is_luhn_s (- is_luhn_n 1) (min is_luhn_n (count is_luhn_s))))) (set! is_luhn_i (- is_luhn_n 2)) (set! is_luhn_even true) (while (>= is_luhn_i 0) (do (set! is_luhn_digit (Integer/parseInt (subs is_luhn_s is_luhn_i (min (+ is_luhn_i 1) (count is_luhn_s))))) (if is_luhn_even (do (set! is_luhn_doubled (* is_luhn_digit 2)) (when (> is_luhn_doubled 9) (set! is_luhn_doubled (- is_luhn_doubled 9))) (set! is_luhn_check_digit (+ is_luhn_check_digit is_luhn_doubled))) (set! is_luhn_check_digit (+ is_luhn_check_digit is_luhn_digit))) (set! is_luhn_even (not is_luhn_even)) (set! is_luhn_i (- is_luhn_i 1)))) (throw (ex-info "return" {:v (= (mod is_luhn_check_digit 10) 0)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [is_luhn_check_digit nil is_luhn_digit nil is_luhn_doubled nil is_luhn_even nil is_luhn_i nil is_luhn_n nil] (try (do (set! is_luhn_n (count is_luhn_s)) (when (<= is_luhn_n 1) (throw (ex-info "return" {:v false}))) (set! is_luhn_check_digit (toi (subs is_luhn_s (- is_luhn_n 1) (min is_luhn_n (count is_luhn_s))))) (set! is_luhn_i (- is_luhn_n 2)) (set! is_luhn_even true) (while (>= is_luhn_i 0) (do (set! is_luhn_digit (toi (subs is_luhn_s is_luhn_i (min (+ is_luhn_i 1) (count is_luhn_s))))) (if is_luhn_even (do (set! is_luhn_doubled (* is_luhn_digit 2)) (when (> is_luhn_doubled 9) (set! is_luhn_doubled (- is_luhn_doubled 9))) (set! is_luhn_check_digit (+ is_luhn_check_digit is_luhn_doubled))) (set! is_luhn_check_digit (+ is_luhn_check_digit is_luhn_digit))) (set! is_luhn_even (not is_luhn_even)) (set! is_luhn_i (- is_luhn_i 1)))) (throw (ex-info "return" {:v (= (mod is_luhn_check_digit 10) 0)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

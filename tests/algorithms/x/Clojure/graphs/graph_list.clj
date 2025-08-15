@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare make_graph contains_vertex add_edge graph_to_string)
@@ -36,7 +39,7 @@
   (try (throw (ex-info "return" {:v (in contains_vertex_v contains_vertex_m)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn add_edge [add_edge_g_p add_edge_s add_edge_d]
-  (binding [add_edge_adj nil add_edge_g nil] (try (do (set! add_edge_g add_edge_g_p) (set! add_edge_adj (:adj_list add_edge_g)) (if (not (:directed add_edge_g)) (if (and (contains_vertex add_edge_adj add_edge_s) (contains_vertex add_edge_adj add_edge_d)) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s (conj (get add_edge_adj add_edge_s) add_edge_d))) (set! add_edge_adj (assoc add_edge_adj add_edge_d (conj (get add_edge_adj add_edge_d) add_edge_s)))) (if (contains_vertex add_edge_adj add_edge_s) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s (conj (get add_edge_adj add_edge_s) add_edge_d))) (set! add_edge_adj (assoc add_edge_adj add_edge_d [add_edge_s]))) (if (contains_vertex add_edge_adj add_edge_d) (do (set! add_edge_adj (assoc add_edge_adj add_edge_d (conj (get add_edge_adj add_edge_d) add_edge_s))) (set! add_edge_adj (assoc add_edge_adj add_edge_s [add_edge_d]))) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s [add_edge_d])) (set! add_edge_adj (assoc add_edge_adj add_edge_d [add_edge_s])))))) (if (and (contains_vertex add_edge_adj add_edge_s) (contains_vertex add_edge_adj add_edge_d)) (set! add_edge_adj (assoc add_edge_adj add_edge_s (conj (get add_edge_adj add_edge_s) add_edge_d))) (if (contains_vertex add_edge_adj add_edge_s) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s (conj (get add_edge_adj add_edge_s) add_edge_d))) (set! add_edge_adj (assoc add_edge_adj add_edge_d []))) (if (contains_vertex add_edge_adj add_edge_d) (set! add_edge_adj (assoc add_edge_adj add_edge_s [add_edge_d])) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s [add_edge_d])) (set! add_edge_adj (assoc add_edge_adj add_edge_d []))))))) (set! add_edge_g (assoc add_edge_g :adj_list add_edge_adj)) (throw (ex-info "return" {:v add_edge_g}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [add_edge_g add_edge_g_p add_edge_adj nil] (try (do (set! add_edge_adj (:adj_list add_edge_g)) (if (not (:directed add_edge_g)) (if (and (contains_vertex add_edge_adj add_edge_s) (contains_vertex add_edge_adj add_edge_d)) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s (conj (get add_edge_adj add_edge_s) add_edge_d))) (set! add_edge_adj (assoc add_edge_adj add_edge_d (conj (get add_edge_adj add_edge_d) add_edge_s)))) (if (contains_vertex add_edge_adj add_edge_s) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s (conj (get add_edge_adj add_edge_s) add_edge_d))) (set! add_edge_adj (assoc add_edge_adj add_edge_d [add_edge_s]))) (if (contains_vertex add_edge_adj add_edge_d) (do (set! add_edge_adj (assoc add_edge_adj add_edge_d (conj (get add_edge_adj add_edge_d) add_edge_s))) (set! add_edge_adj (assoc add_edge_adj add_edge_s [add_edge_d]))) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s [add_edge_d])) (set! add_edge_adj (assoc add_edge_adj add_edge_d [add_edge_s])))))) (if (and (contains_vertex add_edge_adj add_edge_s) (contains_vertex add_edge_adj add_edge_d)) (set! add_edge_adj (assoc add_edge_adj add_edge_s (conj (get add_edge_adj add_edge_s) add_edge_d))) (if (contains_vertex add_edge_adj add_edge_s) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s (conj (get add_edge_adj add_edge_s) add_edge_d))) (set! add_edge_adj (assoc add_edge_adj add_edge_d []))) (if (contains_vertex add_edge_adj add_edge_d) (set! add_edge_adj (assoc add_edge_adj add_edge_s [add_edge_d])) (do (set! add_edge_adj (assoc add_edge_adj add_edge_s [add_edge_d])) (set! add_edge_adj (assoc add_edge_adj add_edge_d []))))))) (set! add_edge_g (assoc add_edge_g :adj_list add_edge_adj)) (throw (ex-info "return" {:v add_edge_g}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var add_edge_g) (constantly add_edge_g))))))
 
 (defn graph_to_string [graph_to_string_g]
   (try (throw (ex-info "return" {:v (str (:adj_list graph_to_string_g))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -47,15 +50,15 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (def main_d_graph (add_edge main_d_graph (str 0) (str 1)))
+      (alter-var-root (var main_d_graph) (constantly (let [__res (add_edge main_d_graph (str 0) (str 1))] (do (alter-var-root (var main_d_graph) (constantly add_edge_g)) __res))))
       (println (graph_to_string main_d_graph))
-      (def main_d_graph (add_edge main_d_graph (str 1) (str 2)))
-      (def main_d_graph (add_edge main_d_graph (str 1) (str 4)))
-      (def main_d_graph (add_edge main_d_graph (str 1) (str 5)))
+      (alter-var-root (var main_d_graph) (constantly (let [__res (add_edge main_d_graph (str 1) (str 2))] (do (alter-var-root (var main_d_graph) (constantly add_edge_g)) __res))))
+      (alter-var-root (var main_d_graph) (constantly (let [__res (add_edge main_d_graph (str 1) (str 4))] (do (alter-var-root (var main_d_graph) (constantly add_edge_g)) __res))))
+      (alter-var-root (var main_d_graph) (constantly (let [__res (add_edge main_d_graph (str 1) (str 5))] (do (alter-var-root (var main_d_graph) (constantly add_edge_g)) __res))))
       (println (graph_to_string main_d_graph))
-      (def main_d_graph (add_edge main_d_graph (str 2) (str 0)))
-      (def main_d_graph (add_edge main_d_graph (str 2) (str 6)))
-      (def main_d_graph (add_edge main_d_graph (str 2) (str 7)))
+      (alter-var-root (var main_d_graph) (constantly (let [__res (add_edge main_d_graph (str 2) (str 0))] (do (alter-var-root (var main_d_graph) (constantly add_edge_g)) __res))))
+      (alter-var-root (var main_d_graph) (constantly (let [__res (add_edge main_d_graph (str 2) (str 6))] (do (alter-var-root (var main_d_graph) (constantly add_edge_g)) __res))))
+      (alter-var-root (var main_d_graph) (constantly (let [__res (add_edge main_d_graph (str 2) (str 7))] (do (alter-var-root (var main_d_graph) (constantly add_edge_g)) __res))))
       (println (graph_to_string main_d_graph))
       (System/gc)
       (let [end (System/nanoTime)

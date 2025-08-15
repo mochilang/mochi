@@ -1,5 +1,2 @@
-Syntax error compiling var at (/workspace/mochi/tests/algorithms/x/Clojure/graphs/lanczos_eigenvectors.clj:251:188).
-Unable to resolve var: find_lanczos_eigenvectors_graph in this context
-
-Full report at:
-/tmp/clojure-17371458152693353418.edn
+[2.0000000000000004, -1.0000000000000004]
+[[0.5773502691896258, 0.7441921137662304]; [0.5773502691896258, -0.08117755737489832]; [0.5773502691896257, -0.6630145563913323]]

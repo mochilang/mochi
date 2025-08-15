@@ -1,6 +1,6 @@
 run: exit status 1
-Execution error (ClassCastException) at main/round-dec (chaos_machine.clj:91).
-class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
+Execution error (NullPointerException) at main/pull (chaos_machine.clj:109).
+Cannot invoke "Object.getClass()" because "x" is null
 
 Full report at:
-/tmp/clojure-8309737767952403948.edn
+/tmp/clojure-7082531192127319351.edn

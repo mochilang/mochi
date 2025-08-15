@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare insertion_sort minimum_waiting_time)
@@ -38,10 +41,10 @@
 (def ^:dynamic minimum_waiting_time_total nil)
 
 (defn insertion_sort [insertion_sort_a_p]
-  (binding [insertion_sort_a nil insertion_sort_i nil insertion_sort_j nil insertion_sort_key nil] (try (do (set! insertion_sort_a insertion_sort_a_p) (set! insertion_sort_i 1) (while (< insertion_sort_i (count insertion_sort_a)) (do (set! insertion_sort_key (nth insertion_sort_a insertion_sort_i)) (set! insertion_sort_j (- insertion_sort_i 1)) (while (and (>= insertion_sort_j 0) (> (nth insertion_sort_a insertion_sort_j) insertion_sort_key)) (do (set! insertion_sort_a (assoc insertion_sort_a (+ insertion_sort_j 1) (nth insertion_sort_a insertion_sort_j))) (set! insertion_sort_j (- insertion_sort_j 1)))) (set! insertion_sort_a (assoc insertion_sort_a (+ insertion_sort_j 1) insertion_sort_key)) (set! insertion_sort_i (+ insertion_sort_i 1)))) (throw (ex-info "return" {:v insertion_sort_a}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [insertion_sort_a insertion_sort_a_p insertion_sort_i nil insertion_sort_j nil insertion_sort_key nil] (try (do (set! insertion_sort_i 1) (while (< insertion_sort_i (count insertion_sort_a)) (do (set! insertion_sort_key (nth insertion_sort_a insertion_sort_i)) (set! insertion_sort_j (- insertion_sort_i 1)) (while (and (>= insertion_sort_j 0) (> (nth insertion_sort_a insertion_sort_j) insertion_sort_key)) (do (set! insertion_sort_a (assoc insertion_sort_a (+ insertion_sort_j 1) (nth insertion_sort_a insertion_sort_j))) (set! insertion_sort_j (- insertion_sort_j 1)))) (set! insertion_sort_a (assoc insertion_sort_a (+ insertion_sort_j 1) insertion_sort_key)) (set! insertion_sort_i (+ insertion_sort_i 1)))) (throw (ex-info "return" {:v insertion_sort_a}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var insertion_sort_a) (constantly insertion_sort_a))))))
 
 (defn minimum_waiting_time [minimum_waiting_time_queries]
-  (binding [minimum_waiting_time_i nil minimum_waiting_time_n nil minimum_waiting_time_sorted nil minimum_waiting_time_total nil] (try (do (set! minimum_waiting_time_n (count minimum_waiting_time_queries)) (when (or (= minimum_waiting_time_n 0) (= minimum_waiting_time_n 1)) (throw (ex-info "return" {:v 0}))) (set! minimum_waiting_time_sorted (insertion_sort minimum_waiting_time_queries)) (set! minimum_waiting_time_total 0) (set! minimum_waiting_time_i 0) (while (< minimum_waiting_time_i minimum_waiting_time_n) (do (set! minimum_waiting_time_total (+ minimum_waiting_time_total (* (nth minimum_waiting_time_sorted minimum_waiting_time_i) (- (- minimum_waiting_time_n minimum_waiting_time_i) 1)))) (set! minimum_waiting_time_i (+ minimum_waiting_time_i 1)))) (throw (ex-info "return" {:v minimum_waiting_time_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [minimum_waiting_time_i nil minimum_waiting_time_n nil minimum_waiting_time_sorted nil minimum_waiting_time_total nil] (try (do (set! minimum_waiting_time_n (count minimum_waiting_time_queries)) (when (or (= minimum_waiting_time_n 0) (= minimum_waiting_time_n 1)) (throw (ex-info "return" {:v 0}))) (set! minimum_waiting_time_sorted (let [__res (insertion_sort minimum_waiting_time_queries)] (do (set! minimum_waiting_time_queries insertion_sort_a) __res))) (set! minimum_waiting_time_total 0) (set! minimum_waiting_time_i 0) (while (< minimum_waiting_time_i minimum_waiting_time_n) (do (set! minimum_waiting_time_total (+ minimum_waiting_time_total (* (nth minimum_waiting_time_sorted minimum_waiting_time_i) (- (- minimum_waiting_time_n minimum_waiting_time_i) 1)))) (set! minimum_waiting_time_i (+ minimum_waiting_time_i 1)))) (throw (ex-info "return" {:v minimum_waiting_time_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare connect in_list prim sort_heap prim_heap print_edges test_vector)
@@ -105,7 +108,7 @@
 
 (def ^:dynamic test_vector_x nil)
 
-(def ^:dynamic main_INF 1000000000)
+(def ^:dynamic main_INF nil)
 
 (defn connect [connect_graph connect_a connect_b connect_w]
   (binding [connect_g nil connect_u nil connect_v nil] (try (do (set! connect_u (- connect_a 1)) (set! connect_v (- connect_b 1)) (set! connect_g connect_graph) (set! connect_g (assoc connect_g connect_u (conj (get connect_g connect_u) [connect_v connect_w]))) (set! connect_g (assoc connect_g connect_v (conj (get connect_g connect_v) [connect_u connect_w]))) (throw (ex-info "return" {:v connect_g}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -126,12 +129,13 @@
   (binding [print_edges_e nil print_edges_i nil] (do (set! print_edges_i 0) (while (< print_edges_i (count print_edges_edges)) (do (set! print_edges_e (nth print_edges_edges print_edges_i)) (println (str (str (str (str "(" (str (nth print_edges_e 0))) ", ") (str (nth print_edges_e 1))) ")")) (set! print_edges_i (+ print_edges_i 1)))) print_edges_edges)))
 
 (defn test_vector []
-  (binding [test_vector_G nil test_vector_i nil test_vector_mst nil test_vector_mst_heap nil test_vector_x nil] (do (set! test_vector_x 5) (set! test_vector_G {}) (set! test_vector_i 0) (while (< test_vector_i test_vector_x) (do (set! test_vector_G (assoc test_vector_G test_vector_i [])) (set! test_vector_i (+ test_vector_i 1)))) (set! test_vector_G (connect test_vector_G 1 2 15)) (set! test_vector_G (connect test_vector_G 1 3 12)) (set! test_vector_G (connect test_vector_G 2 4 13)) (set! test_vector_G (connect test_vector_G 2 5 5)) (set! test_vector_G (connect test_vector_G 3 2 6)) (set! test_vector_G (connect test_vector_G 3 4 6)) (set! test_vector_mst (prim test_vector_G 0 test_vector_x)) (set! test_vector_mst (print_edges test_vector_mst)) (set! test_vector_mst_heap (prim_heap test_vector_G 0 test_vector_x)) (set! test_vector_mst_heap (print_edges test_vector_mst_heap)))))
+  (binding [test_vector_G nil test_vector_i nil test_vector_mst nil test_vector_mst_heap nil test_vector_x nil] (do (set! test_vector_x 5) (set! test_vector_G {}) (set! test_vector_i 0) (while (< test_vector_i test_vector_x) (do (set! test_vector_G (assoc test_vector_G test_vector_i [])) (set! test_vector_i (+ test_vector_i 1)))) (set! test_vector_G (connect test_vector_G 1 2 15)) (set! test_vector_G (connect test_vector_G 1 3 12)) (set! test_vector_G (connect test_vector_G 2 4 13)) (set! test_vector_G (connect test_vector_G 2 5 5)) (set! test_vector_G (connect test_vector_G 3 2 6)) (set! test_vector_G (connect test_vector_G 3 4 6)) (set! test_vector_mst (prim test_vector_G 0 test_vector_x)) (print_edges test_vector_mst) (set! test_vector_mst_heap (prim_heap test_vector_G 0 test_vector_x)) (print_edges test_vector_mst_heap))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_INF) (constantly 1000000000))
       (test_vector)
       (System/gc)
       (let [end (System/nanoTime)

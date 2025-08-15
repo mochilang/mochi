@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare contains get_edges matching_min_vertex_cover)
@@ -52,14 +55,16 @@
 (defn matching_min_vertex_cover [matching_min_vertex_cover_graph]
   (binding [matching_min_vertex_cover_a nil matching_min_vertex_cover_b nil matching_min_vertex_cover_chosen nil matching_min_vertex_cover_e nil matching_min_vertex_cover_edges nil matching_min_vertex_cover_filtered nil matching_min_vertex_cover_idx nil matching_min_vertex_cover_u nil matching_min_vertex_cover_v nil] (try (do (set! matching_min_vertex_cover_chosen []) (set! matching_min_vertex_cover_edges (get_edges matching_min_vertex_cover_graph)) (while (> (count matching_min_vertex_cover_edges) 0) (do (set! matching_min_vertex_cover_idx (- (count matching_min_vertex_cover_edges) 1)) (set! matching_min_vertex_cover_e (nth matching_min_vertex_cover_edges matching_min_vertex_cover_idx)) (set! matching_min_vertex_cover_edges (subvec matching_min_vertex_cover_edges 0 (min matching_min_vertex_cover_idx (count matching_min_vertex_cover_edges)))) (set! matching_min_vertex_cover_u (nth matching_min_vertex_cover_e 0)) (set! matching_min_vertex_cover_v (nth matching_min_vertex_cover_e 1)) (when (not (contains matching_min_vertex_cover_chosen matching_min_vertex_cover_u)) (set! matching_min_vertex_cover_chosen (conj matching_min_vertex_cover_chosen matching_min_vertex_cover_u))) (when (not (contains matching_min_vertex_cover_chosen matching_min_vertex_cover_v)) (set! matching_min_vertex_cover_chosen (conj matching_min_vertex_cover_chosen matching_min_vertex_cover_v))) (set! matching_min_vertex_cover_filtered []) (doseq [edge matching_min_vertex_cover_edges] (do (set! matching_min_vertex_cover_a (nth edge 0)) (set! matching_min_vertex_cover_b (nth edge 1)) (when (and (and (and (not= matching_min_vertex_cover_a matching_min_vertex_cover_u) (not= matching_min_vertex_cover_b matching_min_vertex_cover_u)) (not= matching_min_vertex_cover_a matching_min_vertex_cover_v)) (not= matching_min_vertex_cover_b matching_min_vertex_cover_v)) (set! matching_min_vertex_cover_filtered (conj matching_min_vertex_cover_filtered edge))))) (set! matching_min_vertex_cover_edges matching_min_vertex_cover_filtered))) (throw (ex-info "return" {:v matching_min_vertex_cover_chosen}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_graph {0 [1 3] 1 [0 3] 2 [0 3 4] 3 [0 1 2] 4 [2 3]})
+(def ^:dynamic main_graph nil)
 
-(def ^:dynamic main_cover (matching_min_vertex_cover main_graph))
+(def ^:dynamic main_cover nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_graph) (constantly {0 [1 3] 1 [0 3] 2 [0 3 4] 3 [0 1 2] 4 [2 3]}))
+      (alter-var-root (var main_cover) (constantly (matching_min_vertex_cover main_graph)))
       (println (str main_cover))
       (System/gc)
       (let [end (System/nanoTime)

@@ -1,5 +1,5 @@
-[[0 1 0] [1 0 1] [0 1 0]]
-true
-true
-false
-[[0 0] [0 0]]
+Execution error at main/add-edge (graph_adjacency_matrix.clj:112).
+missing vertex
+
+Full report at:
+/tmp/clojure-8845671870470562606.edn
