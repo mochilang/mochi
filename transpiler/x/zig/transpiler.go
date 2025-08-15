@@ -1652,8 +1652,8 @@ func (p *Program) Emit() []byte {
 		}
 		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
 		buf.WriteString("    switch (info) {\n")
-		buf.WriteString("    .pointer => |p| {\n")
-		buf.WriteString("        if (p.size == .slice) {\n")
+		buf.WriteString("    .Pointer => |p| {\n")
+		buf.WriteString("        if (p.size == .Slice) {\n")
 		buf.WriteString("            var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
 		buf.WriteString("            defer out.deinit();\n")
 		buf.WriteString("            out.append('[') catch unreachable;\n")
@@ -1666,7 +1666,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("            return out.toOwnedSlice() catch unreachable;\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("    },\n")
-		buf.WriteString("    .@\"struct\" => |_| {\n")
+		buf.WriteString("    .Struct => |_| {\n")
 		buf.WriteString("        if (@hasDecl(@TypeOf(v), \"iterator\")) {\n")
 		buf.WriteString("            const KVPair = struct{ ks: []const u8, vs: []const u8 };\n")
 		buf.WriteString("            var pairs = std.ArrayList(KVPair).init(std.heap.page_allocator);\n")
@@ -1774,7 +1774,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * @as(i64, @intCast(std.heap.pageSize()));\n")
+		buf.WriteString("        return pages * @as(i64, @intCast(std.mem.page_size));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -3513,6 +3513,20 @@ func (c *CallExpr) emit(w io.Writer) {
 							io.WriteString(w, ")")
 						}
 						continue
+					}
+				}
+				if ml, ok := a.(*MapLit); ok {
+					t := strings.TrimPrefix(strings.TrimPrefix(exp, "*const "), "*")
+					if strings.HasPrefix(t, "std.StringHashMap(") {
+						ml.KeyType = "[]const u8"
+						ml.ValType = strings.TrimSuffix(strings.TrimPrefix(t, "std.StringHashMap("), ")")
+					} else if strings.HasPrefix(t, "std.AutoHashMap(") {
+						inner := strings.TrimSuffix(strings.TrimPrefix(t, "std.AutoHashMap("), ")")
+						parts := strings.SplitN(inner, ",", 2)
+						if len(parts) == 2 {
+							ml.KeyType = strings.TrimSpace(parts[0])
+							ml.ValType = strings.TrimSpace(parts[1])
+						}
 					}
 				}
 				at := zigTypeFromExpr(a)
