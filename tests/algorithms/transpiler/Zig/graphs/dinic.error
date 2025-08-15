@@ -1,7 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/dinic.zig:153:21: error: local variable shadows declaration of 'v_var_1'
-                var v_var_1: i64 = q[_idx(q.len, qi)];
-                    ^~~~~~~
-/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/dinic.zig:20:1: note: declared here
-var v_var_1: i64 = 1;
-^~~~~~~~~~~~~~~~~~~~
