@@ -44,7 +44,11 @@
 
 (def ^:dynamic contains_bits_i nil)
 
+(def ^:dynamic contains_v nil)
+
 (def ^:dynamic copy_list_n nil)
+
+(def ^:dynamic copy_list_v nil)
 
 (def ^:dynamic count_ones_c nil)
 
@@ -94,11 +98,15 @@
 
 (def ^:dynamic freq_subgraphs_edge_list_j nil)
 
+(def ^:dynamic freq_subgraphs_edge_list_path nil)
+
 (def ^:dynamic get_bitcode_bitcode nil)
 
 (def ^:dynamic get_bitcode_found nil)
 
 (def ^:dynamic get_bitcode_i nil)
+
+(def ^:dynamic get_bitcode_item nil)
 
 (def ^:dynamic get_cluster_clusters nil)
 
@@ -114,11 +122,17 @@
 
 (def ^:dynamic get_distinct_edge_e nil)
 
+(def ^:dynamic get_distinct_edge_item nil)
+
+(def ^:dynamic get_distinct_edge_row nil)
+
 (def ^:dynamic get_frequency_table_bit nil)
 
 (def ^:dynamic get_frequency_table_cnt nil)
 
 (def ^:dynamic get_frequency_table_distinct nil)
+
+(def ^:dynamic get_frequency_table_e nil)
 
 (def ^:dynamic get_frequency_table_entry nil)
 
@@ -135,6 +149,8 @@
 (def ^:dynamic get_nodes_code nil)
 
 (def ^:dynamic get_nodes_edge nil)
+
+(def ^:dynamic get_nodes_f nil)
 
 (def ^:dynamic get_nodes_keys nil)
 
@@ -166,9 +182,15 @@
 
 (def ^:dynamic my_dfs_new_path nil)
 
+(def ^:dynamic my_dfs_node nil)
+
+(def ^:dynamic my_dfs_p nil)
+
 (def ^:dynamic my_dfs_seen nil)
 
 (def ^:dynamic print_all_code nil)
+
+(def ^:dynamic print_all_el nil)
 
 (def ^:dynamic print_all_i nil)
 
@@ -185,22 +207,22 @@
 (def ^:dynamic main_EDGE_ARRAY nil)
 
 (defn contains [contains_lst contains_item]
-  (try (do (doseq [v contains_lst] (when (= v contains_item) (throw (ex-info "return" {:v true})))) (throw (ex-info "return" {:v false}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (binding [contains_v nil] (try (do (doseq [contains_v contains_lst] (when (= contains_v contains_item) (throw (ex-info "return" {:v true})))) (throw (ex-info "return" {:v false}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn get_distinct_edge [get_distinct_edge_edge_array]
-  (binding [get_distinct_edge_distinct nil get_distinct_edge_e nil] (try (do (set! get_distinct_edge_distinct []) (doseq [row get_distinct_edge_edge_array] (doseq [item row] (do (set! get_distinct_edge_e (nth item 0)) (when (not (contains get_distinct_edge_distinct get_distinct_edge_e)) (set! get_distinct_edge_distinct (conj get_distinct_edge_distinct get_distinct_edge_e)))))) (throw (ex-info "return" {:v get_distinct_edge_distinct}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [get_distinct_edge_distinct nil get_distinct_edge_e nil get_distinct_edge_item nil get_distinct_edge_row nil] (try (do (set! get_distinct_edge_distinct []) (doseq [get_distinct_edge_row get_distinct_edge_edge_array] (doseq [get_distinct_edge_item get_distinct_edge_row] (do (set! get_distinct_edge_e (nth get_distinct_edge_item 0)) (when (not (contains get_distinct_edge_distinct get_distinct_edge_e)) (set! get_distinct_edge_distinct (conj get_distinct_edge_distinct get_distinct_edge_e)))))) (throw (ex-info "return" {:v get_distinct_edge_distinct}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn get_bitcode [get_bitcode_edge_array get_bitcode_de]
-  (binding [get_bitcode_bitcode nil get_bitcode_found nil get_bitcode_i nil] (try (do (set! get_bitcode_bitcode "") (set! get_bitcode_i 0) (loop [while_flag_1 true] (when (and while_flag_1 (< get_bitcode_i (count get_bitcode_edge_array))) (do (set! get_bitcode_found false) (loop [item_seq (nth get_bitcode_edge_array get_bitcode_i)] (when (seq item_seq) (let [item (first item_seq)] (cond (= (nth item 0) get_bitcode_de) (do (set! get_bitcode_found true) (recur nil)) :else (recur (rest item_seq)))))) (if get_bitcode_found (set! get_bitcode_bitcode (str get_bitcode_bitcode "1")) (set! get_bitcode_bitcode (str get_bitcode_bitcode "0"))) (set! get_bitcode_i (+ get_bitcode_i 1)) (cond :else (recur while_flag_1))))) (throw (ex-info "return" {:v get_bitcode_bitcode}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [get_bitcode_bitcode nil get_bitcode_found nil get_bitcode_i nil get_bitcode_item nil] (try (do (set! get_bitcode_bitcode "") (set! get_bitcode_i 0) (loop [while_flag_1 true] (when (and while_flag_1 (< get_bitcode_i (count get_bitcode_edge_array))) (do (set! get_bitcode_found false) (loop [get_bitcode_item_seq (nth get_bitcode_edge_array get_bitcode_i)] (when (seq get_bitcode_item_seq) (let [get_bitcode_item (first get_bitcode_item_seq)] (cond (= (nth get_bitcode_item 0) get_bitcode_de) (do (set! get_bitcode_found true) (recur nil)) :else (recur (rest get_bitcode_item_seq)))))) (if get_bitcode_found (set! get_bitcode_bitcode (str get_bitcode_bitcode "1")) (set! get_bitcode_bitcode (str get_bitcode_bitcode "0"))) (set! get_bitcode_i (+ get_bitcode_i 1)) (cond :else (recur while_flag_1))))) (throw (ex-info "return" {:v get_bitcode_bitcode}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn count_ones [count_ones_s]
   (binding [count_ones_c nil count_ones_i nil] (try (do (set! count_ones_c 0) (set! count_ones_i 0) (while (< count_ones_i (count count_ones_s)) (do (when (= (subs count_ones_s count_ones_i (min (+ count_ones_i 1) (count count_ones_s))) "1") (set! count_ones_c (+ count_ones_c 1))) (set! count_ones_i (+ count_ones_i 1)))) (throw (ex-info "return" {:v count_ones_c}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn get_frequency_table [get_frequency_table_edge_array]
-  (binding [get_frequency_table_bit nil get_frequency_table_cnt nil get_frequency_table_distinct nil get_frequency_table_entry nil get_frequency_table_i nil get_frequency_table_j nil get_frequency_table_max_i nil get_frequency_table_table nil get_frequency_table_tmp nil] (try (do (set! get_frequency_table_distinct (get_distinct_edge get_frequency_table_edge_array)) (set! get_frequency_table_table []) (doseq [e get_frequency_table_distinct] (do (set! get_frequency_table_bit (get_bitcode get_frequency_table_edge_array e)) (set! get_frequency_table_cnt (count_ones get_frequency_table_bit)) (set! get_frequency_table_entry {"bit" get_frequency_table_bit "count" (str get_frequency_table_cnt) "edge" e}) (set! get_frequency_table_table (conj get_frequency_table_table get_frequency_table_entry)))) (set! get_frequency_table_i 0) (while (< get_frequency_table_i (count get_frequency_table_table)) (do (set! get_frequency_table_max_i get_frequency_table_i) (set! get_frequency_table_j (+ get_frequency_table_i 1)) (while (< get_frequency_table_j (count get_frequency_table_table)) (do (when (> (toi (get (nth get_frequency_table_table get_frequency_table_j) "count")) (toi (get (nth get_frequency_table_table get_frequency_table_max_i) "count"))) (set! get_frequency_table_max_i get_frequency_table_j)) (set! get_frequency_table_j (+ get_frequency_table_j 1)))) (set! get_frequency_table_tmp (nth get_frequency_table_table get_frequency_table_i)) (set! get_frequency_table_table (assoc get_frequency_table_table get_frequency_table_i (nth get_frequency_table_table get_frequency_table_max_i))) (set! get_frequency_table_table (assoc get_frequency_table_table get_frequency_table_max_i get_frequency_table_tmp)) (set! get_frequency_table_i (+ get_frequency_table_i 1)))) (throw (ex-info "return" {:v get_frequency_table_table}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [get_frequency_table_bit nil get_frequency_table_cnt nil get_frequency_table_distinct nil get_frequency_table_e nil get_frequency_table_entry nil get_frequency_table_i nil get_frequency_table_j nil get_frequency_table_max_i nil get_frequency_table_table nil get_frequency_table_tmp nil] (try (do (set! get_frequency_table_distinct (get_distinct_edge get_frequency_table_edge_array)) (set! get_frequency_table_table []) (doseq [get_frequency_table_e get_frequency_table_distinct] (do (set! get_frequency_table_bit (get_bitcode get_frequency_table_edge_array get_frequency_table_e)) (set! get_frequency_table_cnt (count_ones get_frequency_table_bit)) (set! get_frequency_table_entry {"bit" get_frequency_table_bit "count" (str get_frequency_table_cnt) "edge" get_frequency_table_e}) (set! get_frequency_table_table (conj get_frequency_table_table get_frequency_table_entry)))) (set! get_frequency_table_i 0) (while (< get_frequency_table_i (count get_frequency_table_table)) (do (set! get_frequency_table_max_i get_frequency_table_i) (set! get_frequency_table_j (+ get_frequency_table_i 1)) (while (< get_frequency_table_j (count get_frequency_table_table)) (do (when (> (toi (get (nth get_frequency_table_table get_frequency_table_j) "count")) (toi (get (nth get_frequency_table_table get_frequency_table_max_i) "count"))) (set! get_frequency_table_max_i get_frequency_table_j)) (set! get_frequency_table_j (+ get_frequency_table_j 1)))) (set! get_frequency_table_tmp (nth get_frequency_table_table get_frequency_table_i)) (set! get_frequency_table_table (assoc get_frequency_table_table get_frequency_table_i (nth get_frequency_table_table get_frequency_table_max_i))) (set! get_frequency_table_table (assoc get_frequency_table_table get_frequency_table_max_i get_frequency_table_tmp)) (set! get_frequency_table_i (+ get_frequency_table_i 1)))) (throw (ex-info "return" {:v get_frequency_table_table}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn get_nodes [get_nodes_freq_table]
-  (binding [get_nodes_code nil get_nodes_edge nil get_nodes_keys nil get_nodes_nodes nil] (try (do (set! get_nodes_nodes {}) (set! get_nodes_keys []) (doseq [f get_nodes_freq_table] (do (set! get_nodes_code (get f "bit")) (set! get_nodes_edge (get f "edge")) (if (in get_nodes_code get_nodes_nodes) (set! get_nodes_nodes (assoc get_nodes_nodes get_nodes_code (conj (get get_nodes_nodes get_nodes_code) get_nodes_edge))) (do (set! get_nodes_nodes (assoc get_nodes_nodes get_nodes_code [get_nodes_edge])) (set! get_nodes_keys (conj get_nodes_keys get_nodes_code)))))) (throw (ex-info "return" {:v {:keys get_nodes_keys :map get_nodes_nodes}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [get_nodes_code nil get_nodes_edge nil get_nodes_f nil get_nodes_keys nil get_nodes_nodes nil] (try (do (set! get_nodes_nodes {}) (set! get_nodes_keys []) (doseq [get_nodes_f get_nodes_freq_table] (do (set! get_nodes_code (get get_nodes_f "bit")) (set! get_nodes_edge (get get_nodes_f "edge")) (if (in get_nodes_code get_nodes_nodes) (set! get_nodes_nodes (assoc get_nodes_nodes get_nodes_code (conj (get get_nodes_nodes get_nodes_code) get_nodes_edge))) (do (set! get_nodes_nodes (assoc get_nodes_nodes get_nodes_code [get_nodes_edge])) (set! get_nodes_keys (conj get_nodes_keys get_nodes_code)))))) (throw (ex-info "return" {:v {:keys get_nodes_keys :map get_nodes_nodes}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn get_cluster [get_cluster_nodes]
   (binding [get_cluster_clusters nil get_cluster_code nil get_cluster_i nil get_cluster_weights nil get_cluster_wt nil] (try (do (set! get_cluster_clusters {}) (set! get_cluster_weights []) (set! get_cluster_i 0) (while (< get_cluster_i (count (:keys get_cluster_nodes))) (do (set! get_cluster_code (get (:keys get_cluster_nodes) get_cluster_i)) (set! get_cluster_wt (count_ones get_cluster_code)) (if (in get_cluster_wt get_cluster_clusters) (set! get_cluster_clusters (assoc get_cluster_clusters get_cluster_wt (conj (get get_cluster_clusters get_cluster_wt) get_cluster_code))) (do (set! get_cluster_clusters (assoc get_cluster_clusters get_cluster_wt [get_cluster_code])) (set! get_cluster_weights (conj get_cluster_weights get_cluster_wt)))) (set! get_cluster_i (+ get_cluster_i 1)))) (throw (ex-info "return" {:v {:clusters get_cluster_clusters :weights get_cluster_weights}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -226,10 +248,10 @@
 (def ^:dynamic main_paths [])
 
 (defn copy_list [copy_list_lst]
-  (binding [copy_list_n nil] (try (do (set! copy_list_n []) (doseq [v copy_list_lst] (set! copy_list_n (conj copy_list_n v))) (throw (ex-info "return" {:v copy_list_n}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [copy_list_n nil copy_list_v nil] (try (do (set! copy_list_n []) (doseq [copy_list_v copy_list_lst] (set! copy_list_n (conj copy_list_n copy_list_v))) (throw (ex-info "return" {:v copy_list_n}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn my_dfs [my_dfs_graph my_dfs_start my_dfs_end my_dfs_path]
-  (binding [my_dfs_new_path nil my_dfs_seen nil] (try (do (set! my_dfs_new_path (copy_list my_dfs_path)) (set! my_dfs_new_path (conj my_dfs_new_path my_dfs_start)) (when (= my_dfs_start my_dfs_end) (do (alter-var-root (var main_paths) (fn [_] (conj main_paths my_dfs_new_path))) (throw (ex-info "return" {:v nil})))) (doseq [node (get my_dfs_graph my_dfs_start)] (do (set! my_dfs_seen false) (doseq [p my_dfs_new_path] (when (= p node) (set! my_dfs_seen true))) (when (not my_dfs_seen) (my_dfs my_dfs_graph node my_dfs_end my_dfs_new_path))))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [my_dfs_new_path nil my_dfs_node nil my_dfs_p nil my_dfs_seen nil] (try (do (set! my_dfs_new_path (copy_list my_dfs_path)) (set! my_dfs_new_path (conj my_dfs_new_path my_dfs_start)) (when (= my_dfs_start my_dfs_end) (do (alter-var-root (var main_paths) (fn [_] (conj main_paths my_dfs_new_path))) (throw (ex-info "return" {:v nil})))) (doseq [my_dfs_node (get my_dfs_graph my_dfs_start)] (do (set! my_dfs_seen false) (doseq [my_dfs_p my_dfs_new_path] (when (= my_dfs_p my_dfs_node) (set! my_dfs_seen true))) (when (not my_dfs_seen) (my_dfs my_dfs_graph my_dfs_node my_dfs_end my_dfs_new_path))))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn find_freq_subgraph_given_support [find_freq_subgraph_given_support_s find_freq_subgraph_given_support_clusters find_freq_subgraph_given_support_graph]
   (binding [find_freq_subgraph_given_support_codes nil find_freq_subgraph_given_support_i nil find_freq_subgraph_given_support_k nil] (do (set! find_freq_subgraph_given_support_k (/ (* find_freq_subgraph_given_support_s (count (:weights find_freq_subgraph_given_support_clusters))) 100)) (set! find_freq_subgraph_given_support_codes (get_cluster_codes find_freq_subgraph_given_support_clusters find_freq_subgraph_given_support_k)) (set! find_freq_subgraph_given_support_i 0) (while (< find_freq_subgraph_given_support_i (count find_freq_subgraph_given_support_codes)) (do (my_dfs (:edges find_freq_subgraph_given_support_graph) (nth find_freq_subgraph_given_support_codes find_freq_subgraph_given_support_i) "Header" []) (set! find_freq_subgraph_given_support_i (+ find_freq_subgraph_given_support_i 1)))))))
@@ -238,10 +260,10 @@
   (try (throw (ex-info "return" {:v (get (:map node_edges_nodes) node_edges_code)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn freq_subgraphs_edge_list [main_paths freq_subgraphs_edge_list_nodes]
-  (binding [freq_subgraphs_edge_list_a nil freq_subgraphs_edge_list_b nil freq_subgraphs_edge_list_code nil freq_subgraphs_edge_list_e nil freq_subgraphs_edge_list_edge nil freq_subgraphs_edge_list_edge_list nil freq_subgraphs_edge_list_el nil freq_subgraphs_edge_list_freq_sub_el nil freq_subgraphs_edge_list_j nil] (try (do (set! freq_subgraphs_edge_list_freq_sub_el []) (doseq [path main_paths] (do (set! freq_subgraphs_edge_list_el []) (set! freq_subgraphs_edge_list_j 0) (while (< freq_subgraphs_edge_list_j (- (count path) 1)) (do (set! freq_subgraphs_edge_list_code (nth path freq_subgraphs_edge_list_j)) (set! freq_subgraphs_edge_list_edge_list (node_edges freq_subgraphs_edge_list_nodes freq_subgraphs_edge_list_code)) (set! freq_subgraphs_edge_list_e 0) (while (< freq_subgraphs_edge_list_e (count freq_subgraphs_edge_list_edge_list)) (do (set! freq_subgraphs_edge_list_edge (nth freq_subgraphs_edge_list_edge_list freq_subgraphs_edge_list_e)) (set! freq_subgraphs_edge_list_a (subs freq_subgraphs_edge_list_edge 0 (min 1 (count freq_subgraphs_edge_list_edge)))) (set! freq_subgraphs_edge_list_b (subs freq_subgraphs_edge_list_edge 1 (min 2 (count freq_subgraphs_edge_list_edge)))) (set! freq_subgraphs_edge_list_el (conj freq_subgraphs_edge_list_el [freq_subgraphs_edge_list_a freq_subgraphs_edge_list_b])) (set! freq_subgraphs_edge_list_e (+ freq_subgraphs_edge_list_e 1)))) (set! freq_subgraphs_edge_list_j (+ freq_subgraphs_edge_list_j 1)))) (set! freq_subgraphs_edge_list_freq_sub_el (conj freq_subgraphs_edge_list_freq_sub_el freq_subgraphs_edge_list_el)))) (throw (ex-info "return" {:v freq_subgraphs_edge_list_freq_sub_el}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [freq_subgraphs_edge_list_a nil freq_subgraphs_edge_list_b nil freq_subgraphs_edge_list_code nil freq_subgraphs_edge_list_e nil freq_subgraphs_edge_list_edge nil freq_subgraphs_edge_list_edge_list nil freq_subgraphs_edge_list_el nil freq_subgraphs_edge_list_freq_sub_el nil freq_subgraphs_edge_list_j nil freq_subgraphs_edge_list_path nil] (try (do (set! freq_subgraphs_edge_list_freq_sub_el []) (doseq [freq_subgraphs_edge_list_path main_paths] (do (set! freq_subgraphs_edge_list_el []) (set! freq_subgraphs_edge_list_j 0) (while (< freq_subgraphs_edge_list_j (- (count freq_subgraphs_edge_list_path) 1)) (do (set! freq_subgraphs_edge_list_code (nth freq_subgraphs_edge_list_path freq_subgraphs_edge_list_j)) (set! freq_subgraphs_edge_list_edge_list (node_edges freq_subgraphs_edge_list_nodes freq_subgraphs_edge_list_code)) (set! freq_subgraphs_edge_list_e 0) (while (< freq_subgraphs_edge_list_e (count freq_subgraphs_edge_list_edge_list)) (do (set! freq_subgraphs_edge_list_edge (nth freq_subgraphs_edge_list_edge_list freq_subgraphs_edge_list_e)) (set! freq_subgraphs_edge_list_a (subs freq_subgraphs_edge_list_edge 0 (min 1 (count freq_subgraphs_edge_list_edge)))) (set! freq_subgraphs_edge_list_b (subs freq_subgraphs_edge_list_edge 1 (min 2 (count freq_subgraphs_edge_list_edge)))) (set! freq_subgraphs_edge_list_el (conj freq_subgraphs_edge_list_el [freq_subgraphs_edge_list_a freq_subgraphs_edge_list_b])) (set! freq_subgraphs_edge_list_e (+ freq_subgraphs_edge_list_e 1)))) (set! freq_subgraphs_edge_list_j (+ freq_subgraphs_edge_list_j 1)))) (set! freq_subgraphs_edge_list_freq_sub_el (conj freq_subgraphs_edge_list_freq_sub_el freq_subgraphs_edge_list_el)))) (throw (ex-info "return" {:v freq_subgraphs_edge_list_freq_sub_el}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn print_all [print_all_nodes print_all_support print_all_clusters print_all_graph print_all_freq_subgraph_edge_list]
-  (binding [print_all_code nil print_all_i nil print_all_j nil print_all_k nil print_all_key nil print_all_w nil] (do (println "\nNodes\n") (set! print_all_i 0) (while (< print_all_i (count (:keys print_all_nodes))) (do (set! print_all_code (get (:keys print_all_nodes) print_all_i)) (println print_all_code) (println (get (:map print_all_nodes) print_all_code)) (set! print_all_i (+ print_all_i 1)))) (println "\nSupport\n") (println print_all_support) (println "\nCluster\n") (set! print_all_j 0) (while (< print_all_j (count (:weights print_all_clusters))) (do (set! print_all_w (get (:weights print_all_clusters) print_all_j)) (println (str (str (str print_all_w) ":") (str (get (:clusters print_all_clusters) print_all_w)))) (set! print_all_j (+ print_all_j 1)))) (println "\nGraph\n") (set! print_all_k 0) (while (< print_all_k (count (:keys print_all_graph))) (do (set! print_all_key (get (:keys print_all_graph) print_all_k)) (println print_all_key) (println (get (:edges print_all_graph) print_all_key)) (set! print_all_k (+ print_all_k 1)))) (println "\nEdge List of Frequent subgraphs\n") (doseq [el print_all_freq_subgraph_edge_list] (println print_all_el)))))
+  (binding [print_all_code nil print_all_el nil print_all_i nil print_all_j nil print_all_k nil print_all_key nil print_all_w nil] (do (println "\nNodes\n") (set! print_all_i 0) (while (< print_all_i (count (:keys print_all_nodes))) (do (set! print_all_code (get (:keys print_all_nodes) print_all_i)) (println print_all_code) (println (get (:map print_all_nodes) print_all_code)) (set! print_all_i (+ print_all_i 1)))) (println "\nSupport\n") (println print_all_support) (println "\nCluster\n") (set! print_all_j 0) (while (< print_all_j (count (:weights print_all_clusters))) (do (set! print_all_w (get (:weights print_all_clusters) print_all_j)) (println (str (str (str print_all_w) ":") (str (get (:clusters print_all_clusters) print_all_w)))) (set! print_all_j (+ print_all_j 1)))) (println "\nGraph\n") (set! print_all_k 0) (while (< print_all_k (count (:keys print_all_graph))) (do (set! print_all_key (get (:keys print_all_graph) print_all_k)) (println print_all_key) (println (get (:edges print_all_graph) print_all_key)) (set! print_all_k (+ print_all_k 1)))) (println "\nEdge List of Frequent subgraphs\n") (doseq [print_all_el print_all_freq_subgraph_edge_list] (println print_all_el)))))
 
 (defn main []
   (binding [main_clusters nil main_freq_subgraph_edge_list nil main_frequency_table nil main_graph nil main_nodes nil main_support nil] (do (set! main_frequency_table (get_frequency_table main_EDGE_ARRAY)) (set! main_nodes (get_nodes main_frequency_table)) (set! main_clusters (get_cluster main_nodes)) (set! main_support (get_support main_clusters)) (set! main_graph (construct_graph main_clusters main_nodes)) (find_freq_subgraph_given_support 60 main_clusters main_graph) (set! main_freq_subgraph_edge_list (freq_subgraphs_edge_list main_paths main_nodes)) (print_all main_nodes main_support main_clusters main_graph main_freq_subgraph_edge_list))))
