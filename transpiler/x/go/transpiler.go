@@ -34,6 +34,7 @@ type Program struct {
 	UseJSON      bool
 	UseTime      bool
 	UseInput     bool
+	UseReadFile  bool
 	UseFetch     bool
 	UseSubstr    bool
 	UseSlice     bool
@@ -66,6 +67,7 @@ var (
 	usesJSON           bool
 	usesTime           bool
 	usesInput          bool
+	usesReadFile       bool
 	usesFetch          bool
 	usesSubstr         bool
 	usesSlice          bool
@@ -2588,6 +2590,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesJSON = false
 	usesTime = false
 	usesInput = false
+	usesReadFile = false
 	usesSubstr = false
 	usesSlice = false
 	usesSplit = false
@@ -2650,6 +2653,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseJSON = usesJSON
 	gp.UseTime = usesTime
 	gp.UseInput = usesInput
+	gp.UseReadFile = usesReadFile
 	gp.UseFetch = usesFetch
 	gp.UseSubstr = usesSubstr
 	gp.UseSlice = usesSlice
@@ -6810,6 +6814,14 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "json":
 			usesJSON = true
 			return &JsonExpr{Value: args[0]}, nil
+		case "not":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("not expects 1 argument")
+			}
+			return &NotExpr{Expr: args[0]}, nil
+		case "read_file":
+			usesReadFile = true
+			return &CallExpr{Func: "read_file", Args: args}, nil
 		case "error":
 			if !types.IsStringType(types.TypeOfExpr(p.Call.Args[0], env)) {
 				usesPrint = true
@@ -7651,6 +7663,11 @@ func Emit(prog *Program, bench bool) []byte {
 	if prog.UseRuntime {
 		buf.WriteString("    \"runtime\"\n")
 	}
+	if prog.UseReadFile {
+		if _, ok := prog.Imports["os"]; !ok {
+			buf.WriteString("    \"os\"\n")
+		}
+	}
 	if prog.UseFetch {
 		buf.WriteString("    \"net/http\"\n")
 	}
@@ -7761,6 +7778,13 @@ func Emit(prog *Program, bench bool) []byte {
 	if prog.UseConcat {
 		buf.WriteString("func _concat[T any](a, b []T) []T {\n")
 		buf.WriteString("    return append(append([]T{}, a...), b...)\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseReadFile {
+		buf.WriteString("func read_file(path string) string {\n")
+		buf.WriteString("    b, err := os.ReadFile(path)\n")
+		buf.WriteString("    if err != nil { return \"\" }\n")
+		buf.WriteString("    return string(b)\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseFetch {
