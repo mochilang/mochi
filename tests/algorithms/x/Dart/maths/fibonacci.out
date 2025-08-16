@@ -1,15 +1,1 @@
-../../../tests/algorithms/x/Dart/maths/fibonacci.dart:214:8: Error: Method not found: '_listEq'.
-  if (!_listEq(it, expected)) {
-       ^^^^^^^
-../../../tests/algorithms/x/Dart/maths/fibonacci.dart:217:8: Error: Method not found: '_listEq'.
-  if (!_listEq(rec, expected)) {
-       ^^^^^^^
-../../../tests/algorithms/x/Dart/maths/fibonacci.dart:220:8: Error: Method not found: '_listEq'.
-  if (!_listEq(cache, expected)) {
-       ^^^^^^^
-../../../tests/algorithms/x/Dart/maths/fibonacci.dart:223:8: Error: Method not found: '_listEq'.
-  if (!_listEq(memo, expected)) {
-       ^^^^^^^
-../../../tests/algorithms/x/Dart/maths/fibonacci.dart:226:8: Error: Method not found: '_listEq'.
-  if (!_listEq(bin, expected)) {
-       ^^^^^^^
+55

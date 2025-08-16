@@ -120,7 +120,7 @@ int float_to_bits(double x) {
   double pow = pow2_float(exp);
   double normalized = _num / pow;
   double frac = normalized - 1.0;
-  dynamic mantissa = (frac * pow2_float(23)).toInt();
+  int mantissa = (frac * pow2_float(23)).toInt();
   int exp_bits = exp + 127;
   return lshift(sign, 31) + lshift(exp_bits, 23) + mantissa;
 }

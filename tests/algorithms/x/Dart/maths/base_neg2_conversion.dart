@@ -41,35 +41,22 @@ dynamic _substr(dynamic s, num start, num end) {
 
 String _str(dynamic v) => v.toString();
 
-List<int> bubble_sort(List<int> nums) {
-  List<int> arr = nums;
-  int n = arr.length;
-  int i = 0;
-  while (i < n) {
-    int j = 0;
-    while (j < n - 1) {
-    int a = arr[j];
-    int b = arr[j + 1];
-    if (a > b) {
-    while (arr.length <= j) { arr.add(0); } arr[j] = b;
-    while (arr.length <= j + 1) { arr.add(0); } arr[j + 1] = a;
+int decimal_to_negative_base_2(int _num) {
+  if (_num == 0) {
+    return 0;
   }
-    j = j + 1;
+  int n = _num;
+  String ans = "";
+  while (n != 0) {
+    int rem = n % -2;
+    n = n ~/ -2;
+    if (rem < 0) {
+    rem = rem + 2;
+    n = n + 1;
   }
-    i = i + 1;
+    ans = _str(rem) + ans;
   }
-  return arr;
-}
-
-double median(List<int> nums) {
-  List<int> sorted_list = bubble_sort(nums);
-  int length = sorted_list.length;
-  int mid_index = length ~/ 2;
-  if (length % 2 == 0) {
-    return (sorted_list[mid_index] + sorted_list[mid_index - 1]).toDouble() / 2.0;
-  } else {
-    return sorted_list[mid_index].toDouble();
-  }
+  return int.parse(ans);
 }
 
 void main() {
@@ -79,9 +66,10 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print(_str(median([0])));
-  print(_str(median([4, 1, 3, 2])));
-  print(_str(median([2, 70, 6, 50, 20, 8, 4])));
+  print(decimal_to_negative_base_2(0));
+  print(decimal_to_negative_base_2(-19));
+  print(decimal_to_negative_base_2(4));
+  print(decimal_to_negative_base_2(7));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

@@ -1,4 +1,0 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/maths/fast_inverse_sqrt.dart:125:50: Error: A value of type 'num' can't be returned from a function with return type 'int'.
-  return lshift(sign, 31) + lshift(exp_bits, 23) + mantissa;
-                                                 ^

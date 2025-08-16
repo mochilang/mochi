@@ -4202,14 +4202,14 @@ func inferType(e Expr) string {
 			return "dynamic"
 		}
 	case *UnaryExpr:
-		if ex.Op == "-" {
-			t := inferType(ex.X)
-			if t == "int" || t == "num" {
-				return t
-			}
-			return "num"
-		}
-		return inferType(ex.X)
+       if ex.Op == "-" {
+               t := inferType(ex.X)
+               if t == "int" || t == "double" || t == "num" {
+                       return t
+               }
+               return "num"
+       }
+       return inferType(ex.X)
 	case *CondExpr:
 		t1 := inferType(ex.Then)
 		t2 := inferType(ex.Else)
@@ -4275,12 +4275,15 @@ func inferType(e Expr) string {
 			if sel.Field == "abs" && (rt == "int" || rt == "num") {
 				return "num"
 			}
-			if sel.Field == "toDouble" {
-				return "double"
-			}
-			if sel.Field == "toUpperCase" || sel.Field == "toLowerCase" || sel.Field == "substring" || sel.Field == "substr" || sel.Field == "padLeft" || sel.Field == "padRight" {
-				return "String"
-			}
+               if sel.Field == "toDouble" {
+                       return "double"
+               }
+               if sel.Field == "toInt" {
+                       return "int"
+               }
+               if sel.Field == "toUpperCase" || sel.Field == "toLowerCase" || sel.Field == "substring" || sel.Field == "substr" || sel.Field == "padLeft" || sel.Field == "padRight" {
+                       return "String"
+               }
 			if sel.Field == "parse" {
 				if n, ok := sel.Receiver.(*Name); ok && n.Name == "int" {
 					return "int"
@@ -4714,15 +4717,10 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if useListEq {
-		if _, err := io.WriteString(w, helperListEq+"\n"); err != nil {
-			return err
-		}
-	}
-	if useStr {
-		if _, err := io.WriteString(w, "String _str(dynamic v) => v.toString();\n\n"); err != nil {
-			return err
-		}
+        if useStr {
+                if _, err := io.WriteString(w, "String _str(dynamic v) => v.toString();\n\n"); err != nil {
+                        return err
+                }
 	}
 	if useBigRat {
 		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\nBigRat _neg(BigRat a) => BigRat(-a.num, a.den);\n\n"); err != nil {
@@ -4925,12 +4923,17 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, "}\n"); err != nil {
 		return err
 	}
-	if entry == "_start" {
-		if _, err := io.WriteString(w, "\nvoid main() => _start();\n"); err != nil {
-			return err
-		}
-	}
-	return nil
+       if entry == "_start" {
+               if _, err := io.WriteString(w, "\nvoid main() => _start();\n"); err != nil {
+                       return err
+               }
+       }
+       if useListEq {
+               if _, err := io.WriteString(w, "\n"+helperListEq+"\n"); err != nil {
+                       return err
+               }
+       }
+       return nil
 }
 
 // Transpile converts a Mochi program into a simple Dart AST.

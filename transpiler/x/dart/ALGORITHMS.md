@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-16 13:05 GMT+7
+Last updated: 2025-08-16 14:57 GMT+7
 
-## Algorithms Golden Test Checklist (977/1077)
+## Algorithms Golden Test Checklist (987/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -539,13 +539,13 @@ Last updated: 2025-08-16 13:05 GMT+7
 | 530 | maths/allocation_number | ✓ | 9.497ms | 3.6 MB |
 | 531 | maths/arc_length | ✓ | 7.69ms | 2.4 MB |
 | 532 | maths/area | error |  |  |
-| 533 | maths/area_under_curve | error |  |  |
-| 534 | maths/average_absolute_deviation | error |  |  |
-| 535 | maths/average_mean | error |  |  |
-| 536 | maths/average_median | error |  |  |
+| 533 | maths/area_under_curve | ✓ | 31.714ms | 2.9 MB |
+| 534 | maths/average_absolute_deviation | ✓ | 9.253ms | 2.9 MB |
+| 535 | maths/average_mean | ✓ | 9.585ms | 2.6 MB |
+| 536 | maths/average_median | ✓ | 8.688ms | 2.8 MB |
 | 537 | maths/average_mode | ✓ | 9.593ms | 3.9 MB |
-| 538 | maths/bailey_borwein_plouffe | error |  |  |
-| 539 | maths/base_neg2_conversion | error |  |  |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 295.323ms | 8.5 MB |
+| 539 | maths/base_neg2_conversion | ✓ | 7.602ms | 2.6 MB |
 | 540 | maths/basic_maths | ✓ | 9.576ms | 3.9 MB |
 | 541 | maths/binary_exponentiation | ✓ | 15.45ms | 2.7 MB |
 | 542 | maths/binary_multiplication | ✓ | 12.861ms | 9.8 MB |
@@ -564,17 +564,17 @@ Last updated: 2025-08-16 13:05 GMT+7
 | 555 | maths/dodecahedron | ✓ | 8.733ms | 3.0 MB |
 | 556 | maths/double_factorial | ✓ | 8.478ms | 2.9 MB |
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 10.392ms | 3.4 MB |
-| 558 | maths/entropy | error |  |  |
+| 558 | maths/entropy | ✓ | 27.088ms | 7.1 MB |
 | 559 | maths/euclidean_distance | ✓ | 8.658ms | 2.8 MB |
 | 560 | maths/euler_method | ✓ | 30.612ms | 5.0 MB |
 | 561 | maths/euler_modified | ✓ | 10.834ms | 3.2 MB |
 | 562 | maths/eulers_totient | ✓ | 9.749ms | 3.0 MB |
 | 563 | maths/extended_euclidean_algorithm | ✓ | 8.297ms | 2.8 MB |
 | 564 | maths/factorial | ✓ | 7.487ms | 3.0 MB |
-| 565 | maths/factors | error |  |  |
-| 566 | maths/fast_inverse_sqrt | error |  |  |
+| 565 | maths/factors | ✓ | 10.39ms | 3.5 MB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 11.232ms | 3.5 MB |
 | 567 | maths/fermat_little_theorem | ✓ | 12.057ms | 2.8 MB |
-| 568 | maths/fibonacci | error |  |  |
+| 568 | maths/fibonacci | ✓ | 11.046ms | 3.3 MB |
 | 569 | maths/find_max | ✓ | 8.815ms | 2.8 MB |
 | 570 | maths/find_min | ✓ | 8.831ms | 3.0 MB |
 | 571 | maths/floor | ✓ | 8.218ms | 2.6 MB |

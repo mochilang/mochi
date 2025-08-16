@@ -130,7 +130,7 @@ void calculate_entropy(String text) {
   }
     i = i + 1;
   }
-  num first_entropy = -h1;
+  double first_entropy = -h1;
   print(_str(round_to_int(first_entropy)) + ".0");
   int total2 = 0;
   for (String seq in counts.double.keys) {
@@ -152,7 +152,7 @@ void calculate_entropy(String text) {
   }
     a0 = a0 + 1;
   }
-  num second_entropy = -h2;
+  double second_entropy = -h2;
   print(_str(round_to_int(second_entropy)) + ".0");
   double diff = second_entropy - first_entropy;
   print(_str(round_to_int(diff)) + ".0");

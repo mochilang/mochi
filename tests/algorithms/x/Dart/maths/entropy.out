@@ -1,9 +1,6 @@
-../../../tests/algorithms/x/Dart/maths/entropy.dart:111:27: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-  print(_str(round_to_int(first_entropy)) + ".0");
-                          ^
-../../../tests/algorithms/x/Dart/maths/entropy.dart:133:27: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-  print(_str(round_to_int(second_entropy)) + ".0");
-                          ^
-../../../tests/algorithms/x/Dart/maths/entropy.dart:134:32: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
-  double diff = second_entropy - first_entropy;
-                               ^
+4.0
+6.0
+2.0
+4.0
+7.0
+3.0
