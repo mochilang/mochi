@@ -124,7 +124,7 @@ public class Main {
         double[][] filters = ((double[][])(new double[][]{}));
         long b_1 = 0L;
         while ((long)(b_1) < (long)(bins)) {
-            long center_1 = (long)((long)(((long)(((long)(b_1) + 1L)) * (long)(spectrum_size))) / (long)(((long)(bins) + 1L)));
+            long center_1 = Math.floorDiv(((long)(((long)(((long)(b_1) + 1L)) * (long)(spectrum_size)))), ((long)(((long)(bins) + 1L))));
             double[] filt_1 = ((double[])(new double[]{}));
             long i_5 = 0L;
             while ((long)(i_5) < (long)(spectrum_size)) {
@@ -199,49 +199,15 @@ public class Main {
         return res_4;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            while ((long)(n_10) < (long)(size)) {
-                double t_1 = (double)((double)((((Number)(n_10)).doubleValue())) / (double)((((Number)(sample_rate)).doubleValue())));
-                audio = ((double[])(appendDouble(audio, (double)(sinApprox((double)((double)((double)((double)(2.0) * (double)(PI)) * (double)(440.0)) * (double)(t_1)))))));
-                n_10 = (long)((long)(n_10) + 1L);
-            }
-            coeffs = ((double[])(mfcc(((double[])(audio)), 5L, 3L)));
-            for (double c : coeffs) {
-                System.out.println(c);
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        while ((long)(n_10) < (long)(size)) {
+            double t_1 = (double)((double)((((Number)(n_10)).doubleValue())) / (double)((((Number)(sample_rate)).doubleValue())));
+            audio = ((double[])(appendDouble(audio, (double)(sinApprox((double)((double)((double)((double)(2.0) * (double)(PI)) * (double)(440.0)) * (double)(t_1)))))));
+            n_10 = (long)((long)(n_10) + 1L);
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
+        coeffs = ((double[])(mfcc(((double[])(audio)), 5L, 3L)));
+        for (double c : coeffs) {
+            System.out.println(c);
         }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static double[] appendDouble(double[] arr, double v) {

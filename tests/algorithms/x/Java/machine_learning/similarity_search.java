@@ -86,47 +86,13 @@ public class Main {
         return (double)(dot) / (double)(((double)(sqrt((double)(norm_a_1))) * (double)(sqrt((double)(norm_b_1)))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            neighbors = ((Neighbor[])(similarity_search(((double[][])(dataset)), ((double[][])(value_array)))));
-            while ((long)(k) < (long)(neighbors.length)) {
-                Neighbor n = neighbors[(int)((long)(k))];
-                System.out.println("[" + _p(n.vector) + ", " + _p(n.distance) + "]");
-                k = (long)((long)(k) + 1L);
-            }
-            System.out.println(_p(cosine_similarity(((double[])(new double[]{1.0, 2.0})), ((double[])(new double[]{6.0, 32.0})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        neighbors = ((Neighbor[])(similarity_search(((double[][])(dataset)), ((double[][])(value_array)))));
+        while ((long)(k) < (long)(neighbors.length)) {
+            Neighbor n = neighbors[(int)((long)(k))];
+            System.out.println("[" + _p(n.vector) + ", " + _p(n.distance) + "]");
+            k = (long)((long)(k) + 1L);
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(cosine_similarity(((double[])(new double[]{1.0, 2.0})), ((double[])(new double[]{6.0, 32.0})))));
     }
 
     static String _p(Object v) {

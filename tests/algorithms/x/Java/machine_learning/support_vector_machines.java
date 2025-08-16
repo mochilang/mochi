@@ -83,46 +83,12 @@ w_1[(int)((long)(k_3))] = (double)((double)(w_1[(int)((long)(k_3))]) - (double)(
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            ys = ((long[])(new long[]{1, 1, -1, -1}));
-            base = new_svc((double)(0.01), (double)(0.01), 1000L);
-            model = fit(base, ((double[][])(xs)), ((long[])(ys)));
-            System.out.println(predict(model, ((double[])(new double[]{0.0, 1.0}))));
-            System.out.println(predict(model, ((double[])(new double[]{1.0, 1.0}))));
-            System.out.println(predict(model, ((double[])(new double[]{2.0, 2.0}))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        ys = ((long[])(new long[]{1, 1, -1, -1}));
+        base = new_svc((double)(0.01), (double)(0.01), 1000L);
+        model = fit(base, ((double[][])(xs)), ((long[])(ys)));
+        System.out.println(predict(model, ((double[])(new double[]{0.0, 1.0}))));
+        System.out.println(predict(model, ((double[])(new double[]{1.0, 1.0}))));
+        System.out.println(predict(model, ((double[])(new double[]{2.0, 2.0}))));
     }
 
     static double[] appendDouble(double[] arr, double v) {
