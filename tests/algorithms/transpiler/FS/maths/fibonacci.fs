@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,6 +19,9 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -31,13 +34,15 @@ let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -92,7 +97,7 @@ and fib_iterative (n: int) =
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n is negative")
+            ignore (failwith ("n is negative"))
         if n = 0 then
             __ret <- unbox<int array> [|0|]
             raise Return
@@ -111,7 +116,7 @@ and fib_recursive_term (i: int) =
     let mutable i = i
     try
         if i < 0 then
-            failwith ("n is negative")
+            ignore (failwith ("n is negative"))
         if i < 2 then
             __ret <- i
             raise Return
@@ -125,7 +130,7 @@ and fib_recursive (n: int) =
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n is negative")
+            ignore (failwith ("n is negative"))
         let mutable res: int array = Array.empty<int>
         let mutable i: int = 0
         while i <= n do
@@ -142,7 +147,7 @@ let rec fib_recursive_cached_term (i: int) =
     let mutable i = i
     try
         if i < 0 then
-            failwith ("n is negative")
+            ignore (failwith ("n is negative"))
         if i < 2 then
             __ret <- i
             raise Return
@@ -150,7 +155,7 @@ let rec fib_recursive_cached_term (i: int) =
             __ret <- _dictGet fib_cache_global (i)
             raise Return
         let ``val``: int = (fib_recursive_cached_term (i - 1)) + (fib_recursive_cached_term (i - 2))
-        fib_cache_global.[i] <- ``val``
+        fib_cache_global <- _dictAdd (fib_cache_global) (i) (``val``)
         __ret <- ``val``
         raise Return
         __ret
@@ -161,7 +166,7 @@ and fib_recursive_cached (n: int) =
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n is negative")
+            ignore (failwith ("n is negative"))
         let mutable res: int array = Array.empty<int>
         let mutable j: int = 0
         while j <= n do
@@ -172,7 +177,7 @@ and fib_recursive_cached (n: int) =
         __ret
     with
         | Return -> __ret
-let mutable fib_memo_cache: System.Collections.Generic.IDictionary<int, int> = unbox<System.Collections.Generic.IDictionary<int, int>> (_dictCreate [(0, 0); (1, 1); (2, 1)])
+let mutable fib_memo_cache: System.Collections.Generic.IDictionary<int, int> = _dictCreate<int, int> [(0, 0); (1, 1); (2, 1)]
 let rec fib_memoization_term (num: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable num = num
@@ -181,7 +186,7 @@ let rec fib_memoization_term (num: int) =
             __ret <- _dictGet fib_memo_cache (num)
             raise Return
         let value: int = (fib_memoization_term (num - 1)) + (fib_memoization_term (num - 2))
-        fib_memo_cache.[num] <- value
+        fib_memo_cache <- _dictAdd (fib_memo_cache) (num) (value)
         __ret <- value
         raise Return
         __ret
@@ -192,7 +197,7 @@ and fib_memoization (n: int) =
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n is negative")
+            ignore (failwith ("n is negative"))
         let mutable out: int array = Array.empty<int>
         let mutable i: int = 0
         while i <= n do
@@ -208,9 +213,9 @@ and fib_binet (n: int) =
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n is negative")
+            ignore (failwith ("n is negative"))
         if n >= 1475 then
-            failwith ("n is too large")
+            ignore (failwith ("n is too large"))
         let sqrt5: float = sqrt (5.0)
         let phi: float = (1.0 + sqrt5) / 2.0
         let mutable res: int array = Array.empty<int>
@@ -244,7 +249,7 @@ and matrix_pow (m: int array array) (power: int) =
     let mutable power = power
     try
         if power < 0 then
-            failwith ("power is negative")
+            ignore (failwith ("power is negative"))
         let mutable result: int array array = [|[|1; 0|]; [|0; 1|]|]
         let mutable ``base``: int array array = m
         let mutable p: int = power
@@ -252,7 +257,7 @@ and matrix_pow (m: int array array) (power: int) =
             if (((p % 2 + 2) % 2)) = 1 then
                 result <- matrix_mul (result) (``base``)
             ``base`` <- matrix_mul (``base``) (``base``)
-            p <- int (_floordiv p 2)
+            p <- int (_floordiv (int p) (int 2))
         __ret <- result
         raise Return
         __ret
@@ -263,7 +268,7 @@ and fib_matrix (n: int) =
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n is negative")
+            ignore (failwith ("n is negative"))
         if n = 0 then
             __ret <- 0
             raise Return
@@ -285,23 +290,23 @@ and run_tests () =
         let bin: int array = fib_binet (10)
         let m: int = fib_matrix (10)
         if it <> expected then
-            failwith ("iterative failed")
+            ignore (failwith ("iterative failed"))
         if ``rec`` <> expected then
-            failwith ("recursive failed")
+            ignore (failwith ("recursive failed"))
         if cache <> expected then
-            failwith ("cached failed")
+            ignore (failwith ("cached failed"))
         if memo <> expected then
-            failwith ("memoization failed")
+            ignore (failwith ("memoization failed"))
         if bin <> expected then
-            failwith ("binet failed")
+            ignore (failwith ("binet failed"))
         if m <> 55 then
-            failwith ("matrix failed")
+            ignore (failwith ("matrix failed"))
         __ret <- m
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (run_tests()))
+ignore (printfn "%s" (_str (run_tests())))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

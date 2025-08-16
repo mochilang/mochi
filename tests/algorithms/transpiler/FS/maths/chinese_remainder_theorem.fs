@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,25 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -57,13 +48,13 @@ let rec extended_euclid (a: int) (b: int) =
             __ret <- { _x = 1; _y = 0 }
             raise Return
         let res: EuclidResult = extended_euclid (b) (((a % b + b) % b))
-        let k: int = _floordiv a b
+        let k: int = _floordiv (int a) (int b)
         __ret <- { _x = res._y; _y = (res._x) - (k * (res._y)) }
         raise Return
         __ret
     with
         | Return -> __ret
-let rec chinese_remainder_theorem (n1: int) (r1: int) (n2: int) (r2: int) =
+and chinese_remainder_theorem (n1: int) (r1: int) (n2: int) (r2: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n1 = n1
     let mutable r1 = r1
@@ -80,7 +71,7 @@ let rec chinese_remainder_theorem (n1: int) (r1: int) (n2: int) (r2: int) =
         __ret
     with
         | Return -> __ret
-let rec invert_modulo (a: int) (n: int) =
+and invert_modulo (a: int) (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable n = n
@@ -94,7 +85,7 @@ let rec invert_modulo (a: int) (n: int) =
         __ret
     with
         | Return -> __ret
-let rec chinese_remainder_theorem2 (n1: int) (r1: int) (n2: int) (r2: int) =
+and chinese_remainder_theorem2 (n1: int) (r1: int) (n2: int) (r2: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n1 = n1
     let mutable r1 = r1
@@ -111,15 +102,15 @@ let rec chinese_remainder_theorem2 (n1: int) (r1: int) (n2: int) (r2: int) =
     with
         | Return -> __ret
 let e1: EuclidResult = extended_euclid (10) (6)
-printfn "%s" (((_str (e1._x)) + ",") + (_str (e1._y)))
+ignore (printfn "%s" (((_str (e1._x)) + ",") + (_str (e1._y))))
 let e2: EuclidResult = extended_euclid (7) (5)
-printfn "%s" (((_str (e2._x)) + ",") + (_str (e2._y)))
-printfn "%s" (_str (chinese_remainder_theorem (5) (1) (7) (3)))
-printfn "%s" (_str (chinese_remainder_theorem (6) (1) (4) (3)))
-printfn "%s" (_str (invert_modulo (2) (5)))
-printfn "%s" (_str (invert_modulo (8) (7)))
-printfn "%s" (_str (chinese_remainder_theorem2 (5) (1) (7) (3)))
-printfn "%s" (_str (chinese_remainder_theorem2 (6) (1) (4) (3)))
+ignore (printfn "%s" (((_str (e2._x)) + ",") + (_str (e2._y))))
+ignore (printfn "%s" (_str (chinese_remainder_theorem (5) (1) (7) (3))))
+ignore (printfn "%s" (_str (chinese_remainder_theorem (6) (1) (4) (3))))
+ignore (printfn "%s" (_str (invert_modulo (2) (5))))
+ignore (printfn "%s" (_str (invert_modulo (8) (7))))
+ignore (printfn "%s" (_str (chinese_remainder_theorem2 (5) (1) (7) (3))))
+ignore (printfn "%s" (_str (chinese_remainder_theorem2 (6) (1) (4) (3))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

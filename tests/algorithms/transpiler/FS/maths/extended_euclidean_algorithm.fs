@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -62,7 +64,7 @@ and extended_euclidean_algorithm (a: int) (b: int) =
         let mutable old_coeff_b: int = 0
         let mutable coeff_b: int = 1
         while remainder <> 0 do
-            let quotient: int = _floordiv old_remainder remainder
+            let quotient: int = _floordiv (int old_remainder) (int remainder)
             let temp_remainder: int = old_remainder - (quotient * remainder)
             old_remainder <- remainder
             remainder <- temp_remainder
@@ -82,40 +84,40 @@ and extended_euclidean_algorithm (a: int) (b: int) =
     with
         | Return -> __ret
 and test_extended_euclidean_algorithm () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let r1: Coeffs = extended_euclidean_algorithm (1) (24)
         if ((r1._x) <> 1) || ((r1._y) <> 0) then
-            failwith ("test1 failed")
+            ignore (failwith ("test1 failed"))
         let r2: Coeffs = extended_euclidean_algorithm (8) (14)
         if ((r2._x) <> 2) || ((r2._y) <> (-1)) then
-            failwith ("test2 failed")
+            ignore (failwith ("test2 failed"))
         let r3: Coeffs = extended_euclidean_algorithm (240) (46)
         if ((r3._x) <> (-9)) || ((r3._y) <> 47) then
-            failwith ("test3 failed")
+            ignore (failwith ("test3 failed"))
         let r4: Coeffs = extended_euclidean_algorithm (1) (-4)
         if ((r4._x) <> 1) || ((r4._y) <> 0) then
-            failwith ("test4 failed")
+            ignore (failwith ("test4 failed"))
         let r5: Coeffs = extended_euclidean_algorithm (-2) (-4)
         if ((r5._x) <> (-1)) || ((r5._y) <> 0) then
-            failwith ("test5 failed")
+            ignore (failwith ("test5 failed"))
         let r6: Coeffs = extended_euclidean_algorithm (0) (-4)
         if ((r6._x) <> 0) || ((r6._y) <> (-1)) then
-            failwith ("test6 failed")
+            ignore (failwith ("test6 failed"))
         let r7: Coeffs = extended_euclidean_algorithm (2) (0)
         if ((r7._x) <> 1) || ((r7._y) <> 0) then
-            failwith ("test7 failed")
+            ignore (failwith ("test7 failed"))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_extended_euclidean_algorithm()
+        ignore (test_extended_euclidean_algorithm())
         let res: Coeffs = extended_euclidean_algorithm (240) (46)
-        printfn "%s" (((("(" + (_str (res._x))) + ", ") + (_str (res._y))) + ")")
+        ignore (printfn "%s" (((("(" + (_str (res._x))) + ", ") + (_str (res._y))) + ")"))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -123,4 +125,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

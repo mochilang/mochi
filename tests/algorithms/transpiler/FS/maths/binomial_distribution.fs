@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec abs (x: float) =
@@ -42,12 +30,12 @@ let rec abs (x: float) =
         __ret
     with
         | Return -> __ret
-let rec factorial (n: int) =
+and factorial (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     try
         if n < 0 then
-            failwith ("factorial is undefined for negative numbers")
+            ignore (failwith ("factorial is undefined for negative numbers"))
         let mutable result: int = 1
         let mutable i: int = 2
         while i <= n do
@@ -58,7 +46,7 @@ let rec factorial (n: int) =
         __ret
     with
         | Return -> __ret
-let rec pow_float (``base``: float) (exp: int) =
+and pow_float (``base``: float) (exp: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable ``base`` = ``base``
     let mutable exp = exp
@@ -73,18 +61,18 @@ let rec pow_float (``base``: float) (exp: int) =
         __ret
     with
         | Return -> __ret
-let rec binomial_distribution (successes: int) (trials: int) (prob: float) =
+and binomial_distribution (successes: int) (trials: int) (prob: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable successes = successes
     let mutable trials = trials
     let mutable prob = prob
     try
         if successes > trials then
-            failwith ("successes must be lower or equal to trials")
+            ignore (failwith ("successes must be lower or equal to trials"))
         if (trials < 0) || (successes < 0) then
-            failwith ("the function is defined for non-negative integers")
+            ignore (failwith ("the function is defined for non-negative integers"))
         if not ((0.0 < prob) && (prob < 1.0)) then
-            failwith ("prob has to be in range of 1 - 0")
+            ignore (failwith ("prob has to be in range of 1 - 0"))
         let probability: float = (pow_float (prob) (successes)) * (pow_float (1.0 - prob) (trials - successes))
         let numerator: float = float (factorial (trials))
         let denominator: float = float ((factorial (successes)) * (factorial (trials - successes)))

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -89,7 +91,7 @@ and rshift (num: int) (k: int) =
         let mutable result: int = num
         let mutable i: int = 0
         while i < k do
-            result <- _floordiv (result - (((result % 2 + 2) % 2))) 2
+            result <- _floordiv (int (result - (((result % 2 + 2) % 2)))) (int 2)
             i <- i + 1
         __ret <- result
         raise Return
@@ -192,7 +194,7 @@ and fast_inverse_sqrt (number: float) =
     let mutable number = number
     try
         if number <= 0.0 then
-            failwith ("Input must be a positive number.")
+            ignore (failwith ("Input must be a positive number."))
         let mutable i: int = float_to_bits (number)
         let magic: int = 1597463007
         let y_bits: int = magic - (rshift (i) (1))
@@ -204,34 +206,34 @@ and fast_inverse_sqrt (number: float) =
     with
         | Return -> __ret
 and test_fast_inverse_sqrt () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         if (absf ((fast_inverse_sqrt (10.0)) - 0.3156857923527257)) > 0.0001 then
-            failwith ("fast_inverse_sqrt(10) failed")
+            ignore (failwith ("fast_inverse_sqrt(10) failed"))
         if (absf ((fast_inverse_sqrt (4.0)) - 0.49915357479239103)) > 0.0001 then
-            failwith ("fast_inverse_sqrt(4) failed")
+            ignore (failwith ("fast_inverse_sqrt(4) failed"))
         if (absf ((fast_inverse_sqrt (4.1)) - 0.4932849504615651)) > 0.0001 then
-            failwith ("fast_inverse_sqrt(4.1) failed")
+            ignore (failwith ("fast_inverse_sqrt(4.1) failed"))
         let mutable i: int = 50
         while i < 60 do
             let mutable y: float = fast_inverse_sqrt (float i)
             let actual: float = 1.0 / (sqrtApprox (float i))
             if not (is_close (y) (actual) (0.00132)) then
-                failwith ("relative error too high")
+                ignore (failwith ("relative error too high"))
             i <- i + 1
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_fast_inverse_sqrt()
+        ignore (test_fast_inverse_sqrt())
         let mutable i: int = 5
         while i <= 100 do
             let diff: float = (1.0 / (sqrtApprox (float i))) - (fast_inverse_sqrt (float i))
-            printfn "%s" (((_str (i)) + ": ") + (_str (diff)))
+            ignore (printfn "%s" (((_str (i)) + ": ") + (_str (diff))))
             i <- i + 5
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
@@ -240,4 +242,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

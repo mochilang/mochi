@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Break
 exception Continue
@@ -25,13 +25,15 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -43,7 +45,7 @@ let rec floor_div (a: int) (b: int) =
     let mutable a = a
     let mutable b = b
     try
-        let mutable q: int = _floordiv a b
+        let mutable q: int = _floordiv (int a) (int b)
         let r: int = ((a % b + b) % b)
         if (r <> 0) && (((a < 0) && (b > 0)) || ((a > 0) && (b < 0))) then
             q <- q - 1
@@ -98,7 +100,7 @@ and list_to_string (lst: int array) =
         __ret
     with
         | Return -> __ret
-printfn "%s" ("Continued Fraction of 0.84375 is: " + (list_to_string (continued_fraction (27) (32))))
+ignore (printfn "%s" ("Continued Fraction of 0.84375 is: " + (list_to_string (continued_fraction (27) (32)))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

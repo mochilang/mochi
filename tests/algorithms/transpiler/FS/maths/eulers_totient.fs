@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Break
 exception Continue
@@ -33,13 +33,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec totient (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
@@ -90,29 +92,29 @@ let rec totient (n: int) =
     with
         | Return -> __ret
 and test_totient () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let expected: int array = unbox<int array> [|-1; 0; 1; 2; 2; 4; 2; 6; 4; 6; 9|]
         let res: int array = totient (10)
         let mutable idx: int = 0
         while idx < (Seq.length (expected)) do
             if (_idx res (int idx)) <> (_idx expected (int idx)) then
-                failwith ("totient mismatch at " + (_str (idx)))
+                ignore (failwith ("totient mismatch at " + (_str (idx))))
             idx <- idx + 1
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_totient()
+        ignore (test_totient())
         let n: int = 10
         let res: int array = totient (n)
         let mutable i: int = 1
         while i < n do
-            printfn "%s" ((((_str (i)) + " has ") + (_str (_idx res (int i)))) + " relative primes.")
+            ignore (printfn "%s" ((((_str (i)) + " has ") + (_str (_idx res (int i)))) + " relative primes."))
             i <- i + 1
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
@@ -121,4 +123,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

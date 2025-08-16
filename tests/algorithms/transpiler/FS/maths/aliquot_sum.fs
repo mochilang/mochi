@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,25 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -49,10 +40,10 @@ let rec aliquot_sum (n: int) =
     let mutable n = n
     try
         if n <= 0 then
-            failwith ("Input must be positive")
+            ignore (failwith ("Input must be positive"))
         let mutable total: int = 0
         let mutable divisor: int = 1
-        while divisor <= (_floordiv n 2) do
+        while divisor <= (_floordiv (int n) (int 2)) do
             if (((n % divisor + divisor) % divisor)) = 0 then
                 total <- total + divisor
             divisor <- divisor + 1
@@ -61,11 +52,11 @@ let rec aliquot_sum (n: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (aliquot_sum (15)))
-printfn "%s" (_str (aliquot_sum (6)))
-printfn "%s" (_str (aliquot_sum (12)))
-printfn "%s" (_str (aliquot_sum (1)))
-printfn "%s" (_str (aliquot_sum (19)))
+ignore (printfn "%s" (_str (aliquot_sum (15))))
+ignore (printfn "%s" (_str (aliquot_sum (6))))
+ignore (printfn "%s" (_str (aliquot_sum (12))))
+ignore (printfn "%s" (_str (aliquot_sum (1))))
+ignore (printfn "%s" (_str (aliquot_sum (19))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

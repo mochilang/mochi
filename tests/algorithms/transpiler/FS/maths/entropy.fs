@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -42,13 +42,15 @@ let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary
     | true, v -> v
     | _ -> Unchecked.defaultof<'V>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type TextCounts = {
     mutable _single: System.Collections.Generic.IDictionary<string, int>
     mutable _double: System.Collections.Generic.IDictionary<string, int>
@@ -129,7 +131,7 @@ and round_to_int (x: float) =
     with
         | Return -> __ret
 and calculate_entropy (text: string) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable text = text
     try
         let counts: TextCounts = analyze_text (text)
@@ -146,7 +148,7 @@ and calculate_entropy (text: string) =
                 h1 <- h1 + (prob * (log2 (prob)))
             i <- i + 1
         let first_entropy: float = -h1
-        printfn "%s" ((_str (round_to_int (first_entropy))) + ".0")
+        ignore (printfn "%s" ((_str (round_to_int (first_entropy))) + ".0"))
         let mutable total2: int = 0
         for seq in (counts._double).Keys do
             total2 <- total2 + (_dictGet (counts._double) ((string (seq))))
@@ -164,16 +166,16 @@ and calculate_entropy (text: string) =
                 a1 <- a1 + 1
             a0 <- a0 + 1
         let second_entropy: float = -h2
-        printfn "%s" ((_str (round_to_int (second_entropy))) + ".0")
+        ignore (printfn "%s" ((_str (round_to_int (second_entropy))) + ".0"))
         let diff: float = second_entropy - first_entropy
-        printfn "%s" ((_str (round_to_int (diff))) + ".0")
+        ignore (printfn "%s" ((_str (round_to_int (diff))) + ".0"))
         __ret
     with
         | Return -> __ret
 let text1: string = ("Behind Winston's back the voice " + "from the telescreen was still ") + "babbling and the overfulfilment"
-calculate_entropy (text1)
+ignore (calculate_entropy (text1))
 let text3: string = ((((((((("Had repulsive dashwoods suspicion sincerity but advantage now him. " + "Remark easily garret nor nay.  Civil those mrs enjoy shy fat merry. ") + "You greatest jointure saw horrible. He private he on be imagine ") + "suppose. Fertile beloved evident through no service elderly is. Blind ") + "there if every no so at. Own neglected you preferred way sincerity ") + "delivered his attempted. To of message cottage windows do besides ") + "against uncivil.  Delightful unreserved impossible few estimating ") + "men favourable see entreaties. She propriety immediate was improving. ") + "He or entrance humoured likewise moderate. Much nor game son say ") + "feel. Fat make met can must form into gate. Me we offending prevailed ") + "discovery."
-calculate_entropy (text3)
+ignore (calculate_entropy (text3))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

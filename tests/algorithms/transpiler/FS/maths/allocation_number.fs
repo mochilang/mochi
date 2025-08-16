@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,25 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -50,10 +41,10 @@ let rec allocation_num (number_of_bytes: int) (partitions: int) =
     let mutable partitions = partitions
     try
         if partitions <= 0 then
-            failwith ("partitions must be a positive number!")
+            ignore (failwith ("partitions must be a positive number!"))
         if partitions > number_of_bytes then
-            failwith ("partitions can not > number_of_bytes!")
-        let bytes_per_partition: int = _floordiv number_of_bytes partitions
+            ignore (failwith ("partitions can not > number_of_bytes!"))
+        let bytes_per_partition: int = _floordiv (int number_of_bytes) (int partitions)
         let mutable allocation_list: string array = Array.empty<string>
         let mutable i: int = 0
         while i < partitions do
@@ -66,8 +57,8 @@ let rec allocation_num (number_of_bytes: int) (partitions: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (allocation_num (16647) (4)))
-printfn "%s" (_str (allocation_num (50000) (5)))
+ignore (printfn "%s" (_str (allocation_num (16647) (4))))
+ignore (printfn "%s" (_str (allocation_num (50000) (5))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

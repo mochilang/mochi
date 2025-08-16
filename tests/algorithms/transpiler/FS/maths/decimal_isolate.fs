@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec floor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
@@ -80,19 +82,19 @@ and decimal_isolate (number: float) (digit_amount: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        printfn "%s" (_str (decimal_isolate (1.53) (0)))
-        printfn "%s" (_str (decimal_isolate (35.345) (1)))
-        printfn "%s" (_str (decimal_isolate (35.345) (2)))
-        printfn "%s" (_str (decimal_isolate (35.345) (3)))
-        printfn "%s" (_str (decimal_isolate (-14.789) (3)))
-        printfn "%s" (_str (decimal_isolate (0.0) (2)))
-        printfn "%s" (_str (decimal_isolate (-14.123) (1)))
-        printfn "%s" (_str (decimal_isolate (-14.123) (2)))
-        printfn "%s" (_str (decimal_isolate (-14.123) (3)))
+        ignore (printfn "%s" (_str (decimal_isolate (1.53) (0))))
+        ignore (printfn "%s" (_str (decimal_isolate (35.345) (1))))
+        ignore (printfn "%s" (_str (decimal_isolate (35.345) (2))))
+        ignore (printfn "%s" (_str (decimal_isolate (35.345) (3))))
+        ignore (printfn "%s" (_str (decimal_isolate (-14.789) (3))))
+        ignore (printfn "%s" (_str (decimal_isolate (0.0) (2))))
+        ignore (printfn "%s" (_str (decimal_isolate (-14.123) (1))))
+        ignore (printfn "%s" (_str (decimal_isolate (-14.123) (2))))
+        ignore (printfn "%s" (_str (decimal_isolate (-14.123) (3))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -100,4 +102,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

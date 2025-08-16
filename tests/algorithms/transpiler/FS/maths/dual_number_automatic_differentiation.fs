@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,6 +29,16 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
         a <- na
     a.[i] <- v
     a
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Dual = {
     mutable _real: float
     mutable _duals: float array
@@ -167,7 +177,7 @@ and dual_pow (x: Dual) (n: int) =
     let mutable n = n
     try
         if n < 0 then
-            failwith ("power must be a positive integer")
+            ignore (failwith ("power must be a positive integer"))
         if n = 0 then
             __ret <- { _real = 1.0; _duals = Array.empty<float> }
             raise Return
@@ -212,7 +222,7 @@ and differentiate (func: Dual -> Dual) (position: float) (order: int) =
     with
         | Return -> __ret
 and test_differentiate () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let rec f1 (x: Dual) =
             let mutable __ret : Dual = Unchecked.defaultof<Dual>
@@ -224,7 +234,7 @@ and test_differentiate () =
             with
                 | Return -> __ret
         if (differentiate (unbox<Dual -> Dual> f1) (2.0) (2)) <> 2.0 then
-            failwith ("f1 failed")
+            ignore (failwith ("f1 failed"))
         let rec f2 (x: Dual) =
             let mutable __ret : Dual = Unchecked.defaultof<Dual>
             let mutable x = x
@@ -235,7 +245,7 @@ and test_differentiate () =
             with
                 | Return -> __ret
         if (differentiate (unbox<Dual -> Dual> f2) (9.0) (2)) <> 196830.0 then
-            failwith ("f2 failed")
+            ignore (failwith ("f2 failed"))
         let rec f3 (y: Dual) =
             let mutable __ret : Dual = Unchecked.defaultof<Dual>
             let mutable y = y
@@ -246,7 +256,7 @@ and test_differentiate () =
             with
                 | Return -> __ret
         if (differentiate (unbox<Dual -> Dual> f3) (3.5) (4)) <> 7605.0 then
-            failwith ("f3 failed")
+            ignore (failwith ("f3 failed"))
         let rec f4 (y: Dual) =
             let mutable __ret : Dual = Unchecked.defaultof<Dual>
             let mutable y = y
@@ -257,16 +267,16 @@ and test_differentiate () =
             with
                 | Return -> __ret
         if (differentiate (unbox<Dual -> Dual> f4) (4.0) (3)) <> 0.0 then
-            failwith ("f4 failed")
+            ignore (failwith ("f4 failed"))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_differentiate()
+        ignore (test_differentiate())
         let rec f (y: Dual) =
             let mutable __ret : Dual = Unchecked.defaultof<Dual>
             let mutable y = y
@@ -277,7 +287,7 @@ and main () =
             with
                 | Return -> __ret
         let mutable res: float = differentiate (unbox<Dual -> Dual> f) (9.0) (2)
-        printfn "%g" (res)
+        ignore (printfn "%s" (_str (res)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -285,4 +295,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

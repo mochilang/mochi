@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -37,7 +37,7 @@ let rec binary_exponentiation (a: int) (n: int) (``mod``: int) =
         if (((n % 2 + 2) % 2)) = 1 then
             __ret <- ((((binary_exponentiation (a) (n - 1) (``mod``)) * a) % ``mod`` + ``mod``) % ``mod``)
             raise Return
-        let b: int = binary_exponentiation (a) (_floordiv n 2) (``mod``)
+        let b: int = binary_exponentiation (a) (_floordiv (int n) (int 2)) (``mod``)
         __ret <- (((b * b) % ``mod`` + ``mod``) % ``mod``)
         raise Return
         __ret
@@ -60,24 +60,24 @@ and naive_exponent_mod (a: int) (n: int) (``mod``: int) =
     with
         | Return -> __ret
 and print_bool (b: bool) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable b = b
     try
         if b then
-            printfn "%b" (true)
+            ignore (printfn "%b" (true))
         else
-            printfn "%b" (false)
+            ignore (printfn "%b" (false))
         __ret
     with
         | Return -> __ret
 let p: int = 701
 let a: int = 1000000000
 let b: int = 10
-let left: int = (((_floordiv a b) % p + p) % p)
+let left: int = (((_floordiv (int a) (int b)) % p + p) % p)
 let right_fast: int = (((a * (binary_exponentiation (b) (p - 2) (p))) % p + p) % p)
-print_bool (left = right_fast)
+ignore (print_bool (left = right_fast))
 let right_naive: int = (((a * (naive_exponent_mod (b) (p - 2) (p))) % p + p) % p)
-print_bool (left = right_naive)
+ignore (print_bool (left = right_naive))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
