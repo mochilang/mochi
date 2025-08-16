@@ -1,0 +1,8 @@
+** (SyntaxError) invalid syntax found on /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_022/sol2.exs:140:24:
+     error: syntax error before: ')'
+     │
+ 140 │     Process.put(:rows, )
+     │                        ^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_022/sol2.exs:140:24
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

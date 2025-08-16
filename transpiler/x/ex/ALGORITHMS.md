@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-16 12:28 GMT+7
+Last updated: 2025-08-16 13:01 GMT+7
 
-## Algorithms Golden Test Checklist (839/1077)
+## Algorithms Golden Test Checklist (849/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -504,7 +504,7 @@ Last updated: 2025-08-16 12:28 GMT+7
 | 495 | linear_algebra/src/transformations_2d | ✓ | 1.84ms | 18.7 MB |
 | 496 | linear_programming/simplex | ✓ | 7.20ms | 25.0 MB |
 | 497 | machine_learning/apriori_algorithm | ✓ | 8.51ms | 25.0 MB |
-| 498 | machine_learning/astar | error |  |  |
+| 498 | machine_learning/astar | ✓ |  |  |
 | 499 | machine_learning/automatic_differentiation | ✓ | 1.50ms | 17.3 MB |
 | 500 | machine_learning/data_transformations | ✓ | 6.69ms | 25.1 MB |
 | 501 | machine_learning/decision_tree | ✓ | 346.74ms | 269.3 MB |
@@ -516,7 +516,7 @@ Last updated: 2025-08-16 12:28 GMT+7
 | 507 | machine_learning/k_means_clust | ✓ | 9.99ms | 17.4 MB |
 | 508 | machine_learning/k_nearest_neighbours | error |  |  |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 7.86ms | 25.0 MB |
-| 510 | machine_learning/linear_regression | ✓ |  |  |
+| 510 | machine_learning/linear_regression |   |  |  |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | error |  |  |
 | 512 | machine_learning/logistic_regression | ✓ | 16.06ms | 34.9 MB |
 | 513 | machine_learning/loss_functions | error |  |  |
@@ -846,19 +846,19 @@ Last updated: 2025-08-16 12:28 GMT+7
 | 837 | project_euler/problem_015/sol1 |   |  |  |
 | 838 | project_euler/problem_016/sol1 |   |  |  |
 | 839 | project_euler/problem_016/sol2 |   |  |  |
-| 840 | project_euler/problem_017/sol1 |   |  |  |
-| 841 | project_euler/problem_018/solution |   |  |  |
-| 842 | project_euler/problem_019/sol1 |   |  |  |
-| 843 | project_euler/problem_020/sol1 |   |  |  |
-| 844 | project_euler/problem_020/sol2 |   |  |  |
-| 845 | project_euler/problem_020/sol3 |   |  |  |
-| 846 | project_euler/problem_020/sol4 |   |  |  |
-| 847 | project_euler/problem_021/sol1 |   |  |  |
-| 848 | project_euler/problem_022/sol1 |   |  |  |
-| 849 | project_euler/problem_022/sol2 |   |  |  |
-| 850 | project_euler/problem_023/sol1 |   |  |  |
-| 851 | project_euler/problem_024/sol1 |   |  |  |
-| 852 | project_euler/problem_025/sol1 |   |  |  |
+| 840 | project_euler/problem_017/sol1 | ✓ | 6.07ms | 17.3 MB |
+| 841 | project_euler/problem_018/solution | ✓ | 6.40ms | 17.3 MB |
+| 842 | project_euler/problem_019/sol1 | ✓ | 6.63ms | 25.0 MB |
+| 843 | project_euler/problem_020/sol1 | ✓ | 6.37ms | 77.9 MB |
+| 844 | project_euler/problem_020/sol2 | ✓ | 6.12ms | 81.4 MB |
+| 845 | project_euler/problem_020/sol3 | ✓ | 12.44ms | 25.0 MB |
+| 846 | project_euler/problem_020/sol4 | error |  |  |
+| 847 | project_euler/problem_021/sol1 | ✓ | 37.46ms | 12.5 MB |
+| 848 | project_euler/problem_022/sol1 | ✓ | 6.45ms | 17.3 MB |
+| 849 | project_euler/problem_022/sol2 | error |  |  |
+| 850 | project_euler/problem_023/sol1 | ✓ | 4m55.922874s | 6.3 GB |
+| 851 | project_euler/problem_024/sol1 | ✓ | 5.72ms | 25.0 MB |
+| 852 | project_euler/problem_025/sol1 | error |  |  |
 | 853 | project_euler/problem_025/sol2 |   |  |  |
 | 854 | project_euler/problem_025/sol3 |   |  |  |
 | 855 | project_euler/problem_026/sol1 |   |  |  |

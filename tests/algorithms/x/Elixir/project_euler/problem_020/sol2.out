@@ -1,0 +1,14 @@
+warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {m, total} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_020/sol2.exs:40:8: Main.digit_sum/1
+
+648
+216
+27
+3
+6
+2
+1

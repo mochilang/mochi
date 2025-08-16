@@ -1,0 +1,9 @@
+Enter the Number: 
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a textual representation of an integer
+
+    :erlang.binary_to_integer("")
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_020/sol4.exs:68: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_020/sol4.exs:78: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_020/sol4.exs:86: (file)
