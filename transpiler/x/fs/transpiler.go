@@ -68,6 +68,7 @@ type Program struct {
 	UseArraySet    bool
 	UseJSON        bool
 	UseFloorDiv    bool
+	UseFloorDiv64  bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -109,6 +110,7 @@ var (
 	usesArraySet   bool
 	usesJSON       bool
 	usesFloorDiv   bool
+	usesFloorDiv64 bool
 	funcHasNull    bool
 )
 
@@ -247,6 +249,11 @@ const helperFloorDiv = `let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
     if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q`
+
+const helperFloorDiv64 = `let _floordiv64 (a:int64) (b:int64) : int64 =
+    let q = a / b
+    let r = a % b
+    if r <> 0L && ((a < 0L) <> (b < 0L)) then q - 1L else q`
 
 func writeIndent(w io.Writer) {
 	for i := 0; i < indentLevel; i++ {
@@ -2232,6 +2239,28 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if b.Op == "/" && resT == "int64" {
+		usesFloorDiv64 = true
+		left = &CastExpr{Expr: left, Type: "int64"}
+		right = &CastExpr{Expr: right, Type: "int64"}
+		io.WriteString(w, "_floordiv64 ")
+		if needsParen(left) {
+			io.WriteString(w, "(")
+			left.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			left.emit(w)
+		}
+		io.WriteString(w, " ")
+		if needsParen(right) {
+			io.WriteString(w, "(")
+			right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			right.emit(w)
+		}
+		return
+	}
 	if needsParen(left) {
 		io.WriteString(w, "(")
 		left.emit(w)
@@ -3495,6 +3524,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperFloorDiv)
 		buf.WriteString("\n")
 	}
+	if prog.UseFloorDiv64 {
+		buf.WriteString(helperFloorDiv64)
+		buf.WriteString("\n")
+	}
 	for _, a := range prog.Aliases {
 		fmt.Fprintf(&buf, "type %s = %s\n", fsIdent(a.Name), a.Type)
 	}
@@ -3602,6 +3635,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesArraySet = false
 	usesJSON = false
 	usesFloorDiv = false
+	usesFloorDiv64 = false
 	funcHasNull = false
 	currentReturn = ""
 	funcDepth = 0
@@ -3698,6 +3732,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseArraySet = usesArraySet
 	p.UseJSON = usesJSON
 	p.UseFloorDiv = usesFloorDiv
+	p.UseFloorDiv64 = usesFloorDiv64
 	return p, nil
 }
 
