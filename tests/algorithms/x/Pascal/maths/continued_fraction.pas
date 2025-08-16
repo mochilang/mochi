@@ -65,11 +65,11 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  lst: IntArray;
-  b: integer;
-  denominator: integer;
-  numerator: integer;
   a: integer;
+  denominator: integer;
+  b: integer;
+  numerator: integer;
+  lst: IntArray;
 function floor_div(a: integer; b: integer): integer; forward;
 function continued_fraction(numerator: integer; denominator: integer): IntArray; forward;
 function list_to_string(lst: IntArray): string; forward;

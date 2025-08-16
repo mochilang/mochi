@@ -67,11 +67,11 @@ var
   bench_memdiff_0: int64;
   i: integer;
   result_: real;
-  x_end: real;
-  steps: integer;
-  x: real;
   f_var: FuncType1;
   x_start: real;
+  x: real;
+  x_end: real;
+  steps: integer;
 function abs_float(x: real): real; forward;
 function trapezoidal_area(trapezoidal_area_f_var: FuncType1; x_start: real; x_end: real; steps: integer): real; forward;
 function f(x: real): real; forward;

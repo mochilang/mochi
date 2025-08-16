@@ -85,9 +85,9 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  x: string;
   xs: StrArray;
   lst: StrArray;
+  x: string;
 function contains_int(xs: IntArray; x: integer): boolean; forward;
 function contains_string(xs: StrArray; x: string): boolean; forward;
 function count_int(xs: IntArray; x: integer): integer; forward;

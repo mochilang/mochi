@@ -65,8 +65,8 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  num: real;
   x: IntArray;
+  num: real;
 function abs_val(num: real): real; forward;
 function abs_min(x: IntArray): integer; forward;
 function abs_max(x: IntArray): integer; forward;

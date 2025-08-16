@@ -70,12 +70,12 @@ var
   bench_memdiff_0: int64;
   e1: EuclidResult;
   e2: EuclidResult;
-  b: integer;
-  n: integer;
-  a: integer;
-  n2: integer;
-  r1: integer;
   r2: integer;
+  r1: integer;
+  a: integer;
+  n: integer;
+  b: integer;
+  n2: integer;
   n1: integer;
 function makeEuclidResult(x: integer; y: integer): EuclidResult; forward;
 function extended_euclid(a: integer; b: integer): EuclidResult; forward;

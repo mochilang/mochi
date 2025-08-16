@@ -96,12 +96,12 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  target: RealArray;
   test_features: RealArrayArray;
-  y_pred: RealArray;
-  features: RealArrayArray;
-  dataset_var: Dataset;
+  target: RealArray;
   y_true: RealArray;
+  y_pred: RealArray;
+  dataset_var: Dataset;
+  features: RealArrayArray;
 function makeTree(threshold: real; left_value: real; right_value: real): Tree; forward;
 function makeDataset(data: RealArrayArray; target: RealArray): Dataset; forward;
 function data_handling(data_handling_dataset_var: Dataset): Dataset; forward;

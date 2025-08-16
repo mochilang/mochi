@@ -64,9 +64,9 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
+  modulus: integer;
   base: integer;
   exponent: integer;
-  modulus: integer;
 function binary_exp_recursive(base: real; exponent: integer): real; forward;
 function binary_exp_iterative(base: real; exponent: integer): real; forward;
 function binary_exp_mod_recursive(base: integer; exponent: integer; modulus: integer): integer; forward;

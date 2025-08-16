@@ -86,10 +86,10 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  arr: IntArray;
-  n: integer;
   exp_: integer;
   x: integer;
+  n: integer;
+  arr: IntArray;
   base: integer;
 function pow_int(base: integer; pow_int_exp_: integer): integer; forward;
 function prime_factors(n: integer): IntArray; forward;

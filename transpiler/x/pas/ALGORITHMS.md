@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-16 14:54 GMT+7
+Last updated: 2025-08-16 19:52 GMT+7
 
-## Algorithms Golden Test Checklist (428/1077)
+## Algorithms Golden Test Checklist (442/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -511,56 +511,56 @@ Last updated: 2025-08-16 14:54 GMT+7
 | 502 | machine_learning/dimensionality_reduction |   |  |  |
 | 503 | machine_learning/forecasting/run |   |  |  |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
-| 507 | machine_learning/k_means_clust |   |  |  |
-| 508 | machine_learning/k_nearest_neighbours |   |  |  |
-| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
-| 510 | machine_learning/linear_regression |   |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
-| 512 | machine_learning/logistic_regression |   |  |  |
-| 513 | machine_learning/loss_functions |   |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
-| 515 | machine_learning/mfcc |   |  |  |
-| 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
-| 517 | machine_learning/polynomial_regression |   |  |  |
-| 518 | machine_learning/principle_component_analysis |   |  |  |
-| 519 | machine_learning/scoring_functions |   |  |  |
-| 520 | machine_learning/self_organizing_map |   |  |  |
-| 521 | machine_learning/sequential_minimum_optimization |   |  |  |
-| 522 | machine_learning/similarity_search |   |  |  |
-| 523 | machine_learning/support_vector_machines |   |  |  |
-| 524 | machine_learning/word_frequency_functions |   |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.0µs | 640B |
+| 506 | machine_learning/gradient_descent | ✓ | 21.0µs | 704B |
+| 507 | machine_learning/k_means_clust | ✓ | 0ns | 928B |
+| 508 | machine_learning/k_nearest_neighbours | error |  |  |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.0µs | 0B |
+| 510 | machine_learning/linear_regression | ✓ | 0ns | 640B |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 0ns | 384B |
+| 512 | machine_learning/logistic_regression | ✓ | 2.0µs | 640B |
+| 513 | machine_learning/loss_functions | ✓ | 0ns | 0B |
+| 514 | machine_learning/lstm/lstm_prediction | error |  |  |
+| 515 | machine_learning/mfcc | error |  |  |
+| 516 | machine_learning/multilayer_perceptron_classifier | error |  |  |
+| 517 | machine_learning/polynomial_regression | error |  |  |
+| 518 | machine_learning/principle_component_analysis | ✓ | 0ns | 1.56KB |
+| 519 | machine_learning/scoring_functions | ✓ | 0ns | 0B |
+| 520 | machine_learning/self_organizing_map | ✓ | 0ns | 0B |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 0ns | 608B |
+| 522 | machine_learning/similarity_search | ✓ | 0ns | 832B |
+| 523 | machine_learning/support_vector_machines | ✓ | 0ns | 512B |
+| 524 | machine_learning/word_frequency_functions | error |  |  |
 | 525 | machine_learning/xgboost_classifier | ✓ | 0ns | 0B |
 | 526 | machine_learning/xgboost_regressor | error |  |  |
 | 527 | maths/abs | ✓ | 0ns | 0B |
 | 528 | maths/addition_without_arithmetic | error |  |  |
 | 529 | maths/aliquot_sum | ✓ | 0ns | 64B |
-| 530 | maths/allocation_number | ✓ | 1.0µs | 2.38KB |
+| 530 | maths/allocation_number | ✓ | 0ns | 2.38KB |
 | 531 | maths/arc_length | ✓ | 0ns | 64B |
-| 532 | maths/area | ✓ | 1.0µs | 128B |
+| 532 | maths/area | ✓ | 0ns | 128B |
 | 533 | maths/area_under_curve | ✓ | 1.0µs | 224B |
 | 534 | maths/average_absolute_deviation | ✓ | 0ns | 128B |
-| 535 | maths/average_mean | ✓ | 1.0µs | 160B |
+| 535 | maths/average_mean | ✓ | 0ns | 160B |
 | 536 | maths/average_median | ✓ | 0ns | 128B |
-| 537 | maths/average_mode | ✓ | 1.0µs | 2.31KB |
+| 537 | maths/average_mode | ✓ | 0ns | 2.31KB |
 | 538 | maths/bailey_borwein_plouffe | error |  |  |
 | 539 | maths/base_neg2_conversion | ✓ | 0ns | 0B |
 | 540 | maths/basic_maths | ✓ | 0ns | 128B |
 | 541 | maths/binary_exponentiation | ✓ | 0ns | 0B |
 | 542 | maths/binary_multiplication | ✓ | 0ns | 0B |
 | 543 | maths/binomial_coefficient | ✓ | 0ns | 64B |
-| 544 | maths/binomial_distribution | ✓ | 1.0µs | 0B |
+| 544 | maths/binomial_distribution | ✓ | 2.0µs | 0B |
 | 545 | maths/ceil | ✓ | 0ns | 96B |
 | 546 | maths/chebyshev_distance | ✓ | 0ns | 128B |
 | 547 | maths/check_polygon | ✓ | 0ns | 256B |
 | 548 | maths/chinese_remainder_theorem | ✓ | 0ns | 192B |
 | 549 | maths/chudnovsky_algorithm | ✓ | 0ns | 224B |
 | 550 | maths/collatz_sequence | ✓ | 0ns | 0B |
-| 551 | maths/combinations | ✓ | 1.0µs | 384B |
+| 551 | maths/combinations | ✓ | 0ns | 384B |
 | 552 | maths/continued_fraction | ✓ | 0ns | 64B |
 | 553 | maths/decimal_isolate | ✓ | 0ns | 0B |
-| 554 | maths/decimal_to_fraction | ✓ | 1.0µs | 0B |
+| 554 | maths/decimal_to_fraction | ✓ | 0ns | 0B |
 | 555 | maths/dodecahedron | ✓ | 0ns | 0B |
 | 556 | maths/double_factorial | ✓ | 0ns | 0B |
 | 557 | maths/dual_number_automatic_differentiation | error | 0ns | 0B |

@@ -1,0 +1,11 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/machine_learning/multilayer_perceptron_classifier.pas
+multilayer_perceptron_classifier.pas(101,4) Error: Duplicate identifier "X"
+multilayer_perceptron_classifier.pas(149,19) Error: Type mismatch
+multilayer_perceptron_classifier.pas(150,17) Error: Illegal qualifier
+multilayer_perceptron_classifier.pas(150,25) Fatal: Syntax error, ";" expected but "[" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -65,8 +65,8 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   PI: real;
-  angle: real;
   radius: real;
+  angle: real;
 function arc_length(angle: real; radius: real): real; forward;
 function arc_length(angle: real; radius: real): real;
 begin

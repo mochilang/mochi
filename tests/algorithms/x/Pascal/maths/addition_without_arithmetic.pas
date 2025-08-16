@@ -66,9 +66,9 @@ var
   bench_memdiff_0: int64;
   MAX: integer;
   HALF: integer;
-  b: integer;
-  a: integer;
   n: integer;
+  a: integer;
+  b: integer;
   num: integer;
 function to_unsigned(n: integer): integer; forward;
 function from_unsigned(n: integer): integer; forward;

@@ -65,12 +65,12 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   prob: real;
-  n: integer;
-  successes: integer;
   trials: integer;
-  base: real;
-  x: real;
+  n: integer;
   exp_: integer;
+  x: real;
+  successes: integer;
+  base: real;
 function abs(x: real): real; forward;
 function factorial(n: integer): integer; forward;
 function pow_float(base: real; pow_float_exp_: integer): real; forward;
