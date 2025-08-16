@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-16 12:08 GMT+7
+Last updated: 2025-08-16 12:44 GMT+7
 
-## Algorithms Golden Test Checklist (551/1077)
+## Algorithms Golden Test Checklist (552/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -503,7 +503,7 @@ Last updated: 2025-08-16 12:08 GMT+7
 | 494 | linear_algebra/src/test_linear_algebra |   |  |  |
 | 495 | linear_algebra/src/transformations_2d |   |  |  |
 | 496 | linear_programming/simplex | ✓ | 11.11ms | 131.16KiB |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
+| 497 | machine_learning/apriori_algorithm | ✓ | 9.00ms | 134.00KiB |
 | 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation |   |  |  |
 | 500 | machine_learning/data_transformations | ✓ | 25.73ms | 112.41KiB |
