@@ -1218,7 +1218,12 @@ func (p *Program) write(w io.Writer) {
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+"&")
+					// Struct parameters mutated inside the function should be
+					// passed by value to preserve Mochi's value semantics.
+					// Using a reference here causes the forward declaration to
+					// differ from the definition, leading to ambiguous
+					// overloads.
+					io.WriteString(w, typ)
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
