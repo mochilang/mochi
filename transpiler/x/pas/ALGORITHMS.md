@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-16 14:54 GMT+7
+Last updated: 2025-08-16 19:57 GMT+7
 
-## Algorithms Golden Test Checklist (428/1077)
+## Algorithms Golden Test Checklist (438/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -511,17 +511,17 @@ Last updated: 2025-08-16 14:54 GMT+7
 | 502 | machine_learning/dimensionality_reduction |   |  |  |
 | 503 | machine_learning/forecasting/run |   |  |  |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
-| 507 | machine_learning/k_means_clust |   |  |  |
-| 508 | machine_learning/k_nearest_neighbours |   |  |  |
-| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
-| 510 | machine_learning/linear_regression |   |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
-| 512 | machine_learning/logistic_regression |   |  |  |
-| 513 | machine_learning/loss_functions |   |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
-| 515 | machine_learning/mfcc |   |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.0µs | 640B |
+| 506 | machine_learning/gradient_descent | ✓ | 14.0µs | 704B |
+| 507 | machine_learning/k_means_clust | ✓ | 0ns | 928B |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 0ns | 1.34KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 2.0µs | 0B |
+| 510 | machine_learning/linear_regression | ✓ | 0ns | 640B |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 0ns | 384B |
+| 512 | machine_learning/logistic_regression | ✓ | 2.0µs | 640B |
+| 513 | machine_learning/loss_functions | ✓ | 0ns | 0B |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 5.0µs | 320B |
+| 515 | machine_learning/mfcc | error |  |  |
 | 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
 | 517 | machine_learning/polynomial_regression |   |  |  |
 | 518 | machine_learning/principle_component_analysis |   |  |  |
