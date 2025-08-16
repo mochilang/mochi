@@ -1,7 +1,7 @@
 public class Main {
 
     static long max_int(long a, long b) {
-        if (a >= b) {
+        if ((long)(a) >= (long)(b)) {
             return a;
         } else {
             return b;
@@ -9,16 +9,16 @@ public class Main {
     }
 
     static long max_subsequence_sum(long[] nums) {
-        if ((long)(nums.length) == (long)(0)) {
+        if ((long)(nums.length) == 0L) {
             throw new RuntimeException(String.valueOf("input sequence should not be empty"));
         }
-        long ans_1 = nums[(int)((long)(0))];
+        long ans_1 = (long)(nums[(int)((long)(0))]);
         long i_1 = 1L;
         while ((long)(i_1) < (long)(nums.length)) {
-            long num_1 = nums[(int)((long)(i_1))];
-            long extended_1 = (long)(ans_1 + num_1);
-            ans_1 = max_int(max_int(ans_1, (long)(extended_1)), num_1);
-            i_1 = (long)((long)(i_1) + (long)(1));
+            long num_1 = (long)(nums[(int)((long)(i_1))]);
+            long extended_1 = (long)((long)(ans_1) + (long)(num_1));
+            ans_1 = (long)(max_int((long)(max_int((long)(ans_1), (long)(extended_1))), (long)(num_1)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return ans_1;
     }

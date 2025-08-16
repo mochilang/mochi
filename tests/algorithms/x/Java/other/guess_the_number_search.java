@@ -1,43 +1,43 @@
 public class Main {
 
     static long get_avg(long number_1, long number_2) {
-        return ((long)(Math.floorDiv((number_1 + number_2), 2)));
+        return (long)(((long)(number_1) + (long)(number_2))) / 2L;
     }
 
     static long[] guess_the_number(long lower, long higher, long to_guess) {
-        if (lower > higher) {
+        if ((long)(lower) > (long)(higher)) {
             throw new RuntimeException(String.valueOf("argument value for lower and higher must be(lower > higher)"));
         }
-        if (!(lower < to_guess && to_guess < higher)) {
+        if (!((long)(lower) < (long)(to_guess) && (long)(to_guess) < (long)(higher))) {
             throw new RuntimeException(String.valueOf("guess value must be within the range of lower and higher value"));
         }
         java.util.function.Function<Long,String>[] answer = new java.util.function.Function[1];
         answer[0] = (number) -> {
-        if (number > to_guess) {
+        if ((long)(number) > (long)(to_guess)) {
             return "high";
-        } else         if (number < to_guess) {
+        } else         if ((long)(number) < (long)(to_guess)) {
             return "low";
         } else {
             return "same";
         }
 };
         System.out.println("started...");
-        long last_lowest_1 = lower;
-        long last_highest_1 = higher;
+        long last_lowest_1 = (long)(lower);
+        long last_highest_1 = (long)(higher);
         long[] last_numbers_1 = ((long[])(new long[]{}));
         while (true) {
-            long number_1 = get_avg((long)(last_lowest_1), (long)(last_highest_1));
-            last_numbers_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(last_numbers_1), java.util.stream.LongStream.of(number_1)).toArray()));
-            String resp_1 = String.valueOf(answer[0].apply(number_1));
+            long number_1 = (long)(get_avg((long)(last_lowest_1), (long)(last_highest_1)));
+            last_numbers_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(last_numbers_1), java.util.stream.LongStream.of((long)(number_1))).toArray()));
+            String resp_1 = String.valueOf(answer[0].apply((long)(number_1)));
             if ((resp_1.equals("low"))) {
-                last_lowest_1 = number_1;
+                last_lowest_1 = (long)(number_1);
             } else             if ((resp_1.equals("high"))) {
-                last_highest_1 = number_1;
+                last_highest_1 = (long)(number_1);
             } else {
                 break;
             }
         }
-        System.out.println("guess the number : " + _p(_geti(last_numbers_1, ((Number)((long)(last_numbers_1.length) - (long)(1))).intValue())));
+        System.out.println("guess the number : " + _p(_geti(last_numbers_1, ((Number)((long)(last_numbers_1.length) - 1L)).intValue())));
         System.out.println("details : " + _p(last_numbers_1));
         return last_numbers_1;
     }
@@ -95,7 +95,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

@@ -1,17 +1,17 @@
 public class Main {
 
     static double exp_approx(double x) {
-        double sum = 1.0;
-        double term_1 = 1.0;
+        double sum = (double)(1.0);
+        double term_1 = (double)(1.0);
         long i_1 = 1L;
-        double absx_1 = (double)((double)(x) < 0.0 ? -x : x);
-        while ((long)(i_1) <= (long)(20)) {
-            term_1 = (double)(term_1) * absx_1 / (((Number)(i_1)).doubleValue());
-            sum = (double)(sum) + (double)(term_1);
-            i_1 = (long)((long)(i_1) + (long)(1));
+        double absx_1 = (double)((double)(x) < (double)(0.0) ? -x : x);
+        while ((long)(i_1) <= 20L) {
+            term_1 = (double)((double)((double)(term_1) * (double)(absx_1)) / (double)((((Number)(i_1)).doubleValue())));
+            sum = (double)((double)(sum) + (double)(term_1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        if ((double)(x) < 0.0) {
-            return 1.0 / (double)(sum);
+        if ((double)(x) < (double)(0.0)) {
+            return (double)(1.0) / (double)(sum);
         }
         return sum;
     }
@@ -21,13 +21,13 @@ public class Main {
         long i_3 = 0L;
         while ((long)(i_3) < (long)(vector.length)) {
             double v_1 = (double)(vector[(int)((long)(i_3))]);
-            if ((double)(v_1) > 0.0) {
+            if ((double)(v_1) > (double)(0.0)) {
                 result = ((double[])(appendDouble(result, (double)(v_1))));
             } else {
-                double neg_1 = (double)(alpha) * ((double)(exp_approx((double)(v_1))) - 1.0);
-                result = ((double[])(appendDouble(result, neg_1)));
+                double neg_1 = (double)((double)(alpha) * (double)(((double)(exp_approx((double)(v_1))) - (double)(1.0))));
+                result = ((double[])(appendDouble(result, (double)(neg_1))));
             }
-            i_3 = (long)((long)(i_3) + (long)(1));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return result;
     }
@@ -35,8 +35,8 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(exponential_linear_unit(((double[])(new double[]{2.3, 0.6, -2.0, -3.8})), 0.3)));
-            System.out.println(_p(exponential_linear_unit(((double[])(new double[]{-9.2, -0.3, 0.45, -4.56})), 0.067)));
+            System.out.println(_p(exponential_linear_unit(((double[])(new double[]{2.3, 0.6, -2.0, -3.8})), (double)(0.3))));
+            System.out.println(_p(exponential_linear_unit(((double[])(new double[]{-9.2, -0.3, 0.45, -4.56})), (double)(0.067))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -91,7 +91,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

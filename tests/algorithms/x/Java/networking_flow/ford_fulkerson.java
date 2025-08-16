@@ -1,78 +1,76 @@
 public class Main {
-    static int INF;
-    static int[][] graph;
+    static long INF = 1000000000L;
+    static long[][] graph = ((long[][])(new long[][]{new long[]{0, 16, 13, 0, 0, 0}, new long[]{0, 0, 10, 12, 0, 0}, new long[]{0, 4, 0, 0, 14, 0}, new long[]{0, 0, 9, 0, 0, 20}, new long[]{0, 0, 0, 7, 0, 4}, new long[]{0, 0, 0, 0, 0, 0}}));
 
-    static boolean breadth_first_search(int[][] graph, int source, int sink, int[] parent) {
+    static boolean breadth_first_search(long[][] graph, long source, long sink, long[] parent) {
         boolean[] visited = ((boolean[])(new boolean[]{}));
-        int i = 0;
-        while (i < graph.length) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(graph.length)) {
             visited = ((boolean[])(appendBool(visited, false)));
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int[] queue = ((int[])(new int[]{}));
-        queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(source)).toArray()));
-visited[source] = true;
-        int head = 0;
-        while (head < queue.length) {
-            int u = queue[head];
-            head = head + 1;
-            int[] row = ((int[])(graph[u]));
-            int ind = 0;
-            while (ind < row.length) {
-                int capacity = row[ind];
-                if (visited[ind] == false && capacity > 0) {
-                    queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(ind)).toArray()));
-visited[ind] = true;
-parent[ind] = u;
+        long[] queue_1 = ((long[])(new long[]{}));
+        queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(source))).toArray()));
+visited[(int)((long)(source))] = true;
+        long head_1 = 0L;
+        while ((long)(head_1) < (long)(queue_1.length)) {
+            long u_1 = (long)(queue_1[(int)((long)(head_1))]);
+            head_1 = (long)((long)(head_1) + 1L);
+            long[] row_1 = ((long[])(graph[(int)((long)(u_1))]));
+            long ind_1 = 0L;
+            while ((long)(ind_1) < (long)(row_1.length)) {
+                long capacity_1 = (long)(row_1[(int)((long)(ind_1))]);
+                if ((visited[(int)((long)(ind_1))] == false) && (long)(capacity_1) > 0L) {
+                    queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(ind_1))).toArray()));
+visited[(int)((long)(ind_1))] = true;
+parent[(int)((long)(ind_1))] = (long)(u_1);
                 }
-                ind = ind + 1;
+                ind_1 = (long)((long)(ind_1) + 1L);
             }
         }
-        return visited[sink];
+        return visited[(int)((long)(sink))];
     }
 
-    static int ford_fulkerson(int[][] graph, int source, int sink) {
-        int[] parent = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < graph.length) {
-            parent = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(parent), java.util.stream.IntStream.of(-1)).toArray()));
-            i_1 = i_1 + 1;
+    static long ford_fulkerson(long[][] graph, long source, long sink) {
+        long[] parent = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(graph.length)) {
+            parent = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(parent), java.util.stream.LongStream.of((long)(-1))).toArray()));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        int max_flow = 0;
-        while (breadth_first_search(((int[][])(graph)), source, sink, ((int[])(parent)))) {
-            int path_flow = INF;
-            int s = sink;
-            while (s != source) {
-                int prev = parent[s];
-                int cap = graph[prev][s];
-                if (cap < path_flow) {
-                    path_flow = cap;
+        long max_flow_1 = 0L;
+        while (breadth_first_search(((long[][])(graph)), (long)(source), (long)(sink), ((long[])(parent)))) {
+            long path_flow_1 = (long)(INF);
+            long s_1 = (long)(sink);
+            while ((long)(s_1) != (long)(source)) {
+                long prev_1 = (long)(parent[(int)((long)(s_1))]);
+                long cap_1 = (long)(graph[(int)((long)(prev_1))][(int)((long)(s_1))]);
+                if ((long)(cap_1) < (long)(path_flow_1)) {
+                    path_flow_1 = (long)(cap_1);
                 }
-                s = prev;
+                s_1 = (long)(prev_1);
             }
-            max_flow = max_flow + path_flow;
-            int v = sink;
-            while (v != source) {
-                int u_1 = parent[v];
-graph[u_1][v] = graph[u_1][v] - path_flow;
-graph[v][u_1] = graph[v][u_1] + path_flow;
-                v = u_1;
+            max_flow_1 = (long)((long)(max_flow_1) + (long)(path_flow_1));
+            long v_1 = (long)(sink);
+            while ((long)(v_1) != (long)(source)) {
+                long u_3 = (long)(parent[(int)((long)(v_1))]);
+graph[(int)((long)(u_3))][(int)((long)(v_1))] = (long)((long)(graph[(int)((long)(u_3))][(int)((long)(v_1))]) - (long)(path_flow_1));
+graph[(int)((long)(v_1))][(int)((long)(u_3))] = (long)((long)(graph[(int)((long)(v_1))][(int)((long)(u_3))]) + (long)(path_flow_1));
+                v_1 = (long)(u_3);
             }
-            int j = 0;
-            while (j < parent.length) {
-parent[j] = -1;
-                j = j + 1;
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(parent.length)) {
+parent[(int)((long)(j_1))] = (long)(-1);
+                j_1 = (long)((long)(j_1) + 1L);
             }
         }
-        return max_flow;
+        return max_flow_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            INF = 1000000000;
-            graph = ((int[][])(new int[][]{new int[]{0, 16, 13, 0, 0, 0}, new int[]{0, 0, 10, 12, 0, 0}, new int[]{0, 4, 0, 0, 14, 0}, new int[]{0, 0, 9, 0, 0, 20}, new int[]{0, 0, 0, 7, 0, 4}, new int[]{0, 0, 0, 0, 0, 0}}));
-            System.out.println(_p(ford_fulkerson(((int[][])(graph)), 0, 5)));
+            System.out.println(_p(ford_fulkerson(((long[][])(graph)), 0L, 5L)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -124,6 +122,10 @@ parent[j] = -1;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

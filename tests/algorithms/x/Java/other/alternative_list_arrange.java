@@ -53,7 +53,7 @@ public class Main {
             if ((long)(i_1) < (long)(len2_1)) {
                 result_1 = ((Item[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(second[(int)((long)(i_1))])).toArray(Item[]::new)));
             }
-            i_1 = (long)((long)(i_1) + (long)(1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result_1;
     }
@@ -63,10 +63,10 @@ public class Main {
         long i_3 = 0L;
         while ((long)(i_3) < (long)(xs.length)) {
             s = s + String.valueOf(item_to_string(xs[(int)((long)(i_3))]));
-            if ((long)(i_3) < (long)((long)(xs.length) - (long)(1))) {
+            if ((long)(i_3) < (long)((long)(xs.length) - 1L)) {
                 s = s + ", ";
             }
-            i_3 = (long)((long)(i_3) + (long)(1));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         s = s + "]";
         return s;
@@ -131,7 +131,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

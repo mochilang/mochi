@@ -1,3 +1,4 @@
+run: exit status 1
 Exception in thread "main" java.lang.NullPointerException: Cannot read field "names" because "<parameter1>" is null
 	at Main.evaluate_clause(Main.java:95)
 	at Main.dpll_algorithm(Main.java:148)

@@ -53,8 +53,8 @@ public class Main {
     static Clause clause2;
     static Formula formula;
     static String formula_str;
-    static Clause[] clauses;
-    static String[] symbols;
+    static Clause[] clauses = ((Clause[])(new Clause[]{clause1, clause2}));
+    static String[] symbols = ((String[])(new String[]{"A4", "A3", "A5", "A1"}));
     static java.util.Map<String,Long> model = null;
     static DPLLResult result;
 
@@ -64,9 +64,9 @@ public class Main {
         long i_1 = 0L;
         while ((long)(i_1) < (long)(lits.length)) {
             String lit_1 = lits[(int)((long)(i_1))];
-m.put(lit_1, (long)((long)(0) - (long)(1)));
+m.put(lit_1, (long)(0L - 1L));
             names_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(names_1), java.util.stream.Stream.of(lit_1)).toArray(String[]::new)));
-            i_1 = (long)((long)(i_1) + (long)(1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return new Clause(m, names_1);
     }
@@ -79,12 +79,12 @@ m.put(lit_1, (long)((long)(0) - (long)(1)));
             String symbol_1 = _substr(lit_3, (int)((long)(0)), (int)((long)(2)));
             if (model.containsKey(symbol_1)) {
                 long value_1 = (long)(((long)(model).getOrDefault(symbol_1, 0L)));
-                if ((_substr(lit_3, (int)((long)((long)(_runeLen(lit_3)) - (long)(1))), (int)((long)(_runeLen(lit_3)))).equals("'")) && value_1 != (long)((long)(0) - (long)(1))) {
-                    value_1 = (long)((long)(1) - value_1);
+                if ((_substr(lit_3, (int)((long)((long)(_runeLen(lit_3)) - 1L)), (int)((long)(_runeLen(lit_3)))).equals("'")) && (long)(value_1) != (long)(0L - 1L)) {
+                    value_1 = (long)(1L - (long)(value_1));
                 }
-lits.put(lit_3, value_1);
+lits.put(lit_3, (long)(value_1));
             }
-            i_3 = (long)((long)(i_3) + (long)(1));
+            i_3 = (long)((long)(i_3) + 1L);
         }
 c.literals = lits;
         return c;
@@ -94,33 +94,33 @@ c.literals = lits;
         long i_4 = 0L;
         while ((long)(i_4) < (long)(c.names.length)) {
             String lit_5 = c.names[(int)((long)(i_4))];
-            String sym_1 = String.valueOf((_substr(lit_5, (int)((long)((long)(_runeLen(lit_5)) - (long)(1))), (int)((long)(_runeLen(lit_5)))).equals("'")) ? _substr(lit_5, (int)((long)(0)), (int)((long)(2))) : lit_5 + "'");
+            String sym_1 = String.valueOf((_substr(lit_5, (int)((long)((long)(_runeLen(lit_5)) - 1L)), (int)((long)(_runeLen(lit_5)))).equals("'")) ? _substr(lit_5, (int)((long)(0)), (int)((long)(2))) : lit_5 + "'");
             if (c.literals.containsKey(sym_1)) {
                 return new EvalResult(1, c);
             }
-            i_4 = (long)((long)(i_4) + (long)(1));
+            i_4 = (long)((long)(i_4) + 1L);
         }
         c = assign_clause(c, model);
-        i_4 = (long)(0);
+        i_4 = 0L;
         while ((long)(i_4) < (long)(c.names.length)) {
             String lit_7 = c.names[(int)((long)(i_4))];
             long value_3 = (long)(((long)(c.literals).getOrDefault(lit_7, 0L)));
-            if (value_3 == (long)(1)) {
+            if ((long)(value_3) == 1L) {
                 return new EvalResult(1, c);
             }
-            if (value_3 == (long)((long)(0) - (long)(1))) {
-                return new EvalResult((long)(0) - (long)(1), c);
+            if ((long)(value_3) == (long)(0L - 1L)) {
+                return new EvalResult(0L - 1L, c);
             }
-            i_4 = (long)((long)(i_4) + (long)(1));
+            i_4 = (long)((long)(i_4) + 1L);
         }
         long any_true_1 = 0L;
-        i_4 = (long)(0);
+        i_4 = 0L;
         while ((long)(i_4) < (long)(c.names.length)) {
             String lit_9 = c.names[(int)((long)(i_4))];
-            if ((long)(((long)(c.literals).getOrDefault(lit_9, 0L))) == (long)(1)) {
-                any_true_1 = (long)(1);
+            if ((long)(((long)(c.literals).getOrDefault(lit_9, 0L))) == 1L) {
+                any_true_1 = 1L;
             }
-            i_4 = (long)((long)(i_4) + (long)(1));
+            i_4 = (long)((long)(i_4) + 1L);
         }
         return new EvalResult(any_true_1, c);
     }
@@ -136,7 +136,7 @@ c.literals = lits;
             if (!(symbols[(int)((long)(i_6))].equals(s))) {
                 res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(symbols[(int)((long)(i_6))])).toArray(String[]::new)));
             }
-            i_6 = (long)((long)(i_6) + (long)(1));
+            i_6 = (long)((long)(i_6) + 1L);
         }
         return res;
     }
@@ -147,12 +147,12 @@ c.literals = lits;
         while ((long)(i_8) < (long)(clauses.length)) {
             EvalResult ev_1 = evaluate_clause(clauses[(int)((long)(i_8))], model);
 clauses[(int)((long)(i_8))] = ev_1.clause;
-            if ((long)(ev_1.value) == (long)(0)) {
+            if ((long)(ev_1.value) == 0L) {
                 return new DPLLResult(false, new java.util.LinkedHashMap<String, Long>());
-            } else             if ((long)(ev_1.value) == (long)((long)(0) - (long)(1))) {
+            } else             if ((long)(ev_1.value) == (long)(0L - 1L)) {
                 all_true = false;
             }
-            i_8 = (long)((long)(i_8) + (long)(1));
+            i_8 = (long)((long)(i_8) + 1L);
         }
         if (all_true) {
             return new DPLLResult(true, model);
@@ -182,7 +182,7 @@ tmp2_1.put(p_1, 0L);
                 line = line + " , ";
             }
             line = line + lit_11;
-            i_10 = (long)((long)(i_10) + (long)(1));
+            i_10 = (long)((long)(i_10) + 1L);
         }
         line = line + "}";
         return line;
@@ -193,10 +193,10 @@ tmp2_1.put(p_1, 0L);
         long i_12 = 0L;
         while ((long)(i_12) < (long)(f.clauses.length)) {
             line_1 = line_1 + String.valueOf(str_clause(f.clauses[(int)((long)(i_12))]));
-            if ((long)(i_12) < (long)((long)(f.clauses.length) - (long)(1))) {
+            if ((long)(i_12) < (long)((long)(f.clauses.length) - 1L)) {
                 line_1 = line_1 + " , ";
             }
-            i_12 = (long)((long)(i_12) + (long)(1));
+            i_12 = (long)((long)(i_12) + 1L);
         }
         line_1 = line_1 + "}";
         return line_1;
@@ -209,8 +209,6 @@ tmp2_1.put(p_1, 0L);
             clause2 = new_clause(((String[])(new String[]{"A4"})));
             formula = new_formula(((Clause[])(new Clause[]{clause1, clause2})));
             formula_str = String.valueOf(str_formula(formula));
-            clauses = ((Clause[])(new Clause[]{clause1, clause2}));
-            symbols = ((String[])(new String[]{"A4", "A3", "A5", "A1"}));
             model = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
             result = dpll_algorithm(((Clause[])(clauses)), ((String[])(symbols)), model);
             if (result.sat) {

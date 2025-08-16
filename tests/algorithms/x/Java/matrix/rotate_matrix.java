@@ -1,140 +1,140 @@
 public class Main {
-    static int[][] mat_1 = new int[0][];
-    static int[][] r90;
-    static int[][] r180;
-    static int[][] r270;
+    static long[][] mat_2 = new long[0][];
+    static long[][] r90;
+    static long[][] r180;
+    static long[][] r270;
 
-    static int abs_int(int n) {
-        if (n < 0) {
+    static long abs_int(long n) {
+        if ((long)(n) < 0L) {
             return -n;
         }
         return n;
     }
 
-    static int[][] make_matrix(int row_size) {
-        int size = abs_int(row_size);
-        if (size == 0) {
-            size = 4;
+    static long[][] make_matrix(long row_size) {
+        long size = (long)(abs_int((long)(row_size)));
+        if ((long)(size) == 0L) {
+            size = 4L;
         }
-        int[][] mat = ((int[][])(new int[][]{}));
-        int y = 0;
-        while (y < size) {
-            int[] row = ((int[])(new int[]{}));
-            int x = 0;
-            while (x < size) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(1 + x + y * size)).toArray()));
-                x = x + 1;
+        long[][] mat_1 = ((long[][])(new long[][]{}));
+        long y_1 = 0L;
+        while ((long)(y_1) < (long)(size)) {
+            long[] row_1 = ((long[])(new long[]{}));
+            long x_1 = 0L;
+            while ((long)(x_1) < (long)(size)) {
+                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of((long)((long)(1L + (long)(x_1)) + (long)((long)(y_1) * (long)(size))))).toArray()));
+                x_1 = (long)((long)(x_1) + 1L);
             }
-            mat = ((int[][])(appendObj(mat, row)));
-            y = y + 1;
+            mat_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(mat_1), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
+            y_1 = (long)((long)(y_1) + 1L);
         }
-        return mat;
+        return mat_1;
     }
 
-    static int[][] transpose(int[][] mat) {
-        int n = mat.length;
-        int[][] result = ((int[][])(new int[][]{}));
-        int i = 0;
-        while (i < n) {
-            int[] row_1 = ((int[])(new int[]{}));
-            int j = 0;
-            while (j < n) {
-                row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(mat[j][i])).toArray()));
-                j = j + 1;
+    static long[][] transpose(long[][] mat) {
+        long n = (long)(mat.length);
+        long[][] result_1 = ((long[][])(new long[][]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            long[] row_3 = ((long[])(new long[]{}));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(n)) {
+                row_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_3), java.util.stream.LongStream.of((long)(mat[(int)((long)(j_1))][(int)((long)(i_1))]))).toArray()));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            result = ((int[][])(appendObj(result, row_1)));
-            i = i + 1;
-        }
-        return result;
-    }
-
-    static int[][] reverse_row(int[][] mat) {
-        int[][] result_1 = ((int[][])(new int[][]{}));
-        int i_1 = mat.length - 1;
-        while (i_1 >= 0) {
-            result_1 = ((int[][])(appendObj(result_1, mat[i_1])));
-            i_1 = i_1 - 1;
+            result_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(new long[][]{row_3})).toArray(long[][]::new)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result_1;
     }
 
-    static int[][] reverse_column(int[][] mat) {
-        int[][] result_2 = ((int[][])(new int[][]{}));
-        int i_2 = 0;
-        while (i_2 < mat.length) {
-            int[] row_2 = ((int[])(new int[]{}));
-            int j_1 = mat[i_2].length - 1;
-            while (j_1 >= 0) {
-                row_2 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_2), java.util.stream.IntStream.of(mat[i_2][j_1])).toArray()));
-                j_1 = j_1 - 1;
-            }
-            result_2 = ((int[][])(appendObj(result_2, row_2)));
-            i_2 = i_2 + 1;
+    static long[][] reverse_row(long[][] mat) {
+        long[][] result_2 = ((long[][])(new long[][]{}));
+        long i_3 = (long)((long)(mat.length) - 1L);
+        while ((long)(i_3) >= 0L) {
+            result_2 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_2), java.util.stream.Stream.of(new long[][]{mat[(int)((long)(i_3))]})).toArray(long[][]::new)));
+            i_3 = (long)((long)(i_3) - 1L);
         }
         return result_2;
     }
 
-    static int[][] rotate_90(int[][] mat) {
-        int[][] t = ((int[][])(transpose(((int[][])(mat)))));
-        int[][] rr = ((int[][])(reverse_row(((int[][])(t)))));
-        return rr;
+    static long[][] reverse_column(long[][] mat) {
+        long[][] result_3 = ((long[][])(new long[][]{}));
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(mat.length)) {
+            long[] row_5 = ((long[])(new long[]{}));
+            long j_3 = (long)((long)(mat[(int)((long)(i_5))].length) - 1L);
+            while ((long)(j_3) >= 0L) {
+                row_5 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_5), java.util.stream.LongStream.of((long)(mat[(int)((long)(i_5))][(int)((long)(j_3))]))).toArray()));
+                j_3 = (long)((long)(j_3) - 1L);
+            }
+            result_3 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_3), java.util.stream.Stream.of(new long[][]{row_5})).toArray(long[][]::new)));
+            i_5 = (long)((long)(i_5) + 1L);
+        }
+        return result_3;
     }
 
-    static int[][] rotate_180(int[][] mat) {
-        int[][] rc = ((int[][])(reverse_column(((int[][])(mat)))));
-        int[][] rr_1 = ((int[][])(reverse_row(((int[][])(rc)))));
+    static long[][] rotate_90(long[][] mat) {
+        long[][] t = ((long[][])(transpose(((long[][])(mat)))));
+        long[][] rr_1 = ((long[][])(reverse_row(((long[][])(t)))));
         return rr_1;
     }
 
-    static int[][] rotate_270(int[][] mat) {
-        int[][] t_1 = ((int[][])(transpose(((int[][])(mat)))));
-        int[][] rc_1 = ((int[][])(reverse_column(((int[][])(t_1)))));
-        return rc_1;
+    static long[][] rotate_180(long[][] mat) {
+        long[][] rc = ((long[][])(reverse_column(((long[][])(mat)))));
+        long[][] rr_3 = ((long[][])(reverse_row(((long[][])(rc)))));
+        return rr_3;
     }
 
-    static String row_to_string(int[] row) {
+    static long[][] rotate_270(long[][] mat) {
+        long[][] t_1 = ((long[][])(transpose(((long[][])(mat)))));
+        long[][] rc_2 = ((long[][])(reverse_column(((long[][])(t_1)))));
+        return rc_2;
+    }
+
+    static String row_to_string(long[] row) {
         String line = "";
-        int i_3 = 0;
-        while (i_3 < row.length) {
-            if (i_3 == 0) {
-                line = _p(_geti(row, i_3));
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(row.length)) {
+            if ((long)(i_7) == 0L) {
+                line = _p(_geti(row, ((Number)(i_7)).intValue()));
             } else {
-                line = line + " " + _p(_geti(row, i_3));
+                line = line + " " + _p(_geti(row, ((Number)(i_7)).intValue()));
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + 1L);
         }
         return line;
     }
 
-    static void print_matrix(int[][] mat) {
-        int i_4 = 0;
-        while (i_4 < mat.length) {
-            System.out.println(row_to_string(((int[])(mat[i_4]))));
-            i_4 = i_4 + 1;
+    static void print_matrix(long[][] mat) {
+        long i_8 = 0L;
+        while ((long)(i_8) < (long)(mat.length)) {
+            System.out.println(row_to_string(((long[])(mat[(int)((long)(i_8))]))));
+            i_8 = (long)((long)(i_8) + 1L);
         }
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            mat_1 = ((int[][])(make_matrix(4)));
+            mat_2 = ((long[][])(make_matrix(4L)));
             System.out.println("\norigin:\n");
-            print_matrix(((int[][])(mat_1)));
+            print_matrix(((long[][])(mat_2)));
             System.out.println("\nrotate 90 counterclockwise:\n");
-            r90 = ((int[][])(rotate_90(((int[][])(mat_1)))));
-            print_matrix(((int[][])(r90)));
-            mat_1 = ((int[][])(make_matrix(4)));
+            r90 = ((long[][])(rotate_90(((long[][])(mat_2)))));
+            print_matrix(((long[][])(r90)));
+            mat_2 = ((long[][])(make_matrix(4L)));
             System.out.println("\norigin:\n");
-            print_matrix(((int[][])(mat_1)));
+            print_matrix(((long[][])(mat_2)));
             System.out.println("\nrotate 180:\n");
-            r180 = ((int[][])(rotate_180(((int[][])(mat_1)))));
-            print_matrix(((int[][])(r180)));
-            mat_1 = ((int[][])(make_matrix(4)));
+            r180 = ((long[][])(rotate_180(((long[][])(mat_2)))));
+            print_matrix(((long[][])(r180)));
+            mat_2 = ((long[][])(make_matrix(4L)));
             System.out.println("\norigin:\n");
-            print_matrix(((int[][])(mat_1)));
+            print_matrix(((long[][])(mat_2)));
             System.out.println("\nrotate 270 counterclockwise:\n");
-            r270 = ((int[][])(rotate_270(((int[][])(mat_1)))));
-            print_matrix(((int[][])(r270)));
+            r270 = ((long[][])(rotate_270(((long[][])(mat_2)))));
+            print_matrix(((long[][])(r270)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -168,12 +168,6 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -187,10 +181,14 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

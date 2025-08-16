@@ -1,72 +1,72 @@
 public class Main {
 
-    static boolean is_valid_matrix(int[][] matrix) {
-        if (matrix.length == 0) {
+    static boolean is_valid_matrix(long[][] matrix) {
+        if ((long)(matrix.length) == 0L) {
             return false;
         }
-        int cols = matrix[0].length;
-        for (int[] row : matrix) {
-            if (row.length != cols) {
+        long cols_1 = (long)(matrix[(int)((long)(0))].length);
+        for (long[] row : matrix) {
+            if ((long)(row.length) != (long)(cols_1)) {
                 return false;
             }
         }
         return true;
     }
 
-    static int[] spiral_traversal(int[][] matrix) {
-        if (!(Boolean)is_valid_matrix(((int[][])(matrix)))) {
-            return new int[]{};
+    static long[] spiral_traversal(long[][] matrix) {
+        if (!(Boolean)is_valid_matrix(((long[][])(matrix)))) {
+            return new long[]{};
         }
-        int rows = matrix.length;
-        int cols_1 = matrix[0].length;
-        int top = 0;
-        int bottom = rows - 1;
-        int left = 0;
-        int right = cols_1 - 1;
-        int[] result = ((int[])(new int[]{}));
-        while (left <= right && top <= bottom) {
-            int i = left;
-            while (i <= right) {
-                result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(matrix[top][i])).toArray()));
-                i = i + 1;
+        long rows_1 = (long)(matrix.length);
+        long cols_3 = (long)(matrix[(int)((long)(0))].length);
+        long top_1 = 0L;
+        long bottom_1 = (long)((long)(rows_1) - 1L);
+        long left_1 = 0L;
+        long right_1 = (long)((long)(cols_3) - 1L);
+        long[] result_1 = ((long[])(new long[]{}));
+        while ((long)(left_1) <= (long)(right_1) && (long)(top_1) <= (long)(bottom_1)) {
+            long i_1 = (long)(left_1);
+            while ((long)(i_1) <= (long)(right_1)) {
+                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(matrix[(int)((long)(top_1))][(int)((long)(i_1))]))).toArray()));
+                i_1 = (long)((long)(i_1) + 1L);
             }
-            top = top + 1;
-            i = top;
-            while (i <= bottom) {
-                result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(matrix[i][right])).toArray()));
-                i = i + 1;
+            top_1 = (long)((long)(top_1) + 1L);
+            i_1 = (long)(top_1);
+            while ((long)(i_1) <= (long)(bottom_1)) {
+                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(matrix[(int)((long)(i_1))][(int)((long)(right_1))]))).toArray()));
+                i_1 = (long)((long)(i_1) + 1L);
             }
-            right = right - 1;
-            if (top <= bottom) {
-                i = right;
-                while (i >= left) {
-                    result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(matrix[bottom][i])).toArray()));
-                    i = i - 1;
+            right_1 = (long)((long)(right_1) - 1L);
+            if ((long)(top_1) <= (long)(bottom_1)) {
+                i_1 = (long)(right_1);
+                while ((long)(i_1) >= (long)(left_1)) {
+                    result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(matrix[(int)((long)(bottom_1))][(int)((long)(i_1))]))).toArray()));
+                    i_1 = (long)((long)(i_1) - 1L);
                 }
-                bottom = bottom - 1;
+                bottom_1 = (long)((long)(bottom_1) - 1L);
             }
-            if (left <= right) {
-                i = bottom;
-                while (i >= top) {
-                    result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(matrix[i][left])).toArray()));
-                    i = i - 1;
+            if ((long)(left_1) <= (long)(right_1)) {
+                i_1 = (long)(bottom_1);
+                while ((long)(i_1) >= (long)(top_1)) {
+                    result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(matrix[(int)((long)(i_1))][(int)((long)(left_1))]))).toArray()));
+                    i_1 = (long)((long)(i_1) - 1L);
                 }
-                left = left + 1;
+                left_1 = (long)((long)(left_1) + 1L);
             }
         }
-        return result;
+        return result_1;
     }
 
-    static void spiral_print_clockwise(int[][] matrix) {
-        for (int value : spiral_traversal(((int[][])(matrix)))) {
+    static void spiral_print_clockwise(long[][] matrix) {
+        for (long value : spiral_traversal(((long[][])(matrix)))) {
             System.out.println(_p(value));
         }
     }
 
     static void main() {
-        int[][] a = ((int[][])(new int[][]{new int[]{1, 2, 3, 4}, new int[]{5, 6, 7, 8}, new int[]{9, 10, 11, 12}}));
-        spiral_print_clockwise(((int[][])(a)));
-        System.out.println(_p(spiral_traversal(((int[][])(a)))));
+        long[][] a = ((long[][])(new long[][]{new long[]{1, 2, 3, 4}, new long[]{5, 6, 7, 8}, new long[]{9, 10, 11, 12}}));
+        spiral_print_clockwise(((long[][])(a)));
+        System.out.println(_p(spiral_traversal(((long[][])(a)))));
     }
     public static void main(String[] args) {
         {
@@ -118,6 +118,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

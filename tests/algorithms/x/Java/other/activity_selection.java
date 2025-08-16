@@ -1,6 +1,6 @@
 public class Main {
-    static long[] start;
-    static long[] finish;
+    static long[] start = ((long[])(new long[]{1, 3, 0, 5, 8, 5}));
+    static long[] finish = ((long[])(new long[]{2, 4, 6, 7, 9, 9}));
 
     static void print_max_activities(long[] start, long[] finish) {
         long n = (long)(finish.length);
@@ -8,12 +8,12 @@ public class Main {
         long i_1 = 0L;
         String result_1 = "0,";
         long j_1 = 1L;
-        while (j_1 < n) {
-            if (start[(int)((long)(j_1))] >= finish[(int)((long)(i_1))]) {
+        while ((long)(j_1) < (long)(n)) {
+            if ((long)(start[(int)((long)(j_1))]) >= (long)(finish[(int)((long)(i_1))])) {
                 result_1 = result_1 + _p(j_1) + ",";
-                i_1 = j_1;
+                i_1 = (long)(j_1);
             }
-            j_1 = (long)(j_1 + (long)(1));
+            j_1 = (long)((long)(j_1) + 1L);
         }
         System.out.println(result_1);
     }
@@ -21,8 +21,6 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            start = ((long[])(new long[]{1, 3, 0, 5, 8, 5}));
-            finish = ((long[])(new long[]{2, 4, 6, 7, 9, 9}));
             print_max_activities(((long[])(start)), ((long[])(finish)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -72,7 +70,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

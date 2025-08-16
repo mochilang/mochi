@@ -12,50 +12,48 @@ public class Main {
         }
     }
 
-    static long[] years;
-    static long i = 0;
+    static long[] years = ((long[])(new long[]{1994, 2000, 2010, 2021, 2023, 2032, 2100}));
+    static long i = 0L;
 
     static EasterDate gauss_easter(long year) {
         long metonic_cycle = Math.floorMod(year, 19);
         long julian_leap_year_1 = Math.floorMod(year, 4);
         long non_leap_year_1 = Math.floorMod(year, 7);
-        long leap_day_inhibits_1 = Math.floorDiv(year, 100);
-        long lunar_orbit_correction_1 = Math.floorDiv(((long)(13) + (long)((long)(8) * (long)(leap_day_inhibits_1))), 25);
-        double leap_day_reinstall_number_1 = (((Number)(leap_day_inhibits_1)).doubleValue()) / 4.0;
-        double secular_moon_shift_1 = (15.0 - (((Number)(lunar_orbit_correction_1)).doubleValue()) + (((Number)(leap_day_inhibits_1)).doubleValue()) - leap_day_reinstall_number_1) % 30.0;
-        double century_starting_point_1 = (4.0 + (((Number)(leap_day_inhibits_1)).doubleValue()) - leap_day_reinstall_number_1) % 7.0;
-        double days_to_add_1 = (19.0 * (((Number)(metonic_cycle)).doubleValue()) + secular_moon_shift_1) % 30.0;
-        double days_from_phm_to_sunday_1 = (2.0 * (((Number)(julian_leap_year_1)).doubleValue()) + 4.0 * (((Number)(non_leap_year_1)).doubleValue()) + 6.0 * days_to_add_1 + century_starting_point_1) % 7.0;
-        if (days_to_add_1 == 29.0 && days_from_phm_to_sunday_1 == 6.0) {
+        long leap_day_inhibits_1 = (long)((long)(year) / 100L);
+        long lunar_orbit_correction_1 = (long)((long)((13L + (long)(8L * (long)(leap_day_inhibits_1)))) / 25L);
+        double leap_day_reinstall_number_1 = (double)((double)((((Number)(leap_day_inhibits_1)).doubleValue())) / (double)(4.0));
+        double secular_moon_shift_1 = (double)((double)(((double)((double)((double)(15.0) - (double)((((Number)(lunar_orbit_correction_1)).doubleValue()))) + (double)((((Number)(leap_day_inhibits_1)).doubleValue()))) - (double)(leap_day_reinstall_number_1))) % (double)(30.0));
+        double century_starting_point_1 = (double)((double)(((double)((double)(4.0) + (double)((((Number)(leap_day_inhibits_1)).doubleValue()))) - (double)(leap_day_reinstall_number_1))) % (double)(7.0));
+        double days_to_add_1 = (double)((double)(((double)((double)(19.0) * (double)((((Number)(metonic_cycle)).doubleValue()))) + (double)(secular_moon_shift_1))) % (double)(30.0));
+        double days_from_phm_to_sunday_1 = (double)((double)(((double)((double)((double)((double)(2.0) * (double)((((Number)(julian_leap_year_1)).doubleValue()))) + (double)((double)(4.0) * (double)((((Number)(non_leap_year_1)).doubleValue())))) + (double)((double)(6.0) * (double)(days_to_add_1))) + (double)(century_starting_point_1))) % (double)(7.0));
+        if ((double)(days_to_add_1) == (double)(29.0) && (double)(days_from_phm_to_sunday_1) == (double)(6.0)) {
             return new EasterDate(4, 19);
         }
-        if (days_to_add_1 == 28.0 && days_from_phm_to_sunday_1 == 6.0) {
+        if ((double)(days_to_add_1) == (double)(28.0) && (double)(days_from_phm_to_sunday_1) == (double)(6.0)) {
             return new EasterDate(4, 18);
         }
-        long offset_1 = (long)(((Number)((days_to_add_1 + days_from_phm_to_sunday_1))).intValue());
-        long total_1 = (long)((long)(22) + (long)(offset_1));
-        if ((long)(total_1) > (long)(31)) {
-            return new EasterDate(4, (long)(total_1) - (long)(31));
+        long offset_1 = (long)(((Number)(((double)(days_to_add_1) + (double)(days_from_phm_to_sunday_1)))).intValue());
+        long total_1 = (long)(22L + (long)(offset_1));
+        if ((long)(total_1) > 31L) {
+            return new EasterDate(4, (long)(total_1) - 31L);
         }
         return new EasterDate(3, total_1);
     }
 
     static String format_date(long year, EasterDate d) {
-        String month = String.valueOf((long)(d.month) < (long)(10) ? "0" + _p(d.month) : _p(d.month));
-        String day_1 = String.valueOf((long)(d.day) < (long)(10) ? "0" + _p(d.day) : _p(d.day));
+        String month = String.valueOf((long)(d.month) < 10L ? "0" + _p(d.month) : _p(d.month));
+        String day_1 = String.valueOf((long)(d.day) < 10L ? "0" + _p(d.day) : _p(d.day));
         return _p(year) + "-" + month + "-" + day_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            years = ((long[])(new long[]{1994, 2000, 2010, 2021, 2023, 2032, 2100}));
-            i = (long)(0);
             while ((long)(i) < (long)(years.length)) {
                 long y = (long)(years[(int)((long)(i))]);
                 EasterDate e = gauss_easter((long)(y));
                 System.out.println("Easter in " + _p(y) + " is " + String.valueOf(format_date((long)(y), e)));
-                i = (long)((long)(i) + (long)(1));
+                i = (long)((long)(i) + 1L);
             }
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -105,7 +103,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

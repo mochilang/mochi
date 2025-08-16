@@ -17,7 +17,7 @@ public class Main {
     }
 
     static LCG lcg = null;
-    static long i = 0;
+    static long i = 0L;
 
     static LCG make_lcg(long multiplier, long increment, long modulo, long seed) {
         return new LCG(multiplier, increment, modulo, seed);
@@ -32,10 +32,9 @@ lcg.seed = Math.floorMod(((long)((long)(lcg.multiplier) * (long)(lcg.seed)) + (l
             long _benchStart = _now();
             long _benchMem = _mem();
             lcg = make_lcg(1664525L, 1013904223L, 4294967296L, (long)(_now()));
-            i = (long)(0);
-            while ((long)(i) < (long)(5)) {
+            while ((long)(i) < 5L) {
                 System.out.println(_p(next_number(lcg)));
-                i = (long)((long)(i) + (long)(1));
+                i = (long)((long)(i) + 1L);
             }
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -85,7 +84,6 @@ lcg.seed = Math.floorMod(((long)((long)(lcg.multiplier) * (long)(lcg.seed)) + (l
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

@@ -1,13 +1,13 @@
 public class Main {
 
     static double exp(double x) {
-        double term = 1.0;
-        double sum_1 = 1.0;
+        double term = (double)(1.0);
+        double sum_1 = (double)(1.0);
         long n_1 = 1L;
-        while ((long)(n_1) < (long)(20)) {
-            term = term * (double)(x) / ((Number)(n_1)).doubleValue();
-            sum_1 = sum_1 + term;
-            n_1 = (long)((long)(n_1) + (long)(1));
+        while ((long)(n_1) < 20L) {
+            term = (double)((double)((double)(term) * (double)(x)) / (double)(((Number)(n_1)).doubleValue()));
+            sum_1 = (double)((double)(sum_1) + (double)(term));
+            n_1 = (long)((long)(n_1) + 1L);
         }
         return sum_1;
     }
@@ -17,17 +17,17 @@ public class Main {
         long i_1 = 0L;
         while ((long)(i_1) < (long)(vector.length)) {
             double x_1 = (double)(vector[(int)((long)(i_1))]);
-            double numerator_1 = (double)(exp((double)(a_value) * (double)(x_1))) - (double)(exp((double)(-b_value) * (double)(x_1)));
-            double denominator_1 = (double)(exp((double)(c_value) * (double)(x_1))) + (double)(exp((double)(-d_value) * (double)(x_1)));
-            result = ((double[])(appendDouble(result, numerator_1 / denominator_1)));
-            i_1 = (long)((long)(i_1) + (long)(1));
+            double numerator_1 = (double)((double)(exp((double)((double)(a_value) * (double)(x_1)))) - (double)(exp((double)((double)(-b_value) * (double)(x_1)))));
+            double denominator_1 = (double)((double)(exp((double)((double)(c_value) * (double)(x_1)))) + (double)(exp((double)((double)(-d_value) * (double)(x_1)))));
+            result = ((double[])(appendDouble(result, (double)((double)(numerator_1) / (double)(denominator_1)))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
     static void main() {
         double[] vector = ((double[])(new double[]{5.4, -2.4, 6.3, -5.23, 3.27, 0.56}));
-        double[] res_1 = ((double[])(soboleva_modified_hyperbolic_tangent(((double[])(vector)), 0.2, 0.4, 0.6, 0.8)));
+        double[] res_1 = ((double[])(soboleva_modified_hyperbolic_tangent(((double[])(vector)), (double)(0.2), (double)(0.4), (double)(0.6), (double)(0.8))));
         json(res_1);
     }
     public static void main(String[] args) {

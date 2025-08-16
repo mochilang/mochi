@@ -3,57 +3,57 @@ public class Main {
     static double exp_approx(double x) {
         boolean neg = false;
         double y_1 = (double)(x);
-        if ((double)(x) < 0.0) {
+        if ((double)(x) < (double)(0.0)) {
             neg = true;
             y_1 = (double)(-x);
         }
-        double term_1 = 1.0;
-        double sum_1 = 1.0;
+        double term_1 = (double)(1.0);
+        double sum_1 = (double)(1.0);
         long n_1 = 1L;
-        while ((long)(n_1) < (long)(30)) {
-            term_1 = term_1 * y_1 / (((Number)(n_1)).doubleValue());
-            sum_1 = sum_1 + term_1;
-            n_1 = (long)((long)(n_1) + (long)(1));
+        while ((long)(n_1) < 30L) {
+            term_1 = (double)((double)((double)(term_1) * (double)(y_1)) / (double)((((Number)(n_1)).doubleValue())));
+            sum_1 = (double)((double)(sum_1) + (double)(term_1));
+            n_1 = (long)((long)(n_1) + 1L);
         }
         if (neg) {
-            return 1.0 / sum_1;
+            return (double)(1.0) / (double)(sum_1);
         }
         return sum_1;
     }
 
     static double ln_series(double x) {
-        double t = ((double)(x) - 1.0) / ((double)(x) + 1.0);
-        double term_3 = t;
-        double acc_1 = 0.0;
+        double t = (double)((double)(((double)(x) - (double)(1.0))) / (double)(((double)(x) + (double)(1.0))));
+        double term_3 = (double)(t);
+        double acc_1 = (double)(0.0);
         long n_3 = 1L;
-        while ((long)(n_3) <= (long)(19)) {
-            acc_1 = acc_1 + term_3 / (((Number)(n_3)).doubleValue());
-            term_3 = term_3 * t * t;
-            n_3 = (long)((long)(n_3) + (long)(2));
+        while ((long)(n_3) <= 19L) {
+            acc_1 = (double)((double)(acc_1) + (double)((double)(term_3) / (double)((((Number)(n_3)).doubleValue()))));
+            term_3 = (double)((double)((double)(term_3) * (double)(t)) * (double)(t));
+            n_3 = (long)((long)(n_3) + 2L);
         }
-        return 2.0 * acc_1;
+        return (double)(2.0) * (double)(acc_1);
     }
 
     static double ln(double x) {
         double y_2 = (double)(x);
         long k_1 = 0L;
-        while (y_2 >= 10.0) {
-            y_2 = y_2 / 10.0;
-            k_1 = (long)((long)(k_1) + (long)(1));
+        while ((double)(y_2) >= (double)(10.0)) {
+            y_2 = (double)((double)(y_2) / (double)(10.0));
+            k_1 = (long)((long)(k_1) + 1L);
         }
-        while (y_2 < 1.0) {
-            y_2 = y_2 * 10.0;
-            k_1 = (long)((long)(k_1) - (long)(1));
+        while ((double)(y_2) < (double)(1.0)) {
+            y_2 = (double)((double)(y_2) * (double)(10.0));
+            k_1 = (long)((long)(k_1) - 1L);
         }
-        return (double)(ln_series(y_2)) + (((Number)(k_1)).doubleValue()) * (double)(ln_series(10.0));
+        return (double)(ln_series((double)(y_2))) + (double)((double)((((Number)(k_1)).doubleValue())) * (double)(ln_series((double)(10.0))));
     }
 
     static double softplus(double x) {
-        return ln(1.0 + (double)(exp_approx((double)(x))));
+        return ln((double)((double)(1.0) + (double)(exp_approx((double)(x)))));
     }
 
     static double tanh_approx(double x) {
-        return (2.0 / (1.0 + (double)(exp_approx(-2.0 * (double)(x))))) - 1.0;
+        return (double)(((double)(2.0) / (double)(((double)(1.0) + (double)(exp_approx((double)((double)(-2.0) * (double)(x)))))))) - (double)(1.0);
     }
 
     static double[] mish(double[] vector) {
@@ -62,9 +62,9 @@ public class Main {
         while ((long)(i_1) < (long)(vector.length)) {
             double x_1 = (double)(vector[(int)((long)(i_1))]);
             double sp_1 = (double)(softplus((double)(x_1)));
-            double y_4 = (double)(x_1) * (double)(tanh_approx((double)(sp_1)));
-            result = ((double[])(appendDouble(result, y_4)));
-            i_1 = (long)((long)(i_1) + (long)(1));
+            double y_4 = (double)((double)(x_1) * (double)(tanh_approx((double)(sp_1))));
+            result = ((double[])(appendDouble(result, (double)(y_4))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
@@ -134,7 +134,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

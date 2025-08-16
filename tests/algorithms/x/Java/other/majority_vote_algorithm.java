@@ -3,72 +3,72 @@ public class Main {
     static long index_of(long[] xs, long x) {
         long i = 0L;
         while ((long)(i) < (long)(xs.length)) {
-            if (xs[(int)((long)(i))] == x) {
+            if ((long)(xs[(int)((long)(i))]) == (long)(x)) {
                 return i;
             }
-            i = (long)((long)(i) + (long)(1));
+            i = (long)((long)(i) + 1L);
         }
-        return (long)(0) - (long)(1);
+        return 0L - 1L;
     }
 
     static long[] majority_vote(long[] votes, long votes_needed_to_win) {
-        if (votes_needed_to_win < (long)(2)) {
+        if ((long)(votes_needed_to_win) < 2L) {
             return new long[]{};
         }
         long[] candidates_1 = ((long[])(new long[]{}));
         long[] counts_1 = ((long[])(new long[]{}));
         long i_2 = 0L;
         while ((long)(i_2) < (long)(votes.length)) {
-            long v_1 = votes[(int)((long)(i_2))];
-            long idx_1 = index_of(((long[])(candidates_1)), v_1);
-            if (idx_1 != (long)((long)(0) - (long)(1))) {
-counts_1[(int)((long)(idx_1))] = (long)(counts_1[(int)((long)(idx_1))] + (long)(1));
-            } else             if ((long)(candidates_1.length) < (long)(votes_needed_to_win - (long)(1))) {
-                candidates_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(candidates_1), java.util.stream.LongStream.of(v_1)).toArray()));
+            long v_1 = (long)(votes[(int)((long)(i_2))]);
+            long idx_1 = (long)(index_of(((long[])(candidates_1)), (long)(v_1)));
+            if ((long)(idx_1) != (long)(0L - 1L)) {
+counts_1[(int)((long)(idx_1))] = (long)((long)(counts_1[(int)((long)(idx_1))]) + 1L);
+            } else             if ((long)(candidates_1.length) < (long)((long)(votes_needed_to_win) - 1L)) {
+                candidates_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(candidates_1), java.util.stream.LongStream.of((long)(v_1))).toArray()));
                 counts_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(counts_1), java.util.stream.LongStream.of(1L)).toArray()));
             } else {
                 long j_1 = 0L;
                 while ((long)(j_1) < (long)(counts_1.length)) {
-counts_1[(int)((long)(j_1))] = (long)(counts_1[(int)((long)(j_1))] - (long)(1));
-                    j_1 = (long)((long)(j_1) + (long)(1));
+counts_1[(int)((long)(j_1))] = (long)((long)(counts_1[(int)((long)(j_1))]) - 1L);
+                    j_1 = (long)((long)(j_1) + 1L);
                 }
                 long[] new_candidates_1 = ((long[])(new long[]{}));
                 long[] new_counts_1 = ((long[])(new long[]{}));
-                j_1 = (long)(0);
+                j_1 = 0L;
                 while ((long)(j_1) < (long)(candidates_1.length)) {
-                    if (counts_1[(int)((long)(j_1))] > (long)(0)) {
-                        new_candidates_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(new_candidates_1), java.util.stream.LongStream.of(candidates_1[(int)((long)(j_1))])).toArray()));
-                        new_counts_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(new_counts_1), java.util.stream.LongStream.of(counts_1[(int)((long)(j_1))])).toArray()));
+                    if ((long)(counts_1[(int)((long)(j_1))]) > 0L) {
+                        new_candidates_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(new_candidates_1), java.util.stream.LongStream.of((long)(candidates_1[(int)((long)(j_1))]))).toArray()));
+                        new_counts_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(new_counts_1), java.util.stream.LongStream.of((long)(counts_1[(int)((long)(j_1))]))).toArray()));
                     }
-                    j_1 = (long)((long)(j_1) + (long)(1));
+                    j_1 = (long)((long)(j_1) + 1L);
                 }
                 candidates_1 = ((long[])(new_candidates_1));
                 counts_1 = ((long[])(new_counts_1));
             }
-            i_2 = (long)((long)(i_2) + (long)(1));
+            i_2 = (long)((long)(i_2) + 1L);
         }
         long[] final_counts_1 = ((long[])(new long[]{}));
         long j_3 = 0L;
         while ((long)(j_3) < (long)(candidates_1.length)) {
             final_counts_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(final_counts_1), java.util.stream.LongStream.of(0L)).toArray()));
-            j_3 = (long)((long)(j_3) + (long)(1));
+            j_3 = (long)((long)(j_3) + 1L);
         }
-        i_2 = (long)(0);
+        i_2 = 0L;
         while ((long)(i_2) < (long)(votes.length)) {
-            long v_3 = votes[(int)((long)(i_2))];
-            long idx_3 = index_of(((long[])(candidates_1)), v_3);
-            if (idx_3 != (long)((long)(0) - (long)(1))) {
-final_counts_1[(int)((long)(idx_3))] = (long)(final_counts_1[(int)((long)(idx_3))] + (long)(1));
+            long v_3 = (long)(votes[(int)((long)(i_2))]);
+            long idx_3 = (long)(index_of(((long[])(candidates_1)), (long)(v_3)));
+            if ((long)(idx_3) != (long)(0L - 1L)) {
+final_counts_1[(int)((long)(idx_3))] = (long)((long)(final_counts_1[(int)((long)(idx_3))]) + 1L);
             }
-            i_2 = (long)((long)(i_2) + (long)(1));
+            i_2 = (long)((long)(i_2) + 1L);
         }
         long[] result_1 = ((long[])(new long[]{}));
-        j_3 = (long)(0);
+        j_3 = 0L;
         while ((long)(j_3) < (long)(candidates_1.length)) {
-            if ((long)(final_counts_1[(int)((long)(j_3))] * votes_needed_to_win) > (long)(votes.length)) {
-                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of(candidates_1[(int)((long)(j_3))])).toArray()));
+            if ((long)((long)(final_counts_1[(int)((long)(j_3))]) * (long)(votes_needed_to_win)) > (long)(votes.length)) {
+                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(candidates_1[(int)((long)(j_3))]))).toArray()));
             }
-            j_3 = (long)((long)(j_3) + (long)(1));
+            j_3 = (long)((long)(j_3) + 1L);
         }
         return result_1;
     }
@@ -132,7 +132,6 @@ final_counts_1[(int)((long)(idx_3))] = (long)(final_counts_1[(int)((long)(idx_3)
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);
