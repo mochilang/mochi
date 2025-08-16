@@ -1,5 +1,1 @@
-Exception in thread "main" java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class Layer (java.util.ArrayList is in module java.base of loader 'bootstrap'; Layer is in unnamed module of loader 'app')
-	at Back_propagation_neural_networkKt.train(back_propagation_neural_network.kt:262)
-	at Back_propagation_neural_networkKt.user_main(back_propagation_neural_network.kt:292)
-	at Back_propagation_neural_networkKt.main(back_propagation_neural_network.kt:297)
-	at Back_propagation_neural_networkKt.main(back_propagation_neural_network.kt)
+0.0
