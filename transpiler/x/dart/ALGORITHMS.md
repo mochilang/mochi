@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-16 12:51 GMT+7
+Last updated: 2025-08-16 13:05 GMT+7
 
-## Algorithms Golden Test Checklist (962/1077)
+## Algorithms Golden Test Checklist (977/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -588,7 +588,7 @@ Last updated: 2025-08-16 12:51 GMT+7
 | 579 | maths/integer_square_root | ✓ | 7.632ms | 2.9 MB |
 | 580 | maths/interquartile_range | ✓ | 9.62ms | 3.4 MB |
 | 581 | maths/is_int_palindrome | ✓ | 8.118ms | 2.9 MB |
-| 582 | maths/is_ip_v4_address_valid | error |  |  |
+| 582 | maths/is_ip_v4_address_valid | ✓ |  |  |
 | 583 | maths/is_square_free | ✓ | 7.486ms | 2.5 MB |
 | 584 | maths/jaccard_similarity | ✓ | 9.128ms | 2.5 MB |
 | 585 | maths/joint_probability_distribution | ✓ | 9.963ms | 3.1 MB |
@@ -605,56 +605,56 @@ Last updated: 2025-08-16 12:51 GMT+7
 | 596 | maths/maclaurin_series | ✓ | 10.535ms | 3.4 MB |
 | 597 | maths/manhattan_distance | ✓ | 8.153ms | 2.9 MB |
 | 598 | maths/matrix_exponentiation | ✓ | 15.873ms | 8.8 MB |
-| 599 | maths/max_sum_sliding_window | ✓ | 10.742ms | 1.9 MB |
-| 600 | maths/minkowski_distance | error |  |  |
-| 601 | maths/mobius_function | ✓ | 17.436ms | 10.2 MB |
-| 602 | maths/modular_division | ✓ | 9.049ms | 3.2 MB |
-| 603 | maths/monte_carlo | error |  |  |
-| 604 | maths/monte_carlo_dice | error |  |  |
-| 605 | maths/number_of_digits | ✓ | 18.39ms | 10.8 MB |
-| 606 | maths/numerical_analysis/adams_bashforth | error |  |  |
-| 607 | maths/numerical_analysis/bisection | ✓ | 14.819ms | 9.6 MB |
-| 608 | maths/numerical_analysis/bisection_2 | ✓ | 17.627ms | 10.8 MB |
+| 599 | maths/max_sum_sliding_window | ✓ | 13.346ms | 9.4 MB |
+| 600 | maths/minkowski_distance | ✓ | 8.742ms | 3.2 MB |
+| 601 | maths/mobius_function | ✓ | 9.149ms | 2.9 MB |
+| 602 | maths/modular_division | ✓ | 15.145ms | 9.6 MB |
+| 603 | maths/monte_carlo | ✓ | 19.427ms | 7.7 MB |
+| 604 | maths/monte_carlo_dice | ✓ | 14.843ms | 4.6 MB |
+| 605 | maths/number_of_digits | ✓ | 7.364ms | 2.4 MB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 11.993ms | 2.9 MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 8.515ms | 2.8 MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 7.59ms | 2.6 MB |
 | 609 | maths/numerical_analysis/integration_by_simpson_approx | error |  |  |
-| 610 | maths/numerical_analysis/intersection | ✓ | 12.547ms | 1.8 MB |
-| 611 | maths/numerical_analysis/nevilles_method | ✓ | 10.627ms | 4.4 MB |
-| 612 | maths/numerical_analysis/newton_forward_interpolation | error |  |  |
-| 613 | maths/numerical_analysis/newton_raphson | ✓ | 12.681ms | 1.9 MB |
-| 614 | maths/numerical_analysis/numerical_integration | error |  |  |
+| 610 | maths/numerical_analysis/intersection | ✓ | 8.471ms | 3.0 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 13.357ms | 3.8 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 20.183ms | 8.8 MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 8.96ms | 2.8 MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 21.326ms | 9.0 MB |
 | 615 | maths/numerical_analysis/proper_fractions | error |  |  |
-| 616 | maths/numerical_analysis/runge_kutta | error |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | error |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills | error |  |  |
-| 619 | maths/numerical_analysis/secant_method | ✓ | 13.519ms | 1.9 MB |
-| 620 | maths/numerical_analysis/simpson_rule | error |  |  |
-| 621 | maths/numerical_analysis/square_root | ✓ | 18.549ms | 10.6 MB |
-| 622 | maths/odd_sieve | ✓ | 9.275ms | 3.2 MB |
-| 623 | maths/perfect_cube | ✓ | 10.648ms | 1.6 MB |
-| 624 | maths/perfect_number | ✓ | 85.404ms | 10.5 MB |
-| 625 | maths/perfect_square | ✓ | 8.381ms | 2.2 MB |
-| 626 | maths/persistence | ✓ | 12.448ms | 9.7 MB |
-| 627 | maths/pi_generator | ✓ | 11.399ms | 2.0 MB |
-| 628 | maths/pi_monte_carlo_estimation | error |  |  |
-| 629 | maths/points_are_collinear_3d | error |  |  |
-| 630 | maths/pollard_rho | ✓ | 8.154ms | 3.2 MB |
-| 631 | maths/polynomial_evaluation | ✓ | 10.758ms | 4.0 MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 29.63ms | 5.9 MB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 8.816ms | 2.8 MB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 10.028ms | 3.0 MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 8.915ms | 3.4 MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 8.644ms | 2.8 MB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 14.135ms | 9.1 MB |
+| 622 | maths/odd_sieve | ✓ | 9.337ms | 2.9 MB |
+| 623 | maths/perfect_cube | ✓ | 6.942ms | 2.4 MB |
+| 624 | maths/perfect_number | ✓ | 85.571ms | 6.6 MB |
+| 625 | maths/perfect_square | ✓ | 7.193ms | 2.5 MB |
+| 626 | maths/persistence | ✓ | 14.043ms | 9.6 MB |
+| 627 | maths/pi_generator | ✓ | 7.374ms | 2.6 MB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 12.072ms | 4.6 MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 9.709ms | 2.8 MB |
+| 630 | maths/pollard_rho | ✓ | 8.383ms | 2.9 MB |
+| 631 | maths/polynomial_evaluation | ✓ | 8.747ms | 3.6 MB |
 | 632 | maths/polynomials/single_indeterminate_operations | error |  |  |
-| 633 | maths/power_using_recursion | ✓ | 11.916ms | 2.1 MB |
-| 634 | maths/prime_check | ✓ | 13.271ms | 9.6 MB |
-| 635 | maths/prime_factors | ✓ | 10.313ms | 3.6 MB |
-| 636 | maths/prime_numbers | ✓ | 8.54ms | 3.2 MB |
-| 637 | maths/prime_sieve_eratosthenes | ✓ | 10.536ms | 2.7 MB |
+| 633 | maths/power_using_recursion | ✓ | 7.51ms | 2.8 MB |
+| 634 | maths/prime_check | ✓ | 7.187ms | 2.9 MB |
+| 635 | maths/prime_factors | ✓ | 9.227ms | 3.0 MB |
+| 636 | maths/prime_numbers | ✓ | 10.255ms | 3.2 MB |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 12.956ms | 2.9 MB |
 | 638 | maths/primelib | error |  |  |
-| 639 | maths/print_multiplication_table | ✓ | 8.145ms | 2.1 MB |
-| 640 | maths/pythagoras | ✓ | 20.676ms | 10.4 MB |
-| 641 | maths/qr_decomposition | ✓ | 12.403ms | 4.9 MB |
-| 642 | maths/quadratic_equations_complex_numbers | ✓ | 10.371ms | 3.9 MB |
-| 643 | maths/radians | ✓ | 16.356ms | 2.0 MB |
-| 644 | maths/radix2_fft | error |  |  |
-| 645 | maths/remove_digit | ✓ | 18.044ms | 10.8 MB |
-| 646 | maths/segmented_sieve | ✓ | 13.621ms | 1.6 MB |
-| 647 | maths/series/arithmetic | error |  |  |
-| 648 | maths/series/geometric | ✓ | 8.869ms | 3.5 MB |
+| 639 | maths/print_multiplication_table | ✓ | 7.306ms | 2.8 MB |
+| 640 | maths/pythagoras | ✓ | 15.192ms | 9.2 MB |
+| 641 | maths/qr_decomposition | ✓ | 19.921ms | 9.5 MB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 8.448ms | 2.5 MB |
+| 643 | maths/radians | ✓ | 8.972ms | 2.8 MB |
+| 644 | maths/radix2_fft | ✓ | 21.876ms | 9.0 MB |
+| 645 | maths/remove_digit | ✓ | 7.435ms | 2.5 MB |
+| 646 | maths/segmented_sieve | ✓ | 9.186ms | 2.8 MB |
+| 647 | maths/series/arithmetic | ✓ | 9.477ms | 3.1 MB |
+| 648 | maths/series/geometric | ✓ | 8.563ms | 3.2 MB |
 | 649 | maths/series/geometric_series | error |  |  |
 | 650 | maths/series/harmonic | error |  |  |
 | 651 | maths/series/harmonic_series | error |  |  |

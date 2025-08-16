@@ -1454,7 +1454,15 @@ type BinaryExpr struct {
 
 func (b *BinaryExpr) emit(w io.Writer) error {
 	if b.Op == "as" {
-		if name, ok := b.Right.(*Name); ok && name.Name == "double" {
+		// Determine the target type of the cast.
+		var buf bytes.Buffer
+		if err := b.Right.emit(&buf); err != nil {
+			return err
+		}
+		typ := strings.TrimSpace(buf.String())
+
+		// Numeric casts should use toInt()/toDouble() instead of `as`.
+		if typ == "double" {
 			if _, err := io.WriteString(w, "("); err != nil {
 				return err
 			}
@@ -1464,6 +1472,23 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 			_, err := io.WriteString(w, ").toDouble()")
 			return err
 		}
+		if typ == "int" {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := b.Left.emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ").toInt()")
+			return err
+		}
+
+		// Fallback to Dart's `as` operator for other types.
+		if err := b.Left.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, " as "+typ)
+		return err
 	}
 	if b.Op == "in" {
 		if err := b.Right.emit(w); err != nil {
@@ -2935,7 +2960,8 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) error {
 	valType := inferType(c.Value)
-	if c.Type == "double" {
+	cType := strings.TrimSpace(c.Type)
+	if cType == "double" {
 		if valType == "double" {
 			return c.Value.emit(w)
 		}
@@ -2948,7 +2974,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		_, err := io.WriteString(w, ").toDouble()")
 		return err
 	}
-	if c.Type == "BigInt" {
+	if cType == "BigInt" {
 		if lit, ok := c.Value.(*IntLit); ok {
 			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
 			return err
@@ -2980,7 +3006,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		}
 	}
 
-	if c.Type == "int" && valType == "BigInt" {
+	if cType == "int" && valType == "BigInt" {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
@@ -2991,7 +3017,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
-	if c.Type == "int" && valType == "String" {
+	if cType == "int" && valType == "String" {
 		if _, err := io.WriteString(w, "int.parse("); err != nil {
 			return err
 		}
@@ -3002,7 +3028,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
-	if c.Type == "int" {
+	if cType == "int" {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
@@ -3013,7 +3039,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
-	if c.Type == "num" {
+	if cType == "num" {
 		if valType == "num" {
 			return c.Value.emit(w)
 		}
@@ -3030,13 +3056,13 @@ func (c *CastExpr) emit(w io.Writer) error {
 		_, err = io.WriteString(w, ".toDouble()")
 		return err
 	}
-	if strings.HasPrefix(c.Type, "List<") && valType != c.Type {
-		return emitListConversion(w, c.Value, c.Type)
+	if strings.HasPrefix(cType, "List<") && valType != cType {
+		return emitListConversion(w, c.Value, cType)
 	}
 	if err := c.Value.emit(w); err != nil {
 		return err
 	}
-	switch c.Type {
+	switch cType {
 	case "int":
 		_, err := io.WriteString(w, ".toInt()")
 		return err
@@ -3062,7 +3088,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		_, err := io.WriteString(w, " as BigInt")
 		return err
 	default:
-		_, err := io.WriteString(w, " as "+c.Type)
+		_, err := io.WriteString(w, " as "+cType)
 		return err
 	}
 }
