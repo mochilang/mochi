@@ -2039,7 +2039,11 @@ extension FileHandle {
 func _p(_ v: Any?) -> String {
     if let val = v {
         if let d = val as? Double {
+            if d.isNaN || d.isInfinite {
+                return String(d)
+            }
             if d.rounded(.towardZero) == d {
+                // avoid overflow when converting to Int64
                 if d <= Double(Int64.max) && d >= Double(Int64.min) {
                     return String(Int64(d))
                 }
