@@ -1,7 +1,0 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/machine_learning/linear_regression.dart:67:87: Error: Undefined name '_error'.
-    while (gradients.length <= k) { gradients.add(0); } gradients[k] = gradients[k] + _error * data_x[i][k];
-                                                                                      ^^^^^^
-../../../tests/algorithms/x/Dart/machine_learning/linear_regression.dart:108:68: Error: Undefined name '_error'.
-    print("At Iteration " + _str(iter + 1) + " - Error is " + _str(_error));
-                                                                   ^^^^^^

@@ -80,7 +80,7 @@ double exp_approx(double x) {
   double term = 1.0;
   int n = 1;
   while (n < 20) {
-    term = term * x / ((n).toDouble());
+    term = term * x / n.toDouble();
     sum = sum + term;
     n = n + 1;
   }

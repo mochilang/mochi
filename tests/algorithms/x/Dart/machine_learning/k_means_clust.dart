@@ -98,7 +98,7 @@ List<List<double>> revise_centroids(List<List<double>> data, int k, List<int> as
     List<double> row = <double>[];
     if (counts[i] > 0) {
     for (int j = 0; j < dim; j++) {
-    row = [...row, sums[i][j] / ((counts[i]).toDouble())];
+    row = [...row, sums[i][j] / counts[i].toDouble()];
   };
   } else {
     for (int j = 0; j < dim; j++) {

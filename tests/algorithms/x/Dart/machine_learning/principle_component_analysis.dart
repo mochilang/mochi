@@ -41,8 +41,8 @@ dynamic _substr(dynamic s, num start, num end) {
 }
 
 
-Never _error(String msg) {
-  throw Exception(msg);
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 
 class PCAResult {
@@ -58,7 +58,13 @@ class Eigen {
 }
 
 double sqrt(double x) {
-  return math.sqrt(x);
+  double guess = (x > 1.0 ? x / 2.0 : 1.0);
+  int i = 0;
+  while (i < 20) {
+    guess = 0.5 * (guess + x / guess);
+    i = i + 1;
+  }
+  return guess;
 }
 
 double mean(List<double> xs) {

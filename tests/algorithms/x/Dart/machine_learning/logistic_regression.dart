@@ -50,7 +50,7 @@ double expApprox(double x) {
   double sum = 1.0;
   int n = 1;
   while (n < 30) {
-    term = term * y / ((n).toDouble());
+    term = term * y / n.toDouble();
     sum = sum + term;
     n = n + 1;
   }
@@ -104,7 +104,7 @@ List<double> logistic_reg(double alpha, List<List<double>> x, List<double> y, in
   }
     int k2 = 0;
     while (k2 < n) {
-    while (theta.length <= k2) { theta.add(0); } theta[k2] = theta[k2] - alpha * grad[k2] / ((m).toDouble());
+    while (theta.length <= k2) { theta.add(0); } theta[k2] = theta[k2] - alpha * grad[k2] / m.toDouble();
     k2 = k2 + 1;
   }
     iter = iter + 1;

@@ -79,11 +79,11 @@ void train(int epochs, double lr) {
     double z3 = w2[0] * h1 + w2[1] * h2 + b2;
     double out = sigmoid(z3);
     double error = out - target;
-    double d1 = h1 * (1.0 - h1) * w2[0] * _error;
-    double d2 = h2 * (1.0 - h2) * w2[1] * _error;
-    while (w2.length <= 0) { w2.add(0); } w2[0] = w2[0] - lr * _error * h1;
-    while (w2.length <= 1) { w2.add(0); } w2[1] = w2[1] - lr * _error * h2;
-    b2 = b2 - lr * _error;
+    double d1 = h1 * (1.0 - h1) * w2[0] * error;
+    double d2 = h2 * (1.0 - h2) * w2[1] * error;
+    while (w2.length <= 0) { w2.add(0); } w2[0] = w2[0] - lr * error * h1;
+    while (w2.length <= 1) { w2.add(0); } w2[1] = w2[1] - lr * error * h2;
+    b2 = b2 - lr * error;
     while (w1[0]!.length <= 0) { w1[0]!.add(0); } w1[0]![0] = w1[0][0] - lr * d1 * x0;
     while (w1[1]!.length <= 0) { w1[1]!.add(0); } w1[1]![0] = w1[1][0] - lr * d1 * x1;
     while (b1.length <= 0) { b1.add(0); } b1[0] = b1[0] - lr * d1;

@@ -71,7 +71,7 @@ double expApprox(double x) {
   double term = 1.0;
   int n = 1;
   while (n < 10) {
-    term = term * x / ((n).toDouble());
+    term = term * x / n.toDouble();
     sum = sum + term;
     n = n + 1;
   }
@@ -84,7 +84,7 @@ double ln(double x) {
   double sum = 0.0;
   int n = 1;
   while (n <= 19) {
-    sum = sum + term / ((n).toDouble());
+    sum = sum + term / n.toDouble();
     term = term * t * t;
     n = n + 2;
   }
@@ -143,7 +143,7 @@ List<double> dft(List<double> frame, int bins) {
     double imag = 0.0;
     int n = 0;
     while (n < N) {
-    double angle = -2.0 * PI * ((k).toDouble()) * ((n).toDouble()) / ((N).toDouble());
+    double angle = -2.0 * PI * k.toDouble() * n.toDouble() / N.toDouble();
     real = real + frame[n] * cosApprox(angle);
     imag = imag + frame[n] * sinApprox(angle);
     n = n + 1;
@@ -164,9 +164,9 @@ List<List<double>> triangular_filters(int bins, int spectrum_size) {
     while (i < spectrum_size) {
     double v = 0.0;
     if (i <= center) {
-    v = ((i).toDouble()) / ((center).toDouble());
+    v = i.toDouble() / center.toDouble();
   } else {
-    v = ((spectrum_size - i).toDouble()) / ((spectrum_size - center).toDouble());
+    v = (spectrum_size - i).toDouble() / (spectrum_size - center).toDouble();
   }
     filt = [...filt, v];
     i = i + 1;
@@ -201,10 +201,10 @@ List<List<double>> discrete_cosine_transform(int dct_filter_num, int filter_num)
     int j = 0;
     while (j < filter_num) {
     if (i == 0) {
-    row = [...row, 1.0 / sqrtApprox((filter_num).toDouble())];
+    row = [...row, 1.0 / sqrtApprox(filter_num.toDouble())];
   } else {
-    double angle = ((2 * j + 1).toDouble()) * ((i).toDouble()) * PI / (2.0 * ((filter_num).toDouble()));
-    row = [...row, cosApprox(angle) * sqrtApprox(2.0 / ((filter_num).toDouble()))];
+    double angle = (2 * j + 1).toDouble() * i.toDouble() * PI / (2.0 * filter_num.toDouble());
+    row = [...row, cosApprox(angle) * sqrtApprox(2.0 / filter_num.toDouble())];
   }
     j = j + 1;
   }
@@ -246,7 +246,7 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   while (n < size) {
-    double t = ((n).toDouble()) / ((sample_rate).toDouble());
+    double t = n.toDouble() / sample_rate.toDouble();
     audio = [...audio, sinApprox(2.0 * PI * 440.0 * t)];
     n = n + 1;
   }
