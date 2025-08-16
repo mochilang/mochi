@@ -2325,18 +2325,22 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 
 func (mu *MapUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
-	io.WriteString(w, "(")
-	io.WriteString(w, "__str (")
-	mu.Key.emit(w)
-	io.WriteString(w, "), ")
-	io.WriteString(w, "Obj.repr (Obj.magic (")
-	mu.Value.emit(w)
-	io.WriteString(w, ") : ")
-	io.WriteString(w, ocamlType(mu.Typ))
-	io.WriteString(w, ")")
-	io.WriteString(w, ") :: List.remove_assoc (__str (")
-	mu.Key.emit(w)
-	io.WriteString(w, ")) ")
+       io.WriteString(w, "(")
+       io.WriteString(w, "__str (")
+       mu.Key.emit(w)
+       io.WriteString(w, "), ")
+       if mu.Dyn {
+               io.WriteString(w, "Obj.repr (Obj.magic (")
+               mu.Value.emit(w)
+               io.WriteString(w, ") : ")
+               io.WriteString(w, ocamlType(mu.Typ))
+               io.WriteString(w, ")")
+       } else {
+               mu.Value.emit(w)
+       }
+       io.WriteString(w, ") :: List.remove_assoc (__str (")
+       mu.Key.emit(w)
+       io.WriteString(w, ")) ")
 	if mu.Dyn {
 		if mi, ok := mu.Map.(*MapIndexExpr); ok && mi.Dyn {
 			// Map expression already yields a properly typed list.
@@ -2365,11 +2369,15 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		io.WriteString(w, " in let __len = String.length __s in String.make 1 (String.get __s (if __i >= 0 then __i else __len + __i)))")
 	default:
-		if strings.HasPrefix(ix.ColTyp, "list") {
-			def := zeroValue(ix.Typ)
-			if def == "0" && ix.Typ != "int" && ix.Typ != "float" && ix.Typ != "string" && ix.Typ != "bool" {
-				def = "Obj.repr []"
-			}
+               if strings.HasPrefix(ix.ColTyp, "list") {
+                       def := zeroValue(ix.Typ)
+                       if def == "0" {
+                               if ix.Typ == "" {
+                                       def = "([] : (string * Obj.t) list)"
+                               } else if ix.Typ != "int" && ix.Typ != "float" && ix.Typ != "string" && ix.Typ != "bool" {
+                                       def = "Obj.repr []"
+                               }
+                       }
 			io.WriteString(w, "(let __l = ")
 			ix.Col.emit(w)
 			io.WriteString(w, " in let __i = ")

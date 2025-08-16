@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
 Completed programs: 830/1077
-Last updated: 2025-08-16 09:25 +0700
+Last updated: 2025-08-16 11:48 +0700
 
 Checklist:
 
@@ -502,7 +502,7 @@ Checklist:
 | 493 | linear_algebra/src/schur_complement | ✓ | 308.0µs | 10.92KB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 430.0µs | 31.40KB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 433.0µs | 21.53KB |
-| 496 | linear_programming/simplex | ✓ | 125.0µs | 1.87KB |
+| 496 | linear_programming/simplex | ✓ | 117.0µs | 1.91KB |
 | 497 | machine_learning/apriori_algorithm |   |  |  |
 | 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation | ✓ | 248.0µs | 2.17KB |
