@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-16 14:57 GMT+7
+Last updated: 2025-08-16 19:50 GMT+7
 
-## Algorithms Golden Test Checklist (987/1077)
+## Algorithms Golden Test Checklist (988/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -511,7 +511,7 @@ Last updated: 2025-08-16 14:57 GMT+7
 | 502 | machine_learning/dimensionality_reduction | ✓ | 7.769ms | 2.6 MB |
 | 503 | machine_learning/forecasting/run | ✓ | 26.026ms | 8.8 MB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | error |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 16.012ms | 3.2 MB |
 | 506 | machine_learning/gradient_descent | ✓ | 42.069ms | 2.1 MB |
 | 507 | machine_learning/k_means_clust | ✓ | 12.866ms | 4.8 MB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 9.743ms | 3.0 MB |

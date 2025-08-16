@@ -1,12 +1,1 @@
-../../../tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:141:14: Error: Undefined name '_error'.
-    _error = _error + diff * diff;
-             ^^^^^^
-../../../tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:141:5: Error: Setter not found: '_error'.
-    _error = _error + diff * diff;
-    ^^^^^^
-../../../tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:144:9: Error: Undefined name '_error'.
-    if (_error < best_error) {
-        ^^^^^^
-../../../tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:145:18: Error: Undefined name '_error'.
-    best_error = _error;
-                 ^^^^^^
+Accuracy: 1.0
