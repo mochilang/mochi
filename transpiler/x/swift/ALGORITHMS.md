@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 973/1077
-Last updated: 2025-08-16 13:52 +0700
+Last updated: 2025-08-16 19:42 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -511,10 +511,10 @@ Last updated: 2025-08-16 13:52 +0700
 | 502 | machine_learning/dimensionality_reduction | ✓ | 230µs | 3.2 MB |
 | 503 | machine_learning/forecasting/run | ✓ | 840µs | 3.3 MB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 543µs | 3.0 MB |
-| 506 | machine_learning/gradient_descent | ✓ | 291.998ms | 3.4 MB |
-| 507 | machine_learning/k_means_clust | ✓ | 1.681ms | 3.6 MB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 488µs | 3.2 MB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 588µs | 3.4 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 235.743ms | 3.4 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 1.955ms | 3.7 MB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 569µs | 3.4 MB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.379ms | 3.3 MB |
 | 510 | machine_learning/linear_regression | ✓ | 736µs | 3.4 MB |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 1.681ms | 3.8 MB |

@@ -181,13 +181,13 @@ type FieldExpr struct {
 }
 
 func (fe *FieldExpr) emit(w io.Writer) {
-	if ie, ok := fe.Target.(*IndexExpr); ok && !ie.Force && !ie.KeyString && !ie.KeyAny {
+	if ie, ok := fe.Target.(*IndexExpr); ok && !ie.Force && !ie.KeyString && !ie.KeyAny && !ie.Map {
 		fmt.Fprint(w, "(")
 		fmt.Fprint(w, "_idx(")
 		ie.Base.emit(w)
 		fmt.Fprint(w, ", ")
 		ie.Index.emit(w)
-		fmt.Fprint(w, ")!")
+		fmt.Fprint(w, ")")
 		fmt.Fprintf(w, ".%s)", fe.Name)
 		return
 	}
