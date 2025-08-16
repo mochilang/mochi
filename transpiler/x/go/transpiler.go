@@ -777,24 +777,6 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	if len(c.Args) == 2 && c.Func == "nth_root" {
-		imports["math"] = "math"
-		fmt.Fprint(w, "math.Pow(")
-		c.Args[0].emit(w)
-		fmt.Fprint(w, ", 1.0/float64(")
-		c.Args[1].emit(w)
-		fmt.Fprint(w, "))")
-		return
-	}
-	if len(c.Args) == 2 && c.Func == "pow_int" {
-		imports["math"] = "math"
-		fmt.Fprint(w, "math.Pow(")
-		c.Args[0].emit(w)
-		fmt.Fprint(w, ", float64(")
-		c.Args[1].emit(w)
-		fmt.Fprint(w, "))")
-		return
-	}
 	if len(c.Args) == 1 && (c.Func == "int" || (c.Func == "" && funcIsInt(c.FuncExpr))) {
 		fmt.Fprint(w, "(")
 		c.Args[0].emit(w)
@@ -6597,6 +6579,33 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				expr = &IntCastExpr{Expr: expr}
 			}
 			return expr, nil
+		case "pow_int":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			if len(args) != 2 {
+				return nil, fmt.Errorf("pow_int expects two arguments")
+			}
+			a0 := &CallExpr{Func: "float64", Args: []Expr{args[0]}}
+			a1 := &CallExpr{Func: "float64", Args: []Expr{args[1]}}
+			return &IntCastExpr{Expr: &CallExpr{Func: "math.Pow", Args: []Expr{a0, a1}}}, nil
+		case "nth_root":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			if len(args) != 2 {
+				return nil, fmt.Errorf("nth_root expects two arguments")
+			}
+			a0 := args[0]
+			a1 := args[1]
+			if _, ok := types.TypeOfExpr(p.Call.Args[0], env).(types.IntType); ok {
+				a0 = &CallExpr{Func: "float64", Args: []Expr{a0}}
+			}
+			if _, ok := types.TypeOfExpr(p.Call.Args[1], env).(types.IntType); ok {
+				a1 = &CallExpr{Func: "float64", Args: []Expr{a1}}
+			}
+			exp := &BinaryExpr{Left: &FloatLit{Value: 1}, Op: "/", Right: a1}
+			return &CallExpr{Func: "math.Pow", Args: []Expr{a0, exp}}, nil
 		case "ln":
 			if imports != nil {
 				imports["math"] = "math"
