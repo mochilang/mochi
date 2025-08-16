@@ -83,6 +83,7 @@ var (
 	needMapSetII            bool
 	needMapGetSD            bool
 	needMapSetSD            bool
+	needMapSetSMI           bool
 	needMapGetSMI           bool
 	needContainsMapInt      bool
 	needListAppendInt       bool
@@ -2900,6 +2901,38 @@ func (m *MapLit) emitExpr(w io.Writer) {
 		fmt.Fprintf(w, "MapIL %s = { %s_keys, %s_vals, %s_lens, %d, %d }; %s;})", tmp, tmp, tmp, tmp, len(m.Items), len(m.Items)+16, tmp)
 		return
 	}
+	if keyT == "const char*" && (valT == "int" || valT == "long long") {
+		tmp := fmt.Sprintf("__map%d", tempCounter)
+		tempCounter++
+		fmt.Fprintf(w, "({const char** %s_keys = malloc(%d * sizeof(char*)); ", tmp, len(m.Items))
+		fmt.Fprintf(w, "int *%s_vals = malloc(%d * sizeof(int)); ", tmp, len(m.Items))
+		for i, it := range m.Items {
+			fmt.Fprintf(w, "%s_keys[%d] = ", tmp, i)
+			it.Key.emitExpr(w)
+			io.WriteString(w, "; ")
+			fmt.Fprintf(w, "%s_vals[%d] = ", tmp, i)
+			it.Value.emitExpr(w)
+			io.WriteString(w, "; ")
+		}
+		fmt.Fprintf(w, "MapSI %s = { %s_keys, %s_vals, %d, %d }; %s;})", tmp, tmp, tmp, len(m.Items), len(m.Items)+16, tmp)
+		return
+	}
+	if keyT == "const char*" && valT == "MapSI" {
+		tmp := fmt.Sprintf("__map%d", tempCounter)
+		tempCounter++
+		fmt.Fprintf(w, "({const char** %s_keys = malloc(%d * sizeof(char*)); ", tmp, len(m.Items))
+		fmt.Fprintf(w, "MapSI *%s_vals = malloc(%d * sizeof(MapSI)); ", tmp, len(m.Items))
+		for i, it := range m.Items {
+			fmt.Fprintf(w, "%s_keys[%d] = ", tmp, i)
+			it.Key.emitExpr(w)
+			io.WriteString(w, "; ")
+			fmt.Fprintf(w, "%s_vals[%d] = ", tmp, i)
+			it.Value.emitExpr(w)
+			io.WriteString(w, "; ")
+		}
+		fmt.Fprintf(w, "MapSMI %s = { %s_keys, %s_vals, %d, %d }; %s;})", tmp, tmp, tmp, len(m.Items), len(m.Items)+16, tmp)
+		return
+	}
 	io.WriteString(w, "(MapIL){0}")
 }
 
@@ -4890,7 +4923,7 @@ func (p *Program) Emit() []byte {
 	if needMapGetSD || needMapSetSD || needJSONMapSD {
 		buf.WriteString("typedef struct { const char **keys; double *vals; size_t len; size_t cap; } MapSD;\n\n")
 	}
-	if needMapGetSMI {
+	if needMapGetSMI || needMapSetSMI {
 		buf.WriteString("typedef struct { const char **keys; MapSI *vals; size_t len; size_t cap; } MapSMI;\n\n")
 	}
 	if needJSONMapSD {
@@ -4920,6 +4953,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        m->cap = m->cap ? m->cap * 2 : 16;\n")
 		buf.WriteString("        m->keys = realloc((void*)m->keys, m->cap * sizeof(char*));\n")
 		buf.WriteString("        m->vals = realloc(m->vals, m->cap * sizeof(int));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    m->keys[m->len] = key; m->vals[m->len] = val; m->len++;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needMapSetSMI {
+		buf.WriteString("static void map_set_smi(MapSMI *m, const char *key, MapSI val) {\n")
+		buf.WriteString("    for (size_t i = 0; i < m->len; i++) {\n")
+		buf.WriteString("        if (strcmp(m->keys[i], key) == 0) { m->vals[i] = val; return; }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    if (m->len >= m->cap) {\n")
+		buf.WriteString("        m->cap = m->cap ? m->cap * 2 : 16;\n")
+		buf.WriteString("        m->keys = realloc((void*)m->keys, m->cap * sizeof(char*));\n")
+		buf.WriteString("        m->vals = realloc(m->vals, m->cap * sizeof(MapSI));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    m->keys[m->len] = key; m->vals[m->len] = val; m->len++;\n")
 		buf.WriteString("}\n\n")
@@ -5752,6 +5798,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMapSetSS = false
 	needMapGetII = false
 	needMapSetII = false
+	needMapGetSD = false
+	needMapSetSD = false
+	needMapSetSMI = false
+	needMapGetSMI = false
 	needContainsMapInt = false
 	needListAppendInt = false
 	needListAppendStr = false
@@ -7254,6 +7304,18 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				buf.WriteString(");\n")
 				return &RawStmt{Code: buf.String()}, nil
 			}
+			if keyT == "const char*" && valT == "MapSI" {
+				needMapSetSMI = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_smi(&")
+				buf.WriteString(s.Assign.Name)
+				buf.WriteString(", ")
+				idxs[0].emitExpr(&buf)
+				buf.WriteString(", ")
+				valExpr.emitExpr(&buf)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			}
 			if keyT == "const char*" && strings.HasSuffix(valT, "[]") {
 				if ce, ok := valExpr.(*CallExpr); ok && ce.Func == "append" && len(ce.Args) == 2 {
 					if ie, ok2 := ce.Args[0].(*IndexExpr); ok2 {
@@ -7475,12 +7537,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				default:
 					env.SetVarDeep(s.For.Name, types.AnyType{}, true)
 				}
-				listVar := name + "_keys"
-				lenVar := name + "_len"
-				if vt := varTypes[name]; strings.HasPrefix(vt, "MapSL") || strings.HasPrefix(vt, "MapSS") || strings.HasPrefix(vt, "MapSI") || strings.HasPrefix(vt, "MapSD") || strings.HasPrefix(vt, "MapIS") || strings.HasPrefix(vt, "MapIL") || strings.HasPrefix(vt, "MapSMI") {
-					listVar = name + ".keys"
-					lenVar = name + ".len"
-				}
+				listVar := mapField(name, "keys")
+				lenVar := mapField(name, "len")
 				return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
 			}
 			if name := callVarName(s.For.Source, "values"); name != "" && isMapVar(name) {
@@ -7538,12 +7596,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					default:
 						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
 					}
-					listVar := name + "_keys"
-					lenVar := name + "_len"
-					if vt := varTypes[name]; strings.HasPrefix(vt, "MapSL") || strings.HasPrefix(vt, "MapSS") || strings.HasPrefix(vt, "MapSI") || strings.HasPrefix(vt, "MapSD") || strings.HasPrefix(vt, "MapIS") || strings.HasPrefix(vt, "MapIL") {
-						listVar = name + ".keys"
-						lenVar = name + ".len"
-					}
+					listVar := mapField(name, "keys")
+					lenVar := mapField(name, "len")
 					return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
 				}
 				typStr := inferExprType(env, convertExpr(s.For.Source))
@@ -7560,12 +7614,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					default:
 						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
 					}
-					listVar := name + "_keys"
-					lenVar := name + "_len"
-					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" || vt == "MapIS" || vt == "MapIL" || vt == "MapSMI" {
-						listVar = name + ".keys"
-						lenVar = name + ".len"
-					}
+					listVar := mapField(name, "keys")
+					lenVar := mapField(name, "len")
 					return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
 				}
 				if strings.HasSuffix(typStr, "[]") {
