@@ -41,14 +41,14 @@ public class Main {
     }
 
     static Body update_velocity(Body body, double force_x, double force_y, double delta_time) {
-body.velocity_x = body.velocity_x + force_x * delta_time;
-body.velocity_y = body.velocity_y + force_y * delta_time;
+body.velocity_x = (double)(body.velocity_x) + (double)((double)(force_x) * (double)(delta_time));
+body.velocity_y = (double)(body.velocity_y) + (double)((double)(force_y) * (double)(delta_time));
         return body;
     }
 
     static Body update_position(Body body, double delta_time) {
-body.position_x = body.position_x + body.velocity_x * delta_time;
-body.position_y = body.position_y + body.velocity_y * delta_time;
+body.position_x = (double)(body.position_x) + (double)((double)(body.velocity_x) * (double)(delta_time));
+body.position_y = (double)(body.position_y) + (double)((double)(body.velocity_y) * (double)(delta_time));
         return body;
     }
 
@@ -57,77 +57,111 @@ body.position_y = body.position_y + body.velocity_y * delta_time;
     }
 
     static double sqrtApprox(double x) {
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess = (double)((double)(x) / (double)(2.0));
+        long i_1 = 0L;
+        while ((long)(i_1) < 20L) {
+            guess = (double)((double)(((double)(guess) + (double)((double)(x) / (double)(guess)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return guess;
     }
 
     static BodySystem update_system(BodySystem system, double delta_time) {
         Body[] bodies = ((Body[])(system.bodies));
-        int i_1 = 0;
-        while (i_1 < bodies.length) {
-            Body body1 = bodies[i_1];
-            double force_x = 0.0;
-            double force_y = 0.0;
-            int j = 0;
-            while (j < bodies.length) {
-                if (i_1 != j) {
-                    Body body2 = bodies[j];
-                    double dif_x = body2.position_x - body1.position_x;
-                    double dif_y = body2.position_y - body1.position_y;
-                    double distance_sq = dif_x * dif_x + dif_y * dif_y + system.softening_factor;
-                    double distance = sqrtApprox(distance_sq);
-                    double denom = distance * distance * distance;
-                    force_x = force_x + system.gravitation_constant * body2.mass * dif_x / denom;
-                    force_y = force_y + system.gravitation_constant * body2.mass * dif_y / denom;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(bodies.length)) {
+            Body body1_1 = bodies[(int)((long)(i_3))];
+            double force_x_1 = (double)(0.0);
+            double force_y_1 = (double)(0.0);
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(bodies.length)) {
+                if ((long)(i_3) != (long)(j_1)) {
+                    Body body2_1 = bodies[(int)((long)(j_1))];
+                    double dif_x_1 = (double)((double)(body2_1.position_x) - (double)(body1_1.position_x));
+                    double dif_y_1 = (double)((double)(body2_1.position_y) - (double)(body1_1.position_y));
+                    double distance_sq_1 = (double)((double)((double)((double)(dif_x_1) * (double)(dif_x_1)) + (double)((double)(dif_y_1) * (double)(dif_y_1))) + (double)(system.softening_factor));
+                    double distance_1 = (double)(sqrtApprox((double)(distance_sq_1)));
+                    double denom_1 = (double)((double)((double)(distance_1) * (double)(distance_1)) * (double)(distance_1));
+                    force_x_1 = (double)((double)(force_x_1) + (double)((double)((double)((double)(system.gravitation_constant) * (double)(body2_1.mass)) * (double)(dif_x_1)) / (double)(denom_1)));
+                    force_y_1 = (double)((double)(force_y_1) + (double)((double)((double)((double)(system.gravitation_constant) * (double)(body2_1.mass)) * (double)(dif_y_1)) / (double)(denom_1)));
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            body1 = update_velocity(body1, force_x, force_y, delta_time * system.time_factor);
-bodies[i_1] = body1;
-            i_1 = i_1 + 1;
+            body1_1 = update_velocity(body1_1, (double)(force_x_1), (double)(force_y_1), (double)((double)(delta_time) * (double)(system.time_factor)));
+bodies[(int)((long)(i_3))] = body1_1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        i_1 = 0;
-        while (i_1 < bodies.length) {
-            Body body = bodies[i_1];
-            body = update_position(body, delta_time * system.time_factor);
-bodies[i_1] = body;
-            i_1 = i_1 + 1;
+        i_3 = 0L;
+        while ((long)(i_3) < (long)(bodies.length)) {
+            Body body_1 = bodies[(int)((long)(i_3))];
+            body_1 = update_position(body_1, (double)((double)(delta_time) * (double)(system.time_factor)));
+bodies[(int)((long)(i_3))] = body_1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
 system.bodies = bodies;
         return system;
     }
 
     static void main() {
-        Body b1 = make_body(0.0, 0.0, 0.0, 0.0, 1.0);
-        Body b2 = make_body(10.0, 0.0, 0.0, 0.0, 1.0);
-        BodySystem sys1 = make_body_system(((Body[])(new Body[]{b1, b2})), 1.0, 1.0, 0.0);
-        sys1 = update_system(sys1, 1.0);
-        Body b1_after = sys1.bodies[0];
-        double pos1x = b1_after.position_x;
-        double pos1y = b1_after.position_y;
-        json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("x", (Object)(pos1x)), java.util.Map.entry("y", (Object)(pos1y)))));
-        double vel1x = b1_after.velocity_x;
-        double vel1y = b1_after.velocity_y;
-        json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("vx", (Object)(vel1x)), java.util.Map.entry("vy", (Object)(vel1y)))));
-        Body b3 = make_body(-10.0, 0.0, 0.0, 0.0, 1.0);
-        Body b4 = make_body(10.0, 0.0, 0.0, 0.0, 4.0);
-        BodySystem sys2 = make_body_system(((Body[])(new Body[]{b3, b4})), 1.0, 10.0, 0.0);
-        sys2 = update_system(sys2, 1.0);
-        Body b2_after = sys2.bodies[0];
-        double pos2x = b2_after.position_x;
-        double pos2y = b2_after.position_y;
-        json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("x", (Object)(pos2x)), java.util.Map.entry("y", (Object)(pos2y)))));
-        double vel2x = b2_after.velocity_x;
-        double vel2y = b2_after.velocity_y;
-        json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("vx", (Object)(vel2x)), java.util.Map.entry("vy", (Object)(vel2y)))));
+        Body b1 = make_body((double)(0.0), (double)(0.0), (double)(0.0), (double)(0.0), (double)(1.0));
+        Body b2_1 = make_body((double)(10.0), (double)(0.0), (double)(0.0), (double)(0.0), (double)(1.0));
+        BodySystem sys1_1 = make_body_system(((Body[])(new Body[]{b1, b2_1})), (double)(1.0), (double)(1.0), (double)(0.0));
+        sys1_1 = update_system(sys1_1, (double)(1.0));
+        Body b1_after_1 = sys1_1.bodies[(int)((long)(0))];
+        double pos1x_1 = (double)(b1_after_1.position_x);
+        double pos1y_1 = (double)(b1_after_1.position_y);
+        json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("x", (Object)(pos1x_1)), java.util.Map.entry("y", (Object)(pos1y_1)))));
+        double vel1x_1 = (double)(b1_after_1.velocity_x);
+        double vel1y_1 = (double)(b1_after_1.velocity_y);
+        json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("vx", (Object)(vel1x_1)), java.util.Map.entry("vy", (Object)(vel1y_1)))));
+        Body b3_1 = make_body((double)(-10.0), (double)(0.0), (double)(0.0), (double)(0.0), (double)(1.0));
+        Body b4_1 = make_body((double)(10.0), (double)(0.0), (double)(0.0), (double)(0.0), (double)(4.0));
+        BodySystem sys2_1 = make_body_system(((Body[])(new Body[]{b3_1, b4_1})), (double)(1.0), (double)(10.0), (double)(0.0));
+        sys2_1 = update_system(sys2_1, (double)(1.0));
+        Body b2_after_1 = sys2_1.bodies[(int)((long)(0))];
+        double pos2x_1 = (double)(b2_after_1.position_x);
+        double pos2y_1 = (double)(b2_after_1.position_y);
+        json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("x", (Object)(pos2x_1)), java.util.Map.entry("y", (Object)(pos2y_1)))));
+        double vel2x_1 = (double)(b2_after_1.velocity_x);
+        double vel2y_1 = (double)(b2_after_1.velocity_y);
+        json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("vx", (Object)(vel2x_1)), java.util.Map.entry("vy", (Object)(vel2y_1)))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static void json(Object v) {

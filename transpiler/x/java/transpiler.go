@@ -673,9 +673,9 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 }
 
 func emitIndex(w io.Writer, e Expr) {
-	fmt.Fprint(w, "(int)((long)(")
-	e.emit(w)
-	fmt.Fprint(w, "))")
+	fmt.Fprint(w, "(int)(")
+	emitCastExpr(w, e, "long")
+	fmt.Fprint(w, ")")
 }
 
 func typeFromName(n string) types.Type {

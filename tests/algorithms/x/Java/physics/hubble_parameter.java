@@ -1,62 +1,96 @@
 public class Main {
 
-    static double pow(double base, int exp) {
-        double result = 1.0;
-        int i = 0;
-        while (i < exp) {
-            result = result * base;
-            i = i + 1;
+    static double pow(double base, long exp) {
+        double result = (double)(1.0);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(exp)) {
+            result = (double)((double)(result) * (double)(base));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
     static double sqrt_approx(double x) {
-        if (x == 0.0) {
+        if ((double)(x) == (double)(0.0)) {
             return 0.0;
         }
-        double guess = x / 2.0;
-        int i_1 = 0;
-        while (i_1 < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i_1 = i_1 + 1;
+        double guess_1 = (double)((double)(x) / (double)(2.0));
+        long i_3 = 0L;
+        while ((long)(i_3) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return guess;
+        return guess_1;
     }
 
     static double hubble_parameter(double hubble_constant, double radiation_density, double matter_density, double dark_energy, double redshift) {
         double[] parameters = ((double[])(new double[]{redshift, radiation_density, matter_density, dark_energy}));
-        int i_2 = 0;
-        while (i_2 < parameters.length) {
-            if (parameters[i_2] < 0.0) {
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(parameters.length)) {
+            if ((double)(parameters[(int)((long)(i_5))]) < (double)(0.0)) {
                 throw new RuntimeException(String.valueOf("All input parameters must be positive"));
             }
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
-        i_2 = 1;
-        while (i_2 < 4) {
-            if (parameters[i_2] > 1.0) {
+        i_5 = 1L;
+        while ((long)(i_5) < 4L) {
+            if ((double)(parameters[(int)((long)(i_5))]) > (double)(1.0)) {
                 throw new RuntimeException(String.valueOf("Relative densities cannot be greater than one"));
             }
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
-        double curvature = 1.0 - (matter_density + radiation_density + dark_energy);
-        double zp1 = redshift + 1.0;
-        double e2 = radiation_density * pow(zp1, 4) + matter_density * pow(zp1, 3) + curvature * pow(zp1, 2) + dark_energy;
-        return hubble_constant * sqrt_approx(e2);
+        double curvature_1 = (double)((double)(1.0) - (double)(((double)((double)(matter_density) + (double)(radiation_density)) + (double)(dark_energy))));
+        double zp1_1 = (double)((double)(redshift) + (double)(1.0));
+        double e2_1 = (double)((double)((double)((double)((double)(radiation_density) * (double)(pow((double)(zp1_1), 4L))) + (double)((double)(matter_density) * (double)(pow((double)(zp1_1), 3L)))) + (double)((double)(curvature_1) * (double)(pow((double)(zp1_1), 2L)))) + (double)(dark_energy));
+        return (double)(hubble_constant) * (double)(sqrt_approx((double)(e2_1)));
     }
 
     static void test_hubble_parameter() {
-        double h = hubble_parameter(68.3, 0.0001, 0.3, 0.7, 0.0);
-        if (h < 68.2999 || h > 68.3001) {
+        double h = (double)(hubble_parameter((double)(68.3), (double)(0.0001), (double)(0.3), (double)(0.7), (double)(0.0)));
+        if ((double)(h) < (double)(68.2999) || (double)(h) > (double)(68.3001)) {
             throw new RuntimeException(String.valueOf("hubble_parameter test failed"));
         }
     }
 
     static void main() {
         test_hubble_parameter();
-        System.out.println(hubble_parameter(68.3, 0.0001, 0.3, 0.7, 0.0));
+        System.out.println(hubble_parameter((double)(68.3), (double)(0.0001), (double)(0.3), (double)(0.7), (double)(0.0)));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

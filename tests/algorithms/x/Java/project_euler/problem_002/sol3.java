@@ -1,22 +1,56 @@
 public class Main {
 
-    static int solution(int n) {
-        if (n <= 1) {
+    static long solution(long n) {
+        if ((long)(n) <= 1L) {
             return 0;
         }
-        int a = 0;
-        int b = 2;
-        int count = 0;
-        while (4 * b + a <= n) {
-            int next = 4 * b + a;
-            a = b;
-            b = next;
-            count = count + a;
+        long a_1 = 0L;
+        long b_1 = 2L;
+        long count_1 = 0L;
+        while ((long)((long)(4L * (long)(b_1)) + (long)(a_1)) <= (long)(n)) {
+            long next_1 = (long)((long)(4L * (long)(b_1)) + (long)(a_1));
+            a_1 = (long)(b_1);
+            b_1 = (long)(next_1);
+            count_1 = (long)((long)(count_1) + (long)(a_1));
         }
-        return count + b;
+        return (long)(count_1) + (long)(b_1);
     }
     public static void main(String[] args) {
-        System.out.println("solution() = " + _p(solution(4000000)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println("solution() = " + _p(solution(4000000L)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -31,6 +65,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

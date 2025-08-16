@@ -1,104 +1,138 @@
 public class Main {
 
-    static double pow10(int n) {
-        double p = 1.0;
-        if (n >= 0) {
-            int i = 0;
-            while (i < n) {
-                p = p * 10.0;
-                i = i + 1;
+    static double pow10(long n) {
+        double p = (double)(1.0);
+        if ((long)(n) >= 0L) {
+            long i_2 = 0L;
+            while ((long)(i_2) < (long)(n)) {
+                p = (double)((double)(p) * (double)(10.0));
+                i_2 = (long)((long)(i_2) + 1L);
             }
         } else {
-            int i_1 = 0;
-            while (i_1 > n) {
-                p = p / 10.0;
-                i_1 = i_1 - 1;
+            long i_3 = 0L;
+            while ((long)(i_3) > (long)(n)) {
+                p = (double)((double)(p) / (double)(10.0));
+                i_3 = (long)((long)(i_3) - 1L);
             }
         }
         return p;
     }
 
     static double floor(double x) {
-        int i_2 = ((Number)(x)).intValue();
-        double f = ((Number)(i_2)).doubleValue();
-        if (f > x) {
-            return ((Number)((i_2 - 1))).doubleValue();
+        long i_4 = (long)(((Number)(x)).intValue());
+        double f_1 = (double)(((Number)(i_4)).doubleValue());
+        if ((double)(f_1) > (double)(x)) {
+            return ((Number)(((long)(i_4) - 1L))).doubleValue();
         }
-        return f;
+        return f_1;
     }
 
     static String format_scientific_3(double x) {
-        if (x == 0.0) {
+        if ((double)(x) == (double)(0.0)) {
             return "0.000e+00";
         }
-        String sign = "";
-        double num = x;
-        if (num < 0.0) {
-            sign = "-";
-            num = -num;
+        String sign_1 = "";
+        double num_1 = (double)(x);
+        if ((double)(num_1) < (double)(0.0)) {
+            sign_1 = "-";
+            num_1 = (double)(-num_1);
         }
-        int exp = 0;
-        while (num >= 10.0) {
-            num = num / 10.0;
-            exp = exp + 1;
+        long exp_1 = 0L;
+        while ((double)(num_1) >= (double)(10.0)) {
+            num_1 = (double)((double)(num_1) / (double)(10.0));
+            exp_1 = (long)((long)(exp_1) + 1L);
         }
-        while (num < 1.0) {
-            num = num * 10.0;
-            exp = exp - 1;
+        while ((double)(num_1) < (double)(1.0)) {
+            num_1 = (double)((double)(num_1) * (double)(10.0));
+            exp_1 = (long)((long)(exp_1) - 1L);
         }
-        double temp = floor(num * 1000.0 + 0.5);
-        int scaled = ((Number)(temp)).intValue();
-        if (scaled == 10000) {
-            scaled = 1000;
-            exp = exp + 1;
+        double temp_1 = ((Number)(Math.floor((double)((double)(num_1) * (double)(1000.0)) + (double)(0.5)))).doubleValue();
+        long scaled_1 = (long)(((Number)(temp_1)).intValue());
+        if ((long)(scaled_1) == 10000L) {
+            scaled_1 = 1000L;
+            exp_1 = (long)((long)(exp_1) + 1L);
         }
-        int int_part = Math.floorDiv(scaled, 1000);
-        int frac_part = Math.floorMod(scaled, 1000);
-        String frac_str = _p(frac_part);
-        while (_runeLen(frac_str) < 3) {
-            frac_str = "0" + frac_str;
+        long int_part_1 = (long)((long)(scaled_1) / 1000L);
+        long frac_part_1 = Math.floorMod(scaled_1, 1000);
+        String frac_str_1 = _p(frac_part_1);
+        while ((long)(_runeLen(frac_str_1)) < 3L) {
+            frac_str_1 = "0" + frac_str_1;
         }
-        String mantissa = _p(int_part) + "." + frac_str;
-        String exp_sign = "+";
-        int exp_abs = exp;
-        if (exp < 0) {
-            exp_sign = "-";
-            exp_abs = -exp;
+        String mantissa_1 = _p(int_part_1) + "." + frac_str_1;
+        String exp_sign_1 = "+";
+        long exp_abs_1 = (long)(exp_1);
+        if ((long)(exp_1) < 0L) {
+            exp_sign_1 = "-";
+            exp_abs_1 = (long)(-exp_1);
         }
-        String exp_str = _p(exp_abs);
-        if (exp_abs < 10) {
-            exp_str = "0" + exp_str;
+        String exp_str_1 = _p(exp_abs_1);
+        if ((long)(exp_abs_1) < 10L) {
+            exp_str_1 = "0" + exp_str_1;
         }
-        return sign + mantissa + "e" + exp_sign + exp_str;
+        return sign_1 + mantissa_1 + "e" + exp_sign_1 + exp_str_1;
     }
 
     static String orbital_transfer_work(double mass_central, double mass_object, double r_initial, double r_final) {
-        double G = 6.6743 * pow10(-11);
-        if (r_initial <= 0.0 || r_final <= 0.0) {
+        double G = (double)((double)(6.6743) * (double)(pow10((long)(-11))));
+        if ((double)(r_initial) <= (double)(0.0) || (double)(r_final) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Orbital radii must be greater than zero."));
         }
-        double work = (G * mass_central * mass_object / 2.0) * (1.0 / r_initial - 1.0 / r_final);
-        return format_scientific_3(work);
+        double work_1 = (double)((double)(((double)((double)((double)(G) * (double)(mass_central)) * (double)(mass_object)) / (double)(2.0))) * (double)(((double)((double)(1.0) / (double)(r_initial)) - (double)((double)(1.0) / (double)(r_final)))));
+        return format_scientific_3((double)(work_1));
     }
 
     static void test_orbital_transfer_work() {
-        if (!(orbital_transfer_work(5.972 * pow10(24), 1000.0, 6.371 * pow10(6), 7.0 * pow10(6)).equals("2.811e+09"))) {
+        if (!(orbital_transfer_work((double)((double)(5.972) * (double)(pow10(24L))), (double)(1000.0), (double)((double)(6.371) * (double)(pow10(6L))), (double)((double)(7.0) * (double)(pow10(6L)))).equals("2.811e+09"))) {
             throw new RuntimeException(String.valueOf("case1 failed"));
         }
-        if (!(orbital_transfer_work(5.972 * pow10(24), 500.0, 7.0 * pow10(6), 6.371 * pow10(6)).equals("-1.405e+09"))) {
+        if (!(orbital_transfer_work((double)((double)(5.972) * (double)(pow10(24L))), (double)(500.0), (double)((double)(7.0) * (double)(pow10(6L))), (double)((double)(6.371) * (double)(pow10(6L)))).equals("-1.405e+09"))) {
             throw new RuntimeException(String.valueOf("case2 failed"));
         }
-        if (!(orbital_transfer_work(1.989 * pow10(30), 1000.0, 1.5 * pow10(11), 2.28 * pow10(11)).equals("1.514e+11"))) {
+        if (!(orbital_transfer_work((double)((double)(1.989) * (double)(pow10(30L))), (double)(1000.0), (double)((double)(1.5) * (double)(pow10(11L))), (double)((double)(2.28) * (double)(pow10(11L)))).equals("1.514e+11"))) {
             throw new RuntimeException(String.valueOf("case3 failed"));
         }
     }
 
     static void main() {
         test_orbital_transfer_work();
-        System.out.println(orbital_transfer_work(5.972 * pow10(24), 1000.0, 6.371 * pow10(6), 7.0 * pow10(6)));
+        System.out.println(orbital_transfer_work((double)((double)(5.972) * (double)(pow10(24L))), (double)(1000.0), (double)((double)(6.371) * (double)(pow10(6L))), (double)((double)(7.0) * (double)(pow10(6L)))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {
@@ -117,6 +151,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

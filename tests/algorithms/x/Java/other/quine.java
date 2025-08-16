@@ -1,11 +1,10 @@
 public class Main {
-    static String code;
+    static String code = "/*\nQuine:\n\nA quine is a program that outputs its own source code using string substitution.\n*/\nlet code: string = %s\nprint(code)\n";
 
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            code = "/*\nQuine:\n\nA quine is a program that outputs its own source code using string substitution.\n*/\nlet code: string = %s\nprint(code)\n";
             System.out.println(code);
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;

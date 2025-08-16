@@ -1,19 +1,51 @@
 public class Main {
-    static double mass;
-    static double acceleration;
+    static double mass = (double)(12.5);
+    static double acceleration = (double)(10.0);
     static double force;
 
     static double newtons_second_law_of_motion(double mass, double acceleration) {
-        if (mass < 0.0 || acceleration < 0.0) {
+        if ((double)(mass) < (double)(0.0) || (double)(acceleration) < (double)(0.0)) {
             return 0.0;
         }
-        return mass * acceleration;
+        return (double)(mass) * (double)(acceleration);
     }
     public static void main(String[] args) {
-        mass = 12.5;
-        acceleration = 10.0;
-        force = newtons_second_law_of_motion(mass, acceleration);
-        System.out.println("The force is " + _p(force) + " N");
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            force = (double)(newtons_second_law_of_motion((double)(mass), (double)(acceleration)));
+            System.out.println("The force is " + _p(force) + " N");
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -28,6 +60,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,33 +1,66 @@
 public class Main {
-    static double G;
+    static double G = (double)(9.80665);
 
     static double sqrt(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 10) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = (double)(x);
+        long i_1 = 0L;
+        while ((long)(i_1) < 10L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return guess;
+        return guess_1;
     }
 
     static double terminal_velocity(double mass, double density, double area, double drag_coefficient) {
-        if (mass <= 0.0 || density <= 0.0 || area <= 0.0 || drag_coefficient <= 0.0) {
+        if ((double)(mass) <= (double)(0.0) || (double)(density) <= (double)(0.0) || (double)(area) <= (double)(0.0) || (double)(drag_coefficient) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("mass, density, area and the drag coefficient all need to be positive"));
         }
-        double numerator = 2.0 * mass * G;
-        double denominator = density * area * drag_coefficient;
-        double result = sqrt(numerator / denominator);
-        return result;
+        double numerator_1 = (double)((double)((double)(2.0) * (double)(mass)) * (double)(G));
+        double denominator_1 = (double)((double)((double)(density) * (double)(area)) * (double)(drag_coefficient));
+        double result_1 = (double)(sqrt((double)((double)(numerator_1) / (double)(denominator_1))));
+        return result_1;
     }
     public static void main(String[] args) {
-        G = 9.80665;
-        System.out.println(_p(terminal_velocity(1.0, 25.0, 0.6, 0.77)));
-        System.out.println(_p(terminal_velocity(2.0, 100.0, 0.45, 0.23)));
-        System.out.println(_p(terminal_velocity(5.0, 50.0, 0.2, 0.5)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(_p(terminal_velocity((double)(1.0), (double)(25.0), (double)(0.6), (double)(0.77))));
+            System.out.println(_p(terminal_velocity((double)(2.0), (double)(100.0), (double)(0.45), (double)(0.23))));
+            System.out.println(_p(terminal_velocity((double)(5.0), (double)(50.0), (double)(0.2), (double)(0.5))));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -42,6 +75,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

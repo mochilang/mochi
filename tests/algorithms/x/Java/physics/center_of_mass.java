@@ -35,39 +35,39 @@ public class Main {
     static Coord3D r2;
 
     static double round2(double x) {
-        double scaled = (double)(x) * 100.0;
-        double rounded_1 = ((Number)((((Number)((scaled + 0.5))).intValue()))).doubleValue();
-        return rounded_1 / 100.0;
+        double scaled = (double)((double)(x) * (double)(100.0));
+        double rounded_1 = (double)(((Number)((((Number)(((double)(scaled) + (double)(0.5)))).intValue()))).doubleValue());
+        return (double)(rounded_1) / (double)(100.0);
     }
 
     static Coord3D center_of_mass(Particle[] ps) {
-        if ((long)(ps.length) == (long)(0)) {
+        if ((long)(ps.length) == 0L) {
             throw new RuntimeException(String.valueOf("No particles provided"));
         }
         long i_1 = 0L;
-        double total_mass_1 = 0.0;
-        while (i_1 < (long)(ps.length)) {
+        double total_mass_1 = (double)(0.0);
+        while ((long)(i_1) < (long)(ps.length)) {
             Particle p_1 = ps[(int)((long)(i_1))];
-            if (p_1.mass <= 0.0) {
+            if ((double)(p_1.mass) <= (double)(0.0)) {
                 throw new RuntimeException(String.valueOf("Mass of all particles must be greater than 0"));
             }
-            total_mass_1 = (double)(total_mass_1) + p_1.mass;
-            i_1 = (long)(i_1 + (long)(1));
+            total_mass_1 = (double)((double)(total_mass_1) + (double)(p_1.mass));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        double sum_x_1 = 0.0;
-        double sum_y_1 = 0.0;
-        double sum_z_1 = 0.0;
+        double sum_x_1 = (double)(0.0);
+        double sum_y_1 = (double)(0.0);
+        double sum_z_1 = (double)(0.0);
         i_1 = 0L;
-        while (i_1 < (long)(ps.length)) {
+        while ((long)(i_1) < (long)(ps.length)) {
             Particle p_3 = ps[(int)((long)(i_1))];
-            sum_x_1 = (double)(sum_x_1) + p_3.x * p_3.mass;
-            sum_y_1 = (double)(sum_y_1) + p_3.y * p_3.mass;
-            sum_z_1 = (double)(sum_z_1) + p_3.z * p_3.mass;
-            i_1 = (long)(i_1 + (long)(1));
+            sum_x_1 = (double)((double)(sum_x_1) + (double)((double)(p_3.x) * (double)(p_3.mass)));
+            sum_y_1 = (double)((double)(sum_y_1) + (double)((double)(p_3.y) * (double)(p_3.mass)));
+            sum_z_1 = (double)((double)(sum_z_1) + (double)((double)(p_3.z) * (double)(p_3.mass)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        double cm_x_1 = (double)(round2((double)(sum_x_1) / (double)(total_mass_1)));
-        double cm_y_1 = (double)(round2((double)(sum_y_1) / (double)(total_mass_1)));
-        double cm_z_1 = (double)(round2((double)(sum_z_1) / (double)(total_mass_1)));
+        double cm_x_1 = (double)(round2((double)((double)(sum_x_1) / (double)(total_mass_1))));
+        double cm_y_1 = (double)(round2((double)((double)(sum_y_1) / (double)(total_mass_1))));
+        double cm_z_1 = (double)(round2((double)((double)(sum_z_1) / (double)(total_mass_1))));
         return new Coord3D(cm_x_1, cm_y_1, cm_z_1);
     }
 
@@ -130,7 +130,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);
