@@ -2515,7 +2515,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 	if strings.HasSuffix(t, "[]") {
 		elem = strings.TrimSuffix(t, "[]")
 	}
-	if et := typeOfExpr(a.Item); et != "" && et != "object" {
+	if et := typeOfExpr(a.Item); et != "" && !strings.HasPrefix(et, "object") {
 		elem = et
 	}
 	listStr := exprString(a.List)
