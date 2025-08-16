@@ -1379,27 +1379,29 @@ type AppendBuiltin struct {
 func (a *AppendBuiltin) emit(w io.Writer) {
 	if l, ok := a.List.(*ListLit); ok && len(l.Elems) == 0 {
 		io.WriteString(w, "[")
-		if a.Elem != "" {
-			io.WriteString(w, "(Obj.magic (")
-			a.Value.emit(w)
-			fmt.Fprintf(w, ") : %s)", ocamlType(a.Elem))
-		} else {
-			a.Value.emit(w)
-		}
+		a.emitValue(w)
 		io.WriteString(w, "]")
 		return
 	}
 	io.WriteString(w, "(List.append (")
 	a.List.emit(w)
 	io.WriteString(w, ") [")
+	a.emitValue(w)
+	io.WriteString(w, "])")
+}
+
+func (a *AppendBuiltin) emitValue(w io.Writer) {
 	if a.Elem != "" {
+		if _, ok := a.Value.(*CastExpr); ok {
+			a.Value.emit(w)
+			return
+		}
 		io.WriteString(w, "(Obj.magic (")
 		a.Value.emit(w)
 		fmt.Fprintf(w, ") : %s)", ocamlType(a.Elem))
-	} else {
-		a.Value.emit(w)
+		return
 	}
-	io.WriteString(w, "])")
+	a.Value.emit(w)
 }
 
 func (a *AppendBuiltin) emitPrint(w io.Writer) {
@@ -1902,14 +1904,17 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ")) (")
 		mi.Map.emit(w)
 		io.WriteString(w, ") with Some v -> (Obj.obj (v : Obj.t) : ")
-		if strings.HasPrefix(mi.Typ, "map") {
+		if strings.HasPrefix(mi.Typ, "map-") {
+			parts := strings.SplitN(strings.TrimPrefix(mi.Typ, "map-"), "-", 2)
 			keyTyp := "string"
-			if mi.KeyTyp != "" {
+			valTyp := "Obj.t"
+			if len(parts) == 2 {
+				keyTyp = ocamlType(parts[0])
+				valTyp = ocamlType(parts[1])
+			} else if mi.KeyTyp != "" {
 				keyTyp = ocamlType(mi.KeyTyp)
 			}
-			// Dynamic maps store values as Obj.t; avoid casting to a concrete type
-			// when the retrieved value itself is a map.
-			io.WriteString(w, "( "+keyTyp+" * Obj.t ) list")
+			io.WriteString(w, "( "+keyTyp+" * "+valTyp+" ) list")
 		} else {
 			io.WriteString(w, ocamlType(mi.Typ))
 		}
@@ -2324,15 +2329,11 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "__str (")
 	mu.Key.emit(w)
 	io.WriteString(w, "), ")
-	if mu.Dyn {
-		io.WriteString(w, "Obj.repr (Obj.magic (")
-	}
+	io.WriteString(w, "Obj.repr (Obj.magic (")
 	mu.Value.emit(w)
-	if mu.Dyn {
-		io.WriteString(w, ") : ")
-		io.WriteString(w, ocamlType(mu.Typ))
-		io.WriteString(w, ")")
-	}
+	io.WriteString(w, ") : ")
+	io.WriteString(w, ocamlType(mu.Typ))
+	io.WriteString(w, ")")
 	io.WriteString(w, ") :: List.remove_assoc (__str (")
 	mu.Key.emit(w)
 	io.WriteString(w, ")) ")
@@ -2367,7 +2368,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		if strings.HasPrefix(ix.ColTyp, "list") {
 			def := zeroValue(ix.Typ)
 			if def == "0" && ix.Typ != "int" && ix.Typ != "float" && ix.Typ != "string" && ix.Typ != "bool" {
-				def = "[]"
+				def = "Obj.repr []"
 			}
 			io.WriteString(w, "(let __l = ")
 			ix.Col.emit(w)
@@ -2382,6 +2383,8 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, "(Obj.magic v : float)")
 			} else if ix.Typ == "string" {
 				io.WriteString(w, "(Obj.magic v : string)")
+			} else if ix.Typ == "bool" {
+				io.WriteString(w, "(Obj.magic v : bool)")
 			} else {
 				io.WriteString(w, "v")
 			}
@@ -5958,6 +5961,20 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			name = "String.lowercase_ascii"
 		}
 		return &FuncCall{Name: name, Args: []Expr{arg}, Ret: "string"}, "string", nil
+	}
+	if c.Func == "ln" && len(c.Args) == 1 {
+		arg, _, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		return &FuncCall{Name: "Float.log", Args: []Expr{arg}, Ret: "float"}, "float", nil
+	}
+	if c.Func == "exp" && len(c.Args) == 1 {
+		arg, _, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		return &FuncCall{Name: "Float.exp", Args: []Expr{arg}, Ret: "float"}, "float", nil
 	}
 	if c.Func == "pow" && len(c.Args) == 2 {
 		if _, ok := env.GetFunc("pow"); !ok {
