@@ -1,33 +1,33 @@
 public class Main {
-    static double c = 299792458.0;
+    static double c = (double)(299792458.0);
     static double[] v;
 
     static double sqrtApprox(double x) {
-        if ((double)(x) <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
-        double guess_1 = (double)(x) / 2.0;
+        double guess_1 = (double)((double)(x) / (double)(2.0));
         long i_1 = 0L;
-        while ((long)(i_1) < (long)(20)) {
-            guess_1 = (guess_1 + (double)(x) / guess_1) / 2.0;
-            i_1 = (long)((long)(i_1) + (long)(1));
+        while ((long)(i_1) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return guess_1;
     }
 
     static double beta(double velocity) {
-        if ((double)(velocity) > c) {
+        if ((double)(velocity) > (double)(c)) {
             throw new RuntimeException(String.valueOf("Speed must not exceed light speed 299,792,458 [m/s]!"));
         }
-        if ((double)(velocity) < 1.0) {
+        if ((double)(velocity) < (double)(1.0)) {
             throw new RuntimeException(String.valueOf("Speed must be greater than or equal to 1!"));
         }
-        return (double)(velocity) / c;
+        return (double)(velocity) / (double)(c);
     }
 
     static double gamma(double velocity) {
         double b = (double)(beta((double)(velocity)));
-        return 1.0 / (double)(sqrtApprox(1.0 - (double)(b) * (double)(b)));
+        return (double)(1.0) / (double)(sqrtApprox((double)((double)(1.0) - (double)((double)(b) * (double)(b)))));
     }
 
     static double[][] transformation_matrix(double velocity) {
@@ -39,11 +39,11 @@ public class Main {
     static double[] mat_vec_mul(double[][] mat, double[] vec) {
         double[] res = ((double[])(new double[]{}));
         long i_3 = 0L;
-        while ((long)(i_3) < (long)(4)) {
+        while ((long)(i_3) < 4L) {
             double[] row_1 = ((double[])(mat[(int)((long)(i_3))]));
-            double value_1 = (double)(row_1[(int)((long)(0))]) * (double)(vec[(int)((long)(0))]) + (double)(row_1[(int)((long)(1))]) * (double)(vec[(int)((long)(1))]) + (double)(row_1[(int)((long)(2))]) * (double)(vec[(int)((long)(2))]) + (double)(row_1[(int)((long)(3))]) * (double)(vec[(int)((long)(3))]);
+            double value_1 = (double)((double)((double)((double)((double)(row_1[(int)((long)(0))]) * (double)(vec[(int)((long)(0))])) + (double)((double)(row_1[(int)((long)(1))]) * (double)(vec[(int)((long)(1))]))) + (double)((double)(row_1[(int)((long)(2))]) * (double)(vec[(int)((long)(2))]))) + (double)((double)(row_1[(int)((long)(3))]) * (double)(vec[(int)((long)(3))])));
             res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new double[]{value_1})).toArray()));
-            i_3 = (long)((long)(i_3) + (long)(1));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return res;
     }
@@ -51,22 +51,22 @@ public class Main {
     static double[] transform(double velocity, double[] event) {
         double g_1 = (double)(gamma((double)(velocity)));
         double b_4 = (double)(beta((double)(velocity)));
-        double ct_1 = (double)(event[(int)((long)(0))]) * c;
+        double ct_1 = (double)((double)(event[(int)((long)(0))]) * (double)(c));
         double x_1 = (double)(event[(int)((long)(1))]);
-        return new double[]{(double)(g_1) * ct_1 - (double)(g_1) * (double)(b_4) * (double)(x_1), (double)(-g_1) * (double)(b_4) * ct_1 + (double)(g_1) * (double)(x_1), event[(int)((long)(2))], event[(int)((long)(3))]};
+        return new double[]{(double)((double)(g_1) * (double)(ct_1)) - (double)((double)((double)(g_1) * (double)(b_4)) * (double)(x_1)), (double)((double)((double)(-g_1) * (double)(b_4)) * (double)(ct_1)) + (double)((double)(g_1) * (double)(x_1)), event[(int)((long)(2))], event[(int)((long)(3))]};
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(beta(c)));
-            System.out.println(_p(beta(199792458.0)));
-            System.out.println(_p(beta(100000.0)));
-            System.out.println(_p(gamma(4.0)));
-            System.out.println(_p(gamma(100000.0)));
-            System.out.println(_p(gamma(30000000.0)));
-            System.out.println(_p(transformation_matrix(29979245.0)));
-            v = ((double[])(transform(29979245.0, ((double[])(new double[]{1.0, 2.0, 3.0, 4.0})))));
+            System.out.println(_p(beta((double)(c))));
+            System.out.println(_p(beta((double)(199792458.0))));
+            System.out.println(_p(beta((double)(100000.0))));
+            System.out.println(_p(gamma((double)(4.0))));
+            System.out.println(_p(gamma((double)(100000.0))));
+            System.out.println(_p(gamma((double)(30000000.0))));
+            System.out.println(_p(transformation_matrix((double)(29979245.0))));
+            v = ((double[])(transform((double)(29979245.0), ((double[])(new double[]{1.0, 2.0, 3.0, 4.0})))));
             System.out.println(_p(v));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -116,7 +116,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

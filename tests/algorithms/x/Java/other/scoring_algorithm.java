@@ -1,6 +1,6 @@
 public class Main {
-    static double[][] vehicles = new double[0][];
-    static long[] weights = new long[0];
+    static double[][] vehicles = ((double[][])(new double[][]{}));
+    static long[] weights = ((long[])(new long[]{0, 0, 1}));
     static double[][] result;
 
     static double[][] get_data(double[][] source_data) {
@@ -10,14 +10,14 @@ public class Main {
             double[] row_1 = ((double[])(source_data[(int)((long)(i_1))]));
             long j_1 = 0L;
             while ((long)(j_1) < (long)(row_1.length)) {
-                if ((long)(data_lists.length) < (long)((long)(j_1) + (long)(1))) {
+                if ((long)(data_lists.length) < (long)((long)(j_1) + 1L)) {
                     double[] empty_1 = ((double[])(new double[]{}));
-                    data_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(data_lists), java.util.stream.Stream.of(empty_1)).toArray(double[][]::new)));
+                    data_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(data_lists), java.util.stream.Stream.of(new double[][]{empty_1})).toArray(double[][]::new)));
                 }
 data_lists[(int)((long)(j_1))] = ((double[])(appendDouble(data_lists[(int)((long)(j_1))], (double)(row_1[(int)((long)(j_1))]))));
-                j_1 = (long)((long)(j_1) + (long)(1));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            i_1 = (long)((long)(i_1) + (long)(1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return data_lists;
     }
@@ -27,7 +27,7 @@ data_lists[(int)((long)(j_1))] = ((double[])(appendDouble(data_lists[(int)((long
         long i_3 = 0L;
         while ((long)(i_3) < (long)(data_lists.length)) {
             double[] dlist_1 = ((double[])(data_lists[(int)((long)(i_3))]));
-            long weight_1 = weights[(int)((long)(i_3))];
+            long weight_1 = (long)(weights[(int)((long)(i_3))]);
             double mind_1 = (double)(dlist_1[(int)((long)(0))]);
             double maxd_1 = (double)(dlist_1[(int)((long)(0))]);
             long j_3 = 1L;
@@ -39,33 +39,33 @@ data_lists[(int)((long)(j_1))] = ((double[])(appendDouble(data_lists[(int)((long
                 if ((double)(val_1) > (double)(maxd_1)) {
                     maxd_1 = (double)(val_1);
                 }
-                j_3 = (long)((long)(j_3) + (long)(1));
+                j_3 = (long)((long)(j_3) + 1L);
             }
             double[] score_1 = ((double[])(new double[]{}));
-            j_3 = (long)(0);
-            if (weight_1 == (long)(0)) {
+            j_3 = 0L;
+            if ((long)(weight_1) == 0L) {
                 while ((long)(j_3) < (long)(dlist_1.length)) {
                     double item_2 = (double)(dlist_1[(int)((long)(j_3))]);
-                    if ((double)(maxd_1) - (double)(mind_1) == 0.0) {
-                        score_1 = ((double[])(appendDouble(score_1, 1.0)));
+                    if ((double)((double)(maxd_1) - (double)(mind_1)) == (double)(0.0)) {
+                        score_1 = ((double[])(appendDouble(score_1, (double)(1.0))));
                     } else {
-                        score_1 = ((double[])(appendDouble(score_1, 1.0 - (((double)(item_2) - (double)(mind_1)) / ((double)(maxd_1) - (double)(mind_1))))));
+                        score_1 = ((double[])(appendDouble(score_1, (double)((double)(1.0) - (double)(((double)(((double)(item_2) - (double)(mind_1))) / (double)(((double)(maxd_1) - (double)(mind_1)))))))));
                     }
-                    j_3 = (long)((long)(j_3) + (long)(1));
+                    j_3 = (long)((long)(j_3) + 1L);
                 }
             } else {
                 while ((long)(j_3) < (long)(dlist_1.length)) {
                     double item_3 = (double)(dlist_1[(int)((long)(j_3))]);
-                    if ((double)(maxd_1) - (double)(mind_1) == 0.0) {
-                        score_1 = ((double[])(appendDouble(score_1, 0.0)));
+                    if ((double)((double)(maxd_1) - (double)(mind_1)) == (double)(0.0)) {
+                        score_1 = ((double[])(appendDouble(score_1, (double)(0.0))));
                     } else {
-                        score_1 = ((double[])(appendDouble(score_1, ((double)(item_3) - (double)(mind_1)) / ((double)(maxd_1) - (double)(mind_1)))));
+                        score_1 = ((double[])(appendDouble(score_1, (double)((double)(((double)(item_3) - (double)(mind_1))) / (double)(((double)(maxd_1) - (double)(mind_1)))))));
                     }
-                    j_3 = (long)((long)(j_3) + (long)(1));
+                    j_3 = (long)((long)(j_3) + 1L);
                 }
             }
-            score_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(score_lists), java.util.stream.Stream.of(score_1)).toArray(double[][]::new)));
-            i_3 = (long)((long)(i_3) + (long)(1));
+            score_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(score_lists), java.util.stream.Stream.of(new double[][]{score_1})).toArray(double[][]::new)));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return score_lists;
     }
@@ -75,18 +75,18 @@ data_lists[(int)((long)(j_1))] = ((double[])(appendDouble(data_lists[(int)((long
         double[] final_scores_1 = ((double[])(new double[]{}));
         long i_5 = 0L;
         while ((long)(i_5) < (long)(count)) {
-            final_scores_1 = ((double[])(appendDouble(final_scores_1, 0.0)));
-            i_5 = (long)((long)(i_5) + (long)(1));
+            final_scores_1 = ((double[])(appendDouble(final_scores_1, (double)(0.0))));
+            i_5 = (long)((long)(i_5) + 1L);
         }
-        i_5 = (long)(0);
+        i_5 = 0L;
         while ((long)(i_5) < (long)(score_lists.length)) {
             double[] slist_1 = ((double[])(score_lists[(int)((long)(i_5))]));
             long j_5 = 0L;
             while ((long)(j_5) < (long)(slist_1.length)) {
-final_scores_1[(int)((long)(j_5))] = (double)(final_scores_1[(int)((long)(j_5))]) + (double)(slist_1[(int)((long)(j_5))]);
-                j_5 = (long)((long)(j_5) + (long)(1));
+final_scores_1[(int)((long)(j_5))] = (double)((double)(final_scores_1[(int)((long)(j_5))]) + (double)(slist_1[(int)((long)(j_5))]));
+                j_5 = (long)((long)(j_5) + 1L);
             }
-            i_5 = (long)((long)(i_5) + (long)(1));
+            i_5 = (long)((long)(i_5) + 1L);
         }
         return final_scores_1;
     }
@@ -98,7 +98,7 @@ final_scores_1[(int)((long)(j_5))] = (double)(final_scores_1[(int)((long)(j_5))]
         long i_7 = 0L;
         while ((long)(i_7) < (long)(final_scores_3.length)) {
 source_data[(int)((long)(i_7))] = ((double[])(appendDouble(source_data[(int)((long)(i_7))], (double)(final_scores_3[(int)((long)(i_7))]))));
-            i_7 = (long)((long)(i_7) + (long)(1));
+            i_7 = (long)((long)(i_7) + 1L);
         }
         return source_data;
     }
@@ -106,11 +106,9 @@ source_data[(int)((long)(i_7))] = ((double[])(appendDouble(source_data[(int)((lo
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            vehicles = ((double[][])(new double[][]{}));
-            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[]{20.0, 60.0, 2012.0})).toArray(double[][]::new)));
-            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[]{23.0, 90.0, 2015.0})).toArray(double[][]::new)));
-            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[]{22.0, 50.0, 2011.0})).toArray(double[][]::new)));
-            weights = ((long[])(new long[]{0, 0, 1}));
+            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{20.0, 60.0, 2012.0}})).toArray(double[][]::new)));
+            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{23.0, 90.0, 2015.0}})).toArray(double[][]::new)));
+            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{22.0, 50.0, 2011.0}})).toArray(double[][]::new)));
             result = ((double[][])(procentual_proximity(((double[][])(vehicles)), ((long[])(weights)))));
             System.out.println(_p(result));
             long _benchDuration = _now() - _benchStart;
@@ -167,7 +165,6 @@ source_data[(int)((long)(i_7))] = ((double[])(appendDouble(source_data[(int)((lo
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

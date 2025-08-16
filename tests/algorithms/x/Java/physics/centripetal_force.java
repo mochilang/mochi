@@ -1,36 +1,36 @@
 public class Main {
 
     static double centripetal(double mass, double velocity, double radius) {
-        if ((double)(mass) < 0.0) {
+        if ((double)(mass) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("The mass of the body cannot be negative"));
         }
-        if ((double)(radius) <= 0.0) {
+        if ((double)(radius) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("The radius is always a positive non zero integer"));
         }
-        return (double)(mass) * (double)(velocity) * (double)(velocity) / (double)(radius);
+        return (double)((double)((double)(mass) * (double)(velocity)) * (double)(velocity)) / (double)(radius);
     }
 
     static double floor(double x) {
         long i = (long)(((Number)(x)).intValue());
-        if ((((Number)(i)).doubleValue()) > (double)(x)) {
-            i = (long)((long)(i) - (long)(1));
+        if ((double)((((Number)(i)).doubleValue())) > (double)(x)) {
+            i = (long)((long)(i) - 1L);
         }
         return ((Number)(i)).doubleValue();
     }
 
     static double pow10(long n) {
-        double p = 1.0;
+        double p = (double)(1.0);
         long i_2 = 0L;
-        while ((long)(i_2) < n) {
-            p = p * 10.0;
-            i_2 = (long)((long)(i_2) + (long)(1));
+        while ((long)(i_2) < (long)(n)) {
+            p = (double)((double)(p) * (double)(10.0));
+            i_2 = (long)((long)(i_2) + 1L);
         }
         return p;
     }
 
     static double round(double x, long n) {
-        double m = (double)(pow10(n));
-        return (double)(floor((double)(x) * (double)(m) + 0.5)) / (double)(m);
+        double m = (double)(pow10((long)(n)));
+        return Math.floor((double)((double)(x) * (double)(m)) + (double)(0.5)) / (double)(m);
     }
 
     static void show(double mass, double velocity, double radius) {
@@ -41,11 +41,11 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            show(15.5, -30.0, 10.0);
-            show(10.0, 15.0, 5.0);
-            show(20.0, -50.0, 15.0);
-            show(12.25, 40.0, 25.0);
-            show(50.0, 100.0, 50.0);
+            show((double)(15.5), (double)(-30.0), (double)(10.0));
+            show((double)(10.0), (double)(15.0), (double)(5.0));
+            show((double)(20.0), (double)(-50.0), (double)(15.0));
+            show((double)(12.25), (double)(40.0), (double)(25.0));
+            show((double)(50.0), (double)(100.0), (double)(50.0));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -94,7 +94,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

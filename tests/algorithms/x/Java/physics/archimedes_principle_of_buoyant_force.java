@@ -1,28 +1,27 @@
 public class Main {
-    static double G;
+    static double G = (double)(9.80665);
 
     static double archimedes_principle(double fluid_density, double volume, double gravity) {
-        if ((double)(fluid_density) <= 0.0) {
+        if ((double)(fluid_density) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Impossible fluid density"));
         }
-        if ((double)(volume) <= 0.0) {
+        if ((double)(volume) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Impossible object volume"));
         }
-        if ((double)(gravity) < 0.0) {
+        if ((double)(gravity) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Impossible gravity"));
         }
-        return (double)(fluid_density) * (double)(volume) * (double)(gravity);
+        return (double)((double)(fluid_density) * (double)(volume)) * (double)(gravity);
     }
 
     static double archimedes_principle_default(double fluid_density, double volume) {
-        double res = (double)(archimedes_principle((double)(fluid_density), (double)(volume), G));
+        double res = (double)(archimedes_principle((double)(fluid_density), (double)(volume), (double)(G)));
         return res;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            G = 9.80665;
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

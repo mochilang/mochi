@@ -1,59 +1,59 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:28: error: ';' expected
-            res = res + _substr(inp, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + (long)(1)))));
-                                                                                                    ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:35: error: ';' expected
-        return _substr(data, (int)((long)(1)), (int)((long)(_runeLen(data))))) + _substr(data, (int)((long)(0)), (int)((long)(1))));
-                                                                             ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:35: error: ';' expected
-        return _substr(data, (int)((long)(1)), (int)((long)(_runeLen(data))))) + _substr(data, (int)((long)(0)), (int)((long)(1))));
-                                                                                                                                  ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:42: error: illegal start of expression
-            if ((_substr(a, (int)((long)(i_3)), (int)((long)((long)(i_3) + (long)(1))))).equals(_substr(b, (int)((long)(i_3)), (int)((long)((long)(i_3) + (long)(1)))))))) {
-                                                                                                                                                                        ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:44: error: 'else' without 'if'
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:28: error: ';' expected
+            res = res + _substr(inp, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L))));
+                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:35: error: ';' expected
+        return _substr(data, (int)(1L), (int)((long)(_runeLen(data))))) + _substr(data, (int)(0L), (int)(1L)));
+                                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:35: error: ';' expected
+        return _substr(data, (int)(1L), (int)((long)(_runeLen(data))))) + _substr(data, (int)(0L), (int)(1L)));
+                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:42: error: illegal start of expression
+            if ((_substr(a, (int)((long)(i_3)), (int)((long)((long)(i_3) + 1L)))).equals(_substr(b, (int)((long)(i_3)), (int)((long)((long)(i_3) + 1L))))))) {
+                                                                                                                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:44: error: 'else' without 'if'
             } else {
               ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:77: error: ';' expected
-            long digit_1 = (long)(Integer.parseInt(_substr(s, (int)((long)(i_5)), (int)((long)((long)(i_5) + (long)(1)))))));
-                                                                                                                           ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:85: error: ';' expected
-        String row_bits = _substr(data, (int)((long)(0)), (int)((long)(1)))) + _substr(data, (int)((long)((long)(_runeLen(data)) - (long)(1))), (int)((long)(_runeLen(data)))));
-                                                                           ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:85: error: ';' expected
-        String row_bits = _substr(data, (int)((long)(0)), (int)((long)(1)))) + _substr(data, (int)((long)((long)(_runeLen(data)) - (long)(1))), (int)((long)(_runeLen(data)))));
-                                                                                                                                                                              ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:86: error: ';' expected
-        String col_bits_1 = _substr(data, (int)((long)(1)), (int)((long)(3))));
-                                                                             ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:95: error: ';' expected
-        String left = _substr(message, (int)((long)(0)), (int)((long)(4))));
-                                                                          ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:96: error: ';' expected
-        String right_1 = _substr(message, (int)((long)(4)), (int)((long)(8))));
-                                                                             ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:99: error: ';' expected
-        String left_bin_str_1 = String.valueOf(apply_sbox(((long[][])(s0)), _substr(temp_1, (int)((long)(0)), (int)((long)(4))))));
-                                                                                                                                 ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:100: error: ';' expected
-        String right_bin_str_1 = String.valueOf(apply_sbox(((long[][])(s1)), _substr(temp_1, (int)((long)(4)), (int)((long)(8))))));
-                                                                                                                                  ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:122: error: ';' expected
-            left_1 = _substr(temp_2, (int)((long)(0)), (int)((long)(5))));
-                                                                        ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:123: error: ';' expected
-            right_2 = _substr(temp_2, (int)((long)(5)), (int)((long)(10))));
-                                                                          ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:134: error: ';' expected
-            temp_2 = _substr(temp_2, (int)((long)(4)), (int)((long)(8)))) + _substr(temp_2, (int)((long)(0)), (int)((long)(4))));
-                                                                        ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:134: error: ';' expected
-            temp_2 = _substr(temp_2, (int)((long)(4)), (int)((long)(8)))) + _substr(temp_2, (int)((long)(0)), (int)((long)(4))));
-                                                                                                                               ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:140: error: ';' expected
-            temp_2 = _substr(temp_2, (int)((long)(4)), (int)((long)(8)))) + _substr(temp_2, (int)((long)(0)), (int)((long)(4))));
-                                                                        ^
-/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes3688361672/001/Main.java:140: error: ';' expected
-            temp_2 = _substr(temp_2, (int)((long)(4)), (int)((long)(8)))) + _substr(temp_2, (int)((long)(0)), (int)((long)(4))));
-                                                                                                                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:77: error: ';' expected
+            long digit_1 = (long)(Integer.parseInt(_substr(s, (int)((long)(i_5)), (int)((long)((long)(i_5) + 1L))))));
+                                                                                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:85: error: ';' expected
+        String row_bits = _substr(data, (int)(0L), (int)(1L))) + _substr(data, (int)((long)((long)(_runeLen(data)) - 1L)), (int)((long)(_runeLen(data)))));
+                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:85: error: ';' expected
+        String row_bits = _substr(data, (int)(0L), (int)(1L))) + _substr(data, (int)((long)((long)(_runeLen(data)) - 1L)), (int)((long)(_runeLen(data)))));
+                                                                                                                                                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:86: error: ';' expected
+        String col_bits_1 = _substr(data, (int)(1L), (int)(3L)));
+                                                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:95: error: ';' expected
+        String left = _substr(message, (int)(0L), (int)(4L)));
+                                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:96: error: ';' expected
+        String right_1 = _substr(message, (int)(4L), (int)(8L)));
+                                                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:99: error: ';' expected
+        String left_bin_str_1 = String.valueOf(apply_sbox(((long[][])(s0)), _substr(temp_1, (int)(0L), (int)(4L)))));
+                                                                                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:100: error: ';' expected
+        String right_bin_str_1 = String.valueOf(apply_sbox(((long[][])(s1)), _substr(temp_1, (int)(4L), (int)(8L)))));
+                                                                                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:112: error: ';' expected
+            left_1 = _substr(temp_2, (int)(0L), (int)(5L)));
+                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:113: error: ';' expected
+            right_2 = _substr(temp_2, (int)(5L), (int)(10L)));
+                                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:124: error: ';' expected
+            temp_2 = _substr(temp_2, (int)(4L), (int)(8L))) + _substr(temp_2, (int)(0L), (int)(4L)));
+                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:124: error: ';' expected
+            temp_2 = _substr(temp_2, (int)(4L), (int)(8L))) + _substr(temp_2, (int)(0L), (int)(4L)));
+                                                                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:130: error: ';' expected
+            temp_2 = _substr(temp_2, (int)(4L), (int)(8L))) + _substr(temp_2, (int)(0L), (int)(4L)));
+                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden758_sdes2869287406/001/Main.java:130: error: ';' expected
+            temp_2 = _substr(temp_2, (int)(4L), (int)(8L))) + _substr(temp_2, (int)(0L), (int)(4L)));
+                                                                                                   ^
 19 errors

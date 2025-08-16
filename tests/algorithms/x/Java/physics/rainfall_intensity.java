@@ -4,87 +4,121 @@ public class Main {
     static double r3;
 
     static double exp_approx(double x) {
-        double y = x;
-        boolean is_neg = false;
-        if (x < 0.0) {
-            is_neg = true;
-            y = -x;
+        double y = (double)(x);
+        boolean is_neg_1 = false;
+        if ((double)(x) < (double)(0.0)) {
+            is_neg_1 = true;
+            y = (double)(-x);
         }
-        double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 30) {
-            term = term * y / (((Number)(n)).doubleValue());
-            sum = sum + term;
-            n = n + 1;
+        double term_1 = (double)(1.0);
+        double sum_1 = (double)(1.0);
+        long n_1 = 1L;
+        while ((long)(n_1) < 30L) {
+            term_1 = (double)((double)((double)(term_1) * (double)(y)) / (double)((((Number)(n_1)).doubleValue())));
+            sum_1 = (double)((double)(sum_1) + (double)(term_1));
+            n_1 = (long)((long)(n_1) + 1L);
         }
-        if (((Boolean)(is_neg))) {
-            return 1.0 / sum;
+        if (is_neg_1) {
+            return (double)(1.0) / (double)(sum_1);
         }
-        return sum;
+        return sum_1;
     }
 
     static double ln_series(double x) {
-        double t = (x - 1.0) / (x + 1.0);
-        double term_1 = t;
-        double sum_1 = 0.0;
-        int n_1 = 1;
-        while (n_1 <= 19) {
-            sum_1 = sum_1 + term_1 / (((Number)(n_1)).doubleValue());
-            term_1 = term_1 * t * t;
-            n_1 = n_1 + 2;
+        double t = (double)((double)(((double)(x) - (double)(1.0))) / (double)(((double)(x) + (double)(1.0))));
+        double term_3 = (double)(t);
+        double sum_3 = (double)(0.0);
+        long n_3 = 1L;
+        while ((long)(n_3) <= 19L) {
+            sum_3 = (double)((double)(sum_3) + (double)((double)(term_3) / (double)((((Number)(n_3)).doubleValue()))));
+            term_3 = (double)((double)((double)(term_3) * (double)(t)) * (double)(t));
+            n_3 = (long)((long)(n_3) + 2L);
         }
-        return 2.0 * sum_1;
+        return (double)(2.0) * (double)(sum_3);
     }
 
     static double ln(double x) {
-        double y_1 = x;
-        int k = 0;
-        while (y_1 >= 10.0) {
-            y_1 = y_1 / 10.0;
-            k = k + 1;
+        double y_1 = (double)(x);
+        long k_1 = 0L;
+        while ((double)(y_1) >= (double)(10.0)) {
+            y_1 = (double)((double)(y_1) / (double)(10.0));
+            k_1 = (long)((long)(k_1) + 1L);
         }
-        while (y_1 < 1.0) {
-            y_1 = y_1 * 10.0;
-            k = k - 1;
+        while ((double)(y_1) < (double)(1.0)) {
+            y_1 = (double)((double)(y_1) * (double)(10.0));
+            k_1 = (long)((long)(k_1) - 1L);
         }
-        return ln_series(y_1) + (((Number)(k)).doubleValue()) * ln_series(10.0);
+        return (double)(ln_series((double)(y_1))) + (double)((double)((((Number)(k_1)).doubleValue())) * (double)(ln_series((double)(10.0))));
     }
 
     static double powf(double base, double exponent) {
-        return exp_approx(exponent * ln(base));
+        return exp_approx((double)((double)(exponent) * (double)(ln((double)(base)))));
     }
 
     static double rainfall_intensity(double coefficient_k, double coefficient_a, double coefficient_b, double coefficient_c, double return_period, double duration) {
-        if (coefficient_k <= 0.0) {
+        if ((double)(coefficient_k) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("All parameters must be positive."));
         }
-        if (coefficient_a <= 0.0) {
+        if ((double)(coefficient_a) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("All parameters must be positive."));
         }
-        if (coefficient_b <= 0.0) {
+        if ((double)(coefficient_b) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("All parameters must be positive."));
         }
-        if (coefficient_c <= 0.0) {
+        if ((double)(coefficient_c) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("All parameters must be positive."));
         }
-        if (return_period <= 0.0) {
+        if ((double)(return_period) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("All parameters must be positive."));
         }
-        if (duration <= 0.0) {
+        if ((double)(duration) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("All parameters must be positive."));
         }
-        double numerator = coefficient_k * powf(return_period, coefficient_a);
-        double denominator = powf(duration + coefficient_b, coefficient_c);
-        return numerator / denominator;
+        double numerator_1 = (double)((double)(coefficient_k) * (double)(powf((double)(return_period), (double)(coefficient_a))));
+        double denominator_1 = (double)(powf((double)((double)(duration) + (double)(coefficient_b)), (double)(coefficient_c)));
+        return (double)(numerator_1) / (double)(denominator_1);
     }
     public static void main(String[] args) {
-        r1 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 10.0, 60.0);
-        System.out.println(_p(r1));
-        r2 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 10.0, 30.0);
-        System.out.println(_p(r2));
-        r3 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 5.0, 60.0);
-        System.out.println(_p(r3));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            r1 = (double)(rainfall_intensity((double)(1000.0), (double)(0.2), (double)(11.6), (double)(0.81), (double)(10.0), (double)(60.0)));
+            System.out.println(_p(r1));
+            r2 = (double)(rainfall_intensity((double)(1000.0), (double)(0.2), (double)(11.6), (double)(0.81), (double)(10.0), (double)(30.0)));
+            System.out.println(_p(r2));
+            r3 = (double)(rainfall_intensity((double)(1000.0), (double)(0.2), (double)(11.6), (double)(0.81), (double)(5.0), (double)(60.0)));
+            System.out.println(_p(r3));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -99,6 +133,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

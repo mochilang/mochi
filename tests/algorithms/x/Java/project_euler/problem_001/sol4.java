@@ -1,86 +1,120 @@
 public class Main {
 
-    static boolean contains(int[] xs, int value) {
-        int i = 0;
-        while (i < xs.length) {
-            if (xs[i] == value) {
+    static boolean contains(long[] xs, long value) {
+        long i = 0L;
+        while ((long)(i) < (long)(xs.length)) {
+            if ((long)(xs[(int)((long)(i))]) == (long)(value)) {
                 return true;
             }
-            i = i + 1;
+            i = (long)((long)(i) + 1L);
         }
         return false;
     }
 
-    static int solution(int n) {
-        int[] zmulti = ((int[])(new int[]{}));
-        int[] xmulti = ((int[])(new int[]{}));
-        int temp = 1;
+    static long solution(long n) {
+        long[] zmulti = ((long[])(new long[]{}));
+        long[] xmulti_1 = ((long[])(new long[]{}));
+        long temp_1 = 1L;
         while (true) {
-            int result = 3 * temp;
-            if (result < n) {
-                zmulti = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(zmulti), java.util.stream.IntStream.of(result)).toArray()));
-                temp = temp + 1;
+            long result_1 = (long)(3L * (long)(temp_1));
+            if ((long)(result_1) < (long)(n)) {
+                zmulti = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(zmulti), java.util.stream.LongStream.of((long)(result_1))).toArray()));
+                temp_1 = (long)((long)(temp_1) + 1L);
             } else {
                 break;
             }
         }
-        temp = 1;
+        temp_1 = 1L;
         while (true) {
-            int result_1 = 5 * temp;
-            if (result_1 < n) {
-                xmulti = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(xmulti), java.util.stream.IntStream.of(result_1)).toArray()));
-                temp = temp + 1;
+            long result_3 = (long)(5L * (long)(temp_1));
+            if ((long)(result_3) < (long)(n)) {
+                xmulti_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(xmulti_1), java.util.stream.LongStream.of((long)(result_3))).toArray()));
+                temp_1 = (long)((long)(temp_1) + 1L);
             } else {
                 break;
             }
         }
-        int[] collection = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < zmulti.length) {
-            int v = zmulti[i_1];
-            if (!(Boolean)contains(((int[])(collection)), v)) {
-                collection = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(collection), java.util.stream.IntStream.of(v)).toArray()));
+        long[] collection_1 = ((long[])(new long[]{}));
+        long i_2 = 0L;
+        while ((long)(i_2) < (long)(zmulti.length)) {
+            long v_1 = (long)(zmulti[(int)((long)(i_2))]);
+            if (!(Boolean)contains(((long[])(collection_1)), (long)(v_1))) {
+                collection_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(collection_1), java.util.stream.LongStream.of((long)(v_1))).toArray()));
             }
-            i_1 = i_1 + 1;
+            i_2 = (long)((long)(i_2) + 1L);
         }
-        i_1 = 0;
-        while (i_1 < xmulti.length) {
-            int v_1 = xmulti[i_1];
-            if (!(Boolean)contains(((int[])(collection)), v_1)) {
-                collection = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(collection), java.util.stream.IntStream.of(v_1)).toArray()));
+        i_2 = 0L;
+        while ((long)(i_2) < (long)(xmulti_1.length)) {
+            long v_3 = (long)(xmulti_1[(int)((long)(i_2))]);
+            if (!(Boolean)contains(((long[])(collection_1)), (long)(v_3))) {
+                collection_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(collection_1), java.util.stream.LongStream.of((long)(v_3))).toArray()));
             }
-            i_1 = i_1 + 1;
+            i_2 = (long)((long)(i_2) + 1L);
         }
-        int total = 0;
-        i_1 = 0;
-        while (i_1 < collection.length) {
-            total = total + collection[i_1];
-            i_1 = i_1 + 1;
+        long total_1 = 0L;
+        i_2 = 0L;
+        while ((long)(i_2) < (long)(collection_1.length)) {
+            total_1 = (long)((long)(total_1) + (long)(collection_1[(int)((long)(i_2))]));
+            i_2 = (long)((long)(i_2) + 1L);
         }
-        return total;
+        return total_1;
     }
 
     static void test_solution() {
-        if (solution(3) != 0) {
+        if ((long)(solution(3L)) != 0L) {
             throw new RuntimeException(String.valueOf("solution(3) failed"));
         }
-        if (solution(4) != 3) {
+        if ((long)(solution(4L)) != 3L) {
             throw new RuntimeException(String.valueOf("solution(4) failed"));
         }
-        if (solution(10) != 23) {
+        if ((long)(solution(10L)) != 23L) {
             throw new RuntimeException(String.valueOf("solution(10) failed"));
         }
-        if (solution(600) != 83700) {
+        if ((long)(solution(600L)) != 83700L) {
             throw new RuntimeException(String.valueOf("solution(600) failed"));
         }
     }
 
     static void main() {
         test_solution();
-        System.out.println("solution() = " + _p(solution(1000)));
+        System.out.println("solution() = " + _p(solution(1000L)));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -95,6 +129,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

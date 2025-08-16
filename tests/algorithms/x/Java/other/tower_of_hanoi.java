@@ -1,11 +1,11 @@
 public class Main {
-    static long height;
+    static long height = 3L;
 
     static void move_tower(long height, String from_pole, String to_pole, String with_pole) {
-        if (height >= (long)(1)) {
-            move_tower((long)(height - (long)(1)), from_pole, with_pole, to_pole);
+        if ((long)(height) >= 1L) {
+            move_tower((long)((long)(height) - 1L), from_pole, with_pole, to_pole);
             move_disk(from_pole, to_pole);
-            move_tower((long)(height - (long)(1)), with_pole, to_pole, from_pole);
+            move_tower((long)((long)(height) - 1L), with_pole, to_pole, from_pole);
         }
     }
 
@@ -16,8 +16,7 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            height = 3L;
-            move_tower(height, "A", "B", "C");
+            move_tower((long)(height), "A", "B", "C");
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

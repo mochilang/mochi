@@ -17,30 +17,30 @@ public class Main {
     static Result r3;
 
     static Result shear_stress(double stress, double tangential_force, double area) {
-        int zeros = 0;
-        if (stress == 0.0) {
-            zeros = zeros + 1;
+        long zeros = 0L;
+        if ((double)(stress) == (double)(0.0)) {
+            zeros = (long)((long)(zeros) + 1L);
         }
-        if (tangential_force == 0.0) {
-            zeros = zeros + 1;
+        if ((double)(tangential_force) == (double)(0.0)) {
+            zeros = (long)((long)(zeros) + 1L);
         }
-        if (area == 0.0) {
-            zeros = zeros + 1;
+        if ((double)(area) == (double)(0.0)) {
+            zeros = (long)((long)(zeros) + 1L);
         }
-        if (zeros != 1) {
+        if ((long)(zeros) != 1L) {
             throw new RuntimeException(String.valueOf("You cannot supply more or less than 2 values"));
-        } else         if (stress < 0.0) {
+        } else         if ((double)(stress) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Stress cannot be negative"));
-        } else         if (tangential_force < 0.0) {
+        } else         if ((double)(tangential_force) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Tangential Force cannot be negative"));
-        } else         if (area < 0.0) {
+        } else         if ((double)(area) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Area cannot be negative"));
-        } else         if (stress == 0.0) {
-            return new Result("stress", tangential_force / area);
-        } else         if (tangential_force == 0.0) {
-            return new Result("tangential_force", stress * area);
+        } else         if ((double)(stress) == (double)(0.0)) {
+            return new Result("stress", (double)(tangential_force) / (double)(area));
+        } else         if ((double)(tangential_force) == (double)(0.0)) {
+            return new Result("tangential_force", (double)(stress) * (double)(area));
         } else {
-            return new Result("area", tangential_force / stress);
+            return new Result("area", (double)(tangential_force) / (double)(stress));
         }
     }
 
@@ -48,12 +48,46 @@ public class Main {
         return "Result(name='" + r.name + "', value=" + _p(r.value) + ")";
     }
     public static void main(String[] args) {
-        r1 = shear_stress(25.0, 100.0, 0.0);
-        System.out.println(str_result(r1));
-        r2 = shear_stress(0.0, 1600.0, 200.0);
-        System.out.println(str_result(r2));
-        r3 = shear_stress(1000.0, 0.0, 1200.0);
-        System.out.println(str_result(r3));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            r1 = shear_stress((double)(25.0), (double)(100.0), (double)(0.0));
+            System.out.println(str_result(r1));
+            r2 = shear_stress((double)(0.0), (double)(1600.0), (double)(200.0));
+            System.out.println(str_result(r2));
+            r3 = shear_stress((double)(1000.0), (double)(0.0), (double)(1200.0));
+            System.out.println(str_result(r3));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -68,6 +102,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
