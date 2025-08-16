@@ -1815,7 +1815,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::map<std::string, std::any>>(")
 			i.Target.emit(w)
 			io.WriteString(w, ")[")
-			emitIndex(w, i.Index)
+			i.Index.emit(w)
 			io.WriteString(w, "])")
 			return
 		}
@@ -3418,6 +3418,19 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 	if len(idxs) == 0 {
 		io.WriteString(w, ind)
 		baseType := exprType(a.Target)
+		if baseType == "std::any" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+			}
+			fmt.Fprintf(w, "std::any_cast<std::map<std::string, std::any>&>(")
+			a.Target.emit(w)
+			io.WriteString(w, ")[")
+			a.Index.emit(w)
+			io.WriteString(w, "] = ")
+			a.Value.emit(w)
+			io.WriteString(w, ";\n")
+			return
+		}
 		if strings.HasPrefix(baseType, "std::map<") && strings.HasSuffix(baseType, ">") {
 			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(baseType, "std::map<"), ">"), ",", 2)
 			if len(parts) == 2 && strings.TrimSpace(parts[0]) == "std::string" {
@@ -5704,10 +5717,18 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	}
 	prevRet := currentReturnType
 	currentReturnType = ret
+	paramTypes := map[string]string{}
 	for _, p := range fn.Params {
 		if p.Type != nil {
 			tp := types.ResolveTypeRef(p.Type, currentEnv)
-			localTypes[p.Name] = cppTypeFrom(tp)
+			typ := cppTypeFrom(tp)
+			if strings.HasPrefix(typ, "std::unique_ptr<") {
+				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "std::unique_ptr<"), ">") + "*"
+			} else if strings.HasPrefix(typ, "std::shared_ptr<") {
+				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "std::shared_ptr<"), ">") + "*"
+			}
+			paramTypes[p.Name] = typ
+			localTypes[p.Name] = typ
 		}
 	}
 	defer func() { localTypes = prevLocals; currentVarDecls = prevDecls }()
@@ -5723,16 +5744,7 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	}
 	var params []Param
 	for _, p := range fn.Params {
-		typ := ""
-		if p.Type != nil {
-			tp := types.ResolveTypeRef(p.Type, currentEnv)
-			typ = cppTypeFrom(tp)
-			if strings.HasPrefix(typ, "std::unique_ptr<") {
-				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "std::unique_ptr<"), ">") + "*"
-			} else if strings.HasPrefix(typ, "std::shared_ptr<") {
-				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "std::shared_ptr<"), ">") + "*"
-			}
-		}
+		typ := paramTypes[p.Name]
 		inFunction = prev
 		params = append(params, Param{Name: p.Name, Type: typ, ByVal: mutatedParams[p.Name]})
 	}
@@ -8078,6 +8090,9 @@ func exprType(e Expr) string {
 		t := exprType(v.Target)
 		if t == "std::string" {
 			return "std::string"
+		}
+		if t == "std::any" {
+			return "std::any"
 		}
 		if strings.HasPrefix(t, "std::vector<") && strings.HasSuffix(t, ">") {
 			return strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<"), ">")
