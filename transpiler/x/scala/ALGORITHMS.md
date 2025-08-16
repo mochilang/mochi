@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 928/1077
-Last updated: 2025-08-16 12:34 +0700
+Completed programs: 929/1077
+Last updated: 2025-08-16 14:44 +0700
 
 Checklist:
 
@@ -531,56 +531,56 @@ Checklist:
 | 522 | machine_learning/similarity_search | ✓ | 4µs | 8.7 MB |
 | 523 | machine_learning/support_vector_machines | error |  |  |
 | 524 | machine_learning/word_frequency_functions | ✓ | 13µs | 8.8 MB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 14µs | 8.7 MB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 13µs | 8.7 MB |
-| 527 | maths/abs | ✓ | 9µs | 8.7 MB |
-| 528 | maths/addition_without_arithmetic | ✓ | 9µs | 8.7 MB |
-| 529 | maths/aliquot_sum | ✓ | 5µs | 8.7 MB |
-| 530 | maths/allocation_number | ✓ | 7µs | 8.7 MB |
-| 531 | maths/arc_length | ✓ | 3µs | 8.7 MB |
-| 532 | maths/area | ✓ | 12µs | 8.7 MB |
-| 533 | maths/area_under_curve | ✓ | 32µs | 8.7 MB |
-| 534 | maths/average_absolute_deviation | ✓ | 9µs | 8.7 MB |
-| 535 | maths/average_mean | ✓ | 9µs | 8.7 MB |
-| 536 | maths/average_median | ✓ | 10µs | 8.7 MB |
-| 537 | maths/average_mode | ✓ | 12µs | 8.7 MB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 4.918ms | 8.7 MB |
-| 539 | maths/base_neg2_conversion | error |  |  |
-| 540 | maths/basic_maths | ✓ | 8µs | 8.7 MB |
-| 541 | maths/binary_exponentiation | ✓ | 5µs | 8.7 MB |
-| 542 | maths/binary_multiplication | ✓ | 6µs | 8.8 MB |
-| 543 | maths/binomial_coefficient | ✓ | 8µs | 8.7 MB |
-| 544 | maths/binomial_distribution | ✓ |  |  |
-| 545 | maths/ceil | ✓ | 9µs | 8.7 MB |
-| 546 | maths/chebyshev_distance | ✓ | 5µs | 8.7 MB |
-| 547 | maths/check_polygon | ✓ | 5µs | 8.8 MB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 4µs | 8.7 MB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 8µs | 8.7 MB |
-| 550 | maths/collatz_sequence | ✓ | 5µs | 3.4 MB |
-| 551 | maths/combinations | ✓ | 1µs | 3.4 MB |
-| 552 | maths/continued_fraction | ✓ | 4µs | 3.4 MB |
-| 553 | maths/decimal_isolate | ✓ | 2µs | 3.4 MB |
-| 554 | maths/decimal_to_fraction | ✓ | 5µs | 3.5 MB |
-| 555 | maths/dodecahedron | ✓ | 2µs | 3.4 MB |
-| 556 | maths/double_factorial | ✓ | 1µs | 3.4 MB |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 10µs | 3.5 MB |
-| 558 | maths/entropy | ✓ | 16µs | 3.5 MB |
-| 559 | maths/euclidean_distance | ✓ | 4µs | 3.5 MB |
-| 560 | maths/euler_method | ✓ | 17µs | 3.5 MB |
-| 561 | maths/euler_modified | ✓ | 7µs | 3.5 MB |
-| 562 | maths/eulers_totient | ✓ | 9µs | 3.5 MB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 1µs | 3.4 MB |
-| 564 | maths/factorial | ✓ | 1µs | 3.4 MB |
-| 565 | maths/factors | ✓ | 6µs | 3.4 MB |
-| 566 | maths/fast_inverse_sqrt | ✓ | 10µs | 3.5 MB |
-| 567 | maths/fermat_little_theorem | ✓ | 1µs | 3.5 MB |
-| 568 | maths/fibonacci | ✓ | 18µs | 3.5 MB |
-| 569 | maths/find_max | ✓ | 4µs | 3.5 MB |
-| 570 | maths/find_min | ✓ | 4µs | 3.4 MB |
-| 571 | maths/floor | ✓ | 6µs | 3.4 MB |
-| 572 | maths/gamma | ✓ | 280µs | 3.5 MB |
-| 573 | maths/gaussian | ✓ | 5µs | 3.4 MB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 3µs | 3.4 MB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 183.317ms | 3.5 MB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 183.317ms | 3.5 MB |
+| 527 | maths/abs | ✓ | 183.317ms | 3.5 MB |
+| 528 | maths/addition_without_arithmetic | ✓ | 183.317ms | 3.5 MB |
+| 529 | maths/aliquot_sum | ✓ | 183.317ms | 3.5 MB |
+| 530 | maths/allocation_number | ✓ | 183.317ms | 3.5 MB |
+| 531 | maths/arc_length | ✓ | 183.317ms | 3.5 MB |
+| 532 | maths/area | ✓ | 183.317ms | 3.5 MB |
+| 533 | maths/area_under_curve | ✓ | 183.317ms | 3.5 MB |
+| 534 | maths/average_absolute_deviation | ✓ | 183.317ms | 3.5 MB |
+| 535 | maths/average_mean | ✓ | 183.317ms | 3.5 MB |
+| 536 | maths/average_median | ✓ | 183.317ms | 3.5 MB |
+| 537 | maths/average_mode | ✓ | 183.317ms | 3.5 MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 183.317ms | 3.5 MB |
+| 539 | maths/base_neg2_conversion | ✓ | 183.317ms | 3.5 MB |
+| 540 | maths/basic_maths | ✓ | 183.317ms | 3.5 MB |
+| 541 | maths/binary_exponentiation | ✓ | 183.317ms | 3.5 MB |
+| 542 | maths/binary_multiplication | ✓ | 183.317ms | 3.5 MB |
+| 543 | maths/binomial_coefficient | ✓ | 183.317ms | 3.5 MB |
+| 544 | maths/binomial_distribution | ✓ | 183.317ms | 3.4 MB |
+| 545 | maths/ceil | ✓ | 183.317ms | 3.5 MB |
+| 546 | maths/chebyshev_distance | ✓ | 183.317ms | 3.5 MB |
+| 547 | maths/check_polygon | ✓ | 183.317ms | 3.5 MB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 183.317ms | 3.5 MB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 183.317ms | 3.5 MB |
+| 550 | maths/collatz_sequence | ✓ | 183.317ms | 3.5 MB |
+| 551 | maths/combinations | ✓ | 183.317ms | 3.5 MB |
+| 552 | maths/continued_fraction | ✓ | 183.317ms | 3.5 MB |
+| 553 | maths/decimal_isolate | ✓ | 183.317ms | 3.5 MB |
+| 554 | maths/decimal_to_fraction | ✓ | 183.317ms | 3.5 MB |
+| 555 | maths/dodecahedron | ✓ | 183.317ms | 3.5 MB |
+| 556 | maths/double_factorial | ✓ | 183.317ms | 3.5 MB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 183.317ms | 3.5 MB |
+| 558 | maths/entropy | ✓ | 183.317ms | 3.5 MB |
+| 559 | maths/euclidean_distance | ✓ | 183.317ms | 3.5 MB |
+| 560 | maths/euler_method | ✓ | 183.317ms | 3.5 MB |
+| 561 | maths/euler_modified | ✓ | 183.317ms | 3.5 MB |
+| 562 | maths/eulers_totient | ✓ | 183.317ms | 3.5 MB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 183.317ms | 3.5 MB |
+| 564 | maths/factorial | ✓ | 183.317ms | 3.5 MB |
+| 565 | maths/factors | ✓ | 183.317ms | 3.5 MB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 183.317ms | 3.5 MB |
+| 567 | maths/fermat_little_theorem | ✓ | 183.317ms | 3.5 MB |
+| 568 | maths/fibonacci | ✓ | 183.317ms | 3.5 MB |
+| 569 | maths/find_max | ✓ | 183.317ms | 3.5 MB |
+| 570 | maths/find_min | ✓ | 183.317ms | 3.5 MB |
+| 571 | maths/floor | ✓ | 183.317ms | 3.5 MB |
+| 572 | maths/gamma | ✓ | 183.317ms | 3.5 MB |
+| 573 | maths/gaussian | ✓ | 183.317ms | 3.5 MB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 183.317ms | 3.5 MB |
 | 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 4µs | 8.7 MB |
 | 577 | maths/greatest_common_divisor | ✓ | 4µs | 8.7 MB |

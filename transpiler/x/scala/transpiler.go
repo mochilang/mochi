@@ -2136,7 +2136,7 @@ func Emit(p *Program) []byte {
 	if needsStr {
 		buf.WriteString("  private def _str(x: Any): String = x match {\n")
 		buf.WriteString("    case m: scala.collection.Map[_, _] => scala.collection.immutable.ListMap(m.toSeq.sortBy(_._1.toString): _*).toString.replace(\"ListMap\", \"Map\")\n")
-                buf.WriteString("    case d: Double => java.math.BigDecimal.valueOf(d).stripTrailingZeros.toPlainString\n")
+                buf.WriteString("    case d: Double => { val s = java.lang.Double.toString(d); if (s.indexOf('.') < 0 && !s.contains(\"e\") && !s.contains(\"E\")) s + \".0\" else s }\n")
                 buf.WriteString("    case other => String.valueOf(other)\n")
                 buf.WriteString("  }\n\n")
 	}
