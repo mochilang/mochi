@@ -37,8 +37,8 @@ function _append($arr, $x) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function pivot(&$t, $row, $col) {
-  global $tableau, $finalTab, $res, $key;
+  function pivot($t, $row, $col) {
+  global $finalTab, $key, $res, $tableau;
   $pivotRow = [];
   $pivotVal = $t[$row][$col];
   for ($j = 0; $j < count($t[$row]); $j++) {
@@ -59,7 +59,7 @@ $__start = _now();
   return $t;
 };
   function findPivot($t) {
-  global $tableau, $finalTab, $res, $key;
+  global $finalTab, $key, $res, $tableau;
   $col = 0;
   $minVal = 0.0;
   for ($j = 0; $j < count($t[0]) - 1; $j++) {
@@ -90,7 +90,7 @@ $__start = _now();
   return [$row, $col];
 };
   function interpret($t, $nVars) {
-  global $tableau, $finalTab, $res, $key;
+  global $finalTab, $key, $res, $tableau;
   $lastCol = count($t[0]) - 1;
   $p = $t[0][$lastCol];
   if ($p < 0.0) {
@@ -115,7 +115,7 @@ $__start = _now();
   return $result;
 };
   function simplex($tab) {
-  global $tableau, $finalTab, $res, $key;
+  global $finalTab, $key, $res, $tableau;
   $t = $tab;
   while (true) {
   $p = findPivot($t);

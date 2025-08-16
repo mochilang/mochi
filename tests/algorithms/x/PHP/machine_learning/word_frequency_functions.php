@@ -35,41 +35,6 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -80,7 +45,7 @@ $__start = _now();
   $UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $PUNCT = '!"#$%&\'()*+,-./:;<=>?@[\\]^_{|}~';
   function to_lowercase($s) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $res = '';
   $i = 0;
   while ($i < strlen($s)) {
@@ -93,28 +58,28 @@ $__start = _now();
   $found = true;
   break;
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   if (!$found) {
   $res = $res . $c;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $res;
 };
   function is_punct($c) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $i = 0;
   while ($i < strlen($PUNCT)) {
   if ($c == substr($PUNCT, $i, $i + 1 - $i)) {
   return true;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return false;
 };
   function clean_text($text, $keep_newlines) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $lower = to_lowercase($text);
   $res = '';
   $i = 0;
@@ -132,12 +97,12 @@ $__start = _now();
   $res = $res . $ch;
 };
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $res;
 };
-  function split($s, $sep) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  function mochi_split($s, $sep) {
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $res = [];
   $current = '';
   $i = 0;
@@ -149,50 +114,50 @@ $__start = _now();
 } else {
   $current = $current . $ch;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $res = _append($res, $current);
   return $res;
 };
-  function contains($s, $sub) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  function mochi_contains($s, $sub) {
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $n = strlen($s);
   $m = strlen($sub);
   if ($m == 0) {
   return true;
 }
   $i = 0;
-  while ($i <= _isub($n, $m)) {
+  while ($i <= $n - $m) {
   $j = 0;
   $is_match = true;
   while ($j < $m) {
-  if (substr($s, _iadd($i, $j), _iadd($i, $j) + 1 - _iadd($i, $j)) != substr($sub, $j, $j + 1 - $j)) {
+  if (substr($s, $i + $j, $i + $j + 1 - ($i + $j)) != substr($sub, $j, $j + 1 - $j)) {
   $is_match = false;
   break;
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   if ($is_match) {
   return true;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return false;
 };
   function mochi_floor($x) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $i = intval($x);
   if ((floatval($i)) > $x) {
-  $i = _isub($i, 1);
+  $i = $i - 1;
 }
   return floatval($i);
 };
   function round3($x) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   return mochi_floor($x * 1000.0 + 0.5) / 1000.0;
 };
   function ln($x) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $t = ($x - 1.0) / ($x + 1.0);
   $term = $t;
   $sum = 0.0;
@@ -200,47 +165,47 @@ $__start = _now();
   while ($k <= 99) {
   $sum = $sum + $term / (floatval($k));
   $term = $term * $t * $t;
-  $k = _iadd($k, 2);
+  $k = $k + 2;
 };
   return 2.0 * $sum;
 };
   function mochi_log10($x) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   return ln($x) / ln(10.0);
 };
   function term_frequency($term, $document) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $clean = clean_text($document, false);
-  $tokens = split($clean, ' ');
+  $tokens = mochi_split($clean, ' ');
   $t = to_lowercase($term);
   $count = 0;
   $i = 0;
   while ($i < count($tokens)) {
   if ($tokens[$i] != '' && $tokens[$i] == $t) {
-  $count = _iadd($count, 1);
+  $count = $count + 1;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $count;
 };
   function document_frequency($term, $corpus) {
-  global $LOWER, $UPPER, $PUNCT, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $idf_val;
   $clean = clean_text($corpus, true);
-  $docs = split($clean, '
+  $docs = mochi_split($clean, '
 ');
   $t = to_lowercase($term);
   $matches = 0;
   $i = 0;
   while ($i < count($docs)) {
-  if (contains($docs[$i], $t)) {
-  $matches = _iadd($matches, 1);
+  if (mochi_contains($docs[$i], $t)) {
+  $matches = $matches + 1;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return [$matches, count($docs)];
 };
   function inverse_document_frequency($df, $n, $smoothing) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   if ($smoothing) {
   if ($n == 0) {
   _panic('log10(0) is undefined.');
@@ -264,7 +229,7 @@ $__start = _now();
   return $result;
 };
   function tf_idf($tf, $idf) {
-  global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
+  global $LOWER, $PUNCT, $UPPER, $corpus, $idf_val;
   $prod = (floatval($tf)) * $idf;
   $result = round3($prod);
   echo rtrim(json_encode($result, 1344)), PHP_EOL;

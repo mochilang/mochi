@@ -31,51 +31,16 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   $PI = 3.141592653589793;
   $TWO_PI = 6.283185307179586;
   function _mod($x, $m) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   return $x - (floatval(intval($x / $m))) * $m;
 };
   function sin_approx($x) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   $y = _mod($x + $PI, $TWO_PI) - $PI;
   $y2 = $y * $y;
   $y3 = $y2 * $y;
@@ -84,7 +49,7 @@ $__start = _now();
   return $y - $y3 / 6.0 + $y5 / 120.0 - $y7 / 5040.0;
 };
   function cos_approx($x) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   $y = _mod($x + $PI, $TWO_PI) - $PI;
   $y2 = $y * $y;
   $y4 = $y2 * $y2;
@@ -92,11 +57,11 @@ $__start = _now();
   return 1.0 - $y2 / 2.0 + $y4 / 24.0 - $y6 / 720.0;
 };
   function tan_approx($x) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   return sin_approx($x) / cos_approx($x);
 };
   function sqrt_approx($x) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($x <= 0.0) {
   return 0.0;
 }
@@ -104,12 +69,12 @@ $__start = _now();
   $i = 0;
   while ($i < 20) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $guess;
 };
   function surface_area_cube($side_length) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($side_length < 0.0) {
   echo rtrim('ValueError: surface_area_cube() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -117,7 +82,7 @@ $__start = _now();
   return 6.0 * $side_length * $side_length;
 };
   function surface_area_cuboid($length, $breadth, $height) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($length < 0.0 || $breadth < 0.0 || $height < 0.0) {
   echo rtrim('ValueError: surface_area_cuboid() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -125,7 +90,7 @@ $__start = _now();
   return 2.0 * (($length * $breadth) + ($breadth * $height) + ($length * $height));
 };
   function surface_area_sphere($radius) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($radius < 0.0) {
   echo rtrim('ValueError: surface_area_sphere() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -133,7 +98,7 @@ $__start = _now();
   return 4.0 * $PI * $radius * $radius;
 };
   function surface_area_hemisphere($radius) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($radius < 0.0) {
   echo rtrim('ValueError: surface_area_hemisphere() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -141,7 +106,7 @@ $__start = _now();
   return 3.0 * $PI * $radius * $radius;
 };
   function surface_area_cone($radius, $height) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($radius < 0.0 || $height < 0.0) {
   echo rtrim('ValueError: surface_area_cone() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -150,7 +115,7 @@ $__start = _now();
   return $PI * $radius * ($radius + $slant);
 };
   function surface_area_conical_frustum($radius1, $radius2, $height) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($radius1 < 0.0 || $radius2 < 0.0 || $height < 0.0) {
   echo rtrim('ValueError: surface_area_conical_frustum() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -159,7 +124,7 @@ $__start = _now();
   return $PI * ($slant * ($radius1 + $radius2) + $radius1 * $radius1 + $radius2 * $radius2);
 };
   function surface_area_cylinder($radius, $height) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($radius < 0.0 || $height < 0.0) {
   echo rtrim('ValueError: surface_area_cylinder() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -167,7 +132,7 @@ $__start = _now();
   return 2.0 * $PI * $radius * ($height + $radius);
 };
   function surface_area_torus($torus_radius, $tube_radius) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($torus_radius < 0.0 || $tube_radius < 0.0) {
   echo rtrim('ValueError: surface_area_torus() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -179,7 +144,7 @@ $__start = _now();
   return 4.0 * $PI * $PI * $torus_radius * $tube_radius;
 };
   function area_rectangle($length, $width) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($length < 0.0 || $width < 0.0) {
   echo rtrim('ValueError: area_rectangle() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -187,7 +152,7 @@ $__start = _now();
   return $length * $width;
 };
   function area_square($side_length) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($side_length < 0.0) {
   echo rtrim('ValueError: area_square() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -195,7 +160,7 @@ $__start = _now();
   return $side_length * $side_length;
 };
   function area_triangle($base, $height) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($base < 0.0 || $height < 0.0) {
   echo rtrim('ValueError: area_triangle() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -203,7 +168,7 @@ $__start = _now();
   return ($base * $height) / 2.0;
 };
   function area_triangle_three_sides($side1, $side2, $side3) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($side1 < 0.0 || $side2 < 0.0 || $side3 < 0.0) {
   echo rtrim('ValueError: area_triangle_three_sides() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -218,7 +183,7 @@ $__start = _now();
   return $res;
 };
   function area_parallelogram($base, $height) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($base < 0.0 || $height < 0.0) {
   echo rtrim('ValueError: area_parallelogram() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -226,7 +191,7 @@ $__start = _now();
   return $base * $height;
 };
   function area_trapezium($base1, $base2, $height) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($base1 < 0.0 || $base2 < 0.0 || $height < 0.0) {
   echo rtrim('ValueError: area_trapezium() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -234,7 +199,7 @@ $__start = _now();
   return 0.5 * ($base1 + $base2) * $height;
 };
   function area_circle($radius) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($radius < 0.0) {
   echo rtrim('ValueError: area_circle() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -242,7 +207,7 @@ $__start = _now();
   return $PI * $radius * $radius;
 };
   function area_ellipse($radius_x, $radius_y) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($radius_x < 0.0 || $radius_y < 0.0) {
   echo rtrim('ValueError: area_ellipse() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -250,7 +215,7 @@ $__start = _now();
   return $PI * $radius_x * $radius_y;
 };
   function area_rhombus($diagonal1, $diagonal2) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($diagonal1 < 0.0 || $diagonal2 < 0.0) {
   echo rtrim('ValueError: area_rhombus() only accepts non-negative values'), PHP_EOL;
   return 0.0;
@@ -258,7 +223,7 @@ $__start = _now();
   return 0.5 * $diagonal1 * $diagonal2;
 };
   function area_reg_polygon($sides, $length) {
-  global $PI, $TWO_PI, $TRI_THREE_SIDES;
+  global $PI, $TRI_THREE_SIDES, $TWO_PI;
   if ($sides < 3) {
   echo rtrim('ValueError: area_reg_polygon() only accepts integers greater than or equal to three as number of sides'), PHP_EOL;
   return 0.0;

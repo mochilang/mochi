@@ -4108,7 +4108,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		str := false
 		if transpileEnv != nil {
 			t := types.ExprType(st.For.Source, savedEnv)
-			if types.IsMapType(t) {
+			if types.IsMapType(t) || types.IsAnyType(t) {
 				keys = true
 			}
 			if types.IsStringType(t) {

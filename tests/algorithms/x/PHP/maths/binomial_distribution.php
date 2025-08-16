@@ -15,41 +15,6 @@ function _now() {
     }
     return hrtime(true);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -69,8 +34,8 @@ $__start = _now();
   $result = 1;
   $i = 2;
   while ($i <= $n) {
-  $result = _imul($result, $i);
-  $i = _iadd($i, 1);
+  $result = $result * $i;
+  $i = $i + 1;
 };
   return $result;
 };
@@ -79,7 +44,7 @@ $__start = _now();
   $i = 0;
   while ($i < $exp) {
   $result = $result * $base;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
@@ -93,9 +58,9 @@ $__start = _now();
   if (!(0.0 < $prob && $prob < 1.0)) {
   _panic('prob has to be in range of 1 - 0');
 }
-  $probability = pow_float($prob, $successes) * pow_float(1.0 - $prob, _isub($trials, $successes));
+  $probability = pow_float($prob, $successes) * pow_float(1.0 - $prob, $trials - $successes);
   $numerator = floatval(factorial($trials));
-  $denominator = floatval((_imul(factorial($successes), factorial(_isub($trials, $successes)))));
+  $denominator = floatval((factorial($successes) * factorial($trials - $successes)));
   $coefficient = $numerator / $denominator;
   return $probability * $coefficient;
 };

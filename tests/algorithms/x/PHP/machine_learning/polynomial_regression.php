@@ -35,45 +35,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function design_matrix($xs, $degree) {
-  global $ys, $x, $X, $Xt, $XtX, $Xty, $coeffs;
+  global $X, $Xt, $XtX, $Xty, $coeffs, $x, $ys;
   $i = 0;
   $matrix = [];
   while ($i < count($xs)) {
@@ -83,15 +48,15 @@ $__start = _now();
   while ($j <= $degree) {
   $row = _append($row, $pow);
   $pow = $pow * $xs[$i];
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $matrix = _append($matrix, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $matrix;
 };
   function transpose($matrix) {
-  global $xs, $ys, $x, $X, $Xt, $XtX, $Xty, $coeffs;
+  global $X, $Xt, $XtX, $Xty, $coeffs, $x, $xs, $ys;
   $rows = count($matrix);
   $cols = count($matrix[0]);
   $j = 0;
@@ -101,15 +66,15 @@ $__start = _now();
   $i = 0;
   while ($i < $rows) {
   $row = _append($row, $matrix[$i][$j]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $result = _append($result, $row);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   return $result;
 };
   function matmul($A, $B) {
-  global $xs, $ys, $x, $X, $Xt, $XtX, $Xty, $coeffs;
+  global $X, $Xt, $XtX, $Xty, $coeffs, $x, $xs, $ys;
   $n = count($A);
   $m = count($A[0]);
   $p = count($B[0]);
@@ -123,18 +88,18 @@ $__start = _now();
   $j = 0;
   while ($j < $m) {
   $sum = $sum + $A[$i][$j] * $B[$j][$k];
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $row = _append($row, $sum);
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $result = _append($result, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
   function matvec_mul($A, $v) {
-  global $xs, $ys, $x, $X, $Xt, $XtX, $Xty, $coeffs;
+  global $X, $Xt, $XtX, $Xty, $coeffs, $x, $xs, $ys;
   $n = count($A);
   $m = count($A[0]);
   $i = 0;
@@ -144,25 +109,25 @@ $__start = _now();
   $j = 0;
   while ($j < $m) {
   $sum = $sum + $A[$i][$j] * $v[$j];
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $result = _append($result, $sum);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
   function gaussian_elimination($A, $b) {
-  global $xs, $ys, $X, $Xt, $XtX, $Xty, $coeffs;
+  global $X, $Xt, $XtX, $Xty, $coeffs, $xs, $ys;
   $n = count($A);
   $M = [];
   $i = 0;
   while ($i < $n) {
   $M = _append($M, _append($A[$i], $b[$i]));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $k = 0;
   while ($k < $n) {
-  $j = _iadd($k, 1);
+  $j = $k + 1;
   while ($j < $n) {
   $factor = $M[$j][$k] / $M[$k][$k];
   $rowj = $M[$j];
@@ -170,34 +135,34 @@ $__start = _now();
   $l = $k;
   while ($l <= $n) {
   $rowj[$l] = $rowj[$l] - $factor * $rowk[$l];
-  $l = _iadd($l, 1);
+  $l = $l + 1;
 };
   $M[$j] = $rowj;
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $x = [];
   $t = 0;
   while ($t < $n) {
   $x = _append($x, 0.0);
-  $t = _iadd($t, 1);
+  $t = $t + 1;
 };
-  $i2 = _isub($n, 1);
+  $i2 = $n - 1;
   while ($i2 >= 0) {
   $sum = $M[$i2][$n];
-  $j2 = _iadd($i2, 1);
+  $j2 = $i2 + 1;
   while ($j2 < $n) {
   $sum = $sum - $M[$i2][$j2] * $x[$j2];
-  $j2 = _iadd($j2, 1);
+  $j2 = $j2 + 1;
 };
   $x[$i2] = $sum / $M[$i2][$i2];
-  $i2 = _isub($i2, 1);
+  $i2 = $i2 - 1;
 };
   return $x;
 };
   function predict($xs, $coeffs) {
-  global $ys, $X, $Xt, $XtX, $Xty;
+  global $X, $Xt, $XtX, $Xty, $ys;
   $i = 0;
   $result = [];
   while ($i < count($xs)) {
@@ -208,10 +173,10 @@ $__start = _now();
   while ($j < count($coeffs)) {
   $sum = $sum + $coeffs[$j] * $pow;
   $pow = $pow * $x;
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $result = _append($result, $sum);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
@@ -221,7 +186,7 @@ $__start = _now();
   while ($i < count($xs)) {
   $x = $xs[$i];
   $ys = _append($ys, $x * $x * $x - 2.0 * $x * $x + 3.0 * $x - 5.0);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 }
   $X = design_matrix($xs, 3);
   $Xt = transpose($X);

@@ -19,41 +19,6 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   $PI = 3.141592653589793;
@@ -61,7 +26,7 @@ $__start = _now();
   $seed = 1;
   function mochi_rand() {
   global $PI, $TWO_PI, $seed;
-  $seed = _imod((_iadd(_imul($seed, 1103515245), 12345)), 2147483648);
+  $seed = ($seed * 1103515245 + 12345) % 2147483648;
   return $seed;
 };
   function random() {
@@ -89,7 +54,7 @@ $__start = _now();
   $i = 0;
   while ($i < 10) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $guess;
 };
@@ -102,7 +67,7 @@ $__start = _now();
   while ($n <= 19) {
   $sum = $sum + $term / (floatval($n));
   $term = $term * $t * $t;
-  $n = _iadd($n, 2);
+  $n = $n + 2;
 };
   return 2.0 * $sum;
 };
@@ -117,7 +82,7 @@ $__start = _now();
   $theta = $TWO_PI * $u2;
   $z = $r * mochi_cos($theta);
   $res = _append($res, $mean + $z * $std_dev);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $res;
 };
@@ -129,9 +94,9 @@ $__start = _now();
   $i = 0;
   while ($i < $instance_count[$k]) {
   $res = _append($res, $k);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   return $res;
 };
@@ -141,7 +106,7 @@ $__start = _now();
   $i = 0;
   while ($i < $instance_count) {
   $total = $total + $items[$i];
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / (floatval($instance_count));
 };
@@ -158,18 +123,18 @@ $__start = _now();
   while ($j < count($items[$i])) {
   $diff = $items[$i][$j] - $means[$i];
   $squared_diff = _append($squared_diff, $diff * $diff);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $sum_sq = 0.0;
   $k = 0;
   while ($k < count($squared_diff)) {
   $sum_sq = $sum_sq + $squared_diff[$k];
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $n_classes = count($means);
-  return (1.0 / (floatval((_isub($total_count, $n_classes))))) * $sum_sq;
+  return (1.0 / (floatval(($total_count - $n_classes)))) * $sum_sq;
 };
   function predict_y_values($x_items, $means, $variance, $probabilities) {
   global $PI, $TWO_PI, $seed;
@@ -183,7 +148,7 @@ $__start = _now();
   while ($k < count($x_items)) {
   $discr = $x_items[$i][$j] * ($means[$k] / $variance) - ($means[$k] * $means[$k]) / (2.0 * $variance) + ln($probabilities[$k]);
   $temp = _append($temp, $discr);
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $max_idx = 0;
   $max_val = $temp[0];
@@ -193,12 +158,12 @@ $__start = _now();
   $max_val = $temp[$t];
   $max_idx = $t;
 }
-  $t = _iadd($t, 1);
+  $t = $t + 1;
 };
   $results = _append($results, $max_idx);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $results;
 };
@@ -208,9 +173,9 @@ $__start = _now();
   $i = 0;
   while ($i < count($actual_y)) {
   if ($actual_y[$i] == $predicted_y[$i]) {
-  $correct = _iadd($correct, 1);
+  $correct = $correct + 1;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return (floatval($correct)) / (floatval(count($actual_y))) * 100.0;
 };
@@ -224,26 +189,26 @@ $__start = _now();
   $i = 0;
   while ($i < count($counts)) {
   $x = _append($x, gaussian_distribution($means[$i], $std_dev, $counts[$i]));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $y = y_generator(count($counts), $counts);
   $actual_means = [];
   $i = 0;
   while ($i < count($counts)) {
   $actual_means = _append($actual_means, calculate_mean($counts[$i], $x[$i]));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $total_count = 0;
   $i = 0;
   while ($i < count($counts)) {
-  $total_count = _iadd($total_count, $counts[$i]);
-  $i = _iadd($i, 1);
+  $total_count = $total_count + $counts[$i];
+  $i = $i + 1;
 };
   $probabilities = [];
   $i = 0;
   while ($i < count($counts)) {
   $probabilities = _append($probabilities, calculate_probabilities($counts[$i], $total_count));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $variance = calculate_variance($x, $actual_means, $total_count);
   $predicted = predict_y_values($x, $actual_means, $variance, $probabilities);

@@ -19,52 +19,6 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _intdiv($a, $b) {
-    if ($b === 0 || $b === '0') {
-        throw new DivisionByZeroError();
-    }
-    if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcdiv($sa, $sb, 0));
-    }
-    return intdiv($a, $b);
-}
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -72,27 +26,27 @@ function _panic($msg) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function mochi_sqrt($x) {
-  global $data, $result, $idx;
+  global $data, $idx, $result;
   $guess = ($x > 1.0 ? $x / 2.0 : 1.0);
   $i = 0;
   while ($i < 20) {
   $guess = 0.5 * ($guess + $x / $guess);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $guess;
 };
   function mean($xs) {
-  global $data, $result, $idx;
+  global $data, $idx, $result;
   $sum = 0.0;
   $i = 0;
   while ($i < count($xs)) {
   $sum = $sum + $xs[$i];
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
-  return _idiv($sum, count($xs));
+  return $sum / count($xs);
 };
   function standardize($data) {
-  global $result, $idx;
+  global $idx, $result;
   $n_samples = count($data);
   $n_features = count($data[0]);
   $means = [];
@@ -103,7 +57,7 @@ $__start = _now();
   $i = 0;
   while ($i < $n_samples) {
   $column = _append($column, $data[$i][$j]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $m = mean($column);
   $means = _append($means, $m);
@@ -112,10 +66,10 @@ $__start = _now();
   while ($k < $n_samples) {
   $diff = $column[$k] - $m;
   $variance = $variance + $diff * $diff;
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
-  $stds = _append($stds, mochi_sqrt(_idiv($variance, (_isub($n_samples, 1)))));
-  $j = _iadd($j, 1);
+  $stds = _append($stds, mochi_sqrt($variance / ($n_samples - 1)));
+  $j = $j + 1;
 };
   $standardized = [];
   $r = 0;
@@ -124,15 +78,15 @@ $__start = _now();
   $c = 0;
   while ($c < $n_features) {
   $row = _append($row, ($data[$r][$c] - $means[$c]) / $stds[$c]);
-  $c = _iadd($c, 1);
+  $c = $c + 1;
 };
   $standardized = _append($standardized, $row);
-  $r = _iadd($r, 1);
+  $r = $r + 1;
 };
   return $standardized;
 };
   function covariance_matrix($data) {
-  global $result, $idx;
+  global $idx, $result;
   $n_samples = count($data);
   $n_features = count($data[0]);
   $cov = [];
@@ -145,35 +99,35 @@ $__start = _now();
   $k = 0;
   while ($k < $n_samples) {
   $sum = $sum + $data[$k][$i] * $data[$k][$j];
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
-  $row = _append($row, _idiv($sum, (_isub($n_samples, 1))));
-  $j = _iadd($j, 1);
+  $row = _append($row, $sum / ($n_samples - 1));
+  $j = $j + 1;
 };
   $cov = _append($cov, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $cov;
 };
   function normalize($vec) {
-  global $data, $result, $idx;
+  global $data, $idx, $result;
   $sum = 0.0;
   $i = 0;
   while ($i < count($vec)) {
   $sum = $sum + $vec[$i] * $vec[$i];
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $n = mochi_sqrt($sum);
   $res = [];
   $j = 0;
   while ($j < count($vec)) {
   $res = _append($res, $vec[$j] / $n);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   return $res;
 };
   function eigen_decomposition_2x2($matrix) {
-  global $data, $result, $idx;
+  global $data, $idx, $result;
   $a = $matrix[0][0];
   $b = $matrix[0][1];
   $c = $matrix[1][1];
@@ -203,7 +157,7 @@ $__start = _now();
   return ['values' => $eigenvalues, 'vectors' => $eigenvectors];
 };
   function transpose($matrix) {
-  global $data, $result, $idx;
+  global $data, $idx, $result;
   $rows = count($matrix);
   $cols = count($matrix[0]);
   $trans = [];
@@ -213,10 +167,10 @@ $__start = _now();
   $j = 0;
   while ($j < $rows) {
   $row = _append($row, $matrix[$j][$i]);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $trans = _append($trans, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $trans;
 };
@@ -239,18 +193,18 @@ $__start = _now();
   $k = 0;
   while ($k < $cols_a) {
   $sum = $sum + $a[$i][$k] * $b[$k][$j];
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $row = _append($row, $sum);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $result = _append($result, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
   function apply_pca($data, $n_components) {
-  global $result, $idx;
+  global $idx, $result;
   $standardized = standardize($data);
   $cov = covariance_matrix($standardized);
   $eig = eigen_decomposition_2x2($cov);
@@ -263,7 +217,7 @@ $__start = _now();
   $i = 0;
   while ($i < $n_components) {
   $ratios = _append($ratios, $eigenvalues[$i] / $total);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return ['transformed' => $transformed, 'variance_ratio' => $ratios];
 };
@@ -273,7 +227,7 @@ $__start = _now();
   $idx = 0;
   while ($idx < 5) {
   echo rtrim(json_encode($result['transformed'][$idx], 1344)), PHP_EOL;
-  $idx = _iadd($idx, 1);
+  $idx = $idx + 1;
 }
   echo rtrim('Explained Variance Ratio:'), PHP_EOL;
   echo rtrim(json_encode($result['variance_ratio'], 1344)), PHP_EOL;

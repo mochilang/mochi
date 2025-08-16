@@ -38,7 +38,7 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function get_neighbours($p, $x_limit, $y_limit) {
-  global $world_x, $world_y, $start, $goal, $path, $world;
+  global $goal, $path, $start, $world, $world_x, $world_y;
   $deltas = [['x' => (0 - 1), 'y' => (0 - 1)], ['x' => (0 - 1), 'y' => 0], ['x' => (0 - 1), 'y' => 1], ['x' => 0, 'y' => (0 - 1)], ['x' => 0, 'y' => 1], ['x' => 1, 'y' => (0 - 1)], ['x' => 1, 'y' => 0], ['x' => 1, 'y' => 1]];
   $neighbours = [];
   foreach ($deltas as $d) {
@@ -50,8 +50,8 @@ $__start = _now();
 };
   return $neighbours;
 };
-  function contains($nodes, $p) {
-  global $world_x, $world_y, $start, $goal, $path, $world;
+  function mochi_contains($nodes, $p) {
+  global $goal, $path, $start, $world, $world_x, $world_y;
   foreach ($nodes as $n) {
   if ($n['pos']['x'] == $p['x'] && $n['pos']['y'] == $p['y']) {
   return true;
@@ -60,7 +60,7 @@ $__start = _now();
   return false;
 };
   function get_node($nodes, $p) {
-  global $world_x, $world_y, $start, $goal, $path, $world;
+  global $goal, $path, $start, $world, $world_x, $world_y;
   foreach ($nodes as $n) {
   if ($n['pos']['x'] == $p['x'] && $n['pos']['y'] == $p['y']) {
   return $n;
@@ -69,7 +69,7 @@ $__start = _now();
   return ['pos' => $p, 'parent' => ['x' => (0 - 1), 'y' => (0 - 1)], 'g' => 0, 'h' => 0, 'f' => 0];
 };
   function astar($x_limit, $y_limit, $start, $goal) {
-  global $world_x, $world_y, $world;
+  global $world, $world_x, $world_y;
   $open = [];
   $closed = [];
   $open = _append($open, ['pos' => $start, 'parent' => ['x' => (0 - 1), 'y' => (0 - 1)], 'g' => 0, 'h' => 0, 'f' => 0]);
@@ -99,7 +99,7 @@ $__start = _now();
 }
   $neighbours = get_neighbours($current['pos'], $x_limit, $y_limit);
   foreach ($neighbours as $np) {
-  if (contains($closed, $np)) {
+  if (mochi_contains($closed, $np)) {
   continue;
 }
   $g = $current['g'] + 1;
@@ -116,7 +116,7 @@ $__start = _now();
   if ($skip) {
   continue;
 }
-  $open = _append($open, ['pos' => $np, 'parent' => $current['pos'], $g => $g, $h => $h, $f => $f]);
+  $open = _append($open, ['pos' => $np, 'parent' => $current['pos'], 'g' => $g, 'h' => $h, 'f' => $f]);
 };
 };
   $path = [];
@@ -134,7 +134,7 @@ $__start = _now();
   return $rev;
 };
   function create_world($x_limit, $y_limit) {
-  global $world_x, $world_y, $start, $goal, $path;
+  global $goal, $path, $start, $world_x, $world_y;
   $world = [];
   $i = 0;
   while ($i < $x_limit) {
@@ -150,13 +150,13 @@ $__start = _now();
   return $world;
 };
   function mark_path(&$world, $path) {
-  global $world_x, $world_y, $start, $goal;
+  global $goal, $start, $world_x, $world_y;
   foreach ($path as $p) {
   $world[$p['x']][$p['y']] = 1;
 };
 };
   function print_world($world) {
-  global $world_x, $world_y, $start, $goal, $path;
+  global $goal, $path, $start, $world_x, $world_y;
   foreach ($world as $row) {
   echo rtrim(_str($row)), PHP_EOL;
 };

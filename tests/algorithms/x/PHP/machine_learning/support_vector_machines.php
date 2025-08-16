@@ -19,55 +19,20 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function dot($a, $b) {
-  global $xs, $ys, $base, $model;
+  global $base, $model, $xs, $ys;
   $s = 0.0;
   $i = 0;
   while ($i < count($a)) {
   $s = $s + $a[$i] * $b[$i];
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $s;
 };
   function new_svc($lr, $lambda, $epochs) {
-  global $xs, $ys, $base, $model;
+  global $base, $model, $xs, $ys;
   return ['weights' => [], 'bias' => 0.0, 'lr' => $lr, 'lambda' => $lambda, 'epochs' => $epochs];
 };
   function fit($model, $xs, $ys) {
@@ -77,7 +42,7 @@ $__start = _now();
   $i = 0;
   while ($i < $n_features) {
   $w = _append($w, 0.0);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $b = 0.0;
   $epoch = 0;
@@ -91,24 +56,24 @@ $__start = _now();
   $k = 0;
   while ($k < count($w)) {
   $w[$k] = $w[$k] + $model['lr'] * ($y * $x[$k] - 2.0 * $model['lambda'] * $w[$k]);
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $b = $b + $model['lr'] * $y;
 } else {
   $k = 0;
   while ($k < count($w)) {
   $w[$k] = $w[$k] - $model['lr'] * (2.0 * $model['lambda'] * $w[$k]);
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
-  $epoch = _iadd($epoch, 1);
+  $epoch = $epoch + 1;
 };
   return ['weights' => $w, 'bias' => $b, 'lr' => $model['lr'], 'lambda' => $model['lambda'], 'epochs' => $model['epochs']];
 };
   function predict($model, $x) {
-  global $xs, $ys, $base;
+  global $base, $xs, $ys;
   $s = dot($model['weights'], $x) + $model['bias'];
   if ($s >= 0.0) {
   return 1;

@@ -35,66 +35,31 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function absf($x) {
-  global $train_data, $test_data, $parameter_vector;
+  global $parameter_vector, $test_data, $train_data;
   if ($x < 0.0) {
   return -$x;
 }
   return $x;
 };
   function hypothesis_value($input, $params) {
-  global $train_data, $test_data, $parameter_vector;
+  global $parameter_vector, $test_data, $train_data;
   $value = $params[0];
   $i = 0;
   while ($i < count($input)) {
-  $value = $value + $input[$i] * $params[_iadd($i, 1)];
-  $i = _iadd($i, 1);
+  $value = $value + $input[$i] * $params[$i + 1];
+  $i = $i + 1;
 };
   return $value;
 };
   function calc_error($dp, $params) {
-  global $train_data, $test_data, $parameter_vector;
+  global $parameter_vector, $test_data, $train_data;
   return hypothesis_value($dp['x'], $params) - $dp['y'];
 };
   function summation_of_cost_derivative($index, $params, $data) {
-  global $train_data, $test_data, $parameter_vector;
+  global $parameter_vector, $test_data, $train_data;
   $sum = 0.0;
   $i = 0;
   while ($i < count($data)) {
@@ -105,16 +70,16 @@ $__start = _now();
 } else {
   $sum = $sum + $e * $dp['x'][$index];
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $sum;
 };
   function get_cost_derivative($index, $params, $data) {
-  global $train_data, $test_data, $parameter_vector;
+  global $parameter_vector, $test_data, $train_data;
   return summation_of_cost_derivative($index, $params, $data) / (floatval(count($data)));
 };
   function allclose($a, $b, $atol, $rtol) {
-  global $train_data, $test_data, $parameter_vector;
+  global $parameter_vector, $test_data, $train_data;
   $i = 0;
   while ($i < count($a)) {
   $diff = absf($a[$i] - $b[$i]);
@@ -122,25 +87,25 @@ $__start = _now();
   if ($diff > $limit) {
   return false;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return true;
 };
   function run_gradient_descent($train_data, $initial_params) {
-  global $test_data, $parameter_vector;
+  global $parameter_vector, $test_data;
   $learning_rate = 0.009;
   $absolute_error_limit = 0.000002;
   $relative_error_limit = 0.0;
   $j = 0;
   $params = $initial_params;
   while (true) {
-  $j = _iadd($j, 1);
+  $j = $j + 1;
   $temp = [];
   $i = 0;
   while ($i < count($params)) {
-  $deriv = get_cost_derivative(_isub($i, 1), $params, $train_data);
+  $deriv = get_cost_derivative($i - 1, $params, $train_data);
   $temp = _append($temp, $params[$i] - $learning_rate * $deriv);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   if (allclose($params, $temp, $absolute_error_limit, $relative_error_limit)) {
   echo rtrim('Number of iterations:' . _str($j)), PHP_EOL;
@@ -151,13 +116,13 @@ $__start = _now();
   return $params;
 };
   function test_gradient_descent($test_data, $params) {
-  global $train_data, $parameter_vector;
+  global $parameter_vector, $train_data;
   $i = 0;
   while ($i < count($test_data)) {
   $dp = $test_data[$i];
   echo rtrim('Actual output value:' . _str($dp['y'])), PHP_EOL;
   echo rtrim('Hypothesis output:' . _str(hypothesis_value($dp['x'], $params))), PHP_EOL;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
 };
   $train_data = [['x' => [5.0, 2.0, 3.0], 'y' => 15.0], ['x' => [6.0, 5.0, 9.0], 'y' => 25.0], ['x' => [11.0, 12.0, 13.0], 'y' => 41.0], ['x' => [1.0, 1.0, 1.0], 'y' => 8.0], ['x' => [11.0, 12.0, 13.0], 'y' => 41.0]];

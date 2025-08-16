@@ -26,41 +26,6 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -74,8 +39,8 @@ $__start = _now();
   if ($exponent == 0) {
   return 1.0;
 }
-  if (_imod($exponent, 2) == 1) {
-  return binary_exp_recursive($base, _isub($exponent, 1)) * $base;
+  if ($exponent % 2 == 1) {
+  return binary_exp_recursive($base, $exponent - 1) * $base;
 }
   $half = binary_exp_recursive($base, _intdiv($exponent, 2));
   return $half * $half;
@@ -88,7 +53,7 @@ $__start = _now();
   $b = $base;
   $e = $exponent;
   while ($e > 0) {
-  if (_imod($e, 2) == 1) {
+  if ($e % 2 == 1) {
   $result = $result * $b;
 }
   $b = $b * $b;
@@ -104,13 +69,13 @@ $__start = _now();
   _panic('modulus must be positive');
 }
   if ($exponent == 0) {
-  return _imod(1, $modulus);
+  return 1 % $modulus;
 }
-  if (_imod($exponent, 2) == 1) {
-  return _imod((_imul(binary_exp_mod_recursive($base, _isub($exponent, 1), $modulus), (_imod($base, $modulus)))), $modulus);
+  if ($exponent % 2 == 1) {
+  return fmod((binary_exp_mod_recursive($base, $exponent - 1, $modulus) * ($base % $modulus)), $modulus);
 }
   $r = binary_exp_mod_recursive($base, _intdiv($exponent, 2), $modulus);
-  return _imod((_imul($r, $r)), $modulus);
+  return ($r * $r) % $modulus;
 };
   function binary_exp_mod_iterative($base, $exponent, $modulus) {
   if ($exponent < 0) {
@@ -119,14 +84,14 @@ $__start = _now();
   if ($modulus <= 0) {
   _panic('modulus must be positive');
 }
-  $result = _imod(1, $modulus);
-  $b = _imod($base, $modulus);
+  $result = 1 % $modulus;
+  $b = $base % $modulus;
   $e = $exponent;
   while ($e > 0) {
-  if (_imod($e, 2) == 1) {
-  $result = _imod((_imul($result, $b)), $modulus);
+  if ($e % 2 == 1) {
+  $result = ($result * $b) % $modulus;
 }
-  $b = _imod((_imul($b, $b)), $modulus);
+  $b = ($b * $b) % $modulus;
   $e = _intdiv($e, 2);
 };
   return $result;

@@ -46,41 +46,6 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -91,8 +56,8 @@ $__start = _now();
   $result = 1;
   $i = 0;
   while ($i < $exp) {
-  $result = _imul($result, $base);
-  $i = _iadd($i, 1);
+  $result = $result * $base;
+  $i = $i + 1;
 };
   return $result;
 };
@@ -102,17 +67,17 @@ $__start = _now();
 }
   $num = $n;
   $pf = [];
-  while (_imod($num, 2) == 0) {
+  while ($num % 2 == 0) {
   $pf = _append($pf, 2);
   $num = _intdiv($num, 2);
 };
   $i = 3;
-  while (_imul($i, $i) <= $num) {
-  while (_imod($num, $i) == 0) {
+  while ($i * $i <= $num) {
+  while ($num % $i == 0) {
   $pf = _append($pf, $i);
   $num = _intdiv($num, $i);
 };
-  $i = _iadd($i, 2);
+  $i = $i + 2;
 };
   if ($num > 2) {
   $pf = _append($pf, $num);
@@ -126,23 +91,23 @@ $__start = _now();
   $num = $n;
   $div = 1;
   $temp = 1;
-  while (_imod($num, 2) == 0) {
-  $temp = _iadd($temp, 1);
+  while ($num % 2 == 0) {
+  $temp = $temp + 1;
   $num = _intdiv($num, 2);
 };
-  $div = _imul($div, $temp);
+  $div = $div * $temp;
   $i = 3;
-  while (_imul($i, $i) <= $num) {
+  while ($i * $i <= $num) {
   $temp = 1;
-  while (_imod($num, $i) == 0) {
-  $temp = _iadd($temp, 1);
+  while ($num % $i == 0) {
+  $temp = $temp + 1;
   $num = _intdiv($num, $i);
 };
-  $div = _imul($div, $temp);
-  $i = _iadd($i, 2);
+  $div = $div * $temp;
+  $i = $i + 2;
 };
   if ($num > 1) {
-  $div = _imul($div, 2);
+  $div = $div * 2;
 }
   return $div;
 };
@@ -153,34 +118,34 @@ $__start = _now();
   $num = $n;
   $s = 1;
   $temp = 1;
-  while (_imod($num, 2) == 0) {
-  $temp = _iadd($temp, 1);
+  while ($num % 2 == 0) {
+  $temp = $temp + 1;
   $num = _intdiv($num, 2);
 };
   if ($temp > 1) {
-  $s = _imul($s, (_intdiv((_isub(pow_int(2, $temp), 1)), (_isub(2, 1)))));
+  $s = $s * ((pow_int(2, $temp) - 1) / (2 - 1));
 }
   $i = 3;
-  while (_imul($i, $i) <= $num) {
+  while ($i * $i <= $num) {
   $temp = 1;
-  while (_imod($num, $i) == 0) {
-  $temp = _iadd($temp, 1);
+  while ($num % $i == 0) {
+  $temp = $temp + 1;
   $num = _intdiv($num, $i);
 };
   if ($temp > 1) {
-  $s = _imul($s, (_intdiv((_isub(pow_int($i, $temp), 1)), (_isub($i, 1)))));
+  $s = $s * ((pow_int($i, $temp) - 1) / ($i - 1));
 }
-  $i = _iadd($i, 2);
+  $i = $i + 2;
 };
   return $s;
 };
-  function contains($arr, $x) {
+  function mochi_contains($arr, $x) {
   $idx = 0;
   while ($idx < count($arr)) {
   if ($arr[$idx] == $x) {
   return true;
 }
-  $idx = _iadd($idx, 1);
+  $idx = $idx + 1;
 };
   return false;
 };
@@ -189,10 +154,10 @@ $__start = _now();
   $idx = 0;
   while ($idx < count($arr)) {
   $v = $arr[$idx];
-  if (!contains($result, $v)) {
+  if (!mochi_contains($result, $v)) {
   $result = _append($result, $v);
 }
-  $idx = _iadd($idx, 1);
+  $idx = $idx + 1;
 };
   return $result;
 };
@@ -205,8 +170,8 @@ $__start = _now();
   $idx = 0;
   while ($idx < count($factors)) {
   $x = $factors[$idx];
-  $s = _imul((_intdiv($s, $x)), (_isub($x, 1)));
-  $idx = _iadd($idx, 1);
+  $s = (_intdiv($s, $x)) * ($x - 1);
+  $idx = $idx + 1;
 };
   return $s;
 };

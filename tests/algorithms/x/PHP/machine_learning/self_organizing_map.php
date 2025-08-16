@@ -31,49 +31,14 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function get_winner($weights, $sample) {
   $d0 = 0.0;
   $d1 = 0.0;
   for ($i = 0; $i < count($sample); $i++) {
-  $diff0 = _isub($sample[$i], $weights[0][$i]);
-  $diff1 = _isub($sample[$i], $weights[1][$i]);
+  $diff0 = $sample[$i] - $weights[0][$i];
+  $diff1 = $sample[$i] - $weights[1][$i];
   $d0 = $d0 + $diff0 * $diff0;
   $d1 = $d1 + $diff1 * $diff1;
   return ($d0 > $d1 ? 0 : 1);
@@ -82,7 +47,7 @@ $__start = _now();
 };
   function update($weights, $sample, $j, $alpha) {
   for ($i = 0; $i < count($weights); $i++) {
-  $weights[$j][$i] = _iadd($weights[$j][$i], _imul($alpha, (_isub($sample[$i], $weights[$j][$i]))));
+  $weights[$j][$i] = $weights[$j][$i] + $alpha * ($sample[$i] - $weights[$j][$i]);
 };
   return $weights;
 };
@@ -91,10 +56,10 @@ $__start = _now();
   $i = 0;
   while ($i < count($xs)) {
   $s = $s . _str($xs[$i]);
-  if ($i < _isub(count($xs), 1)) {
+  if ($i < count($xs) - 1) {
   $s = $s . ', ';
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $s = $s . ']';
   return $s;
@@ -104,10 +69,10 @@ $__start = _now();
   $i = 0;
   while ($i < count($m)) {
   $s = $s . list_to_string($m[$i]);
-  if ($i < _isub(count($m), 1)) {
+  if ($i < count($m) - 1) {
   $s = $s . ', ';
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $s = $s . ']';
   return $s;

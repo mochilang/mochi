@@ -19,41 +19,6 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -77,7 +42,7 @@ $__start = _now();
   if (abs_val(floatval($i)) < abs_val(floatval($j))) {
   $j = $i;
 }
-  $idx = _iadd($idx, 1);
+  $idx = $idx + 1;
 };
   return $j;
 };
@@ -92,7 +57,7 @@ $__start = _now();
   if (abs_val(floatval($i)) > abs_val(floatval($j))) {
   $j = $i;
 }
-  $idx = _iadd($idx, 1);
+  $idx = $idx + 1;
 };
   return $j;
 };
@@ -104,23 +69,23 @@ $__start = _now();
   $i = 0;
   while ($i < count($x)) {
   $arr = _append($arr, $x[$i]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $n = count($arr);
   $a = 0;
   while ($a < $n) {
   $b = 0;
-  while ($b < _isub(_isub($n, $a), 1)) {
-  if (abs_val(floatval($arr[$b])) > abs_val(floatval($arr[_iadd($b, 1)]))) {
+  while ($b < $n - $a - 1) {
+  if (abs_val(floatval($arr[$b])) > abs_val(floatval($arr[$b + 1]))) {
   $temp = $arr[$b];
-  $arr[$b] = $arr[_iadd($b, 1)];
-  $arr[_iadd($b, 1)] = $temp;
+  $arr[$b] = $arr[$b + 1];
+  $arr[$b + 1] = $temp;
 }
-  $b = _iadd($b, 1);
+  $b = $b + 1;
 };
-  $a = _iadd($a, 1);
+  $a = $a + 1;
 };
-  return $arr[_isub($n, 1)];
+  return $arr[$n - 1];
 };
   function test_abs_val() {
   if (abs_val(0.0) != 0.0) {

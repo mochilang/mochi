@@ -19,41 +19,6 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function data_handling($dataset) {
@@ -67,7 +32,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($target)) {
   $predictions = _append($predictions, 0.0);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $est = 0;
   while ($est < $n_estimators) {
@@ -75,13 +40,13 @@ $__start = _now();
   $j = 0;
   while ($j < count($target)) {
   $residuals = _append($residuals, $target[$j] - $predictions[$j]);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $sum_feat = 0.0;
   $j = 0;
   while ($j < count($features)) {
   $sum_feat = $sum_feat + $features[$j][0];
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $threshold = $sum_feat / (floatval(count($features)));
   $left_sum = 0.0;
@@ -92,12 +57,12 @@ $__start = _now();
   while ($j < count($features)) {
   if ($features[$j][0] <= $threshold) {
   $left_sum = $left_sum + $residuals[$j];
-  $left_count = _iadd($left_count, 1);
+  $left_count = $left_count + 1;
 } else {
   $right_sum = $right_sum + $residuals[$j];
-  $right_count = _iadd($right_count, 1);
+  $right_count = $right_count + 1;
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $left_value = 0.0;
   if ($left_count > 0) {
@@ -114,10 +79,10 @@ $__start = _now();
 } else {
   $predictions[$j] = $predictions[$j] + $learning_rate * $right_value;
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
-  $trees = _append($trees, [$threshold => $threshold, $left_value => $left_value, $right_value => $right_value]);
-  $est = _iadd($est, 1);
+  $trees = _append($trees, ['threshold' => $threshold, 'left_value' => $left_value, 'right_value' => $right_value]);
+  $est = $est + 1;
 };
   $preds = [];
   $t = 0;
@@ -130,10 +95,10 @@ $__start = _now();
 } else {
   $pred = $pred + $learning_rate * $trees[$k]['right_value'];
 }
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $preds = _append($preds, $pred);
-  $t = _iadd($t, 1);
+  $t = $t + 1;
 };
   return $preds;
 };
@@ -146,7 +111,7 @@ $__start = _now();
   $diff = -$diff;
 }
   $sum = $sum + $diff;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $sum / (floatval(count($y_true)));
 };
@@ -156,7 +121,7 @@ $__start = _now();
   while ($i < count($y_true)) {
   $diff = $y_true[$i] - $y_pred[$i];
   $sum = $sum + $diff * $diff;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $sum / (floatval(count($y_true)));
 };
