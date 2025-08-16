@@ -1180,7 +1180,7 @@ func (s *StrBuiltin) emit(w io.Writer) {
 
 func (s *StrBuiltin) emitPrint(w io.Writer) { s.emit(w) }
 
-// LenBuiltin represents a call to len() builtin for strings.
+// LenBuiltin represents a call to the len() builtin.
 type LenBuiltin struct {
 	Arg Expr
 	Typ string
@@ -1200,6 +1200,8 @@ func (l *LenBuiltin) emit(w io.Writer) {
 		fn = "String.length"
 	case "list", "map":
 		fn = "List.length"
+	case "array":
+		fn = "Array.length"
 	default:
 		if strings.HasPrefix(l.Typ, "map-") {
 			fn = "List.length"
