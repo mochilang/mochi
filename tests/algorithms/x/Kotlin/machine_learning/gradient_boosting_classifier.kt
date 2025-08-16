@@ -1,29 +1,9 @@
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
-var _nowSeed = 0L
-var _nowSeeded = false
-fun _now(): Long {
-    if (!_nowSeeded) {
-        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
-            _nowSeed = it
-            _nowSeeded = true
-        }
-    }
-    return if (_nowSeeded) {
-        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        kotlin.math.abs(_nowSeed)
-    } else {
-        kotlin.math.abs(System.nanoTime())
-    }
-}
-
-fun toJson(v: Any?): String = when (v) {
-    null -> "null"
-    is String -> "\"" + v.replace("\"", "\\\"") + "\""
-    is Boolean, is Number -> v.toString()
-    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
-    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
-    else -> toJson(v.toString())
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
 }
 
 data class Stump(var feature: Int = 0, var threshold: Double = 0.0, var left: Double = 0.0, var right: Double = 0.0)
@@ -37,7 +17,7 @@ fun exp_approx(x: Double): Double {
     var sum: Double = 1.0
     var i: Int = (1).toInt()
     while (i < 10) {
-        term = (term * x) / ((i.toDouble()))
+        term = (term * x) / (i.toDouble())
         sum = sum + term
         i = i + 1
     }
@@ -79,7 +59,7 @@ fun predict_raw(models: MutableList<Stump>, features: MutableList<MutableList<Do
         var stump: Stump = models[m]!!
         i = 0
         while (i < n) {
-            var value: Double = (((features[i]!!) as MutableList<Double>))[stump.feature]!!
+            var value: Double = ((features[i]!!) as MutableList<Double>)[stump.feature]!!
             if (value <= stump.threshold) {
                 _listSet(preds, i, preds[i]!! + (learning_rate * stump.left))
             } else {
@@ -115,14 +95,14 @@ fun train_stump(features: MutableList<MutableList<Double>>, residuals: MutableLi
     while (j < n_features) {
         var t_index: Int = (0).toInt()
         while (t_index < n_samples) {
-            var t: Double = (((features[t_index]!!) as MutableList<Double>))[j]!!
+            var t: Double = ((features[t_index]!!) as MutableList<Double>)[j]!!
             var sum_left: Double = 0.0
             var count_left: Int = (0).toInt()
             var sum_right: Double = 0.0
             var count_right: Int = (0).toInt()
             var i: Int = (0).toInt()
             while (i < n_samples) {
-                if ((((features[i]!!) as MutableList<Double>))[j]!! <= t) {
+                if (((features[i]!!) as MutableList<Double>)[j]!! <= t) {
                     sum_left = sum_left + residuals[i]!!
                     count_left = count_left + 1
                 } else {
@@ -133,16 +113,16 @@ fun train_stump(features: MutableList<MutableList<Double>>, residuals: MutableLi
             }
             var left_val: Double = 0.0
             if (count_left != 0) {
-                left_val = sum_left / ((count_left.toDouble()))
+                left_val = sum_left / (count_left.toDouble())
             }
             var right_val: Double = 0.0
             if (count_right != 0) {
-                right_val = sum_right / ((count_right.toDouble()))
+                right_val = sum_right / (count_right.toDouble())
             }
             var error: Double = 0.0
             i = 0
             while (i < n_samples) {
-                var pred: Double = (if ((((features[i]!!) as MutableList<Double>))[j]!! <= t) left_val else right_val.toDouble())
+                var pred: Double = if (((features[i]!!) as MutableList<Double>)[j]!! <= t) left_val else right_val.toDouble()
                 var diff: Double = residuals[i]!! - pred
                 error = error + (diff * diff)
                 i = i + 1
@@ -190,21 +170,9 @@ fun accuracy(preds: MutableList<Double>, target: MutableList<Double>): Double {
         }
         i = i + 1
     }
-    return ((correct.toDouble())) / ((n.toDouble()))
+    return (correct.toDouble()) / (n.toDouble())
 }
 
 fun main() {
-    run {
-        System.gc()
-        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _start = _now()
-        println("Accuracy: " + acc.toString())
-        System.gc()
-        val _end = _now()
-        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _durationUs = (_end - _start) / 1000
-        val _memDiff = kotlin.math.abs(_endMem - _startMem)
-        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
-        println(toJson(_res))
-    }
+    println("Accuracy: " + _numToStr(acc))
 }
