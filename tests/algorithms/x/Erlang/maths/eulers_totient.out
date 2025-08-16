@@ -1,7 +1,3 @@
-/workspace/mochi/tests/algorithms/x/Erlang/maths/eulers_totient.erl:129:27: Warning: variable 'Primes_3' exported from 'case' (line 97, column 17)
-%  129| {I_3, Is_prime_3, J_2, N, Primes_3, Totients_5} = Fun_2(I_3, Is_prime_2, J, N, Primes_3, Totients_2),
-%     |                           ^
-
 "1 has 0 relative primes."
 "2 has 1 relative primes."
 "3 has 2 relative primes."
