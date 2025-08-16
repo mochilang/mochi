@@ -43,24 +43,46 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-  position: real;
-  func: FuncType1;
-  ds: RealArray;
-  real_: real;
-  order: integer;
   x: Dual;
+  position: real;
+  real_: real;
+  func: FuncType1;
   rank: integer;
-  b: real;
+  n: integer;
+  ds: RealArray;
+  order: integer;
   a: Dual;
-function makeDual(real: real; duals: RealArray): Dual; forward;
-function make_dual(real_: real; rank: integer): Dual; forward;
-function dual_from_list(real_: real; ds: RealArray): Dual; forward;
+  b: real;
+function makeDual(real_: real; duals: RealArray): Dual; forward;
+function make_dual(make_dual_real_: real; rank: integer): Dual; forward;
+function dual_from_list(make_dual_real_: real; ds: RealArray): Dual; forward;
 function dual_add(a: Dual; b: Dual): Dual; forward;
 function dual_add_real(a: Dual; b: real): Dual; forward;
 function dual_mul(a: Dual; b: Dual): Dual; forward;
@@ -70,12 +92,12 @@ function factorial(n: integer): real; forward;
 function differentiate(func: FuncType1; position: real; order: integer): real; forward;
 procedure test_differentiate(); forward;
 procedure main(); forward;
-function makeDual(real: real; duals: RealArray): Dual;
+function makeDual(real_: real; duals: RealArray): Dual;
 begin
-  Result.real := real;
+  Result.real := real_;
   Result.duals := duals;
 end;
-function make_dual(real_: real; rank: integer): Dual;
+function make_dual(make_dual_real_: real; rank: integer): Dual;
 var
   make_dual_ds: array of real;
   make_dual_i: integer;
@@ -88,7 +110,7 @@ begin
 end;
   exit(makeDual(real_, make_dual_ds));
 end;
-function dual_from_list(real_: real; ds: RealArray): Dual;
+function dual_from_list(make_dual_real_: real; ds: RealArray): Dual;
 begin
   exit(makeDual(real_, ds));
 end;
@@ -267,11 +289,11 @@ end;
 begin
   exit(dual_mul(dual_pow(x, 2), dual_pow(x, 4)));
 end;
-  function f3(test_differentiate_y: Dual): Dual;
+  function f3(f3_test_differentiate_y: Dual): Dual;
 begin
   exit(dual_mul_real(dual_pow(dual_add_real(test_differentiate_y, 3), 6), 0.5));
 end;
-  function f4(test_differentiate_y: Dual): Dual;
+  function f4(f3_test_differentiate_y: Dual): Dual;
 begin
   exit(dual_pow(test_differentiate_y, 2));
 end;
@@ -293,7 +315,7 @@ procedure main();
 var
   main_res: real;
   main_y: Dual;
-  function f(main_y: Dual): Dual;
+  function f(f_main_y: Dual): Dual;
 begin
   exit(dual_mul(dual_pow(main_y, 2), dual_pow(main_y, 4)));
 end;

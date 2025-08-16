@@ -37,20 +37,42 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  rel_tol: real;
-  k: integer;
-  a: real;
-  num: integer;
-  b: real;
-  x: real;
-  n: integer;
   bits: integer;
   number: real;
+  num: integer;
+  k: integer;
+  b: real;
+  a: real;
+  n: integer;
+  x: real;
+  rel_tol: real;
 function pow2_int(n: integer): integer; forward;
 function pow2_float(n: integer): real; forward;
 function lshift(num: integer; k: integer): integer; forward;
@@ -81,6 +103,7 @@ function pow2_float(n: integer): real;
 var
   pow2_float_result_: real;
   pow2_float_i: integer;
+  pow2_float_i_8: integer;
   pow2_float_m: integer;
 begin
   pow2_float_result_ := 1;
@@ -91,11 +114,11 @@ begin
   pow2_float_i := pow2_float_i + 1;
 end;
 end else begin
-  pow2_float_i := 0;
+  pow2_float_i_8 := 0;
   pow2_float_m := 0 - n;
-  while pow2_float_i < pow2_float_m do begin
+  while pow2_float_i_8 < pow2_float_m do begin
   pow2_float_result_ := pow2_float_result_ / 2;
-  pow2_float_i := pow2_float_i + 1;
+  pow2_float_i_8 := pow2_float_i_8 + 1;
 end;
 end;
   exit(pow2_float_result_);
@@ -147,7 +170,7 @@ function float_to_bits(x: real): integer;
 var
   float_to_bits_num: real;
   float_to_bits_sign: integer;
-  float_to_bits_exp: integer;
+  float_to_bits_exp_: integer;
   float_to_bits_pow: real;
   float_to_bits_normalized: real;
   float_to_bits_frac: real;
@@ -160,12 +183,12 @@ begin
   float_to_bits_sign := 1;
   float_to_bits_num := -float_to_bits_num;
 end;
-  float_to_bits_exp := log2_floor(float_to_bits_num);
-  float_to_bits_pow := pow2_float(float_to_bits_exp);
+  float_to_bits_exp_ := log2_floor(float_to_bits_num);
+  float_to_bits_pow := pow2_float(float_to_bits_exp_);
   float_to_bits_normalized := float_to_bits_num / float_to_bits_pow;
   float_to_bits_frac := float_to_bits_normalized - 1;
   float_to_bits_mantissa := Trunc(float_to_bits_frac * pow2_float(23));
-  float_to_bits_exp_bits := float_to_bits_exp + 127;
+  float_to_bits_exp_bits := float_to_bits_exp_ + 127;
   exit((lshift(float_to_bits_sign, 31) + lshift(float_to_bits_exp_bits, 23)) + float_to_bits_mantissa);
 end;
 function bits_to_float(bits: integer): real;
@@ -173,7 +196,7 @@ var
   bits_to_float_sign_bit: integer;
   bits_to_float_sign: real;
   bits_to_float_exp_bits: integer;
-  bits_to_float_exp: integer;
+  bits_to_float_exp_: integer;
   bits_to_float_mantissa_bits: integer;
   bits_to_float_mantissa: real;
 begin
@@ -183,10 +206,10 @@ begin
   bits_to_float_sign := -1;
 end;
   bits_to_float_exp_bits := rshift(bits, 23) mod 256;
-  bits_to_float_exp := bits_to_float_exp_bits - 127;
+  bits_to_float_exp_ := bits_to_float_exp_bits - 127;
   bits_to_float_mantissa_bits := bits mod pow2_int(23);
   bits_to_float_mantissa := 1 + (Double(bits_to_float_mantissa_bits) / pow2_float(23));
-  exit((bits_to_float_sign * bits_to_float_mantissa) * pow2_float(bits_to_float_exp));
+  exit((bits_to_float_sign * bits_to_float_mantissa) * pow2_float(bits_to_float_exp_));
 end;
 function absf(x: real): real;
 begin

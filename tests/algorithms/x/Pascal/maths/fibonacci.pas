@@ -39,6 +39,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_int_to_str(xs: array of integer): string;
 var i: integer;
 begin
@@ -66,14 +88,14 @@ var
   bench_memdiff_0: int64;
   fib_cache_global: specialize TFPGMap<integer, integer>;
   fib_memo_cache: specialize TFPGMap<integer, integer>;
-  m: IntArrayArray;
-  a: IntArrayArray;
-  num: integer;
   n: integer;
   x: real;
-  i: integer;
   b: IntArrayArray;
+  num: integer;
   power: integer;
+  i: integer;
+  a: IntArrayArray;
+  m: IntArrayArray;
 function Map1(): specialize TFPGMap<integer, integer>; forward;
 function sqrt(x: real): real; forward;
 function powf(x: real; n: integer): real; forward;
@@ -93,9 +115,9 @@ function run_tests(): integer; forward;
 function Map1(): specialize TFPGMap<integer, integer>;
 begin
   Result := specialize TFPGMap<integer, integer>.Create();
-  Result.AddOrSetData(0, Variant(0));
-  Result.AddOrSetData(1, Variant(1));
-  Result.AddOrSetData(2, Variant(1));
+  Result.AddOrSetData(0, 0);
+  Result.AddOrSetData(1, 1);
+  Result.AddOrSetData(2, 1);
 end;
 function sqrt(x: real): real;
 var
@@ -224,19 +246,19 @@ end;
 end;
 function fib_memoization(n: integer): IntArray;
 var
-  fib_memoization_out: array of integer;
+  fib_memoization_out_: array of integer;
   fib_memoization_i: integer;
 begin
   if n < 0 then begin
   panic('n is negative');
 end;
-  fib_memoization_out := [];
+  fib_memoization_out_ := [];
   fib_memoization_i := 0;
   while fib_memoization_i <= n do begin
-  fib_memoization_out := concat(fib_memoization_out, IntArray([fib_memoization_term(fib_memoization_i)]));
+  fib_memoization_out_ := concat(fib_memoization_out_, IntArray([fib_memoization_term(fib_memoization_i)]));
   fib_memoization_i := fib_memoization_i + 1;
 end;
-  exit(fib_memoization_out);
+  exit(fib_memoization_out_);
 end;
 function fib_binet(n: integer): IntArray;
 var
