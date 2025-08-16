@@ -1604,6 +1604,14 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	if id, ok := target.(*IdentExpr); ok {
 		t := inferType(id)
 		name := fsIdent(id.Name)
+		// handle dictionary updates
+		if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") ||
+			((t == "" || t == "obj") && len(indices) > 0 && inferType(indices[0]) != "int") {
+			writeIndent(w)
+			expr := buildMapUpdate(&IdentExpr{Name: name}, indices, s.Value)
+			expr.emit(w)
+			return
+		}
 		if strings.HasSuffix(t, " array") && len(indices) == 1 {
 			usesArraySet = true
 			writeIndent(w)
@@ -4247,9 +4255,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if id, ok := base.(*IdentExpr); ok {
 			t := inferType(id)
-			// Map assignment: use helper to update dictionary
-			// Avoid treating arrays of maps as maps.
-			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && !strings.HasSuffix(t, " array") && len(indices) > 0 {
+			// Map assignment: use helper to update dictionary even if type is unknown
+			if (strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") || ((t == "" || t == "obj") && len(indices) > 0 && inferType(indices[0]) != "int")) && !strings.HasSuffix(t, " array") {
 				expr := buildMapUpdate(&IdentExpr{Name: id.Name}, indices, val)
 				return &AssignStmt{Name: fsIdent(id.Name), Expr: expr}, nil
 			}
@@ -5535,10 +5542,14 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 	key := keys[0]
 	keyT := mapKeyType(inferType(m))
-	if keyT == "string" {
+	if keyT == "string" || keyT == "obj" {
 		key = &CallExpr{Func: "string", Args: []Expr{key}}
 	} else if keyT == "int" && inferType(key) == "int64" {
 		key = &CastExpr{Expr: key, Type: "int"}
+	}
+	dictExpr := m
+	if t := inferType(m); t == "obj" || t == "" {
+		dictExpr = &CastExpr{Expr: m, Type: "System.Collections.Generic.IDictionary<string, obj>"}
 	}
 	if len(keys) == 1 {
 		mapVal := mapValueType(inferType(m))
@@ -5547,14 +5558,14 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 			v = &CallExpr{Func: "box", Args: []Expr{val}}
 		}
 		usesDictAdd = true
-		return &CallExpr{Func: "_dictAdd", Args: []Expr{m, key, v}}
+		return &CallExpr{Func: "_dictAdd", Args: []Expr{dictExpr, key, v}}
 	}
 	inner := buildMapUpdate(&IndexExpr{Target: m, Index: key}, keys[1:], val)
 	if mapValueType(inferType(m)) == "obj" {
 		inner = &CallExpr{Func: "box", Args: []Expr{inner}}
 	}
 	usesDictAdd = true
-	return &CallExpr{Func: "_dictAdd", Args: []Expr{m, key, inner}}
+	return &CallExpr{Func: "_dictAdd", Args: []Expr{dictExpr, key, inner}}
 }
 
 func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {

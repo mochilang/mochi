@@ -1,8 +1,62 @@
-error[T005]: parameter `name` is missing a type
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:15:1
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
 
- 15 | fun make_node(name, count, parent) {
-    | ^
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(78,31): error FS0001: The type 'obj' is not compatible with the type 'seq<string>'
 
-help:
-  Add a type like `x: int` to this parameter.
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(80,201): error FS0039: The value or constructor '_str' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(109,28): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(109,147): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(133,140): error FS0039: The value or constructor '_str' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(135,115): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(132,17): warning FS0020: This expression should have type 'unit', but has type 'IDictionary<string,obj>'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(142,17): error FS0001: This expression was expected to have type
+    unit    
+but here has type
+    IDictionary<'a,'b>    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(147,51): error FS0039: The type 'map' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(164,47): error FS0039: The type 'map' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(198,18): error FS0001: Type mismatch. Expecting a
+    obj array    
+but given a
+    IDictionary<string,obj> []    
+The type 'obj' does not match the type 'IDictionary<string,obj>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(213,18): error FS0693: The type 'obj' is not a type whose values can be enumerated with this syntax, i.e. is not compatible with either seq<_>, IEnumerable<_> or IEnumerable and does not have a GetEnumerator method
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(215,35): error FS0033: The type 'Microsoft.FSharp.Core.array<_>' expects 1 type argument(s) but is given 0
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(220,28): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(220,156): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(232,99): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/frequent_pattern_growth.fs(238,34): error FS0001: The type 'obj' does not support a conversion to the type 'int'

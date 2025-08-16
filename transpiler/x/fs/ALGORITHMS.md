@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
 Completed programs: 924/1077
-Last updated: 2025-08-15 11:16 +0700
+Last updated: 2025-08-16 11:48 +0700
 
 Checklist:
 
@@ -502,14 +502,14 @@ Checklist:
 | 493 | linear_algebra/src/schur_complement | ✓ | 571.223ms | 37.0 KB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 571.223ms | 34.1 KB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 571.223ms | 37.0 KB |
-| 496 | linear_programming/simplex | ✓ | 571.223ms | 64.8 KB |
+| 496 | linear_programming/simplex | ✓ | 571.223ms | 60.7 KB |
 | 497 | machine_learning/apriori_algorithm | ✓ | 571.223ms | 56.6 KB |
 | 498 | machine_learning/astar | ✓ | 571.223ms | 59.0 KB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 571.223ms | 36.7 KB |
 | 500 | machine_learning/data_transformations | ✓ | 571.223ms | 61.5 KB |
-| 501 | machine_learning/decision_tree | ✓ | 571.223ms | 62.3 KB |
+| 501 | machine_learning/decision_tree | ✓ | 571.223ms | 71.0 KB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 571.223ms | 36.0 KB |
-| 503 | machine_learning/forecasting/run | ✓ | 571.223ms | 39.1 KB |
+| 503 | machine_learning/forecasting/run | ✓ | 571.223ms | 39.8 KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 571.223ms | 37.2 KB |
 | 506 | machine_learning/gradient_descent | ✓ | 571.223ms | 59.9 KB |
