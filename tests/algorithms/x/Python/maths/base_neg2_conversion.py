@@ -48,62 +48,23 @@ else:
     _bench_mem_start = 0
 _bench_start = _now()
 try:
-    MAX = 4294967296
-    HALF = 2147483648
-    def to_unsigned(n):
-        if n < 0:
-            return MAX + n
-        return n
-    def from_unsigned(n):
-        if n >= HALF:
-            return n - MAX
-        return n
-    def bit_and(a, b):
-        x = a
-        y = b
-        res = 0
-        bit = 1
-        i = 0
-        while i < 32:
-            if (x % 2 == 1) and (y % 2 == 1):
-                res = res + bit
-            x = x // 2
-            y = y // 2
-            bit = bit * 2
-            i = i + 1
-        return res
-    def bit_xor(a, b):
-        x = a
-        y = b
-        res = 0
-        bit = 1
-        i = 0
-        while i < 32:
-            abit = x % 2
-            bbit = y % 2
-            if (abit + bbit) % 2 == 1:
-                res = res + bit
-            x = x // 2
-            y = y // 2
-            bit = bit * 2
-            i = i + 1
-        return res
-    def lshift1(num):
-        return (num * 2) % MAX
-    def add(a, b):
-        first = to_unsigned(a)
-        second = to_unsigned(b)
-        while second != 0:
-            carry = bit_and(first, second)
-            first = bit_xor(first, second)
-            second = lshift1(carry)
-        result = from_unsigned(first)
-        return result
-    print(_str(add(3, 5)))
-    print(_str(add(13, 5)))
-    print(_str(add(-7, 2)))
-    print(_str(add(0, -7)))
-    print(_str(add(-321, 0)))
+    def decimal_to_negative_base_2(num):
+        if num == 0:
+            return 0
+        n = num
+        ans = ""
+        while n != 0:
+            rem = n % (-2)
+            n = n // (-2)
+            if rem < 0:
+                rem = rem + 2
+                n = n + 1
+            ans = _str(rem) + ans
+        return int(ans)
+    print(decimal_to_negative_base_2(0))
+    print(decimal_to_negative_base_2(-19))
+    print(decimal_to_negative_base_2(4))
+    print(decimal_to_negative_base_2(7))
 finally:
     _bench_end = _now()
     if resource:
