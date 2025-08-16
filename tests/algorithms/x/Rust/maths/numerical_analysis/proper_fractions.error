@@ -1,0 +1,186 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:52:2
+   |
+52 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:43:11
+   |
+43 |     while (y != 0) {
+   |           ^      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+43 -     while (y != 0) {
+43 +     while y != 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:44:22
+   |
+44 |         let t: i64 = (x % y);
+   |                      ^     ^
+   |
+help: remove these parentheses
+   |
+44 -         let t: i64 = (x % y);
+44 +         let t: i64 = x % y;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:48:8
+   |
+48 |     if (x < 0) {
+   |        ^     ^
+   |
+help: remove these parentheses
+   |
+48 -     if (x < 0) {
+48 +     if x < 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:54:8
+   |
+54 |     if (den < 0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+54 -     if (den < 0) {
+54 +     if den < 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:59:11
+   |
+59 |     while (n < den) {
+   |           ^       ^
+   |
+help: remove these parentheses
+   |
+59 -     while (n < den) {
+59 +     while n < den {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:60:12
+   |
+60 |         if (gcd(n, den) == 1) {
+   |            ^                ^
+   |
+help: remove these parentheses
+   |
+60 -         if (gcd(n, den) == 1) {
+60 +         if gcd(n, den) == 1 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:63:13
+   |
+63 |         n = (n + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+63 -         n = (n + 1);
+63 +         n = n + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:69:8
+   |
+69 |     if (a != vec![String::from("1/10").clone(), String::from("3/10").clone(), String::from("7/10").clone(), String::from("9/10").clone()]) {
+   |        ^                                                                                                                                 ^
+   |
+help: remove these parentheses
+   |
+69 -     if (a != vec![String::from("1/10").clone(), String::from("3/10").clone(), String::from("7/10").clone(), String::from("9/10").clone()]) {
+69 +     if a != vec![String::from("1/10").clone(), String::from("3/10").clone(), String::from("7/10").clone(), String::from("9/10").clone()] {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:73:8
+   |
+73 |     if (b != vec![String::from("1/5").clone(), String::from("2/5").clone(), String::from("3/5").clone(), String::from("4/5").clone()]) {
+   |        ^                                                                                                                             ^
+   |
+help: remove these parentheses
+   |
+73 -     if (b != vec![String::from("1/5").clone(), String::from("2/5").clone(), String::from("3/5").clone(), String::from("4/5").clone()]) {
+73 +     if b != vec![String::from("1/5").clone(), String::from("2/5").clone(), String::from("3/5").clone(), String::from("4/5").clone()] {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:77:8
+   |
+77 |     if (c != vec![]) {
+   |        ^           ^
+   |
+help: remove these parentheses
+   |
+77 -     if (c != vec![]) {
+77 +     if c != vec![] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:89:28
+   |
+89 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+89 -     let duration_us: i64 = ((_end - _start) / 1000);
+89 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0283]: type annotations needed
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:77:11
+   |
+77 |     if (c != vec![]) {
+   |           ^^ cannot infer type for type parameter `U`
+   |
+   = note: cannot satisfy `String: PartialEq<_>`
+   = help: the following types implement trait `PartialEq<Rhs>`:
+             `String` implements `PartialEq<&str>`
+             `String` implements `PartialEq<ByteStr>`
+             `String` implements `PartialEq<ByteString>`
+             `String` implements `PartialEq<Cow<'_, str>>`
+             `String` implements `PartialEq<str>`
+             `String` implements `PartialEq`
+   = note: required for `Vec<String>` to implement `PartialEq<Vec<_>>`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:40:12
+   |
+40 |     fn gcd(mut a: i64, mut b: i64) -> i64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/proper_fractions.rs:40:24
+   |
+40 |     fn gcd(mut a: i64, mut b: i64) -> i64 {
+   |                        ----^
+   |                        |
+   |                        help: remove this `mut`
+
+error: aborting due to 1 previous error; 15 warnings emitted
+
+For more information about this error, try `rustc --explain E0283`.

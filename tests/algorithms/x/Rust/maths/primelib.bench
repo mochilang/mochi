@@ -1,0 +1,13 @@
+true
+[2, 3, 5, 7, 11, 13, 17, 19]
+[2, 3, 5, 7, 11, 13, 17, 19]
+[7, 41]
+41
+7
+40
+[5, 23]
+23
+
+thread 'main' panicked at /workspace/mochi/tests/algorithms/x/Rust/maths/primelib.rs:209:9:
+arguments must be prime and p1 < p2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

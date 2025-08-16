@@ -1,0 +1,218 @@
+error[E0434]: can't capture dynamic environment in a fn item
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:78:20
+   |
+78 |     println!("{}", bisection(&mut f, 1.0, 1000.0).to_string());
+   |                    ^^^^^^^^^
+   |
+   = help: use the `|| { ... }` closure form instead
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:46:2
+   |
+46 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:76:2
+   |
+76 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:79:2
+   |
+79 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:41:8
+   |
+41 |     if (x < 0.0) {
+   |        ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+41 -     if (x < 0.0) {
+41 +     if x < 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:50:8
+   |
+50 |     if (f(a) == 0.0) {
+   |        ^           ^
+   |
+help: remove these parentheses
+   |
+50 -     if (f(a) == 0.0) {
+50 +     if f(a) == 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:53:8
+   |
+53 |     if (f(b) == 0.0) {
+   |        ^           ^
+   |
+help: remove these parentheses
+   |
+53 -     if (f(b) == 0.0) {
+53 +     if f(b) == 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:56:8
+   |
+56 |     if ((f(a) * f(b)) > 0.0) {
+   |        ^                   ^
+   |
+help: remove these parentheses
+   |
+56 -     if ((f(a) * f(b)) > 0.0) {
+56 +     if (f(a) * f(b)) > 0.0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:59:24
+   |
+59 |     let mut mid: f64 = (start + ((end - start) / 2.0));
+   |                        ^                             ^
+   |
+help: remove these parentheses
+   |
+59 -     let mut mid: f64 = (start + ((end - start) / 2.0));
+59 +     let mut mid: f64 = start + ((end - start) / 2.0);
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:60:11
+   |
+60 |     while (abs_float((start - mid)) > 0.0000001) {
+   |           ^                                    ^
+   |
+help: remove these parentheses
+   |
+60 -     while (abs_float((start - mid)) > 0.0000001) {
+60 +     while abs_float((start - mid)) > 0.0000001 {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:60:22
+   |
+60 |     while (abs_float((start - mid)) > 0.0000001) {
+   |                      ^           ^
+   |
+help: remove these parentheses
+   |
+60 -     while (abs_float((start - mid)) > 0.0000001) {
+60 +     while (abs_float(start - mid) > 0.0000001) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:62:12
+   |
+62 |         if (fmid == 0.0) {
+   |            ^           ^
+   |
+help: remove these parentheses
+   |
+62 -         if (fmid == 0.0) {
+62 +         if fmid == 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:65:12
+   |
+65 |         if ((fmid * f(start)) < 0.0) {
+   |            ^                       ^
+   |
+help: remove these parentheses
+   |
+65 -         if ((fmid * f(start)) < 0.0) {
+65 +         if (fmid * f(start)) < 0.0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:70:15
+   |
+70 |         mid = (start + ((end - start) / 2.0));
+   |               ^                             ^
+   |
+help: remove these parentheses
+   |
+70 -         mid = (start + ((end - start) / 2.0));
+70 +         mid = start + ((end - start) / 2.0);
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:75:12
+   |
+75 |     return ((((x * x) * x) - (2.0 * x)) - 5.0)
+   |            ^                                 ^
+   |
+help: remove these parentheses
+   |
+75 -     return ((((x * x) * x) - (2.0 * x)) - 5.0)
+75 +     return (((x * x) * x) - (2.0 * x)) - 5.0
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:82:28
+   |
+82 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+82 -     let duration_us: i64 = ((_end - _start) / 1000);
+82 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unused variable: `bisection`
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:47:13
+   |
+47 |     let mut bisection = |f: &mut dyn FnMut(f64) -> f64, a: f64, b: f64| -> f64 {
+   |             ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_bisection`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:47:9
+   |
+47 |     let mut bisection = |f: &mut dyn FnMut(f64) -> f64, a: f64, b: f64| -> f64 {
+   |         ----^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:40:18
+   |
+40 |     fn abs_float(mut x: f64) -> f64 {
+   |                  ----^
+   |                  |
+   |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/bisection.rs:74:10
+   |
+74 |     fn f(mut x: f64) -> f64 {
+   |          ----^
+   |          |
+   |          help: remove this `mut`
+
+error: aborting due to 1 previous error; 20 warnings emitted
+
+For more information about this error, try `rustc --explain E0434`.

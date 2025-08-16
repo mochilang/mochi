@@ -1,0 +1,237 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:64:2
+   |
+64 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:67:2
+   |
+67 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:70:2
+   |
+70 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:96:2
+   |
+96 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:59:8
+   |
+59 |     if (x < 0.0) {
+   |        ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+59 -     if (x < 0.0) {
+59 +     if x < 0.0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:69:12
+   |
+69 |     return ((f((x + (delta_x / 2.0))) - f((x - (delta_x / 2.0)))) / delta_x)
+   |            ^                                                               ^
+   |
+help: remove these parentheses
+   |
+69 -     return ((f((x + (delta_x / 2.0))) - f((x - (delta_x / 2.0)))) / delta_x)
+69 +     return (f((x + (delta_x / 2.0))) - f((x - (delta_x / 2.0)))) / delta_x
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:69:16
+   |
+69 |     return ((f((x + (delta_x / 2.0))) - f((x - (delta_x / 2.0)))) / delta_x)
+   |                ^                   ^
+   |
+help: remove these parentheses
+   |
+69 -     return ((f((x + (delta_x / 2.0))) - f((x - (delta_x / 2.0)))) / delta_x)
+69 +     return ((f(x + (delta_x / 2.0)) - f((x - (delta_x / 2.0)))) / delta_x)
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:69:43
+   |
+69 |     return ((f((x + (delta_x / 2.0))) - f((x - (delta_x / 2.0)))) / delta_x)
+   |                                           ^                   ^
+   |
+help: remove these parentheses
+   |
+69 -     return ((f((x + (delta_x / 2.0))) - f((x - (delta_x / 2.0)))) / delta_x)
+69 +     return ((f((x + (delta_x / 2.0))) - f(x - (delta_x / 2.0))) / delta_x)
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:75:11
+   |
+75 |     while (i < max_iter) {
+   |           ^            ^
+   |
+help: remove these parentheses
+   |
+75 -     while (i < max_iter) {
+75 +     while i < max_iter {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:80:12
+   |
+80 |         if (err < max_error) {
+   |            ^               ^
+   |
+help: remove these parentheses
+   |
+80 -         if (err < max_error) {
+80 +         if err < max_error {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:84:12
+   |
+84 |         if (der == 0.0) {
+   |            ^          ^
+   |
+help: remove these parentheses
+   |
+84 -         if (der == 0.0) {
+84 +         if der == 0.0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:88:13
+   |
+88 |         a = (a - (f(a) / der));
+   |             ^                ^
+   |
+help: remove these parentheses
+   |
+88 -         a = (a - (f(a) / der));
+88 +         a = a - (f(a) / der);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:89:13
+   |
+89 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+89 -         i = (i + 1);
+89 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:95:12
+   |
+95 |     return (((x * x) - (5.0 * x)) + 2.0)
+   |            ^                           ^
+   |
+help: remove these parentheses
+   |
+95 -     return (((x * x) - (5.0 * x)) + 2.0)
+95 +     return ((x * x) - (5.0 * x)) + 2.0
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:100:28
+    |
+100 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+100 -     let duration_us: i64 = ((_end - _start) / 1000);
+100 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0596]: cannot borrow `f` as mutable, as it is not declared as mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:83:40
+   |
+83 |         let der: f64 = calc_derivative(&mut f, a, step);
+   |                                        ^^^^^^ cannot borrow as mutable
+   |
+note: the binding is already a mutable borrow
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:71:34
+   |
+71 |     let mut newton_raphson = |f: &mut dyn FnMut(f64) -> f64, x0: f64, max_iter: i64, step: f64, max_error: f64, log_steps: bool| -> NRRes...
+   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: try removing `&mut` here
+   |
+83 -         let der: f64 = calc_derivative(&mut f, a, step);
+83 +         let der: f64 = calc_derivative(f, a, step);
+   |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:71:9
+   |
+71 |     let mut newton_raphson = |f: &mut dyn FnMut(f64) -> f64, x0: f64, max_iter: i64, step: f64, max_error: f64, log_steps: bool| -> NRRes...
+   |         ----^^^^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:58:18
+   |
+58 |     fn abs_float(mut x: f64) -> f64 {
+   |                  ----^
+   |                  |
+   |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:65:13
+   |
+65 |     fn fail(mut msg: String) {
+   |             ----^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:68:55
+   |
+68 |     fn calc_derivative(f: &mut dyn FnMut(f64) -> f64, mut x: f64, mut delta_x: f64) -> f64 {
+   |                                                       ----^
+   |                                                       |
+   |                                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:68:67
+   |
+68 |     fn calc_derivative(f: &mut dyn FnMut(f64) -> f64, mut x: f64, mut delta_x: f64) -> f64 {
+   |                                                                   ----^^^^^^^
+   |                                                                   |
+   |                                                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/newton_raphson.rs:94:13
+   |
+94 |     fn poly(mut x: f64) -> f64 {
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+error: aborting due to 1 previous error; 22 warnings emitted
+
+For more information about this error, try `rustc --explain E0596`.

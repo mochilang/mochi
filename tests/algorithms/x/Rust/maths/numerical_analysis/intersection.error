@@ -1,0 +1,170 @@
+error[E0434]: can't capture dynamic environment in a fn item
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:67:20
+   |
+67 |     println!("{}", intersection(&mut f, 3.0, 3.5).to_string());
+   |                    ^^^^^^^^^^^^
+   |
+   = help: use the `|| { ... }` closure form instead
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:45:2
+   |
+45 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:65:2
+   |
+65 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:68:2
+   |
+68 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:41:8
+   |
+41 |     if (x < 0.0) {
+   |        ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+41 -     if (x < 0.0) {
+41 +     if x < 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:50:12
+   |
+50 |         if ((x_n == x_n1) || (function(x_n1) == function(x_n))) {
+   |            ^                                                  ^
+   |
+help: remove these parentheses
+   |
+50 -         if ((x_n == x_n1) || (function(x_n1) == function(x_n))) {
+50 +         if (x_n == x_n1) || (function(x_n1) == function(x_n)) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:54:32
+   |
+54 |         let denominator: f64 = ((function(x_n1) - function(x_n)) / (x_n1 - x_n));
+   |                                ^                                               ^
+   |
+help: remove these parentheses
+   |
+54 -         let denominator: f64 = ((function(x_n1) - function(x_n)) / (x_n1 - x_n));
+54 +         let denominator: f64 = (function(x_n1) - function(x_n)) / (x_n1 - x_n);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:55:25
+   |
+55 |         let x_n2: f64 = (x_n1 - (numerator / denominator));
+   |                         ^                                ^
+   |
+help: remove these parentheses
+   |
+55 -         let x_n2: f64 = (x_n1 - (numerator / denominator));
+55 +         let x_n2: f64 = x_n1 - (numerator / denominator);
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:56:12
+   |
+56 |         if (abs_float((x_n2 - x_n1)) < 0.00001) {
+   |            ^                                  ^
+   |
+help: remove these parentheses
+   |
+56 -         if (abs_float((x_n2 - x_n1)) < 0.00001) {
+56 +         if abs_float((x_n2 - x_n1)) < 0.00001 {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:56:23
+   |
+56 |         if (abs_float((x_n2 - x_n1)) < 0.00001) {
+   |                       ^           ^
+   |
+help: remove these parentheses
+   |
+56 -         if (abs_float((x_n2 - x_n1)) < 0.00001) {
+56 +         if (abs_float(x_n2 - x_n1) < 0.00001) {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:64:12
+   |
+64 |     return ((((x * x) * x) - (2.0 * x)) - 5.0)
+   |            ^                                 ^
+   |
+help: remove these parentheses
+   |
+64 -     return ((((x * x) * x) - (2.0 * x)) - 5.0)
+64 +     return (((x * x) * x) - (2.0 * x)) - 5.0
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:71:28
+   |
+71 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+71 -     let duration_us: i64 = ((_end - _start) / 1000);
+71 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unused variable: `intersection`
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:46:13
+   |
+46 |     let mut intersection = |function: &mut dyn FnMut(f64) -> f64, x0: f64, x1: f64| -> f64 {
+   |             ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_intersection`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:46:9
+   |
+46 |     let mut intersection = |function: &mut dyn FnMut(f64) -> f64, x0: f64, x1: f64| -> f64 {
+   |         ----^^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:40:18
+   |
+40 |     fn abs_float(mut x: f64) -> f64 {
+   |                  ----^
+   |                  |
+   |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/numerical_analysis/intersection.rs:63:10
+   |
+63 |     fn f(mut x: f64) -> f64 {
+   |          ----^
+   |          |
+   |          help: remove this `mut`
+
+error: aborting due to 1 previous error; 16 warnings emitted
+
+For more information about this error, try `rustc --explain E0434`.
