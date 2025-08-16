@@ -687,17 +687,17 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, "))")
 	case "int":
-		io.WriteString(w, "math.floor(tonumber(")
+		io.WriteString(w, "(math.modf(tonumber(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
-		io.WriteString(w, ") or 0)")
+		io.WriteString(w, ") or 0))")
 	case "toi":
-		io.WriteString(w, "math.floor(tonumber(")
+		io.WriteString(w, "(math.modf(tonumber(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
-		io.WriteString(w, ") or 0)")
+		io.WriteString(w, ") or 0))")
 	case "float":
 		io.WriteString(w, "tonumber(")
 		if len(c.Args) > 0 {
