@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-16 11:52 GMT+7
+Last updated: 2025-08-16 12:28 GMT+7
 
 ## Algorithms Golden Test Checklist (839/1077)
 | Index | Name | Status | Duration | Memory |
@@ -502,9 +502,9 @@ Last updated: 2025-08-16 11:52 GMT+7
 | 493 | linear_algebra/src/schur_complement | ✓ | 1.96ms | 17.7 MB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 1.77ms | 25.1 MB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 1.84ms | 18.7 MB |
-| 496 | linear_programming/simplex | ✓ | 6.18ms | 25.0 MB |
+| 496 | linear_programming/simplex | ✓ | 7.20ms | 25.0 MB |
 | 497 | machine_learning/apriori_algorithm | ✓ | 8.51ms | 25.0 MB |
-| 498 | machine_learning/astar | ✓ |  |  |
+| 498 | machine_learning/astar | error |  |  |
 | 499 | machine_learning/automatic_differentiation | ✓ | 1.50ms | 17.3 MB |
 | 500 | machine_learning/data_transformations | ✓ | 6.69ms | 25.1 MB |
 | 501 | machine_learning/decision_tree | ✓ | 346.74ms | 269.3 MB |
@@ -516,7 +516,7 @@ Last updated: 2025-08-16 11:52 GMT+7
 | 507 | machine_learning/k_means_clust | ✓ | 9.99ms | 17.4 MB |
 | 508 | machine_learning/k_nearest_neighbours | error |  |  |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 7.86ms | 25.0 MB |
-| 510 | machine_learning/linear_regression |   |  |  |
+| 510 | machine_learning/linear_regression | ✓ |  |  |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | error |  |  |
 | 512 | machine_learning/logistic_regression | ✓ | 16.06ms | 34.9 MB |
 | 513 | machine_learning/loss_functions | error |  |  |
