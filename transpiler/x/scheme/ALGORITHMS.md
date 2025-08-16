@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-15 10:31 GMT+7
+Last updated: 2025-08-16 09:36 GMT+7
 
 ## Algorithms Golden Test Checklist (873/1077)
 | Index | Name | Status | Duration | Memory |
@@ -731,7 +731,7 @@ Last updated: 2025-08-15 10:31 GMT+7
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 0s | 12.5 MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 1ms | 12.1 MB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 0s | 12.1 MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 1ms | 12.8 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 1ms | 12.4 MB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 0s | 12.1 MB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 0s | 12.3 MB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 1ms | 12.4 MB |

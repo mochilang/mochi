@@ -1711,11 +1711,25 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 					&List{Elems: []Node{&List{Elems: []Node{Symbol(x), node}}}},
 					cond,
 				}}
-			} else if t.Simple != nil && *t.Simple == "string" {
-				node = &List{Elems: []Node{Symbol("to-str"), node}}
-			} else if t.Simple != nil && *t.Simple == "float" {
-				node = &List{Elems: []Node{Symbol("+"), FloatLit(0), node}}
-			} // ignore other casts
+                        } else if t.Simple != nil && *t.Simple == "string" {
+                                node = &List{Elems: []Node{Symbol("to-str"), node}}
+                        } else if t.Simple != nil && *t.Simple == "float" {
+                                x := gensym("v")
+                                cond := &List{Elems: []Node{
+                                        Symbol("cond"),
+                                        &List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}},
+                                                &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}},
+                                        &List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}},
+                                                &List{Elems: []Node{Symbol("if"), Symbol(x), FloatLit(1), FloatLit(0)}}}},
+                                        &List{Elems: []Node{Symbol("else"),
+                                                &List{Elems: []Node{Symbol("exact->inexact"), Symbol(x)}}}},
+                                }}
+                                node = &List{Elems: []Node{
+                                        Symbol("let"),
+                                        &List{Elems: []Node{&List{Elems: []Node{Symbol(x), node}}}},
+                                        cond,
+                                }}
+                        } // ignore other casts
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			call := pf.Ops[i+1].Call
 			if len(call.Args) != 1 {
