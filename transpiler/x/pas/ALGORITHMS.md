@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-16 12:35 GMT+7
+Last updated: 2025-08-16 14:54 GMT+7
 
-## Algorithms Golden Test Checklist (408/1077)
+## Algorithms Golden Test Checklist (428/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -531,54 +531,54 @@ Last updated: 2025-08-16 12:35 GMT+7
 | 522 | machine_learning/similarity_search |   |  |  |
 | 523 | machine_learning/support_vector_machines |   |  |  |
 | 524 | machine_learning/word_frequency_functions |   |  |  |
-| 525 | machine_learning/xgboost_classifier |   |  |  |
-| 526 | machine_learning/xgboost_regressor |   |  |  |
-| 527 | maths/abs |   |  |  |
-| 528 | maths/addition_without_arithmetic |   |  |  |
-| 529 | maths/aliquot_sum |   |  |  |
-| 530 | maths/allocation_number |   |  |  |
-| 531 | maths/arc_length |   |  |  |
-| 532 | maths/area |   |  |  |
-| 533 | maths/area_under_curve |   |  |  |
-| 534 | maths/average_absolute_deviation |   |  |  |
-| 535 | maths/average_mean |   |  |  |
-| 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode |   |  |  |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
-| 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
-| 543 | maths/binomial_coefficient |   |  |  |
-| 544 | maths/binomial_distribution |   |  |  |
-| 545 | maths/ceil |   |  |  |
-| 546 | maths/chebyshev_distance |   |  |  |
-| 547 | maths/check_polygon |   |  |  |
-| 548 | maths/chinese_remainder_theorem |   |  |  |
-| 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence | ✓ | 1.0µs | 0B |
+| 525 | machine_learning/xgboost_classifier | ✓ | 0ns | 0B |
+| 526 | machine_learning/xgboost_regressor | error |  |  |
+| 527 | maths/abs | ✓ | 0ns | 0B |
+| 528 | maths/addition_without_arithmetic | error |  |  |
+| 529 | maths/aliquot_sum | ✓ | 0ns | 64B |
+| 530 | maths/allocation_number | ✓ | 1.0µs | 2.38KB |
+| 531 | maths/arc_length | ✓ | 0ns | 64B |
+| 532 | maths/area | ✓ | 1.0µs | 128B |
+| 533 | maths/area_under_curve | ✓ | 1.0µs | 224B |
+| 534 | maths/average_absolute_deviation | ✓ | 0ns | 128B |
+| 535 | maths/average_mean | ✓ | 1.0µs | 160B |
+| 536 | maths/average_median | ✓ | 0ns | 128B |
+| 537 | maths/average_mode | ✓ | 1.0µs | 2.31KB |
+| 538 | maths/bailey_borwein_plouffe | error |  |  |
+| 539 | maths/base_neg2_conversion | ✓ | 0ns | 0B |
+| 540 | maths/basic_maths | ✓ | 0ns | 128B |
+| 541 | maths/binary_exponentiation | ✓ | 0ns | 0B |
+| 542 | maths/binary_multiplication | ✓ | 0ns | 0B |
+| 543 | maths/binomial_coefficient | ✓ | 0ns | 64B |
+| 544 | maths/binomial_distribution | ✓ | 1.0µs | 0B |
+| 545 | maths/ceil | ✓ | 0ns | 96B |
+| 546 | maths/chebyshev_distance | ✓ | 0ns | 128B |
+| 547 | maths/check_polygon | ✓ | 0ns | 256B |
+| 548 | maths/chinese_remainder_theorem | ✓ | 0ns | 192B |
+| 549 | maths/chudnovsky_algorithm | ✓ | 0ns | 224B |
+| 550 | maths/collatz_sequence | ✓ | 0ns | 0B |
 | 551 | maths/combinations | ✓ | 1.0µs | 384B |
 | 552 | maths/continued_fraction | ✓ | 0ns | 64B |
 | 553 | maths/decimal_isolate | ✓ | 0ns | 0B |
-| 554 | maths/decimal_to_fraction | ✓ | 0ns | 0B |
+| 554 | maths/decimal_to_fraction | ✓ | 1.0µs | 0B |
 | 555 | maths/dodecahedron | ✓ | 0ns | 0B |
 | 556 | maths/double_factorial | ✓ | 0ns | 0B |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 0ns | 0B |
-| 558 | maths/entropy | ✓ | 3.0µs | 87.75KB |
+| 557 | maths/dual_number_automatic_differentiation | error | 0ns | 0B |
+| 558 | maths/entropy | ✓ | 2.0µs | 87.75KB |
 | 559 | maths/euclidean_distance | ✓ | 0ns | 0B |
 | 560 | maths/euler_method | ✓ | 1.0µs | 7.94KB |
-| 561 | maths/euler_modified | ✓ | 0ns | 0B |
-| 562 | maths/eulers_totient | ✓ | 1.0µs | 0B |
+| 561 | maths/euler_modified | ✓ | 1.0µs | 0B |
+| 562 | maths/eulers_totient | ✓ | 0ns | 0B |
 | 563 | maths/extended_euclidean_algorithm | ✓ | 0ns | 0B |
 | 564 | maths/factorial | ✓ | 0ns | 0B |
 | 565 | maths/factors | ✓ | 0ns | 0B |
 | 566 | maths/fast_inverse_sqrt | ✓ | 0ns | 0B |
-| 567 | maths/fermat_little_theorem | ✓ | 0ns | 0B |
-| 568 | maths/fibonacci | ✓ | 0ns | 640B |
+| 567 | maths/fermat_little_theorem | error | 0ns | 0B |
+| 568 | maths/fibonacci | ✓ | 1.0µs | 640B |
 | 569 | maths/find_max | ✓ | 0ns | 0B |
-| 570 | maths/find_min | ✓ | 1.0µs | 0B |
+| 570 | maths/find_min | ✓ | 0ns | 0B |
 | 571 | maths/floor | ✓ | 0ns | 0B |
-| 572 | maths/gamma | ✓ | 28.0µs | 0B |
+| 572 | maths/gamma | ✓ | 22.0µs | 0B |
 | 573 | maths/gaussian | ✓ | 0ns | 0B |
 | 574 | maths/gcd_of_n_numbers | ✓ | 0ns | 128B |
 | 575 | maths/geometric_mean | ✓ |  |  |

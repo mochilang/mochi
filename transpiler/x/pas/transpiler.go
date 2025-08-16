@@ -2469,7 +2469,9 @@ func convertIf(env *types.Env, ifs *parser.IfStmt, varTypes map[string]string) (
 	if err != nil {
 		return nil, err
 	}
+	pushScope()
 	thenBody, err := convertBody(env, ifs.Then, varTypes)
+	popScope()
 	if err != nil {
 		return nil, err
 	}
@@ -2481,8 +2483,10 @@ func convertIf(env *types.Env, ifs *parser.IfStmt, varTypes map[string]string) (
 		}
 		elseBody = []Stmt{nested}
 	} else {
+		pushScope()
 		var err2 error
 		elseBody, err2 = convertBody(env, ifs.Else, varTypes)
+		popScope()
 		if err2 != nil {
 			return nil, err2
 		}
@@ -5294,9 +5298,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					typ = currProg.addArrayAlias(elem)
 				}
 			}
-			params = append(params, formatParam(pa.Name, typ))
+			san := sanitize(pa.Name)
+			params = append(params, fmt.Sprintf("%s: %s", san, pasType(typ)))
 			child.SetVar(pa.Name, types.AnyType{}, true)
-			currentScope()[pa.Name] = pa.Name
+			currentScope()[pa.Name] = san
 		}
 		var body []Stmt
 		if p.FunExpr.ExprBody != nil {

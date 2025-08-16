@@ -38,16 +38,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
+  n: integer;
   left: integer;
   index: integer;
-  right: integer;
-  n: integer;
   nums: RealArray;
+  right: integer;
 function normalize_index(index: integer; n: integer): integer; forward;
 function find_max_iterative(nums: RealArray): real; forward;
 function find_max_recursive(nums: RealArray; left: integer; right: integer): real; forward;
