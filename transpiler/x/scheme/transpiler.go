@@ -5,6 +5,7 @@ package scheme
 import (
 	"bufio"
 	"bytes"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -75,10 +76,10 @@ func WithBenchMain(f func()) { WithBenchMainEnabled(true, f) }
 // running f and then restores the previous state. It is useful when callers
 // need to explicitly enable or disable benchmarking in a scoped manner.
 func WithBenchMainEnabled(v bool, f func()) {
-        prev := benchMain
-        benchMain = v
-        defer func() { benchMain = prev }()
-        f()
+	prev := benchMain
+	benchMain = v
+	defer func() { benchMain = prev }()
+	f()
 }
 
 func pushLoop(breakSym Symbol, cont Node) {
@@ -1979,12 +1980,15 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr)
 	case p.Load != nil:
-		format := parseFormat(p.Load.With)
+		format, delim, header := parseLoadOptions(p.Load.With)
+		if format == "" && delim != "" {
+			format = "csv"
+		}
 		path := ""
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
 		}
-		n, err := dataExprFromFile(path, format, p.Load.Type)
+		n, err := dataExprFromFile(path, format, delim, header, p.Load.Type)
 		if err != nil {
 			return nil, err
 		}
@@ -2176,30 +2180,54 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
-func parseFormat(e *parser.Expr) string {
+func literalBool(e *parser.Expr) (bool, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
-		return ""
+		return false, false
 	}
 	u := e.Binary.Left
 	if len(u.Ops) > 0 || u.Value == nil {
-		return ""
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Bool == nil {
+		return false, false
+	}
+	return bool(*p.Target.Lit.Bool), true
+}
+
+func parseLoadOptions(e *parser.Expr) (format, delim string, header bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return
 	}
 	p := u.Value
 	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
-		return ""
+		return
 	}
 	for _, it := range p.Target.Map.Items {
-		key, ok := isSimpleIdent(it.Key)
+		key, ok := literalString(it.Key)
 		if !ok {
-			key, ok = literalString(it.Key)
+			continue
 		}
-		if key == "format" {
+		switch key {
+		case "format":
 			if s, ok := literalString(it.Value); ok {
-				return s
+				format = s
+			}
+		case "delimiter":
+			if s, ok := literalString(it.Value); ok {
+				delim = s
+			}
+		case "header":
+			if b, ok := literalBool(it.Value); ok {
+				header = b
 			}
 		}
 	}
-	return ""
+	return
 }
 
 func valueToNode(v interface{}, typ *parser.TypeRef) Node {
@@ -2243,7 +2271,7 @@ func valueToNode(v interface{}, typ *parser.TypeRef) Node {
 	}
 }
 
-func dataExprFromFile(path, format string, typ *parser.TypeRef) (Node, error) {
+func dataExprFromFile(path, format, delim string, header bool, typ *parser.TypeRef) (Node, error) {
 	if path == "" {
 		return &List{Elems: []Node{Symbol("_list")}}, nil
 	}
@@ -2284,7 +2312,48 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Node, error) {
 		if err := json.Unmarshal(data, &v); err != nil {
 			return nil, err
 		}
-	case "yaml", "csv", "":
+	case "csv", "tsv":
+		r := csv.NewReader(bytes.NewReader(data))
+		if delim != "" {
+			r.Comma = []rune(delim)[0]
+		} else if format == "tsv" {
+			r.Comma = '\t'
+		}
+		records, err := r.ReadAll()
+		if err != nil {
+			return nil, err
+		}
+		var headerRow []string
+		start := 0
+		if header && len(records) > 0 {
+			headerRow = records[0]
+			start = 1
+		} else {
+			max := 0
+			for _, rec := range records {
+				if len(rec) > max {
+					max = len(rec)
+				}
+			}
+			headerRow = make([]string, max)
+			for i := 0; i < max; i++ {
+				headerRow[i] = fmt.Sprintf("c%d", i)
+			}
+		}
+		var list []interface{}
+		for _, rec := range records[start:] {
+			obj := map[string]interface{}{}
+			for i, h := range headerRow {
+				if i < len(rec) {
+					obj[h] = rec[i]
+				} else {
+					obj[h] = ""
+				}
+			}
+			list = append(list, obj)
+		}
+		v = list
+	case "yaml", "":
 		return nil, fmt.Errorf("unsupported load format")
 	default:
 		return nil, fmt.Errorf("unsupported load format")
