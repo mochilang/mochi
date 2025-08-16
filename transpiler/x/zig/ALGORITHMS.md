@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-16 14:44 +0700
+Last updated: 2025-08-16 19:42 +0700
 
-## Program Checklist (397/1077)
+## Program Checklist (398/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -511,7 +511,7 @@ Last updated: 2025-08-16 14:44 +0700
 | 502 | machine_learning/dimensionality_reduction |   |  |  |
 | 503 | machine_learning/forecasting/run |   |  |  |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.965ms | 640.0 KB |
 | 506 | machine_learning/gradient_descent |   |  |  |
 | 507 | machine_learning/k_means_clust |   |  |  |
 | 508 | machine_learning/k_nearest_neighbours |   |  |  |
