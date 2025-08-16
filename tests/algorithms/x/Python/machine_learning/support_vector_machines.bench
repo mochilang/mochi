@@ -1,4 +1,5 @@
-File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/support_vector_machines.py", line 67
-    return SVC(weights=[], bias=0.0, lr=lr, lambda=lambda_, epochs=epochs)
-                                            ^^^^^^
-SyntaxError: invalid syntax
+{
+  "duration_us": 5111,
+  "memory_bytes": 13680640,
+  "name": "main"
+}
