@@ -153,7 +153,7 @@ inv_1[(int)((long)(k_3))][(int)((long)(j_7))] = (double)((double)(inv_1[(int)((l
         double[][] X = ((double[][])(new double[][]{}));
         long i_16 = 0L;
         while ((long)(i_16) < (long)(train_dt.length)) {
-            X = java.util.stream.Stream.concat(java.util.Arrays.stream(X), java.util.stream.Stream.of(new Object[][]{new double[]{1.0, train_dt[(int)((long)(i_16))], train_mtch[(int)((long)(i_16))]}})).toArray(Object[][]::new);
+            X = java.util.stream.Stream.concat(java.util.Arrays.stream(X), java.util.stream.Stream.of(new double[][]{new double[]{1.0, train_dt[(int)((long)(i_16))], train_mtch[(int)((long)(i_16))]}})).toArray(double[][]::new);
             i_16 = (long)((long)(i_16) + 1L);
         }
         double[] beta_1 = ((double[])(normal_equation(((double[][])(X)), ((double[])(train_usr)))));
@@ -166,7 +166,7 @@ inv_1[(int)((long)(k_3))][(int)((long)(j_7))] = (double)((double)(inv_1[(int)((l
         double[] y_1 = ((double[])(new double[]{}));
         long i_18 = 1L;
         while ((long)(i_18) < (long)(n_2)) {
-            X_2 = java.util.stream.Stream.concat(java.util.Arrays.stream(X_2), java.util.stream.Stream.of(new Object[][]{new double[]{1.0, train_user[(int)((long)((long)(i_18) - 1L))], train_match[(int)((long)(i_18))]}})).toArray(Object[][]::new);
+            X_2 = java.util.stream.Stream.concat(java.util.Arrays.stream(X_2), java.util.stream.Stream.of(new double[][]{new double[]{1.0, train_user[(int)((long)((long)(i_18) - 1L))], train_match[(int)((long)(i_18))]}})).toArray(double[][]::new);
             y_1 = ((double[])(appendDouble(y_1, (double)(train_user[(int)((long)(i_18))]))));
             i_18 = (long)((long)(i_18) + 1L);
         }
@@ -279,41 +279,7 @@ inv_1[(int)((long)(k_3))][(int)((long)(j_7))] = (double)((double)(inv_1[(int)((l
         System.out.println(data_safety_checker(((double[])(vote)), (double)(5.0)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static double[] appendDouble(double[] arr, double v) {
