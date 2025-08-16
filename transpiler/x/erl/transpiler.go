@@ -196,6 +196,14 @@ mochi_fetch(Url, _Opts) ->
     end.
 `
 
+const helperReadFile = `
+mochi_read_file(Path) ->
+    case file:read_file(Path) of
+        {ok, Bin} -> binary_to_list(Bin);
+        _ -> ""
+    end.
+`
+
 const helperNot = `
 mochi_not(X) ->
     case X of
@@ -228,6 +236,16 @@ const helperSafeFmod = `
 mochi_safe_fmod(A, B) ->
     try math:fmod(A, B) catch _:_ -> 0.0 end.
 `
+const helperIDiv = `
+mochi_idiv(A, B) ->
+    Q = A div B,
+    R = A rem B,
+    case ((R /= 0) andalso ((B < 0 andalso R > 0) orelse (B > 0 andalso R < 0))) of
+        true -> Q - 1;
+        false -> Q
+    end.
+`
+
 const helperMod = `
 mochi_mod(A, B) ->
     A1 = case erlang:is_float(A) of
@@ -240,7 +258,7 @@ mochi_mod(A, B) ->
     end,
     case B1 of
         0 -> 0;
-        _ -> ((A1 rem B1) + B1) rem B1
+        _ -> A1 - B1 * mochi_idiv(A1, B1)
     end.
 `
 const helperBigRat = `
@@ -318,9 +336,11 @@ var useBigRat bool
 var useRepeat bool
 var useStr bool
 var useFetch bool
+var useReadFile bool
 var useNot bool
 var useSafeArith bool
 var useSafeFmod bool
+var useIDiv bool
 var useMod bool
 var useNth bool
 var useFirst bool
@@ -355,9 +375,11 @@ type Program struct {
 	UseRepeat       bool
 	UseStr          bool
 	UseFetch        bool
+	UseReadFile     bool
 	UseNot          bool
 	UseSafeArith    bool
 	UseSafeFmod     bool
+	UseIDiv         bool
 	UseMod          bool
 	UseNth          bool
 	UseFirst        bool
@@ -3234,7 +3256,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split", "reverse", "first":
+	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split", "reverse", "first", "read_file":
 		return true
 	default:
 		return false
@@ -3423,9 +3445,11 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useRepeat = false
 	useStr = false
 	useFetch = false
+	useReadFile = false
 	useNot = false
 	useSafeArith = false
 	useSafeFmod = false
+	useIDiv = false
 	useMod = false
 	// mochi_nth is used for safe list indexing; include helper by default
 	useNth = true
@@ -3477,9 +3501,11 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseRepeat = useRepeat
 	p.UseStr = true
 	p.UseFetch = useFetch
+	p.UseReadFile = useReadFile
 	p.UseNot = useNot
 	p.UseSafeArith = useSafeArith
 	p.UseSafeFmod = useSafeFmod
+	p.UseIDiv = useIDiv
 	p.UseMod = useMod
 	p.UseNth = useNth
 	p.UseFirst = useFirst
@@ -4594,8 +4620,12 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 						continue
 					}
 					if isIntExpr(l, env, ctx) && isIntExpr(r, env, ctx) && !isBigRatType(lt) && !isBigRatType(rt) {
-						op = "div"
-						typesList[i] = types.IntType{}
+						useIDiv = true
+						exprs[i] = &CallExpr{Func: "mochi_idiv", Args: []Expr{l, r}}
+						exprs = append(exprs[:i+1], exprs[i+2:]...)
+						typesList = append(typesList[:i+1], typesList[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
 					} else {
 						useSafeArith = true
 						exprs[i] = &CallExpr{Func: "mochi_safe_div", Args: []Expr{l, r}}
@@ -4614,6 +4644,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 						continue
 					}
 					useMod = true
+					useIDiv = true
 					exprs[i] = &CallExpr{Func: "mochi_mod", Args: []Expr{l, r}}
 					exprs = append(exprs[:i+1], exprs[i+2:]...)
 					typesList = append(typesList[:i+1], typesList[i+2:]...)
@@ -5483,6 +5514,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			useRepeat = true
 			useToInt = true
 			return &CallExpr{Func: "mochi_repeat", Args: ce.Args}, nil
+		} else if ce.Func == "read_file" && len(ce.Args) == 1 {
+			useReadFile = true
+			return &CallExpr{Func: "mochi_read_file", Args: ce.Args}, nil
 		} else if ce.Func == "split" && len(ce.Args) == 2 {
 			return &CallExpr{Func: "string:tokens", Args: ce.Args}, nil
 		} else if ce.Func == "reverse" && len(ce.Args) == 1 {
@@ -6669,6 +6703,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperFetch)
 		buf.WriteString("\n")
 	}
+	if p.UseReadFile {
+		buf.WriteString(helperReadFile)
+		buf.WriteString("\n")
+	}
 	if p.UseNot {
 		buf.WriteString(helperNot)
 		buf.WriteString("\n")
@@ -6679,6 +6717,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseSafeFmod {
 		buf.WriteString(helperSafeFmod)
+		buf.WriteString("\n")
+	}
+	if p.UseIDiv {
+		buf.WriteString(helperIDiv)
 		buf.WriteString("\n")
 	}
 	if p.UseMod {
