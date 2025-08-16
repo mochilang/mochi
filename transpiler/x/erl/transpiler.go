@@ -2197,6 +2197,14 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 		return
+	case "repr":
+		useStr = true
+		io.WriteString(w, "mochi_repr(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
 	case "sum":
 		io.WriteString(w, "lists:sum(")
 		if len(c.Args) > 0 {
@@ -3499,7 +3507,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseParseIntStr = useParseIntStr
 	p.UseBigRat = useBigRat
 	p.UseRepeat = useRepeat
-	p.UseStr = true
+	p.UseStr = useStr
 	p.UseFetch = useFetch
 	p.UseReadFile = useReadFile
 	p.UseNot = useNot
@@ -5453,8 +5461,10 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			for i, a := range ce.Args {
 				fmtParts[i] = "~ts"
 				if call, ok := a.(*CallExpr); ok && call.Func == "str" {
+					useStr = true
 					args[i] = &CallExpr{Func: "mochi_str", Args: call.Args}
 				} else {
+					useStr = true
 					args[i] = &CallExpr{Func: "mochi_repr", Args: []Expr{a}}
 				}
 			}
@@ -6742,7 +6752,7 @@ func (p *Program) Emit() []byte {
 		}
 	}
 	buf.WriteString("    catch\n")
-	buf.WriteString("        _:Err -> io:format(\"~s~n\", [mochi_str(Err)])\n")
+	buf.WriteString("        _:Err -> io:format(\"~p~n\", [Err])\n")
 	buf.WriteString("    end.\n")
 	return buf.Bytes()
 }
