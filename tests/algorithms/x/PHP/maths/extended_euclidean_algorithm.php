@@ -32,12 +32,19 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -83,31 +90,31 @@ $__start = _now();
   function test_extended_euclidean_algorithm() {
   $r1 = extended_euclidean_algorithm(1, 24);
   if (($r1['x'] != 1) || ($r1['y'] != 0)) {
-  $panic('test1 failed');
+  _panic('test1 failed');
 }
   $r2 = extended_euclidean_algorithm(8, 14);
   if (($r2['x'] != 2) || ($r2['y'] != (-1))) {
-  $panic('test2 failed');
+  _panic('test2 failed');
 }
   $r3 = extended_euclidean_algorithm(240, 46);
   if (($r3['x'] != (-9)) || ($r3['y'] != 47)) {
-  $panic('test3 failed');
+  _panic('test3 failed');
 }
   $r4 = extended_euclidean_algorithm(1, -4);
   if (($r4['x'] != 1) || ($r4['y'] != 0)) {
-  $panic('test4 failed');
+  _panic('test4 failed');
 }
   $r5 = extended_euclidean_algorithm(-2, -4);
   if (($r5['x'] != (-1)) || ($r5['y'] != 0)) {
-  $panic('test5 failed');
+  _panic('test5 failed');
 }
   $r6 = extended_euclidean_algorithm(0, -4);
   if (($r6['x'] != 0) || ($r6['y'] != (-1))) {
-  $panic('test6 failed');
+  _panic('test6 failed');
 }
   $r7 = extended_euclidean_algorithm(2, 0);
   if (($r7['x'] != 1) || ($r7['y'] != 0)) {
-  $panic('test7 failed');
+  _panic('test7 failed');
 }
 };
   function main() {

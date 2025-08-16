@@ -15,6 +15,10 @@ function _now() {
     }
     return hrtime(true);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function sqrtApprox($x) {
@@ -37,7 +41,7 @@ $__start = _now();
 };
   function dodecahedron_surface_area($edge) {
   if ($edge <= 0) {
-  $panic('Length must be a positive.');
+  _panic('Length must be a positive.');
 }
   $term = sqrtApprox(25.0 + 10.0 * sqrtApprox(5.0));
   $e = floatval($edge);
@@ -45,7 +49,7 @@ $__start = _now();
 };
   function dodecahedron_volume($edge) {
   if ($edge <= 0) {
-  $panic('Length must be a positive.');
+  _panic('Length must be a positive.');
 }
   $term = (15.0 + 7.0 * sqrtApprox(5.0)) / 4.0;
   $e = floatval($edge);
@@ -53,16 +57,16 @@ $__start = _now();
 };
   function test_dodecahedron() {
   if (!approx_equal(dodecahedron_surface_area(5), 516.1432201766901, 0.0001)) {
-  $panic('surface area 5 failed');
+  _panic('surface area 5 failed');
 }
   if (!approx_equal(dodecahedron_surface_area(10), 2064.5728807067603, 0.0001)) {
-  $panic('surface area 10 failed');
+  _panic('surface area 10 failed');
 }
   if (!approx_equal(dodecahedron_volume(5), 957.8898700780791, 0.0001)) {
-  $panic('volume 5 failed');
+  _panic('volume 5 failed');
 }
   if (!approx_equal(dodecahedron_volume(10), 7663.118960624633, 0.0001)) {
-  $panic('volume 10 failed');
+  _panic('volume 10 failed');
 }
 };
   function main() {

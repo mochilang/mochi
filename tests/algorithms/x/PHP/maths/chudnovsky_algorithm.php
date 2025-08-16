@@ -42,41 +42,6 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -92,7 +57,7 @@ $__start = _now();
   $i = 0;
   while ($i < 20) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $guess;
 };
@@ -101,7 +66,7 @@ $__start = _now();
   $i = 2;
   while ($i <= $n) {
   $result = $result * (floatval($i));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
@@ -109,15 +74,15 @@ $__start = _now();
   if ($n < 1) {
   _panic('Undefined for non-natural numbers');
 }
-  $iterations = _intdiv((_iadd($n, 13)), 14);
+  $iterations = _intdiv(($n + 13), 14);
   $constant_term = 426880.0 * sqrtApprox(10005.0);
   $exponential_term = 1.0;
   $linear_term = 13591409.0;
   $partial_sum = $linear_term;
   $k = 1;
   while ($k < $iterations) {
-  $k6 = _imul(6, $k);
-  $k3 = _imul(3, $k);
+  $k6 = 6 * $k;
+  $k3 = 3 * $k;
   $fact6k = factorial_float($k6);
   $fact3k = factorial_float($k3);
   $factk = factorial_float($k);
@@ -125,7 +90,7 @@ $__start = _now();
   $linear_term = $linear_term + 545140134.0;
   $exponential_term = $exponential_term * (-262537412640768000.0);
   $partial_sum = $partial_sum + $multinomial * $linear_term / $exponential_term;
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   return $constant_term / $partial_sum;
 };

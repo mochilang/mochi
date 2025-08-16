@@ -31,6 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function pow10($n) {
@@ -60,11 +64,11 @@ $__start = _now();
 };
   function parse_decimal($s) {
   if (strlen($s) == 0) {
-  $panic('invalid number');
+  _panic('invalid number');
 }
   $idx = 0;
   $sign = 1;
-  $first = substr($s, 0, 1 - 0);
+  $first = substr($s, 0, 1);
   if ($first == '-') {
   $sign = -1;
   $idx = 1;
@@ -115,16 +119,16 @@ $__start = _now();
   $exp_str = $exp_str . $c;
   $idx = $idx + 1;
 } else {
-  $panic('invalid number');
+  _panic('invalid number');
 }
 };
   if (strlen($exp_str) == 0) {
-  $panic('invalid number');
+  _panic('invalid number');
 };
   $exp = $exp_sign * intval($exp_str);
 }
   if ($idx != strlen($s)) {
-  $panic('invalid number');
+  _panic('invalid number');
 }
   if (strlen($int_part) == 0) {
   $int_part = '0';
@@ -156,7 +160,7 @@ $__start = _now();
 };
   function assert_fraction($name, $fr, $num, $den) {
   if ($fr['numerator'] != $num || $fr['denominator'] != $den) {
-  $panic($name);
+  _panic($name);
 }
 };
   function test_decimal_to_fraction() {

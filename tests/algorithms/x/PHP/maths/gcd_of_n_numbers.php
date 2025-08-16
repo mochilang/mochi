@@ -31,6 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function gcd($a, $b) {
@@ -48,17 +52,17 @@ $__start = _now();
 };
   function get_greatest_common_divisor($nums) {
   if (count($nums) == 0) {
-  $panic('at least one number is required');
+  _panic('at least one number is required');
 }
   $g = $nums[0];
   if ($g <= 0) {
-  $panic('numbers must be integer and greater than zero');
+  _panic('numbers must be integer and greater than zero');
 }
   $i = 1;
   while ($i < count($nums)) {
   $n = $nums[$i];
   if ($n <= 0) {
-  $panic('numbers must be integer and greater than zero');
+  _panic('numbers must be integer and greater than zero');
 }
   $g = gcd($g, $n);
   $i = $i + 1;

@@ -16,12 +16,19 @@ function _now() {
     return hrtime(true);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -33,7 +40,7 @@ $__start = _now();
 };
   function find_max_iterative($nums) {
   if (count($nums) == 0) {
-  $panic('find_max_iterative() arg is an empty sequence');
+  _panic('find_max_iterative() arg is an empty sequence');
 }
   $max_num = $nums[0];
   $i = 0;
@@ -49,10 +56,10 @@ $__start = _now();
   function find_max_recursive($nums, $left, $right) {
   $n = count($nums);
   if ($n == 0) {
-  $panic('find_max_recursive() arg is an empty sequence');
+  _panic('find_max_recursive() arg is an empty sequence');
 }
   if ($left >= $n || $left < (0 - $n) || $right >= $n || $right < (0 - $n)) {
-  $panic('list index out of range');
+  _panic('list index out of range');
 }
   $l = normalize_index($left, $n);
   $r = normalize_index($right, $n);
@@ -70,13 +77,13 @@ $__start = _now();
   function test_find_max() {
   $arr = [2.0, 4.0, 9.0, 7.0, 19.0, 94.0, 5.0];
   if (find_max_iterative($arr) != 94.0) {
-  $panic('find_max_iterative failed');
+  _panic('find_max_iterative failed');
 }
   if (find_max_recursive($arr, 0, count($arr) - 1) != 94.0) {
-  $panic('find_max_recursive failed');
+  _panic('find_max_recursive failed');
 }
   if (find_max_recursive($arr, -count($arr), -1) != 94.0) {
-  $panic('negative index handling failed');
+  _panic('negative index handling failed');
 }
 };
   function main() {

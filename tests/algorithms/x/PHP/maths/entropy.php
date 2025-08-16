@@ -71,7 +71,7 @@ $__start = _now();
 } else {
   $single[$last] = 1;
 }
-  $first = substr($text, 0, 1 - 0);
+  $first = substr($text, 0, 1);
   $pair0 = ' ' . $first;
   $double[$pair0] = 1;
   $i = 0;

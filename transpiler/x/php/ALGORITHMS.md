@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-16 12:04 GMT+7
+Last updated: 2025-08-16 14:59 GMT+7
 
 ## Algorithms Golden Test Checklist (990/1077)
 | Index | Name | Status | Duration | Memory |
@@ -531,56 +531,56 @@ Last updated: 2025-08-16 12:04 GMT+7
 | 522 | machine_learning/similarity_search | ✓ | 125µs | 39.3 KB |
 | 523 | machine_learning/support_vector_machines | ✓ | 925µs | 35.3 KB |
 | 524 | machine_learning/word_frequency_functions | ✓ | 405µs | 74.8 KB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 126µs | 37.1 KB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 98µs | 40.9 KB |
-| 527 | maths/abs | ✓ | 86µs | 37.4 KB |
-| 528 | maths/addition_without_arithmetic | ✓ | 358µs | 36.3 KB |
-| 529 | maths/aliquot_sum | ✓ | 91µs | 35.9 KB |
-| 530 | maths/allocation_number | ✓ | 102µs | 39.5 KB |
-| 531 | maths/arc_length | ✓ | 43µs | 38.7 KB |
-| 532 | maths/area | ✓ | 83µs | 92.7 KB |
-| 533 | maths/area_under_curve | ✓ | 8.967ms | 39.0 KB |
-| 534 | maths/average_absolute_deviation | ✓ | 49µs | 39.3 KB |
-| 535 | maths/average_mean | ✓ | 58µs | 38.9 KB |
-| 536 | maths/average_median | ✓ | 77µs | 39.4 KB |
-| 537 | maths/average_mode | ✓ | 142µs | 70.3 KB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 1.812763s | 40.3 KB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 175µs | 37.1 KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 144µs | 40.9 KB |
+| 527 | maths/abs | ✓ | 121µs | 37.4 KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 361µs | 36.3 KB |
+| 529 | maths/aliquot_sum | ✓ | 120µs | 35.9 KB |
+| 530 | maths/allocation_number | ✓ | 131µs | 39.5 KB |
+| 531 | maths/arc_length | ✓ | 83µs | 38.7 KB |
+| 532 | maths/area | ✓ | 123µs | 92.7 KB |
+| 533 | maths/area_under_curve | ✓ | 12.76ms | 39.0 KB |
+| 534 | maths/average_absolute_deviation | ✓ | 66µs | 39.3 KB |
+| 535 | maths/average_mean | ✓ | 145µs | 38.9 KB |
+| 536 | maths/average_median | ✓ | 194µs | 39.4 KB |
+| 537 | maths/average_mode | ✓ | 237µs | 70.3 KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 3.126549s | 40.3 KB |
 | 539 | maths/base_neg2_conversion | ✓ | 100µs | 38.0 KB |
-| 540 | maths/basic_maths | ✓ | 175µs | 72.9 KB |
-| 541 | maths/binary_exponentiation | ✓ | 97µs | 36.1 KB |
-| 542 | maths/binary_multiplication | ✓ | 45µs | 35.2 KB |
-| 543 | maths/binomial_coefficient | ✓ | 71µs | 39.7 KB |
+| 540 | maths/basic_maths | ✓ | 176µs | 72.9 KB |
+| 541 | maths/binary_exponentiation | ✓ | 69µs | 36.1 KB |
+| 542 | maths/binary_multiplication | ✓ | 68µs | 35.2 KB |
+| 543 | maths/binomial_coefficient | ✓ | 125µs | 39.7 KB |
 | 544 | maths/binomial_distribution | ✓ | 1µs | 34.3 KB |
-| 545 | maths/ceil | ✓ | 44µs | 39.0 KB |
-| 546 | maths/chebyshev_distance | ✓ | 97µs | 40.6 KB |
-| 547 | maths/check_polygon | ✓ | 150µs | 41.4 KB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 187µs | 71.6 KB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 93µs | 42.8 KB |
-| 550 | maths/collatz_sequence | ✓ | 151µs | 36.9 KB |
-| 551 | maths/combinations | ✓ | 83µs | 38.5 KB |
-| 552 | maths/continued_fraction | ✓ | 137µs | 40.3 KB |
-| 553 | maths/decimal_isolate | ✓ | 88µs | 35.9 KB |
-| 554 | maths/decimal_to_fraction | ✓ | 176µs | 71.5 KB |
-| 555 | maths/dodecahedron | ✓ | 100µs | 36.4 KB |
-| 556 | maths/double_factorial | ✓ | 52µs | 38.6 KB |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 196µs | 73.3 KB |
-| 558 | maths/entropy | ✓ | 607µs | 37.1 KB |
-| 559 | maths/euclidean_distance | ✓ | 143µs | 34.8 KB |
-| 560 | maths/euler_method | ✓ | 634µs | 37.3 KB |
-| 561 | maths/euler_modified | ✓ | 175µs | 36.1 KB |
-| 562 | maths/eulers_totient | ✓ | 127µs | 37.8 KB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 138µs | 37.2 KB |
-| 564 | maths/factorial | ✓ | 158µs | 35.8 KB |
-| 565 | maths/factors | ✓ | 195µs | 36.9 KB |
-| 566 | maths/fast_inverse_sqrt | ✓ | 951µs | 70.3 KB |
-| 567 | maths/fermat_little_theorem | ✓ | 133µs | 39.1 KB |
-| 568 | maths/fibonacci | ✓ | 418µs | 78.3 KB |
-| 569 | maths/find_max | ✓ | 128µs | 36.9 KB |
-| 570 | maths/find_min | ✓ | 134µs | 40.2 KB |
-| 571 | maths/floor | ✓ | 76µs | 36.1 KB |
-| 572 | maths/gamma | ✓ | 1.515259s | 71.2 KB |
-| 573 | maths/gaussian | ✓ | 62µs | 35.5 KB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 79µs | 39.2 KB |
+| 545 | maths/ceil | ✓ | 60µs | 39.0 KB |
+| 546 | maths/chebyshev_distance | ✓ | 80µs | 38.4 KB |
+| 547 | maths/check_polygon | ✓ | 142µs | 39.3 KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 142µs | 36.8 KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 58µs | 40.5 KB |
+| 550 | maths/collatz_sequence | ✓ | 218µs | 36.9 KB |
+| 551 | maths/combinations | ✓ | 70µs | 36.3 KB |
+| 552 | maths/continued_fraction | ✓ | 141µs | 40.3 KB |
+| 553 | maths/decimal_isolate | ✓ | 70µs | 35.9 KB |
+| 554 | maths/decimal_to_fraction | ✓ | 181µs | 71.8 KB |
+| 555 | maths/dodecahedron | ✓ | 57µs | 37.0 KB |
+| 556 | maths/double_factorial | ✓ | 66µs | 39.0 KB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 241µs | 73.6 KB |
+| 558 | maths/entropy | ✓ | 689µs | 37.1 KB |
+| 559 | maths/euclidean_distance | ✓ | 176µs | 34.8 KB |
+| 560 | maths/euler_method | ✓ | 734µs | 37.4 KB |
+| 561 | maths/euler_modified | ✓ | 150µs | 36.1 KB |
+| 562 | maths/eulers_totient | ✓ | 162µs | 37.7 KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 161µs | 37.6 KB |
+| 564 | maths/factorial | ✓ | 59µs | 36.0 KB |
+| 565 | maths/factors | ✓ | 220µs | 37.5 KB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 964µs | 71.2 KB |
+| 567 | maths/fermat_little_theorem | ✓ | 186µs | 39.2 KB |
+| 568 | maths/fibonacci | ✓ | 275µs | 75.5 KB |
+| 569 | maths/find_max | ✓ | 109µs | 37.2 KB |
+| 570 | maths/find_min | ✓ | 166µs | 39.6 KB |
+| 571 | maths/floor | ✓ | 80µs | 36.2 KB |
+| 572 | maths/gamma | ✓ | 189.913ms | 37.3 KB |
+| 573 | maths/gaussian | ✓ | 68µs | 35.5 KB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 105µs | 39.4 KB |
 | 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 92µs | 37.7 KB |
 | 577 | maths/greatest_common_divisor | ✓ | 167µs | 37.5 KB |

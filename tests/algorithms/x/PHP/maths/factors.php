@@ -36,12 +36,19 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -77,16 +84,16 @@ $__start = _now();
 };
   function run_tests() {
   if (factors_of_a_number(1) != [1]) {
-  $panic('case1 failed');
+  _panic('case1 failed');
 }
   if (factors_of_a_number(5) != [1, 5]) {
-  $panic('case2 failed');
+  _panic('case2 failed');
 }
   if (factors_of_a_number(24) != [1, 2, 3, 4, 6, 8, 12, 24]) {
-  $panic('case3 failed');
+  _panic('case3 failed');
 }
   if (factors_of_a_number(-24) != []) {
-  $panic('case4 failed');
+  _panic('case4 failed');
 }
 };
   function main() {

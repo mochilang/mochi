@@ -1,16 +1,33 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-function mochi_abs($x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_abs($x) {
   if ($x < 0.0) {
   return -$x;
 }
   return $x;
-}
-function pow_int($base, $exp) {
+};
+  function pow_int($base, $exp) {
   $result = 1.0;
   $i = 0;
   while ($i < $exp) {
@@ -18,8 +35,8 @@ function pow_int($base, $exp) {
   $i = $i + 1;
 };
   return $result;
-}
-function nth_root($x, $n) {
+};
+  function nth_root($x, $n) {
   if ($x == 0.0) {
   return 0.0;
 }
@@ -31,16 +48,16 @@ function nth_root($x, $n) {
   $i = $i + 1;
 };
   return $guess;
-}
-function round_nearest($x) {
+};
+  function round_nearest($x) {
   if ($x >= 0.0) {
   $n = intval(($x + 0.5));
   return floatval($n);
 }
   $n = intval(($x - 0.5));
   return floatval($n);
-}
-function compute_geometric_mean($nums) {
+};
+  function compute_geometric_mean($nums) {
   if (count($nums) == 0) {
   _panic('no numbers');
 }
@@ -62,8 +79,8 @@ function compute_geometric_mean($nums) {
   $mean = $possible;
 }
   return $mean;
-}
-function test_compute_geometric_mean() {
+};
+  function test_compute_geometric_mean() {
   $eps = 0.0001;
   $m1 = compute_geometric_mean([2.0, 8.0]);
   if (mochi_abs($m1 - 4.0) > $eps) {
@@ -85,9 +102,17 @@ function test_compute_geometric_mean() {
   if (mochi_abs($m5 + 5.0) > $eps) {
   _panic('test5 failed');
 }
-}
-function main() {
+};
+  function main() {
   test_compute_geometric_mean();
   echo rtrim(json_encode(compute_geometric_mean([-3.0, -27.0]), 1344)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

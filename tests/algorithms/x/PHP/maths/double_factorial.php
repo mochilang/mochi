@@ -15,11 +15,15 @@ function _now() {
     }
     return hrtime(true);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function double_factorial_recursive($n) {
   if ($n < 0) {
-  $panic('double_factorial_recursive() not defined for negative values');
+  _panic('double_factorial_recursive() not defined for negative values');
 }
   if ($n <= 1) {
   return 1;
@@ -28,7 +32,7 @@ $__start = _now();
 };
   function double_factorial_iterative($n) {
   if ($n < 0) {
-  $panic('double_factorial_iterative() not defined for negative values');
+  _panic('double_factorial_iterative() not defined for negative values');
 }
   $result = 1;
   $i = $n;
@@ -40,33 +44,33 @@ $__start = _now();
 };
   function test_double_factorial() {
   if (double_factorial_recursive(0) != 1) {
-  $panic('0!! recursive failed');
+  _panic('0!! recursive failed');
 }
   if (double_factorial_iterative(0) != 1) {
-  $panic('0!! iterative failed');
+  _panic('0!! iterative failed');
 }
   if (double_factorial_recursive(1) != 1) {
-  $panic('1!! recursive failed');
+  _panic('1!! recursive failed');
 }
   if (double_factorial_iterative(1) != 1) {
-  $panic('1!! iterative failed');
+  _panic('1!! iterative failed');
 }
   if (double_factorial_recursive(5) != 15) {
-  $panic('5!! recursive failed');
+  _panic('5!! recursive failed');
 }
   if (double_factorial_iterative(5) != 15) {
-  $panic('5!! iterative failed');
+  _panic('5!! iterative failed');
 }
   if (double_factorial_recursive(6) != 48) {
-  $panic('6!! recursive failed');
+  _panic('6!! recursive failed');
 }
   if (double_factorial_iterative(6) != 48) {
-  $panic('6!! iterative failed');
+  _panic('6!! iterative failed');
 }
   $n = 0;
   while ($n <= 10) {
   if (double_factorial_recursive($n) != double_factorial_iterative($n)) {
-  $panic('double factorial mismatch');
+  _panic('double factorial mismatch');
 }
   $n = $n + 1;
 };

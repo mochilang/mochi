@@ -16,6 +16,7 @@ function _now() {
     return hrtime(true);
 }
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -23,6 +24,10 @@ function _len($x) {
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -129,7 +134,7 @@ $__start = _now();
 };
   function dual_pow($x, $n) {
   if ($n < 0) {
-  $panic('power must be a positive integer');
+  _panic('power must be a positive integer');
 }
   if ($n == 0) {
   return ['real' => 1.0, 'duals' => []];
@@ -165,28 +170,28 @@ $f1 = function($x) use (&$f1) {
   return dual_pow($x, 2);
 };
   if (differentiate($f1, 2.0, 2) != 2.0) {
-  $panic('f1 failed');
+  _panic('f1 failed');
 }
   $f2 = null;
 $f2 = function($x) use (&$f2, $f1) {
   return dual_mul(dual_pow($x, 2), dual_pow($x, 4));
 };
   if (differentiate($f2, 9.0, 2) != 196830.0) {
-  $panic('f2 failed');
+  _panic('f2 failed');
 }
   $f3 = null;
 $f3 = function($y) use (&$f3, $f1, $f2) {
   return dual_mul_real(dual_pow(dual_add_real($y, 3.0), 6), 0.5);
 };
   if (differentiate($f3, 3.5, 4) != 7605.0) {
-  $panic('f3 failed');
+  _panic('f3 failed');
 }
   $f4 = null;
 $f4 = function($y) use (&$f4, $f1, $f2, $f3) {
   return dual_pow($y, 2);
 };
   if (differentiate($f4, 4.0, 3) != 0.0) {
-  $panic('f4 failed');
+  _panic('f4 failed');
 }
 };
   function main() {

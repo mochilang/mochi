@@ -15,11 +15,15 @@ function _now() {
     }
     return hrtime(true);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function factorial($n) {
   if ($n < 0) {
-  $panic('factorial() not defined for negative values');
+  _panic('factorial() not defined for negative values');
 }
   $value = 1;
   $i = 1;
@@ -31,7 +35,7 @@ $__start = _now();
 };
   function factorial_recursive($n) {
   if ($n < 0) {
-  $panic('factorial() not defined for negative values');
+  _panic('factorial() not defined for negative values');
 }
   if ($n <= 1) {
   return 1;
@@ -42,12 +46,12 @@ $__start = _now();
   $i = 0;
   while ($i <= 10) {
   if (factorial($i) != factorial_recursive($i)) {
-  $panic('mismatch between factorial and factorial_recursive');
+  _panic('mismatch between factorial and factorial_recursive');
 }
   $i = $i + 1;
 };
   if (factorial(6) != 720) {
-  $panic('factorial(6) should be 720');
+  _panic('factorial(6) should be 720');
 }
 };
   function main() {

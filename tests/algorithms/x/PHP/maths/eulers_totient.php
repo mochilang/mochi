@@ -35,6 +35,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function totient($n) {
@@ -76,7 +80,7 @@ $__start = _now();
   $idx = 0;
   while ($idx < count($expected)) {
   if ($res[$idx] != $expected[$idx]) {
-  $panic('totient mismatch at ' . _str($idx));
+  _panic('totient mismatch at ' . _str($idx));
 }
   $idx = $idx + 1;
 };

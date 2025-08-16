@@ -32,12 +32,19 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -149,7 +156,7 @@ $__start = _now();
 };
   function fast_inverse_sqrt($number) {
   if ($number <= 0.0) {
-  $panic('Input must be a positive number.');
+  _panic('Input must be a positive number.');
 }
   $i = float_to_bits($number);
   $magic = 1597463007;
@@ -160,20 +167,20 @@ $__start = _now();
 };
   function test_fast_inverse_sqrt() {
   if (absf(fast_inverse_sqrt(10.0) - 0.3156857923527257) > 0.0001) {
-  $panic('fast_inverse_sqrt(10) failed');
+  _panic('fast_inverse_sqrt(10) failed');
 }
   if (absf(fast_inverse_sqrt(4.0) - 0.49915357479239103) > 0.0001) {
-  $panic('fast_inverse_sqrt(4) failed');
+  _panic('fast_inverse_sqrt(4) failed');
 }
   if (absf(fast_inverse_sqrt(4.1) - 0.4932849504615651) > 0.0001) {
-  $panic('fast_inverse_sqrt(4.1) failed');
+  _panic('fast_inverse_sqrt(4.1) failed');
 }
   $i = 50;
   while ($i < 60) {
   $y = fast_inverse_sqrt(floatval($i));
   $actual = 1.0 / sqrtApprox(floatval($i));
   if (!is_close($y, $actual, 0.00132)) {
-  $panic('relative error too high');
+  _panic('relative error too high');
 }
   $i = $i + 1;
 };

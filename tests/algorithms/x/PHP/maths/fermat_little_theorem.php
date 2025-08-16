@@ -16,6 +16,9 @@ function _now() {
     return hrtime(true);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -26,7 +29,7 @@ function _intdiv($a, $b) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function binary_exponentiation($a, $n, $mod) {
-  global $p, $left, $right_fast, $right_naive;
+  global $left, $p, $right_fast, $right_naive;
   if ($n == 0) {
   return 1;
 }
@@ -37,7 +40,7 @@ $__start = _now();
   return ($b * $b) % $mod;
 };
   function naive_exponent_mod($a, $n, $mod) {
-  global $p, $b, $left, $right_fast, $right_naive;
+  global $b, $left, $p, $right_fast, $right_naive;
   $result = 1;
   $i = 0;
   while ($i < $n) {
@@ -47,7 +50,7 @@ $__start = _now();
   return $result;
 };
   function print_bool($b) {
-  global $p, $a, $left, $right_fast, $right_naive;
+  global $a, $left, $p, $right_fast, $right_naive;
   if ($b) {
   echo rtrim((true ? 'true' : 'false')), PHP_EOL;
 } else {

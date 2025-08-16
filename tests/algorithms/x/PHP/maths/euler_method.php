@@ -19,6 +19,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function ceil_int($x) {
@@ -60,7 +64,7 @@ $f = function($x, $y) use ($f) {
   $ys = explicit_euler($f, 1.0, 0.0, 0.01, 5.0);
   $last = $ys[count($ys) - 1];
   if (abs_float($last - 144.77277243257308) > 0.001) {
-  $panic('explicit_euler failed');
+  _panic('explicit_euler failed');
 }
 };
   function main() {

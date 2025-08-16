@@ -31,6 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function mochi_floor($x) {
@@ -46,7 +50,7 @@ $__start = _now();
   $idx = 0;
   while ($idx < count($nums)) {
   if (mochi_floor($nums[$idx]) != $expected[$idx]) {
-  $panic('floor test failed');
+  _panic('floor test failed');
 }
   $idx = $idx + 1;
 };

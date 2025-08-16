@@ -32,6 +32,9 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -39,11 +42,15 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function find_min_iterative($nums) {
   if (count($nums) == 0) {
-  $panic('find_min_iterative() arg is an empty sequence');
+  _panic('find_min_iterative() arg is an empty sequence');
 }
   $min_num = $nums[0];
   $i = 0;
@@ -59,10 +66,10 @@ $__start = _now();
   function find_min_recursive($nums, $left, $right) {
   $n = count($nums);
   if ($n == 0) {
-  $panic('find_min_recursive() arg is an empty sequence');
+  _panic('find_min_recursive() arg is an empty sequence');
 }
   if ($left >= $n || $left < (0 - $n) || $right >= $n || $right < (0 - $n)) {
-  $panic('list index out of range');
+  _panic('list index out of range');
 }
   $l = $left;
   $r = $right;
@@ -86,28 +93,28 @@ $__start = _now();
   function test_find_min() {
   $a = [3.0, 2.0, 1.0];
   if (find_min_iterative($a) != 1.0) {
-  $panic('iterative test1 failed');
+  _panic('iterative test1 failed');
 }
   if (find_min_recursive($a, 0, count($a) - 1) != 1.0) {
-  $panic('recursive test1 failed');
+  _panic('recursive test1 failed');
 }
   $b = [-3.0, -2.0, -1.0];
   if (find_min_iterative($b) != (-3.0)) {
-  $panic('iterative test2 failed');
+  _panic('iterative test2 failed');
 }
   if (find_min_recursive($b, 0, count($b) - 1) != (-3.0)) {
-  $panic('recursive test2 failed');
+  _panic('recursive test2 failed');
 }
   $c = [3.0, -3.0, 0.0];
   if (find_min_iterative($c) != (-3.0)) {
-  $panic('iterative test3 failed');
+  _panic('iterative test3 failed');
 }
   if (find_min_recursive($c, 0, count($c) - 1) != (-3.0)) {
-  $panic('recursive test3 failed');
+  _panic('recursive test3 failed');
 }
   $d = [1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0, 10.0];
   if (find_min_recursive($d, (0 - count($d)), (0 - 1)) != 1.0) {
-  $panic('negative index test failed');
+  _panic('negative index test failed');
 }
 };
   function main() {
