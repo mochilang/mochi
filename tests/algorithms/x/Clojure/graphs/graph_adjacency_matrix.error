@@ -1,6 +1,0 @@
-run: exit status 1
-Execution error at main/add-edge (graph_adjacency_matrix.clj:112).
-missing vertex
-
-Full report at:
-/tmp/clojure-8845671870470562606.edn

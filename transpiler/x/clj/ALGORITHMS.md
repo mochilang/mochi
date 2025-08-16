@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-15 15:32 GMT+7
+Last updated: 2025-08-15 21:40 GMT+7
 
-## Algorithms Golden Test Checklist (782/1077)
+## Algorithms Golden Test Checklist (783/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -432,11 +432,11 @@ Last updated: 2025-08-15 15:32 GMT+7
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 51.653ms | 21.06MB |
 | 424 | graphs/even_tree | ✓ | 41.42ms | 20.93MB |
 | 425 | graphs/finding_bridges | ✓ | 97.715ms | 21.08MB |
-| 426 | graphs/frequent_pattern_graph_miner | ✓ | 73.632ms | 39.61MB |
-| 427 | graphs/g_topological_sort | ✓ | 44.021ms | 21.61MB |
-| 428 | graphs/gale_shapley_bigraph | ✓ | 65.588ms | 21.84MB |
-| 429 | graphs/graph_adjacency_list | ✓ | 55.512ms | 27.29MB |
-| 430 | graphs/graph_adjacency_matrix | error | 73.157ms | 24.73MB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 80.875ms | 39.78MB |
+| 427 | graphs/g_topological_sort | ✓ | 33.552ms | 21.63MB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 53.458ms | 21.66MB |
+| 429 | graphs/graph_adjacency_list | ✓ | 57.603ms | 27.25MB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 49.376ms | 25.54MB |
 | 431 | graphs/graph_list | ✓ | 70.352ms | 21.08MB |
 | 432 | graphs/graphs_floyd_warshall | error | 46.461ms | 21.04MB |
 | 433 | graphs/greedy_best_first | ✓ | 129.202ms | 25.78MB |
@@ -706,7 +706,7 @@ Last updated: 2025-08-15 15:32 GMT+7
 | 697 | matrix/binary_search_matrix | ✓ | 45.522ms | 20.70MB |
 | 698 | matrix/count_islands_in_matrix | error |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 1.952115s | 54.85MB |
-| 700 | matrix/count_paths | ✓ | 56.55ms | 21.30MB |
+| 700 | matrix/count_paths | ✓ | 56.189ms | 20.75MB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 60.933ms | 21.03MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 64.474ms | 27.05MB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 47.372ms | 25.28MB |
