@@ -1166,7 +1166,11 @@ type ForEachStmt struct {
 func (fe *ForEachStmt) emit(w io.Writer) {
 	if fe.IsMap {
 		usesSort = true
-		fmt.Fprintf(w, "for _, %s := range func() []%s { keys := make([]%s, 0, len(", fe.Name, fe.KeyType, fe.KeyType)
+		keyType := fe.KeyType
+		if keyType == "" {
+			keyType = "any"
+		}
+		fmt.Fprintf(w, "for _, %s := range func() []%s { keys := make([]%s, 0, len(", fe.Name, keyType, keyType)
 		if fe.Iterable != nil {
 			fe.Iterable.emit(w)
 		}
@@ -1232,10 +1236,31 @@ func (ias *IndexAssignStmt) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
-	fmt.Fprintf(w, "%s[", ias.Name)
-	ias.Index.emit(w)
-	fmt.Fprint(w, "] = ")
-	ias.Value.emit(w)
+	if assignAnyVars[ias.Name] {
+		keyType, valType := "any", "any"
+		if topEnv != nil {
+			if vt, err := topEnv.GetVar(ias.Name); err == nil {
+				if mt, ok := vt.(types.MapType); ok {
+					if kt := toGoTypeFromType(mt.Key); kt != "" {
+						keyType = kt
+					}
+					if vt := toGoTypeFromType(mt.Value); vt != "" {
+						valType = vt
+					}
+				}
+			}
+		}
+		fmt.Fprintf(w, "func(v any) map[%s]%s { if v == nil { return nil }; if vv, ok := v.(map[%s]%s); ok { return vv }; return v.(map[%s]%s) }(%s)[", keyType, valType, keyType, valType, keyType, valType, ias.Name)
+		ias.Index.emit(w)
+		fmt.Fprint(w, "] = ")
+		ias.Value.emit(w)
+		fmt.Fprint(w, "")
+	} else {
+		fmt.Fprintf(w, "%s[", ias.Name)
+		ias.Index.emit(w)
+		fmt.Fprint(w, "] = ")
+		ias.Value.emit(w)
+	}
 }
 
 // UpdateStmt updates fields of items in a list of structs.

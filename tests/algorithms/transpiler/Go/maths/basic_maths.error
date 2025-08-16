@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/maths/basic_maths.go:156:14: undefined: math
+../../../tests/algorithms/transpiler/Go/maths/basic_maths.go:167:15: undefined: math
