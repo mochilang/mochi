@@ -39,6 +39,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -61,14 +83,14 @@ var
   key2: string;
   CT: string;
   PT: string;
-  inp: string;
-  a: string;
   data: string;
-  b: string;
-  width: integer;
+  a: string;
   n: integer;
-  s: IntArrayArray;
+  b: string;
+  inp: string;
   table: IntArray;
+  s: IntArrayArray;
+  width: integer;
 function apply_table(inp: string; table: IntArray): string; forward;
 function left_shift(data: string): string; forward;
 function xor_(a: string; b: string): string; forward;
@@ -164,15 +186,15 @@ var
   apply_sbox_row: integer;
   apply_sbox_col: integer;
   apply_sbox_val: integer;
-  apply_sbox_out: string;
+  apply_sbox_out_: string;
 begin
   apply_sbox_row_bits := copy(data, 1, 1) + copy(data, Length(data) - 1+1, (Length(data) - (Length(data) - 1)));
   apply_sbox_col_bits := copy(data, 2, 2);
   apply_sbox_row := bin_to_int(apply_sbox_row_bits);
   apply_sbox_col := bin_to_int(apply_sbox_col_bits);
   apply_sbox_val := s[apply_sbox_row][apply_sbox_col];
-  apply_sbox_out := int_to_binary(apply_sbox_val);
-  exit(apply_sbox_out);
+  apply_sbox_out_ := int_to_binary(apply_sbox_val);
+  exit(apply_sbox_out_);
 end;
 function f(expansion: IntArray; s0: IntArrayArray; s1: IntArrayArray; key: string; message: string): string;
 var

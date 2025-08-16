@@ -38,15 +38,37 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_real_to_str(xs: array of real): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
 var i: integer;
 begin
-  Result := '[';
+  write('[');
   for i := 0 to High(xs) do begin
-    Result := Result + FloatToStr(xs[i]);
-    if i < High(xs) then Result := Result + ' ';
+    write(xs[i]);
+    if i < High(xs) then write(', ');
   end;
-  Result := Result + ']';
+  writeln(']');
+end;
+procedure show_list_real(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(' ');
+  end;
+  write(']');
 end;
 var
   bench_start_0: integer;
@@ -54,8 +76,8 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   sample: array of real;
-  x: real;
   vector: RealArray;
+  x: real;
 function exp_taylor(x: real): real; forward;
 function sigmoid(vector: RealArray): RealArray; forward;
 function gaussian_error_linear_unit(vector: RealArray): RealArray; forward;
@@ -114,9 +136,9 @@ begin
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
   sample := [-1, 1, 2];
-  writeln(list_real_to_str(sigmoid(sample)));
-  writeln(list_real_to_str(gaussian_error_linear_unit(sample)));
-  writeln(list_real_to_str(gaussian_error_linear_unit([-3])));
+  show_list_real(sigmoid(sample));
+  show_list_real(gaussian_error_linear_unit(sample));
+  show_list_real(gaussian_error_linear_unit([-3]));
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
   writeln('{');

@@ -50,6 +50,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -60,14 +82,14 @@ var
   weight: array of real;
   foods: ThingArray;
   res: GreedyResult;
-  ts: ThingArray;
+  weights: RealArray;
   items: ThingArray;
-  names: StrArray;
+  ts: ThingArray;
   t: Thing;
-  values: RealArray;
+  names: StrArray;
   key_func: FuncType1;
   max_cost: real;
-  weights: RealArray;
+  values: RealArray;
 function makeGreedyResult(items: ThingArray; total_value: real): GreedyResult; forward;
 function makeThing(name: string; value: real; weight: real): Thing; forward;
 function get_value(t: Thing): real; forward;

@@ -1,6 +1,6 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
-uses SysUtils, fgl;
+uses SysUtils, Variants, fgl;
 type IntArray = array of integer;
 type NumberContainer = record
   numbermap: specialize TFPGMap<integer, IntArray>;
@@ -42,6 +42,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -52,16 +74,16 @@ var
   cont: NumberContainer;
   val: integer;
   index: integer;
-  item: integer;
   array_: IntArray;
+  item: integer;
+  xs: IntArray;
   num: integer;
   idx: integer;
-  xs: IntArray;
 function makeNumberContainer(numbermap: specialize TFPGMap<integer, IntArray>; indexmap: specialize TFPGMap<integer, integer>): NumberContainer; forward;
 function remove_at(xs: IntArray; idx: integer): IntArray; forward;
 function insert_at(xs: IntArray; idx: integer; val: integer): IntArray; forward;
-function binary_search_delete(array_: IntArray; item: integer): IntArray; forward;
-function binary_search_insert(array_: IntArray; index: integer): IntArray; forward;
+function binary_search_delete(binary_search_delete_array_: IntArray; item: integer): IntArray; forward;
+function binary_search_insert(binary_search_delete_array_: IntArray; index: integer): IntArray; forward;
 function change(cont: NumberContainer; idx: integer; num: integer): NumberContainer; forward;
 function find(cont: NumberContainer; num: integer): integer; forward;
 function makeNumberContainer(numbermap: specialize TFPGMap<integer, IntArray>; indexmap: specialize TFPGMap<integer, integer>): NumberContainer;
@@ -103,7 +125,7 @@ end;
 end;
   exit(insert_at_res);
 end;
-function binary_search_delete(array_: IntArray; item: integer): IntArray;
+function binary_search_delete(binary_search_delete_array_: IntArray; item: integer): IntArray;
 var
   binary_search_delete_low: integer;
   binary_search_delete_high: integer;
@@ -129,11 +151,11 @@ end;
   writeln('ValueError: Either the item is not in the array or the array was unsorted');
   exit(binary_search_delete_arr);
 end;
-function binary_search_insert(array_: IntArray; index: integer): IntArray;
+function binary_search_insert(binary_search_delete_array_: IntArray; index: integer): IntArray;
 var
   binary_search_insert_low: integer;
   binary_search_insert_high: integer;
-  binary_search_insert_arr: array of integer;
+  binary_search_insert_arr: Variant;
   binary_search_insert_mid: integer;
 begin
   binary_search_insert_low := 0;

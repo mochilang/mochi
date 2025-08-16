@@ -38,6 +38,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
@@ -53,9 +75,9 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
+  x: real;
   vector: RealArray;
   beta: real;
-  x: real;
 function sqrtApprox(x: real): real; forward;
 function squareplus(vector: RealArray; beta: real): RealArray; forward;
 procedure main(); forward;

@@ -38,15 +38,37 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_real_to_str(xs: array of real): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
 var i: integer;
 begin
-  Result := '[';
+  write('[');
   for i := 0 to High(xs) do begin
-    Result := Result + FloatToStr(xs[i]);
-    if i < High(xs) then Result := Result + ' ';
+    write(xs[i]);
+    if i < High(xs) then write(', ');
   end;
-  Result := Result + ']';
+  writeln(']');
+end;
+procedure show_list_real(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(' ');
+  end;
+  write(']');
 end;
 var
   bench_start_0: integer;
@@ -54,26 +76,26 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   vector: RealArray;
-  x: real;
   lambda_: real;
+  x: real;
   alpha: real;
-function exp(x: real): real; forward;
+function exp_(x: real): real; forward;
 function scaled_exponential_linear_unit(vector: RealArray; alpha: real; lambda_: real): RealArray; forward;
-function exp(x: real): real;
+function exp_(x: real): real;
 var
-  exp_term: real;
-  exp_sum: real;
-  exp_n: integer;
+  exp__term: real;
+  exp__sum: real;
+  exp__n: integer;
 begin
-  exp_term := 1;
-  exp_sum := 1;
-  exp_n := 1;
-  while exp_n < 20 do begin
-  exp_term := (exp_term * x) / Double(exp_n);
-  exp_sum := exp_sum + exp_term;
-  exp_n := exp_n + 1;
+  exp__term := 1;
+  exp__sum := 1;
+  exp__n := 1;
+  while exp__n < 20 do begin
+  exp__term := (exp__term * x) / Double(exp__n);
+  exp__sum := exp__sum + exp__term;
+  exp__n := exp__n + 1;
 end;
-  exit(exp_sum);
+  exit(exp__sum);
 end;
 function scaled_exponential_linear_unit(vector: RealArray; alpha: real; lambda_: real): RealArray;
 var
@@ -100,8 +122,8 @@ begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln(list_real_to_str(scaled_exponential_linear_unit([1.3, 3.7, 2.4], 1.6732, 1.0507)));
-  writeln(list_real_to_str(scaled_exponential_linear_unit([1.3, 4.7, 8.2], 1.6732, 1.0507)));
+  show_list_real(scaled_exponential_linear_unit([1.3, 3.7, 2.4], 1.6732, 1.0507));
+  show_list_real(scaled_exponential_linear_unit([1.3, 4.7, 8.2], 1.6732, 1.0507));
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
   writeln('{');

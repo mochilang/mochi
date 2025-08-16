@@ -40,6 +40,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
@@ -68,8 +90,8 @@ var
   vehicles: array of RealArray;
   weights: array of integer;
   result_: RealArrayArray;
-  data_lists: RealArrayArray;
   source_data: RealArrayArray;
+  data_lists: RealArrayArray;
   score_lists: RealArrayArray;
 function get_data(source_data: RealArrayArray): RealArrayArray; forward;
 function calculate_each_score(data_lists: RealArrayArray; weights: IntArray): RealArrayArray; forward;

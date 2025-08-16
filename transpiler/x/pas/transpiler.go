@@ -1402,6 +1402,10 @@ func (p *Program) Emit() []byte {
 	for _, a := range p.LateAliases {
 		aliasNames[a] = struct{}{}
 	}
+	recordNames := make(map[string]struct{})
+	for _, r := range p.Records {
+		recordNames[r.Name] = struct{}{}
+	}
 	for _, r := range p.Records {
 		uses := false
 		for _, f := range r.Fields {
@@ -1412,6 +1416,10 @@ func (p *Program) Emit() []byte {
 				}
 			}
 			if uses {
+				break
+			}
+			if _, ok := recordNames[f.Type]; ok && f.Type != r.Name {
+				uses = true
 				break
 			}
 		}
@@ -1501,7 +1509,9 @@ func (p *Program) Emit() []byte {
 	buf.WriteString("procedure panic(msg: string);\nbegin\n  writeln(msg);\n  halt(1);\nend;\n")
 	buf.WriteString("procedure error(msg: string);\nbegin\n  panic(msg);\nend;\n")
 	buf.WriteString("function _to_float(x: integer): real;\nbegin\n  _to_float := x;\nend;\n")
-	buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := _to_float(x);\nend;\n")
+	if _, ok := funcNames["to_float"]; !ok {
+		buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := _to_float(x);\nend;\n")
+	}
 	buf.WriteString("procedure json(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
 	if p.NeedJSON {
 		buf.WriteString("procedure json_intarray(xs: IntArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
@@ -1512,7 +1522,9 @@ func (p *Program) Emit() []byte {
 	}
 	if p.NeedToFloat {
 		buf.WriteString("function _to_float(x: real): real; begin _to_float := x; end;\n")
-		buf.WriteString("function to_float(x: real): real; begin to_float := x; end;\n")
+		if _, ok := funcNames["to_float"]; !ok {
+			buf.WriteString("function to_float(x: real): real; begin to_float := x; end;\n")
+		}
 	}
 	if p.UseSHA256 {
 		buf.WriteString("function _sha256(bs: IntArray): IntArray;\nvar tmp, outFile, hex: string; f: file; t: Text; i: integer; res: IntArray;\nbegin\n  tmp := GetTempFileName('', 'mochi_sha256');\n  Assign(f, tmp);\n  Rewrite(f,1);\n  for i := 0 to Length(bs)-1 do\n    BlockWrite(f, bs[i],1);\n  Close(f);\n  outFile := tmp + '.hash';\n  fpSystem(PChar(AnsiString('sha256sum ' + tmp + ' > ' + outFile)));\n  Assign(t, outFile);\n  Reset(t);\n  ReadLn(t, hex);\n  Close(t);\n  DeleteFile(tmp);\n  DeleteFile(outFile);\n  hex := Trim(hex);\n  SetLength(res, 32);\n  for i := 0 to 31 do\n    res[i] := StrToInt('$'+Copy(hex, i*2+1,2));\n  _sha256 := res;\nend;\n")
@@ -2679,6 +2691,10 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 								vd.Type = currProg.addArrayAlias(pasTypeFromType(t.Elem))
 							case types.BoolType:
 								vd.Type = "boolean"
+							default:
+								if typ := pasTypeFromType(t); typ != "" {
+									vd.Type = typ
+								}
 							}
 						}
 					}
@@ -2844,8 +2860,11 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						} else if strings.HasPrefix(tt, "array of RealArray") {
 							currProg.NeedShowListReal2 = true
 							currProg.NeedShowListReal = true
+							currProg.NeedListStrReal = true
+							currProg.NeedListStrRealList = true
 						} else if strings.HasPrefix(tt, "array of real") {
 							currProg.NeedShowListReal = true
+							currProg.NeedListStrReal = true
 						} else if strings.HasPrefix(tt, "array of int64") {
 							currProg.NeedShowListInt64 = true
 						} else if strings.HasPrefix(tt, "array of Variant") {
@@ -5493,6 +5512,11 @@ func inferType(e Expr) string {
 			return "real"
 		case "Double":
 			return "real"
+		case "copy":
+			if len(v.Args) > 0 {
+				return inferType(v.Args[0])
+			}
+			return ""
 		case "concat":
 			if len(v.Args) > 0 {
 				t := inferType(v.Args[0])
@@ -5822,8 +5846,9 @@ func addConstructors(p *Program) {
 				elem := strings.TrimPrefix(typ, "array of ")
 				typ = p.addArrayAlias(elem)
 			}
-			params = append(params, formatParam(f.Name, typ))
-			body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{f.Name}}, Expr: &VarRef{Name: f.Name}})
+			paramName := sanitize(f.Name)
+			params = append(params, fmt.Sprintf("%s: %s", paramName, pasType(typ)))
+			body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{f.Name}}, Expr: &VarRef{Name: paramName}})
 		}
 		fn := FunDecl{Name: ctorName(r.Name), Params: params, ReturnType: r.Name, Body: body}
 		p.Funs = append([]FunDecl{fn}, p.Funs...)

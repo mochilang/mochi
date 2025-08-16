@@ -65,12 +65,12 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  d_value: real;
-  x: real;
   vector: RealArray;
-  b_value: real;
   a_value: real;
+  x: real;
   c_value: real;
+  b_value: real;
+  d_value: real;
 function exp_(x: real): real; forward;
 function soboleva_modified_hyperbolic_tangent(vector: RealArray; a_value: real; b_value: real; c_value: real; d_value: real): RealArray; forward;
 procedure main(); forward;

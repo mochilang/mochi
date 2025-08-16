@@ -1,10 +1,9 @@
-compile: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/algorithms/x/Pascal/neural_network/back_propagation_neural_network.pas
-back_propagation_neural_network.pas(5,28) Error: Identifier not found "Layer"
-back_propagation_neural_network.pas(5,33) Error: Error in type definition
-back_propagation_neural_network.pas(91,32) Fatal: Syntax error, "identifier" expected but ":" found
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode
+run: exit status 217
+An unhandled exception occurred at $0000000000402EAA:
+EAccessViolation: Access violation
+  $0000000000402EAA
+  $0000000000404701
+  $0000000000404E6D
+  $0000000000405F3A
+  $0000000000406116
+

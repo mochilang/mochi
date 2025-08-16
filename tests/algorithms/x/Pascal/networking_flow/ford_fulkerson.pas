@@ -40,6 +40,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -47,8 +69,8 @@ var
   bench_memdiff_0: int64;
   INF: integer;
   graph: array of IntArray;
-  parent: IntArray;
   sink: integer;
+  parent: IntArray;
   source: integer;
 function breadth_first_search(graph: IntArrayArray; source: integer; sink: integer; parent: IntArray): boolean; forward;
 function ford_fulkerson(graph: IntArrayArray; source: integer; sink: integer): integer; forward;

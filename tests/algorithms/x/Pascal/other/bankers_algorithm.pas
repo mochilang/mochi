@@ -1,8 +1,8 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
 type BoolArray = array of boolean;
+type IntArray = array of integer;
 type IntArrayArray = array of IntArray;
 type State = record
   claim: array of integer;
@@ -45,6 +45,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -53,9 +75,9 @@ var
   claim_vector: array of integer;
   allocated_resources_table: array of IntArray;
   maximum_claim_table: array of IntArray;
-  max: IntArrayArray;
   claim: IntArray;
   alloc: IntArrayArray;
+  max: IntArrayArray;
   alloc_sum: IntArray;
 function makeState(claim: IntArray; alloc: IntArrayArray; max: IntArrayArray): State; forward;
 function processes_resource_summation(alloc: IntArrayArray): IntArray; forward;
