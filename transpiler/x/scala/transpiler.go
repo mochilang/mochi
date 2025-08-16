@@ -1209,21 +1209,21 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(")
-	a.List.emit(w)
-	fmt.Fprint(w, " :+ ")
-	if ie, ok := a.Elem.(*IfExpr); ok {
-		t1 := inferTypeWithEnv(ie.Then, nil)
-		t2 := inferTypeWithEnv(ie.Else, nil)
-		if t1 != "BigInt" || t2 != "BigInt" {
-			needsBigInt = true
-			fmt.Fprint(w, "BigInt(")
-			a.Elem.emit(w)
-			fmt.Fprint(w, ")")
-			fmt.Fprint(w, ")")
-			return
-		}
-	}
+        fmt.Fprint(w, "(")
+        a.List.emit(w)
+        fmt.Fprint(w, " :+ ")
+        if ie, ok := a.Elem.(*IfExpr); ok {
+                t1 := inferTypeWithEnv(ie.Then, nil)
+                t2 := inferTypeWithEnv(ie.Else, nil)
+               if t1 == "BigInt" || t2 == "BigInt" {
+                       needsBigInt = true
+                       fmt.Fprint(w, "BigInt(")
+                       a.Elem.emit(w)
+                       fmt.Fprint(w, ")")
+                       fmt.Fprint(w, ")")
+                       return
+               }
+        }
 	if be, ok := a.Elem.(*BinaryExpr); ok {
 		if il, ok2 := be.Left.(*IntLit); ok2 && il.Value == 0 && be.Op == "-" {
 			if _, ok3 := be.Right.(*IntLit); ok3 {
@@ -5242,9 +5242,14 @@ func toScalaTypeFromType(t types.Type) string {
 		return "BigRat"
 	case types.ListType:
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
-	case types.MapType:
-		return fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
-	case types.FuncType:
+        case types.MapType:
+                return fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+       case types.UnionType:
+               if tt.Name != "" {
+                       return tt.Name
+               }
+               return "Any"
+        case types.FuncType:
 		parts := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
 			s := toScalaTypeFromType(p)
