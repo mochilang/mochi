@@ -3054,6 +3054,14 @@ func (a *AppendExpr) emit(w io.Writer) {
 	if jt == "" {
 		jt = elem
 	}
+	if jt == "Object[]" {
+		if ll, ok := a.Value.(*ListLit); ok && len(ll.Elems) > 0 {
+			if t := inferType(ll.Elems[0]); t != "" && t != "Object" {
+				elem = t + "[]"
+				jt = javaType(elem)
+			}
+		}
+	}
 	if _, ok := a.Value.(*NullLit); ok {
 		switch elem {
 		case "int", "long":

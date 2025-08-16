@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-16 12:07 GMT+7
+Last updated: 2025-08-16 12:29 GMT+7
 
-## Algorithms Golden Test Checklist (952/1077)
+## Algorithms Golden Test Checklist (953/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -509,7 +509,7 @@ Last updated: 2025-08-16 12:07 GMT+7
 | 500 | machine_learning/data_transformations | ✓ | 28.0ms | 59.09KB |
 | 501 | machine_learning/decision_tree | ✓ | 43.0ms | 49.00KB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 18.0ms | 504B |
-| 503 | machine_learning/forecasting/run | error |  |  |
+| 503 | machine_learning/forecasting/run | ✓ | 30.0ms | 57.38KB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 30.0ms | 63.75KB |
 | 506 | machine_learning/gradient_descent | ✓ | 41.0ms | 49.46KB |
