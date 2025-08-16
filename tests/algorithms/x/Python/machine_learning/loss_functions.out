@@ -1,26 +1,13 @@
-20.0
-0.53
-60.0
-0.20666666666666664
+0.2529995012327421
+0.008257977659239775
+0.567395975254385
+0.0025966118981496423
 1.52
 2.1020000000000003
 14.693999999999999
 2.4200000000000004
-0.0
-0.75
-228152458.75893378
-0.0
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 322, in <module>
-    main()
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 321, in main
-    print(kullback_leibler_divergence(y_true_kl, y_pred_kl))
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 288, in kullback_leibler_divergence
-    total = total + y_true[i] * ln(y_true[i] // y_pred[i])
-                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 43, in ln
-    panic("ln domain error")
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 11, in panic
-    raise Exception(msg)
-Exception: ln domain error
+0.5177530641803918
+0.13125
+4.911450390553533
+0.012500000000000022
+0.030478754035472025

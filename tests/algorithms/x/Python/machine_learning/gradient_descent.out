@@ -3,6 +3,6 @@ Number of iterations:5993
 Testing gradient descent for a linear hypothesis function.
 
 Actual output value:555.0
-Hypothesis output:555.2244946726339
+Hypothesis output:555.224494672634
 Actual output value:150.0
-Hypothesis output:150.01694829900703
+Hypothesis output:150.016948299007
