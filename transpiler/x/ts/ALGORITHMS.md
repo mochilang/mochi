@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-16 05:50 UTC
+Last updated: 2025-08-16 07:51 UTC
 
 ## Algorithms Golden Test Checklist (1058/1077)
 | Index | Name | Status | Duration | Memory |
@@ -534,22 +534,22 @@ Last updated: 2025-08-16 05:50 UTC
 | 525 | machine_learning/xgboost_classifier | ✓ | 571.223ms | 118.9 KB |
 | 526 | machine_learning/xgboost_regressor | ✓ | 571.223ms | 333.6 KB |
 | 527 | maths/abs | ✓ | 571.223ms | 24.0 KB |
-| 528 | maths/addition_without_arithmetic | ✓ | 571.223ms | 37.8 KB |
-| 529 | maths/aliquot_sum | ✓ | 571.223ms | 25.2 KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 571.223ms | 542.8 KB |
+| 529 | maths/aliquot_sum | ✓ | 571.223ms | 25.0 KB |
 | 530 | maths/allocation_number | ✓ | 571.223ms | 274.7 KB |
 | 531 | maths/arc_length | ✓ | 571.223ms | 275.4 KB |
 | 532 | maths/area | ✓ | 571.223ms | 358.5 KB |
-| 533 | maths/area_under_curve | ✓ | 571.223ms | 534.5 KB |
+| 533 | maths/area_under_curve | ✓ | 571.223ms | 486.6 KB |
 | 534 | maths/average_absolute_deviation | ✓ | 571.223ms | 289.7 KB |
 | 535 | maths/average_mean | ✓ | 571.223ms | 21.7 KB |
 | 536 | maths/average_median | ✓ | 571.223ms | 296.1 KB |
 | 537 | maths/average_mode | ✓ | 571.223ms | 106.4 KB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 571.223ms | 184.4 KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 571.223ms | 491.2 KB |
 | 539 | maths/base_neg2_conversion | ✓ | 571.223ms | 22.7 KB |
 | 540 | maths/basic_maths | ✓ | 571.223ms | 26.9 KB |
 | 541 | maths/binary_exponentiation | ✓ | 571.223ms | 22.9 KB |
-| 542 | maths/binary_multiplication | ✓ | 571.223ms | 22.4 KB |
-| 543 | maths/binomial_coefficient | ✓ | 571.223ms | 536.2 KB |
+| 542 | maths/binary_multiplication | ✓ | 571.223ms | 22.3 KB |
+| 543 | maths/binomial_coefficient | ✓ | 571.223ms | 536.7 KB |
 | 544 | maths/binomial_distribution | ✓ | 571.223ms | 2.7 KB |
 | 545 | maths/ceil | ✓ | 571.223ms | 305.4 KB |
 | 546 | maths/chebyshev_distance | ✓ | 571.223ms | 18.9 KB |
@@ -560,25 +560,25 @@ Last updated: 2025-08-16 05:50 UTC
 | 551 | maths/combinations | ✓ | 571.223ms | 25.2 KB |
 | 552 | maths/continued_fraction | ✓ | 571.223ms | 16.3 KB |
 | 553 | maths/decimal_isolate | ✓ | 571.223ms | 294.9 KB |
-| 554 | maths/decimal_to_fraction | ✓ | 571.223ms | 291.1 KB |
+| 554 | maths/decimal_to_fraction | ✓ | 571.223ms | 791.6 KB |
 | 555 | maths/dodecahedron | ✓ | 571.223ms | 27.7 KB |
 | 556 | maths/double_factorial | ✓ | 571.223ms | 15.6 KB |
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 571.223ms | 95.3 KB |
-| 558 | maths/entropy | ✓ | 571.223ms | 496.7 KB |
-| 559 | maths/euclidean_distance | ✓ | 571.223ms | 34.6 KB |
-| 560 | maths/euler_method | ✓ | 571.223ms | 1.3 MB |
+| 558 | maths/entropy | ✓ | 571.223ms | 471.4 KB |
+| 559 | maths/euclidean_distance | ✓ | 571.223ms | 34.9 KB |
+| 560 | maths/euler_method | ✓ | 571.223ms | 305.5 KB |
 | 561 | maths/euler_modified | ✓ | 571.223ms | 34.6 KB |
-| 562 | maths/eulers_totient | ✓ | 571.223ms | 565.7 KB |
+| 562 | maths/eulers_totient | ✓ | 571.223ms | 566.1 KB |
 | 563 | maths/extended_euclidean_algorithm | ✓ | 571.223ms | 17.5 KB |
 | 564 | maths/factorial | ✓ | 571.223ms | 15.0 KB |
-| 565 | maths/factors | ✓ |  |  |
-| 566 | maths/fast_inverse_sqrt | ✓ | 571.223ms | 396.2 KB |
+| 565 | maths/factors | ✓ | 571.223ms | 20.7 KB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 571.223ms | 397.0 KB |
 | 567 | maths/fermat_little_theorem | ✓ | 571.223ms | 16.7 KB |
-| 568 | maths/fibonacci | ✓ |  |  |
+| 568 | maths/fibonacci | ✓ | 571.223ms | 70.7 KB |
 | 569 | maths/find_max | ✓ | 571.223ms | 32.7 KB |
-| 570 | maths/find_min | ✓ | 571.223ms | 30.7 KB |
+| 570 | maths/find_min | ✓ | 571.223ms | 535.3 KB |
 | 571 | maths/floor | ✓ | 571.223ms | 17.2 KB |
-| 572 | maths/gamma | ✓ | 571.223ms | 73.1 KB |
+| 572 | maths/gamma | ✓ | 571.223ms | 770.9 KB |
 | 573 | maths/gaussian | ✓ | 571.223ms | 17.3 KB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 571.223ms | 24.8 KB |
 | 575 | maths/geometric_mean | ✓ |  |  |
