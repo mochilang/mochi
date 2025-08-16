@@ -5386,16 +5386,18 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			}
 		}
 	}
-	if strings.HasPrefix(ret, "std.StringHashMap(") {
-		for _, st := range body {
-			if rs, ok := st.(*ReturnStmt); ok {
-				if ml, ok2 := rs.Value.(*MapLit); ok2 && ml.StructName != "" {
-					ret = ml.StructName
-					break
-				}
-			}
-		}
-	}
+        if strings.HasPrefix(ret, "std.StringHashMap(") {
+                for _, st := range body {
+                        if rs, ok := st.(*ReturnStmt); ok {
+                                if ml, ok2 := rs.Value.(*MapLit); ok2 && ml.StructName != "" {
+                                        if _, isVariant := variantTags[ml.StructName]; !isVariant {
+                                                ret = ml.StructName
+                                                break
+                                        }
+                                }
+                        }
+                }
+        }
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
 	if ret == "[]Value" {
 		for _, st := range f.Body {
