@@ -154,6 +154,23 @@ var (
 // JSON object with duration and memory statistics on completion.
 func SetBenchMain(v bool) { benchMain = v }
 
+// listTypeToC converts a Mochi list type like "list<int>" into the
+// corresponding C slice notation (e.g. "long long[]"). It only handles the
+// primitive element types used by TheAlgorithms programs.
+func listTypeToC(typ string) string {
+	inner := strings.TrimSuffix(strings.TrimPrefix(typ, "list<"), ">")
+	switch inner {
+	case "int":
+		return "long long[]"
+	case "float":
+		return "double[]"
+	case "string":
+		return "const char*[]"
+	default:
+		return inner + "[]"
+	}
+}
+
 func emitLenExpr(w io.Writer, e Expr) {
 	switch v := e.(type) {
 	case *VarRef:
@@ -1365,16 +1382,40 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 
 func (d *DeclStmt) emit(w io.Writer, indent int) {
 	typ := d.Type
+	if strings.HasPrefix(typ, "list<") && strings.HasSuffix(typ, ">") {
+		typ = listTypeToC(typ)
+	}
 	if typ == "" {
-		if vt, ok := varTypes[d.Name]; ok && vt != "" {
-			typ = vt
-		} else if t := inferExprType(currentEnv, d.Value); t != "" {
+		if t := inferExprType(currentEnv, d.Value); t != "" {
 			typ = t
+		} else if vt, ok := varTypes[d.Name]; ok && vt != "" {
+			typ = vt
+		}
+	}
+	if typ == "double[]" {
+		var lst *ListLit
+		if l, ok := d.Value.(*ListLit); ok {
+			lst = l
+		} else if cl, ok := constLists[d.Name]; ok {
+			lst = cl
+		}
+		if lst != nil && len(lst.Elems) > 0 {
+			allInt := true
+			for _, e := range lst.Elems {
+				if inferExprType(currentEnv, e) != "long long" {
+					allInt = false
+					break
+				}
+			}
+			if allInt {
+				typ = "long long[]"
+			}
 		}
 	}
 	if typ == "" || typ == "int" {
 		typ = "long long"
 	}
+	varTypes[d.Name] = typ
 	if vr, ok := d.Value.(*VarRef); ok && vr.Name == d.Name {
 		return
 	}
