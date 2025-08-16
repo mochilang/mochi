@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (514/1077) - Last updated 2025-08-16 00:08 +0700:
+Checklist of programs that currently transpile and run (519/1077) - Last updated 2025-08-16 10:03 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -445,11 +445,11 @@ Checklist of programs that currently transpile and run (514/1077) - Last updated
 | 438 | graphs/lanczos_eigenvectors |  |  |  |
 | 439 | graphs/markov_chain | ✓ | 889us | 1.6 MB |
 | 440 | graphs/matching_min_vertex_cover | ✓ | 418us | 1.6 MB |
-| 441 | graphs/minimum_path_sum |  |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |  |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |  |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |  |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |  |  |  |
+| 441 | graphs/minimum_path_sum | ✓ | 475us | 1.5 MB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 766us | 1.6 MB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 304us | 1.6 MB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 538us | 1.5 MB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 722us | 1.5 MB |
 | 446 | graphs/minimum_spanning_tree_prims2 |  |  |  |
 | 447 | graphs/multi_heuristic_astar |  |  |  |
 | 448 | graphs/page_rank |  |  |  |
