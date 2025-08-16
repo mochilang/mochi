@@ -2211,11 +2211,11 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return 0\n}\n")
 	}
 	if p.UseIndex {
-		buf.WriteString("func _idx<T>(_ xs: [T], _ i: Int) -> T? {\n")
+		buf.WriteString("func _idx<T>(_ xs: [T], _ i: Int) -> T {\n")
 		buf.WriteString("    var idx = i\n")
 		buf.WriteString("    if idx < 0 { idx += xs.count }\n")
 		buf.WriteString("    if idx >= 0 && idx < xs.count { return xs[idx] }\n")
-		buf.WriteString("    return xs.first\n}\n")
+		buf.WriteString("    return xs.first!\n}\n")
 		buf.WriteString("func _idx<K: Hashable, V>(_ m: [K: V], _ k: K) -> V? {\n")
 		buf.WriteString("    return m[k]\n}\n")
 	}
@@ -3205,9 +3205,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 					usesSet = true
 					tmpVarCounter++
 					tmpName := fmt.Sprintf("_tmp%d", tmpVarCounter)
-					varDecl := &VarDecl{Name: tmpName, Expr: &CastExpr{Expr: &CallExpr{Func: "_idx", Args: []Expr{ie.Base, ie.Index}}, Type: swiftTypeOf(nodeType) + "!"}}
+					varDecl := &VarDecl{Name: tmpName, Expr: &CastExpr{Expr: &CallExpr{Func: "_idx", Args: []Expr{ie.Base, ie.Index}}, Type: swiftTypeOf(nodeType)}}
 					fieldAssign := &IndexAssignStmt{Target: &FieldExpr{Target: &NameExpr{Name: tmpName}, Name: fe.Name}, Value: val}
-					arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{ie.Base, ie.Index, &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: swiftTypeOf(nodeType) + "!"}}}}
+					arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{ie.Base, ie.Index, &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: swiftTypeOf(nodeType)}}}}
 					return &BlockStmt{Stmts: []Stmt{varDecl, fieldAssign, arrAssign}}, nil
 				}
 			}
@@ -3218,9 +3218,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 					usesSet = true
 					tmpVarCounter++
 					tmpName := fmt.Sprintf("_tmp%d", tmpVarCounter)
-					varDecl := &VarDecl{Name: tmpName, Expr: &CastExpr{Expr: &CallExpr{Func: "_idx", Args: []Expr{outer.Base, outer.Index}}, Type: swiftTypeOf(outerType) + "!"}}
+					varDecl := &VarDecl{Name: tmpName, Expr: &CastExpr{Expr: &CallExpr{Func: "_idx", Args: []Expr{outer.Base, outer.Index}}, Type: swiftTypeOf(outerType)}}
 					setInner := &AssignStmt{Name: tmpName, Expr: &CallExpr{Func: "_set", Args: []Expr{&NameExpr{Name: tmpName}, ie.Index, val}}}
-					arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{outer.Base, outer.Index, &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: swiftTypeOf(outerType) + "!"}}}}
+					arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{outer.Base, outer.Index, &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: swiftTypeOf(outerType)}}}}
 					return &BlockStmt{Stmts: []Stmt{varDecl, setInner, arrAssign}}, nil
 				}
 			}
