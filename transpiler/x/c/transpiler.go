@@ -7562,7 +7562,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					}
 					listVar := name + "_keys"
 					lenVar := name + "_len"
-					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" || vt == "MapIS" || vt == "MapIL" {
+					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" || vt == "MapIS" || vt == "MapIL" || vt == "MapSMI" {
 						listVar = name + ".keys"
 						lenVar = name + ".len"
 					}

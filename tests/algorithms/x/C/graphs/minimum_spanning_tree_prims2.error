@@ -1,0 +1,53 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c: In function ‘prims_algo’:
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:140:32: error: ‘graph_len’ undeclared (first use in this function)
+  140 |     for (size_t __i = 0; __i < graph_len; __i++) {
+      |                                ^~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:140:32: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:141:28: error: ‘graph_keys’ undeclared (first use in this function)
+  141 |         const char* node = graph_keys[__i];
+      |                            ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:241:15: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  241 |         graph[(int)("a")] = (MapIL){0};
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:241:14: error: subscripted value is neither array nor pointer nor vector
+  241 |         graph[(int)("a")] = (MapIL){0};
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:241:30: error: ‘MapIL’ undeclared (first use in this function)
+  241 |         graph[(int)("a")] = (MapIL){0};
+      |                              ^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:241:36: error: expected ‘;’ before ‘{’ token
+  241 |         graph[(int)("a")] = (MapIL){0};
+      |                                    ^
+      |                                    ;
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:242:15: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  242 |         graph[(int)("b")] = (MapIL){0};
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:242:14: error: subscripted value is neither array nor pointer nor vector
+  242 |         graph[(int)("b")] = (MapIL){0};
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:242:36: error: expected ‘;’ before ‘{’ token
+  242 |         graph[(int)("b")] = (MapIL){0};
+      |                                    ^
+      |                                    ;
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:243:15: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  243 |         graph[(int)("c")] = (MapIL){0};
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:243:14: error: subscripted value is neither array nor pointer nor vector
+  243 |         graph[(int)("c")] = (MapIL){0};
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:243:36: error: expected ‘;’ before ‘{’ token
+  243 |         graph[(int)("c")] = (MapIL){0};
+      |                                    ^
+      |                                    ;
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:244:15: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  244 |         graph[(int)("d")] = (MapIL){0};
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:244:14: error: subscripted value is neither array nor pointer nor vector
+  244 |         graph[(int)("d")] = (MapIL){0};
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/graphs/minimum_spanning_tree_prims2.c:244:36: error: expected ‘;’ before ‘{’ token
+  244 |         graph[(int)("d")] = (MapIL){0};
+      |                                    ^
+      |                                    ;
