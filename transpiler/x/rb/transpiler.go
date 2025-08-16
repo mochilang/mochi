@@ -3631,15 +3631,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
-		if (st.Fun.Name == "ln" || st.Fun.Name == "exp" || st.Fun.Name == "sqrt") && len(st.Fun.Params) == 1 && len(st.Fun.Body) == 0 {
+		if (st.Fun.Name == "ln" || st.Fun.Name == "exp") && len(st.Fun.Params) == 1 {
 			p := safeName(st.Fun.Params[0].Name)
 			call := "Math.log"
 			if st.Fun.Name == "exp" {
 				call = "Math.exp"
-			} else if st.Fun.Name == "sqrt" {
-				call = "Math.sqrt"
 			}
 			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: call, Args: []Expr{&Ident{Name: p}}}}}
+			return &FuncStmt{Name: st.Fun.Name, Params: []string{p}, Body: body}, nil
+		}
+		if st.Fun.Name == "sqrt" && len(st.Fun.Params) == 1 && len(st.Fun.Body) == 0 {
+			p := safeName(st.Fun.Params[0].Name)
+			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.sqrt", Args: []Expr{&Ident{Name: p}}}}}
 			return &FuncStmt{Name: st.Fun.Name, Params: []string{p}, Body: body}, nil
 		}
 		funcDepth++
@@ -3731,7 +3734,7 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 	for _, p := range fn.Params {
 		addVar(p.Name)
 	}
-	if (fn.Name == "ln" || fn.Name == "exp") && len(fn.Params) == 1 && len(fn.Body) == 0 {
+	if (fn.Name == "ln" || fn.Name == "exp") && len(fn.Params) == 1 {
 		popScope()
 		currentEnv = savedEnv
 		funcDepth--
