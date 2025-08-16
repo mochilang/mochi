@@ -1713,6 +1713,43 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
 					return
 				}
+				fmt.Fprintf(w, "%s %s%s = NULL;\n", base, stars, d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t *%s_lens = NULL;\n", d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_lens_len = 0;\n", d.Name)
+				for _, e := range lst.Elems {
+					writeIndent(w, indent)
+					switch base {
+					case "int", "long long":
+						needListAppendPtr = true
+						fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", d.Name, d.Name, d.Name)
+					case "double":
+						needListAppendDoublePtr = true
+						fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", d.Name, d.Name, d.Name)
+					default:
+						if strings.Contains(base, "char*") {
+							needListAppendStrPtr = true
+							fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", d.Name, d.Name, d.Name)
+						} else {
+							if needListAppendStructPtr == nil {
+								needListAppendStructPtr = make(map[string]bool)
+							}
+							needListAppendStructPtr[base] = true
+							fmt.Fprintf(w, "%s = list_append_%sptr(%s, &%s_len, ", d.Name, sanitizeTypeName(base), d.Name, d.Name)
+						}
+					}
+					e.emitExpr(w)
+					io.WriteString(w, ");\n")
+					writeIndent(w, indent)
+					needListAppendSizeT = true
+					fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, ", d.Name, d.Name, d.Name)
+					emitLenExpr(w, e)
+					io.WriteString(w, ");\n")
+				}
+				return
 			}
 			fmt.Fprintf(w, "%s %s%s = NULL;\n", base, stars, d.Name)
 			writeIndent(w, indent)

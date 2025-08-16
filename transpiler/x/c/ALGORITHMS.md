@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (541/1077) - Last updated 2025-08-16 13:53 +0700:
+Checklist of programs that currently transpile and run (545/1077) - Last updated 2025-08-16 20:21 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -521,17 +521,17 @@ Checklist of programs that currently transpile and run (541/1077) - Last updated
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 669us | 1.7 MB |
 | 515 | machine_learning/mfcc | ✓ | 393us | 1.6 MB |
 | 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 9.83ms | 1.5 MB |
-| 517 | machine_learning/polynomial_regression |  | 286us | 1.5 MB |
-| 518 | machine_learning/principle_component_analysis |  |  |  |
+| 517 | machine_learning/polynomial_regression | ✓ | 286us | 1.5 MB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 403us | 1.6 MB |
 | 519 | machine_learning/scoring_functions | ✓ | 711us | 1.6 MB |
 | 520 | machine_learning/self_organizing_map | ✓ | 512us | 1.6 MB |
 | 521 | machine_learning/sequential_minimum_optimization | ✓ | 297us | 1.7 MB |
 | 522 | machine_learning/similarity_search | ✓ | 258us | 1.6 MB |
 | 523 | machine_learning/support_vector_machines | ✓ | 883us | 1.6 MB |
-| 524 | machine_learning/word_frequency_functions |  | 564us | 1.7 MB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 564us | 1.7 MB |
 | 525 | machine_learning/xgboost_classifier | ✓ | 282us | 1.5 MB |
 | 526 | machine_learning/xgboost_regressor | ✓ | 436us | 1.6 MB |
-| 527 | maths/abs |  | 286us | 1.6 MB |
+| 527 | maths/abs | ✓ | 286us | 1.6 MB |
 | 528 | maths/addition_without_arithmetic | ✓ | 302us | 1.5 MB |
 | 529 | maths/aliquot_sum | ✓ | 456us | 1.4 MB |
 | 530 | maths/allocation_number | ✓ | 293us | 1.4 MB |
