@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-16 12:06 GMT+7
+Last updated: 2025-08-16 12:40 GMT+7
 
-## Algorithms Golden Test Checklist (772/1077)
+## Algorithms Golden Test Checklist (773/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -506,8 +506,8 @@ Last updated: 2025-08-16 12:06 GMT+7
 | 497 | machine_learning/apriori_algorithm | ✓ | 120µs | 2.1 MB |
 | 498 | machine_learning/astar | ✓ | 142µs | 1.9 MB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 41µs | 2.3 MB |
-| 500 | machine_learning/data_transformations | ✓ | 79µs | 2.2 MB |
-| 501 | machine_learning/decision_tree | error | 1.401ms | 2.3 MB |
+| 500 | machine_learning/data_transformations | ✓ | 86µs | 2.2 MB |
+| 501 | machine_learning/decision_tree | ✓ | 1.419ms | 2.0 MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 19µs | 2.1 MB |
 | 503 | machine_learning/forecasting/run | ✓ | 103µs | 2.2 MB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
