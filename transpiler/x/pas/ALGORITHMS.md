@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-16 09:43 GMT+7
+Last updated: 2025-08-16 12:35 GMT+7
 
-## Algorithms Golden Test Checklist (407/1077)
+## Algorithms Golden Test Checklist (408/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -502,8 +502,8 @@ Last updated: 2025-08-16 09:43 GMT+7
 | 493 | linear_algebra/src/schur_complement |   |  |  |
 | 494 | linear_algebra/src/test_linear_algebra |   |  |  |
 | 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
+| 496 | linear_programming/simplex | ✓ | 0ns | 1.94KB |
+| 497 | machine_learning/apriori_algorithm | error |  |  |
 | 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation |   |  |  |
 | 500 | machine_learning/data_transformations | ✓ | 0ns | 384B |
