@@ -155,7 +155,9 @@ end
 
 const helperSplit = `
 def _split(s, sep = ' ')
-  if sep == ''
+  if sep.nil?
+    s.to_s.split
+  elsif sep == ''
     s.to_s.chars
   else
     s.to_s.split(sep.to_s)
