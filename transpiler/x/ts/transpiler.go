@@ -4390,7 +4390,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &AwaitExpr{X: &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}}, nil
 	case p.Load != nil:
-		format := parseFormat(p.Load.With)
+		opts := parseLoadOptions(p.Load.With)
 		path := ""
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
@@ -4403,9 +4403,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if path != "" && strings.HasPrefix(path, "../") {
 			pathExpr = fmt.Sprintf("new URL(\"../../../%s\", import.meta.url).pathname", clean)
 		} else if path != "" && !strings.HasPrefix(path, "/") {
-			pathExpr = fmt.Sprintf("new URL('../../../../..', import.meta.url).pathname + %q", path)
+			pathExpr = fmt.Sprintf("new URL('../../../../../..', import.meta.url).pathname + %q", path)
 		}
-		switch format {
+		switch opts.format {
 		case "json":
 			return &RawExpr{Code: fmt.Sprintf("JSON.parse(Deno.readTextFileSync(%s))", pathExpr)}, nil
 		case "jsonl":
@@ -4413,6 +4413,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return &RawExpr{Code: code}, nil
 		case "yaml":
 			code := fmt.Sprintf(`(() => {const _t=Deno.readTextFileSync(%s).trim().split(/\r?\n/);const _o:any[]=[];let c:any={};for(let line of _t){if(line.startsWith('- ')){if(Object.keys(c).length)_o.push(c);c={};line=line.slice(2);}else if(line.startsWith('  ')){line=line.slice(2);}if(!line)continue;const [k,v]=line.split(':');const val=v.trim();c[k.trim()]=/^\d+$/.test(val)?+val:val;}if(Object.keys(c).length)_o.push(c);return _o;})()`, pathExpr)
+			return &RawExpr{Code: code}, nil
+		case "csv":
+			delim := strconv.Quote(opts.delimiter)
+			if opts.header {
+				code := fmt.Sprintf(`(()=>{const _t=Deno.readTextFileSync(%s).trim().split(/\\r?\\n/);const _h=_t.shift()?.split(%s)||[];return _t.filter(Boolean).map(_l=>{const _c=_l.split(%s);const _o:any={};for(let i=0;i<_h.length&&i<_c.length;i++)_o[_h[i]]=_c[i];return _o;});})()`, pathExpr, delim, delim)
+				return &RawExpr{Code: code}, nil
+			}
+			code := fmt.Sprintf(`(()=>{const _t=Deno.readTextFileSync(%s).trim().split(/\\r?\\n/);return _t.filter(Boolean).map(_l=>{const _c=_l.split(%s);const _o:any={};for(let i=0;i<_c.length;i++)_o['c'+i]=_c[i];return _o;});})()`, pathExpr, delim)
 			return &RawExpr{Code: code}, nil
 		default:
 			return nil, fmt.Errorf("unsupported load format")
@@ -5005,6 +5013,24 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func literalBool(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return false, false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
+		return bool(*p.Target.Lit.Bool), true
+	}
+	return false, false
+}
+
 func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return nil
@@ -5037,13 +5063,67 @@ func parseFormat(e *parser.Expr) string {
 		if !ok {
 			key, ok = literalString(it.Key)
 		}
+		if !ok {
+			continue
+		}
 		if key == "format" {
 			if s, ok := literalString(it.Value); ok {
 				return s
 			}
 		}
+		if key == "delimiter" || key == "header" {
+			return "csv"
+		}
 	}
 	return ""
+}
+
+type loadOptions struct {
+	format    string
+	delimiter string
+	header    bool
+}
+
+func parseLoadOptions(e *parser.Expr) loadOptions {
+	opts := loadOptions{delimiter: ",", header: true}
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return opts
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return opts
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return opts
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if !ok {
+			continue
+		}
+		switch key {
+		case "format":
+			if s, ok := literalString(it.Value); ok {
+				opts.format = s
+			}
+		case "delimiter":
+			if s, ok := literalString(it.Value); ok {
+				opts.delimiter = s
+			}
+		case "header":
+			if b, ok := literalBool(it.Value); ok {
+				opts.header = b
+			}
+		}
+	}
+	if opts.format == "" && (opts.delimiter != "," || !opts.header) {
+		opts.format = "csv"
+	}
+	return opts
 }
 
 func mapStringFields(m *MapLit) ([]string, bool) {
