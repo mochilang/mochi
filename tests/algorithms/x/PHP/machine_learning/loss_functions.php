@@ -19,41 +19,6 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -81,16 +46,16 @@ $__start = _now();
   function clip($x, $lo, $hi) {
   return maxf($lo, minf($x, $hi));
 };
-  function to_float($x) {
-  return _imul($x, 1.0);
+  function mochi_to_float($x) {
+  return $x * 1.0;
 };
   function powf($base, $exp) {
   $result = 1.0;
   $i = 0;
-  $n = intval('mochi_exp');
+  $n = intval($exp);
   while ($i < $n) {
   $result = $result * $base;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
@@ -104,10 +69,10 @@ $__start = _now();
   $sum = 0.0;
   $k = 0;
   while ($k < 10) {
-  $denom = floatval(_iadd(_imul(2, $k), 1));
+  $denom = floatval(2 * $k + 1);
   $sum = $sum + $term / $denom;
   $term = $term * $y2;
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   return 2.0 * $sum;
 };
@@ -118,7 +83,7 @@ $__start = _now();
   while ($n < 20) {
   $term = $term * $x / floatval($n);
   $sum = $sum + $term;
-  $n = _iadd($n, 1);
+  $n = $n + 1;
 };
   return $sum;
 };
@@ -127,7 +92,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($v)) {
   $total = $total + $v[$i];
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / floatval(count($v));
 };
@@ -142,7 +107,7 @@ $__start = _now();
   $yp = clip($y_pred[$i], $epsilon, 1.0 - $epsilon);
   $loss = -($yt * ln($yp) + (1.0 - $yt) * ln(1.0 - $yp));
   $losses = _append($losses, $loss);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return mean($losses);
 };
@@ -158,7 +123,7 @@ $__start = _now();
   $term1 = $alpha * powf(1.0 - $yp, $gamma) * $yt * ln($yp);
   $term2 = (1.0 - $alpha) * powf($yp, $gamma) * (1.0 - $yt) * ln(1.0 - $yp);
   $losses = _append($losses, -($term1 + $term2));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return mean($losses);
 };
@@ -184,7 +149,7 @@ $__start = _now();
 }
   $sum_true = $sum_true + $yt;
   $sum_pred = $sum_pred + $yp;
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   if ($sum_true != 1.0) {
   _panic('y_true must be one-hot encoded.');
@@ -196,9 +161,9 @@ $__start = _now();
   while ($j < count($y_true[$i])) {
   $yp = clip($y_pred[$i][$j], $epsilon, 1.0);
   $total = $total - ($y_true[$i][$j] * ln($yp));
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total;
 };
@@ -214,7 +179,7 @@ $__start = _now();
   $j = 0;
   while ($j < $cols) {
   $tmp = _append($tmp, 1.0);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $a = $tmp;
 }
@@ -238,7 +203,7 @@ $__start = _now();
 }
   $sum_true = $sum_true + $yt;
   $sum_pred = $sum_pred + $yp;
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   if ($sum_true != 1.0) {
   _panic('y_true must be one-hot encoded.');
@@ -251,10 +216,10 @@ $__start = _now();
   while ($j < $cols) {
   $yp = clip($y_pred[$i][$j], $epsilon, 1.0);
   $row_loss = $row_loss + $a[$j] * powf(1.0 - $yp, $gamma) * $y_true[$i][$j] * ln($yp);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $total = $total - $row_loss;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / floatval($rows);
 };
@@ -272,7 +237,7 @@ $__start = _now();
   $pred = $y_pred[$i];
   $l = maxf(0.0, 1.0 - $yt * $pred);
   $losses = _append($losses, $l);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return mean($losses);
 };
@@ -290,7 +255,7 @@ $__start = _now();
 } else {
   $total = $total + $delta * ($adiff - 0.5 * $delta);
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / floatval(count($y_true));
 };
@@ -303,7 +268,7 @@ $__start = _now();
   while ($i < count($y_true)) {
   $diff = $y_true[$i] - $y_pred[$i];
   $losses = _append($losses, $diff * $diff);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return mean($losses);
 };
@@ -315,7 +280,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($y_true)) {
   $total = $total + absf($y_true[$i] - $y_pred[$i]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / floatval(count($y_true));
 };
@@ -330,7 +295,7 @@ $__start = _now();
   $b = ln(1.0 + $y_pred[$i]);
   $diff = $a - $b;
   $total = $total + $diff * $diff;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / floatval(count($y_true));
 };
@@ -346,7 +311,7 @@ $__start = _now();
   $yt = $epsilon;
 }
   $total = $total + absf(($yt - $y_pred[$i]) / $yt);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / floatval(count($y_true));
 };
@@ -375,12 +340,12 @@ $__start = _now();
 }
   $prob = clip($y_pred[$b][$j][$label], $epsilon, 1.0);
   $sum_log = $sum_log + ln($prob);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $mean_log = $sum_log / floatval($sentence_len);
   $perp = mochi_exp(-$mean_log);
   $total_perp = $total_perp + $perp;
-  $b = _iadd($b, 1);
+  $b = $b + 1;
 };
   return $total_perp / floatval($batch);
 };
@@ -397,7 +362,7 @@ $__start = _now();
 } else {
   $total = $total + $diff - 0.5 * $beta;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / floatval(count($y_true));
 };
@@ -409,7 +374,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($y_true)) {
   $total = $total + $y_true[$i] * ln($y_true[$i] / $y_pred[$i]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total;
 };

@@ -35,41 +35,6 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -79,7 +44,7 @@ $__start = _now();
   function mochi_floor($x) {
   $i = intval($x);
   if ((floatval($i)) > $x) {
-  $i = _isub($i, 1);
+  $i = $i - 1;
 }
   return floatval($i);
 };
@@ -88,7 +53,7 @@ $__start = _now();
   $i = 0;
   while ($i < $n) {
   $result = $result * 10.0;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
@@ -102,7 +67,7 @@ $__start = _now();
   $i = 0;
   while ($i < 20) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $guess;
 };
@@ -112,7 +77,7 @@ $__start = _now();
   $n = count($data);
   while ($i < $n) {
   $total = $total + $data[$i];
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $total / (floatval($n));
 };
@@ -127,9 +92,9 @@ $__start = _now();
   while ($i < $n) {
   $diff = $data[$i] - $m;
   $sum_sq = $sum_sq + $diff * $diff;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
-  return sqrtApprox($sum_sq / (floatval((_isub($n, 1)))));
+  return sqrtApprox($sum_sq / (floatval(($n - 1))));
 };
   function normalization($data, $ndigits) {
   $x_min = floatval(min($data));
@@ -141,7 +106,7 @@ $__start = _now();
   while ($i < $n) {
   $norm = ($data[$i] - $x_min) / $denom;
   $result = _append($result, mochi_round($norm, $ndigits));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
@@ -154,7 +119,7 @@ $__start = _now();
   while ($i < $n) {
   $z = ($data[$i] - $mu) / $sigma;
   $result = _append($result, mochi_round($z, $ndigits));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };

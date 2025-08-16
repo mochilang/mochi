@@ -19,41 +19,6 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -61,7 +26,7 @@ function _panic($msg) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function expApprox($x) {
-  global $x_train, $y_train, $preds;
+  global $preds, $x_train, $y_train;
   if ($x < 0.0) {
   return 1.0 / expApprox(-$x);
 }
@@ -75,12 +40,12 @@ $__start = _now();
   while ($n < 20) {
   $term = $term * $x / (floatval($n));
   $sum = $sum + $term;
-  $n = _iadd($n, 1);
+  $n = $n + 1;
 };
   return $sum;
 };
   function transpose($mat) {
-  global $x_train, $y_train, $preds;
+  global $preds, $x_train, $y_train;
   $rows = count($mat);
   $cols = count($mat[0]);
   $res = [];
@@ -90,15 +55,15 @@ $__start = _now();
   $j = 0;
   while ($j < $rows) {
   $row = _append($row, $mat[$j][$i]);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $res = _append($res, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $res;
 };
   function matMul($a, $b) {
-  global $x_train, $y_train, $preds;
+  global $preds, $x_train, $y_train;
   $a_rows = count($a);
   $a_cols = count($a[0]);
   $b_cols = count($b[0]);
@@ -112,18 +77,18 @@ $__start = _now();
   $k = 0;
   while ($k < $a_cols) {
   $sum = $sum + $a[$i][$k] * $b[$k][$j];
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $row = _append($row, $sum);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $res = _append($res, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $res;
 };
   function matInv($mat) {
-  global $x_train, $y_train, $preds;
+  global $preds, $x_train, $y_train;
   $n = count($mat);
   $aug = [];
   $i = 0;
@@ -132,7 +97,7 @@ $__start = _now();
   $j = 0;
   while ($j < $n) {
   $row = _append($row, $mat[$i][$j]);
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $j = 0;
   while ($j < $n) {
@@ -141,10 +106,10 @@ $__start = _now();
 } else {
   $row = _append($row, 0.0);
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $aug = _append($aug, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $col = 0;
   while ($col < $n) {
@@ -153,23 +118,23 @@ $__start = _now();
   _panic('Matrix is singular');
 }
   $j = 0;
-  while ($j < _imul(2, $n)) {
+  while ($j < 2 * $n) {
   $aug[$col][$j] = $aug[$col][$j] / $pivot;
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $r = 0;
   while ($r < $n) {
   if ($r != $col) {
   $factor = $aug[$r][$col];
   $j = 0;
-  while ($j < _imul(2, $n)) {
+  while ($j < 2 * $n) {
   $aug[$r][$j] = $aug[$r][$j] - $factor * $aug[$col][$j];
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
 }
-  $r = _iadd($r, 1);
+  $r = $r + 1;
 };
-  $col = _iadd($col, 1);
+  $col = $col + 1;
 };
   $inv = [];
   $i = 0;
@@ -177,16 +142,16 @@ $__start = _now();
   $row = [];
   $j = 0;
   while ($j < $n) {
-  $row = _append($row, $aug[$i][_iadd($j, $n)]);
-  $j = _iadd($j, 1);
+  $row = _append($row, $aug[$i][$j + $n]);
+  $j = $j + 1;
 };
   $inv = _append($inv, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $inv;
 };
   function weight_matrix($point, $x_train, $tau) {
-  global $y_train, $preds;
+  global $preds, $y_train;
   $m = count($x_train);
   $weights = [];
   $i = 0;
@@ -199,10 +164,10 @@ $__start = _now();
 } else {
   $row = _append($row, 0.0);
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $weights = _append($weights, $row);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $j = 0;
   while ($j < $m) {
@@ -211,10 +176,10 @@ $__start = _now();
   while ($k < count($point)) {
   $diff = $point[$k] - $x_train[$j][$k];
   $diff_sq = $diff_sq + $diff * $diff;
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $weights[$j][$j] = expApprox(-$diff_sq / (2.0 * $tau * $tau));
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   return $weights;
 };
@@ -229,7 +194,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($y_train)) {
   $y_col = _append($y_col, [$y_train[$i]]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $x_t_w_y = matMul($x_t_w, $y_col);
   return matMul($inv_part, $x_t_w_y);
@@ -244,16 +209,16 @@ $__start = _now();
   $k = 0;
   while ($k < count($theta)) {
   $weights_vec = _append($weights_vec, $theta[$k][0]);
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   $pred = 0.0;
   $j = 0;
   while ($j < count($x_train[$i])) {
   $pred = $pred + $x_train[$i][$j] * $weights_vec[$j];
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $preds = _append($preds, $pred);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $preds;
 };

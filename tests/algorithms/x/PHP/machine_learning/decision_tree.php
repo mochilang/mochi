@@ -43,7 +43,7 @@ $__start = _now();
   global $PI, $TWO_PI, $seed;
   return $x - (floatval(intval($x / $m))) * $m;
 };
-  function sin($x) {
+  function mochi_sin($x) {
   global $PI, $TWO_PI, $seed;
   $y = _mod($x + $PI, $TWO_PI) - $PI;
   $y2 = $y * $y;
@@ -91,13 +91,13 @@ $__start = _now();
   $min_error = mean_squared_error($x, mean($y)) * 2.0;
   $i = 0;
   while ($i < count($x)) {
-  if (count(array_slice($x, 0, $i - 0)) < $min_leaf_size) {
+  if (count(array_slice($x, 0, $i)) < $min_leaf_size) {
   $i = $i;
 } else {
   if (count(array_slice($x, $i)) < $min_leaf_size) {
   $i = $i;
 } else {
-  $err_left = mean_squared_error(array_slice($x, 0, $i - 0), mean(array_slice($y, 0, $i - 0)));
+  $err_left = mean_squared_error(array_slice($x, 0, $i), mean(array_slice($y, 0, $i)));
   $err_right = mean_squared_error(array_slice($x, $i), mean(array_slice($y, $i)));
   $err = $err_left + $err_right;
   if ($err < $min_error) {
@@ -109,8 +109,8 @@ $__start = _now();
   $i = $i + 1;
 };
   if ($best_split != 0) {
-  $left_x = array_slice($x, 0, $best_split - 0);
-  $left_y = array_slice($y, 0, $best_split - 0);
+  $left_x = array_slice($x, 0, $best_split);
+  $left_y = array_slice($y, 0, $best_split);
   $right_x = array_slice($x, $best_split);
   $right_y = array_slice($y, $best_split);
   $boundary = $x[$best_split];
@@ -122,10 +122,17 @@ $__start = _now();
 };
   function predict($tree, $value) {
   global $PI, $TWO_PI, $seed;
-  return match($tree) {
-    $Leaf($p) => $p,
-    $Branch($b, $l, $r) => ($value >= $b ? predict($r, $value) : predict($l, $value)),
-};
+  return (function($__v) {
+  if ($__v['__tag'] === "Leaf") {
+    $p = $__v["prediction"];
+    return $p;
+  } elseif ($__v['__tag'] === "Branch") {
+    $b = $__v["decision_boundary"];
+    $l = $__v["left"];
+    $r = $__v["right"];
+    return ($value >= $b ? predict($r, $value) : predict($l, $value));
+  }
+})($tree);
 };
   function main() {
   global $PI, $TWO_PI, $seed;
@@ -138,7 +145,7 @@ $__start = _now();
   $y = [];
   $i = 0;
   while ($i < count($x)) {
-  $y = _append($y, sin($x[$i]));
+  $y = _append($y, mochi_sin($x[$i]));
   $i = $i + 1;
 };
   $tree = train_tree($x, $y, 10, 10);

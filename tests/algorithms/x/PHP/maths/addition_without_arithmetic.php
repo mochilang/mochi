@@ -42,103 +42,68 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   $MAX = 4294967296;
   $HALF = 2147483648;
   function to_unsigned($n) {
-  global $MAX, $HALF;
+  global $HALF, $MAX;
   if ($n < 0) {
-  return _iadd($MAX, $n);
+  return $MAX + $n;
 }
   return $n;
 };
   function from_unsigned($n) {
-  global $MAX, $HALF;
+  global $HALF, $MAX;
   if ($n >= $HALF) {
-  return _isub($n, $MAX);
+  return $n - $MAX;
 }
   return $n;
 };
   function bit_and($a, $b) {
-  global $MAX, $HALF;
+  global $HALF, $MAX;
   $x = $a;
   $y = $b;
   $res = 0;
   $bit = 1;
   $i = 0;
   while ($i < 32) {
-  if ((_imod($x, 2) == 1) && (_imod($y, 2) == 1)) {
-  $res = _iadd($res, $bit);
+  if (($x % 2 == 1) && ($y % 2 == 1)) {
+  $res = $res + $bit;
 }
   $x = _intdiv($x, 2);
   $y = _intdiv($y, 2);
-  $bit = _imul($bit, 2);
-  $i = _iadd($i, 1);
+  $bit = $bit * 2;
+  $i = $i + 1;
 };
   return $res;
 };
   function bit_xor($a, $b) {
-  global $MAX, $HALF;
+  global $HALF, $MAX;
   $x = $a;
   $y = $b;
   $res = 0;
   $bit = 1;
   $i = 0;
   while ($i < 32) {
-  $abit = _imod($x, 2);
-  $bbit = _imod($y, 2);
-  if (_imod((_iadd($abit, $bbit)), 2) == 1) {
-  $res = _iadd($res, $bit);
+  $abit = $x % 2;
+  $bbit = $y % 2;
+  if (($abit + $bbit) % 2 == 1) {
+  $res = $res + $bit;
 }
   $x = _intdiv($x, 2);
   $y = _intdiv($y, 2);
-  $bit = _imul($bit, 2);
-  $i = _iadd($i, 1);
+  $bit = $bit * 2;
+  $i = $i + 1;
 };
   return $res;
 };
   function lshift1($num) {
-  global $MAX, $HALF;
-  return _imod((_imul($num, 2)), $MAX);
+  global $HALF, $MAX;
+  return ($num * 2) % $MAX;
 };
   function add($a, $b) {
-  global $MAX, $HALF;
+  global $HALF, $MAX;
   $first = to_unsigned($a);
   $second = to_unsigned($b);
   while ($second != 0) {

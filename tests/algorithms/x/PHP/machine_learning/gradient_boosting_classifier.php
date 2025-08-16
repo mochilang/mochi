@@ -35,64 +35,29 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function exp_approx($x) {
-  global $features, $target, $models, $predictions, $acc;
+  global $acc, $features, $models, $predictions, $target;
   $term = 1.0;
   $sum = 1.0;
   $i = 1;
   while ($i < 10) {
   $term = $term * $x / (floatval($i));
   $sum = $sum + $term;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $sum;
 };
   function signf($x) {
-  global $features, $target, $models, $predictions, $acc;
+  global $acc, $features, $models, $predictions, $target;
   if ($x >= 0.0) {
   return 1.0;
 }
   return -1.0;
 };
   function gradient($target, $preds) {
-  global $features, $models, $predictions, $acc;
+  global $acc, $features, $models, $predictions;
   $n = count($target);
   $residuals = [];
   $i = 0;
@@ -102,18 +67,18 @@ $__start = _now();
   $exp_val = exp_approx($t * $y);
   $res = -$t / (1.0 + $exp_val);
   $residuals = _append($residuals, $res);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $residuals;
 };
   function predict_raw($models, $features, $learning_rate) {
-  global $target, $predictions, $acc;
+  global $acc, $predictions, $target;
   $n = count($features);
   $preds = [];
   $i = 0;
   while ($i < $n) {
   $preds = _append($preds, 0.0);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $m = 0;
   while ($m < count($models)) {
@@ -126,25 +91,25 @@ $__start = _now();
 } else {
   $preds[$i] = $preds[$i] + $learning_rate * $stump['right'];
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
-  $m = _iadd($m, 1);
+  $m = $m + 1;
 };
   return $preds;
 };
   function predict($models, $features, $learning_rate) {
-  global $target, $predictions, $acc;
+  global $acc, $predictions, $target;
   $raw = predict_raw($models, $features, $learning_rate);
   $result = [];
   $i = 0;
   while ($i < count($raw)) {
   $result = _append($result, signf($raw[$i]));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $result;
 };
   function train_stump($features, $residuals) {
-  global $target, $models, $predictions, $acc;
+  global $acc, $models, $predictions, $target;
   $n_samples = count($features);
   $n_features = count($features[0]);
   $best_feature = 0;
@@ -165,12 +130,12 @@ $__start = _now();
   while ($i < $n_samples) {
   if ($features[$i][$j] <= $t) {
   $sum_left = $sum_left + $residuals[$i];
-  $count_left = _iadd($count_left, 1);
+  $count_left = $count_left + 1;
 } else {
   $sum_right = $sum_right + $residuals[$i];
-  $count_right = _iadd($count_right, 1);
+  $count_right = $count_right + 1;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $left_val = 0.0;
   if ($count_left != 0) {
@@ -186,7 +151,7 @@ $__start = _now();
   $pred = ($features[$i][$j] <= $t ? $left_val : $right_val);
   $diff = $residuals[$i] - $pred;
   $error = $error + $diff * $diff;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   if ($error < $best_error) {
   $best_error = $error;
@@ -195,14 +160,14 @@ $__start = _now();
   $best_left = $left_val;
   $best_right = $right_val;
 }
-  $t_index = _iadd($t_index, 1);
+  $t_index = $t_index + 1;
 };
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   return ['feature' => $best_feature, 'threshold' => $best_threshold, 'left' => $best_left, 'right' => $best_right];
 };
   function fit($n_estimators, $learning_rate, $features, $target) {
-  global $predictions, $acc;
+  global $acc, $predictions;
   $models = [];
   $m = 0;
   while ($m < $n_estimators) {
@@ -212,24 +177,24 @@ $__start = _now();
   $i = 0;
   while ($i < count($grad)) {
   $residuals = _append($residuals, -$grad[$i]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $stump = train_stump($features, $residuals);
   $models = _append($models, $stump);
-  $m = _iadd($m, 1);
+  $m = $m + 1;
 };
   return $models;
 };
   function accuracy($preds, $target) {
-  global $features, $models, $predictions, $acc;
+  global $acc, $features, $models, $predictions;
   $n = count($target);
   $correct = 0;
   $i = 0;
   while ($i < $n) {
   if ($preds[$i] == $target[$i]) {
-  $correct = _iadd($correct, 1);
+  $correct = $correct + 1;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return (floatval($correct)) / (floatval($n));
 };

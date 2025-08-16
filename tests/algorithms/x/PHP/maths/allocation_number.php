@@ -46,41 +46,6 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -98,10 +63,10 @@ $__start = _now();
   $allocation_list = [];
   $i = 0;
   while ($i < $partitions) {
-  $start_bytes = _iadd(_imul($i, $bytes_per_partition), 1);
-  $end_bytes = ($i == _isub($partitions, 1) ? $number_of_bytes : _imul((_iadd($i, 1)), $bytes_per_partition));
+  $start_bytes = $i * $bytes_per_partition + 1;
+  $end_bytes = ($i == $partitions - 1 ? $number_of_bytes : ($i + 1) * $bytes_per_partition);
   $allocation_list = _append($allocation_list, _str($start_bytes) . '-' . _str($end_bytes));
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $allocation_list;
 };

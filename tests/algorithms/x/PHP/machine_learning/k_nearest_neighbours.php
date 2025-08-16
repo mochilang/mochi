@@ -25,45 +25,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function sqrtApprox($x) {
-  global $train_X, $train_y, $classes, $knn, $point;
+  global $classes, $knn, $point, $train_X, $train_y;
   if ($x <= 0.0) {
   return 0.0;
 }
@@ -71,40 +36,40 @@ $__start = _now();
   $i = 0;
   while ($i < 20) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $guess;
 };
   function make_knn($train_data, $train_target, $class_labels) {
-  global $train_X, $train_y, $classes, $knn, $point;
+  global $classes, $knn, $point, $train_X, $train_y;
   $items = [];
   $i = 0;
   while ($i < count($train_data)) {
   $pl = ['point' => $train_data[$i], 'label' => $train_target[$i]];
   $items = _append($items, $pl);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return ['data' => $items, 'labels' => $class_labels];
 };
   function euclidean_distance($a, $b) {
-  global $train_X, $train_y, $classes, $knn, $point;
+  global $classes, $knn, $point, $train_X, $train_y;
   $sum = 0.0;
   $i = 0;
   while ($i < count($a)) {
   $diff = $a[$i] - $b[$i];
   $sum = $sum + $diff * $diff;
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return sqrtApprox($sum);
 };
   function classify($knn, $pred_point, $k) {
-  global $train_X, $train_y, $classes, $point;
+  global $classes, $point, $train_X, $train_y;
   $distances = [];
   $i = 0;
   while ($i < _len($knn['data'])) {
   $d = euclidean_distance($knn['data'][$i]['point'], $pred_point);
   $distances = _append($distances, ['dist' => $d, 'label' => $knn['data'][$i]['label']]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $votes = [];
   $count = 0;
@@ -115,23 +80,23 @@ $__start = _now();
   if ($distances[$j]['dist'] < $distances[$min_index]['dist']) {
   $min_index = $j;
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
   $votes = _append($votes, $distances[$min_index]['label']);
   $distances[$min_index]['dist'] = 1000000000000000000.0;
-  $count = _iadd($count, 1);
+  $count = $count + 1;
 };
   $tally = [];
   $t = 0;
   while ($t < _len($knn['labels'])) {
   $tally = _append($tally, 0);
-  $t = _iadd($t, 1);
+  $t = $t + 1;
 };
   $v = 0;
   while ($v < count($votes)) {
   $lbl = $votes[$v];
-  $tally[$lbl] = _iadd($tally[$lbl], 1);
-  $v = _iadd($v, 1);
+  $tally[$lbl] = $tally[$lbl] + 1;
+  $v = $v + 1;
 };
   $max_idx = 0;
   $m = 1;
@@ -139,7 +104,7 @@ $__start = _now();
   if ($tally[$m] > $tally[$max_idx]) {
   $max_idx = $m;
 }
-  $m = _iadd($m, 1);
+  $m = $m + 1;
 };
   return $knn['labels'][$max_idx];
 };

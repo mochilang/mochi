@@ -138,7 +138,15 @@ $__start = _now();
 }
 };
   if ($is_subsequence) {
-  $pruned = _append($pruned, $candidate);
+  $merged = [];
+  foreach ($candidate as $item) {
+  foreach ($item as $s) {
+  if (!contains_string($merged, $s)) {
+  $merged = _append($merged, $s);
+}
+};
+};
+  $pruned = _append($pruned, $merged);
 }
 };
   return $pruned;
