@@ -2743,17 +2743,37 @@ func (l *ListLit) emitExpr(w io.Writer) {
 	}
 	dims := strings.Count(elemType, "[]")
 	base := strings.TrimSuffix(elemType, strings.Repeat("[]", dims))
-	// When the element type has no array suffixes (i.e. dims == 0), this
-	// literal represents a 1-D list. Allocate its storage on the heap so the
-	// returned pointer remains valid after the expression finishes.
-	if dims == 0 {
-		fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", base, len(l.Elems), base)
-		for i, e := range l.Elems {
-			fmt.Fprintf(w, "tmp[%d] = ", i)
-			e.emitExpr(w)
-			io.WriteString(w, "; ")
+	allConst := true
+	for _, e := range l.Elems {
+		if !isConstExpr(e) {
+			allConst = false
+			break
 		}
-		io.WriteString(w, "tmp;})")
+	}
+	// When the element type has no array suffixes (i.e. dims == 0), this
+	// literal represents a 1-D list. If all elements are constant, emit a
+	// compound literal so it can appear in global initializers. Otherwise
+	// allocate storage on the heap so the pointer remains valid after the
+	// expression finishes.
+	if dims == 0 {
+		if allConst {
+			fmt.Fprintf(w, "(%s[]){", base)
+			for i, e := range l.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				e.emitExpr(w)
+			}
+			io.WriteString(w, "}")
+		} else {
+			fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", base, len(l.Elems), base)
+			for i, e := range l.Elems {
+				fmt.Fprintf(w, "tmp[%d] = ", i)
+				e.emitExpr(w)
+				io.WriteString(w, "; ")
+			}
+			io.WriteString(w, "tmp;})")
+		}
 		return
 	}
 	outType := base + strings.Repeat("*", dims)
@@ -10408,6 +10428,25 @@ func inferExprType(env *types.Env, e Expr) string {
 				}
 				return elemType + "[]"
 			}
+			// If all elements are themselves lists, promote the
+			// outer list to a two-dimensional slice. Mixed numeric
+			// inner types are widened to double to preserve
+			// fractional values.
+			listElem := true
+			promoted := "long long[]"
+			for _, it := range v.Elems {
+				t := inferExprType(env, it)
+				if !strings.HasSuffix(t, "[]") {
+					listElem = false
+					break
+				}
+				if strings.HasPrefix(t, "double") || exprIsFloat(it) {
+					promoted = "double[]"
+				}
+			}
+			if listElem {
+				return promoted + "[]"
+			}
 		} else {
 			return "long long[]"
 		}
@@ -10589,7 +10628,14 @@ func inferExprType(env *types.Env, e Expr) string {
 		case "(const char*)":
 			return "const char*"
 		}
-		return inferExprType(env, v.Expr)
+		// Propagate the operand's type through unary operations so that
+		// expressions like "-2" retain their integer type instead of
+		// falling back to floating point. If the operand type cannot be
+		// determined, assume a signed integer.
+		if t := inferExprType(env, v.Expr); t != "" {
+			return t
+		}
+		return "long long"
 	}
 	if _, ok := evalString(e); ok {
 		return "const char*"
