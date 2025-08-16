@@ -80,7 +80,7 @@ List<double> xgboost(List<List<double>> features, List<double> target, List<List
     sum_feat = sum_feat + features[j][0];
     j = j + 1;
   }
-    double threshold = sum_feat / ((features.length).toDouble());
+    double threshold = sum_feat / features.length.toDouble();
     double left_sum = 0.0;
     int left_count = 0;
     double right_sum = 0.0;
@@ -98,11 +98,11 @@ List<double> xgboost(List<List<double>> features, List<double> target, List<List
   }
     double left_value = 0.0;
     if (left_count > 0) {
-    left_value = left_sum / ((left_count).toDouble());
+    left_value = left_sum / left_count.toDouble();
   }
     double right_value = 0.0;
     if (right_count > 0) {
-    right_value = right_sum / ((right_count).toDouble());
+    right_value = right_sum / right_count.toDouble();
   }
     j = 0;
     while (j < features.length) {
@@ -146,7 +146,7 @@ double mean_absolute_error(List<double> y_true, List<double> y_pred) {
     sum = sum + diff;
     i = i + 1;
   }
-  return sum / ((y_true.length).toDouble());
+  return sum / y_true.length.toDouble();
 }
 
 double mean_squared_error(List<double> y_true, List<double> y_pred) {
@@ -157,7 +157,7 @@ double mean_squared_error(List<double> y_true, List<double> y_pred) {
     sum = sum + diff * diff;
     i = i + 1;
   }
-  return sum / ((y_true.length).toDouble());
+  return sum / y_true.length.toDouble();
 }
 
 dynamic _main() {

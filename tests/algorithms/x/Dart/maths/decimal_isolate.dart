@@ -42,7 +42,7 @@ dynamic _substr(dynamic s, num start, num end) {
 String _str(dynamic v) => v.toString();
 
 double floor(double x) {
-  dynamic i = x.toInt();
+  int i = x.toInt();
   if (i.toDouble() > x) {
     i = i - 1;
   }

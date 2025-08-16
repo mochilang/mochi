@@ -64,7 +64,7 @@ List<double> run_steep_gradient_descent(List<List<double>> data_x, List<double> 
     double error = prediction - data_y[i];
     int k = 0;
     while (k < theta.length) {
-    while (gradients.length <= k) { gradients.add(0); } gradients[k] = gradients[k] + _error * data_x[i][k];
+    while (gradients.length <= k) { gradients.add(0); } gradients[k] = gradients[k] + error * data_x[i][k];
     k = k + 1;
   }
     i = i + 1;
@@ -105,7 +105,7 @@ List<double> run_linear_regression(List<List<double>> data_x, List<double> data_
   while (iter < iterations) {
     theta = run_steep_gradient_descent(data_x, data_y, len_data, alpha, theta);
     double error = sum_of_square_error(data_x, data_y, len_data, theta);
-    print("At Iteration " + _str(iter + 1) + " - Error is " + _str(_error));
+    print("At Iteration " + _str(iter + 1) + " - Error is " + _str(error));
     iter = iter + 1;
   }
   return theta;

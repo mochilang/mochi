@@ -85,7 +85,7 @@ double summation_of_cost_derivative(int index, List<double> params, List<DataPoi
 }
 
 double get_cost_derivative(int index, List<double> params, List<DataPoint> data) {
-  return summation_of_cost_derivative(index, params, data) / ((data.length).toDouble());
+  return summation_of_cost_derivative(index, params, data) / data.length.toDouble();
 }
 
 bool allclose(List<double> a, List<double> b, double atol, double rtol) {

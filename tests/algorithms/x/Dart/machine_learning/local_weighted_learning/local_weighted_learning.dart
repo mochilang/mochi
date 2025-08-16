@@ -40,8 +40,8 @@ dynamic _substr(dynamic s, num start, num end) {
 }
 
 
-Never _error(String msg) {
-  throw Exception(msg);
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 
 
@@ -61,7 +61,7 @@ double expApprox(double x) {
   double term = 1.0;
   int n = 1;
   while (n < 20) {
-    term = term * x / ((n).toDouble());
+    term = term * x / n.toDouble();
     sum = sum + term;
     n = n + 1;
   }

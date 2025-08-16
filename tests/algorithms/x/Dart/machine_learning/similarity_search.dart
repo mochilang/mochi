@@ -49,7 +49,16 @@ class Neighbor {
 }
 
 double sqrt(double x) {
-  return math.sqrt(x);
+  if (x <= 0.0) {
+    return 0.0;
+  }
+  double guess = x;
+  int i = 0;
+  while (i < 10) {
+    guess = (guess + x / guess) / 2.0;
+    i = i + 1;
+  }
+  return guess;
 }
 
 double euclidean(List<double> a, List<double> b) {

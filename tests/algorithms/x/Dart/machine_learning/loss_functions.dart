@@ -40,8 +40,8 @@ dynamic _substr(dynamic s, num start, num end) {
 }
 
 
-Never _error(String msg) {
-  throw Exception(msg);
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 
 double absf(double x) {
@@ -133,8 +133,8 @@ double binary_cross_entropy(List<double> y_true, List<double> y_pred, double eps
   while (i < y_true.length) {
     double yt = y_true[i];
     double yp = clip(y_pred[i], epsilon, 1.0 - epsilon);
-    num loss = -(yt * ln(yp) + (1.0 - yt) * ln(1.0 - yp));
-    losses = List<double>.from([...losses, loss]);
+    double loss = -(yt * ln(yp) + (1.0 - yt) * ln(1.0 - yp));
+    losses = [...losses, loss];
     i = i + 1;
   }
   return mean(losses);
@@ -151,7 +151,7 @@ double binary_focal_cross_entropy(List<double> y_true, List<double> y_pred, doub
     double yp = clip(y_pred[i], epsilon, 1.0 - epsilon);
     double term1 = alpha * powf(1.0 - yp, gamma) * yt * ln(yp);
     double term2 = (1.0 - alpha) * powf(yp, gamma) * (1.0 - yt) * ln(1.0 - yp);
-    losses = List<double>.from([...losses, -(term1 + term2)]);
+    losses = [...losses, -(term1 + term2)];
     i = i + 1;
   }
   return mean(losses);
@@ -429,9 +429,9 @@ dynamic _main() {
   print(categorical_cross_entropy(y_true_cce, y_pred_cce, 0.000000000000001));
   List<double> alpha = [0.6, 0.2, 0.7];
   print(categorical_focal_cross_entropy(y_true_cce, y_pred_cce, alpha, 2.0, 0.000000000000001));
-  List<dynamic> y_true_hinge = [-1.0, 1.0, 1.0, -1.0, 1.0];
-  List<dynamic> y_pred_hinge = [-4.0, -0.3, 0.7, 5.0, 10.0];
-  print(hinge_loss(List<double>.from(y_true_hinge), List<double>.from(y_pred_hinge)));
+  List<double> y_true_hinge = [-1.0, 1.0, 1.0, -1.0, 1.0];
+  List<double> y_pred_hinge = [-4.0, -0.3, 0.7, 5.0, 10.0];
+  print(hinge_loss(y_true_hinge, y_pred_hinge));
   List<double> y_true_huber = [0.9, 10.0, 2.0, 1.0, 5.2];
   List<double> y_pred_huber = [0.8, 2.1, 2.9, 4.2, 5.2];
   print(huber_loss(y_true_huber, y_pred_huber, 1.0));

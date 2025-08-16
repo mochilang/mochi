@@ -67,7 +67,7 @@ double ln_series(double x) {
   double sum = 0.0;
   int n = 1;
   while (n <= 19) {
-    sum = sum + term / ((n).toDouble());
+    sum = sum + term / n.toDouble();
     term = term * t * t;
     n = n + 2;
   }
@@ -85,7 +85,7 @@ double ln(double x) {
     y = y * 10.0;
     k = k - 1;
   }
-  return ln_series(y) + ((k).toDouble()) * ln_series(10.0);
+  return ln_series(y) + k.toDouble() * ln_series(10.0);
 }
 
 double mae(List<double> predict, List<double> actual) {
@@ -96,7 +96,7 @@ double mae(List<double> predict, List<double> actual) {
     sum = sum + absf(diff);
     i = i + 1;
   }
-  return sum / ((predict.length).toDouble());
+  return sum / predict.length.toDouble();
 }
 
 double mse(List<double> predict, List<double> actual) {
@@ -107,7 +107,7 @@ double mse(List<double> predict, List<double> actual) {
     sum = sum + diff * diff;
     i = i + 1;
   }
-  return sum / ((predict.length).toDouble());
+  return sum / predict.length.toDouble();
 }
 
 double rmse(List<double> predict, List<double> actual) {
@@ -124,7 +124,7 @@ double rmsle(List<double> predict, List<double> actual) {
     sum = sum + diff * diff;
     i = i + 1;
   }
-  return sqrtApprox(sum / ((predict.length).toDouble()));
+  return sqrtApprox(sum / predict.length.toDouble());
 }
 
 double mbd(List<double> predict, List<double> actual) {
@@ -136,7 +136,7 @@ double mbd(List<double> predict, List<double> actual) {
     actual_sum = actual_sum + actual[i];
     i = i + 1;
   }
-  double n = (predict.length).toDouble();
+  double n = predict.length.toDouble();
   double numerator = diff_sum / n;
   double denominator = actual_sum / n;
   return numerator / denominator * 100.0;
@@ -151,7 +151,7 @@ double manual_accuracy(List<double> predict, List<double> actual) {
   }
     i = i + 1;
   }
-  return ((correct).toDouble()) / ((predict.length).toDouble());
+  return correct.toDouble() / predict.length.toDouble();
 }
 
 void _main() {

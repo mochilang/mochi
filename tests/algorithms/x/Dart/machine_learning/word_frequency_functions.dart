@@ -42,8 +42,8 @@ dynamic _substr(dynamic s, num start, num end) {
 String _str(dynamic v) => v.toString();
 
 
-Never _error(String msg) {
-  throw Exception(msg);
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 
 String LOWER = "abcdefghijklmnopqrstuvwxyz";
@@ -148,11 +148,11 @@ bool contains(String s, String sub) {
 }
 
 double floor(double x) {
-  int i = (x).toInt();
-  if (((i).toDouble()) > x) {
+  int i = x.toInt();
+  if (i.toDouble() > x) {
     i = i - 1;
   }
-  return (i).toDouble();
+  return i.toDouble();
 }
 
 double round3(double x) {
@@ -165,7 +165,7 @@ double ln(double x) {
   double sum = 0.0;
   int k = 1;
   while (k <= 99) {
-    sum = sum + term / ((k).toDouble());
+    sum = sum + term / k.toDouble();
     term = term * t * t;
     k = k + 2;
   }
@@ -211,7 +211,7 @@ double inverse_document_frequency(int df, int n, bool smoothing) {
     if (n == 0) {
     _error("log10(0) is undefined.");
   };
-    double ratio = ((n).toDouble()) / (1.0 + ((df).toDouble()));
+    double ratio = n.toDouble() / (1.0 + df.toDouble());
     double l = log10(ratio);
     double result = round3(1.0 + l);
     print(result);
@@ -223,7 +223,7 @@ double inverse_document_frequency(int df, int n, bool smoothing) {
   if (n == 0) {
     _error("log10(0) is undefined.");
   }
-  double ratio = ((n).toDouble()) / ((df).toDouble());
+  double ratio = n.toDouble() / df.toDouble();
   double l = log10(ratio);
   double result = round3(l);
   print(result);
@@ -231,7 +231,7 @@ double inverse_document_frequency(int df, int n, bool smoothing) {
 }
 
 double tf_idf(int tf, double idf) {
-  double prod = ((tf).toDouble()) * idf;
+  double prod = tf.toDouble() * idf;
   double result = round3(prod);
   print(result);
   return result;

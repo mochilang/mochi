@@ -76,7 +76,7 @@ SVC fit(SVC model, List<List<double>> xs, List<int> ys) {
     int j = 0;
     while (j < xs.length) {
     List<double> x = xs[j];
-    double y = (ys[j]).toDouble();
+    double y = ys[j].toDouble();
     double prod = dot(w, x) + b;
     if (y * prod < 1.0) {
     int k = 0;
