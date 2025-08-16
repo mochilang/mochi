@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-15 11:22 GMT+7
+Last updated: 2025-08-16 09:31 GMT+7
 
 ## Algorithms Golden Test Checklist (838/1077)
 | Index | Name | Status | Duration | Memory |
@@ -430,7 +430,7 @@ Last updated: 2025-08-15 11:22 GMT+7
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 18.50ms | 17.3 MB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 365us | 12.5 MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1.23ms | 17.3 MB |
-| 424 | graphs/even_tree | ✓ | 4.42ms | 12.5 MB |
+| 424 | graphs/even_tree | error | 4.42ms | 12.5 MB |
 | 425 | graphs/finding_bridges | ✓ | 4.13ms | 20.2 MB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 16.12ms | 25.0 MB |
 | 427 | graphs/g_topological_sort | ✓ | 10.25ms | 17.3 MB |
@@ -444,7 +444,7 @@ Last updated: 2025-08-15 11:22 GMT+7
 | 435 | graphs/kahns_algorithm_long | ✓ | 7.69ms | 12.5 MB |
 | 436 | graphs/kahns_algorithm_topo | ✓ | 11.05ms | 25.0 MB |
 | 437 | graphs/karger | ✓ | 10.70ms | 17.3 MB |
-| 438 | graphs/lanczos_eigenvectors | error | 12.01ms | 17.3 MB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 12.01ms | 17.3 MB |
 | 439 | graphs/markov_chain | ✓ | 5.13ms | 25.9 MB |
 | 440 | graphs/matching_min_vertex_cover | ✓ | 18.59ms | 12.6 MB |
 | 441 | graphs/minimum_path_sum | ✓ | 7.72ms | 12.5 MB |
@@ -452,9 +452,9 @@ Last updated: 2025-08-15 11:22 GMT+7
 | 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 6.96ms | 32.7 MB |
 | 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 327us | 17.3 MB |
 | 445 | graphs/minimum_spanning_tree_prims | ✓ | 7.18ms | 17.3 MB |
-| 446 | graphs/minimum_spanning_tree_prims2 | error | 9.41ms | 25.0 MB |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 9.41ms | 25.0 MB |
 | 447 | graphs/multi_heuristic_astar | error |  |  |
-| 448 | graphs/page_rank | ✓ |  |  |
+| 448 | graphs/page_rank | error |  |  |
 | 449 | graphs/prim | ✓ | 561us | 17.3 MB |
 | 450 | graphs/random_graph_generator | ✓ | 10.75ms | 9.5 MB |
 | 451 | graphs/scc_kosaraju | ✓ | 13.24ms | 9.5 MB |
@@ -711,7 +711,7 @@ Last updated: 2025-08-15 11:22 GMT+7
 | 702 | matrix/inverse_of_matrix | ✓ | 5.73ms | 33.5 MB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 4.93ms | 17.3 MB |
 | 704 | matrix/matrix_based_game | ✓ | 334us | 12.5 MB |
-| 705 | matrix/matrix_class | ✓ | 11.15ms | 26.5 MB |
+| 705 | matrix/matrix_class | ✓ | 19.33ms | 34.2 MB |
 | 706 | matrix/matrix_equalization | ✓ | 4.31ms | 17.3 MB |
 | 707 | matrix/matrix_multiplication_recursion | ✓ | 5.73ms | 25.0 MB |
 | 708 | matrix/matrix_operation | ✓ | 15.86ms | 12.5 MB |
