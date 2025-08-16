@@ -3298,7 +3298,11 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 			}
 		}
 	}
-	thenStmts, err := convertStmts(env, i.Then)
+	thenEnv := env
+	if env != nil {
+		thenEnv = types.NewEnv(env)
+	}
+	thenStmts, err := convertStmts(thenEnv, i.Then)
 	if err != nil {
 		return nil, err
 	}
@@ -3312,7 +3316,11 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 	}
 	var elseStmts []Stmt
 	if i.Else != nil {
-		elseStmts, err = convertStmts(env, i.Else)
+		elseEnv := env
+		if env != nil {
+			elseEnv = types.NewEnv(env)
+		}
+		elseStmts, err = convertStmts(elseEnv, i.Else)
 		if err != nil {
 			return nil, err
 		}
@@ -3321,6 +3329,16 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 }
 
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
+	if f.Name == "panic" && len(f.Params) == 1 && len(f.Body) == 0 {
+		// Treat empty panic definition as a fatal error function that never returns.
+		paramName := f.Params[0].Name
+		fn := &FunDecl{Name: "panic", Ret: "Never", Params: []Param{{Name: paramName, Type: "String"}}, Body: []Stmt{&RawStmt{Code: "fatalError(" + paramName + ")"}}}
+		if env != nil {
+			env.SetFuncType("panic", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.VoidType{}})
+			env.SetFunc("panic", f)
+		}
+		return fn, nil
+	}
 	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
 	child := types.NewEnv(env)
 	updated := map[string]bool{}
