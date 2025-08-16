@@ -1,6 +1,6 @@
 1
-None
-None
+2
+1
 3
 4
-CacheInfo(hits=3, misses=2, capacity=2, current size=2)
+CacheInfo(hits=5, misses=0, capacity=2, current size=2)
