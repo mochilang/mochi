@@ -1,0 +1,5 @@
+run: exit status 70
+ERROR: 2380 should be pentagonal
+  called from <anonymous> on line 538 of file /workspace/mochi/tests/algorithms/x/Scheme/project_euler/problem_045/sol1.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

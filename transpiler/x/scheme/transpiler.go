@@ -495,6 +495,7 @@ func header() []byte {
 	prelude += "\n(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))"
 	prelude += "\n(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))"
 	prelude += "\n(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))"
+	prelude += "\n(define (_eq a b) (cond ((and (number? a) (number? b)) (if (or (inexact? a) (inexact? b)) (< (abs (- a b)) 1e-6) (= a b))) ((and (string? a) (string? b)) (string=? a b)) (else (equal? a b))))"
 	prelude += `
 (define (_add a b)
   (cond ((and (number? a) (number? b)) (+ a b))
@@ -798,14 +799,14 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 			iter = &List{Elems: []Node{Symbol("string->list"), iter}}
 			isString = true
 		}
-                if list, ok := iter.(*List); ok {
-                        if sym, ok := list.Elems[0].(Symbol); ok && sym == "hash-table-ref" {
-                                needHash = true
-                                iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
-                        }
-                }
-        }
-        loopVar := Symbol("xs")
+		if list, ok := iter.(*List); ok {
+			if sym, ok := list.Elems[0].(Symbol); ok && sym == "hash-table-ref" {
+				needHash = true
+				iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+			}
+		}
+	}
+	loopVar := Symbol("xs")
 	loopSym := gensym("loop")
 	breakSym := gensym("break")
 	if hasRange {
@@ -2067,7 +2068,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Node, error) {
 				}
 			}
 			var cond Node
-			cond = &List{Elems: []Node{Symbol("equal?"),
+			cond = &List{Elems: []Node{Symbol("_eq"),
 				&List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit(tagKey)}},
 				ensureUnionConst(variant),
 			}}
@@ -2082,7 +2083,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		cond := &List{Elems: []Node{Symbol("equal?"), temp, pat}}
+		cond := &List{Elems: []Node{Symbol("_eq"), temp, pat}}
 		expr = &List{Elems: []Node{Symbol("if"), cond, res, expr}}
 	}
 	return &List{Elems: []Node{
@@ -2953,9 +2954,9 @@ func makeBinary(op string, left, right Node) Node {
 					}
 				}
 			}
-			return &List{Elems: []Node{Symbol("equal?"), left, right}}
+			return &List{Elems: []Node{Symbol("_eq"), left, right}}
 		}
-		return &List{Elems: []Node{Symbol("equal?"), left, right}}
+		return &List{Elems: []Node{Symbol("_eq"), left, right}}
 	case "!=":
 		if isStr(left) || isStr(right) {
 			if isStr(left) {
@@ -2976,9 +2977,9 @@ func makeBinary(op string, left, right Node) Node {
 					}
 				}
 			}
-			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
+			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("_eq"), left, right}}}}
 		}
-		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
+		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("_eq"), left, right}}}}
 	case "&&":
 		return &List{Elems: []Node{Symbol("and"), left, right}}
 	case "||":
@@ -3061,9 +3062,9 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		case ">=":
 			return &List{Elems: []Node{Symbol("string>=?"), left, right}}
 		case "==":
-			return &List{Elems: []Node{Symbol("equal?"), left, right}}
+			return &List{Elems: []Node{Symbol("_eq"), left, right}}
 		case "!=":
-			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
+			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("_eq"), left, right}}}}
 		}
 	}
 

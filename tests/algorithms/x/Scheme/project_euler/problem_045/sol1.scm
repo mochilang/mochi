@@ -110,12 +110,12 @@
 (
   let (
     (
-      start3 (
+      start5 (
         current-jiffy
       )
     )
      (
-      jps6 (
+      jps8 (
         jiffies-per-second
       )
     )
@@ -123,7 +123,15 @@
    (
     begin (
       define (
-        recursive_lucas_number n
+        to_float x
+      )
+       (
+        * x 1.0
+      )
+    )
+     (
+      define (
+        sqrt x
       )
        (
         call/cc (
@@ -133,11 +141,11 @@
            (
             begin (
               if (
-                _eq n 0
+                <= x 0.0
               )
                (
                 begin (
-                  ret1 2
+                  ret1 0.0
                 )
               )
                (
@@ -145,28 +153,64 @@
               )
             )
              (
-              if (
-                _eq n 1
-              )
-               (
-                begin (
-                  ret1 1
+              let (
+                (
+                  guess x
                 )
               )
                (
-                void
-              )
-            )
-             (
-              ret1 (
-                _add (
-                  recursive_lucas_number (
-                    - n 1
+                begin (
+                  let (
+                    (
+                      i 0
+                    )
                   )
-                )
-                 (
-                  recursive_lucas_number (
-                    - n 2
+                   (
+                    begin (
+                      letrec (
+                        (
+                          loop2 (
+                            lambda (
+                              
+                            )
+                             (
+                              if (
+                                < i 10
+                              )
+                               (
+                                begin (
+                                  set! guess (
+                                    _div (
+                                      _add guess (
+                                        _div x guess
+                                      )
+                                    )
+                                     2.0
+                                  )
+                                )
+                                 (
+                                  set! i (
+                                    + i 1
+                                  )
+                                )
+                                 (
+                                  loop2
+                                )
+                              )
+                               (
+                                void
+                              )
+                            )
+                          )
+                        )
+                      )
+                       (
+                        loop2
+                      )
+                    )
+                     (
+                      ret1 guess
+                    )
                   )
                 )
               )
@@ -177,79 +221,114 @@
     )
      (
       define (
-        dynamic_lucas_number n
+        floor x
       )
        (
         let (
           (
-            a 2
+            n 0
           )
         )
          (
           begin (
             let (
               (
-                b 1
+                y x
               )
             )
              (
               begin (
-                let (
+                letrec (
                   (
-                    i 0
-                  )
-                )
-                 (
-                  begin (
-                    letrec (
-                      (
-                        loop2 (
-                          lambda (
-                            
+                    loop3 (
+                      lambda (
+                        
+                      )
+                       (
+                        if (
+                          >= y 1.0
+                        )
+                         (
+                          begin (
+                            set! y (
+                              - y 1.0
+                            )
                           )
                            (
-                            if (
-                              < i n
-                            )
-                             (
-                              begin (
-                                let (
-                                  (
-                                    next (
-                                      + a b
-                                    )
-                                  )
-                                )
-                                 (
-                                  begin (
-                                    set! a b
-                                  )
-                                   (
-                                    set! b next
-                                  )
-                                   (
-                                    set! i (
-                                      + i 1
-                                    )
-                                  )
-                                )
-                              )
-                               (
-                                loop2
-                              )
-                            )
-                             (
-                              void
+                            set! n (
+                              + n 1
                             )
                           )
+                           (
+                            loop3
+                          )
+                        )
+                         (
+                          void
                         )
                       )
                     )
-                     (
-                      loop2
-                    )
                   )
-                   a
+                )
+                 (
+                  loop3
+                )
+              )
+               n
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        hexagonal_num n
+      )
+       (
+        * n (
+          - (
+            * 2 n
+          )
+           1
+        )
+      )
+    )
+     (
+      define (
+        is_pentagonal n
+      )
+       (
+        let (
+          (
+            root (
+              sqrt (
+                _add 1.0 (
+                  * 24.0 (
+                    to_float n
+                  )
+                )
+              )
+            )
+          )
+        )
+         (
+          begin (
+            let (
+              (
+                val (
+                  _div (
+                    + 1.0 root
+                  )
+                   6.0
+                )
+              )
+            )
+             (
+              begin (
+                _eq val (
+                  to_float (
+                    floor val
+                  )
                 )
               )
             )
@@ -258,206 +337,241 @@
       )
     )
      (
-      _display (
-        if (
-          string? (
-            to-str-space (
-              recursive_lucas_number 1
+      define (
+        solution start
+      )
+       (
+        let (
+          (
+            idx start
+          )
+        )
+         (
+          begin (
+            let (
+              (
+                num (
+                  hexagonal_num idx
+                )
+              )
             )
-          )
-        )
-         (
-          to-str-space (
-            recursive_lucas_number 1
-          )
-        )
-         (
-          to-str (
-            to-str-space (
-              recursive_lucas_number 1
+             (
+              begin (
+                letrec (
+                  (
+                    loop4 (
+                      lambda (
+                        
+                      )
+                       (
+                        if (
+                          not (
+                            is_pentagonal num
+                          )
+                        )
+                         (
+                          begin (
+                            set! idx (
+                              + idx 1
+                            )
+                          )
+                           (
+                            set! num (
+                              hexagonal_num idx
+                            )
+                          )
+                           (
+                            loop4
+                          )
+                        )
+                         (
+                          void
+                        )
+                      )
+                    )
+                  )
+                )
+                 (
+                  loop4
+                )
+              )
+               num
             )
           )
         )
       )
     )
      (
-      newline
-    )
-     (
-      _display (
-        if (
-          string? (
-            to-str-space (
-              recursive_lucas_number 20
+      define (
+        test_hexagonal_num
+      )
+       (
+        begin (
+          if (
+            not (
+              _eq (
+                hexagonal_num 143
+              )
+               40755
             )
+          )
+           (
+            begin (
+              panic "hexagonal_num(143) failed"
+            )
+          )
+           (
+            void
           )
         )
          (
-          to-str-space (
-            recursive_lucas_number 20
+          if (
+            not (
+              _eq (
+                hexagonal_num 21
+              )
+               861
+            )
+          )
+           (
+            begin (
+              panic "hexagonal_num(21) failed"
+            )
+          )
+           (
+            void
           )
         )
          (
-          to-str (
-            to-str-space (
-              recursive_lucas_number 20
+          if (
+            not (
+              _eq (
+                hexagonal_num 10
+              )
+               190
             )
+          )
+           (
+            begin (
+              panic "hexagonal_num(10) failed"
+            )
+          )
+           (
+            void
           )
         )
       )
     )
      (
-      newline
-    )
-     (
-      _display (
-        if (
-          string? (
-            to-str-space (
-              recursive_lucas_number 0
+      define (
+        test_is_pentagonal
+      )
+       (
+        begin (
+          if (
+            not (
+              is_pentagonal 330
             )
+          )
+           (
+            begin (
+              panic "330 should be pentagonal"
+            )
+          )
+           (
+            void
           )
         )
          (
-          to-str-space (
-            recursive_lucas_number 0
+          if (
+            is_pentagonal 7683
+          )
+           (
+            begin (
+              panic "7683 should not be pentagonal"
+            )
+          )
+           (
+            void
           )
         )
          (
-          to-str (
-            to-str-space (
-              recursive_lucas_number 0
+          if (
+            not (
+              is_pentagonal 2380
             )
+          )
+           (
+            begin (
+              panic "2380 should be pentagonal"
+            )
+          )
+           (
+            void
           )
         )
       )
     )
      (
-      newline
-    )
-     (
-      _display (
+      define (
+        test_solution
+      )
+       (
         if (
-          string? (
-            to-str-space (
-              recursive_lucas_number 5
+          not (
+            _eq (
+              solution 144
             )
+             1533776805
           )
         )
          (
-          to-str-space (
-            recursive_lucas_number 5
+          begin (
+            panic "solution failed"
           )
         )
          (
-          to-str (
-            to-str-space (
-              recursive_lucas_number 5
-            )
-          )
+          void
         )
       )
     )
      (
-      newline
+      test_hexagonal_num
+    )
+     (
+      test_is_pentagonal
+    )
+     (
+      test_solution
     )
      (
       _display (
         if (
           string? (
-            to-str-space (
-              dynamic_lucas_number 1
+            string-append (
+              to-str-space (
+                solution 144
+              )
             )
+             " = "
           )
         )
          (
-          to-str-space (
-            dynamic_lucas_number 1
-          )
-        )
-         (
-          to-str (
+          string-append (
             to-str-space (
-              dynamic_lucas_number 1
+              solution 144
             )
           )
-        )
-      )
-    )
-     (
-      newline
-    )
-     (
-      _display (
-        if (
-          string? (
-            to-str-space (
-              dynamic_lucas_number 20
-            )
-          )
-        )
-         (
-          to-str-space (
-            dynamic_lucas_number 20
-          )
+           " = "
         )
          (
           to-str (
-            to-str-space (
-              dynamic_lucas_number 20
+            string-append (
+              to-str-space (
+                solution 144
+              )
             )
-          )
-        )
-      )
-    )
-     (
-      newline
-    )
-     (
-      _display (
-        if (
-          string? (
-            to-str-space (
-              dynamic_lucas_number 0
-            )
-          )
-        )
-         (
-          to-str-space (
-            dynamic_lucas_number 0
-          )
-        )
-         (
-          to-str (
-            to-str-space (
-              dynamic_lucas_number 0
-            )
-          )
-        )
-      )
-    )
-     (
-      newline
-    )
-     (
-      _display (
-        if (
-          string? (
-            to-str-space (
-              dynamic_lucas_number 25
-            )
-          )
-        )
-         (
-          to-str-space (
-            dynamic_lucas_number 25
-          )
-        )
-         (
-          to-str (
-            to-str-space (
-              dynamic_lucas_number 25
-            )
+             " = "
           )
         )
       )
@@ -468,7 +582,7 @@
      (
       let (
         (
-          end4 (
+          end6 (
             current-jiffy
           )
         )
@@ -476,14 +590,14 @@
        (
         let (
           (
-            dur5 (
+            dur7 (
               quotient (
                 * (
-                  - end4 start3
+                  - end6 start5
                 )
                  1000000
               )
-               jps6
+               jps8
             )
           )
         )
@@ -491,7 +605,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur5
+                number->string dur7
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

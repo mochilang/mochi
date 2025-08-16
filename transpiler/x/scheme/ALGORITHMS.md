@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-16 12:41 GMT+7
+Last updated: 2025-08-16 13:12 GMT+7
 
-## Algorithms Golden Test Checklist (873/1077)
+## Algorithms Golden Test Checklist (875/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -601,7 +601,7 @@ Last updated: 2025-08-16 12:41 GMT+7
 | 592 | maths/line_length | ✓ | 40ms | 12.1 MB |
 | 593 | maths/liouville_lambda | ✓ | 1ms | 12.0 MB |
 | 594 | maths/lucas_lehmer_primality_test | ✓ | 1ms | 11.8 MB |
-| 595 | maths/lucas_series | ✓ | 249ms | 11.9 MB |
+| 595 | maths/lucas_series | ✓ | 253ms | 12.6 MB |
 | 596 | maths/maclaurin_series | ✓ | 3ms | 13.0 MB |
 | 597 | maths/manhattan_distance | ✓ | 1ms | 12.3 MB |
 | 598 | maths/matrix_exponentiation | ✓ | 1ms | 13.5 MB |
@@ -882,8 +882,8 @@ Last updated: 2025-08-16 12:41 GMT+7
 | 873 | project_euler/problem_043/sol1 |   |  |  |
 | 874 | project_euler/problem_044/sol1 |   |  |  |
 | 875 | project_euler/problem_045/sol1 |   |  |  |
-| 876 | project_euler/problem_046/sol1 |   |  |  |
-| 877 | project_euler/problem_047/sol1 |   |  |  |
+| 876 | project_euler/problem_046/sol1 | ✓ | 1.165s | 12.7 MB |
+| 877 | project_euler/problem_047/sol1 | ✓ | 3.364s | 128.7 MB |
 | 878 | project_euler/problem_048/sol1 |   |  |  |
 | 879 | project_euler/problem_049/sol1 |   |  |  |
 | 880 | project_euler/problem_050/sol1 |   |  |  |
