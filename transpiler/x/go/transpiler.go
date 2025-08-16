@@ -6584,6 +6584,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			return expr, nil
 		case "pow_int":
+			if _, err := env.GetVar(name); err == nil {
+				return &CallExpr{Func: name, Args: args}, nil
+			}
 			if imports != nil {
 				imports["math"] = "math"
 			}
