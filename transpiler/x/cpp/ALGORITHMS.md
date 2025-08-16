@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 1014/1077
-Last updated: 2025-08-16 12:09 +0700
+Completed programs: 1016/1077
+Last updated: 2025-08-16 12:42 +0700
 
 Checklist:
 
@@ -607,59 +607,59 @@ Checklist:
 | 598 | maths/matrix_exponentiation | ✓ | 474.0µs | 3.56MB |
 | 599 | maths/max_sum_sliding_window | ✓ | 318.0µs | 3.58MB |
 | 600 | maths/minkowski_distance | ✓ | 571.0µs | 3.84MB |
-| 601 | maths/mobius_function | ✓ | 268.0µs | 3.64MB |
-| 602 | maths/modular_division | ✓ | 277.0µs | 3.60MB |
-| 603 | maths/monte_carlo | ✓ | 937.0µs | 3.82MB |
-| 604 | maths/monte_carlo_dice | ✓ | 1.0ms | 3.73MB |
-| 605 | maths/number_of_digits | ✓ | 315.0µs | 3.64MB |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 | ✓ | 577.0µs | 3.75MB |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 551.0µs | 3.66MB |
-| 610 | maths/numerical_analysis/intersection | ✓ | 518.0µs | 3.60MB |
-| 611 | maths/numerical_analysis/nevilles_method | ✓ | 826.0µs | 3.88MB |
-| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 520.0µs | 3.86MB |
-| 613 | maths/numerical_analysis/newton_raphson | ✓ | 428.0µs | 3.86MB |
-| 614 | maths/numerical_analysis/numerical_integration | ✓ | 5.0ms | 3.75MB |
-| 615 | maths/numerical_analysis/proper_fractions | ✓ | 300.0µs | 3.55MB |
-| 616 | maths/numerical_analysis/runge_kutta | ✓ | 1.0ms | 3.83MB |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 528.0µs | 3.79MB |
-| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 603.0µs | 3.68MB |
-| 619 | maths/numerical_analysis/secant_method | ✓ | 638.0µs | 3.71MB |
-| 620 | maths/numerical_analysis/simpson_rule | ✓ | 530.0µs | 3.75MB |
-| 621 | maths/numerical_analysis/square_root | ✓ | 524.0µs | 3.66MB |
-| 622 | maths/odd_sieve | ✓ | 253.0µs | 3.48MB |
-| 623 | maths/perfect_cube | ✓ | 328.0µs | 3.67MB |
-| 624 | maths/perfect_number | ✓ | 139.0ms | 3.59MB |
-| 625 | maths/perfect_square | ✓ | 303.0µs | 3.58MB |
-| 626 | maths/persistence | ✓ | 206.0µs | 3.58MB |
-| 627 | maths/pi_generator | ✓ | 171.0µs | 3.54MB |
-| 628 | maths/pi_monte_carlo_estimation | ✓ | 990.0µs | 3.73MB |
-| 629 | maths/points_are_collinear_3d | ✓ | 268.0µs | 3.46MB |
-| 630 | maths/pollard_rho | ✓ | 278.0µs | 3.62MB |
-| 631 | maths/polynomial_evaluation | ✓ | 507.0µs | 3.86MB |
-| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 463.0µs | 3.77MB |
-| 633 | maths/power_using_recursion | ✓ | 202.0µs | 3.56MB |
-| 634 | maths/prime_check | ✓ | 364.0µs | 3.73MB |
-| 635 | maths/prime_factors | ✓ | 344.0µs | 3.60MB |
-| 636 | maths/prime_numbers | ✓ | 336.0µs | 3.60MB |
-| 637 | maths/prime_sieve_eratosthenes | ✓ | 440.0µs | 3.77MB |
+| 601 | maths/mobius_function | ✓ | 184.0µs | 3.48MB |
+| 602 | maths/modular_division | ✓ | 211.0µs | 3.69MB |
+| 603 | maths/monte_carlo | ✓ | 692.0µs | 3.71MB |
+| 604 | maths/monte_carlo_dice | ✓ | 555.0µs | 3.73MB |
+| 605 | maths/number_of_digits | ✓ | 195.0µs | 3.74MB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 482.0µs | 3.78MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 492.0µs | 3.84MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 346.0µs | 3.71MB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 470.0µs | 3.79MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 394.0µs | 3.84MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 443.0µs | 3.72MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 378.0µs | 3.72MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 400.0µs | 3.86MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 3.0ms | 3.71MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 255.0µs | 3.64MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 1.0ms | 3.98MB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 379.0µs | 3.88MB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 428.0µs | 3.74MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 353.0µs | 3.72MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 434.0µs | 3.85MB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 339.0µs | 3.69MB |
+| 622 | maths/odd_sieve | ✓ | 196.0µs | 3.48MB |
+| 623 | maths/perfect_cube | ✓ | 350.0µs | 3.60MB |
+| 624 | maths/perfect_number | ✓ | 98.0ms | 3.57MB |
+| 625 | maths/perfect_square | ✓ | 223.0µs | 3.58MB |
+| 626 | maths/persistence | ✓ | 202.0µs | 3.58MB |
+| 627 | maths/pi_generator | ✓ | 152.0µs | 3.70MB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 599.0µs | 3.72MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 201.0µs | 3.53MB |
+| 630 | maths/pollard_rho | ✓ | 214.0µs | 3.58MB |
+| 631 | maths/polynomial_evaluation | ✓ | 499.0µs | 3.73MB |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 386.0µs | 3.77MB |
+| 633 | maths/power_using_recursion | ✓ | 130.0µs | 3.46MB |
+| 634 | maths/prime_check | ✓ | 296.0µs | 3.69MB |
+| 635 | maths/prime_factors | ✓ | 244.0µs | 3.61MB |
+| 636 | maths/prime_numbers | ✓ | 211.0µs | 3.80MB |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 314.0µs | 3.61MB |
 | 638 | maths/primelib |   |  |  |
-| 639 | maths/print_multiplication_table | ✓ | 298.0µs | 3.48MB |
-| 640 | maths/pythagoras | ✓ | 485.0µs | 3.80MB |
-| 641 | maths/qr_decomposition | ✓ | 602.0µs | 3.69MB |
-| 642 | maths/quadratic_equations_complex_numbers | ✓ | 523.0µs | 3.73MB |
-| 643 | maths/radians | ✓ | 521.0µs | 3.67MB |
-| 644 | maths/radix2_fft | ✓ | 582.0µs | 3.86MB |
-| 645 | maths/remove_digit | ✓ | 194.0µs | 3.45MB |
-| 646 | maths/segmented_sieve | ✓ | 370.0µs | 3.76MB |
-| 647 | maths/series/arithmetic | ✓ | 550.0µs | 3.71MB |
-| 648 | maths/series/geometric | ✓ | 459.0µs | 3.80MB |
-| 649 | maths/series/geometric_series | ✓ | 416.0µs | 3.65MB |
-| 650 | maths/series/harmonic | ✓ | 449.0µs | 3.88MB |
-| 651 | maths/series/harmonic_series | ✓ | 288.0µs | 3.78MB |
-| 652 | maths/series/hexagonal_numbers | ✓ | 324.0µs | 3.60MB |
-| 653 | maths/series/p_series | ✓ | 492.0µs | 3.84MB |
+| 639 | maths/print_multiplication_table | ✓ | 243.0µs | 3.61MB |
+| 640 | maths/pythagoras | ✓ | 359.0µs | 3.71MB |
+| 641 | maths/qr_decomposition | ✓ | 512.0µs | 3.69MB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 365.0µs | 3.86MB |
+| 643 | maths/radians | ✓ | 328.0µs | 3.66MB |
+| 644 | maths/radix2_fft | ✓ | 391.0µs | 3.79MB |
+| 645 | maths/remove_digit | ✓ | 119.0µs | 3.45MB |
+| 646 | maths/segmented_sieve | ✓ | 255.0µs | 3.54MB |
+| 647 | maths/series/arithmetic | ✓ | 386.0µs | 3.75MB |
+| 648 | maths/series/geometric | ✓ | 361.0µs | 3.97MB |
+| 649 | maths/series/geometric_series | ✓ | 284.0µs | 3.69MB |
+| 650 | maths/series/harmonic | ✓ | 476.0µs | 3.74MB |
+| 651 | maths/series/harmonic_series | ✓ | 232.0µs | 3.61MB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 258.0µs | 3.60MB |
+| 653 | maths/series/p_series | ✓ | 804.0µs | 3.73MB |
 | 654 | maths/sieve_of_eratosthenes | ✓ | 607.0µs | 3.69MB |
 | 655 | maths/sigmoid | ✓ | 487.0µs | 3.65MB |
 | 656 | maths/signum | ✓ | 251.0µs | 3.62MB |
