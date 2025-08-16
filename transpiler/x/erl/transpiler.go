@@ -2576,6 +2576,44 @@ func (a *AtomLit) emit(w io.Writer) { io.WriteString(w, a.Name) }
 func (n *NowExpr) emit(w io.Writer) { io.WriteString(w, "mochi_now()") }
 
 func (i *IfStmt) emit(w io.Writer) {
+	// Detect simple assignment pattern to avoid exported-from-case warnings.
+	if len(i.Then) > 0 && len(i.Else) > 0 {
+		if lt, ok := i.Then[len(i.Then)-1].(*LetStmt); ok {
+			if le, ok2 := i.Else[len(i.Else)-1].(*LetStmt); ok2 && lt.Name == le.Name {
+				// Both branches assign the same variable; emit as
+				// `Var = case Cond of ... end` with branch bodies
+				// returning the value.
+				fmt.Fprintf(w, "%s = (case ", lt.Name)
+				i.Cond.emit(w)
+				io.WriteString(w, " of\n        true -> ")
+				// Emit then statements excluding final assignment.
+				for idx, st := range i.Then[:len(i.Then)-1] {
+					if idx > 0 {
+						io.WriteString(w, ",\n            ")
+					}
+					st.emit(w)
+				}
+				if len(i.Then) > 1 {
+					io.WriteString(w, ",\n            ")
+				}
+				lt.Expr.emit(w)
+				io.WriteString(w, ";\n        _ -> ")
+				for idx, st := range i.Else[:len(i.Else)-1] {
+					if idx > 0 {
+						io.WriteString(w, ",\n            ")
+					}
+					st.emit(w)
+				}
+				if len(i.Else) > 1 {
+					io.WriteString(w, ",\n            ")
+				}
+				le.Expr.emit(w)
+				io.WriteString(w, "\n    end)")
+				return
+			}
+		}
+	}
+
 	io.WriteString(w, "case ")
 	i.Cond.emit(w)
 	io.WriteString(w, " of\n        true -> ")
@@ -6539,7 +6577,7 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString("#!/usr/bin/env escript\n")
 	buf.WriteString("-module(main).\n")
-	buf.WriteString("-compile([nowarn_shadow_vars, nowarn_unused_vars, nowarn_exported_vars, nowarn_export_all, nowarn_unused_expr, nowarn_unused_function]).\n")
+	buf.WriteString("-compile([export_vars, nowarn_export_vars, nowarn_shadow_vars, nowarn_unused_vars, nowarn_export_all, nowarn_unused_expr, nowarn_unused_function]).\n")
 	exports := []string{"main/1"}
 	for _, f := range p.Funs {
 		exports = append(exports, fmt.Sprintf("%s/%d", f.Name, len(f.Params)))
