@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-16 12:54 GMT+7
+Last updated: 2025-08-16 14:50 GMT+7
 
 ## Algorithms Golden Test Checklist (1026/1077)
 | Index | Name | Status | Duration | Memory |
@@ -531,8 +531,8 @@ Last updated: 2025-08-16 12:54 GMT+7
 | 522 | machine_learning/similarity_search | ✓ | 2.0ms | 14.82KB |
 | 523 | machine_learning/support_vector_machines | ✓ | 1.0ms | 17.38KB |
 | 524 | machine_learning/word_frequency_functions | ✓ | 2.0ms | 273.95KB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 2.0ms | 38.86KB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 2.0ms | 17.11KB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 1.0µs | 39.05KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 1.0µs | 19.59KB |
 | 527 | maths/abs | ✓ | 1.0µs | 14.60KB |
 | 528 | maths/addition_without_arithmetic | ✓ | 1.0µs | 17.20KB |
 | 529 | maths/aliquot_sum | ✓ | 1.0µs | 16.67KB |
