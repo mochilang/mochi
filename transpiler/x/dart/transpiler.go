@@ -120,8 +120,8 @@ void _json(dynamic v) {
 `
 
 const helperError = `
-Never _error(String msg) {
-  throw Exception(msg);
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 `
 

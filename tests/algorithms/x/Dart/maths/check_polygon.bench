@@ -1,6 +1,1 @@
-../../../tests/algorithms/x/Dart/maths/check_polygon.dart:41:5: Error: Method not found: 'error'.
-    error("Monogons and Digons are not polygons in the Euclidean space");
-    ^^^^^
-../../../tests/algorithms/x/Dart/maths/check_polygon.dart:46:5: Error: Method not found: 'error'.
-    error("All values must be greater than 0");
-    ^^^^^
+{"duration_us":12663,"memory_bytes":3407872,"name":"main"}

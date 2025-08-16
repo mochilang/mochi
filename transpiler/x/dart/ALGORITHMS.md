@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-16 11:58 GMT+7
+Last updated: 2025-08-16 12:23 GMT+7
 
-## Algorithms Golden Test Checklist (950/1077)
+## Algorithms Golden Test Checklist (952/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -551,9 +551,9 @@ Last updated: 2025-08-16 11:58 GMT+7
 | 542 | maths/binary_multiplication | ✓ | 12.861ms | 9.8 MB |
 | 543 | maths/binomial_coefficient | ✓ | 7.503ms | 3.1 MB |
 | 544 | maths/binomial_distribution | ✓ | 15.961ms | 11.1 MB |
-| 545 | maths/ceil | ✓ |  |  |
+| 545 | maths/ceil | ✓ | 12.644ms | 3.2 MB |
 | 546 | maths/chebyshev_distance | ✓ | 13.256ms | 1.9 MB |
-| 547 | maths/check_polygon | error |  |  |
+| 547 | maths/check_polygon | ✓ | 12.663ms | 3.2 MB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 9.241ms | 2.0 MB |
 | 549 | maths/chudnovsky_algorithm | error |  |  |
 | 550 | maths/collatz_sequence | ✓ | 12.927ms | 2.2 MB |
@@ -561,7 +561,7 @@ Last updated: 2025-08-16 11:58 GMT+7
 | 552 | maths/continued_fraction | ✓ | 9.346ms | 2.8 MB |
 | 553 | maths/decimal_isolate | ✓ | 8.358ms | 3.6 MB |
 | 554 | maths/decimal_to_fraction | ✓ | 10.01ms | 3.8 MB |
-| 555 | maths/dodecahedron | error |  |  |
+| 555 | maths/dodecahedron | ✓ | 12.872ms | 3.3 MB |
 | 556 | maths/double_factorial | ✓ | 17.423ms | 9.6 MB |
 | 557 | maths/dual_number_automatic_differentiation | error |  |  |
 | 558 | maths/entropy | error |  |  |
