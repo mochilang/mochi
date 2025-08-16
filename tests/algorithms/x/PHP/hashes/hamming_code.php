@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
@@ -15,7 +30,9 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function index_of($s, $ch) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function index_of($s, $ch) {
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -24,8 +41,8 @@ function index_of($s, $ch) {
   $i = $i + 1;
 };
   return -1;
-}
-function mochi_ord($ch) {
+};
+  function mochi_ord($ch) {
   $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $lower = 'abcdefghijklmnopqrstuvwxyz';
   $idx = index_of($upper, $ch);
@@ -37,8 +54,8 @@ function mochi_ord($ch) {
   return 97 + $idx;
 }
   return 0;
-}
-function mochi_chr($n) {
+};
+  function mochi_chr($n) {
   $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $lower = 'abcdefghijklmnopqrstuvwxyz';
   if ($n >= 65 && $n < 91) {
@@ -48,8 +65,8 @@ function mochi_chr($n) {
   return substr($lower, $n - 97, $n - 96 - ($n - 97));
 }
   return '?';
-}
-function text_to_bits($text) {
+};
+  function text_to_bits($text) {
   $bits = '';
   $i = 0;
   while ($i < strlen($text)) {
@@ -67,8 +84,8 @@ function text_to_bits($text) {
   $i = $i + 1;
 };
   return $bits;
-}
-function text_from_bits($bits) {
+};
+  function text_from_bits($bits) {
   $text = '';
   $i = 0;
   while ($i < strlen($bits)) {
@@ -85,14 +102,14 @@ function text_from_bits($bits) {
   $i = $i + 8;
 };
   return $text;
-}
-function bool_to_string($b) {
+};
+  function bool_to_string($b) {
   if ($b) {
   return 'True';
 }
   return 'False';
-}
-function string_to_bitlist($s) {
+};
+  function string_to_bitlist($s) {
   $res = [];
   $i = 0;
   while ($i < strlen($s)) {
@@ -104,8 +121,8 @@ function string_to_bitlist($s) {
   $i = $i + 1;
 };
   return $res;
-}
-function bitlist_to_string($bits) {
+};
+  function bitlist_to_string($bits) {
   $s = '';
   $i = 0;
   while ($i < count($bits)) {
@@ -117,8 +134,8 @@ function bitlist_to_string($bits) {
   $i = $i + 1;
 };
   return $s;
-}
-function is_power_of_two($x) {
+};
+  function is_power_of_two($x) {
   if ($x < 1) {
   return false;
 }
@@ -127,8 +144,8 @@ function is_power_of_two($x) {
   $p = $p * 2;
 };
   return $p == $x;
-}
-function list_eq($a, $b) {
+};
+  function list_eq($a, $b) {
   if (count($a) != count($b)) {
   return false;
 }
@@ -140,8 +157,8 @@ function list_eq($a, $b) {
   $i = $i + 1;
 };
   return true;
-}
-function pow2($e) {
+};
+  function pow2($e) {
   $res = 1;
   $i = 0;
   while ($i < $e) {
@@ -149,15 +166,15 @@ function pow2($e) {
   $i = $i + 1;
 };
   return $res;
-}
-function has_bit($n, $b) {
+};
+  function has_bit($n, $b) {
   $p = pow2($b);
   if (((_intdiv($n, $p)) % 2) == 1) {
   return true;
 }
   return false;
-}
-function hamming_encode($r, $data_bits) {
+};
+  function hamming_encode($r, $data_bits) {
   $total = $r + count($data_bits);
   $data_ord = [];
   $cont_data = 0;
@@ -202,8 +219,8 @@ function hamming_encode($r, $data_bits) {
   $i = $i + 1;
 };
   return $result;
-}
-function hamming_decode($r, $code) {
+};
+  function hamming_decode($r, $code) {
   $data_output = [];
   $parity_received = [];
   $i = 1;
@@ -228,8 +245,8 @@ function hamming_decode($r, $code) {
 };
   $ack = list_eq($parity_received, $parity_calc);
   return ['data' => $data_output, 'ack' => $ack];
-}
-function main() {
+};
+  function main() {
   $sizePari = 4;
   $be = 2;
   $text = 'Message01';
@@ -254,5 +271,13 @@ function main() {
 }
   $decoded_err = hamming_decode($sizePari, $corrupted);
   echo rtrim('Data receive (error) ----> ' . bitlist_to_string($decoded_err['data']) . ' -- Data integrity: ' . bool_to_string($decoded_err['ack'])), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

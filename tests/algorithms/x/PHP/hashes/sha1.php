@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
@@ -15,9 +30,11 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-$MOD = 4294967296;
-$ASCII = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
-function mochi_ord($ch) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $MOD = 4294967296;
+  $ASCII = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+  function mochi_ord($ch) {
   global $ASCII, $MOD;
   $i = 0;
   while ($i < strlen($ASCII)) {
@@ -27,8 +44,8 @@ function mochi_ord($ch) {
   $i = $i + 1;
 };
   return 0;
-}
-function pow2($n) {
+};
+  function pow2($n) {
   global $ASCII, $MOD;
   $res = 1;
   $i = 0;
@@ -37,8 +54,8 @@ function pow2($n) {
   $i = $i + 1;
 };
   return $res;
-}
-function bit_and($a, $b) {
+};
+  function bit_and($a, $b) {
   global $ASCII, $MOD;
   $x = $a;
   $y = $b;
@@ -55,8 +72,8 @@ function bit_and($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function bit_or($a, $b) {
+};
+  function bit_or($a, $b) {
   global $ASCII, $MOD;
   $x = $a;
   $y = $b;
@@ -75,8 +92,8 @@ function bit_or($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function bit_xor($a, $b) {
+};
+  function bit_xor($a, $b) {
   global $ASCII, $MOD;
   $x = $a;
   $y = $b;
@@ -95,18 +112,18 @@ function bit_xor($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function bit_not($a) {
+};
+  function bit_not($a) {
   global $ASCII, $MOD;
   return ($MOD - 1) - $a;
-}
-function rotate_left($n, $b) {
+};
+  function rotate_left($n, $b) {
   global $ASCII, $MOD;
   $left = fmod(($n * pow2($b)), $MOD);
   $right = $n / pow2(32 - $b);
   return ($left + $right) % $MOD;
-}
-function to_hex32($n) {
+};
+  function to_hex32($n) {
   global $ASCII, $MOD;
   $digits = '0123456789abcdef';
   $num = $n;
@@ -126,8 +143,8 @@ function to_hex32($n) {
   $s = substr($s, strlen($s) - 8, strlen($s) - (strlen($s) - 8));
 }
   return $s;
-}
-function mochi_sha1($message) {
+};
+  function mochi_sha1($message) {
   global $ASCII, $MOD;
   $bytes = [];
   $i = 0;
@@ -228,9 +245,17 @@ function mochi_sha1($message) {
   $bindex = $bindex + 1;
 };
   return to_hex32($h0) . to_hex32($h1) . to_hex32($h2) . to_hex32($h3) . to_hex32($h4);
-}
-function main() {
+};
+  function main() {
   global $ASCII, $MOD;
   echo rtrim(json_encode(mochi_sha1('Test String'), 1344)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

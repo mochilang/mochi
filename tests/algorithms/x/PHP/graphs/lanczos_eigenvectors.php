@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -24,17 +39,19 @@ function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$seed = 123456789;
-function mochi_rand() {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $seed = 123456789;
+  function mochi_rand() {
   global $graph, $result, $seed;
   $seed = ($seed * 1103515245 + 12345) % 2147483648;
   return $seed;
-}
-function random() {
+};
+  function random() {
   global $graph, $result, $seed;
   return (1.0 * mochi_rand()) / 2147483648.0;
-}
-function sqrtApprox($x) {
+};
+  function sqrtApprox($x) {
   global $graph, $result, $seed;
   if ($x <= 0.0) {
   return 0.0;
@@ -46,12 +63,12 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function absf($x) {
+};
+  function absf($x) {
   global $graph, $result, $seed;
   return ($x < 0.0 ? -$x : $x);
-}
-function dot($a, $b) {
+};
+  function dot($a, $b) {
   global $graph, $result, $seed;
   $s = 0.0;
   $i = 0;
@@ -60,8 +77,8 @@ function dot($a, $b) {
   $i = $i + 1;
 };
   return $s;
-}
-function vector_scale($v, $s) {
+};
+  function vector_scale($v, $s) {
   global $graph, $result, $seed;
   $res = [];
   $i = 0;
@@ -70,8 +87,8 @@ function vector_scale($v, $s) {
   $i = $i + 1;
 };
   return $res;
-}
-function vector_sub($a, $b) {
+};
+  function vector_sub($a, $b) {
   global $graph, $result, $seed;
   $res = [];
   $i = 0;
@@ -80,8 +97,8 @@ function vector_sub($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function vector_add($a, $b) {
+};
+  function vector_add($a, $b) {
   global $graph, $result, $seed;
   $res = [];
   $i = 0;
@@ -90,8 +107,8 @@ function vector_add($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function zeros_matrix($r, $c) {
+};
+  function zeros_matrix($r, $c) {
   global $graph, $result, $seed;
   $m = [];
   $i = 0;
@@ -106,8 +123,8 @@ function zeros_matrix($r, $c) {
   $i = $i + 1;
 };
   return $m;
-}
-function column($m, $idx) {
+};
+  function column($m, $idx) {
   global $graph, $result, $seed;
   $col = [];
   $i = 0;
@@ -116,8 +133,8 @@ function column($m, $idx) {
   $i = $i + 1;
 };
   return $col;
-}
-function validate_adjacency_list($graph) {
+};
+  function validate_adjacency_list($graph) {
   global $result, $seed;
   $i = 0;
   while ($i < count($graph)) {
@@ -131,8 +148,8 @@ function validate_adjacency_list($graph) {
 };
   $i = $i + 1;
 };
-}
-function multiply_matrix_vector($graph, $vector) {
+};
+  function multiply_matrix_vector($graph, $vector) {
   global $seed;
   $n = count($graph);
   if (count($vector) != $n) {
@@ -152,8 +169,8 @@ function multiply_matrix_vector($graph, $vector) {
   $i = $i + 1;
 };
   return $result;
-}
-function lanczos_iteration($graph, $k) {
+};
+  function lanczos_iteration($graph, $k) {
   global $result, $seed;
   $n = count($graph);
   if ($k < 1 || $k > $n) {
@@ -211,8 +228,8 @@ function lanczos_iteration($graph, $k) {
   $j = $j + 1;
 };
   return ['t' => $t, 'q' => $q];
-}
-function jacobi_eigen($a_in, $max_iter) {
+};
+  function jacobi_eigen($a_in, $max_iter) {
   global $graph, $result, $seed;
   $n = count($a_in);
   $a = $a_in;
@@ -288,8 +305,8 @@ function jacobi_eigen($a_in, $max_iter) {
   $i = $i + 1;
 };
   return ['values' => $eigenvalues, 'vectors' => $v];
-}
-function matmul($a, $b) {
+};
+  function matmul($a, $b) {
   global $graph, $result, $seed;
   $rows = count($a);
   $cols = count($b[0]);
@@ -311,8 +328,8 @@ function matmul($a, $b) {
   $i = $i + 1;
 };
   return $m;
-}
-function sort_eigenpairs($vals, $vecs) {
+};
+  function sort_eigenpairs($vals, $vecs) {
   global $graph, $result, $seed;
   $n = count($vals);
   $values = $vals;
@@ -338,8 +355,8 @@ function sort_eigenpairs($vals, $vecs) {
   $i = $i + 1;
 };
   return ['values' => $values, 'vectors' => $vectors];
-}
-function find_lanczos_eigenvectors($graph, $k) {
+};
+  function find_lanczos_eigenvectors($graph, $k) {
   global $result, $seed;
   validate_adjacency_list($graph);
   $res = lanczos_iteration($graph, $k);
@@ -347,8 +364,8 @@ function find_lanczos_eigenvectors($graph, $k) {
   $sorted = sort_eigenpairs($eig['values'], $eig['vectors']);
   $final_vectors = matmul($res['q'], $sorted['vectors']);
   return ['values' => $sorted['values'], 'vectors' => $final_vectors];
-}
-function list_to_string($arr) {
+};
+  function list_to_string($arr) {
   global $graph, $result, $seed;
   $s = '[';
   $i = 0;
@@ -360,8 +377,8 @@ function list_to_string($arr) {
   $i = $i + 1;
 };
   return $s . ']';
-}
-function matrix_to_string($m) {
+};
+  function matrix_to_string($m) {
   global $graph, $result, $seed;
   $s = '[';
   $i = 0;
@@ -373,8 +390,16 @@ function matrix_to_string($m) {
   $i = $i + 1;
 };
   return $s . ']';
-}
-$graph = [[1, 2], [0, 2], [0, 1]];
-$result = find_lanczos_eigenvectors($graph, 2);
-echo rtrim(list_to_string($result['values'])), PHP_EOL;
-echo rtrim(matrix_to_string($result['vectors'])), PHP_EOL;
+};
+  $graph = [[1, 2], [0, 2], [0, 1]];
+  $result = find_lanczos_eigenvectors($graph, 2);
+  echo rtrim(list_to_string($result['values'])), PHP_EOL;
+  echo rtrim(matrix_to_string($result['vectors'])), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

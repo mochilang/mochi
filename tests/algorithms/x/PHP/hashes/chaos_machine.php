@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _intdiv($a, $b) {
     if ($b === 0 || $b === '0') {
         throw new DivisionByZeroError();
@@ -11,10 +26,12 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-$K = [0.33, 0.44, 0.55, 0.44, 0.33];
-$t = 3;
-$size = 5;
-function round_dec($x, $n) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $K = [0.33, 0.44, 0.55, 0.44, 0.33];
+  $t = 3;
+  $size = 5;
+  function round_dec($x, $n) {
   global $K, $machine, $res, $size, $t;
   $m10 = 1.0;
   $i = 0;
@@ -24,12 +41,12 @@ function round_dec($x, $n) {
 };
   $y = $x * $m10 + 0.5;
   return (1.0 * intval($y)) / $m10;
-}
-function mochi_reset() {
+};
+  function mochi_reset() {
   global $K, $i, $machine, $res, $size, $t;
   return ['buffer' => $K, 'params' => [0.0, 0.0, 0.0, 0.0, 0.0], 'time' => 0];
-}
-function push($m, $seed) {
+};
+  function push($m, $seed) {
   global $K, $machine, $res, $size, $t;
   $buf = $m['buffer'];
   $par = $m['params'];
@@ -47,8 +64,8 @@ function push($m, $seed) {
   $i = $i + 1;
 };
   return ['buffer' => $buf, 'params' => $par, 'time' => $m['time'] + 1];
-}
-function mochi_xor($a, $b) {
+};
+  function mochi_xor($a, $b) {
   global $K, $i, $machine, $size, $t;
   $aa = $a;
   $bb = $b;
@@ -65,8 +82,8 @@ function mochi_xor($a, $b) {
   $bit = $bit * 2;
 };
   return $res;
-}
-function xorshift($x, $y) {
+};
+  function xorshift($x, $y) {
   global $K, $i, $machine, $res, $size, $t;
   $xv = $x;
   $yv = $y;
@@ -74,8 +91,8 @@ function xorshift($x, $y) {
   $yv = mochi_xor($yv, $xv * 131072);
   $xv = mochi_xor($xv, _intdiv($yv, 32));
   return $xv;
-}
-function pull($m) {
+};
+  function pull($m) {
   global $K, $machine, $res, $size, $t;
   $buf = $m['buffer'];
   $par = $m['params'];
@@ -95,14 +112,22 @@ function pull($m) {
   $new_machine = ['buffer' => $buf, 'params' => $par, 'time' => $m['time'] + 1];
   $value = fmod(xorshift($x, $y), 4294967295);
   return ['value' => $value, 'machine' => $new_machine];
-}
-$machine = mochi_reset();
-$i = 0;
-while ($i < 100) {
+};
+  $machine = mochi_reset();
+  $i = 0;
+  while ($i < 100) {
   $machine = push($machine, $i);
   $i = $i + 1;
 }
-$res = pull($machine);
-echo rtrim(json_encode($res['value'], 1344)), PHP_EOL;
-echo rtrim(json_encode($res['machine']['buffer'], 1344)), PHP_EOL;
-echo rtrim(json_encode($res['machine']['params'], 1344)), PHP_EOL;
+  $res = pull($machine);
+  echo rtrim(json_encode($res['value'], 1344)), PHP_EOL;
+  echo rtrim(json_encode($res['machine']['buffer'], 1344)), PHP_EOL;
+  echo rtrim(json_encode($res['machine']['params'], 1344)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function tarjan($g) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function tarjan($g) {
   $n = count($g);
   $stack = [];
   $on_stack = [];
@@ -79,8 +96,8 @@ $strong_connect = function($v, $index) use (&$strong_connect, $g, $n, &$stack, &
   $v = $v + 1;
 };
   return $components;
-}
-function create_graph($n, $edges) {
+};
+  function create_graph($n, $edges) {
   $g = [];
   $i = 0;
   while ($i < $n) {
@@ -93,8 +110,8 @@ function create_graph($n, $edges) {
   $g[$u] = _append($g[$u], $v);
 };
   return $g;
-}
-function main() {
+};
+  function main() {
   $n_vertices = 7;
   $source = [0, 0, 1, 2, 3, 3, 4, 4, 6];
   $target = [1, 3, 2, 0, 1, 4, 5, 6, 5];
@@ -106,5 +123,13 @@ function main() {
 };
   $g = create_graph($n_vertices, $edges);
   echo rtrim(_str(tarjan($g))), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
