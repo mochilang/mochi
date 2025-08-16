@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 926/1077
-Last updated: 2025-08-16 11:48 +0700
+Completed programs: 928/1077
+Last updated: 2025-08-16 12:34 +0700
 
 Checklist:
 
@@ -503,13 +503,13 @@ Checklist:
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 11µs | 8.8 MB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 9µs | 8.8 MB |
 | 496 | linear_programming/simplex | ✓ | 183.317ms | 8.7 MB |
-| 497 | machine_learning/apriori_algorithm | error |  |  |
+| 497 | machine_learning/apriori_algorithm | ✓ | 183.317ms | 8.8 MB |
 | 498 | machine_learning/astar | ✓ | 3µs | 8.7 MB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 6µs | 8.7 MB |
 | 500 | machine_learning/data_transformations | ✓ | 10µs | 8.8 MB |
-| 501 | machine_learning/decision_tree | error |  |  |
+| 501 | machine_learning/decision_tree | ✓ | 183.317ms | 8.8 MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 3µs | 8.7 MB |
-| 503 | machine_learning/forecasting/run | ✓ | 14µs | 8.8 MB |
+| 503 | machine_learning/forecasting/run | ✓ | 183.317ms | 8.7 MB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 4µs | 8.7 MB |
 | 506 | machine_learning/gradient_descent | ✓ | 184µs | 8.7 MB |
