@@ -26,23 +26,9 @@ warning: variable "current_id" is unused (there is a variable with the same name
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:17:20: Main.dfs/8
 
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 80 │       {i, ids, low, visited} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:80:8: Main.compute_bridges/1
-
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 105 │       {bridges, i, id} = try do
-     │                 ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:105:17: Main.compute_bridges/1
-
      warning: variable "id" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 105 │       {bridges, i, id} = try do
+ 105 │       {bridges, _, id} = try do
      │                    ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:105:20: Main.compute_bridges/1

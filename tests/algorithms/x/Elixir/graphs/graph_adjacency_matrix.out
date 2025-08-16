@@ -1,44 +1,9 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 23 │       i = try do
-    │       ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_matrix.exs:23:7: Main.make_graph/3
-
-    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 40 │       j = try do
-    │       ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_matrix.exs:40:7: Main.make_graph/3
-
-     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
  101 │       g = Map.put(g, :vertex_to_index, idx_map)
      │       ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_matrix.exs:101:7: Main.add_vertex/2
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 74 │       {i, matrix} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_matrix.exs:74:8: Main.add_vertex/2
-
-    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 91 │       {j, row} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_matrix.exs:91:8: Main.add_vertex/2
-
-     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 164 │             {j, new_row} = try do
-     │              ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_matrix.exs:164:14: Main.remove_vertex/2
 
      warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
@@ -46,13 +11,6 @@ warning: variable "i" is unused (there is a variable with the same name in the c
      │       ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_matrix.exs:189:7: Main.remove_vertex/2
-
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 181 │       {i, new_matrix} = try do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_matrix.exs:181:8: Main.remove_vertex/2
 
      warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │

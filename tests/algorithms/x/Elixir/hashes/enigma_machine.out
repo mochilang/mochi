@@ -1,39 +1,4 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 44 │       {i, result} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:44:8: Main.build_alphabet/0
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 68 │       {i, lst} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:68:8: Main.range_list/1
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 92 │       {i, lst} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:92:8: Main.reversed_range_list/1
-
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 117 │       i = try do
-     │       ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:117:7: Main.index_of_char/2
-
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 142 │       i = try do
-     │       ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/enigma_machine.exs:142:7: Main.index_of_int/2
-
-     warning: variable "gear_one" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "gear_one" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
  167 │   gear_one = (gear_one ++ [i])
      │   ~

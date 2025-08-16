@@ -5,33 +5,12 @@ warning: variable "head" is unused (there is a variable with the same name in th
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_long.exs:115:8: Main.longest_distance/1
 
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 24 │       {i, indegree} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_long.exs:24:8: Main.longest_distance/1
-
      warning: variable "indegree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
  115 │       {head, indegree, long_dist, queue} = try do
      │              ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_long.exs:115:14: Main.longest_distance/1
-
-    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 41 │       {j, long_dist} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_long.exs:41:8: Main.longest_distance/1
-
-    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 83 │       {k, queue} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_long.exs:83:8: Main.longest_distance/1
 
      warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │

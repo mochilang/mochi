@@ -43,8 +43,9 @@ var elixirReserved = map[string]struct{}{
 }
 
 var kernelReserved = map[string]int{
-	"floor": 1,
-	"ceil":  1,
+	"floor":     1,
+	"ceil":      1,
+	"to_string": 1,
 }
 
 func kernelImportExcepts() []string {

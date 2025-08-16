@@ -1,43 +1,46 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "ci" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 55 │       {i, ranks} = try do
-    │        ~
+ 97 │         ci = try do
+    │         ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:55:8: Main.page_rank/3
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:97:9: Main.main/0
 
-    error: undefined variable "nodes"
+======= Nodes =======
+%{name: "A", inbound: ["C"], outbound: ["B", "C"]}
+%{name: "B", inbound: ["A"], outbound: ["C"]}
+%{name: "C", inbound: ["A", "B"], outbound: ["A"]}
+======= Iteration 1 =======
+%{"A" => 1.0, "B" => 0.575, "C" => 1.06375}
+======= Iteration 2 =======
+%{"A" => 1.0541874999999998, "B" => 0.5980296875, "C" => 1.106354921875}
+======= Iteration 3 =======
+%{"A" => 1.09040168359375, "B" => 0.6134207155273438, "C" => 1.134828323725586}
+{
+  "duration_us": 15381,
+  "memory_bytes": 25624,
+  "name": "main"
+}
+    warning: incompatible types given to Kernel.++/2:
+
+        <<"<node=", n.name::binary, " inbound=">> ++ n.inbound
+
+    given types:
+
+        -binary()-, dynamic()
+
+    but expected one of:
+
+        list(term()), term()
+
+    where "n" was given the type:
+
+        # type: dynamic()
+        # from: /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:16:22
+        n
+
+    typing violation found at:
     │
- 74 │     {nodes} = Enum.reduce(Process.get(:names), {nodes}, fn name, {nodes} ->
-    │                                                 ^^^^^
+ 18 │       throw {:return, (((((("<node=" <> n.name) <> " inbound=") ++ n.inbound) <> " outbound=") ++ n.outbound) <> ">")}
+    │                                                                 ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:74:49: Main.main/0
-
-     warning: variable "ci" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 101 │         {ci, nodes} = try do
-     │          ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:101:10: Main.main/0
-
-     error: undefined variable "ri"
-     │
- 114 │         while_fun_2.(while_fun_2, nodes, ri)
-     │                                          ^^
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:114:42: Main.main/0
-
-     warning: variable "nodes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 113 │     {nodes, ri} = try do
-     │      ~~~~~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:113:6: Main.main/0
-
-     warning: variable "ri" is unused (if the variable is not meant to be used, prefix it with an underscore)
-     │
- 113 │     {nodes, ri} = try do
-     │             ~~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:113:13: Main.main/0
-
-** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs: cannot compile module Main (errors have been logged)
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:18:65: Main.node_to_string/1
