@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-16 12:39 +0700
+Last updated: 2025-08-16 13:01 +0700
 
-## Program Checklist (358/1077)
+## Program Checklist (361/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -504,9 +504,9 @@ Last updated: 2025-08-16 12:39 +0700
 | 495 | linear_algebra/src/transformations_2d |   |  |  |
 | 496 | linear_programming/simplex | ✓ | 1.032ms | 640.0 KB |
 | 497 | machine_learning/apriori_algorithm | ✓ | 1.127ms | 512.0 KB |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations |   |  |  |
+| 498 | machine_learning/astar | ✓ | 4.038ms | 1.1 MB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 570µs | 256.0 KB |
+| 500 | machine_learning/data_transformations | ✓ | 1.62ms | 512.0 KB |
 | 501 | machine_learning/decision_tree |   |  |  |
 | 502 | machine_learning/dimensionality_reduction |   |  |  |
 | 503 | machine_learning/forecasting/run |   |  |  |
