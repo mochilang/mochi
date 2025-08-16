@@ -1,0 +1,398 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:44:17
+   |
+44 |     rand_seed = (((1103515245 * rand_seed) + 12345) % 2147483648);
+   |                 ^                                               ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+44 -     rand_seed = (((1103515245 * rand_seed) + 12345) % 2147483648);
+44 +     rand_seed = ((1103515245 * rand_seed) + 12345) % 2147483648;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:45:12
+   |
+45 |     return ((rand_seed as f64) / 2147483648.0)
+   |            ^                                 ^
+   |
+help: remove these parentheses
+   |
+45 -     return ((rand_seed as f64) / 2147483648.0)
+45 +     return (rand_seed as f64) / 2147483648.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:48:12
+   |
+48 |     return ((rand_float() * (max_val - min_val)) + min_val)
+   |            ^                                              ^
+   |
+help: remove these parentheses
+   |
+48 -     return ((rand_float() * (max_val - min_val)) + min_val)
+48 +     return (rand_float() * (max_val - min_val)) + min_val
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:51:8
+   |
+51 |     if (x < 0.0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+51 -     if (x < 0.0) {
+51 +     if x < 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:57:8
+   |
+57 |     if (x == 0.0) {
+   |        ^        ^
+   |
+help: remove these parentheses
+   |
+57 -     if (x == 0.0) {
+57 +     if x == 0.0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:60:26
+   |
+60 |     let mut guess: f64 = (x / 2.0);
+   |                          ^       ^
+   |
+help: remove these parentheses
+   |
+60 -     let mut guess: f64 = (x / 2.0);
+60 +     let mut guess: f64 = x / 2.0;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:62:11
+   |
+62 |     while (i < 20) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+62 -     while (i < 20) {
+62 +     while i < 20 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:63:17
+   |
+63 |         guess = ((guess + (x / guess)) / 2.0);
+   |                 ^                           ^
+   |
+help: remove these parentheses
+   |
+63 -         guess = ((guess + (x / guess)) / 2.0);
+63 +         guess = (guess + (x / guess)) / 2.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:64:13
+   |
+64 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+64 -         i = (i + 1);
+64 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:71:11
+   |
+71 |     while (i < iterations) {
+   |           ^              ^
+   |
+help: remove these parentheses
+   |
+71 -     while (i < iterations) {
+71 +     while i < iterations {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:74:12
+   |
+74 |         if (((x * x) + (y * y)) <= 1.0) {
+   |            ^                          ^
+   |
+help: remove these parentheses
+   |
+74 -         if (((x * x) + (y * y)) <= 1.0) {
+74 +         if ((x * x) + (y * y)) <= 1.0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:75:22
+   |
+75 |             inside = (inside + 1.0);
+   |                      ^            ^
+   |
+help: remove these parentheses
+   |
+75 -             inside = (inside + 1.0);
+75 +             inside = inside + 1.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:77:13
+   |
+77 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+77 -         i = (i + 1);
+77 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:79:27
+   |
+79 |     let proportion: f64 = (inside / (iterations as f64));
+   |                           ^                            ^
+   |
+help: remove these parentheses
+   |
+79 -     let proportion: f64 = (inside / (iterations as f64));
+79 +     let proportion: f64 = inside / (iterations as f64);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:80:28
+   |
+80 |     let pi_estimate: f64 = (proportion * 4.0);
+   |                            ^                ^
+   |
+help: remove these parentheses
+   |
+80 -     let pi_estimate: f64 = (proportion * 4.0);
+80 +     let pi_estimate: f64 = proportion * 4.0;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:88:11
+   |
+88 |     while (i < iterations) {
+   |           ^              ^
+   |
+help: remove these parentheses
+   |
+88 -     while (i < iterations) {
+88 +     while i < iterations {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:90:15
+   |
+90 |         sum = (sum + f(x));
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+90 -         sum = (sum + f(x));
+90 +         sum = sum + f(x);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:91:13
+   |
+91 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+91 -         i = (i + 1);
+91 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:93:25
+   |
+93 |     let expected: f64 = (sum / (iterations as f64));
+   |                         ^                         ^
+   |
+help: remove these parentheses
+   |
+93 -     let expected: f64 = (sum / (iterations as f64));
+93 +     let expected: f64 = sum / (iterations as f64);
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:94:12
+   |
+94 |     return (expected * (max_value - min_value))
+   |            ^                                  ^
+   |
+help: remove these parentheses
+   |
+94 -     return (expected * (max_value - min_value))
+94 +     return expected * (max_value - min_value)
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:101:31
+    |
+101 |     let expected_value: f64 = (((max_value * max_value) - (min_value * min_value)) / 2.0);
+    |                               ^                                                         ^
+    |
+help: remove these parentheses
+    |
+101 -     let expected_value: f64 = (((max_value * max_value) - (min_value * min_value)) / 2.0);
+101 +     let expected_value: f64 = ((max_value * max_value) - (min_value * min_value)) / 2.0;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:106:81
+    |
+106 |     println!("{}", format!("{} {}", "Total error is", format!("{:?}", abs_float((estimated_value - expected_value)))).trim_end());
+    |                                                                                 ^                                ^
+    |
+help: remove these parentheses
+    |
+106 -     println!("{}", format!("{} {}", "Total error is", format!("{:?}", abs_float((estimated_value - expected_value)))).trim_end());
+106 +     println!("{}", format!("{} {}", "Total error is", format!("{:?}", abs_float(estimated_value - expected_value))).trim_end());
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:111:18
+    |
+111 |     let y: f64 = (4.0 - (x * x));
+    |                  ^             ^
+    |
+help: remove these parentheses
+    |
+111 -     let y: f64 = (4.0 - (x * x));
+111 +     let y: f64 = 4.0 - (x * x);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:120:81
+    |
+120 |     println!("{}", format!("{} {}", "Total error is", format!("{:?}", abs_float((estimated_value - unsafe { g_PI.clone() })))).trim_end());
+    |                                                                                 ^                                         ^
+    |
+help: remove these parentheses
+    |
+120 -     println!("{}", format!("{} {}", "Total error is", format!("{:?}", abs_float((estimated_value - unsafe { g_PI.clone() })))).trim_end());
+120 +     println!("{}", format!("{} {}", "Total error is", format!("{:?}", abs_float(estimated_value - unsafe { g_PI.clone() }))).trim_end());
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:130:32
+    |
+130 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+130 -         let duration_us: i64 = ((_end - _start) / 1000);
+130 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:40:5
+   |
+40 |     unsafe {
+   |     ^^^^^^ unnecessary `unsafe` block
+   |
+   = note: `#[warn(unused_unsafe)]` on by default
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:82:81
+   |
+82 |     println!("{}", format!("{} {}", "The numpy value of pi is", format!("{:?}", unsafe { g_PI.clone() })).trim_end());
+   |                                                                                 ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:83:86
+   |
+83 |     println!("{}", format!("{} {}", "The total error is", format!("{:?}", abs_float((unsafe { g_PI.clone() } - pi_estimate)))).trim_end());
+   |                                                                                      ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:119:74
+    |
+119 |     println!("{}", format!("{} {}", "Expected value is", format!("{:?}", unsafe { g_PI.clone() })).trim_end());
+    |                                                                          ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:120:100
+    |
+120 |     println!("{}", format!("{} {}", "Total error is", format!("{:?}", abs_float((estimated_value - unsafe { g_PI.clone() })))).trim_end());
+    |                                                                                                    ^^^^^^ unnecessary `unsafe` block
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:50:13
+   |
+50 |         let mut abs_float = |x: f64| -> f64 {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:56:13
+   |
+56 |         let mut sqrtApprox = |x: f64| -> f64 {
+   |             ----^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+error[E0499]: cannot borrow `rand_range` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:85:46
+    |
+68  |         let mut pi_estimator = |iterations: i64| {
+    |                                ----------------- first mutable borrow occurs here
+...
+72  |         let x: f64 = rand_range(-1.0, 1.0);
+    |                      ---------- first borrow occurs due to use of `rand_range` in closure
+...
+85  |         let mut area_under_curve_estimator = |iterations: i64, f: &mut dyn FnMut(f64) -> f64, min_value: f64, max_value: f64| -> f64 {
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ second mutable borrow occurs here
+...
+89  |         let x: f64 = rand_range(min_value, max_value);
+    |                      ---------- second borrow occurs due to use of `rand_range` in closure
+...
+124 |     pi_estimator(1000);
+    |     ------------ first borrow later captured here by closure
+
+error[E0499]: cannot borrow `area_under_curve_estimator` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/monte_carlo.rs:109:55
+    |
+96  |         let mut area_under_line_estimator_check = |iterations: i64, min_value: f64, max_value: f64| {
+    |                                                   ------------------------------------------------- first mutable borrow occurs here
+...
+100 |     let estimated_value: f64 = area_under_curve_estimator(iterations, &mut identity_function, min_value, max_value);
+    |                                -------------------------- first borrow occurs due to use of `area_under_curve_estimator` in closure
+...
+109 |         let mut pi_estimator_using_area_under_curve = |iterations: i64| {
+    |                                                       ^^^^^^^^^^^^^^^^^ second mutable borrow occurs here
+...
+115 |     let estimated_value: f64 = area_under_curve_estimator(iterations, &mut semi_circle, 0.0, 2.0);
+    |                                -------------------------- second borrow occurs due to use of `area_under_curve_estimator` in closure
+...
+125 |     area_under_line_estimator_check(1000, 0.0, 1.0);
+    |     ------------------------------- first borrow later captured here by closure
+
+error: aborting due to 2 previous errors; 33 warnings emitted
+
+For more information about this error, try `rustc --explain E0499`.

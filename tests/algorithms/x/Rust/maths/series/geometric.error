@@ -1,0 +1,346 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:62:2
+   |
+62 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:84:2
+   |
+84 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:41:8
+   |
+41 |     if ((series.len() as i64) == 0) {
+   |        ^                          ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+41 -     if ((series.len() as i64) == 0) {
+41 +     if (series.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:44:8
+   |
+44 |     if ((series.len() as i64) == 1) {
+   |        ^                          ^
+   |
+help: remove these parentheses
+   |
+44 -     if ((series.len() as i64) == 1) {
+44 +     if (series.len() as i64) == 1 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:47:8
+   |
+47 |     if (series[0 as usize] == 0.0) {
+   |        ^                         ^
+   |
+help: remove these parentheses
+   |
+47 -     if (series[0 as usize] == 0.0) {
+47 +     if series[0 as usize] == 0.0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:50:22
+   |
+50 |     let ratio: f64 = (series[1 as usize] / series[0 as usize]);
+   |                      ^                                       ^
+   |
+help: remove these parentheses
+   |
+50 -     let ratio: f64 = (series[1 as usize] / series[0 as usize]);
+50 +     let ratio: f64 = series[1 as usize] / series[0 as usize];
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:52:11
+   |
+52 |     while (i < ((series.len() as i64) - 1)) {
+   |           ^                               ^
+   |
+help: remove these parentheses
+   |
+52 -     while (i < ((series.len() as i64) - 1)) {
+52 +     while i < ((series.len() as i64) - 1) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:53:12
+   |
+53 |         if (series[i as usize] == 0.0) {
+   |            ^                         ^
+   |
+help: remove these parentheses
+   |
+53 -         if (series[i as usize] == 0.0) {
+53 +         if series[i as usize] == 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:56:12
+   |
+56 |         if ((series[(i + 1) as usize] / series[i as usize]) != ratio) {
+   |            ^                                                        ^
+   |
+help: remove these parentheses
+   |
+56 -         if ((series[(i + 1) as usize] / series[i as usize]) != ratio) {
+56 +         if (series[(i + 1) as usize] / series[i as usize]) != ratio {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:59:13
+   |
+59 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+59 -         i = (i + 1);
+59 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:64:8
+   |
+64 |     if ((series.len() as i64) == 0) {
+   |        ^                          ^
+   |
+help: remove these parentheses
+   |
+64 -     if ((series.len() as i64) == 0) {
+64 +     if (series.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:69:11
+   |
+69 |     while (i < (series.len() as i64)) {
+   |           ^                         ^
+   |
+help: remove these parentheses
+   |
+69 -     while (i < (series.len() as i64)) {
+69 +     while i < (series.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:70:19
+   |
+70 |         product = (product * series[i as usize]);
+   |                   ^                            ^
+   |
+help: remove these parentheses
+   |
+70 -         product = (product * series[i as usize]);
+70 +         product = product * series[i as usize];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:71:13
+   |
+71 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+71 -         i = (i + 1);
+71 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:73:18
+   |
+73 |     let n: i64 = (series.len() as i64);
+   |                  ^                   ^
+   |
+help: remove these parentheses
+   |
+73 -     let n: i64 = (series.len() as i64);
+73 +     let n: i64 = series.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:79:11
+   |
+79 |     while (i < exp) {
+   |           ^       ^
+   |
+help: remove these parentheses
+   |
+79 -     while (i < exp) {
+79 +     while i < exp {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:80:18
+   |
+80 |         result = (result * base);
+   |                  ^             ^
+   |
+help: remove these parentheses
+   |
+80 -         result = (result * base);
+80 +         result = result * base;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:81:13
+   |
+81 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+81 -         i = (i + 1);
+81 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:86:8
+   |
+86 |     if (value == 0.0) {
+   |        ^            ^
+   |
+help: remove these parentheses
+   |
+86 -     if (value == 0.0) {
+86 +     if value == 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:91:8
+   |
+91 |     if (value < 1.0) {
+   |        ^           ^
+   |
+help: remove these parentheses
+   |
+91 -     if (value < 1.0) {
+91 +     if value < 1.0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:94:24
+   |
+94 |     let mut mid: f64 = ((low + high) / 2.0);
+   |                        ^                  ^
+   |
+help: remove these parentheses
+   |
+94 -     let mut mid: f64 = ((low + high) / 2.0);
+94 +     let mut mid: f64 = (low + high) / 2.0;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:96:11
+   |
+96 |     while (i < 40) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+96 -     while (i < 40) {
+96 +     while i < 40 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:98:12
+   |
+98 |         if (mp > value) {
+   |            ^          ^
+   |
+help: remove these parentheses
+   |
+98 -         if (mp > value) {
+98 +         if mp > value {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:103:15
+    |
+103 |         mid = ((low + high) / 2.0);
+    |               ^                  ^
+    |
+help: remove these parentheses
+    |
+103 -         mid = ((low + high) / 2.0);
+103 +         mid = (low + high) / 2.0;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:104:13
+    |
+104 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+104 -         i = (i + 1);
+104 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:124:28
+    |
+124 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+124 -     let duration_us: i64 = ((_end - _start) / 1000);
+124 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0425]: cannot find function `nth_root` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:74:12
+   |
+74 |     return nth_root(product, n)
+   |            ^^^^^^^^ not found in this scope
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:40:28
+   |
+40 |     fn is_geometric_series(mut series: Vec<f64>) -> bool {
+   |                            ----^^^^^^
+   |                            |
+   |                            help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:76:18
+   |
+76 |     fn pow_float(mut base: f64, mut exp: i64) -> f64 {
+   |                  ----^^^^
+   |                  |
+   |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/series/geometric.rs:76:33
+   |
+76 |     fn pow_float(mut base: f64, mut exp: i64) -> f64 {
+   |                                 ----^^^
+   |                                 |
+   |                                 help: remove this `mut`
+
+error: aborting due to 1 previous error; 30 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

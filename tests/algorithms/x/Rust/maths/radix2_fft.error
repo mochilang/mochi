@@ -1,0 +1,803 @@
+error[E0425]: cannot find value `PI` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:147:55
+    |
+147 | |a: Vec<Complex>, invert: bool| -> Vec<Complex> { fft(PI, &mut c_add, &mut c_div_scalar, &mut c_mul, &mut c_sub, &mut exp_i, &mut make_co...
+    |                                                       ^^ not found in this scope
+    |
+help: consider importing one of these constants
+    |
+2   + use std::f128::consts::PI;
+    |
+2   + use std::f16::consts::PI;
+    |
+2   + use std::f32::consts::PI;
+    |
+2   + use std::f64::consts::PI;
+    |
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:59:2
+   |
+59 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:62:2
+   |
+62 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:65:2
+   |
+65 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:68:2
+   |
+68 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:71:2
+   |
+71 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:84:2
+   |
+84 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:97:2
+   |
+97 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:109:2
+    |
+109 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:155:2
+    |
+155 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:164:2
+    |
+164 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:181:2
+    |
+181 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:76:11
+   |
+76 |     while (i < 10) {
+   |           ^      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+76 -     while (i < 10) {
+76 +     while i < 10 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:77:23
+   |
+77 |         let k1: f64 = (2.0 * (i as f64));
+   |                       ^                ^
+   |
+help: remove these parentheses
+   |
+77 -         let k1: f64 = (2.0 * (i as f64));
+77 +         let k1: f64 = 2.0 * (i as f64);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:78:23
+   |
+78 |         let k2: f64 = (k1 + 1.0);
+   |                       ^        ^
+   |
+help: remove these parentheses
+   |
+78 -         let k2: f64 = (k1 + 1.0);
+78 +         let k2: f64 = k1 + 1.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:79:16
+   |
+79 |         term = (((-term * x) * x) / (k1 * k2));
+   |                ^                             ^
+   |
+help: remove these parentheses
+   |
+79 -         term = (((-term * x) * x) / (k1 * k2));
+79 +         term = ((-term * x) * x) / (k1 * k2);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:80:15
+   |
+80 |         sum = (sum + term);
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+80 -         sum = (sum + term);
+80 +         sum = sum + term;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:81:13
+   |
+81 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+81 -         i = (i + 1);
+81 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:89:11
+   |
+89 |     while (i < 10) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+89 -     while (i < 10) {
+89 +     while i < 10 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:90:23
+   |
+90 |         let k1: f64 = ((2.0 * (i as f64)) - 1.0);
+   |                       ^                        ^
+   |
+help: remove these parentheses
+   |
+90 -         let k1: f64 = ((2.0 * (i as f64)) - 1.0);
+90 +         let k1: f64 = (2.0 * (i as f64)) - 1.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:91:23
+   |
+91 |         let k2: f64 = (2.0 * (i as f64));
+   |                       ^                ^
+   |
+help: remove these parentheses
+   |
+91 -         let k2: f64 = (2.0 * (i as f64));
+91 +         let k2: f64 = 2.0 * (i as f64);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:92:16
+   |
+92 |         term = (((-term * x) * x) / (k1 * k2));
+   |                ^                             ^
+   |
+help: remove these parentheses
+   |
+92 -         term = (((-term * x) * x) / (k1 * k2));
+92 +         term = ((-term * x) * x) / (k1 * k2);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:93:15
+   |
+93 |         sum = (sum + term);
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+93 -         sum = (sum + term);
+93 +         sum = sum + term;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:94:13
+   |
+94 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+94 -         i = (i + 1);
+94 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:104:11
+    |
+104 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+104 -     while (i < n) {
+104 +     while i < n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:106:13
+    |
+106 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+106 -         i = (i + 1);
+106 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:112:18
+    |
+112 |     let n: i64 = (a.len() as i64);
+    |                  ^              ^
+    |
+help: remove these parentheses
+    |
+112 -     let n: i64 = (a.len() as i64);
+112 +     let n: i64 = a.len() as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:113:8
+    |
+113 |     if (n == 1) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+113 -     if (n == 1) {
+113 +     if n == 1 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:119:11
+    |
+119 |     while (i < (n / 2)) {
+    |           ^           ^
+    |
+help: remove these parentheses
+    |
+119 -     while (i < (n / 2)) {
+119 +     while i < (n / 2) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:122:13
+    |
+122 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+122 -         i = (i + 1);
+122 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:126:22
+    |
+126 |     let angle: f64 = (((2.0 * unsafe { g_PI.clone() }) / (n as f64)) * if invert { -1.0 } else { 1.0 });
+    |                      ^                                                                                ^
+    |
+help: remove these parentheses
+    |
+126 -     let angle: f64 = (((2.0 * unsafe { g_PI.clone() }) / (n as f64)) * if invert { -1.0 } else { 1.0 });
+126 +     let angle: f64 = ((2.0 * unsafe { g_PI.clone() }) / (n as f64)) * if invert { -1.0 } else { 1.0 };
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:131:11
+    |
+131 |     while (i < (n / 2)) {
+    |           ^           ^
+    |
+help: remove these parentheses
+    |
+131 -     while (i < (n / 2)) {
+131 +     while i < (n / 2) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:143:13
+    |
+143 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+143 -         i = (i + 1);
+143 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:150:22
+    |
+150 |     let mut i: i64 = (x as i64);
+    |                      ^        ^
+    |
+help: remove these parentheses
+    |
+150 -     let mut i: i64 = (x as i64);
+150 +     let mut i: i64 = x as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:151:8
+    |
+151 |     if ((i as f64) > x) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+151 -     if ((i as f64) > x) {
+151 +     if (i as f64) > x {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:152:13
+    |
+152 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+152 -         i = (i - 1);
+152 +         i = i - 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:154:12
+    |
+154 |     return (i as f64)
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+154 -     return (i as f64)
+154 +     return i as f64
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:159:11
+    |
+159 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+159 -     while (i < n) {
+159 +     while i < n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:160:13
+    |
+160 |         p = (p * 10.0);
+    |             ^        ^
+    |
+help: remove these parentheses
+    |
+160 -         p = (p * 10.0);
+160 +         p = p * 10.0;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:161:13
+    |
+161 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+161 -         i = (i + 1);
+161 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:167:12
+    |
+167 |     return (floor(((x * m) + 0.5)) / m)
+    |            ^                          ^
+    |
+help: remove these parentheses
+    |
+167 -     return (floor(((x * m) + 0.5)) / m)
+167 +     return floor(((x * m) + 0.5)) / m
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:167:19
+    |
+167 |     return (floor(((x * m) + 0.5)) / m)
+    |                   ^             ^
+    |
+help: remove these parentheses
+    |
+167 -     return (floor(((x * m) + 0.5)) / m)
+167 +     return (floor((x * m) + 0.5) / m)
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:172:11
+    |
+172 |     while (i < (l.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+172 -     while (i < (l.len() as i64)) {
+172 +     while i < (l.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:174:12
+    |
+174 |         if ((i + 1) < (l.len() as i64)) {
+    |            ^                          ^
+    |
+help: remove these parentheses
+    |
+174 -         if ((i + 1) < (l.len() as i64)) {
+174 +         if (i + 1) < (l.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:177:13
+    |
+177 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+177 -         i = (i + 1);
+177 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:184:11
+    |
+184 |     while (n < (((a.len() as i64) + (b.len() as i64)) - 1)) {
+    |           ^                                               ^
+    |
+help: remove these parentheses
+    |
+184 -     while (n < (((a.len() as i64) + (b.len() as i64)) - 1)) {
+184 +     while n < (((a.len() as i64) + (b.len() as i64)) - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:185:13
+    |
+185 |         n = (n * 2);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+185 -         n = (n * 2);
+185 +         n = n * 2;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:190:11
+    |
+190 |     while (i < (a.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+190 -     while (i < (a.len() as i64)) {
+190 +     while i < (a.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:192:13
+    |
+192 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+192 -         i = (i + 1);
+192 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:195:11
+    |
+195 |     while (i < (b.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+195 -     while (i < (b.len() as i64)) {
+195 +     while i < (b.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:197:13
+    |
+197 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+197 -         i = (i + 1);
+197 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:202:11
+    |
+202 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+202 -     while (i < n) {
+202 +     while i < n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:204:13
+    |
+204 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+204 -         i = (i + 1);
+204 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:209:11
+    |
+209 |     while (i < (((a.len() as i64) + (b.len() as i64)) - 1)) {
+    |           ^                                               ^
+    |
+help: remove these parentheses
+    |
+209 -     while (i < (((a.len() as i64) + (b.len() as i64)) - 1)) {
+209 +     while i < (((a.len() as i64) + (b.len() as i64)) - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:212:13
+    |
+212 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+212 -         i = (i + 1);
+212 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:214:11
+    |
+214 |     while (((res.len() as i64) > 0) && (res[((res.len() as i64) - 1) as usize] == 0.0)) {
+    |           ^                                                                           ^
+    |
+help: remove these parentheses
+    |
+214 -     while (((res.len() as i64) > 0) && (res[((res.len() as i64) - 1) as usize] == 0.0)) {
+214 +     while ((res.len() as i64) > 0) && (res[((res.len() as i64) - 1) as usize] == 0.0) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:224:32
+    |
+224 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+224 -         let duration_us: i64 = ((_end - _start) / 1000);
+224 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:57:18
+   |
+57 |         fn c_add(mut a: Complex, mut b: Complex) -> Complex {
+   |                  ----^
+   |                  |
+   |                  help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:57:34
+   |
+57 |         fn c_add(mut a: Complex, mut b: Complex) -> Complex {
+   |                                  ----^
+   |                                  |
+   |                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:60:18
+   |
+60 |         fn c_sub(mut a: Complex, mut b: Complex) -> Complex {
+   |                  ----^
+   |                  |
+   |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:60:34
+   |
+60 |         fn c_sub(mut a: Complex, mut b: Complex) -> Complex {
+   |                                  ----^
+   |                                  |
+   |                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:63:18
+   |
+63 |         fn c_mul(mut a: Complex, mut b: Complex) -> Complex {
+   |                  ----^
+   |                  |
+   |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:63:34
+   |
+63 |         fn c_mul(mut a: Complex, mut b: Complex) -> Complex {
+   |                                  ----^
+   |                                  |
+   |                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:66:25
+   |
+66 |         fn c_mul_scalar(mut a: Complex, mut s: f64) -> Complex {
+   |                         ----^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:66:41
+   |
+66 |         fn c_mul_scalar(mut a: Complex, mut s: f64) -> Complex {
+   |                                         ----^
+   |                                         |
+   |                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:69:25
+   |
+69 |         fn c_div_scalar(mut a: Complex, mut s: f64) -> Complex {
+   |                         ----^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:69:41
+   |
+69 |         fn c_div_scalar(mut a: Complex, mut s: f64) -> Complex {
+   |                                         ----^
+   |                                         |
+   |                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:72:23
+   |
+72 |         fn sin_taylor(mut x: f64) -> f64 {
+   |                       ----^
+   |                       |
+   |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:85:23
+   |
+85 |         fn cos_taylor(mut x: f64) -> f64 {
+   |                       ----^
+   |                       |
+   |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:101:30
+    |
+101 |         fn make_complex_list(mut n: i64, mut value: Complex) -> Vec<Complex> {
+    |                              ----^
+    |                              |
+    |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:101:42
+    |
+101 |         fn make_complex_list(mut n: i64, mut value: Complex) -> Vec<Complex> {
+    |                                          ----^^^^^
+    |                                          |
+    |                                          help: remove this `mut`
+
+warning: unused variable: `PI`
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:111:8
+    |
+111 | fn fft(PI: f64, c_add: &mut dyn FnMut(Complex, Complex) -> Complex, c_div_scalar: &mut dyn FnMut(Complex, f64) -> Complex, c_mul: &mut dy...
+    |        ^^ help: if this is intentional, prefix it with an underscore: `_PI`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:124:32
+    |
+124 |     let y0: Vec<Complex> = fft(unsafe { g_PI.clone() }, c_add, c_div_scalar, c_mul, c_sub, exp_i, make_complex_list, a0.clone(), invert);
+    |                                ^^^^^^ unnecessary `unsafe` block
+    |
+    = note: `#[warn(unused_unsafe)]` on by default
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:125:32
+    |
+125 |     let y1: Vec<Complex> = fft(unsafe { g_PI.clone() }, c_add, c_div_scalar, c_mul, c_sub, exp_i, make_complex_list, a1.clone(), invert);
+    |                                ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:126:31
+    |
+126 |     let angle: f64 = (((2.0 * unsafe { g_PI.clone() }) / (n as f64)) * if invert { -1.0 } else { 1.0 });
+    |                               ^^^^^^ unnecessary `unsafe` block
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:149:18
+    |
+149 |         fn floor(mut x: f64) -> f64 {
+    |                  ----^
+    |                  |
+    |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:156:18
+    |
+156 |         fn pow10(mut n: i64) -> f64 {
+    |                  ----^
+    |                  |
+    |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/radix2_fft.rs:169:27
+    |
+169 |         fn list_to_string(mut l: Vec<f64>) -> String {
+    |                           ----^
+    |                           |
+    |                           help: remove this `mut`
+
+error: aborting due to 1 previous error; 78 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

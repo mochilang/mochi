@@ -4454,7 +4454,10 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 				}
 			}
 			typ = fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(pts, ", "), rt)
-			sigType = "&mut " + typ
+			sigType = "&mut dyn FnMut(" + strings.Join(pts, ", ") + ")"
+			if rt != "" && rt != "()" {
+				sigType += " -> " + rt
+			}
 		} else if strings.HasPrefix(typ, "Vec<") && !(origAny && strings.HasPrefix(sigType, "Option<")) {
 			mut := paramMutated(fn.Body, p.Name)
 			assign := paramAssigned(fn.Body, p.Name)
@@ -4677,7 +4680,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 				} else if ct == "fn" || strings.HasPrefix(ct, "fn(") {
 					pts := funParamTypes[c]
 					r := funReturns[c]
-					paramType = "&mut impl FnMut(" + strings.Join(pts, ", ") + ")"
+					paramType = "&mut dyn FnMut(" + strings.Join(pts, ", ") + ")"
 					if r != "" && r != "()" {
 						paramType += " -> " + r
 					}
