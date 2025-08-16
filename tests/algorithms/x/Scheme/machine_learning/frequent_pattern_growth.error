@@ -1,8 +1,11 @@
-type: error[T005]: parameter `name` is missing a type
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:15:1
-
- 15 | fun make_node(name, count, parent) {
-    | ^
-
-help:
-  Add a type like `x: int` to this parameter.
+run: exit status 70
+ERROR: hash-table-ref: key not found: "milk"
+  called from <anonymous> on line 555 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/frequent_pattern_growth.scm
+  called from <anonymous> on line 1540 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/frequent_pattern_growth.scm
+  called from loop11 on line 1509 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/frequent_pattern_growth.scm
+  called from <anonymous> on line 259 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 3473 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/frequent_pattern_growth.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
