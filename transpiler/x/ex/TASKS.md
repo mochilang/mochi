@@ -1,5 +1,5 @@
-## Progress (2025-08-15 09:59 +0700)
-- Commit 7e318d35bd: chore(go): update algorithms outputs for indices 316-365
+## Progress (2025-08-16 11:48 +0700)
+- Commit fa2dc5e881: rb transpiler: map ln/exp to Math and update algorithms
 - Generated Elixir for 102/105 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference

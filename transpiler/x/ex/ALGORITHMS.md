@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-16 09:46 GMT+7
+Last updated: 2025-08-16 11:52 GMT+7
 
 ## Algorithms Golden Test Checklist (839/1077)
 | Index | Name | Status | Duration | Memory |
@@ -503,7 +503,7 @@ Last updated: 2025-08-16 09:46 GMT+7
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 1.77ms | 25.1 MB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 1.84ms | 18.7 MB |
 | 496 | linear_programming/simplex | ✓ | 6.18ms | 25.0 MB |
-| 497 | machine_learning/apriori_algorithm | ✓ | 7.60ms | 25.0 MB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 8.51ms | 25.0 MB |
 | 498 | machine_learning/astar | ✓ |  |  |
 | 499 | machine_learning/automatic_differentiation | ✓ | 1.50ms | 17.3 MB |
 | 500 | machine_learning/data_transformations | ✓ | 6.69ms | 25.1 MB |
