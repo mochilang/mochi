@@ -2770,7 +2770,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		// single-argument functions named `ln` or `exp` with calls to
 		// the built-in `Math.log` and `Math.exp` to improve numerical
 		// stability and avoid domain errors.
-		if len(params) == 1 {
+		if len(params) == 1 && len(body) == 1 {
 			var call string
 			if name == "ln" {
 				call = "Math.log"
@@ -2778,7 +2778,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				call = "Math.exp"
 			}
 			if call != "" {
-				fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: call, Args: []Expr{&NameRef{Name: params[0]}}}}}
+				if _, ok := body[0].(*ReturnStmt); ok {
+					fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: call, Args: []Expr{&NameRef{Name: params[0]}}}}}
+				}
 			}
 		}
 		if fd.Async {
