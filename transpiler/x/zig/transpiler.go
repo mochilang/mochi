@@ -472,7 +472,8 @@ type CopySliceExpr struct {
 
 func (e *CopySliceExpr) emit(w io.Writer) {
 	elem := strings.TrimPrefix(e.Elem, "const ")
-	fmt.Fprintf(w, "blk: { const tmp = std.heap.page_allocator.alloc(%s, %s.len) catch unreachable; @memcpy(tmp, %s); break :blk tmp; }", elem, e.Src, e.Src)
+	lbl := newLabel()
+	fmt.Fprintf(w, "%s: { const tmp = std.heap.page_allocator.alloc(%s, %s.len) catch unreachable; @memcpy(tmp, %s); break :%s tmp; }", lbl, elem, e.Src, e.Src, lbl)
 }
 
 // NotExpr represents logical negation.
@@ -631,7 +632,8 @@ func (ae *AppendExpr) emit(w io.Writer) {
 	}
 	elem = strings.TrimPrefix(elem, "const ")
 	tmp := uniqueName("_tmp")
-	fmt.Fprintf(w, "blk: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", tmp, elem)
+	lbl := newLabel()
+	fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", lbl, tmp, elem)
 	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
 	ae.List.emit(w)
 	io.WriteString(w, ")) catch |err| handleError(err); ")
@@ -655,7 +657,7 @@ func (ae *AppendExpr) emit(w io.Writer) {
 		ae.Value.emit(w)
 	}
 	io.WriteString(w, ") catch |err| handleError(err); ")
-	fmt.Fprintf(w, "break :blk (%s.toOwnedSlice() catch |err| handleError(err)); }", tmp)
+	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch |err| handleError(err)); }", lbl, tmp)
 }
 
 // ConcatExpr concatenates two lists.
@@ -677,7 +679,8 @@ func (ce *ConcatExpr) emit(w io.Writer) {
 	}
 	elem = strings.TrimPrefix(elem, "const ")
 	tmp := uniqueName("_tmp")
-	fmt.Fprintf(w, "blk: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", tmp, elem)
+	lbl := newLabel()
+	fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", lbl, tmp, elem)
 	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
 	if ll, ok := ce.A.(*ListLit); ok {
 		ll.emit(w)
@@ -692,7 +695,7 @@ func (ce *ConcatExpr) emit(w io.Writer) {
 		ce.B.emit(w)
 	}
 	io.WriteString(w, ")) catch |err| handleError(err); ")
-	fmt.Fprintf(w, "break :blk (%s.toOwnedSlice() catch |err| handleError(err)); }", tmp)
+	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch |err| handleError(err)); }", lbl, tmp)
 }
 
 type FieldExpr struct {
@@ -738,11 +741,12 @@ type GroupByExpr struct {
 func (qc *QueryComp) emit(w io.Writer) {
 	elemType := qc.ElemType
 	sortType := ""
+	lbl := newLabel()
 	if qc.Sort != nil {
 		sortType = zigTypeFromExpr(qc.Sort)
-		fmt.Fprintf(w, "blk: {\n    var arr = std.ArrayList(struct{key: %s, val: %s}).init(std.heap.page_allocator);\n", sortType, elemType)
+		fmt.Fprintf(w, "%s: {\n    var arr = std.ArrayList(struct{key: %s, val: %s}).init(std.heap.page_allocator);\n", lbl, sortType, elemType)
 	} else {
-		fmt.Fprintf(w, "blk: {\n    var arr = std.ArrayList(%s).init(std.heap.page_allocator);\n", elemType)
+		fmt.Fprintf(w, "%s: {\n    var arr = std.ArrayList(%s).init(std.heap.page_allocator);\n", lbl, elemType)
 	}
 	indent := 1
 	for i, src := range qc.Sources {
@@ -834,11 +838,12 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, "tmp = tmp[start..end];\n")
 	}
 	writeIndent(w, 1)
-	io.WriteString(w, "break :blk tmp;\n}")
+	fmt.Fprintf(w, "break :%s tmp;\n}", lbl)
 }
 
 func (gq *GroupByExpr) emit(w io.Writer) {
-	fmt.Fprintf(w, "blk: {\n    var groups_map = std.AutoHashMap(%s, std.ArrayList(%s)).init(std.heap.page_allocator);\n", gq.KeyType, gq.SrcElem)
+	lbl := newLabel()
+	fmt.Fprintf(w, "%s: {\n    var groups_map = std.AutoHashMap(%s, std.ArrayList(%s)).init(std.heap.page_allocator);\n", lbl, gq.KeyType, gq.SrcElem)
 	writeIndent(w, 1)
 	io.WriteString(w, "for (")
 	gq.Source.emit(w)
@@ -932,7 +937,7 @@ func (gq *GroupByExpr) emit(w io.Writer) {
 		io.WriteString(w, "tmp = arr2.toOwnedSlice() catch unreachable;\n")
 	}
 	writeIndent(w, 1)
-	io.WriteString(w, "break :blk tmp;\n}")
+	fmt.Fprintf(w, "break :%s tmp;\n}", lbl)
 }
 
 type FuncExpr struct {
@@ -1652,8 +1657,8 @@ func (p *Program) Emit() []byte {
 		}
 		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
 		buf.WriteString("    switch (info) {\n")
-		buf.WriteString("    .pointer => |p| {\n")
-		buf.WriteString("        if (p.size == .slice) {\n")
+		buf.WriteString("    .Pointer => |p| {\n")
+		buf.WriteString("        if (p.size == .Slice) {\n")
 		buf.WriteString("            var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
 		buf.WriteString("            defer out.deinit();\n")
 		buf.WriteString("            out.append('[') catch unreachable;\n")
@@ -1666,7 +1671,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("            return out.toOwnedSlice() catch unreachable;\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("    },\n")
-		buf.WriteString("    .@\"struct\" => |_| {\n")
+		buf.WriteString("    .Struct => |_| {\n")
 		buf.WriteString("        if (@hasDecl(@TypeOf(v), \"iterator\")) {\n")
 		buf.WriteString("            const KVPair = struct{ ks: []const u8, vs: []const u8 };\n")
 		buf.WriteString("            var pairs = std.ArrayList(KVPair).init(std.heap.page_allocator);\n")
@@ -1774,7 +1779,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * @as(i64, @intCast(std.heap.pageSize()));\n")
+		buf.WriteString("        return pages * @as(i64, @intCast(std.mem.page_size));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -1961,6 +1966,22 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	}
 	if kw == "const" && targetType == "[]u8" {
 		targetType = "[]const u8"
+	}
+	u := varUses[key]
+	if u == 0 {
+		if u2, ok := varUses[":"+v.Name]; ok {
+			u = u2
+		}
+	}
+	if u == 0 && !mut {
+		io.WriteString(w, "_ = ")
+		if v.Value != nil {
+			v.Value.emit(w)
+		} else {
+			io.WriteString(w, "undefined")
+		}
+		io.WriteString(w, ";\n")
+		return
 	}
 	if false {
 	}
@@ -2661,11 +2682,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 			if elem == "[]const u8" || elem == "[]u8" {
 				tmp := uniqueName("v")
-				io.WriteString(w, "blk: { var _found = false; for (")
+				lbl := newLabel()
+				fmt.Fprintf(w, "%s: { var _found = false; for (", lbl)
 				b.Right.emit(w)
 				fmt.Fprintf(w, ") |%s| { if (std.mem.eql(u8, %s, ", tmp, tmp)
 				b.Left.emit(w)
-				fmt.Fprintf(w, ")) { _found = true; break; } } break :blk _found; }")
+				fmt.Fprintf(w, ")) { _found = true; break; } } break :%s _found; }", lbl)
 			} else {
 				fmt.Fprintf(w, "std.mem.indexOfScalar(%s, ", elem)
 				b.Right.emit(w)
@@ -2677,6 +2699,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	op := b.Op
+	if (op == "+" || op == "-" || op == "*") && isIntType(lt) && isIntType(rt) {
+		op += "%"
+	}
 	if op == "%" {
 		io.WriteString(w, "@mod(")
 		b.Left.emit(w)
@@ -3192,7 +3217,8 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 				if len(ll.Elems) == 0 {
 					ll.emit(w)
 				} else {
-					fmt.Fprintf(w, "blk: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator);", ll.ElemType)
+					lbl := newLabel()
+					fmt.Fprintf(w, "%s: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator);", lbl, ll.ElemType)
 					for _, e := range ll.Elems {
 						io.WriteString(w, " _tmp.append(")
 						if ll.ElemType == "Value" {
@@ -3221,7 +3247,7 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 						}
 						io.WriteString(w, ") catch |err| handleError(err);")
 					}
-					io.WriteString(w, " break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }")
+					fmt.Fprintf(w, " break :%s (_tmp.toOwnedSlice() catch |err| handleError(err)); }", lbl)
 				}
 			} else {
 				exprType := zigTypeFromExpr(r.Value)
@@ -3360,7 +3386,8 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "avg":
 		if len(c.Args) == 1 {
-			io.WriteString(w, "blk: { var arr = ")
+			lbl := newLabel()
+			fmt.Fprintf(w, "%s: { var arr = ", lbl)
 			if v, ok := c.Args[0].(*VarRef); ok {
 				if t, ok2 := varTypes[v.Name]; ok2 {
 					if _, ok3 := groupItemTypes[t]; ok3 {
@@ -3375,23 +3402,25 @@ func (c *CallExpr) emit(w io.Writer) {
 			} else {
 				c.Args[0].emit(w)
 			}
-			io.WriteString(w, "; if (arr.len == 0) break :blk 0; var sum: f64 = 0; for (arr) |v| { sum += @as(f64, v); } break :blk sum / @as(f64, arr.len); }")
+			fmt.Fprintf(w, "; if (arr.len == 0) break :%s 0; var sum: f64 = 0; for (arr) |v| { sum += @as(f64, v); } break :%s sum / @as(f64, arr.len); }", lbl, lbl)
 		} else {
 			io.WriteString(w, "0")
 		}
 	case "min":
 		if len(c.Args) == 1 {
-			io.WriteString(w, "blk: { var arr = ")
+			lbl := newLabel()
+			fmt.Fprintf(w, "%s: { var arr = ", lbl)
 			c.Args[0].emit(w)
-			io.WriteString(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v < m) m = v; } break :blk m; }")
+			fmt.Fprintf(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v < m) m = v; } break :%s m; }", lbl)
 		} else {
 			io.WriteString(w, "0")
 		}
 	case "max":
 		if len(c.Args) == 1 {
-			io.WriteString(w, "blk: { var arr = ")
+			lbl := newLabel()
+			fmt.Fprintf(w, "%s: { var arr = ", lbl)
 			c.Args[0].emit(w)
-			io.WriteString(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v > m) m = v; } break :blk m; }")
+			fmt.Fprintf(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v > m) m = v; } break :%s m; }", lbl)
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -3440,9 +3469,11 @@ func (c *CallExpr) emit(w io.Writer) {
 				}
 				(&ListLit{Elems: vals}).emit(w)
 			} else if v, ok := c.Args[0].(*VarRef); ok && mapVars[v.Name] {
-				io.WriteString(w, "blk: { var it = ")
+				lbl := newLabel()
+				fmt.Fprintf(w, "%s: { var it = ", lbl)
 				v.emit(w)
-				io.WriteString(w, ".iterator(); var arr = std.ArrayList(i64).init(std.heap.page_allocator); while (it.next()) |kv| { arr.append(kv.value) catch unreachable; } break :blk arr.toOwnedSlice() catch unreachable; }")
+				io.WriteString(w, ".iterator(); var arr = std.ArrayList(i64).init(std.heap.page_allocator); while (it.next()) |kv| { arr.append(kv.value) catch unreachable; } break :")
+				fmt.Fprintf(w, "%s arr.toOwnedSlice() catch unreachable; }", lbl)
 			} else {
 				io.WriteString(w, "[]i64{}")
 			}
@@ -3483,11 +3514,13 @@ func (c *CallExpr) emit(w io.Writer) {
 							}
 						}
 					}
-					io.WriteString(w, "blk: { var it = ")
+					lbl := newLabel()
+					fmt.Fprintf(w, "%s: { var it = ", lbl)
 					v.emit(w)
 					io.WriteString(w, ".keyIterator(); var arr = std.ArrayList(")
 					io.WriteString(w, keyType)
-					io.WriteString(w, ").init(std.heap.page_allocator); while (it.next()) |k| { arr.append(k.*) catch unreachable; } break :blk arr.toOwnedSlice() catch unreachable; }")
+					io.WriteString(w, ").init(std.heap.page_allocator); while (it.next()) |k| { arr.append(k.*) catch unreachable; } break :")
+					fmt.Fprintf(w, "%s arr.toOwnedSlice() catch unreachable; }", lbl)
 				} else {
 					io.WriteString(w, "[]i64{}")
 				}
@@ -4355,9 +4388,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				elemT = t[2:]
 			}
 			return &ConcatExpr{A: args[0], B: args[1], ElemType: elemT}, nil
-		case "panic":
+		case "panic", "error":
 			if len(args) != 1 {
-				return nil, fmt.Errorf("panic expects one argument")
+				return nil, fmt.Errorf("%s expects one argument", name)
 			}
 			funcReturns["@panic"] = ""
 			return &CallExpr{Func: "@panic", Args: args}, nil
