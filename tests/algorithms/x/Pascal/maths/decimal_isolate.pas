@@ -64,9 +64,9 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  number: real;
   x: real;
   n: integer;
+  number: real;
   digit_amount: integer;
 function floor(x: real): real; forward;
 function pow10(n: integer): real; forward;
