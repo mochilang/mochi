@@ -39,6 +39,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -48,18 +70,18 @@ var
   last: real;
   ys_14: RealArray;
   x: real;
-  y0: real;
-  x0: real;
-  step_size: real;
-  ode_func: FuncType1;
-  x_end: real;
   a: real;
+  x_end: real;
+  step_size: real;
+  x0: real;
+  y0: real;
+  ode_func: FuncType1;
 function ceil_int(x: real): integer; forward;
 function explicit_euler(ode_func: FuncType1; y0: real; x0: real; step_size: real; x_end: real): RealArray; forward;
 function abs_float(a: real): real; forward;
-function anon3(x: real; y: real): real; forward;
+function anon3(x: real; anon3_y: real): real; forward;
 procedure test_explicit_euler(); forward;
-function anon5(x: real; y: real): real; forward;
+function anon5(x: real; anon5_y: real): real; forward;
 procedure main(); forward;
 function ceil_int(x: real): integer;
 var
@@ -103,9 +125,9 @@ begin
 end;
   exit(a);
 end;
-function anon3(x: real; y: real): real;
+function anon3(x: real; anon3_y: real): real;
 begin
-  exit(y);
+  exit(anon3_y);
 end;
 procedure test_explicit_euler();
 var
@@ -118,9 +140,9 @@ begin
   panic('explicit_euler failed');
 end;
 end;
-function anon5(x: real; y: real): real;
+function anon5(x: real; anon5_y: real): real;
 begin
-  exit(y);
+  exit(anon5_y);
 end;
 procedure main();
 var

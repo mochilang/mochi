@@ -37,20 +37,42 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   PI: real;
-  exponent: real;
-  num: real;
   x: real;
-  base: real;
+  exponent: real;
   z: real;
+  base: real;
+  num: real;
 function absf(x: real): real; forward;
 function sqrt(x: real): real; forward;
-function ln(x: real): real; forward;
+function ln_(x: real): real; forward;
 function exp_series(x: real): real; forward;
 function powf(base: real; exponent: real): real; forward;
 function integrand(x: real; z: real): real; forward;
@@ -80,30 +102,30 @@ end;
 end;
   exit(sqrt_guess);
 end;
-function ln(x: real): real;
+function ln_(x: real): real;
 var
-  ln_y: real;
-  ln_y2: real;
-  ln_term: real;
-  ln_sum: real;
-  ln_k: integer;
-  ln_denom: real;
+  ln__y: real;
+  ln__y2: real;
+  ln__term: real;
+  ln__sum: real;
+  ln__k: integer;
+  ln__denom: real;
 begin
   if x <= 0 then begin
   panic('ln domain error');
 end;
-  ln_y := (x - 1) / (x + 1);
-  ln_y2 := ln_y * ln_y;
-  ln_term := ln_y;
-  ln_sum := 0;
-  ln_k := 0;
-  while ln_k < 10 do begin
-  ln_denom := Double((2 * ln_k) + 1);
-  ln_sum := ln_sum + (ln_term / ln_denom);
-  ln_term := ln_term * ln_y2;
-  ln_k := ln_k + 1;
+  ln__y := (x - 1) / (x + 1);
+  ln__y2 := ln__y * ln__y;
+  ln__term := ln__y;
+  ln__sum := 0;
+  ln__k := 0;
+  while ln__k < 10 do begin
+  ln__denom := Double((2 * ln__k) + 1);
+  ln__sum := ln__sum + (ln__term / ln__denom);
+  ln__term := ln__term * ln__y2;
+  ln__k := ln__k + 1;
 end;
-  exit(2 * ln_sum);
+  exit(2 * ln__sum);
 end;
 function exp_series(x: real): real;
 var

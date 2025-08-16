@@ -1,0 +1,7 @@
+run: exit status 217
+An unhandled exception occurred at $0000000000401FA3:
+EInvalidOp: Invalid floating point operation
+  $0000000000401FA3
+  $0000000000402FD8
+  $00000000004032CB
+

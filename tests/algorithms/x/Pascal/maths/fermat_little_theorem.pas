@@ -37,6 +37,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -50,10 +72,10 @@ var
   right_naive: integer;
   mod_: integer;
   n: integer;
-function binary_exponentiation(a: integer; n: integer; mod_: integer): integer; forward;
-function naive_exponent_mod(a: integer; n: integer; mod_: integer): integer; forward;
+function binary_exponentiation(a: integer; n: integer; binary_exponentiation_mod_: integer): integer; forward;
+function naive_exponent_mod(a: integer; n: integer; binary_exponentiation_mod_: integer): integer; forward;
 procedure print_bool(b: boolean); forward;
-function binary_exponentiation(a: integer; n: integer; mod_: integer): integer;
+function binary_exponentiation(a: integer; n: integer; binary_exponentiation_mod_: integer): integer;
 var
   binary_exponentiation_b: integer;
 begin
@@ -66,7 +88,7 @@ end;
   binary_exponentiation_b := binary_exponentiation(a, n div 2, mod_);
   exit((binary_exponentiation_b * binary_exponentiation_b) mod mod_);
 end;
-function naive_exponent_mod(a: integer; n: integer; mod_: integer): integer;
+function naive_exponent_mod(a: integer; n: integer; binary_exponentiation_mod_: integer): integer;
 var
   naive_exponent_mod_result_: integer;
   naive_exponent_mod_i: integer;

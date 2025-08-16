@@ -1,4 +1,4 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
 type Fraction = record
@@ -41,20 +41,42 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  num: integer;
-  fr: Fraction;
-  n: integer;
-  s: string;
-  x: real;
-  name: string;
-  den: integer;
-  b: integer;
   a: integer;
+  b: integer;
+  num: integer;
+  x: real;
+  s: string;
+  name: string;
+  n: integer;
+  den: integer;
+  fr: Fraction;
 function makeFraction(numerator: integer; denominator: integer): Fraction; forward;
 function pow10(n: integer): integer; forward;
 function gcd(a: integer; b: integer): integer; forward;
@@ -112,9 +134,11 @@ var
   parse_decimal_int_part: string;
   parse_decimal_c: string;
   parse_decimal_frac_part: string;
-  parse_decimal_exp: integer;
+  parse_decimal_c_15: string;
+  parse_decimal_exp_: integer;
   parse_decimal_exp_sign: integer;
   parse_decimal_exp_str: string;
+  parse_decimal_c_19: string;
   parse_decimal_num_str: string;
   parse_decimal_numerator: integer;
   parse_decimal_denominator: integer;
@@ -147,16 +171,16 @@ end;
   if (parse_decimal_idx < Length(s)) and (copy(s, parse_decimal_idx+1, (parse_decimal_idx + 1 - (parse_decimal_idx))) = '.') then begin
   parse_decimal_idx := parse_decimal_idx + 1;
   while parse_decimal_idx < Length(s) do begin
-  parse_decimal_c := copy(s, parse_decimal_idx+1, (parse_decimal_idx + 1 - (parse_decimal_idx)));
-  if (parse_decimal_c >= '0') and (parse_decimal_c <= '9') then begin
-  parse_decimal_frac_part := parse_decimal_frac_part + parse_decimal_c;
+  parse_decimal_c_15 := copy(s, parse_decimal_idx+1, (parse_decimal_idx + 1 - (parse_decimal_idx)));
+  if (parse_decimal_c_15 >= '0') and (parse_decimal_c_15 <= '9') then begin
+  parse_decimal_frac_part := parse_decimal_frac_part + parse_decimal_c_15;
   parse_decimal_idx := parse_decimal_idx + 1;
 end else begin
   break;
 end;
 end;
 end;
-  parse_decimal_exp := 0;
+  parse_decimal_exp_ := 0;
   if (parse_decimal_idx < Length(s)) and ((copy(s, parse_decimal_idx+1, (parse_decimal_idx + 1 - (parse_decimal_idx))) = 'e') or (copy(s, parse_decimal_idx+1, (parse_decimal_idx + 1 - (parse_decimal_idx))) = 'E')) then begin
   parse_decimal_idx := parse_decimal_idx + 1;
   parse_decimal_exp_sign := 1;
@@ -170,9 +194,9 @@ end;
 end;
   parse_decimal_exp_str := '';
   while parse_decimal_idx < Length(s) do begin
-  parse_decimal_c := copy(s, parse_decimal_idx+1, (parse_decimal_idx + 1 - (parse_decimal_idx)));
-  if (parse_decimal_c >= '0') and (parse_decimal_c <= '9') then begin
-  parse_decimal_exp_str := parse_decimal_exp_str + parse_decimal_c;
+  parse_decimal_c_19 := copy(s, parse_decimal_idx+1, (parse_decimal_idx + 1 - (parse_decimal_idx)));
+  if (parse_decimal_c_19 >= '0') and (parse_decimal_c_19 <= '9') then begin
+  parse_decimal_exp_str := parse_decimal_exp_str + parse_decimal_c_19;
   parse_decimal_idx := parse_decimal_idx + 1;
 end else begin
   panic('invalid number');
@@ -181,7 +205,7 @@ end;
   if Length(parse_decimal_exp_str) = 0 then begin
   panic('invalid number');
 end;
-  parse_decimal_exp := parse_decimal_exp_sign * StrToInt(parse_decimal_exp_str);
+  parse_decimal_exp_ := parse_decimal_exp_sign * StrToInt(parse_decimal_exp_str);
 end;
   if parse_decimal_idx <> Length(s) then begin
   panic('invalid number');
@@ -195,11 +219,11 @@ end;
   parse_decimal_numerator := 0 - parse_decimal_numerator;
 end;
   parse_decimal_denominator := pow10(Length(parse_decimal_frac_part));
-  if parse_decimal_exp > 0 then begin
-  parse_decimal_numerator := parse_decimal_numerator * pow10(parse_decimal_exp);
+  if parse_decimal_exp_ > 0 then begin
+  parse_decimal_numerator := parse_decimal_numerator * pow10(parse_decimal_exp_);
 end else begin
-  if parse_decimal_exp < 0 then begin
-  parse_decimal_denominator := parse_decimal_denominator * pow10(-parse_decimal_exp);
+  if parse_decimal_exp_ < 0 then begin
+  parse_decimal_denominator := parse_decimal_denominator * pow10(-parse_decimal_exp_);
 end;
 end;
   exit(makeFraction(parse_decimal_numerator, parse_decimal_denominator));

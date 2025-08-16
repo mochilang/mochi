@@ -41,6 +41,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -163,6 +185,7 @@ var
   calculate_entropy_ch0: string;
   calculate_entropy_a1: integer;
   calculate_entropy_ch1: string;
+  calculate_entropy_prob_37: real;
   calculate_entropy_second_entropy: real;
   calculate_entropy_diff: real;
 begin
@@ -199,8 +222,8 @@ end;
   calculate_entropy_ch1 := copy(calculate_entropy_alphas, calculate_entropy_a1+1, (calculate_entropy_a1 + 1 - (calculate_entropy_a1)));
   calculate_entropy_seq := calculate_entropy_ch0 + calculate_entropy_ch1;
   if calculate_entropy_counts.double.IndexOf(calculate_entropy_seq) <> -1 then begin
-  calculate_entropy_prob := Double(calculate_entropy_counts.double[calculate_entropy_seq]) / Double(calculate_entropy_total2);
-  calculate_entropy_h2 := calculate_entropy_h2 + (calculate_entropy_prob * log2(calculate_entropy_prob));
+  calculate_entropy_prob_37 := Double(calculate_entropy_counts.double[calculate_entropy_seq]) / Double(calculate_entropy_total2);
+  calculate_entropy_h2 := calculate_entropy_h2 + (calculate_entropy_prob_37 * log2(calculate_entropy_prob_37));
 end;
   calculate_entropy_a1 := calculate_entropy_a1 + 1;
 end;
