@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-16 11:57 GMT+7
+Last updated: 2025-08-16 12:37 GMT+7
 
 ## Algorithms Golden Test Checklist (1043/1077)
 | Index | Name | Status | Duration | Memory |
@@ -552,7 +552,7 @@ Last updated: 2025-08-16 11:57 GMT+7
 | 543 | maths/binomial_coefficient | ✓ | 99µs | 856 B |
 | 544 | maths/binomial_distribution | ✓ | 2µs | 192 B |
 | 545 | maths/ceil | ✓ | 55µs | 944 B |
-| 546 | maths/chebyshev_distance | ✓ | 105µs | 888 B |
+| 546 | maths/chebyshev_distance | ✓ | 135µs | 888 B |
 | 547 | maths/check_polygon | ✓ | 137µs | 928 B |
 | 548 | maths/chinese_remainder_theorem | ✓ | 249µs | 1.4 KB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 77µs | 856 B |
