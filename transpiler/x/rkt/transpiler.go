@@ -86,6 +86,9 @@ func sanitizeName(name string) string {
 		return "append_"
 	case "reverse":
 		return "reverse_"
+	case "abs":
+		// avoid clobbering Racket's built-in abs function
+		return "abs_"
 	case "exp":
 		// avoid shadowing Racket's math `exp` function
 		return "exp_"

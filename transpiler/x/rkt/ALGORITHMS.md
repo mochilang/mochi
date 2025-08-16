@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-15 15:38 UTC
+Last updated: 2025-08-16 05:10 UTC
 
-## Algorithms Golden Test Checklist (885/1077)
+## Algorithms Golden Test Checklist (886/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -502,23 +502,23 @@ Last updated: 2025-08-15 15:38 UTC
 | 493 | linear_algebra/src/schur_complement | ✓ | 9m31.223891s | 57.9 KB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 9m31.223891s | 230.0 KB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 9m31.223891s | 80.4 KB |
-| 496 | linear_programming/simplex | ✓ | 9m31.223891s | 3.7 KB |
-| 497 | machine_learning/apriori_algorithm |   | 102µs | 9.0 KB |
-| 498 | machine_learning/astar | ✓ | 9m31.223891s | 12.2 KB |
-| 499 | machine_learning/automatic_differentiation | ✓ | 9m31.223891s | 10.6 KB |
-| 500 | machine_learning/data_transformations | ✓ | 128µs | 131.2 KB |
-| 501 | machine_learning/decision_tree | ✓ | 647.464ms | 4.6 MB |
-| 502 | machine_learning/dimensionality_reduction | ✓ | 7µs | 1.1 KB |
-| 503 | machine_learning/forecasting/run | ✓ | 196µs | 225.7 KB |
+| 496 | linear_programming/simplex | ✓ | 36µs | 3.9 KB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 20µs | 9.0 KB |
+| 498 | machine_learning/astar | ✓ | 39µs | 11.9 KB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 56µs | 10.8 KB |
+| 500 | machine_learning/data_transformations | ✓ | 135µs | 131.2 KB |
+| 501 | machine_learning/decision_tree | ✓ | 650.341ms | 4.7 MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 11µs | 1.1 KB |
+| 503 | machine_learning/forecasting/run | ✓ | 229µs | 223.9 KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 31µs | 1.1 KB |
-| 506 | machine_learning/gradient_descent | ✓ | 384.016ms |  |
-| 507 | machine_learning/k_means_clust | ✓ | 52µs | 9.5 KB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 86µs | 100.4 KB |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 616µs | 2.2 MB |
-| 510 | machine_learning/linear_regression | ✓ | 9µs | 4.7 KB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 9m31.223891s | 17.0 KB |
-| 512 | machine_learning/logistic_regression | ✓ | 29µs | 3.5 KB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 32µs | 1.1 KB |
+| 506 | machine_learning/gradient_descent | ✓ | 256.152ms |  |
+| 507 | machine_learning/k_means_clust | ✓ | 56µs | 9.5 KB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 79µs | 100.4 KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 940µs | 2.3 MB |
+| 510 | machine_learning/linear_regression | ✓ | 10µs | 4.6 KB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 72µs | 17.2 KB |
+| 512 | machine_learning/logistic_regression | ✓ | 45µs | 3.5 KB |
 | 513 | machine_learning/loss_functions | ✓ | 9m31.223891s | 796.8 KB |
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 28µs | 1.8 KB |
 | 515 | machine_learning/mfcc | ✓ | 38µs | 101.5 KB |
