@@ -1663,7 +1663,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "  globalThis.gc?.()\n")
 	io.WriteString(w, "  const _endMem = _mem()\n")
 	io.WriteString(w, "  const _memory_bytes = Math.max(0, _endMem - _startMem)\n")
-	fmt.Fprintf(w, "  console.log(JSON.stringify({\n    \"duration_us\": _duration_us,\n    \"memory_bytes\": _memory_bytes,\n    \"name\": %q\n  }, null, \"  \"))\n", b.Name)
+	fmt.Fprintf(w, "  console.log('\\n' + JSON.stringify({\n    \"duration_us\": _duration_us,\n    \"memory_bytes\": _memory_bytes,\n    \"name\": %q\n  }, null, \"  \"))\n", b.Name)
 	io.WriteString(w, "})();\n")
 }
 
@@ -4608,10 +4608,10 @@ func literalType(l *parser.Literal) types.Type {
 
 func tsType(t types.Type) string {
 	switch tt := t.(type) {
-        case types.BigIntType:
-                return "bigint"
-        case types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
-                return "number"
+	case types.BigIntType:
+		return "bigint"
+	case types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
+		return "number"
 	case types.BoolType:
 		return "boolean"
 	case types.StringType:
