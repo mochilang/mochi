@@ -1546,6 +1546,18 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, "]")
 				return
 			}
+			// If the target type is unknown but the index expression is
+			// clearly non-numeric (e.g. a string key), treat this as a
+			// map lookup without applying the +1 offset. This avoids
+			// generating invalid code such as `table[key + 1]` when the
+			// key is a string extracted from a list.
+			if !isIntExpr(ix.Index) && !isFloatExpr(ix.Index) {
+				ix.Target.emit(w)
+				io.WriteString(w, "[")
+				ix.Index.emit(w)
+				io.WriteString(w, "]")
+				return
+			}
 			// Fallback: default to list-style indexing with the
 			// Lua +1 offset when type information is insufficient.
 			// This mirrors Mochi's zero-based semantics and avoids
