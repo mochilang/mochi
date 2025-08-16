@@ -574,7 +574,12 @@ func header() []byte {
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))`
-	prelude += "\n(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) '()))"
+	// list-ref-safe previously returned the empty list on out-of-range access,
+	// which caused "expected Number" runtime errors when its result fed into
+	// arithmetic.  It now yields 0 as a numeric sentinel and accepts any
+	// numeric index, coercing floats like `0.0` to integers, allowing
+	// algorithms to continue even when indices are computed inexactly.
+	prelude += "\n(define (list-ref-safe lst idx) (if (and (number? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) 0))"
 	prelude += "\n(define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst (inexact->exact idx) val)))"
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"

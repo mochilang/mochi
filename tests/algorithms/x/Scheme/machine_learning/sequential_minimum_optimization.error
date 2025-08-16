@@ -1,15 +1,18 @@
 run: exit status 70
-ERROR on line 810 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm: invalid type, expected Number: ()
-  called from <anonymous> on line 516 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
-  called from loop9 on line 499 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
-  called from <anonymous> on line 610 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
-  called from <anonymous> on line 516 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
-  called from loop9 on line 494 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+ERROR: length: not a list: 0
+  called from loop1 on line 159 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 141 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 726 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 517 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from loop9 on line 500 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 611 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 517 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from loop9 on line 495 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 477 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
-  called from loop7 on line 463 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 478 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from loop7 on line 464 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 446 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 447 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
   called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
