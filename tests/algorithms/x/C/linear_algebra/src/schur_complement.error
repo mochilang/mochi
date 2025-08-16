@@ -1,0 +1,58 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c: In function ‘inverse’:
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:247:45: warning: passing argument 1 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  247 |         long long row = concat_long_long(mat[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? mat_len + _mochi_idx : _mochi_idx;})], mat_lens[i], id[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? id_len + _mochi_idx : _mochi_idx;})], id_lens[i]);
+      |                                          ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             double *
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:71:47: note: expected ‘long long int *’ but argument is of type ‘double *’
+   71 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                    ~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:247:150: warning: passing argument 3 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  247 |         long long row = concat_long_long(mat[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? mat_len + _mochi_idx : _mochi_idx;})], mat_lens[i], id[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? id_len + _mochi_idx : _mochi_idx;})], id_lens[i]);
+      |                                                                                                                                                    ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                                                      |
+      |                                                                                                                                                      double *
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:71:81: note: expected ‘const long long int *’ but argument is of type ‘double *’
+   71 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                                                ~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:247:25: warning: initialization of ‘long long int’ from ‘long long int *’ makes integer from pointer without a cast [-Wint-conversion]
+  247 |         long long row = concat_long_long(mat[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? mat_len + _mochi_idx : _mochi_idx;})], mat_lens[i], id[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? id_len + _mochi_idx : _mochi_idx;})], id_lens[i]);
+      |                         ^~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:248:52: warning: passing argument 3 of ‘list_append_doubleptr’ makes pointer from integer without a cast [-Wint-conversion]
+  248 |         aug = list_append_doubleptr(aug, &aug_len, row);
+      |                                                    ^~~
+      |                                                    |
+      |                                                    long long int
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:56:74: note: expected ‘double *’ but argument is of type ‘long long int’
+   56 | static double** list_append_doubleptr(double **arr, size_t *len, double *val) {
+      |                                                                  ~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:249:61: error: ‘row_len’ undeclared (first use in this function)
+  249 |         aug_lens = list_append_szt(aug_lens, &aug_lens_len, row_len);
+      |                                                             ^~~~~~~
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:249:61: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:391:35: warning: passing argument 1 of ‘schur_complement’ from incompatible pointer type [-Wincompatible-pointer-types]
+  391 |     double **s = schur_complement(a, a_len, a_lens, a_len, b, b_len, b_lens, b_len, c, c_len, c_lens, c_len, none);
+      |                                   ^
+      |                                   |
+      |                                   long long int **
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:303:40: note: expected ‘double **’ but argument is of type ‘long long int **’
+  303 | double * * schur_complement(double * * mat_a, size_t mat_a_len, size_t* mat_a_lens, size_t mat_a_lens_len, double * * mat_b, size_t mat_b_len, size_t* mat_b_lens, size_t mat_b_lens_len, double * * mat_c, size_t mat_c_len, size_t* mat_c_lens, size_t mat_c_lens_len, OptionMatrix pseudo_inv) {
+      |                             ~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:391:60: warning: passing argument 5 of ‘schur_complement’ from incompatible pointer type [-Wincompatible-pointer-types]
+  391 |     double **s = schur_complement(a, a_len, a_lens, a_len, b, b_len, b_lens, b_len, c, c_len, c_lens, c_len, none);
+      |                                                            ^
+      |                                                            |
+      |                                                            long long int **
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:303:119: note: expected ‘double **’ but argument is of type ‘long long int **’
+  303 | double * * schur_complement(double * * mat_a, size_t mat_a_len, size_t* mat_a_lens, size_t mat_a_lens_len, double * * mat_b, size_t mat_b_len, size_t* mat_b_lens, size_t mat_b_lens_len, double * * mat_c, size_t mat_c_len, size_t* mat_c_lens, size_t mat_c_lens_len, OptionMatrix pseudo_inv) {
+      |                                                                                                            ~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:391:85: warning: passing argument 9 of ‘schur_complement’ from incompatible pointer type [-Wincompatible-pointer-types]
+  391 |     double **s = schur_complement(a, a_len, a_lens, a_len, b, b_len, b_lens, b_len, c, c_len, c_lens, c_len, none);
+      |                                                                                     ^
+      |                                                                                     |
+      |                                                                                     long long int **
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/schur_complement.c:303:198: note: expected ‘double **’ but argument is of type ‘long long int **’
+  303 | double * * schur_complement(double * * mat_a, size_t mat_a_len, size_t* mat_a_lens, size_t mat_a_lens_len, double * * mat_b, size_t mat_b_len, size_t* mat_b_lens, size_t mat_b_lens_len, double * * mat_c, size_t mat_c_len, size_t* mat_c_lens, size_t mat_c_lens_len, OptionMatrix pseudo_inv) {
+      |                                                                                                                                                                                           ~~~~~~~~~~~^~~~~

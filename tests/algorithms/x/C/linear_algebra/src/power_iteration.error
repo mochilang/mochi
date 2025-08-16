@@ -1,0 +1,16 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/power_iteration.c: In function ‘power_iteration’:
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/power_iteration.c:242:17: error: expected identifier or ‘(’ before ‘)’ token
+  242 |         bigint(*)(const char*) denom;
+      |                 ^
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/power_iteration.c:244:19: error: lvalue required as left operand of assignment
+  244 |             denom = user_abs(lambda);
+      |                   ^
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/power_iteration.c:246:19: error: lvalue required as left operand of assignment
+  246 |             denom = 1LL;
+      |                   ^
+/workspace/mochi/tests/algorithms/x/C/linear_algebra/src/power_iteration.c:248:46: error: invalid operands to binary / (have ‘double’ and ‘const __mpz_struct * (*)(__mpq_struct (*)[1])’)
+  248 |         err = user_abs(lambda - lambda_prev) / denom;
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+      |               |                              |
+      |               double                         const __mpz_struct * (*)(__mpq_struct (*)[1])

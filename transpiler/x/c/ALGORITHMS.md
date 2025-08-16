@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (520/1077) - Last updated 2025-08-16 10:42 +0700:
+Checklist of programs that currently transpile and run (541/1077) - Last updated 2025-08-16 11:14 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -454,52 +454,52 @@ Checklist of programs that currently transpile and run (520/1077) - Last updated
 | 447 | graphs/multi_heuristic_astar |  |  |  |
 | 448 | graphs/page_rank |  |  |  |
 | 449 | graphs/prim |  |  |  |
-| 450 | graphs/random_graph_generator | ✓ | 227us | 1.5 MB |
-| 451 | graphs/scc_kosaraju | ✓ | 230us | 1.5 MB |
-| 452 | graphs/strongly_connected_components | ✓ | 569us | 1.4 MB |
+| 450 | graphs/random_graph_generator | ✓ | 443us | 1.4 MB |
+| 451 | graphs/scc_kosaraju |  | 230us | 1.5 MB |
+| 452 | graphs/strongly_connected_components |  | 569us | 1.4 MB |
 | 453 | graphs/tarjans_scc |  |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 282us | 1.6 MB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 198us | 1.6 MB |
 | 455 | graphs/tests/test_min_spanning_tree_prim |  |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 154us | 1.4 MB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 218us | 1.4 MB |
 | 457 | greedy_methods/fractional_cover_problem |  |  |  |
-| 458 | greedy_methods/fractional_knapsack | ✓ | 708us | 1.5 MB |
-| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 355us | 1.5 MB |
-| 460 | greedy_methods/gas_station | ✓ | 485us | 1.5 MB |
-| 461 | greedy_methods/minimum_coin_change | ✓ | 263us | 1.4 MB |
-| 462 | greedy_methods/minimum_waiting_time | ✓ | 205us | 1.4 MB |
-| 463 | greedy_methods/optimal_merge_pattern | ✓ | 220us | 1.5 MB |
-| 464 | greedy_methods/smallest_range | ✓ | 303us | 1.5 MB |
-| 465 | hashes/adler32 | ✓ | 324us | 1.5 MB |
-| 466 | hashes/chaos_machine | ✓ | 261us | 1.6 MB |
-| 467 | hashes/djb2 | ✓ | 233us | 1.4 MB |
-| 468 | hashes/elf | ✓ | 301us | 1.7 MB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 276us | 1.6 MB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 217us | 1.4 MB |
+| 460 | greedy_methods/gas_station | ✓ | 194us | 1.6 MB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 300us | 1.5 MB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 470us | 1.6 MB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 257us | 1.5 MB |
+| 464 | greedy_methods/smallest_range | ✓ | 463us | 1.6 MB |
+| 465 | hashes/adler32 | ✓ | 275us | 1.6 MB |
+| 466 | hashes/chaos_machine | ✓ | 591us | 1.4 MB |
+| 467 | hashes/djb2 | ✓ | 225us | 1.4 MB |
+| 468 | hashes/elf | ✓ | 388us | 1.7 MB |
 | 469 | hashes/enigma_machine |  |  |  |
-| 470 | hashes/fletcher16 |  |  |  |
-| 471 | hashes/hamming_code |  |  |  |
-| 472 | hashes/luhn |  |  |  |
-| 473 | hashes/md5 |  |  |  |
-| 474 | hashes/sdbm |  |  |  |
-| 475 | hashes/sha1 |  |  |  |
-| 476 | hashes/sha256 |  |  |  |
-| 477 | knapsack/greedy_knapsack |  |  |  |
+| 470 | hashes/fletcher16 | ✓ |  |  |
+| 471 | hashes/hamming_code | ✓ | 693us | 1.6 MB |
+| 472 | hashes/luhn | ✓ | 579us | 1.6 MB |
+| 473 | hashes/md5 | ✓ |  |  |
+| 474 | hashes/sdbm | ✓ | 415us | 1.7 MB |
+| 475 | hashes/sha1 | ✓ | 505us | 1.7 MB |
+| 476 | hashes/sha256 | ✓ | 16.41ms | 1.6 MB |
+| 477 | knapsack/greedy_knapsack | ✓ | 208us | 1.6 MB |
 | 478 | knapsack/knapsack |  |  |  |
-| 479 | knapsack/recursive_approach_knapsack |  |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |  |  |  |
-| 481 | knapsack/tests/test_knapsack |  |  |  |
-| 482 | linear_algebra/gaussian_elimination |  |  |  |
-| 483 | linear_algebra/jacobi_iteration_method |  |  |  |
-| 484 | linear_algebra/lu_decomposition |  |  |  |
-| 485 | linear_algebra/matrix_inversion |  |  |  |
-| 486 | linear_algebra/src/conjugate_gradient |  |  |  |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting |  |  |  |
-| 488 | linear_algebra/src/lib |  |  |  |
-| 489 | linear_algebra/src/polynom_for_points |  |  |  |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 492us | 1.6 MB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 324us | 1.5 MB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 451us | 1.6 MB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 190us | 1.4 MB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 228us | 1.5 MB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 224us | 1.6 MB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 298us | 1.6 MB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 717us | 1.6 MB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 307us | 1.6 MB |
+| 488 | linear_algebra/src/lib | ✓ | 248us | 1.6 MB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 470us | 1.6 MB |
 | 490 | linear_algebra/src/power_iteration |  |  |  |
-| 491 | linear_algebra/src/rank_of_matrix |  |  |  |
-| 492 | linear_algebra/src/rayleigh_quotient |  |  |  |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ |  |  |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 245us | 1.7 MB |
 | 493 | linear_algebra/src/schur_complement |  |  |  |
-| 494 | linear_algebra/src/test_linear_algebra |  |  |  |
-| 495 | linear_algebra/src/transformations_2d |  |  |  |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 333us | 1.5 MB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 516us | 1.7 MB |
 | 496 | linear_programming/simplex |  |  |  |
 | 497 | machine_learning/apriori_algorithm |  |  |  |
 | 498 | machine_learning/astar |  |  |  |

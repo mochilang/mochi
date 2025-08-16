@@ -1,0 +1,145 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c: In function ‘connect’:
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:186:6: error: subscripted value is neither array nor pointer nor vector
+  186 |     g[(int)(u)] = list_append_int_new(g[(int)({long long _mochi_idx = u; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})], g.lens[(int)(u)], ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = v; tmp[1] = w; tmp;}));
+      |      ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:186:91: error: ‘g_len’ undeclared (first use in this function)
+  186 |     g[(int)(u)] = list_append_int_new(g[(int)({long long _mochi_idx = u; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})], g.lens[(int)(u)], ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = v; tmp[1] = w; tmp;}));
+      |                                                                                           ^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:186:91: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:186:129: error: request for member ‘lens’ in something not a structure or union
+  186 |     g[(int)(u)] = list_append_int_new(g[(int)({long long _mochi_idx = u; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})], g.lens[(int)(u)], ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = v; tmp[1] = w; tmp;}));
+      |                                                                                                                                 ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:186:147: warning: passing argument 3 of ‘list_append_int_new’ makes integer from pointer without a cast [-Wint-conversion]
+  186 |     g[(int)(u)] = list_append_int_new(g[(int)({long long _mochi_idx = u; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})], g.lens[(int)(u)], ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = v; tmp[1] = w; tmp;}));
+      |                                                                                                                                                  ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                                                   |
+      |                                                                                                                                                   long long int *
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:91:83: note: expected ‘long long int’ but argument is of type ‘long long int *’
+   91 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                                                         ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:187:6: error: subscripted value is neither array nor pointer nor vector
+  187 |     g[(int)(v)] = list_append_int_new(g[(int)({long long _mochi_idx = v; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})], g.lens[(int)(v)], ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = u; tmp[1] = w; tmp;}));
+      |      ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:187:129: error: request for member ‘lens’ in something not a structure or union
+  187 |     g[(int)(v)] = list_append_int_new(g[(int)({long long _mochi_idx = v; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})], g.lens[(int)(v)], ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = u; tmp[1] = w; tmp;}));
+      |                                                                                                                                 ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:187:147: warning: passing argument 3 of ‘list_append_int_new’ makes integer from pointer without a cast [-Wint-conversion]
+  187 |     g[(int)(v)] = list_append_int_new(g[(int)({long long _mochi_idx = v; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})], g.lens[(int)(v)], ({long long *tmp = malloc(2 * sizeof(long long)); tmp[0] = u; tmp[1] = w; tmp;}));
+      |                                                                                                                                                  ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                                                   |
+      |                                                                                                                                                   long long int *
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:91:83: note: expected ‘long long int’ but argument is of type ‘long long int *’
+   91 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                                                         ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c: In function ‘prim’:
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:226:22: error: expected identifier or ‘(’ before ‘[’ token
+  226 |             long long[]* __tmp0 = map_get_il(graph.keys, graph.vals, graph.lens, graph.len, u, NULL);
+      |                      ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:227:49: error: request for member ‘keys’ in something not a structure or union
+  227 |             size_t __tmp0_len = map_len_il(graph.keys, graph.vals, graph.lens, graph.len, u);
+      |                                                 ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:227:61: error: request for member ‘vals’ in something not a structure or union
+  227 |             size_t __tmp0_len = map_len_il(graph.keys, graph.vals, graph.lens, graph.len, u);
+      |                                                             ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:227:73: error: request for member ‘lens’ in something not a structure or union
+  227 |             size_t __tmp0_len = map_len_il(graph.keys, graph.vals, graph.lens, graph.len, u);
+      |                                                                         ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:227:85: error: request for member ‘len’ in something not a structure or union
+  227 |             size_t __tmp0_len = map_len_il(graph.keys, graph.vals, graph.lens, graph.len, u);
+      |                                                                                     ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:229:32: error: ‘__tmp0’ undeclared (first use in this function)
+  229 |                 long long *e = __tmp0[__i];
+      |                                ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:230:32: error: ‘__tmp0_lens’ undeclared (first use in this function); did you mean ‘__tmp0_len’?
+  230 |                 size_t e_len = __tmp0_lens[__i];
+      |                                ^~~~~~~~~~~
+      |                                __tmp0_len
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c: In function ‘prim_heap’:
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:318:22: error: expected identifier or ‘(’ before ‘[’ token
+  318 |             long long[]* __tmp1 = map_get_il(graph.keys, graph.vals, graph.lens, graph.len, u, NULL);
+      |                      ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:319:49: error: request for member ‘keys’ in something not a structure or union
+  319 |             size_t __tmp1_len = map_len_il(graph.keys, graph.vals, graph.lens, graph.len, u);
+      |                                                 ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:319:61: error: request for member ‘vals’ in something not a structure or union
+  319 |             size_t __tmp1_len = map_len_il(graph.keys, graph.vals, graph.lens, graph.len, u);
+      |                                                             ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:319:73: error: request for member ‘lens’ in something not a structure or union
+  319 |             size_t __tmp1_len = map_len_il(graph.keys, graph.vals, graph.lens, graph.len, u);
+      |                                                                         ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:319:85: error: request for member ‘len’ in something not a structure or union
+  319 |             size_t __tmp1_len = map_len_il(graph.keys, graph.vals, graph.lens, graph.len, u);
+      |                                                                                     ^
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:321:32: error: ‘__tmp1’ undeclared (first use in this function)
+  321 |                 long long *e = __tmp1[__i];
+      |                                ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:322:32: error: ‘__tmp1_lens’ undeclared (first use in this function); did you mean ‘__tmp1_len’?
+  322 |                 size_t e_len = __tmp1_lens[__i];
+      |                                ^~~~~~~~~~~
+      |                                __tmp1_len
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c: In function ‘test_vector’:
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:377:17: error: incompatible type for argument 1 of ‘connect’
+  377 |     G = connect(G, 1LL, 2LL, 15LL);
+      |                 ^
+      |                 |
+      |                 MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:182:17: note: expected ‘int’ but argument is of type ‘MapIL’
+  182 | int connect(int graph, long long a, long long b, long long w) {
+      |             ~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:378:17: error: incompatible type for argument 1 of ‘connect’
+  378 |     G = connect(G, 1LL, 3LL, 12LL);
+      |                 ^
+      |                 |
+      |                 MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:182:17: note: expected ‘int’ but argument is of type ‘MapIL’
+  182 | int connect(int graph, long long a, long long b, long long w) {
+      |             ~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:379:17: error: incompatible type for argument 1 of ‘connect’
+  379 |     G = connect(G, 2LL, 4LL, 13LL);
+      |                 ^
+      |                 |
+      |                 MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:182:17: note: expected ‘int’ but argument is of type ‘MapIL’
+  182 | int connect(int graph, long long a, long long b, long long w) {
+      |             ~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:380:17: error: incompatible type for argument 1 of ‘connect’
+  380 |     G = connect(G, 2LL, 5LL, 5LL);
+      |                 ^
+      |                 |
+      |                 MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:182:17: note: expected ‘int’ but argument is of type ‘MapIL’
+  182 | int connect(int graph, long long a, long long b, long long w) {
+      |             ~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:381:17: error: incompatible type for argument 1 of ‘connect’
+  381 |     G = connect(G, 3LL, 2LL, 6LL);
+      |                 ^
+      |                 |
+      |                 MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:182:17: note: expected ‘int’ but argument is of type ‘MapIL’
+  182 | int connect(int graph, long long a, long long b, long long w) {
+      |             ~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:382:17: error: incompatible type for argument 1 of ‘connect’
+  382 |     G = connect(G, 3LL, 4LL, 6LL);
+      |                 ^
+      |                 |
+      |                 MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:182:17: note: expected ‘int’ but argument is of type ‘MapIL’
+  182 | int connect(int graph, long long a, long long b, long long w) {
+      |             ~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:383:28: error: incompatible type for argument 1 of ‘prim’
+  383 |     long long **mst = prim(G, 0LL, x);
+      |                            ^
+      |                            |
+      |                            MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:202:24: note: expected ‘int’ but argument is of type ‘MapIL’
+  202 | long long * * prim(int graph, long long s, long long n) {
+      |                    ~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:388:38: error: incompatible type for argument 1 of ‘prim_heap’
+  388 |     long long **mst_heap = prim_heap(G, 0LL, x);
+      |                                      ^
+      |                                      |
+      |                                      MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/prim.c:296:29: note: expected ‘int’ but argument is of type ‘MapIL’
+  296 | long long * * prim_heap(int graph, long long s, long long n) {
+      |                         ~~~~^~~~~

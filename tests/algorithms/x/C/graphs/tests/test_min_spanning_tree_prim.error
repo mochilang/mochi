@@ -1,0 +1,67 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c: In function ‘prims_algorithm’:
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:181:41: error: request for member ‘len’ in something not a structure or union
+  181 |     for (size_t __i = 0; __i < adjacency.len; __i++) {
+      |                                         ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:182:26: error: request for member ‘keys’ in something not a structure or union
+  182 |         int k = adjacency.keys[__i];
+      |                          ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:189:45: error: request for member ‘len’ in something not a structure or union
+  189 |         for (size_t __i = 0; __i < adjacency.len; __i++) {
+      |                                             ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:190:34: error: request for member ‘keys’ in something not a structure or union
+  190 |             int u_str = adjacency.keys[__i];
+      |                                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:194:60: error: request for member ‘keys’ in something not a structure or union
+  194 |                     Neighbor* __tmp0 = map_get_il(adjacency.keys, adjacency.vals, adjacency.lens, adjacency.len, u, NULL);
+      |                                                            ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:194:76: error: request for member ‘vals’ in something not a structure or union
+  194 |                     Neighbor* __tmp0 = map_get_il(adjacency.keys, adjacency.vals, adjacency.lens, adjacency.len, u, NULL);
+      |                                                                            ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:194:92: error: request for member ‘lens’ in something not a structure or union
+  194 |                     Neighbor* __tmp0 = map_get_il(adjacency.keys, adjacency.vals, adjacency.lens, adjacency.len, u, NULL);
+      |                                                                                            ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:194:108: error: request for member ‘len’ in something not a structure or union
+  194 |                     Neighbor* __tmp0 = map_get_il(adjacency.keys, adjacency.vals, adjacency.lens, adjacency.len, u, NULL);
+      |                                                                                                            ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:195:50: error: request for member ‘lens’ in something not a structure or union
+  195 |                     size_t __tmp0_len = adjacency.lens[u];
+      |                                                  ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c: In function ‘test_prim_successful_result’:
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:252:246: error: incompatible type for argument 3 of ‘list_append_int_new’
+  252 |         map_set_il(&adjacency.keys, &adjacency.vals, &adjacency.lens, &adjacency.len, &adjacency.cap, u, list_append_int_new(map_get_il(adjacency.keys, adjacency.vals, adjacency.lens, adjacency.len, u, NULL), adjacency.lens[(int)(u)], (Neighbor){.node = v, .cost = w}), map_len_il(adjacency.keys, adjacency.vals, adjacency.lens, adjacency.len, u) + 1);
+      |                                                                                                                                                                                                                                                      ^~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                                                                                                                                                      |
+      |                                                                                                                                                                                                                                                      Neighbor
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:106:83: note: expected ‘long long int’ but argument is of type ‘Neighbor’
+  106 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                                                         ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:253:246: error: incompatible type for argument 3 of ‘list_append_int_new’
+  253 |         map_set_il(&adjacency.keys, &adjacency.vals, &adjacency.lens, &adjacency.len, &adjacency.cap, v, list_append_int_new(map_get_il(adjacency.keys, adjacency.vals, adjacency.lens, adjacency.len, v, NULL), adjacency.lens[(int)(v)], (Neighbor){.node = u, .cost = w}), map_len_il(adjacency.keys, adjacency.vals, adjacency.lens, adjacency.len, v) + 1);
+      |                                                                                                                                                                                                                                                      ^~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                                                                                                                                                      |
+      |                                                                                                                                                                                                                                                      Neighbor
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:106:83: note: expected ‘long long int’ but argument is of type ‘Neighbor’
+  106 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                                                         ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:255:40: error: incompatible type for argument 1 of ‘prims_algorithm’
+  255 |     EdgePair *result = prims_algorithm(adjacency);
+      |                                        ^~~~~~~~~
+      |                                        |
+      |                                        MapIL
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:174:32: note: expected ‘int’ but argument is of type ‘MapIL’
+  174 | EdgePair * prims_algorithm(int adjacency) {
+      |                            ~~~~^~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:296:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  296 |         printf("%d\n", test_prim_successful_result());
+      |                 ~^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
+/workspace/mochi/tests/algorithms/x/C/graphs/tests/test_min_spanning_tree_prim.c:297:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  297 |         printf("%d\n", 1LL);
+      |                 ~^     ~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld

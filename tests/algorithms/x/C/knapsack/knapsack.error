@@ -1,0 +1,9 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/knapsack/knapsack.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/knapsack/knapsack.c:93:16: error: expected identifier or ‘(’ before ‘)’ token
+   93 |     long long(*)(const char*) count = values_len;
+      |                ^
+/workspace/mochi/tests/algorithms/x/C/knapsack/knapsack.c:94:80: error: ‘count’ undeclared (first use in this function)
+   94 |     long long result = knapsack(cap, weights, weights_len, values, values_len, count);
+      |                                                                                ^~~~~
+/workspace/mochi/tests/algorithms/x/C/knapsack/knapsack.c:94:80: note: each undeclared identifier is reported only once for each function it appears in

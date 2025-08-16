@@ -1,0 +1,42 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c: In function ‘node_to_string’:
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:117:120: warning: passing argument 1 of ‘str_int’ makes integer from pointer without a cast [-Wint-conversion]
+  117 |     return str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("<node=", n.name), " inbound="), str_int(n.inbound)), " outbound="), str_int(n.outbound)), ">");
+      |                                                                                                                       ~^~~~~~~~
+      |                                                                                                                        |
+      |                                                                                                                        const char **
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:21:32: note: expected ‘long long int’ but argument is of type ‘const char **’
+   21 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:117:156: warning: passing argument 1 of ‘str_int’ makes integer from pointer without a cast [-Wint-conversion]
+  117 |     return str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("<node=", n.name), " inbound="), str_int(n.inbound)), " outbound="), str_int(n.outbound)), ">");
+      |                                                                                                                                                           ~^~~~~~~~~
+      |                                                                                                                                                            |
+      |                                                                                                                                                            const char **
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:21:32: note: expected ‘long long int’ but argument is of type ‘const char **’
+   21 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c: In function ‘page_rank’:
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:126:9: error: ‘ranks’ undeclared (first use in this function)
+  126 |         ranks[(int)(n.name)] = 1LL;
+      |         ^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:126:9: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:126:15: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  126 |         ranks[(int)(n.name)] = 1LL;
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:133:9: error: ‘outbounds’ undeclared (first use in this function); did you mean ‘outbounds_len’?
+  133 |         outbounds[(int)(n.name)] = 1LL * n.outbound_len;
+      |         ^~~~~~~~~
+      |         outbounds_len
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:133:19: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  133 |         outbounds[(int)(n.name)] = 1LL * n.outbound_len;
+      |                   ^
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:145:19: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  145 |             ranks[(int)(n.name)] = (1LL - d) + (d * sum_val);
+      |                   ^
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/graphs/page_rank.c:184:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘Node’ [-Wformat=]
+  184 |             printf("%d\n", n);
+      |                     ~^     ~
+      |                      |     |
+      |                      int   Node
