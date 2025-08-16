@@ -1,3 +1,7 @@
+## Progress (2025-08-16 12:48 +0700)
+- fs: add base_neg2_conversion algorithm
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-15 10:20 +0700)
 - php: support toi builtin and reserve reset
 - Generated F# for 103/105 programs (103 passing)
