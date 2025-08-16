@@ -1,5 +1,5 @@
 exit status 134
 Unhandled exception. System.Exception: test4 failed
-   at Program.test_compute_geometric_mean() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_geometric_mean2687501473/001/Program.cs:line 203
-   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_geometric_mean2687501473/001/Program.cs:line 212
-   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_geometric_mean2687501473/001/Program.cs:line 221
+   at Program.test_compute_geometric_mean() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_geometric_mean1847885500/001/Program.cs:line 202
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_geometric_mean1847885500/001/Program.cs:line 211
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_geometric_mean1847885500/001/Program.cs:line 220
