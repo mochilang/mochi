@@ -1,99 +1,65 @@
 public class Main {
 
     static double sqrtApprox(double x) {
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess = (double)((double)(x) / (double)(2.0));
+        long i_1 = 0L;
+        while ((long)(i_1) < 20L) {
+            guess = (double)((double)(((double)(guess) + (double)((double)(x) / (double)(guess)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return guess;
     }
 
     static double abs_val(double num) {
-        if (num < 0.0) {
+        if ((double)(num) < (double)(0.0)) {
             return -num;
         }
         return num;
     }
 
     static boolean approx_equal(double a, double b, double eps) {
-        return abs_val(a - b) < eps;
+        return (double)(abs_val((double)((double)(a) - (double)(b)))) < (double)(eps);
     }
 
-    static double dodecahedron_surface_area(int edge) {
-        if (edge <= 0) {
+    static double dodecahedron_surface_area(long edge) {
+        if ((long)(edge) <= 0L) {
             throw new RuntimeException(String.valueOf("Length must be a positive."));
         }
-        double term = sqrtApprox(25.0 + 10.0 * sqrtApprox(5.0));
-        double e = ((Number)(edge)).doubleValue();
-        return 3.0 * term * e * e;
+        double term_1 = (double)(sqrtApprox((double)((double)(25.0) + (double)((double)(10.0) * (double)(sqrtApprox((double)(5.0)))))));
+        double e_1 = (double)(((Number)(edge)).doubleValue());
+        return (double)((double)((double)(3.0) * (double)(term_1)) * (double)(e_1)) * (double)(e_1);
     }
 
-    static double dodecahedron_volume(int edge) {
-        if (edge <= 0) {
+    static double dodecahedron_volume(long edge) {
+        if ((long)(edge) <= 0L) {
             throw new RuntimeException(String.valueOf("Length must be a positive."));
         }
-        double term_1 = (15.0 + 7.0 * sqrtApprox(5.0)) / 4.0;
-        double e_1 = ((Number)(edge)).doubleValue();
-        return term_1 * e_1 * e_1 * e_1;
+        double term_3 = (double)((double)(((double)(15.0) + (double)((double)(7.0) * (double)(sqrtApprox((double)(5.0)))))) / (double)(4.0));
+        double e_3 = (double)(((Number)(edge)).doubleValue());
+        return (double)((double)((double)(term_3) * (double)(e_3)) * (double)(e_3)) * (double)(e_3);
     }
 
     static void test_dodecahedron() {
-        if (!(Boolean)approx_equal(dodecahedron_surface_area(5), 516.1432201766901, 0.0001)) {
+        if (!(Boolean)approx_equal((double)(dodecahedron_surface_area(5L)), (double)(516.1432201766901), (double)(0.0001))) {
             throw new RuntimeException(String.valueOf("surface area 5 failed"));
         }
-        if (!(Boolean)approx_equal(dodecahedron_surface_area(10), 2064.5728807067603, 0.0001)) {
+        if (!(Boolean)approx_equal((double)(dodecahedron_surface_area(10L)), (double)(2064.5728807067603), (double)(0.0001))) {
             throw new RuntimeException(String.valueOf("surface area 10 failed"));
         }
-        if (!(Boolean)approx_equal(dodecahedron_volume(5), 957.8898700780791, 0.0001)) {
+        if (!(Boolean)approx_equal((double)(dodecahedron_volume(5L)), (double)(957.8898700780791), (double)(0.0001))) {
             throw new RuntimeException(String.valueOf("volume 5 failed"));
         }
-        if (!(Boolean)approx_equal(dodecahedron_volume(10), 7663.118960624633, 0.0001)) {
+        if (!(Boolean)approx_equal((double)(dodecahedron_volume(10L)), (double)(7663.118960624633), (double)(0.0001))) {
             throw new RuntimeException(String.valueOf("volume 10 failed"));
         }
     }
 
     static void main() {
         test_dodecahedron();
-        System.out.println(dodecahedron_surface_area(5));
-        System.out.println(dodecahedron_volume(5));
+        System.out.println(dodecahedron_surface_area(5L));
+        System.out.println(dodecahedron_volume(5L));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 }

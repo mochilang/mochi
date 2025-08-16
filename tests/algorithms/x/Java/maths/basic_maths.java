@@ -18,13 +18,13 @@ public class Main {
         long[] pf_1 = ((long[])(new long[]{}));
         while (Math.floorMod(num_1, 2) == 0L) {
             pf_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(pf_1), java.util.stream.LongStream.of(2L)).toArray()));
-            num_1 = (long)((long)(num_1) / 2L);
+            num_1 = Math.floorDiv(num_1, 2);
         }
         long i_3 = 3L;
         while ((long)((long)(i_3) * (long)(i_3)) <= (long)(num_1)) {
             while (Math.floorMod(num_1, i_3) == 0L) {
                 pf_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(pf_1), java.util.stream.LongStream.of((long)(i_3))).toArray()));
-                num_1 = (long)((long)(num_1) / (long)(i_3));
+                num_1 = Math.floorDiv(num_1, i_3);
             }
             i_3 = (long)((long)(i_3) + 2L);
         }
@@ -43,7 +43,7 @@ public class Main {
         long temp_1 = 1L;
         while (Math.floorMod(num_3, 2) == 0L) {
             temp_1 = (long)((long)(temp_1) + 1L);
-            num_3 = (long)((long)(num_3) / 2L);
+            num_3 = Math.floorDiv(num_3, 2);
         }
         div_1 = (long)((long)(div_1) * (long)(temp_1));
         long i_5 = 3L;
@@ -51,7 +51,7 @@ public class Main {
             temp_1 = 1L;
             while (Math.floorMod(num_3, i_5) == 0L) {
                 temp_1 = (long)((long)(temp_1) + 1L);
-                num_3 = (long)((long)(num_3) / (long)(i_5));
+                num_3 = Math.floorDiv(num_3, i_5);
             }
             div_1 = (long)((long)(div_1) * (long)(temp_1));
             i_5 = (long)((long)(i_5) + 2L);
@@ -71,20 +71,20 @@ public class Main {
         long temp_3 = 1L;
         while (Math.floorMod(num_5, 2) == 0L) {
             temp_3 = (long)((long)(temp_3) + 1L);
-            num_5 = (long)((long)(num_5) / 2L);
+            num_5 = Math.floorDiv(num_5, 2);
         }
         if ((long)(temp_3) > 1L) {
-            s_1 = (long)((long)(s_1) * (long)(((long)(((long)(pow_int(2L, (long)(temp_3))) - 1L)) / (long)((2L - 1L)))));
+            s_1 = (long)((long)(s_1) * ((Number)((Math.floorDiv(((long)(((long)(pow_int(2L, (long)(temp_3))) - 1L))), ((long)((2L - 1L))))))).intValue());
         }
         long i_7 = 3L;
         while ((long)((long)(i_7) * (long)(i_7)) <= (long)(num_5)) {
             temp_3 = 1L;
             while (Math.floorMod(num_5, i_7) == 0L) {
                 temp_3 = (long)((long)(temp_3) + 1L);
-                num_5 = (long)((long)(num_5) / (long)(i_7));
+                num_5 = Math.floorDiv(num_5, i_7);
             }
             if ((long)(temp_3) > 1L) {
-                s_1 = (long)((long)(s_1) * (long)(((long)(((long)(pow_int((long)(i_7), (long)(temp_3))) - 1L)) / (long)(((long)(i_7) - 1L)))));
+                s_1 = (long)((long)(s_1) * ((Number)((Math.floorDiv(((long)(((long)(pow_int((long)(i_7), (long)(temp_3))) - 1L))), ((long)(((long)(i_7) - 1L))))))).intValue());
             }
             i_7 = (long)((long)(i_7) + 2L);
         }
@@ -124,50 +124,16 @@ public class Main {
         long idx_4 = 0L;
         while ((long)(idx_4) < (long)(factors_1.length)) {
             long x_1 = (long)(factors_1[(int)((long)(idx_4))]);
-            s_3 = (long)((long)(((long)(s_3) / (long)(x_1))) * (long)(((long)(x_1) - 1L)));
+            s_3 = (long)(((Number)((Math.floorDiv(((long)(s_3)), ((long)(x_1)))))).intValue() * (long)(((long)(x_1) - 1L)));
             idx_4 = (long)((long)(idx_4) + 1L);
         }
         return s_3;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(prime_factors(100L)));
-            System.out.println(_p(number_of_divisors(100L)));
-            System.out.println(_p(sum_of_divisors(100L)));
-            System.out.println(_p(euler_phi(100L)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(prime_factors(100L)));
+        System.out.println(_p(number_of_divisors(100L)));
+        System.out.println(_p(sum_of_divisors(100L)));
+        System.out.println(_p(euler_phi(100L)));
     }
 
     static String _p(Object v) {

@@ -30,47 +30,13 @@ public class Main {
         return (double)((double)((double)(x) * (double)(x)) * (double)(x)) + (double)((double)(x) * (double)(x));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println("f(x) = x^3 + x^2");
-            System.out.println("The area between the curve, x = -5, x = 5 and the x axis is:");
-            while ((long)(i_2) <= 100000L) {
-                double result = (double)(trapezoidal_area(Main::f, (double)(-5.0), (double)(5.0), (long)(i_2)));
-                System.out.println("with " + _p(i_2) + " steps: " + _p(result));
-                i_2 = (long)((long)(i_2) * 10L);
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        System.out.println("f(x) = x^3 + x^2");
+        System.out.println("The area between the curve, x = -5, x = 5 and the x axis is:");
+        while ((long)(i_2) <= 100000L) {
+            double result = (double)(trapezoidal_area(Main::f, (double)(-5.0), (double)(5.0), (long)(i_2)));
+            System.out.println("with " + _p(i_2) + " steps: " + _p(result));
+            i_2 = (long)((long)(i_2) * 10L);
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

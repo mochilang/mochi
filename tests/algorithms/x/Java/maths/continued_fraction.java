@@ -1,80 +1,46 @@
 public class Main {
 
-    static int floor_div(int a, int b) {
-        int q = a / b;
-        int r = Math.floorMod(a, b);
-        if (r != 0 && ((a < 0 && b > 0) || (a > 0 && b < 0))) {
-            q = q - 1;
+    static long floor_div(long a, long b) {
+        long q = Math.floorDiv(((long)(a)), ((long)(b)));
+        long r_1 = Math.floorMod(a, b);
+        if ((long)(r_1) != 0L && (((long)(a) < 0L && (long)(b) > 0L) || ((long)(a) > 0L && (long)(b) < 0L))) {
+            q = (long)((long)(q) - 1L);
         }
         return q;
     }
 
-    static int[] continued_fraction(int numerator, int denominator) {
-        int num = numerator;
-        int den = denominator;
-        int[] result = ((int[])(new int[]{}));
+    static long[] continued_fraction(long numerator, long denominator) {
+        long num = (long)(numerator);
+        long den_1 = (long)(denominator);
+        long[] result_1 = ((long[])(new long[]{}));
         while (true) {
-            int integer_part = floor_div(num, den);
-            result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(integer_part)).toArray()));
-            num = num - integer_part * den;
-            if (num == 0) {
+            long integer_part_1 = (long)(floor_div((long)(num), (long)(den_1)));
+            result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(integer_part_1))).toArray()));
+            num = (long)((long)(num) - (long)((long)(integer_part_1) * (long)(den_1)));
+            if ((long)(num) == 0L) {
                 break;
             }
-            int tmp = num;
-            num = den;
-            den = tmp;
+            long tmp_1 = (long)(num);
+            num = (long)(den_1);
+            den_1 = (long)(tmp_1);
         }
-        return result;
+        return result_1;
     }
 
-    static String list_to_string(int[] lst) {
+    static String list_to_string(long[] lst) {
         String s = "[";
-        int i = 0;
-        while (i < lst.length) {
-            s = s + _p(_geti(lst, i));
-            if (i < lst.length - 1) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(lst.length)) {
+            s = s + _p(_geti(lst, ((Number)(i_1)).intValue()));
+            if ((long)(i_1) < (long)((long)(lst.length) - 1L)) {
                 s = s + ", ";
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return s + "]";
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println("Continued Fraction of 0.84375 is: " + String.valueOf(list_to_string(((int[])(continued_fraction(27, 32))))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println("Continued Fraction of 0.84375 is: " + String.valueOf(list_to_string(((long[])(continued_fraction(27L, 32L))))));
     }
 
     static String _p(Object v) {
@@ -90,10 +56,14 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

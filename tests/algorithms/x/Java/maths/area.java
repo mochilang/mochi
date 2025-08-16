@@ -203,64 +203,30 @@ public class Main {
         return (double)(((double)((double)(n_1) * (double)(length)) * (double)(length))) / (double)(((double)(4.0) * (double)(tan_approx((double)((double)(PI) / (double)(n_1))))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println("[DEMO] Areas of various geometric shapes:");
-            System.out.println("Rectangle: " + _p(area_rectangle((double)(10.0), (double)(20.0))));
-            System.out.println("Square: " + _p(area_square((double)(10.0))));
-            System.out.println("Triangle: " + _p(area_triangle((double)(10.0), (double)(10.0))));
-            TRI_THREE_SIDES = (double)(area_triangle_three_sides((double)(5.0), (double)(12.0), (double)(13.0)));
-            System.out.println("Triangle Three Sides: " + _p(TRI_THREE_SIDES));
-            System.out.println("Parallelogram: " + _p(area_parallelogram((double)(10.0), (double)(20.0))));
-            System.out.println("Rhombus: " + _p(area_rhombus((double)(10.0), (double)(20.0))));
-            System.out.println("Trapezium: " + _p(area_trapezium((double)(10.0), (double)(20.0), (double)(30.0))));
-            System.out.println("Circle: " + _p(area_circle((double)(20.0))));
-            System.out.println("Ellipse: " + _p(area_ellipse((double)(10.0), (double)(20.0))));
-            System.out.println("");
-            System.out.println("Surface Areas of various geometric shapes:");
-            System.out.println("Cube: " + _p(surface_area_cube((double)(20.0))));
-            System.out.println("Cuboid: " + _p(surface_area_cuboid((double)(10.0), (double)(20.0), (double)(30.0))));
-            System.out.println("Sphere: " + _p(surface_area_sphere((double)(20.0))));
-            System.out.println("Hemisphere: " + _p(surface_area_hemisphere((double)(20.0))));
-            System.out.println("Cone: " + _p(surface_area_cone((double)(10.0), (double)(20.0))));
-            System.out.println("Conical Frustum: " + _p(surface_area_conical_frustum((double)(10.0), (double)(20.0), (double)(30.0))));
-            System.out.println("Cylinder: " + _p(surface_area_cylinder((double)(10.0), (double)(20.0))));
-            System.out.println("Torus: " + _p(surface_area_torus((double)(20.0), (double)(10.0))));
-            System.out.println("Equilateral Triangle: " + _p(area_reg_polygon(3L, (double)(10.0))));
-            System.out.println("Square: " + _p(area_reg_polygon(4L, (double)(10.0))));
-            System.out.println("Regular Pentagon: " + _p(area_reg_polygon(5L, (double)(10.0))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println("[DEMO] Areas of various geometric shapes:");
+        System.out.println("Rectangle: " + _p(area_rectangle((double)(10.0), (double)(20.0))));
+        System.out.println("Square: " + _p(area_square((double)(10.0))));
+        System.out.println("Triangle: " + _p(area_triangle((double)(10.0), (double)(10.0))));
+        TRI_THREE_SIDES = (double)(area_triangle_three_sides((double)(5.0), (double)(12.0), (double)(13.0)));
+        System.out.println("Triangle Three Sides: " + _p(TRI_THREE_SIDES));
+        System.out.println("Parallelogram: " + _p(area_parallelogram((double)(10.0), (double)(20.0))));
+        System.out.println("Rhombus: " + _p(area_rhombus((double)(10.0), (double)(20.0))));
+        System.out.println("Trapezium: " + _p(area_trapezium((double)(10.0), (double)(20.0), (double)(30.0))));
+        System.out.println("Circle: " + _p(area_circle((double)(20.0))));
+        System.out.println("Ellipse: " + _p(area_ellipse((double)(10.0), (double)(20.0))));
+        System.out.println("");
+        System.out.println("Surface Areas of various geometric shapes:");
+        System.out.println("Cube: " + _p(surface_area_cube((double)(20.0))));
+        System.out.println("Cuboid: " + _p(surface_area_cuboid((double)(10.0), (double)(20.0), (double)(30.0))));
+        System.out.println("Sphere: " + _p(surface_area_sphere((double)(20.0))));
+        System.out.println("Hemisphere: " + _p(surface_area_hemisphere((double)(20.0))));
+        System.out.println("Cone: " + _p(surface_area_cone((double)(10.0), (double)(20.0))));
+        System.out.println("Conical Frustum: " + _p(surface_area_conical_frustum((double)(10.0), (double)(20.0), (double)(30.0))));
+        System.out.println("Cylinder: " + _p(surface_area_cylinder((double)(10.0), (double)(20.0))));
+        System.out.println("Torus: " + _p(surface_area_torus((double)(20.0), (double)(10.0))));
+        System.out.println("Equilateral Triangle: " + _p(area_reg_polygon(3L, (double)(10.0))));
+        System.out.println("Square: " + _p(area_reg_polygon(4L, (double)(10.0))));
+        System.out.println("Regular Pentagon: " + _p(area_reg_polygon(5L, (double)(10.0))));
     }
 
     static String _p(Object v) {

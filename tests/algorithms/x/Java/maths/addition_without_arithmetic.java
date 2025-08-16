@@ -26,8 +26,8 @@ public class Main {
             if ((Math.floorMod(x, 2) == 1L) && (Math.floorMod(y_1, 2) == 1L)) {
                 res_1 = (long)((long)(res_1) + (long)(bit_1));
             }
-            x = (long)((long)(x) / 2L);
-            y_1 = (long)((long)(y_1) / 2L);
+            x = Math.floorDiv(x, 2);
+            y_1 = Math.floorDiv(y_1, 2);
             bit_1 = (long)((long)(bit_1) * 2L);
             i_1 = (long)((long)(i_1) + 1L);
         }
@@ -46,8 +46,8 @@ public class Main {
             if (Math.floorMod(((long)(abit_1) + (long)(bbit_1)), 2) == 1L) {
                 res_3 = (long)((long)(res_3) + (long)(bit_3));
             }
-            x_1 = (long)((long)(x_1) / 2L);
-            y_3 = (long)((long)(y_3) / 2L);
+            x_1 = Math.floorDiv(x_1, 2);
+            y_3 = Math.floorDiv(y_3, 2);
             bit_3 = (long)((long)(bit_3) * 2L);
             i_3 = (long)((long)(i_3) + 1L);
         }
@@ -70,45 +70,11 @@ public class Main {
         return result_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(add(3L, 5L)));
-            System.out.println(_p(add(13L, 5L)));
-            System.out.println(_p(add((long)(-7), 2L)));
-            System.out.println(_p(add(0L, (long)(-7))));
-            System.out.println(_p(add((long)(-321), 0L)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(add(3L, 5L)));
+        System.out.println(_p(add(13L, 5L)));
+        System.out.println(_p(add((long)(-7), 2L)));
+        System.out.println(_p(add(0L, (long)(-7))));
+        System.out.println(_p(add((long)(-321), 0L)));
     }
 
     static String _p(Object v) {

@@ -1,36 +1,35 @@
 public class Main {
-    static double[] nums = new double[0];
+    static double[] nums = ((double[])(new double[]{3.0, 7.0, 13.0, 2.0}));
     static boolean _v;
 
     static boolean check_polygon(double[] nums) {
-        if (nums.length < 2) {
+        if ((long)(nums.length) < 2L) {
             throw new RuntimeException(String.valueOf("Monogons and Digons are not polygons in the Euclidean space"));
         }
-        long i_1 = 0;
-        while (i_1 < nums.length) {
-            if (nums[(int)(i_1)] <= 0.0) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(nums.length)) {
+            if ((double)(nums[(int)((long)(i_1))]) <= (double)(0.0)) {
                 throw new RuntimeException(String.valueOf("All values must be greater than 0"));
             }
-            i_1 = i_1 + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        double total_1 = 0.0;
-        double max_side_1 = 0.0;
-        i_1 = 0;
-        while (i_1 < nums.length) {
-            double v_1 = nums[(int)(i_1)];
-            total_1 = total_1 + v_1;
-            if (v_1 > max_side_1) {
-                max_side_1 = v_1;
+        double total_1 = (double)(0.0);
+        double max_side_1 = (double)(0.0);
+        i_1 = 0L;
+        while ((long)(i_1) < (long)(nums.length)) {
+            double v_1 = (double)(nums[(int)((long)(i_1))]);
+            total_1 = (double)((double)(total_1) + (double)(v_1));
+            if ((double)(v_1) > (double)(max_side_1)) {
+                max_side_1 = (double)(v_1);
             }
-            i_1 = i_1 + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return max_side_1 < (total_1 - max_side_1);
+        return (double)(max_side_1) < (double)(((double)(total_1) - (double)(max_side_1)));
     }
     public static void main(String[] args) {
         System.out.println(_p(check_polygon(((double[])(new double[]{6.0, 10.0, 5.0})))));
         System.out.println(_p(check_polygon(((double[])(new double[]{3.0, 7.0, 13.0, 2.0})))));
         System.out.println(_p(check_polygon(((double[])(new double[]{1.0, 4.3, 5.2, 12.2})))));
-        nums = ((double[])(new double[]{3.0, 7.0, 13.0, 2.0}));
         _v = check_polygon(((double[])(nums)));
         System.out.println(_p(nums));
     }
@@ -50,7 +49,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

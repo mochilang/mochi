@@ -6,7 +6,7 @@ public class Main {
         }
         long total_1 = 0L;
         long divisor_1 = 1L;
-        while ((long)(divisor_1) <= (long)((long)(n) / 2L)) {
+        while ((long)(divisor_1) <= Math.floorDiv(((long)(n)), ((long)(2)))) {
             if (Math.floorMod(n, divisor_1) == 0L) {
                 total_1 = (long)((long)(total_1) + (long)(divisor_1));
             }
@@ -15,45 +15,11 @@ public class Main {
         return total_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(aliquot_sum(15L)));
-            System.out.println(_p(aliquot_sum(6L)));
-            System.out.println(_p(aliquot_sum(12L)));
-            System.out.println(_p(aliquot_sum(1L)));
-            System.out.println(_p(aliquot_sum(19L)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(aliquot_sum(15L)));
+        System.out.println(_p(aliquot_sum(6L)));
+        System.out.println(_p(aliquot_sum(12L)));
+        System.out.println(_p(aliquot_sum(1L)));
+        System.out.println(_p(aliquot_sum(19L)));
     }
 
     static String _p(Object v) {

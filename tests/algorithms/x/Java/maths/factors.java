@@ -2,31 +2,31 @@ public class Main {
 
     static long[] reverse(long[] xs) {
         long[] res = ((long[])(new long[]{}));
-        long i_1 = xs.length - 1;
-        while (i_1 >= 0) {
-            res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of(xs[(int)(i_1)])).toArray()));
-            i_1 = i_1 - 1;
+        long i_1 = (long)((long)(xs.length) - 1L);
+        while ((long)(i_1) >= 0L) {
+            res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(xs[(int)((long)(i_1))]))).toArray()));
+            i_1 = (long)((long)(i_1) - 1L);
         }
         return res;
     }
 
     static long[] factors_of_a_number(long num) {
         long[] facs = ((long[])(new long[]{}));
-        if (num < 1) {
+        if ((long)(num) < 1L) {
             return facs;
         }
         long[] small_1 = ((long[])(new long[]{}));
         long[] large_1 = ((long[])(new long[]{}));
         long i_3 = 1L;
-        while (i_3 * i_3 <= num) {
-            if (Math.floorMod(num, i_3) == 0) {
-                small_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(small_1), java.util.stream.LongStream.of(i_3)).toArray()));
-                Object d_1 = Math.floorDiv(num, i_3);
-                if (((Number)(d_1)).intValue() != i_3) {
+        while ((long)((long)(i_3) * (long)(i_3)) <= (long)(num)) {
+            if (Math.floorMod(num, i_3) == 0L) {
+                small_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(small_1), java.util.stream.LongStream.of((long)(i_3))).toArray()));
+                Object d_1 = Math.floorDiv(((long)(num)), ((long)(i_3)));
+                if (((Number)(d_1)).intValue() != (long)(i_3)) {
                     large_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(large_1), java.util.stream.LongStream.of(((Number)(d_1)).longValue())).toArray()));
                 }
             }
-            i_3 = i_3 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         facs = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(small_1), java.util.Arrays.stream(reverse(((long[])(large_1))))).toArray()));
         return facs;
@@ -42,7 +42,7 @@ public class Main {
         if (!java.util.Arrays.equals(factors_of_a_number(24L), new long[]{1, 2, 3, 4, 6, 8, 12, 24})) {
             throw new RuntimeException(String.valueOf("case3 failed"));
         }
-        if (!java.util.Arrays.equals(factors_of_a_number(-24), new long[]{})) {
+        if (!java.util.Arrays.equals(factors_of_a_number((long)(-24)), new long[]{})) {
             throw new RuntimeException(String.valueOf("case4 failed"));
         }
     }
@@ -52,41 +52,7 @@ public class Main {
         System.out.println(_p(factors_of_a_number(24L)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -104,7 +70,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);
