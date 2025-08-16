@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
 Completed programs: 926/1077
-Last updated: 2025-08-15 15:17 +0700
+Last updated: 2025-08-16 11:48 +0700
 
 Checklist:
 
@@ -502,7 +502,7 @@ Checklist:
 | 493 | linear_algebra/src/schur_complement | ✓ | 10µs | 8.8 MB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 11µs | 8.8 MB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 9µs | 8.8 MB |
-| 496 | linear_programming/simplex | ✓ | 3µs | 8.7 MB |
+| 496 | linear_programming/simplex | ✓ | 183.317ms | 8.7 MB |
 | 497 | machine_learning/apriori_algorithm | error |  |  |
 | 498 | machine_learning/astar | ✓ | 3µs | 8.7 MB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 6µs | 8.7 MB |
