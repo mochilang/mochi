@@ -2957,14 +2957,8 @@ func (c *CastExpr) emit(w io.Writer) {
 				l.ElemType = c.Type[2:]
 			}
 			io.WriteString(w, "@constCast(")
-			if len(l.Elems) == 0 {
-				l.emit(w)
-			} else {
-				io.WriteString(w, "&(")
-				l.emit(w)
-				io.WriteString(w, ")")
-			}
-			io.WriteString(w, ")[0..]")
+			l.emit(w)
+			io.WriteString(w, ")")
 			return
 		}
 	}
