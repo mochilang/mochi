@@ -3116,6 +3116,20 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	if b.Op == "%" {
+		if um, ok := b.Right.(*UnaryMinus); ok {
+			if lit, ok := um.Expr.(*IntLit); ok {
+				io.WriteString(w, "((")
+				b.Left.emit(w)
+				io.WriteString(w, " mod ")
+				lit.emit(w)
+				io.WriteString(w, " + ")
+				lit.emit(w)
+				io.WriteString(w, ") mod ")
+				lit.emit(w)
+				io.WriteString(w, ")")
+				return
+			}
+		}
 		io.WriteString(w, "((")
 		b.Left.emit(w)
 		io.WriteString(w, " mod ")
