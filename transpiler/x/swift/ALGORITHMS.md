@@ -2,12 +2,12 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 935/1077
-Last updated: 2025-08-15 15:17 +0700
+Completed programs: 936/1077
+Last updated: 2025-08-16 11:48 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 2.345ms | 3.7 MB |
+| 1 | backtracking/all_combinations | ✓ | 1.868ms | 4.0 MB |
 | 2 | backtracking/all_permutations | ✓ | 1.383ms | 3.5 MB |
 | 3 | backtracking/all_subsequences | ✓ | 914µs | 3.4 MB |
 | 4 | backtracking/coloring | ✓ | 540µs | 3.3 MB |
@@ -502,56 +502,56 @@ Last updated: 2025-08-15 15:17 +0700
 | 493 | linear_algebra/src/schur_complement | ✓ | 757µs | 3.2 MB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 1.09ms | 3.4 MB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 779µs | 3.4 MB |
-| 496 | linear_programming/simplex | ✓ | 730µs | 3.3 MB |
-| 497 | machine_learning/apriori_algorithm | ✓ | 1.367ms | 3.2 MB |
-| 498 | machine_learning/astar | ✓ | 1.924ms | 3.6 MB |
-| 499 | machine_learning/automatic_differentiation | ✓ | 377µs | 3.2 MB |
-| 500 | machine_learning/data_transformations | ✓ | 1.088ms | 3.5 MB |
-| 501 | machine_learning/decision_tree | ✓ | 211.727ms | 3.7 MB |
-| 502 | machine_learning/dimensionality_reduction | ✓ | 230µs | 3.2 MB |
-| 503 | machine_learning/forecasting/run | ✓ | 840µs | 3.3 MB |
+| 496 | linear_programming/simplex | ✓ | 736µs | 3.3 MB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 707µs | 3.2 MB |
+| 498 | machine_learning/astar | ✓ | 1.689ms | 3.4 MB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 505µs | 3.6 MB |
+| 500 | machine_learning/data_transformations | ✓ | 1.251ms | 3.7 MB |
+| 501 | machine_learning/decision_tree | ✓ | 210.676ms | 3.8 MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 198µs | 2.9 MB |
+| 503 | machine_learning/forecasting/run | ✓ | 861µs | 3.2 MB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 543µs | 3.0 MB |
-| 506 | machine_learning/gradient_descent | ✓ | 291.998ms | 3.4 MB |
-| 507 | machine_learning/k_means_clust | ✓ | 1.681ms | 3.6 MB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 488µs | 3.2 MB |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.379ms | 3.3 MB |
-| 510 | machine_learning/linear_regression | ✓ | 736µs | 3.4 MB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 1.681ms | 3.8 MB |
-| 512 | machine_learning/logistic_regression | ✓ | 40.335ms | 3.3 MB |
-| 513 | machine_learning/loss_functions | ✓ | 652µs | 3.5 MB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 51.318ms | 3.3 MB |
-| 515 | machine_learning/mfcc | ✓ | 1.454ms | 3.2 MB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 155.891ms | 3.3 MB |
-| 517 | machine_learning/polynomial_regression | ✓ | 1.007ms | 3.6 MB |
-| 518 | machine_learning/principle_component_analysis | ✓ | 1.021ms | 3.4 MB |
-| 519 | machine_learning/scoring_functions | ✓ | 405µs | 3.4 MB |
-| 520 | machine_learning/self_organizing_map | ✓ | 569µs | 3.4 MB |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 890µs | 3.4 MB |
-| 522 | machine_learning/similarity_search | ✓ | 943µs | 3.7 MB |
-| 523 | machine_learning/support_vector_machines | ✓ | 15.883ms | 3.2 MB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 11.812ms | 3.8 MB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 945µs | 3.1 MB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 654µs | 3.1 MB |
-| 527 | maths/abs | ✓ | 331µs | 3.2 MB |
-| 528 | maths/addition_without_arithmetic | ✓ | 686µs | 3.2 MB |
-| 529 | maths/aliquot_sum | ✓ | 374µs | 3.2 MB |
-| 530 | maths/allocation_number | ✓ | 974µs | 3.6 MB |
-| 531 | maths/arc_length | ✓ | 362µs | 3.2 MB |
-| 532 | maths/area | ✓ | 550µs | 3.4 MB |
-| 533 | maths/area_under_curve | ✓ | 19.067ms | 3.2 MB |
-| 534 | maths/average_absolute_deviation | ✓ | 833µs | 3.4 MB |
-| 535 | maths/average_mean | ✓ | 528µs | 3.3 MB |
-| 536 | maths/average_median | ✓ | 414µs | 3.2 MB |
-| 537 | maths/average_mode | ✓ | 964µs | 3.6 MB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 26.928034s | 3.3 MB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 579µs | 3.2 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 313.964ms | 3.3 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 1.802ms | 4.0 MB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 615µs | 3.3 MB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.641ms | 3.0 MB |
+| 510 | machine_learning/linear_regression | ✓ | 655µs | 3.3 MB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 2.778ms | 3.5 MB |
+| 512 | machine_learning/logistic_regression | ✓ | 40.485ms | 3.4 MB |
+| 513 | machine_learning/loss_functions | ✓ | 715µs | 3.1 MB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 49.584ms | 3.2 MB |
+| 515 | machine_learning/mfcc | ✓ | 1.542ms | 3.1 MB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 141.1ms | 3.6 MB |
+| 517 | machine_learning/polynomial_regression | ✓ | 1.306ms | 3.7 MB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 803µs | 3.4 MB |
+| 519 | machine_learning/scoring_functions | ✓ | 577µs | 3.3 MB |
+| 520 | machine_learning/self_organizing_map | ✓ | 2.919ms | 3.4 MB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 1.144ms | 3.4 MB |
+| 522 | machine_learning/similarity_search | ✓ | 1.129ms | 3.6 MB |
+| 523 | machine_learning/support_vector_machines | ✓ | 14.935ms | 3.2 MB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 12.651ms | 3.6 MB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 933µs | 3.3 MB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 627µs | 3.3 MB |
+| 527 | maths/abs | ✓ | 476µs | 3.5 MB |
+| 528 | maths/addition_without_arithmetic | ✓ | 805µs | 3.2 MB |
+| 529 | maths/aliquot_sum | ✓ | 416µs | 3.1 MB |
+| 530 | maths/allocation_number | ✓ | 916µs | 3.6 MB |
+| 531 | maths/arc_length | ✓ | 370µs | 3.3 MB |
+| 532 | maths/area | ✓ | 453µs | 3.3 MB |
+| 533 | maths/area_under_curve | ✓ | 16.931ms | 3.4 MB |
+| 534 | maths/average_absolute_deviation | ✓ | 508µs | 3.5 MB |
+| 535 | maths/average_mean | ✓ | 610µs | 3.4 MB |
+| 536 | maths/average_median | ✓ | 460µs | 3.4 MB |
+| 537 | maths/average_mode | ✓ | 1.374ms | 3.5 MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 22.059534s | 2.9 MB |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths | ✓ | 1.348ms | 3.5 MB |
-| 541 | maths/binary_exponentiation | ✓ | 986µs | 3.4 MB |
-| 542 | maths/binary_multiplication | ✓ | 476µs | 3.2 MB |
+| 540 | maths/basic_maths | ✓ | 953µs | 3.4 MB |
+| 541 | maths/binary_exponentiation | ✓ | 613µs | 3.6 MB |
+| 542 | maths/binary_multiplication | ✓ | 430µs | 3.2 MB |
 | 543 | maths/binomial_coefficient | ✓ | 700µs | 2.9 MB |
 | 544 | maths/binomial_distribution | ✓ | 163µs | 3.2 MB |
-| 545 | maths/ceil | ✓ | 648µs | 3.3 MB |
+| 545 | maths/ceil | ✓ | 477µs | 3.3 MB |
 | 546 | maths/chebyshev_distance | ✓ | 472µs | 3.4 MB |
 | 547 | maths/check_polygon | ✓ | 1.304ms | 3.6 MB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 690µs | 3.2 MB |
@@ -1046,7 +1046,7 @@ Last updated: 2025-08-15 15:17 +0700
 | 1037 | strings/top_k_frequent_words | ✓ | 2.116ms | 3.7 MB |
 | 1038 | strings/upper | ✓ | 288µs | 3.2 MB |
 | 1039 | strings/wave_string | ✓ | 1.613ms | 3.5 MB |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 1.163ms | 3.4 MB |
 | 1041 | strings/word_occurrence |   |  |  |
 | 1042 | strings/word_patterns |   |  |  |
 | 1043 | strings/z_function |   |  |  |
