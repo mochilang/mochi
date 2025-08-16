@@ -143,7 +143,7 @@ func uniqueWhileName() string {
 // counter that is typically not used after the loop ends.
 func isLoopCounter(name string) bool {
 	switch name {
-	case "i", "j", "k":
+	case "i", "j", "k", "l":
 		return true
 	default:
 		return false
