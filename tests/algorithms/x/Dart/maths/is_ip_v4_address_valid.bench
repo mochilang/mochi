@@ -1,1 +1,7 @@
-{"duration_us":9419,"memory_bytes":3145728,"name":"main"}
+../../../tests/algorithms/x/Dart/maths/is_ip_v4_address_valid.dart:82:28: Error: The method 'toInt' isn't defined for the type 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'toInt'.
+    value = value * 10 + c.toInt();
+                           ^^^^^
+../../../tests/algorithms/x/Dart/maths/is_ip_v4_address_valid.dart:82:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    value = value * 10 + c.toInt();
+                       ^
