@@ -1207,7 +1207,7 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "_idx(")
 		if be, ok := ie.Base.(*IndexExpr); ok {
 			be.emit(w)
-			if !be.Force {
+			if (be.Map || be.KeyString || be.KeyAny) && !be.Force {
 				fmt.Fprint(w, "!")
 			}
 		} else {
@@ -1586,6 +1586,16 @@ func (c *CallExpr) emit(w io.Writer) {
 		e.emit(w)
 	}
 
+	var simple func(Expr) bool
+	simple = func(e Expr) bool {
+		switch e.(type) {
+		case *NameExpr, *LitExpr:
+			return true
+		default:
+			return false
+		}
+	}
+
 	switch c.Func {
 	case "len":
 		if len(c.Args) == 1 {
@@ -1706,6 +1716,25 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[1].emit(w)
 			fmt.Fprint(w, ")")
 			usesAppend = true
+			return
+		}
+	case "_set":
+		if len(c.Args) == 3 {
+			fmt.Fprint(w, "_set(")
+			emitNoCast(c.Args[0])
+			fmt.Fprint(w, ", ")
+			c.Args[1].emit(w)
+			fmt.Fprint(w, ", ")
+			if simple(c.Args[2]) {
+				c.Args[2].emit(w)
+			} else {
+				tmp := fmt.Sprintf("_tmp%d", tmpVarCounter)
+				tmpVarCounter++
+				fmt.Fprintf(w, "{ let %s = ", tmp)
+				c.Args[2].emit(w)
+				fmt.Fprintf(w, "; return %s }()", tmp)
+			}
+			fmt.Fprint(w, ")")
 			return
 		}
 	case "avg":
@@ -4577,7 +4606,6 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				} else if l, ok := baseType.(types.ListType); ok {
 					baseType = l.Elem
 					if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
-						force = true
 						if _, ok2 := baseType.(types.ListType); ok2 {
 							skipUpdate = true
 						} else if _, ok2 := baseType.(types.MapType); ok2 {

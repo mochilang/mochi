@@ -1,0 +1,144 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:127:37: warning: forced cast of '[Double]' to same type has no effect
+125 |         i = 0
+126 |         while (i < n) {
+127 |             var _tmp3 = (_idx(q, i) as! [Double])
+    |                                     `- warning: forced cast of '[Double]' to same type has no effect
+128 |             _tmp3 = _set(_tmp3, 1, { let _tmp4 = Double(_idx(y_points, i)); return _tmp4 }())
+129 |             q = _set(q, i, { let _tmp5 = (_tmp3 as! [Double]); return _tmp5 }())
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:129:49: warning: forced cast of '[Double]' to same type has no effect
+127 |             var _tmp3 = (_idx(q, i) as! [Double])
+128 |             _tmp3 = _set(_tmp3, 1, { let _tmp4 = Double(_idx(y_points, i)); return _tmp4 }())
+129 |             q = _set(q, i, { let _tmp5 = (_tmp3 as! [Double]); return _tmp5 }())
+    |                                                 `- warning: forced cast of '[Double]' to same type has no effect
+130 |             i = _int((i &+ 1))
+131 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:136:47: warning: forced cast of '[Double]' to same type has no effect
+134 |             var row_idx = col
+135 |             while (row_idx < n) {
+136 |                 var _tmp4 = (_idx(q, row_idx) as! [Double])
+    |                                               `- warning: forced cast of '[Double]' to same type has no effect
+137 |                 _tmp4 = _set(_tmp4, col, { let _tmp6 = Double((Double(((Double((x0 - Double(_idx(x_points, ((row_idx &- col) &+ 1))))) * Double(_idx(_idx(q, row_idx), (col &- 1)))) - (Double((x0 - Double(_idx(x_points, row_idx)))) * Double(_idx(_idx(q, (row_idx &- 1)), (col &- 1)))))) / Double((Double(_idx(x_points, row_idx)) - Double(_idx(x_points, ((row_idx &- col) &+ 1))))))); return _tmp6 }())
+138 |                 q = _set(q, row_idx, { let _tmp7 = (_tmp4 as! [Double]); return _tmp7 }())
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:137:17: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+135 |             while (row_idx < n) {
+136 |                 var _tmp4 = (_idx(q, row_idx) as! [Double])
+137 |                 _tmp4 = _set(_tmp4, col, { let _tmp6 = Double((Double(((Double((x0 - Double(_idx(x_points, ((row_idx &- col) &+ 1))))) * Double(_idx(_idx(q, row_idx), (col &- 1)))) - (Double((x0 - Double(_idx(x_points, row_idx)))) * Double(_idx(_idx(q, (row_idx &- 1)), (col &- 1)))))) / Double((Double(_idx(x_points, row_idx)) - Double(_idx(x_points, ((row_idx &- col) &+ 1))))))); return _tmp6 }())
+    |                 `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+138 |                 q = _set(q, row_idx, { let _tmp7 = (_tmp4 as! [Double]); return _tmp7 }())
+139 |                 row_idx = _int((row_idx &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:138:59: warning: forced cast of '[Double]' to same type has no effect
+136 |                 var _tmp4 = (_idx(q, row_idx) as! [Double])
+137 |                 _tmp4 = _set(_tmp4, col, { let _tmp6 = Double((Double(((Double((x0 - Double(_idx(x_points, ((row_idx &- col) &+ 1))))) * Double(_idx(_idx(q, row_idx), (col &- 1)))) - (Double((x0 - Double(_idx(x_points, row_idx)))) * Double(_idx(_idx(q, (row_idx &- 1)), (col &- 1)))))) / Double((Double(_idx(x_points, row_idx)) - Double(_idx(x_points, ((row_idx &- col) &+ 1))))))); return _tmp6 }())
+138 |                 q = _set(q, row_idx, { let _tmp7 = (_tmp4 as! [Double]); return _tmp7 }())
+    |                                                           `- warning: forced cast of '[Double]' to same type has no effect
+139 |                 row_idx = _int((row_idx &+ 1))
+140 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:143:90: warning: forced cast of '[[Double]]' to same type has no effect
+141 |             col = _int((col &+ 1))
+142 |         }
+143 |         return NevilleResult(value: Double(_idx(_idx(q, (n &- 1)), (n &- 1))), table: (q as! [[Double]]))
+    |                                                                                          `- warning: forced cast of '[[Double]]' to same type has no effect
+144 |     }
+145 |     func test_neville() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:154:13: warning: forced cast of '[Double]' to same type has no effect
+152 |             _arr = _append(_arr, 6.0)
+153 |             return _arr
+154 |         }() as! [Double])
+    |             `- warning: forced cast of '[Double]' to same type has no effect
+155 |         let ys: [Double] = ({
+156 |             var _arr: [Double] = []
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:163:13: warning: forced cast of '[Double]' to same type has no effect
+161 |             _arr = _append(_arr, 11.0)
+162 |             return _arr
+163 |         }() as! [Double])
+    |             `- warning: forced cast of '[Double]' to same type has no effect
+164 |         let r1 = neville_interpolate((xs as! [Double]), (ys as! [Double]), 5.0)
+165 |         if (r1.value != 10.0) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:164:42: warning: forced cast of '[Double]' to same type has no effect
+162 |             return _arr
+163 |         }() as! [Double])
+164 |         let r1 = neville_interpolate((xs as! [Double]), (ys as! [Double]), 5.0)
+    |                                          `- warning: forced cast of '[Double]' to same type has no effect
+165 |         if (r1.value != 10.0) {
+166 |             _ = fatalError("neville_interpolate at 5 failed")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:164:61: warning: forced cast of '[Double]' to same type has no effect
+162 |             return _arr
+163 |         }() as! [Double])
+164 |         let r1 = neville_interpolate((xs as! [Double]), (ys as! [Double]), 5.0)
+    |                                                             `- warning: forced cast of '[Double]' to same type has no effect
+165 |         if (r1.value != 10.0) {
+166 |             _ = fatalError("neville_interpolate at 5 failed")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:168:42: warning: forced cast of '[Double]' to same type has no effect
+166 |             _ = fatalError("neville_interpolate at 5 failed")
+167 |         }
+168 |         let r2 = neville_interpolate((xs as! [Double]), (ys as! [Double]), 99.0)
+    |                                          `- warning: forced cast of '[Double]' to same type has no effect
+169 |         if (r2.value != 104.0) {
+170 |             _ = fatalError("neville_interpolate at 99 failed")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:168:61: warning: forced cast of '[Double]' to same type has no effect
+166 |             _ = fatalError("neville_interpolate at 5 failed")
+167 |         }
+168 |         let r2 = neville_interpolate((xs as! [Double]), (ys as! [Double]), 99.0)
+    |                                                             `- warning: forced cast of '[Double]' to same type has no effect
+169 |         if (r2.value != 104.0) {
+170 |             _ = fatalError("neville_interpolate at 99 failed")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:174:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+172 |     }
+173 |     func main() {
+174 |         _ = test_neville()
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+175 |         let xs: [Double] = ({
+176 |             var _arr: [Double] = []
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:183:13: warning: forced cast of '[Double]' to same type has no effect
+181 |             _arr = _append(_arr, 6.0)
+182 |             return _arr
+183 |         }() as! [Double])
+    |             `- warning: forced cast of '[Double]' to same type has no effect
+184 |         let ys: [Double] = ({
+185 |             var _arr: [Double] = []
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:192:13: warning: forced cast of '[Double]' to same type has no effect
+190 |             _arr = _append(_arr, 11.0)
+191 |             return _arr
+192 |         }() as! [Double])
+    |             `- warning: forced cast of '[Double]' to same type has no effect
+193 |         let r = neville_interpolate((xs as! [Double]), (ys as! [Double]), 5.0)
+194 |         print(_p(r.value))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:193:41: warning: forced cast of '[Double]' to same type has no effect
+191 |             return _arr
+192 |         }() as! [Double])
+193 |         let r = neville_interpolate((xs as! [Double]), (ys as! [Double]), 5.0)
+    |                                         `- warning: forced cast of '[Double]' to same type has no effect
+194 |         print(_p(r.value))
+195 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:193:60: warning: forced cast of '[Double]' to same type has no effect
+191 |             return _arr
+192 |         }() as! [Double])
+193 |         let r = neville_interpolate((xs as! [Double]), (ys as! [Double]), 5.0)
+    |                                                            `- warning: forced cast of '[Double]' to same type has no effect
+194 |         print(_p(r.value))
+195 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden611_maths_numerical_analysis_nevilles_method2046188871/001/main.swift:196:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+194 |         print(_p(r.value))
+195 |     }
+196 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+197 |     let _benchEnd = _now()
+198 |     let _benchMemEnd = _mem()
