@@ -2,6 +2,12 @@ import java.math.BigInteger
 
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -82,7 +88,7 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println((("The first " + n.toString()) + " digits of pi is: ") + pi(n).toString())
+        println((("The first " + _numToStr(n)) + " digits of pi is: ") + _numToStr(pi(n)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

@@ -1,5 +1,11 @@
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -46,11 +52,11 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(aliquot_sum(15).toString())
-        println(aliquot_sum(6).toString())
-        println(aliquot_sum(12).toString())
-        println(aliquot_sum(1).toString())
-        println(aliquot_sum(19).toString())
+        println(_numToStr(aliquot_sum(15)))
+        println(_numToStr(aliquot_sum(6)))
+        println(_numToStr(aliquot_sum(12)))
+        println(_numToStr(aliquot_sum(1)))
+        println(_numToStr(aliquot_sum(19)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

@@ -1,5 +1,11 @@
 import java.math.BigInteger
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -68,15 +74,15 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println((e1.x.toString() + ",") + e1.y.toString())
+        println((_numToStr(e1.x) + ",") + _numToStr(e1.y))
         var e2: EuclidResult = extended_euclid(7, 5)
-        println((e2.x.toString() + ",") + e2.y.toString())
-        println(chinese_remainder_theorem(5, 1, 7, 3).toString())
-        println(chinese_remainder_theorem(6, 1, 4, 3).toString())
-        println(invert_modulo(2, 5).toString())
-        println(invert_modulo(8, 7).toString())
-        println(chinese_remainder_theorem2(5, 1, 7, 3).toString())
-        println(chinese_remainder_theorem2(6, 1, 4, 3).toString())
+        println((_numToStr(e2.x) + ",") + _numToStr(e2.y))
+        println(_numToStr(chinese_remainder_theorem(5, 1, 7, 3)))
+        println(_numToStr(chinese_remainder_theorem(6, 1, 4, 3)))
+        println(_numToStr(invert_modulo(2, 5)))
+        println(_numToStr(invert_modulo(8, 7)))
+        println(_numToStr(chinese_remainder_theorem2(5, 1, 7, 3)))
+        println(_numToStr(chinese_remainder_theorem2(6, 1, 4, 3)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

@@ -77,12 +77,12 @@ fun binomial_distribution(successes: Int, trials: Int, prob: Double): Double {
 
 fun test_example1(): Unit {
     var result: Double = binomial_distribution(3, 5, 0.7)
-    expect(kotlin.math.abs(result - 0.3087) < 0.0000001)
+    expect(abs(result - 0.3087) < 0.0000001)
 }
 
 fun test_example2(): Unit {
     var result: Double = binomial_distribution(2, 4, 0.5)
-    expect(kotlin.math.abs(result - 0.375) < 0.0000001)
+    expect(abs(result - 0.375) < 0.0000001)
 }
 
 fun main() {

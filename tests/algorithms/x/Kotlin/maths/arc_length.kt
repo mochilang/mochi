@@ -1,3 +1,9 @@
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -34,9 +40,9 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(arc_length(45.0, 5.0).toString())
-        println(arc_length(120.0, 15.0).toString())
-        println(arc_length(90.0, 10.0).toString())
+        println(_numToStr(arc_length(45.0, 5.0)))
+        println(_numToStr(arc_length(120.0, 15.0)))
+        println(_numToStr(arc_length(90.0, 10.0)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

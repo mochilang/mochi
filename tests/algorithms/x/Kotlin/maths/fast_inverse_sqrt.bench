@@ -18,4 +18,4 @@
 90: 1.0248089398787186E-4
 95: 1.3665874163094893E-4
 100: 1.5511740679860497E-4
-{"duration_us":7410, "memory_bytes":127008, "name":"main"}
+{"duration_us":15527, "memory_bytes":123336, "name":"main"}

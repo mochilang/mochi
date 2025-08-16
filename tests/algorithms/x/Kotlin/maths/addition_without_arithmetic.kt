@@ -1,5 +1,11 @@
 import java.math.BigInteger
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -101,11 +107,11 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(add(3, 5).toString())
-        println(add(13, 5).toString())
-        println(add(0 - 7, 2).toString())
-        println(add(0, 0 - 7).toString())
-        println(add(0 - 321, 0).toString())
+        println(_numToStr(add(3, 5)))
+        println(_numToStr(add(13, 5)))
+        println(_numToStr(add(0 - 7, 2)))
+        println(_numToStr(add(0, 0 - 7)))
+        println(_numToStr(add(0 - 321, 0)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

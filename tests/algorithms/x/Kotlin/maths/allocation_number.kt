@@ -2,6 +2,12 @@ import java.math.BigInteger
 
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -41,7 +47,7 @@ fun allocation_num(number_of_bytes: Int, partitions: Int): MutableList<String> {
     while (i < partitions) {
         var start_bytes: Int = ((i * bytes_per_partition) + 1).toInt()
         var end_bytes: Int = (if (i == (partitions - 1)) number_of_bytes else (i + 1) * bytes_per_partition).toInt()
-        allocation_list = run { val _tmp = allocation_list.toMutableList(); _tmp.add((start_bytes.toString() + "-") + end_bytes.toString()); _tmp }
+        allocation_list = run { val _tmp = allocation_list.toMutableList(); _tmp.add((_numToStr(start_bytes) + "-") + _numToStr(end_bytes)); _tmp }
         i = i + 1
     }
     return allocation_list

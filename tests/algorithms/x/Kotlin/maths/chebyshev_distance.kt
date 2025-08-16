@@ -41,7 +41,7 @@ fun chebyshev_distance(point_a: MutableList<Double>, point_b: MutableList<Double
     var max_diff: Double = 0.0
     var i: Int = (0).toInt()
     while (i < point_a.size) {
-        var diff: Double = kotlin.math.abs(point_a[i]!! - point_b[i]!!)
+        var diff: Double = abs(point_a[i]!! - point_b[i]!!)
         if (diff > max_diff) {
             max_diff = diff
         }
