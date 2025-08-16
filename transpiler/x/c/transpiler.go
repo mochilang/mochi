@@ -217,12 +217,14 @@ func emitLenExpr(w io.Writer, e Expr) {
 				io.WriteString(w, ")")
 			} else if strings.HasPrefix(t, "Map") || mapKeyTypes[vr.Name] != "" {
 				io.WriteString(w, mapField(vr.Name, "lens")+"[")
+				io.WriteString(w, "(int)(")
 				v.Index.emitExpr(w)
-				io.WriteString(w, "]")
+				io.WriteString(w, ")]")
 			} else {
 				io.WriteString(w, vr.Name+"_lens[")
+				io.WriteString(w, "(int)(")
 				v.Index.emitExpr(w)
-				io.WriteString(w, "]")
+				io.WriteString(w, ")]")
 			}
 		} else if fe, ok := v.Target.(*FieldExpr); ok {
 			t := inferExprType(currentEnv, fe)
@@ -7180,6 +7182,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %d, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
 			} else if valT == "int" && keyT == "int" {
 				fmt.Fprintf(&buf, "MapII %s = { %s_keys, %s_vals, %d, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
+			} else if valT == "double" && keyT == "const char*" {
+				fmt.Fprintf(&buf, "MapSD %s = { %s_keys, %s_vals, %d, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
+				needMapGetSD = true
 			}
 			return &RawStmt{Code: buf.String()}, nil
 		}
@@ -7411,6 +7416,19 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
 				emitMapStringValue(&buf, valExpr)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			}
+			if keyT == "const char*" && valT == "double" {
+				needMapSetSD = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_sd(")
+				buf.WriteString(mapField(s.Assign.Name, "keys") + ", ")
+				buf.WriteString(mapField(s.Assign.Name, "vals") + ", &")
+				buf.WriteString(mapField(s.Assign.Name, "len") + ", ")
+				idxs[0].emitExpr(&buf)
+				buf.WriteString(", ")
+				valExpr.emitExpr(&buf)
 				buf.WriteString(");\n")
 				return &RawStmt{Code: buf.String()}, nil
 			}
