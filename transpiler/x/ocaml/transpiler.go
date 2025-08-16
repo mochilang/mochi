@@ -448,6 +448,11 @@ func splitTopLevel(s string, sep rune) []string {
 }
 
 func mapFieldType(typ, field string) (string, bool) {
+	if fields, ok := structFields[typ]; ok {
+		if ft, ok := fields[field]; ok {
+			return ft, true
+		}
+	}
 	if (strings.HasPrefix(typ, "map{") || strings.HasPrefix(typ, "map-dyn{")) && strings.HasSuffix(typ, "}") {
 		inner := strings.TrimSuffix(typ, "}")
 		if strings.HasPrefix(inner, "map-dyn{") {
@@ -2325,22 +2330,22 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 
 func (mu *MapUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
-       io.WriteString(w, "(")
-       io.WriteString(w, "__str (")
-       mu.Key.emit(w)
-       io.WriteString(w, "), ")
-       if mu.Dyn {
-               io.WriteString(w, "Obj.repr (Obj.magic (")
-               mu.Value.emit(w)
-               io.WriteString(w, ") : ")
-               io.WriteString(w, ocamlType(mu.Typ))
-               io.WriteString(w, ")")
-       } else {
-               mu.Value.emit(w)
-       }
-       io.WriteString(w, ") :: List.remove_assoc (__str (")
-       mu.Key.emit(w)
-       io.WriteString(w, ")) ")
+	io.WriteString(w, "(")
+	io.WriteString(w, "__str (")
+	mu.Key.emit(w)
+	io.WriteString(w, "), ")
+	if mu.Dyn {
+		io.WriteString(w, "Obj.repr (Obj.magic (")
+		mu.Value.emit(w)
+		io.WriteString(w, ") : ")
+		io.WriteString(w, ocamlType(mu.Typ))
+		io.WriteString(w, ")")
+	} else {
+		mu.Value.emit(w)
+	}
+	io.WriteString(w, ") :: List.remove_assoc (__str (")
+	mu.Key.emit(w)
+	io.WriteString(w, ")) ")
 	if mu.Dyn {
 		if mi, ok := mu.Map.(*MapIndexExpr); ok && mi.Dyn {
 			// Map expression already yields a properly typed list.
@@ -2369,15 +2374,17 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		io.WriteString(w, " in let __len = String.length __s in String.make 1 (String.get __s (if __i >= 0 then __i else __len + __i)))")
 	default:
-               if strings.HasPrefix(ix.ColTyp, "list") {
-                       def := zeroValue(ix.Typ)
-                       if def == "0" {
-                               if ix.Typ == "" {
-                                       def = "([] : (string * Obj.t) list)"
-                               } else if ix.Typ != "int" && ix.Typ != "float" && ix.Typ != "string" && ix.Typ != "bool" {
-                                       def = "Obj.repr []"
-                               }
-                       }
+		if strings.HasPrefix(ix.ColTyp, "list") {
+			def := zeroValue(ix.Typ)
+			if def == "0" {
+				if ix.Typ == "" {
+					def = "([] : (string * Obj.t) list)"
+				} else if ix.Typ != "int" && ix.Typ != "float" && ix.Typ != "string" && ix.Typ != "bool" {
+					// For complex types like structs, return an empty association list so the
+					// default value matches the expected type instead of Obj.t.
+					def = "([] : (string * Obj.t) list)"
+				}
+			}
 			io.WriteString(w, "(let __l = ")
 			ix.Col.emit(w)
 			io.WriteString(w, " in let __i = ")
@@ -2595,23 +2602,23 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Expr.emit(w)
 		io.WriteString(w, ")))")
 	case "obj_to_int":
-		io.WriteString(w, "(Obj.magic ")
+		io.WriteString(w, "(Obj.magic (")
 		c.Expr.emit(w)
-		io.WriteString(w, " : int)")
+		io.WriteString(w, ") : int)")
 	case "obj_to_float":
-		io.WriteString(w, "(Obj.magic ")
+		io.WriteString(w, "(Obj.magic (")
 		c.Expr.emit(w)
-		io.WriteString(w, " : float)")
+		io.WriteString(w, ") : float)")
 	case "obj_to_string":
-		io.WriteString(w, "(Obj.magic ")
+		io.WriteString(w, "(Obj.magic (")
 		c.Expr.emit(w)
-		io.WriteString(w, " : string)")
+		io.WriteString(w, ") : string)")
 	default:
 		if strings.HasPrefix(c.Type, "obj_to_") {
 			typ := strings.TrimPrefix(c.Type, "obj_to_")
-			io.WriteString(w, "(Obj.magic ")
+			io.WriteString(w, "(Obj.magic (")
 			c.Expr.emit(w)
-			io.WriteString(w, " : ")
+			io.WriteString(w, ") : ")
 			io.WriteString(w, ocamlType(typ))
 			io.WriteString(w, ")")
 		} else {
