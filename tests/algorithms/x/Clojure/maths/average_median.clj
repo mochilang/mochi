@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare bubble_sort median)
@@ -43,7 +46,7 @@
   (binding [bubble_sort_a nil bubble_sort_arr nil bubble_sort_b nil bubble_sort_i nil bubble_sort_j nil bubble_sort_n nil] (try (do (set! bubble_sort_arr bubble_sort_nums) (set! bubble_sort_n (count bubble_sort_arr)) (set! bubble_sort_i 0) (while (< bubble_sort_i bubble_sort_n) (do (set! bubble_sort_j 0) (while (< bubble_sort_j (- bubble_sort_n 1)) (do (set! bubble_sort_a (nth bubble_sort_arr bubble_sort_j)) (set! bubble_sort_b (nth bubble_sort_arr (+ bubble_sort_j 1))) (when (> bubble_sort_a bubble_sort_b) (do (set! bubble_sort_arr (assoc bubble_sort_arr bubble_sort_j bubble_sort_b)) (set! bubble_sort_arr (assoc bubble_sort_arr (+ bubble_sort_j 1) bubble_sort_a)))) (set! bubble_sort_j (+ bubble_sort_j 1)))) (set! bubble_sort_i (+ bubble_sort_i 1)))) (throw (ex-info "return" {:v bubble_sort_arr}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn median [median_nums]
-  (binding [median_length nil median_mid_index nil median_sorted_list nil] (try (do (set! median_sorted_list (bubble_sort median_nums)) (set! median_length (count median_sorted_list)) (set! median_mid_index (quot median_length 2)) (if (= (mod median_length 2) 0) (throw (ex-info "return" {:v (/ (double (+ (nth median_sorted_list median_mid_index) (nth median_sorted_list (- median_mid_index 1)))) 2.0)})) (throw (ex-info "return" {:v (double (nth median_sorted_list median_mid_index))})))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [median_length nil median_mid_index nil median_sorted_list nil] (try (do (set! median_sorted_list (bubble_sort median_nums)) (set! median_length (count median_sorted_list)) (set! median_mid_index (/ median_length 2)) (if (= (mod median_length 2) 0) (throw (ex-info "return" {:v (/ (double (+ (nth median_sorted_list median_mid_index) (nth median_sorted_list (- median_mid_index 1)))) 2.0)})) (throw (ex-info "return" {:v (double (nth median_sorted_list median_mid_index))})))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

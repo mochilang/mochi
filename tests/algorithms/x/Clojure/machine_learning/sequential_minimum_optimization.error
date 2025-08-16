@@ -1,6 +1,6 @@
 run: exit status 1
-Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/machine_learning/sequential_minimum_optimization.clj:88:2180).
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/machine_learning/sequential_minimum_optimization.clj:91:2224).
 Can only recur from tail position
 
 Full report at:
-/tmp/clojure-508401976240893655.edn
+/tmp/clojure-6255290901024828486.edn

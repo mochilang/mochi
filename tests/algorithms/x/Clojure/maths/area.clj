@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare _mod sin_approx cos_approx tan_approx sqrt_approx surface_area_cube surface_area_cuboid surface_area_sphere surface_area_hemisphere surface_area_cone surface_area_conical_frustum surface_area_cylinder surface_area_torus area_rectangle area_square area_triangle area_triangle_three_sides area_parallelogram area_trapezium area_circle area_ellipse area_rhombus area_reg_polygon)
@@ -55,12 +58,12 @@
 
 (def ^:dynamic surface_area_conical_frustum_slant nil)
 
-(def ^:dynamic main_PI 3.141592653589793)
+(def ^:dynamic main_PI nil)
 
-(def ^:dynamic main_TWO_PI 6.283185307179586)
+(def ^:dynamic main_TWO_PI nil)
 
 (defn _mod [_mod_x _mod_m]
-  (try (throw (ex-info "return" {:v (- _mod_x (* (double (int (quot _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (/ _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sin_approx [sin_approx_x]
   (binding [sin_approx_y nil sin_approx_y2 nil sin_approx_y3 nil sin_approx_y5 nil sin_approx_y7 nil] (try (do (set! sin_approx_y (- (_mod (+ sin_approx_x main_PI) main_TWO_PI) main_PI)) (set! sin_approx_y2 (* sin_approx_y sin_approx_y)) (set! sin_approx_y3 (* sin_approx_y2 sin_approx_y)) (set! sin_approx_y5 (* sin_approx_y3 sin_approx_y2)) (set! sin_approx_y7 (* sin_approx_y5 sin_approx_y2)) (throw (ex-info "return" {:v (- (+ (- sin_approx_y (/ sin_approx_y3 6.0)) (/ sin_approx_y5 120.0)) (/ sin_approx_y7 5040.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -72,7 +75,7 @@
   (try (throw (ex-info "return" {:v (/ (sin_approx tan_approx_x) (cos_approx tan_approx_x))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sqrt_approx [sqrt_approx_x]
-  (binding [sqrt_approx_guess nil sqrt_approx_i nil] (try (do (when (<= sqrt_approx_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_approx_guess (/ sqrt_approx_x 2.0)) (set! sqrt_approx_i 0) (while (< sqrt_approx_i 20) (do (set! sqrt_approx_guess (/ (+ sqrt_approx_guess (quot sqrt_approx_x sqrt_approx_guess)) 2.0)) (set! sqrt_approx_i (+ sqrt_approx_i 1)))) (throw (ex-info "return" {:v sqrt_approx_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrt_approx_guess nil sqrt_approx_i nil] (try (do (when (<= sqrt_approx_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_approx_guess (/ sqrt_approx_x 2.0)) (set! sqrt_approx_i 0) (while (< sqrt_approx_i 20) (do (set! sqrt_approx_guess (/ (+ sqrt_approx_guess (/ sqrt_approx_x sqrt_approx_guess)) 2.0)) (set! sqrt_approx_i (+ sqrt_approx_i 1)))) (throw (ex-info "return" {:v sqrt_approx_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn surface_area_cube [surface_area_cube_side_length]
   (try (do (when (< surface_area_cube_side_length 0.0) (do (println "ValueError: surface_area_cube() only accepts non-negative values") (throw (ex-info "return" {:v 0.0})))) (throw (ex-info "return" {:v (* (* 6.0 surface_area_cube_side_length) surface_area_cube_side_length)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -128,16 +131,19 @@
 (defn area_reg_polygon [area_reg_polygon_sides area_reg_polygon_length]
   (binding [area_reg_polygon_n nil] (try (do (when (< area_reg_polygon_sides 3) (do (println "ValueError: area_reg_polygon() only accepts integers greater than or equal to three as number of sides") (throw (ex-info "return" {:v 0.0})))) (when (< area_reg_polygon_length 0.0) (do (println "ValueError: area_reg_polygon() only accepts non-negative values as length of a side") (throw (ex-info "return" {:v 0.0})))) (set! area_reg_polygon_n (double area_reg_polygon_sides)) (throw (ex-info "return" {:v (/ (* (* area_reg_polygon_n area_reg_polygon_length) area_reg_polygon_length) (* 4.0 (tan_approx (/ main_PI area_reg_polygon_n))))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_TRI_THREE_SIDES (area_triangle_three_sides 5.0 12.0 13.0))
+(def ^:dynamic main_TRI_THREE_SIDES nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_PI) (constantly 3.141592653589793))
+      (alter-var-root (var main_TWO_PI) (constantly 6.283185307179586))
       (println "[DEMO] Areas of various geometric shapes:")
       (println (str "Rectangle: " (str (area_rectangle 10.0 20.0))))
       (println (str "Square: " (str (area_square 10.0))))
       (println (str "Triangle: " (str (area_triangle 10.0 10.0))))
+      (alter-var-root (var main_TRI_THREE_SIDES) (constantly (area_triangle_three_sides 5.0 12.0 13.0)))
       (println (str "Triangle Three Sides: " (str main_TRI_THREE_SIDES)))
       (println (str "Parallelogram: " (str (area_parallelogram 10.0 20.0))))
       (println (str "Rhombus: " (str (area_rhombus 10.0 20.0))))

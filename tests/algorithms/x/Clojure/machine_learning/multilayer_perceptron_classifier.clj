@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare exp_taylor sigmoid train predict wrapper)
@@ -78,16 +81,16 @@
 (def ^:dynamic train_z3 nil)
 
 (defn exp_taylor [exp_taylor_x]
-  (binding [exp_taylor_i nil exp_taylor_sum nil exp_taylor_term nil] (try (do (set! exp_taylor_term 1.0) (set! exp_taylor_sum 1.0) (set! exp_taylor_i 1.0) (while (< exp_taylor_i 20.0) (do (set! exp_taylor_term (quot (* exp_taylor_term exp_taylor_x) exp_taylor_i)) (set! exp_taylor_sum (+ exp_taylor_sum exp_taylor_term)) (set! exp_taylor_i (+ exp_taylor_i 1.0)))) (throw (ex-info "return" {:v exp_taylor_sum}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [exp_taylor_i nil exp_taylor_sum nil exp_taylor_term nil] (try (do (set! exp_taylor_term 1.0) (set! exp_taylor_sum 1.0) (set! exp_taylor_i 1.0) (while (< exp_taylor_i 20.0) (do (set! exp_taylor_term (/ (* exp_taylor_term exp_taylor_x) exp_taylor_i)) (set! exp_taylor_sum (+ exp_taylor_sum exp_taylor_term)) (set! exp_taylor_i (+ exp_taylor_i 1.0)))) (throw (ex-info "return" {:v exp_taylor_sum}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn sigmoid [sigmoid_x]
   (try (throw (ex-info "return" {:v (/ 1.0 (+ 1.0 (exp_taylor (- sigmoid_x))))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def ^:dynamic main_X [[0.0 0.0] [1.0 1.0] [1.0 0.0] [0.0 1.0]])
+(def ^:dynamic main_X nil)
 
-(def ^:dynamic main_Y [0.0 1.0 0.0 0.0])
+(def ^:dynamic main_Y nil)
 
-(def ^:dynamic main_test_data [[0.0 0.0] [0.0 1.0] [1.0 1.0]])
+(def ^:dynamic main_test_data nil)
 
 (def ^:dynamic main_w1 [[0.5 (- 0.5)] [0.5 0.5]])
 
@@ -106,13 +109,17 @@
 (defn wrapper [wrapper_y]
   (try (throw (ex-info "return" {:v wrapper_y})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def ^:dynamic main_preds (wrapper (predict main_test_data)))
+(def ^:dynamic main_preds nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_X) (constantly [[0.0 0.0] [1.0 1.0] [1.0 0.0] [0.0 1.0]]))
+      (alter-var-root (var main_Y) (constantly [0.0 1.0 0.0 0.0]))
+      (alter-var-root (var main_test_data) (constantly [[0.0 0.0] [0.0 1.0] [1.0 1.0]]))
       (train 4000 0.5)
+      (alter-var-root (var main_preds) (constantly (wrapper (predict main_test_data))))
       (println (str main_preds))
       (System/gc)
       (let [end (System/nanoTime)

@@ -1,18 +1,7 @@
 run: exit status 1
-0.0
-0.0
-0.0
-0.0
-1.0
-2.0
-14.0
-2.0
-0.0
-0.0
-1.0
-0.0
-Execution error at main/ln (loss_functions.clj:243).
-ln domain error
+0.2529995012327421
+Execution error (NumberFormatException) at java.lang.NumberFormatException/forInputString (NumberFormatException.java:67).
+For input string: "2.0"
 
 Full report at:
-/tmp/clojure-15807016233665381355.edn
+/tmp/clojure-1036308009059515064.edn

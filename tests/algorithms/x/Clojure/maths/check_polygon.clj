@@ -37,7 +37,7 @@
 
 (def ^:dynamic main_nums [3.0 7.0 13.0 2.0])
 
-(def ^:dynamic main__ (check_polygon main_nums))
+(def ^:dynamic main__ nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
@@ -46,6 +46,7 @@
       (println (str (check_polygon [6.0 10.0 5.0])))
       (println (str (check_polygon [3.0 7.0 13.0 2.0])))
       (println (str (check_polygon [1.0 4.3 5.2 12.2])))
+      (alter-var-root (var main__) (constantly (check_polygon main_nums)))
       (println (str main_nums))
       (System/gc)
       (let [end (System/nanoTime)

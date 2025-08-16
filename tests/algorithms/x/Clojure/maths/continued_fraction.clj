@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare floor_div continued_fraction list_to_string)
@@ -40,7 +43,7 @@
 (def ^:dynamic list_to_string_s nil)
 
 (defn floor_div [floor_div_a floor_div_b]
-  (binding [floor_div_q nil floor_div_r nil] (try (do (set! floor_div_q (quot floor_div_a floor_div_b)) (set! floor_div_r (mod floor_div_a floor_div_b)) (when (and (not= floor_div_r 0) (or (and (< floor_div_a 0) (> floor_div_b 0)) (and (> floor_div_a 0) (< floor_div_b 0)))) (set! floor_div_q (- floor_div_q 1))) (throw (ex-info "return" {:v floor_div_q}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [floor_div_q nil floor_div_r nil] (try (do (set! floor_div_q (/ floor_div_a floor_div_b)) (set! floor_div_r (mod floor_div_a floor_div_b)) (when (and (not= floor_div_r 0) (or (and (< floor_div_a 0) (> floor_div_b 0)) (and (> floor_div_a 0) (< floor_div_b 0)))) (set! floor_div_q (- floor_div_q 1))) (throw (ex-info "return" {:v floor_div_q}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn continued_fraction [continued_fraction_numerator continued_fraction_denominator]
   (binding [continued_fraction_den nil continued_fraction_integer_part nil continued_fraction_num nil continued_fraction_result nil continued_fraction_tmp nil] (try (do (set! continued_fraction_num continued_fraction_numerator) (set! continued_fraction_den continued_fraction_denominator) (set! continued_fraction_result []) (loop [while_flag_1 true] (when (and while_flag_1 true) (do (set! continued_fraction_integer_part (floor_div continued_fraction_num continued_fraction_den)) (set! continued_fraction_result (conj continued_fraction_result continued_fraction_integer_part)) (set! continued_fraction_num (- continued_fraction_num (* continued_fraction_integer_part continued_fraction_den))) (cond (= continued_fraction_num 0) (recur false) :else (do (set! continued_fraction_tmp continued_fraction_num) (set! continued_fraction_num continued_fraction_den) (set! continued_fraction_den continued_fraction_tmp) (recur while_flag_1)))))) (throw (ex-info "return" {:v continued_fraction_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

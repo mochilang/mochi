@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare collatz_sequence main)
@@ -30,7 +33,7 @@
 (def ^:dynamic main_seq nil)
 
 (defn collatz_sequence [collatz_sequence_n]
-  (binding [collatz_sequence_current nil collatz_sequence_seq nil] (try (do (when (< collatz_sequence_n 1) (throw (Exception. "Sequence only defined for positive integers"))) (set! collatz_sequence_seq [collatz_sequence_n]) (set! collatz_sequence_current collatz_sequence_n) (while (not= collatz_sequence_current 1) (do (if (= (mod collatz_sequence_current 2) 0) (set! collatz_sequence_current (quot collatz_sequence_current 2)) (set! collatz_sequence_current (+ (* 3 collatz_sequence_current) 1))) (set! collatz_sequence_seq (conj collatz_sequence_seq collatz_sequence_current)))) (throw (ex-info "return" {:v collatz_sequence_seq}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [collatz_sequence_current nil collatz_sequence_seq nil] (try (do (when (< collatz_sequence_n 1) (throw (Exception. "Sequence only defined for positive integers"))) (set! collatz_sequence_seq [collatz_sequence_n]) (set! collatz_sequence_current collatz_sequence_n) (while (not= collatz_sequence_current 1) (do (if (= (mod collatz_sequence_current 2) 0) (set! collatz_sequence_current (/ collatz_sequence_current 2)) (set! collatz_sequence_current (+ (* 3 collatz_sequence_current) 1))) (set! collatz_sequence_seq (conj collatz_sequence_seq collatz_sequence_current)))) (throw (ex-info "return" {:v collatz_sequence_seq}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (binding [main_n nil main_seq nil] (do (set! main_n 11) (set! main_seq (collatz_sequence main_n)) (println (str main_seq)) (println (str (str (str (str "Collatz sequence from " (str main_n)) " took ") (str (count main_seq))) " steps.")))))

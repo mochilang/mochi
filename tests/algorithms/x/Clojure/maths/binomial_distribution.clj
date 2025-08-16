@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare abs factorial pow_float binomial_distribution)
@@ -47,7 +50,7 @@
   (binding [pow_float_i nil pow_float_result nil] (try (do (set! pow_float_result 1.0) (set! pow_float_i 0) (while (< pow_float_i pow_float_exp) (do (set! pow_float_result (* pow_float_result pow_float_base)) (set! pow_float_i (+ pow_float_i 1)))) (throw (ex-info "return" {:v pow_float_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn binomial_distribution [binomial_distribution_successes binomial_distribution_trials binomial_distribution_prob]
-  (binding [binomial_distribution_coefficient nil binomial_distribution_denominator nil binomial_distribution_numerator nil binomial_distribution_probability nil] (try (do (when (> binomial_distribution_successes binomial_distribution_trials) (throw (Exception. "successes must be lower or equal to trials"))) (when (or (< binomial_distribution_trials 0) (< binomial_distribution_successes 0)) (throw (Exception. "the function is defined for non-negative integers"))) (when (not (and (< 0.0 binomial_distribution_prob) (< binomial_distribution_prob 1.0))) (throw (Exception. "prob has to be in range of 1 - 0"))) (set! binomial_distribution_probability (* (pow_float binomial_distribution_prob binomial_distribution_successes) (pow_float (- 1.0 binomial_distribution_prob) (- binomial_distribution_trials binomial_distribution_successes)))) (set! binomial_distribution_numerator (double (factorial binomial_distribution_trials))) (set! binomial_distribution_denominator (double (* (factorial binomial_distribution_successes) (factorial (- binomial_distribution_trials binomial_distribution_successes))))) (set! binomial_distribution_coefficient (quot binomial_distribution_numerator binomial_distribution_denominator)) (throw (ex-info "return" {:v (* binomial_distribution_probability binomial_distribution_coefficient)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [binomial_distribution_coefficient nil binomial_distribution_denominator nil binomial_distribution_numerator nil binomial_distribution_probability nil] (try (do (when (> binomial_distribution_successes binomial_distribution_trials) (throw (Exception. "successes must be lower or equal to trials"))) (when (or (< binomial_distribution_trials 0) (< binomial_distribution_successes 0)) (throw (Exception. "the function is defined for non-negative integers"))) (when (not (and (< 0.0 binomial_distribution_prob) (< binomial_distribution_prob 1.0))) (throw (Exception. "prob has to be in range of 1 - 0"))) (set! binomial_distribution_probability (* (pow_float binomial_distribution_prob binomial_distribution_successes) (pow_float (- 1.0 binomial_distribution_prob) (- binomial_distribution_trials binomial_distribution_successes)))) (set! binomial_distribution_numerator (double (factorial binomial_distribution_trials))) (set! binomial_distribution_denominator (double (* (factorial binomial_distribution_successes) (factorial (- binomial_distribution_trials binomial_distribution_successes))))) (set! binomial_distribution_coefficient (/ binomial_distribution_numerator binomial_distribution_denominator)) (throw (ex-info "return" {:v (* binomial_distribution_probability binomial_distribution_coefficient)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

@@ -1,3 +1,4 @@
+run: exit status 1
 [DEMO] Areas of various geometric shapes:
 Rectangle: 200.0
 Square: 100.0

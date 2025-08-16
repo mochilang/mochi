@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare allocation_num)
@@ -32,7 +35,7 @@
 (def ^:dynamic allocation_num_start_bytes nil)
 
 (defn allocation_num [allocation_num_number_of_bytes allocation_num_partitions]
-  (binding [allocation_num_allocation_list nil allocation_num_bytes_per_partition nil allocation_num_end_bytes nil allocation_num_i nil allocation_num_start_bytes nil] (try (do (when (<= allocation_num_partitions 0) (throw (Exception. "partitions must be a positive number!"))) (when (> allocation_num_partitions allocation_num_number_of_bytes) (throw (Exception. "partitions can not > number_of_bytes!"))) (set! allocation_num_bytes_per_partition (quot allocation_num_number_of_bytes allocation_num_partitions)) (set! allocation_num_allocation_list []) (set! allocation_num_i 0) (while (< allocation_num_i allocation_num_partitions) (do (set! allocation_num_start_bytes (+ (* allocation_num_i allocation_num_bytes_per_partition) 1)) (set! allocation_num_end_bytes (if (= allocation_num_i (- allocation_num_partitions 1)) allocation_num_number_of_bytes (* (+ allocation_num_i 1) allocation_num_bytes_per_partition))) (set! allocation_num_allocation_list (conj allocation_num_allocation_list (str (str (str allocation_num_start_bytes) "-") (str allocation_num_end_bytes)))) (set! allocation_num_i (+ allocation_num_i 1)))) (throw (ex-info "return" {:v allocation_num_allocation_list}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [allocation_num_allocation_list nil allocation_num_bytes_per_partition nil allocation_num_end_bytes nil allocation_num_i nil allocation_num_start_bytes nil] (try (do (when (<= allocation_num_partitions 0) (throw (Exception. "partitions must be a positive number!"))) (when (> allocation_num_partitions allocation_num_number_of_bytes) (throw (Exception. "partitions can not > number_of_bytes!"))) (set! allocation_num_bytes_per_partition (/ allocation_num_number_of_bytes allocation_num_partitions)) (set! allocation_num_allocation_list []) (set! allocation_num_i 0) (while (< allocation_num_i allocation_num_partitions) (do (set! allocation_num_start_bytes (+ (* allocation_num_i allocation_num_bytes_per_partition) 1)) (set! allocation_num_end_bytes (if (= allocation_num_i (- allocation_num_partitions 1)) allocation_num_number_of_bytes (* (+ allocation_num_i 1) allocation_num_bytes_per_partition))) (set! allocation_num_allocation_list (conj allocation_num_allocation_list (str (str (str allocation_num_start_bytes) "-") (str allocation_num_end_bytes)))) (set! allocation_num_i (+ allocation_num_i 1)))) (throw (ex-info "return" {:v allocation_num_allocation_list}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

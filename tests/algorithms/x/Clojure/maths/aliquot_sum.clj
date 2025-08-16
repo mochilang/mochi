@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare aliquot_sum)
@@ -26,7 +29,7 @@
 (def ^:dynamic aliquot_sum_total nil)
 
 (defn aliquot_sum [aliquot_sum_n]
-  (binding [aliquot_sum_divisor nil aliquot_sum_total nil] (try (do (when (<= aliquot_sum_n 0) (throw (Exception. "Input must be positive"))) (set! aliquot_sum_total 0) (set! aliquot_sum_divisor 1) (while (<= aliquot_sum_divisor (quot aliquot_sum_n 2)) (do (when (= (mod aliquot_sum_n aliquot_sum_divisor) 0) (set! aliquot_sum_total (+ aliquot_sum_total aliquot_sum_divisor))) (set! aliquot_sum_divisor (+ aliquot_sum_divisor 1)))) (throw (ex-info "return" {:v aliquot_sum_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [aliquot_sum_divisor nil aliquot_sum_total nil] (try (do (when (<= aliquot_sum_n 0) (throw (Exception. "Input must be positive"))) (set! aliquot_sum_total 0) (set! aliquot_sum_divisor 1) (while (<= aliquot_sum_divisor (/ aliquot_sum_n 2)) (do (when (= (mod aliquot_sum_n aliquot_sum_divisor) 0) (set! aliquot_sum_total (+ aliquot_sum_total aliquot_sum_divisor))) (set! aliquot_sum_divisor (+ aliquot_sum_divisor 1)))) (throw (ex-info "return" {:v aliquot_sum_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

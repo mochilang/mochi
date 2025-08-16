@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare to_unsigned from_unsigned bit_and bit_xor lshift1 add)
@@ -53,9 +56,9 @@
 
 (def ^:dynamic first_v nil)
 
-(def ^:dynamic main_MAX 4294967296)
+(def ^:dynamic main_MAX nil)
 
-(def ^:dynamic main_HALF 2147483648)
+(def ^:dynamic main_HALF nil)
 
 (defn to_unsigned [to_unsigned_n]
   (try (if (< to_unsigned_n 0) (+ main_MAX to_unsigned_n) to_unsigned_n) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -64,10 +67,10 @@
   (try (if (>= from_unsigned_n main_HALF) (- from_unsigned_n main_MAX) from_unsigned_n) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn bit_and [bit_and_a bit_and_b]
-  (binding [bit_and_bit nil bit_and_i nil bit_and_res nil bit_and_x nil bit_and_y nil] (try (do (set! bit_and_x bit_and_a) (set! bit_and_y bit_and_b) (set! bit_and_res 0) (set! bit_and_bit 1) (set! bit_and_i 0) (while (< bit_and_i 32) (do (when (and (= (mod bit_and_x 2) 1) (= (mod bit_and_y 2) 1)) (set! bit_and_res (+ bit_and_res bit_and_bit))) (set! bit_and_x (quot bit_and_x 2)) (set! bit_and_y (quot bit_and_y 2)) (set! bit_and_bit (* bit_and_bit 2)) (set! bit_and_i (+ bit_and_i 1)))) (throw (ex-info "return" {:v bit_and_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [bit_and_bit nil bit_and_i nil bit_and_res nil bit_and_x nil bit_and_y nil] (try (do (set! bit_and_x bit_and_a) (set! bit_and_y bit_and_b) (set! bit_and_res 0) (set! bit_and_bit 1) (set! bit_and_i 0) (while (< bit_and_i 32) (do (when (and (= (mod bit_and_x 2) 1) (= (mod bit_and_y 2) 1)) (set! bit_and_res (+ bit_and_res bit_and_bit))) (set! bit_and_x (/ bit_and_x 2)) (set! bit_and_y (/ bit_and_y 2)) (set! bit_and_bit (* bit_and_bit 2)) (set! bit_and_i (+ bit_and_i 1)))) (throw (ex-info "return" {:v bit_and_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn bit_xor [bit_xor_a bit_xor_b]
-  (binding [bit_xor_abit nil bit_xor_bbit nil bit_xor_bit nil bit_xor_i nil bit_xor_res nil bit_xor_x nil bit_xor_y nil] (try (do (set! bit_xor_x bit_xor_a) (set! bit_xor_y bit_xor_b) (set! bit_xor_res 0) (set! bit_xor_bit 1) (set! bit_xor_i 0) (while (< bit_xor_i 32) (do (set! bit_xor_abit (mod bit_xor_x 2)) (set! bit_xor_bbit (mod bit_xor_y 2)) (when (= (mod (+ bit_xor_abit bit_xor_bbit) 2) 1) (set! bit_xor_res (+ bit_xor_res bit_xor_bit))) (set! bit_xor_x (quot bit_xor_x 2)) (set! bit_xor_y (quot bit_xor_y 2)) (set! bit_xor_bit (* bit_xor_bit 2)) (set! bit_xor_i (+ bit_xor_i 1)))) (throw (ex-info "return" {:v bit_xor_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [bit_xor_abit nil bit_xor_bbit nil bit_xor_bit nil bit_xor_i nil bit_xor_res nil bit_xor_x nil bit_xor_y nil] (try (do (set! bit_xor_x bit_xor_a) (set! bit_xor_y bit_xor_b) (set! bit_xor_res 0) (set! bit_xor_bit 1) (set! bit_xor_i 0) (while (< bit_xor_i 32) (do (set! bit_xor_abit (mod bit_xor_x 2)) (set! bit_xor_bbit (mod bit_xor_y 2)) (when (= (mod (+ bit_xor_abit bit_xor_bbit) 2) 1) (set! bit_xor_res (+ bit_xor_res bit_xor_bit))) (set! bit_xor_x (/ bit_xor_x 2)) (set! bit_xor_y (/ bit_xor_y 2)) (set! bit_xor_bit (* bit_xor_bit 2)) (set! bit_xor_i (+ bit_xor_i 1)))) (throw (ex-info "return" {:v bit_xor_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn lshift1 [lshift1_num]
   (try (throw (ex-info "return" {:v (mod (* lshift1_num 2) main_MAX)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -79,6 +82,8 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_MAX) (constantly 4294967296))
+      (alter-var-root (var main_HALF) (constantly 2147483648))
       (println (str (add 3 5)))
       (println (str (add 13 5)))
       (println (str (add (- 7) 2)))

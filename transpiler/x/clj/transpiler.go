@@ -483,7 +483,13 @@ func renameVar(name string) string {
 		renameVars[name] = newName
 		return newName
 	}
-	if transpileEnv != nil {
+	if funcNames != nil {
+		if funcNames[name] {
+			newName := name + "_v"
+			renameVars[name] = newName
+			return newName
+		}
+	} else if transpileEnv != nil {
 		if _, ok := transpileEnv.GetFunc(name); ok {
 			newName := name + "_v"
 			renameVars[name] = newName
@@ -495,6 +501,15 @@ func renameVar(name string) string {
 		prefix = "f"
 	}
 	newName := prefix + "_" + name
+	if funcNames != nil {
+		if funcNames[newName] {
+			newName += "_v"
+		}
+	} else if transpileEnv != nil {
+		if _, ok := transpileEnv.GetFunc(newName); ok {
+			newName += "_v"
+		}
+	}
 	renameVars[name] = newName
 	return newName
 }
@@ -795,6 +810,7 @@ var reservedNames = map[string]bool{
 	"next":  true,
 	"first": true,
 }
+var funcNames map[string]bool
 
 // builtin replacements for some heavy numeric helpers
 var bigIntHelpers = map[string]*Defn{
@@ -817,6 +833,12 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	groupVars = make(map[string]bool)
 	structCount = 0
 	funParamsStack = nil
+	funcNames = make(map[string]bool)
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			funcNames[st.Fun.Name] = true
+		}
+	}
 	nestedFunArgs = make(map[string][]string)
 	funcMutatedParams = make(map[string][]mutParam)
 	stringVars = nil

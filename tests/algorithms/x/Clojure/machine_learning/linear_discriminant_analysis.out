@@ -1,5 +1,5 @@
-Execution error (ArithmeticException) at main/predict-y-values (linear_discriminant_analysis.clj:166).
-Divide by zero
+Execution error (NumberFormatException) at java.lang.NumberFormatException/forInputString (NumberFormatException.java:67).
+For input string: "0.6757413032464683"
 
 Full report at:
-/tmp/clojure-9054363845810516600.edn
+/tmp/clojure-11222900157507097907.edn

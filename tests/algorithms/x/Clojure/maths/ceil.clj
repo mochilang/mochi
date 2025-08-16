@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare ceil)
@@ -25,16 +28,19 @@
 
 (def ^:dynamic ceil_truncated nil)
 
+(def ^:dynamic main_v nil)
+
 (defn ceil [ceil_x]
   (binding [ceil_frac nil ceil_truncated nil] (try (do (set! ceil_truncated (long ceil_x)) (set! ceil_frac (- ceil_x (double ceil_truncated))) (if (<= ceil_frac 0.0) ceil_truncated (+ ceil_truncated 1))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_values [1.0 (- 1.0) 0.0 (- 0.0) 1.1 (- 1.1) 1.0 (- 1.0) 1000000000.0])
+(def ^:dynamic main_values nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (doseq [v main_values] (println (ceil v)))
+      (alter-var-root (var main_values) (constantly [1.0 (- 1.0) 0.0 (- 0.0) 1.1 (- 1.1) 1.0 (- 1.0) 1000000000.0]))
+      (doseq [main_v main_values] (println (ceil main_v)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))
