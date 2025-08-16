@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-16 11:57 GMT+7
+Last updated: 2025-08-16 12:40 GMT+7
 
 ## Algorithms Golden Test Checklist (964/1077)
 | Index | Name | Status | Duration | Memory |
@@ -552,14 +552,14 @@ Last updated: 2025-08-16 11:57 GMT+7
 | 543 | maths/binomial_coefficient | ✓ | 19.0µs | 12.28MB |
 | 544 | maths/binomial_distribution | ✓ | 10.0µs | 12.87MB |
 | 545 | maths/ceil | ✓ | 22.0µs | 12.67MB |
-| 546 | maths/chebyshev_distance | ✓ | 20.0µs | 12.61MB |
+| 546 | maths/chebyshev_distance | ✓ | 23.0µs | 12.99MB |
 | 547 | maths/check_polygon | ✓ | 36.0µs | 12.93MB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 851.0µs | 13.14MB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 30.0µs | 12.52MB |
 | 550 | maths/collatz_sequence | ✓ | 20.0µs | 12.47MB |
 | 551 | maths/combinations | ✓ | 16.0µs | 12.68MB |
 | 552 | maths/continued_fraction | ✓ | 19.0µs | 12.42MB |
-| 553 | maths/decimal_isolate | ✓ | 48.0µs | 12.98MB |
+| 553 | maths/decimal_isolate | ✓ | 59.0µs | 12.68MB |
 | 554 | maths/decimal_to_fraction | ✓ | 145.0µs | 14.28MB |
 | 555 | maths/dodecahedron | error |  |  |
 | 556 | maths/double_factorial | ✓ | 20.0µs | 12.73MB |
