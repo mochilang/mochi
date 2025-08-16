@@ -1,0 +1,10 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/machine_learning/apriori_algorithm.pas
+apriori_algorithm.pas(170,30) Error: Incompatible type for arg no. 1: Got "Int64", expected "StrArray"
+apriori_algorithm.pas(169,7) Error: Incompatible types: got "StrArray" expected "Int64"
+apriori_algorithm.pas(380) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
