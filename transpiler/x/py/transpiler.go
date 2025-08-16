@@ -151,9 +151,10 @@ def panic(msg):
 
 const helperStr = `
 def _str(v):
+    import builtins
     if isinstance(v, float):
-        if abs(v - round(v)) < 1e-9:
-            return str(float(round(v)))
+        if abs(v - builtins.round(v)) < 1e-9:
+            return str(float(builtins.round(v)))
         return format(v, ".15g")
     return str(v)
 `
