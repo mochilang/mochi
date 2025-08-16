@@ -43,7 +43,7 @@ fun solution(limit: int): int {
         break
       }
     }
-    if iterations == 50 && !is_palindrome(current) {
+    if iterations == 50 && is_palindrome(current) == false {
       count = count + 1
     }
     num = num + 1
