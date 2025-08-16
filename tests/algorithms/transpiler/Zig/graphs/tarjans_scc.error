@@ -1,7 +1,2 @@
 exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/tarjans_scc.zig:75:19: error: function parameter shadows declaration of 'strong_connect'
-fn strong_connect(strong_connect: i64, index_of: []i64, lowlink_of: []i64, components: [][]i64, g: [][]i64, stack: []i64, on_stack: []bool, v: i64, index: i64) i64 {
-                  ^~~~~~~~~~~~~~
-/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/tarjans_scc.zig:75:1: note: declared here
-fn strong_connect(strong_connect: i64, index_of: []i64, lowlink_of: []i64, components: [][]i64, g: [][]i64, stack: []i64, on_stack: []bool, v: i64, index: i64) i64 {
-^~
+/workspace/mochi/tests/algorithms/transpiler/Zig/graphs/tarjans_scc.zig:78:5: error: cannot assign to constant

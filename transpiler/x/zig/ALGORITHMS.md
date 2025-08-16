@@ -2,7 +2,7 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-16 13:01 +0700
+Last updated: 2025-08-16 13:51 +0700
 
 ## Program Checklist (361/1077)
 | Index | Name | Status | Duration | Memory |
@@ -456,9 +456,9 @@ Last updated: 2025-08-16 13:01 +0700
 | 447 | graphs/multi_heuristic_astar | ✓ | 1.477ms | 384.0 KB |
 | 448 | graphs/page_rank |   |  |  |
 | 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator | ✓ | 1.275ms | 640.0 KB |
-| 451 | graphs/scc_kosaraju | ✓ | 895µs | 384.0 KB |
-| 452 | graphs/strongly_connected_components | ✓ | 2.156ms | 768.0 KB |
+| 450 | graphs/random_graph_generator | ✓ | 1.64ms | 444.0 KB |
+| 451 | graphs/scc_kosaraju | ✓ | 1.167ms | 384.0 KB |
+| 452 | graphs/strongly_connected_components | ✓ | 2.785ms | 768.0 KB |
 | 453 | graphs/tarjans_scc |   |  |  |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.735ms | 384.0 KB |
 | 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |

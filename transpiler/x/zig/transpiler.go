@@ -3074,8 +3074,15 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 }
 
 func (f *ForStmt) emit(w io.Writer, indent int) {
-	writeIndent(w, indent)
+	pushAliasScope()
+	alias := f.Name
 	used := stmtsUse(f.Name, f.Body)
+	if used {
+		alias = uniqueName(f.Name)
+		aliasStack[len(aliasStack)-1][f.Name] = alias
+		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], f.Name)
+	}
+	writeIndent(w, indent)
 	tmp := fmt.Sprintf("__it%d", loopCounter)
 	loopCounter++
 	if f.Iterable != nil {
@@ -3119,7 +3126,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, tmp)
 				io.WriteString(w, "| {\n")
 				writeIndent(w, indent+1)
-				fmt.Fprintf(w, "const %s = %s.*;\n", f.Name, tmp)
+				fmt.Fprintf(w, "const %s = %s.*;\n", alias, tmp)
 			} else {
 				io.WriteString(w, "_| {\n")
 			}
@@ -3132,9 +3139,9 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, "| {\n")
 				writeIndent(w, indent+1)
 				if typ == "[]const u8" {
-					fmt.Fprintf(w, "const %s: []const u8 = &[_]u8{%s};\n", f.Name, tmp)
+					fmt.Fprintf(w, "const %s: []const u8 = &[_]u8{%s};\n", alias, tmp)
 				} else {
-					fmt.Fprintf(w, "const %s = %s;\n", f.Name, tmp)
+					fmt.Fprintf(w, "const %s = %s;\n", alias, tmp)
 				}
 			} else {
 				io.WriteString(w, "_|")
@@ -3151,7 +3158,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, tmp)
 			io.WriteString(w, "| {\n")
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "const %s: i64 = @as(i64, @intCast(%s));\n", f.Name, tmp)
+			fmt.Fprintf(w, "const %s: i64 = @as(i64, @intCast(%s));\n", alias, tmp)
 		} else {
 			io.WriteString(w, "_|")
 			io.WriteString(w, " {\n")
@@ -3160,20 +3167,21 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 	// temporarily register the iteration variable's type so expressions in
 	// the body can perform type-specific operations (e.g., string
 	// comparisons) even after compile-time scopes have been popped.
-	prevT, ok := varTypes[f.Name]
+	prevT, ok := varTypes[alias]
 	if f.ElemType != "" {
-		varTypes[f.Name] = f.ElemType
+		varTypes[alias] = f.ElemType
 	}
 	for _, st := range f.Body {
 		st.emit(w, indent+1)
 	}
 	if ok {
-		varTypes[f.Name] = prevT
+		varTypes[alias] = prevT
 	} else {
-		delete(varTypes, f.Name)
+		delete(varTypes, alias)
 	}
 	writeIndent(w, indent)
 	io.WriteString(w, "}\n")
+	popAliasScope()
 }
 
 func (b *BreakStmt) emit(w io.Writer, indent int) {
@@ -4276,7 +4284,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				if t == "" {
 					t = "i64"
 				}
-				newParams = append(newParams, Param{Name: n, Type: t})
+				pname := n
+				if pname == name {
+					pname = uniqueName(n + "_param")
+				}
+				newParams = append(newParams, Param{Name: pname, Type: t})
 			}
 			newParams = append(newParams, f.Params...)
 			f.Params = newParams
@@ -5292,7 +5304,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		paramName := name
 		if mutable {
 			paramName = uniqueName(name + "_param")
-		} else if globalNames[name] || locals[p.Name] {
+		} else if globalNames[name] || locals[p.Name] || name == fn.Name {
 			paramName = uniqueName(name + "_param")
 		} else {
 			paramName = uniqueName(name)
@@ -5386,18 +5398,18 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			}
 		}
 	}
-        if strings.HasPrefix(ret, "std.StringHashMap(") {
-                for _, st := range body {
-                        if rs, ok := st.(*ReturnStmt); ok {
-                                if ml, ok2 := rs.Value.(*MapLit); ok2 && ml.StructName != "" {
-                                        if _, isVariant := variantTags[ml.StructName]; !isVariant {
-                                                ret = ml.StructName
-                                                break
-                                        }
-                                }
-                        }
-                }
-        }
+	if strings.HasPrefix(ret, "std.StringHashMap(") {
+		for _, st := range body {
+			if rs, ok := st.(*ReturnStmt); ok {
+				if ml, ok2 := rs.Value.(*MapLit); ok2 && ml.StructName != "" {
+					if _, isVariant := variantTags[ml.StructName]; !isVariant {
+						ret = ml.StructName
+						break
+					}
+				}
+			}
+		}
+	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
 	if ret == "[]Value" {
 		for _, st := range f.Body {
@@ -5413,6 +5425,9 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		captured := []string{}
 		for i := 0; i < len(aliasStack)-1; i++ {
 			for _, alias := range aliasStack[i] {
+				if alias == name {
+					continue
+				}
 				if used[alias] && !capturedMap[alias] {
 					capturedMap[alias] = true
 					captured = append(captured, alias)
@@ -5425,7 +5440,11 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			if t == "" {
 				t = "i64"
 			}
-			newParams = append(newParams, Param{Name: n, Type: t})
+			pname := n
+			if pname == name {
+				pname = uniqueName(n + "_param")
+			}
+			newParams = append(newParams, Param{Name: pname, Type: t})
 		}
 		newParams = append(newParams, f.Params...)
 		f.Params = newParams
