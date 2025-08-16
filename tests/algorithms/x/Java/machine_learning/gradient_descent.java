@@ -14,78 +14,78 @@ public class Main {
 
     static DataPoint[] train_data;
     static DataPoint[] test_data;
-    static double[] parameter_vector = new double[0];
+    static double[] parameter_vector = ((double[])(new double[]{2.0, 4.0, 1.0, 5.0}));
 
     static double absf(double x) {
-        if (x < 0.0) {
+        if ((double)(x) < (double)(0.0)) {
             return -x;
         }
         return x;
     }
 
     static double hypothesis_value(double[] input, double[] params) {
-        double value = params[(int)(0)];
-        long i_1 = 0;
-        while (i_1 < input.length) {
-            value = value + input[(int)(i_1)] * params[(int)(i_1 + 1)];
-            i_1 = i_1 + 1;
+        double value = (double)(params[(int)(0L)]);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(input.length)) {
+            value = (double)((double)(value) + (double)((double)(input[(int)((long)(i_1))]) * (double)(params[(int)((long)((long)(i_1) + 1L))])));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return value;
     }
 
     static double calc_error(DataPoint dp, double[] params) {
-        return hypothesis_value(((double[])(dp.x)), ((double[])(params))) - dp.y;
+        return (double)(hypothesis_value(((double[])(dp.x)), ((double[])(params)))) - (double)(dp.y);
     }
 
     static double summation_of_cost_derivative(long index, double[] params, DataPoint[] data) {
-        double sum = 0.0;
-        long i_3 = 0;
-        while (i_3 < data.length) {
-            DataPoint dp_1 = data[(int)(i_3)];
-            double e_1 = calc_error(dp_1, ((double[])(params)));
-            if (index == (-1)) {
-                sum = sum + e_1;
+        double sum = (double)(0.0);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(data.length)) {
+            DataPoint dp_1 = data[(int)((long)(i_3))];
+            double e_1 = (double)(calc_error(dp_1, ((double[])(params))));
+            if ((long)(index) == (long)((-1))) {
+                sum = (double)((double)(sum) + (double)(e_1));
             } else {
-                sum = sum + e_1 * dp_1.x[(int)(index)];
+                sum = (double)((double)(sum) + (double)((double)(e_1) * (double)(dp_1.x[(int)((long)(index))])));
             }
-            i_3 = i_3 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return sum;
     }
 
     static double get_cost_derivative(long index, double[] params, DataPoint[] data) {
-        return summation_of_cost_derivative(index, ((double[])(params)), ((DataPoint[])(data))) / (((Number)(data.length)).doubleValue());
+        return (double)(summation_of_cost_derivative((long)(index), ((double[])(params)), ((DataPoint[])(data)))) / (double)((((Number)(data.length)).doubleValue()));
     }
 
     static boolean allclose(double[] a, double[] b, double atol, double rtol) {
-        long i_4 = 0;
-        while (i_4 < a.length) {
-            double diff_1 = absf(a[(int)(i_4)] - b[(int)(i_4)]);
-            double limit_1 = atol + rtol * absf(b[(int)(i_4)]);
-            if (diff_1 > limit_1) {
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)(a.length)) {
+            double diff_1 = (double)(absf((double)((double)(a[(int)((long)(i_4))]) - (double)(b[(int)((long)(i_4))]))));
+            double limit_1 = (double)((double)(atol) + (double)((double)(rtol) * (double)(absf((double)(b[(int)((long)(i_4))])))));
+            if ((double)(diff_1) > (double)(limit_1)) {
                 return false;
             }
-            i_4 = i_4 + 1;
+            i_4 = (long)((long)(i_4) + 1L);
         }
         return true;
     }
 
     static double[] run_gradient_descent(DataPoint[] train_data, double[] initial_params) {
-        double learning_rate = 0.009;
-        double absolute_error_limit_1 = 2e-06;
-        double relative_error_limit_1 = 0.0;
-        long j_1 = 0;
+        double learning_rate = (double)(0.009);
+        double absolute_error_limit_1 = (double)(2e-06);
+        double relative_error_limit_1 = (double)(0.0);
+        long j_1 = 0L;
         double[] params_1 = ((double[])(initial_params));
         while (true) {
-            j_1 = j_1 + 1;
+            j_1 = (long)((long)(j_1) + 1L);
             double[] temp_1 = ((double[])(new double[]{}));
-            long i_6 = 0;
-            while (i_6 < params_1.length) {
-                double deriv_1 = get_cost_derivative(i_6 - 1, ((double[])(params_1)), ((DataPoint[])(train_data)));
-                temp_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(temp_1), java.util.stream.DoubleStream.of(params_1[(int)(i_6)] - learning_rate * deriv_1)).toArray()));
-                i_6 = i_6 + 1;
+            long i_6 = 0L;
+            while ((long)(i_6) < (long)(params_1.length)) {
+                double deriv_1 = (double)(get_cost_derivative((long)((long)(i_6) - 1L), ((double[])(params_1)), ((DataPoint[])(train_data))));
+                temp_1 = ((double[])(appendDouble(temp_1, (double)((double)(params_1[(int)((long)(i_6))]) - (double)((double)(learning_rate) * (double)(deriv_1))))));
+                i_6 = (long)((long)(i_6) + 1L);
             }
-            if (((Boolean)(allclose(((double[])(params_1)), ((double[])(temp_1)), absolute_error_limit_1, relative_error_limit_1)))) {
+            if (allclose(((double[])(params_1)), ((double[])(temp_1)), (double)(absolute_error_limit_1), (double)(relative_error_limit_1))) {
                 System.out.println("Number of iterations:" + _p(j_1));
                 break;
             }
@@ -95,21 +95,60 @@ public class Main {
     }
 
     static void test_gradient_descent(DataPoint[] test_data, double[] params) {
-        long i_7 = 0;
-        while (i_7 < test_data.length) {
-            DataPoint dp_3 = test_data[(int)(i_7)];
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(test_data.length)) {
+            DataPoint dp_3 = test_data[(int)((long)(i_7))];
             System.out.println("Actual output value:" + _p(dp_3.y));
             System.out.println("Hypothesis output:" + _p(hypothesis_value(((double[])(dp_3.x)), ((double[])(params)))));
-            i_7 = i_7 + 1;
+            i_7 = (long)((long)(i_7) + 1L);
         }
     }
     public static void main(String[] args) {
-        train_data = ((DataPoint[])(new DataPoint[]{new DataPoint(new double[]{5.0, 2.0, 3.0}, 15.0), new DataPoint(new double[]{6.0, 5.0, 9.0}, 25.0), new DataPoint(new double[]{11.0, 12.0, 13.0}, 41.0), new DataPoint(new double[]{1.0, 1.0, 1.0}, 8.0), new DataPoint(new double[]{11.0, 12.0, 13.0}, 41.0)}));
-        test_data = ((DataPoint[])(new DataPoint[]{new DataPoint(new double[]{515.0, 22.0, 13.0}, 555.0), new DataPoint(new double[]{61.0, 35.0, 49.0}, 150.0)}));
-        parameter_vector = ((double[])(new double[]{2.0, 4.0, 1.0, 5.0}));
-        parameter_vector = ((double[])(run_gradient_descent(((DataPoint[])(train_data)), ((double[])(parameter_vector)))));
-        System.out.println("\nTesting gradient descent for a linear hypothesis function.\n");
-        test_gradient_descent(((DataPoint[])(test_data)), ((double[])(parameter_vector)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            train_data = ((DataPoint[])(new DataPoint[]{new DataPoint(new double[]{5.0, 2.0, 3.0}, 15.0), new DataPoint(new double[]{6.0, 5.0, 9.0}, 25.0), new DataPoint(new double[]{11.0, 12.0, 13.0}, 41.0), new DataPoint(new double[]{1.0, 1.0, 1.0}, 8.0), new DataPoint(new double[]{11.0, 12.0, 13.0}, 41.0)}));
+            test_data = ((DataPoint[])(new DataPoint[]{new DataPoint(new double[]{515.0, 22.0, 13.0}, 555.0), new DataPoint(new double[]{61.0, 35.0, 49.0}, 150.0)}));
+            parameter_vector = ((double[])(run_gradient_descent(((DataPoint[])(train_data)), ((double[])(parameter_vector)))));
+            System.out.println("\nTesting gradient descent for a linear hypothesis function.\n");
+            test_gradient_descent(((DataPoint[])(test_data)), ((double[])(parameter_vector)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -127,7 +166,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

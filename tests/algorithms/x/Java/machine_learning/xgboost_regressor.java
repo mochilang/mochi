@@ -33,107 +33,107 @@ public class Main {
     }
 
     static double[] xgboost(double[][] features, double[] target, double[][] test_features) {
-        double learning_rate = 0.5;
-        long n_estimators_1 = 3;
+        double learning_rate = (double)(0.5);
+        long n_estimators_1 = 3L;
         Tree[] trees_1 = ((Tree[])(new Tree[]{}));
         double[] predictions_1 = ((double[])(new double[]{}));
-        long i_1 = 0;
-        while (i_1 < target.length) {
-            predictions_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(predictions_1), java.util.stream.DoubleStream.of(0.0)).toArray()));
-            i_1 = i_1 + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(target.length)) {
+            predictions_1 = ((double[])(appendDouble(predictions_1, (double)(0.0))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        long est_1 = 0;
-        while (est_1 < n_estimators_1) {
+        long est_1 = 0L;
+        while ((long)(est_1) < (long)(n_estimators_1)) {
             double[] residuals_1 = ((double[])(new double[]{}));
-            long j_1 = 0;
-            while (j_1 < target.length) {
-                residuals_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(residuals_1), java.util.stream.DoubleStream.of(target[(int)(j_1)] - predictions_1[(int)(j_1)])).toArray()));
-                j_1 = j_1 + 1;
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(target.length)) {
+                residuals_1 = ((double[])(appendDouble(residuals_1, (double)((double)(target[(int)((long)(j_1))]) - (double)(predictions_1[(int)((long)(j_1))])))));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            double sum_feat_1 = 0.0;
-            j_1 = 0;
-            while (j_1 < features.length) {
-                sum_feat_1 = sum_feat_1 + features[(int)(j_1)][(int)(0)];
-                j_1 = j_1 + 1;
+            double sum_feat_1 = (double)(0.0);
+            j_1 = 0L;
+            while ((long)(j_1) < (long)(features.length)) {
+                sum_feat_1 = (double)((double)(sum_feat_1) + (double)(features[(int)((long)(j_1))][(int)(0L)]));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            double threshold_1 = sum_feat_1 / (((Number)(features.length)).doubleValue());
-            double left_sum_1 = 0.0;
-            long left_count_1 = 0;
-            double right_sum_1 = 0.0;
-            long right_count_1 = 0;
-            j_1 = 0;
-            while (j_1 < features.length) {
-                if (features[(int)(j_1)][(int)(0)] <= threshold_1) {
-                    left_sum_1 = left_sum_1 + residuals_1[(int)(j_1)];
-                    left_count_1 = left_count_1 + 1;
+            double threshold_1 = (double)((double)(sum_feat_1) / (double)((((Number)(features.length)).doubleValue())));
+            double left_sum_1 = (double)(0.0);
+            long left_count_1 = 0L;
+            double right_sum_1 = (double)(0.0);
+            long right_count_1 = 0L;
+            j_1 = 0L;
+            while ((long)(j_1) < (long)(features.length)) {
+                if ((double)(features[(int)((long)(j_1))][(int)(0L)]) <= (double)(threshold_1)) {
+                    left_sum_1 = (double)((double)(left_sum_1) + (double)(residuals_1[(int)((long)(j_1))]));
+                    left_count_1 = (long)((long)(left_count_1) + 1L);
                 } else {
-                    right_sum_1 = right_sum_1 + residuals_1[(int)(j_1)];
-                    right_count_1 = right_count_1 + 1;
+                    right_sum_1 = (double)((double)(right_sum_1) + (double)(residuals_1[(int)((long)(j_1))]));
+                    right_count_1 = (long)((long)(right_count_1) + 1L);
                 }
-                j_1 = j_1 + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            double left_value_1 = 0.0;
-            if (left_count_1 > 0) {
-                left_value_1 = left_sum_1 / (((Number)(left_count_1)).doubleValue());
+            double left_value_1 = (double)(0.0);
+            if ((long)(left_count_1) > 0L) {
+                left_value_1 = (double)((double)(left_sum_1) / (double)((((Number)(left_count_1)).doubleValue())));
             }
-            double right_value_1 = 0.0;
-            if (right_count_1 > 0) {
-                right_value_1 = right_sum_1 / (((Number)(right_count_1)).doubleValue());
+            double right_value_1 = (double)(0.0);
+            if ((long)(right_count_1) > 0L) {
+                right_value_1 = (double)((double)(right_sum_1) / (double)((((Number)(right_count_1)).doubleValue())));
             }
-            j_1 = 0;
-            while (j_1 < features.length) {
-                if (features[(int)(j_1)][(int)(0)] <= threshold_1) {
-predictions_1[(int)(j_1)] = predictions_1[(int)(j_1)] + learning_rate * left_value_1;
+            j_1 = 0L;
+            while ((long)(j_1) < (long)(features.length)) {
+                if ((double)(features[(int)((long)(j_1))][(int)(0L)]) <= (double)(threshold_1)) {
+predictions_1[(int)((long)(j_1))] = (double)((double)(predictions_1[(int)((long)(j_1))]) + (double)((double)(learning_rate) * (double)(left_value_1)));
                 } else {
-predictions_1[(int)(j_1)] = predictions_1[(int)(j_1)] + learning_rate * right_value_1;
+predictions_1[(int)((long)(j_1))] = (double)((double)(predictions_1[(int)((long)(j_1))]) + (double)((double)(learning_rate) * (double)(right_value_1)));
                 }
-                j_1 = j_1 + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
             trees_1 = ((Tree[])(java.util.stream.Stream.concat(java.util.Arrays.stream(trees_1), java.util.stream.Stream.of(new Tree(threshold_1, left_value_1, right_value_1))).toArray(Tree[]::new)));
-            est_1 = est_1 + 1;
+            est_1 = (long)((long)(est_1) + 1L);
         }
         double[] preds_1 = ((double[])(new double[]{}));
-        long t_1 = 0;
-        while (t_1 < test_features.length) {
-            double pred_1 = 0.0;
-            long k_1 = 0;
-            while (k_1 < trees_1.length) {
-                if (test_features[(int)(t_1)][(int)(0)] <= trees_1[(int)(k_1)].threshold) {
-                    pred_1 = pred_1 + learning_rate * trees_1[(int)(k_1)].left_value;
+        long t_1 = 0L;
+        while ((long)(t_1) < (long)(test_features.length)) {
+            double pred_1 = (double)(0.0);
+            long k_1 = 0L;
+            while ((long)(k_1) < (long)(trees_1.length)) {
+                if ((double)(test_features[(int)((long)(t_1))][(int)(0L)]) <= (double)(trees_1[(int)((long)(k_1))].threshold)) {
+                    pred_1 = (double)((double)(pred_1) + (double)((double)(learning_rate) * (double)(trees_1[(int)((long)(k_1))].left_value)));
                 } else {
-                    pred_1 = pred_1 + learning_rate * trees_1[(int)(k_1)].right_value;
+                    pred_1 = (double)((double)(pred_1) + (double)((double)(learning_rate) * (double)(trees_1[(int)((long)(k_1))].right_value)));
                 }
-                k_1 = k_1 + 1;
+                k_1 = (long)((long)(k_1) + 1L);
             }
-            preds_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(preds_1), java.util.stream.DoubleStream.of(pred_1)).toArray()));
-            t_1 = t_1 + 1;
+            preds_1 = ((double[])(appendDouble(preds_1, (double)(pred_1))));
+            t_1 = (long)((long)(t_1) + 1L);
         }
         return preds_1;
     }
 
     static double mean_absolute_error(double[] y_true, double[] y_pred) {
-        double sum = 0.0;
-        long i_3 = 0;
-        while (i_3 < y_true.length) {
-            double diff_1 = y_true[(int)(i_3)] - y_pred[(int)(i_3)];
-            if (diff_1 < 0.0) {
-                diff_1 = -diff_1;
+        double sum = (double)(0.0);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(y_true.length)) {
+            double diff_1 = (double)((double)(y_true[(int)((long)(i_3))]) - (double)(y_pred[(int)((long)(i_3))]));
+            if ((double)(diff_1) < (double)(0.0)) {
+                diff_1 = (double)(-diff_1);
             }
-            sum = sum + diff_1;
-            i_3 = i_3 + 1;
+            sum = (double)((double)(sum) + (double)(diff_1));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return sum / (((Number)(y_true.length)).doubleValue());
+        return (double)(sum) / (double)((((Number)(y_true.length)).doubleValue()));
     }
 
     static double mean_squared_error(double[] y_true, double[] y_pred) {
-        double sum_1 = 0.0;
-        long i_5 = 0;
-        while (i_5 < y_true.length) {
-            double diff_3 = y_true[(int)(i_5)] - y_pred[(int)(i_5)];
-            sum_1 = sum_1 + diff_3 * diff_3;
-            i_5 = i_5 + 1;
+        double sum_1 = (double)(0.0);
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(y_true.length)) {
+            double diff_3 = (double)((double)(y_true[(int)((long)(i_5))]) - (double)(y_pred[(int)((long)(i_5))]));
+            sum_1 = (double)((double)(sum_1) + (double)((double)(diff_3) * (double)(diff_3)));
+            i_5 = (long)((long)(i_5) + 1L);
         }
-        return sum_1 / (((Number)(y_true.length)).doubleValue());
+        return (double)(sum_1) / (double)((((Number)(y_true.length)).doubleValue()));
     }
 
     static void main() {
@@ -152,6 +152,46 @@ predictions_1[(int)(j_1)] = predictions_1[(int)(j_1)] + learning_rate * right_va
         System.out.println(mean_squared_error(((double[])(y_test_1)), ((double[])(predictions_3))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

@@ -1,5 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm2397995282/001/Main.java:203: error: incompatible types: String[][][] cannot be converted to String[][]
-            itemset = prune(((String[][])(itemset)), ((String[][][])(combos_1)), length_1);
-                           ^
-1 error

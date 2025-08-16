@@ -1,14 +1,47 @@
 public class Main {
-    static double PI;
+    static double PI = (double)(3.141592653589793);
 
     static double arc_length(double angle, double radius) {
-        return 2.0 * PI * radius * (angle / 360.0);
+        return (double)((double)((double)(2.0) * (double)(PI)) * (double)(radius)) * (double)(((double)(angle) / (double)(360.0)));
     }
     public static void main(String[] args) {
-        PI = 3.141592653589793;
-        System.out.println(_p(arc_length(45.0, 5.0)));
-        System.out.println(_p(arc_length(120.0, 15.0)));
-        System.out.println(_p(arc_length(90.0, 10.0)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(_p(arc_length((double)(45.0), (double)(5.0))));
+            System.out.println(_p(arc_length((double)(120.0), (double)(15.0))));
+            System.out.println(_p(arc_length((double)(90.0), (double)(10.0))));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -26,7 +59,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

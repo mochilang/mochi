@@ -1,8 +1,84 @@
-type: error[T005]: parameter `name` is missing a type
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:15:1
-
- 15 | fun make_node(name, count, parent) {
-    | ^
-
-help:
-  Add a type like `x: int` to this parameter.
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:12: error: cannot find symbol
+current.node_link = target_node;
+       ^
+  symbol:   variable node_link
+  location: variable current of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:18: error: cannot find symbol
+        if (children_1.containsKey(first)) {
+                      ^
+  symbol:   method containsKey(String)
+  location: variable children_1 of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:20: error: cannot find symbol
+child_1.count = ((Number)(((Object)(((java.util.Map)child_1)).get("count")))).intValue() + (long)(count);
+       ^
+  symbol:   variable count
+  location: variable child_1 of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:21: error: incompatible types: String cannot be converted to long
+children_1[(int)((long)(first))] = child_1;
+                       ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:21: error: array required, but Object found
+children_1[(int)((long)(first))] = child_1;
+          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:22: error: cannot find symbol
+in_tree.children = children_1;
+       ^
+  symbol:   variable children
+  location: variable in_tree of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:25: error: incompatible types: String cannot be converted to long
+children_1[(int)((long)(first))] = new_node_1;
+                       ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:25: error: array required, but Object found
+children_1[(int)((long)(first))] = new_node_1;
+          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:26: error: cannot find symbol
+in_tree.children = children_1;
+       ^
+  symbol:   variable children
+  location: variable in_tree of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:29: error: cannot find symbol
+entry_1.node = new_node_1;
+       ^
+  symbol:   variable node
+  location: variable entry_1 of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:33: error: incompatible types: String cannot be converted to long
+header_table[(int)((long)(first))] = entry_1;
+                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:33: error: array required, but Object found
+header_table[(int)((long)(first))] = entry_1;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:83: error: incompatible types: double[] cannot be converted to Object[]
+        Object[] freq_items_1 = new double[]{};
+                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:139: error: incompatible types: double[] cannot be converted to Object[]
+        Object[] items_3 = new double[]{};
+                           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:140: error: for-each not applicable to expression type
+        for (var k : header_table) {
+                     ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:148: error: incompatible types: Object cannot be converted to int
+                if (String.valueOf(((Object)(((java.util.Map)header_table[sorted_items_1[(int)((long)(i_5))]])).get("count"))).compareTo(String.valueOf(((Object)(((java.util.Map)header_table[sorted_items_1[(int)((long)(j_7))]])).get("count")))) > 0) {
+                                                                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:148: error: array required, but Object found
+                if (String.valueOf(((Object)(((java.util.Map)header_table[sorted_items_1[(int)((long)(i_5))]])).get("count"))).compareTo(String.valueOf(((Object)(((java.util.Map)header_table[sorted_items_1[(int)((long)(j_7))]])).get("count")))) > 0) {
+                                                                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:148: error: incompatible types: Object cannot be converted to int
+                if (String.valueOf(((Object)(((java.util.Map)header_table[sorted_items_1[(int)((long)(i_5))]])).get("count"))).compareTo(String.valueOf(((Object)(((java.util.Map)header_table[sorted_items_1[(int)((long)(j_7))]])).get("count")))) > 0) {
+                                                                                                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:148: error: array required, but Object found
+                if (String.valueOf(((Object)(((java.util.Map)header_table[sorted_items_1[(int)((long)(i_5))]])).get("count"))).compareTo(String.valueOf(((Object)(((java.util.Map)header_table[sorted_items_1[(int)((long)(j_7))]])).get("count")))) > 0) {
+                                                                                                                                                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:163: error: incompatible types: Object cannot be converted to int
+            Object[] cond_pats_2 = ((Object[])(find_prefix_path((String)(base_pat_1), (Object)(((Object)(((java.util.Map)header_table[base_pat_1])).get("node"))))));
+                                                                                                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:163: error: array required, but Object found
+            Object[] cond_pats_2 = ((Object[])(find_prefix_path((String)(base_pat_1), (Object)(((Object)(((java.util.Map)header_table[base_pat_1])).get("node"))))));
+                                                                                                                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java:164: error: incompatible types: double[] cannot be converted to Object[]
+            Object[] cond_dataset_1 = new double[]{};
+                                      ^
+Note: /tmp/TestJavaTranspiler_Algorithms_Golden504_frequent_pattern_growth1108235692/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+22 errors

@@ -1,24 +1,30 @@
 public class Main {
 
-    static double mean(double[] nums) {
-        if ((long)(nums.length) == 0L) {
-            throw new RuntimeException(String.valueOf("List is empty"));
+    static long decimal_to_negative_base_2(long num) {
+        if ((long)(num) == 0L) {
+            return 0;
         }
-        double total_1 = (double)(0.0);
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(nums.length)) {
-            total_1 = (double)((double)(total_1) + (double)(nums[(int)((long)(i_1))]));
-            i_1 = (long)((long)(i_1) + 1L);
+        long n_1 = (long)(num);
+        String ans_1 = "";
+        while ((long)(n_1) != 0L) {
+            long rem_1 = Math.floorMod(n_1, (-2));
+            n_1 = Math.floorDiv(n_1, (-2));
+            if ((long)(rem_1) < 0L) {
+                rem_1 = (long)((long)(rem_1) + 2L);
+                n_1 = (long)((long)(n_1) + 1L);
+            }
+            ans_1 = _p(rem_1) + ans_1;
         }
-        return (double)(total_1) / (double)((((Number)(nums.length)).doubleValue()));
+        return Integer.parseInt(ans_1);
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(mean(((double[])(new double[]{3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0})))));
-            System.out.println(_p(mean(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0})))));
-            System.out.println(_p(mean(((double[])(new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0})))));
+            System.out.println(decimal_to_negative_base_2(0L));
+            System.out.println(decimal_to_negative_base_2((long)(-19)));
+            System.out.println(decimal_to_negative_base_2(4L));
+            System.out.println(decimal_to_negative_base_2(7L));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
