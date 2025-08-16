@@ -1,101 +1,67 @@
 public class Main {
 
-    static int double_factorial_recursive(int n) {
-        if (n < 0) {
+    static long double_factorial_recursive(long n) {
+        if ((long)(n) < 0L) {
             throw new RuntimeException(String.valueOf("double_factorial_recursive() not defined for negative values"));
         }
-        if (n <= 1) {
+        if ((long)(n) <= 1L) {
             return 1;
         }
-        return n * double_factorial_recursive(n - 2);
+        return (long)(n) * (long)(double_factorial_recursive((long)((long)(n) - 2L)));
     }
 
-    static int double_factorial_iterative(int n) {
-        if (n < 0) {
+    static long double_factorial_iterative(long n) {
+        if ((long)(n) < 0L) {
             throw new RuntimeException(String.valueOf("double_factorial_iterative() not defined for negative values"));
         }
-        int result = 1;
-        int i = n;
-        while (i > 0) {
-            result = result * i;
-            i = i - 2;
+        long result_1 = 1L;
+        long i_1 = (long)(n);
+        while ((long)(i_1) > 0L) {
+            result_1 = (long)((long)(result_1) * (long)(i_1));
+            i_1 = (long)((long)(i_1) - 2L);
         }
-        return result;
+        return result_1;
     }
 
     static void test_double_factorial() {
-        if (double_factorial_recursive(0) != 1) {
+        if ((long)(double_factorial_recursive(0L)) != 1L) {
             throw new RuntimeException(String.valueOf("0!! recursive failed"));
         }
-        if (double_factorial_iterative(0) != 1) {
+        if ((long)(double_factorial_iterative(0L)) != 1L) {
             throw new RuntimeException(String.valueOf("0!! iterative failed"));
         }
-        if (double_factorial_recursive(1) != 1) {
+        if ((long)(double_factorial_recursive(1L)) != 1L) {
             throw new RuntimeException(String.valueOf("1!! recursive failed"));
         }
-        if (double_factorial_iterative(1) != 1) {
+        if ((long)(double_factorial_iterative(1L)) != 1L) {
             throw new RuntimeException(String.valueOf("1!! iterative failed"));
         }
-        if (double_factorial_recursive(5) != 15) {
+        if ((long)(double_factorial_recursive(5L)) != 15L) {
             throw new RuntimeException(String.valueOf("5!! recursive failed"));
         }
-        if (double_factorial_iterative(5) != 15) {
+        if ((long)(double_factorial_iterative(5L)) != 15L) {
             throw new RuntimeException(String.valueOf("5!! iterative failed"));
         }
-        if (double_factorial_recursive(6) != 48) {
+        if ((long)(double_factorial_recursive(6L)) != 48L) {
             throw new RuntimeException(String.valueOf("6!! recursive failed"));
         }
-        if (double_factorial_iterative(6) != 48) {
+        if ((long)(double_factorial_iterative(6L)) != 48L) {
             throw new RuntimeException(String.valueOf("6!! iterative failed"));
         }
-        int n = 0;
-        while (n <= 10) {
-            if (double_factorial_recursive(n) != double_factorial_iterative(n)) {
+        long n_1 = 0L;
+        while ((long)(n_1) <= 10L) {
+            if ((long)(double_factorial_recursive((long)(n_1))) != (long)(double_factorial_iterative((long)(n_1)))) {
                 throw new RuntimeException(String.valueOf("double factorial mismatch"));
             }
-            n = n + 1;
+            n_1 = (long)((long)(n_1) + 1L);
         }
     }
 
     static void main() {
         test_double_factorial();
-        System.out.println(double_factorial_iterative(10));
+        System.out.println(double_factorial_iterative(10L));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 }

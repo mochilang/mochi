@@ -1,199 +1,165 @@
 public class Main {
 
     static long pow2_int(long n) {
-        long result = 1;
-        long i_1 = 0;
-        while (i_1 < n) {
-            result = result * 2;
-            i_1 = i_1 + 1;
+        long result = 1L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            result = (long)((long)(result) * 2L);
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
     static double pow2_float(long n) {
-        double result_1 = 1.0;
-        if (n >= 0) {
-            long i_4 = 0;
-            while (i_4 < n) {
-                result_1 = result_1 * 2.0;
-                i_4 = i_4 + 1;
+        double result_1 = (double)(1.0);
+        if ((long)(n) >= 0L) {
+            long i_4 = 0L;
+            while ((long)(i_4) < (long)(n)) {
+                result_1 = (double)((double)(result_1) * (double)(2.0));
+                i_4 = (long)((long)(i_4) + 1L);
             }
         } else {
-            long i_5 = 0;
-            long m_1 = 0 - n;
-            while (i_5 < m_1) {
-                result_1 = result_1 / 2.0;
-                i_5 = i_5 + 1;
+            long i_5 = 0L;
+            long m_1 = (long)(0L - (long)(n));
+            while ((long)(i_5) < (long)(m_1)) {
+                result_1 = (double)((double)(result_1) / (double)(2.0));
+                i_5 = (long)((long)(i_5) + 1L);
             }
         }
         return result_1;
     }
 
     static long lshift(long num, long k) {
-        long result_2 = num;
-        long i_7 = 0;
-        while (i_7 < k) {
-            result_2 = result_2 * 2;
-            i_7 = i_7 + 1;
+        long result_2 = (long)(num);
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(k)) {
+            result_2 = (long)((long)(result_2) * 2L);
+            i_7 = (long)((long)(i_7) + 1L);
         }
         return result_2;
     }
 
     static long rshift(long num, long k) {
-        long result_3 = num;
-        long i_9 = 0;
-        while (i_9 < k) {
-            result_3 = Math.floorDiv((result_3 - (Math.floorMod(result_3, 2))), 2);
-            i_9 = i_9 + 1;
+        long result_3 = (long)(num);
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(k)) {
+            result_3 = Math.floorDiv(((long)(result_3) - (long)((Math.floorMod(result_3, 2)))), 2);
+            i_9 = (long)((long)(i_9) + 1L);
         }
         return result_3;
     }
 
     static long log2_floor(double x) {
-        double n = x;
-        long e_1 = 0;
-        while (n >= 2.0) {
-            n = n / 2.0;
-            e_1 = e_1 + 1;
+        double n = (double)(x);
+        long e_1 = 0L;
+        while ((double)(n) >= (double)(2.0)) {
+            n = (double)((double)(n) / (double)(2.0));
+            e_1 = (long)((long)(e_1) + 1L);
         }
-        while (n < 1.0) {
-            n = n * 2.0;
-            e_1 = e_1 - 1;
+        while ((double)(n) < (double)(1.0)) {
+            n = (double)((double)(n) * (double)(2.0));
+            e_1 = (long)((long)(e_1) - 1L);
         }
         return e_1;
     }
 
     static long float_to_bits(double x) {
-        double num = x;
-        long sign_1 = 0;
-        if (num < 0.0) {
-            sign_1 = 1;
-            num = -num;
+        double num = (double)(x);
+        long sign_1 = 0L;
+        if ((double)(num) < (double)(0.0)) {
+            sign_1 = 1L;
+            num = (double)(-num);
         }
-        long exp_1 = log2_floor(num);
-        double pow_1 = pow2_float(exp_1);
-        double normalized_1 = num / pow_1;
-        double frac_1 = normalized_1 - 1.0;
-        long mantissa_1 = ((Number)((frac_1 * pow2_float(23)))).intValue();
-        long exp_bits_1 = exp_1 + 127;
-        return lshift(sign_1, 31) + lshift(exp_bits_1, 23) + mantissa_1;
+        long exp_1 = (long)(log2_floor((double)(num)));
+        double pow_1 = (double)(pow2_float((long)(exp_1)));
+        double normalized_1 = (double)((double)(num) / (double)(pow_1));
+        double frac_1 = (double)((double)(normalized_1) - (double)(1.0));
+        long mantissa_1 = (long)(((Number)(((double)(frac_1) * (double)(pow2_float(23L))))).intValue());
+        long exp_bits_1 = (long)((long)(exp_1) + 127L);
+        return (long)((long)(lshift((long)(sign_1), 31L)) + (long)(lshift((long)(exp_bits_1), 23L))) + (long)(mantissa_1);
     }
 
     static double bits_to_float(long bits) {
-        long sign_bit = Math.floorMod(rshift(bits, 31), 2);
-        double sign_3 = 1.0;
-        if (sign_bit == 1) {
-            sign_3 = -1.0;
+        long sign_bit = Math.floorMod(rshift((long)(bits), 31L), 2);
+        double sign_3 = (double)(1.0);
+        if ((long)(sign_bit) == 1L) {
+            sign_3 = (double)(-1.0);
         }
-        long exp_bits_3 = Math.floorMod(rshift(bits, 23), 256);
-        long exp_3 = exp_bits_3 - 127;
-        long mantissa_bits_1 = Math.floorMod(bits, pow2_int(23));
-        double mantissa_3 = 1.0 + (((Number)(mantissa_bits_1)).doubleValue()) / pow2_float(23);
-        return sign_3 * mantissa_3 * pow2_float(exp_3);
+        long exp_bits_3 = Math.floorMod(rshift((long)(bits), 23L), 256);
+        long exp_3 = (long)((long)(exp_bits_3) - 127L);
+        long mantissa_bits_1 = Math.floorMod(bits, pow2_int(23L));
+        double mantissa_3 = (double)((double)(1.0) + (double)((double)((((Number)(mantissa_bits_1)).doubleValue())) / (double)(pow2_float(23L))));
+        return (double)((double)(sign_3) * (double)(mantissa_3)) * (double)(pow2_float((long)(exp_3)));
     }
 
     static double absf(double x) {
-        if (x < 0.0) {
+        if ((double)(x) < (double)(0.0)) {
             return -x;
         }
         return x;
     }
 
     static double sqrtApprox(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
-        double guess_1 = x / 2.0;
-        long i_11 = 0;
-        while (i_11 < 20) {
-            guess_1 = (guess_1 + x / guess_1) / 2.0;
-            i_11 = i_11 + 1;
+        double guess_1 = (double)((double)(x) / (double)(2.0));
+        long i_11 = 0L;
+        while ((long)(i_11) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_11 = (long)((long)(i_11) + 1L);
         }
         return guess_1;
     }
 
     static boolean is_close(double a, double b, double rel_tol) {
-        return absf(a - b) <= rel_tol * absf(b);
+        return (double)(absf((double)((double)(a) - (double)(b)))) <= (double)((double)(rel_tol) * (double)(absf((double)(b))));
     }
 
     static double fast_inverse_sqrt(double number) {
-        if (number <= 0.0) {
+        if ((double)(number) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Input must be a positive number."));
         }
-        long i_13 = float_to_bits(number);
-        long magic_1 = 1597463007;
-        long y_bits_1 = magic_1 - rshift(i_13, 1);
-        double y_1 = bits_to_float(y_bits_1);
-        y_1 = y_1 * (1.5 - 0.5 * number * y_1 * y_1);
+        long i_13 = (long)(float_to_bits((double)(number)));
+        long magic_1 = 1597463007L;
+        long y_bits_1 = (long)((long)(magic_1) - (long)(rshift((long)(i_13), 1L)));
+        double y_1 = (double)(bits_to_float((long)(y_bits_1)));
+        y_1 = (double)((double)(y_1) * (double)(((double)(1.5) - (double)((double)((double)((double)(0.5) * (double)(number)) * (double)(y_1)) * (double)(y_1)))));
         return y_1;
     }
 
     static void test_fast_inverse_sqrt() {
-        if (absf(fast_inverse_sqrt(10.0) - 0.3156857923527257) > 0.0001) {
+        if ((double)(absf((double)((double)(fast_inverse_sqrt((double)(10.0))) - (double)(0.3156857923527257)))) > (double)(0.0001)) {
             throw new RuntimeException(String.valueOf("fast_inverse_sqrt(10) failed"));
         }
-        if (absf(fast_inverse_sqrt(4.0) - 0.49915357479239103) > 0.0001) {
+        if ((double)(absf((double)((double)(fast_inverse_sqrt((double)(4.0))) - (double)(0.49915357479239103)))) > (double)(0.0001)) {
             throw new RuntimeException(String.valueOf("fast_inverse_sqrt(4) failed"));
         }
-        if (absf(fast_inverse_sqrt(4.1) - 0.4932849504615651) > 0.0001) {
+        if ((double)(absf((double)((double)(fast_inverse_sqrt((double)(4.1))) - (double)(0.4932849504615651)))) > (double)(0.0001)) {
             throw new RuntimeException(String.valueOf("fast_inverse_sqrt(4.1) failed"));
         }
-        long i_15 = 50;
-        while (i_15 < 60) {
-            double y_3 = fast_inverse_sqrt(((Number)(i_15)).doubleValue());
-            double actual_1 = 1.0 / sqrtApprox(((Number)(i_15)).doubleValue());
-            if (!(Boolean)is_close(y_3, actual_1, 0.00132)) {
+        long i_15 = 50L;
+        while ((long)(i_15) < 60L) {
+            double y_3 = (double)(fast_inverse_sqrt((double)(((Number)(i_15)).doubleValue())));
+            double actual_1 = (double)((double)(1.0) / (double)(sqrtApprox((double)(((Number)(i_15)).doubleValue()))));
+            if (!(Boolean)is_close((double)(y_3), (double)(actual_1), (double)(0.00132))) {
                 throw new RuntimeException(String.valueOf("relative error too high"));
             }
-            i_15 = i_15 + 1;
+            i_15 = (long)((long)(i_15) + 1L);
         }
     }
 
     static void main() {
         test_fast_inverse_sqrt();
-        long i_17 = 5;
-        while (i_17 <= 100) {
-            double diff_1 = (1.0 / sqrtApprox(((Number)(i_17)).doubleValue())) - fast_inverse_sqrt(((Number)(i_17)).doubleValue());
+        long i_17 = 5L;
+        while ((long)(i_17) <= 100L) {
+            double diff_1 = (double)((double)(((double)(1.0) / (double)(sqrtApprox((double)(((Number)(i_17)).doubleValue()))))) - (double)(fast_inverse_sqrt((double)(((Number)(i_17)).doubleValue()))));
             System.out.println(_p(i_17) + ": " + _p(diff_1));
-            i_17 = i_17 + 5;
+            i_17 = (long)((long)(i_17) + 5L);
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -211,7 +177,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

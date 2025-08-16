@@ -1,44 +1,44 @@
 public class Main {
 
     static double find_min_iterative(double[] nums) {
-        if (nums.length == 0) {
+        if ((long)(nums.length) == 0L) {
             throw new RuntimeException(String.valueOf("find_min_iterative() arg is an empty sequence"));
         }
-        double min_num_1 = nums[(int)(0)];
-        long i_1 = 0;
-        while (i_1 < nums.length) {
-            double num_1 = nums[(int)(i_1)];
-            if (num_1 < min_num_1) {
-                min_num_1 = num_1;
+        double min_num_1 = (double)(nums[(int)(0L)]);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(nums.length)) {
+            double num_1 = (double)(nums[(int)((long)(i_1))]);
+            if ((double)(num_1) < (double)(min_num_1)) {
+                min_num_1 = (double)(num_1);
             }
-            i_1 = i_1 + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return min_num_1;
     }
 
     static double find_min_recursive(double[] nums, long left, long right) {
-        long n = nums.length;
-        if (n == 0) {
+        long n = (long)(nums.length);
+        if ((long)(n) == 0L) {
             throw new RuntimeException(String.valueOf("find_min_recursive() arg is an empty sequence"));
         }
-        if (left >= n || left < (0 - n) || right >= n || right < (0 - n)) {
+        if ((long)(left) >= (long)(n) || (long)(left) < (long)((0L - (long)(n))) || (long)(right) >= (long)(n) || (long)(right) < (long)((0L - (long)(n)))) {
             throw new RuntimeException(String.valueOf("list index out of range"));
         }
-        long l_1 = left;
-        long r_1 = right;
-        if (l_1 < 0) {
-            l_1 = n + l_1;
+        long l_1 = (long)(left);
+        long r_1 = (long)(right);
+        if ((long)(l_1) < 0L) {
+            l_1 = (long)((long)(n) + (long)(l_1));
         }
-        if (r_1 < 0) {
-            r_1 = n + r_1;
+        if ((long)(r_1) < 0L) {
+            r_1 = (long)((long)(n) + (long)(r_1));
         }
-        if (l_1 == r_1) {
-            return nums[(int)(l_1)];
+        if ((long)(l_1) == (long)(r_1)) {
+            return nums[(int)((long)(l_1))];
         }
-        long mid_1 = Math.floorDiv((l_1 + r_1), 2);
-        double left_min_1 = find_min_recursive(((double[])(nums)), l_1, mid_1);
-        double right_min_1 = find_min_recursive(((double[])(nums)), mid_1 + 1, r_1);
-        if (left_min_1 <= right_min_1) {
+        long mid_1 = Math.floorDiv(((long)(l_1) + (long)(r_1)), 2);
+        double left_min_1 = (double)(find_min_recursive(((double[])(nums)), (long)(l_1), (long)(mid_1)));
+        double right_min_1 = (double)(find_min_recursive(((double[])(nums)), (long)((long)(mid_1) + 1L), (long)(r_1)));
+        if ((double)(left_min_1) <= (double)(right_min_1)) {
             return left_min_1;
         }
         return right_min_1;
@@ -46,28 +46,28 @@ public class Main {
 
     static void test_find_min() {
         double[] a = ((double[])(new double[]{3.0, 2.0, 1.0}));
-        if (find_min_iterative(((double[])(a))) != 1.0) {
+        if ((double)(find_min_iterative(((double[])(a)))) != (double)(1.0)) {
             throw new RuntimeException(String.valueOf("iterative test1 failed"));
         }
-        if (find_min_recursive(((double[])(a)), 0, a.length - 1) != 1.0) {
+        if ((double)(find_min_recursive(((double[])(a)), 0L, (long)((long)(a.length) - 1L))) != (double)(1.0)) {
             throw new RuntimeException(String.valueOf("recursive test1 failed"));
         }
         double[] b_1 = ((double[])(new double[]{-3.0, -2.0, -1.0}));
-        if (find_min_iterative(((double[])(b_1))) != (-3.0)) {
+        if ((double)(find_min_iterative(((double[])(b_1)))) != (double)((-3.0))) {
             throw new RuntimeException(String.valueOf("iterative test2 failed"));
         }
-        if (find_min_recursive(((double[])(b_1)), 0, b_1.length - 1) != (-3.0)) {
+        if ((double)(find_min_recursive(((double[])(b_1)), 0L, (long)((long)(b_1.length) - 1L))) != (double)((-3.0))) {
             throw new RuntimeException(String.valueOf("recursive test2 failed"));
         }
         double[] c_1 = ((double[])(new double[]{3.0, -3.0, 0.0}));
-        if (find_min_iterative(((double[])(c_1))) != (-3.0)) {
+        if ((double)(find_min_iterative(((double[])(c_1)))) != (double)((-3.0))) {
             throw new RuntimeException(String.valueOf("iterative test3 failed"));
         }
-        if (find_min_recursive(((double[])(c_1)), 0, c_1.length - 1) != (-3.0)) {
+        if ((double)(find_min_recursive(((double[])(c_1)), 0L, (long)((long)(c_1.length) - 1L))) != (double)((-3.0))) {
             throw new RuntimeException(String.valueOf("recursive test3 failed"));
         }
         double[] d_1 = ((double[])(new double[]{1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0, 10.0}));
-        if (find_min_recursive(((double[])(d_1)), (0 - d_1.length), (0 - 1)) != 1.0) {
+        if ((double)(find_min_recursive(((double[])(d_1)), (long)((0L - (long)(d_1.length))), (long)((0L - 1L)))) != (double)(1.0)) {
             throw new RuntimeException(String.valueOf("negative index test failed"));
         }
     }
@@ -78,41 +78,7 @@ public class Main {
         System.out.println(_p(find_min_iterative(((double[])(sample_1)))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -130,7 +96,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

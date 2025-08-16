@@ -1,27 +1,27 @@
 public class Main {
 
     static double sqrtApprox(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = (double)(x);
+        long i_1 = 0L;
+        while ((long)(i_1) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return guess;
+        return guess_1;
     }
 
     static double euclidean_distance(double[] v1, double[] v2) {
-        double sum = 0.0;
-        int i_1 = 0;
-        while (i_1 < v1.length) {
-            double diff = v1[i_1] - v2[i_1];
-            sum = sum + diff * diff;
-            i_1 = i_1 + 1;
+        double sum = (double)(0.0);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(v1.length)) {
+            double diff_1 = (double)((double)(v1[(int)((long)(i_3))]) - (double)(v2[(int)((long)(i_3))]));
+            sum = (double)((double)(sum) + (double)((double)(diff_1) * (double)(diff_1)));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return sqrtApprox(sum);
+        return sqrtApprox((double)(sum));
     }
 
     static double euclidean_distance_no_np(double[] v1, double[] v2) {
@@ -36,41 +36,7 @@ public class Main {
         System.out.println(_p(euclidean_distance_no_np(((double[])(new double[]{0.0, 0.0})), ((double[])(new double[]{2.0, 2.0})))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -85,6 +51,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

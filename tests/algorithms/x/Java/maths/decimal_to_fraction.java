@@ -1,8 +1,8 @@
 public class Main {
     static class Fraction {
-        int numerator;
-        int denominator;
-        Fraction(int numerator, int denominator) {
+        long numerator;
+        long denominator;
+        Fraction(long numerator, long denominator) {
             this.numerator = numerator;
             this.denominator = denominator;
         }
@@ -13,117 +13,117 @@ public class Main {
     }
 
 
-    static int pow10(int n) {
-        int result = 1;
-        int i = 0;
-        while (i < n) {
-            result = result * 10;
-            i = i + 1;
+    static long pow10(long n) {
+        long result = 1L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            result = (long)((long)(result) * 10L);
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
-    static int gcd(int a, int b) {
-        int x = a;
-        int y = b;
-        if (x < 0) {
-            x = -x;
+    static long gcd(long a, long b) {
+        long x = (long)(a);
+        long y_1 = (long)(b);
+        if ((long)(x) < 0L) {
+            x = (long)(-x);
         }
-        if (y < 0) {
-            y = -y;
+        if ((long)(y_1) < 0L) {
+            y_1 = (long)(-y_1);
         }
-        while (y != 0) {
-            int r = Math.floorMod(x, y);
-            x = y;
-            y = r;
+        while ((long)(y_1) != 0L) {
+            long r_1 = Math.floorMod(x, y_1);
+            x = (long)(y_1);
+            y_1 = (long)(r_1);
         }
         return x;
     }
 
     static Fraction parse_decimal(String s) {
-        if (_runeLen(s) == 0) {
+        if ((long)(_runeLen(s)) == 0L) {
             throw new RuntimeException(String.valueOf("invalid number"));
         }
-        int idx = 0;
-        int sign = 1;
-        String first = _substr(s, 0, 1);
-        if ((first.equals("-"))) {
-            sign = -1;
-            idx = 1;
-        } else         if ((first.equals("+"))) {
-            idx = 1;
+        long idx_1 = 0L;
+        long sign_1 = 1L;
+        String first_1 = _substr(s, (int)(0L), (int)(1L));
+        if ((first_1.equals("-"))) {
+            sign_1 = (long)(-1);
+            idx_1 = 1L;
+        } else         if ((first_1.equals("+"))) {
+            idx_1 = 1L;
         }
-        String int_part = "";
-        while (idx < _runeLen(s)) {
-            String c = _substr(s, idx, idx + 1);
-            if ((c.compareTo("0") >= 0) && (c.compareTo("9") <= 0)) {
-                int_part = int_part + c;
-                idx = idx + 1;
+        String int_part_1 = "";
+        while ((long)(idx_1) < (long)(_runeLen(s))) {
+            String c_1 = _substr(s, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L)));
+            if ((c_1.compareTo("0") >= 0) && (c_1.compareTo("9") <= 0)) {
+                int_part_1 = int_part_1 + c_1;
+                idx_1 = (long)((long)(idx_1) + 1L);
             } else {
                 break;
             }
         }
-        String frac_part = "";
-        if (idx < _runeLen(s) && (_substr(s, idx, idx + 1).equals("."))) {
-            idx = idx + 1;
-            while (idx < _runeLen(s)) {
-                String c_1 = _substr(s, idx, idx + 1);
-                if ((c_1.compareTo("0") >= 0) && (c_1.compareTo("9") <= 0)) {
-                    frac_part = frac_part + c_1;
-                    idx = idx + 1;
+        String frac_part_1 = "";
+        if ((long)(idx_1) < (long)(_runeLen(s)) && (_substr(s, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L))).equals("."))) {
+            idx_1 = (long)((long)(idx_1) + 1L);
+            while ((long)(idx_1) < (long)(_runeLen(s))) {
+                String c_3 = _substr(s, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L)));
+                if ((c_3.compareTo("0") >= 0) && (c_3.compareTo("9") <= 0)) {
+                    frac_part_1 = frac_part_1 + c_3;
+                    idx_1 = (long)((long)(idx_1) + 1L);
                 } else {
                     break;
                 }
             }
         }
-        int exp = 0;
-        if (idx < _runeLen(s) && ((_substr(s, idx, idx + 1).equals("e")) || (_substr(s, idx, idx + 1).equals("E")))) {
-            idx = idx + 1;
-            int exp_sign = 1;
-            if (idx < _runeLen(s) && (_substr(s, idx, idx + 1).equals("-"))) {
-                exp_sign = -1;
-                idx = idx + 1;
-            } else             if (idx < _runeLen(s) && (_substr(s, idx, idx + 1).equals("+"))) {
-                idx = idx + 1;
+        long exp_1 = 0L;
+        if ((long)(idx_1) < (long)(_runeLen(s)) && ((_substr(s, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L))).equals("e")) || (_substr(s, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L))).equals("E")))) {
+            idx_1 = (long)((long)(idx_1) + 1L);
+            long exp_sign_1 = 1L;
+            if ((long)(idx_1) < (long)(_runeLen(s)) && (_substr(s, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L))).equals("-"))) {
+                exp_sign_1 = (long)(-1);
+                idx_1 = (long)((long)(idx_1) + 1L);
+            } else             if ((long)(idx_1) < (long)(_runeLen(s)) && (_substr(s, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L))).equals("+"))) {
+                idx_1 = (long)((long)(idx_1) + 1L);
             }
-            String exp_str = "";
-            while (idx < _runeLen(s)) {
-                String c_2 = _substr(s, idx, idx + 1);
-                if ((c_2.compareTo("0") >= 0) && (c_2.compareTo("9") <= 0)) {
-                    exp_str = exp_str + c_2;
-                    idx = idx + 1;
+            String exp_str_1 = "";
+            while ((long)(idx_1) < (long)(_runeLen(s))) {
+                String c_5 = _substr(s, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + 1L)));
+                if ((c_5.compareTo("0") >= 0) && (c_5.compareTo("9") <= 0)) {
+                    exp_str_1 = exp_str_1 + c_5;
+                    idx_1 = (long)((long)(idx_1) + 1L);
                 } else {
                     throw new RuntimeException(String.valueOf("invalid number"));
                 }
             }
-            if (_runeLen(exp_str) == 0) {
+            if ((long)(_runeLen(exp_str_1)) == 0L) {
                 throw new RuntimeException(String.valueOf("invalid number"));
             }
-            exp = exp_sign * Integer.parseInt(exp_str);
+            exp_1 = (long)((long)(exp_sign_1) * (long)(Integer.parseInt(exp_str_1)));
         }
-        if (idx != _runeLen(s)) {
+        if ((long)(idx_1) != (long)(_runeLen(s))) {
             throw new RuntimeException(String.valueOf("invalid number"));
         }
-        if (_runeLen(int_part) == 0) {
-            int_part = "0";
+        if ((long)(_runeLen(int_part_1)) == 0L) {
+            int_part_1 = "0";
         }
-        String num_str = int_part + frac_part;
-        int numerator = Integer.parseInt(num_str);
-        if (sign == (0 - 1)) {
-            numerator = (0 - numerator);
+        String num_str_1 = int_part_1 + frac_part_1;
+        long numerator_1 = (long)(Integer.parseInt(num_str_1));
+        if ((long)(sign_1) == (long)((0L - 1L))) {
+            numerator_1 = (long)((0L - (long)(numerator_1)));
         }
-        int denominator = pow10(_runeLen(frac_part));
-        if (exp > 0) {
-            numerator = numerator * pow10(exp);
-        } else         if (exp < 0) {
-            denominator = denominator * pow10(-exp);
+        long denominator_1 = (long)(pow10((long)(_runeLen(frac_part_1))));
+        if ((long)(exp_1) > 0L) {
+            numerator_1 = (long)((long)(numerator_1) * (long)(pow10((long)(exp_1))));
+        } else         if ((long)(exp_1) < 0L) {
+            denominator_1 = (long)((long)(denominator_1) * (long)(pow10((long)(-exp_1))));
         }
-        return new Fraction(numerator, denominator);
+        return new Fraction(numerator_1, denominator_1);
     }
 
     static Fraction reduce(Fraction fr) {
-        int g = gcd(fr.numerator, fr.denominator);
-        return new Fraction(fr.numerator / g, fr.denominator / g);
+        long g = (long)(gcd((long)(fr.numerator), (long)(fr.denominator)));
+        return new Fraction(Math.floorDiv(((long)(fr.numerator)), ((long)(g))), Math.floorDiv(((long)(fr.denominator)), ((long)(g))));
     }
 
     static Fraction decimal_to_fraction_str(String s) {
@@ -134,69 +134,35 @@ public class Main {
         return decimal_to_fraction_str(_p(x));
     }
 
-    static void assert_fraction(String name, Fraction fr, int num, int den) {
-        if (fr.numerator != num || fr.denominator != den) {
+    static void assert_fraction(String name, Fraction fr, long num, long den) {
+        if ((long)(fr.numerator) != (long)(num) || (long)(fr.denominator) != (long)(den)) {
             throw new RuntimeException(String.valueOf(name));
         }
     }
 
     static void test_decimal_to_fraction() {
-        assert_fraction("case1", decimal_to_fraction(2.0), 2, 1);
-        assert_fraction("case2", decimal_to_fraction(89.0), 89, 1);
-        assert_fraction("case3", decimal_to_fraction_str("67"), 67, 1);
-        assert_fraction("case4", decimal_to_fraction_str("45.0"), 45, 1);
-        assert_fraction("case5", decimal_to_fraction(1.5), 3, 2);
-        assert_fraction("case6", decimal_to_fraction_str("6.25"), 25, 4);
-        assert_fraction("case7", decimal_to_fraction(0.0), 0, 1);
-        assert_fraction("case8", decimal_to_fraction(-2.5), -5, 2);
-        assert_fraction("case9", decimal_to_fraction(0.125), 1, 8);
-        assert_fraction("case10", decimal_to_fraction(1.00000025e+06), 4000001, 4);
-        assert_fraction("case11", decimal_to_fraction(1.3333), 13333, 10000);
-        assert_fraction("case12", decimal_to_fraction_str("1.23e2"), 123, 1);
-        assert_fraction("case13", decimal_to_fraction_str("0.500"), 1, 2);
+        assert_fraction("case1", decimal_to_fraction((double)(2.0)), 2L, 1L);
+        assert_fraction("case2", decimal_to_fraction((double)(89.0)), 89L, 1L);
+        assert_fraction("case3", decimal_to_fraction_str("67"), 67L, 1L);
+        assert_fraction("case4", decimal_to_fraction_str("45.0"), 45L, 1L);
+        assert_fraction("case5", decimal_to_fraction((double)(1.5)), 3L, 2L);
+        assert_fraction("case6", decimal_to_fraction_str("6.25"), 25L, 4L);
+        assert_fraction("case7", decimal_to_fraction((double)(0.0)), 0L, 1L);
+        assert_fraction("case8", decimal_to_fraction((double)(-2.5)), (long)(-5), 2L);
+        assert_fraction("case9", decimal_to_fraction((double)(0.125)), 1L, 8L);
+        assert_fraction("case10", decimal_to_fraction((double)(1.00000025e+06)), 4000001L, 4L);
+        assert_fraction("case11", decimal_to_fraction((double)(1.3333)), 13333L, 10000L);
+        assert_fraction("case12", decimal_to_fraction_str("1.23e2"), 123L, 1L);
+        assert_fraction("case13", decimal_to_fraction_str("0.500"), 1L, 2L);
     }
 
     static void main() {
         test_decimal_to_fraction();
-        Fraction fr = decimal_to_fraction(1.5);
-        System.out.println(_p(fr.numerator) + "/" + _p(fr.denominator));
+        Fraction fr_1 = decimal_to_fraction((double)(1.5));
+        System.out.println(_p(fr_1.numerator) + "/" + _p(fr_1.denominator));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static int _runeLen(String s) {
@@ -204,6 +170,10 @@ public class Main {
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
@@ -221,6 +191,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

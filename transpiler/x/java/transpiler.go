@@ -3392,8 +3392,12 @@ func (i *IntersectExpr) emit(w io.Writer) {
 
 func (c *ConcatExpr) emit(w io.Writer) {
 	elem := arrayElemType(c.Left)
-	if elem == "" {
-		elem = arrayElemType(c.Right)
+	if elem == "" || elem == "Object" {
+		if r := arrayElemType(c.Right); r != "" && r != "Object" {
+			elem = r
+		} else if elem == "" {
+			elem = arrayElemType(c.Right)
+		}
 	}
 	if elem == "int" {
 		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
@@ -7361,9 +7365,12 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    }\n")
 	}
 	if needConcat {
-		buf.WriteString("\n    static <T> T[] concat(T[] a, T[] b) {\n")
-		buf.WriteString("        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);\n")
-		buf.WriteString("        System.arraycopy(b, 0, out, a.length, b.length);\n")
+		buf.WriteString("\n    static Object concat(Object a, Object b) {\n")
+		buf.WriteString("        int len1 = java.lang.reflect.Array.getLength(a);\n")
+		buf.WriteString("        int len2 = java.lang.reflect.Array.getLength(b);\n")
+		buf.WriteString("        Object out = java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), len1 + len2);\n")
+		buf.WriteString("        System.arraycopy(a, 0, out, 0, len1);\n")
+		buf.WriteString("        System.arraycopy(b, 0, out, len1, len2);\n")
 		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")
 	}

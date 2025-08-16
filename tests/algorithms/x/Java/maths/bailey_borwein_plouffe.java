@@ -11,7 +11,7 @@ public class Main {
                 result = Math.floorMod(((long)(result) * (long)(b_1)), modulus);
             }
             b_1 = Math.floorMod(((long)(b_1) * (long)(b_1)), modulus);
-            e_1 = (long)((long)(e_1) / 2L);
+            e_1 = Math.floorDiv(e_1, 2);
         }
         return result;
     }
@@ -82,46 +82,12 @@ public class Main {
         return hd_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            while ((long)(i_3) <= 10L) {
-                digits = digits + String.valueOf(bailey_borwein_plouffe((long)(i_3), 1000L));
-                i_3 = (long)((long)(i_3) + 1L);
-            }
-            System.out.println(digits);
-            System.out.println(bailey_borwein_plouffe(5L, 10000L));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        while ((long)(i_3) <= 10L) {
+            digits = digits + String.valueOf(bailey_borwein_plouffe((long)(i_3), 1000L));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(digits);
+        System.out.println(bailey_borwein_plouffe(5L, 10000L));
     }
 
     static String _p(Object v) {
