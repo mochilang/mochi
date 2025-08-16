@@ -57,6 +57,7 @@ var useSplit bool
 var useValue bool
 var useSha256 bool
 var useNewNode bool
+var dupListElems bool
 var aliasStack []map[string]string
 var namesStack [][]string
 var nameCounts map[string]int
@@ -81,6 +82,7 @@ var zigKeywords = map[string]bool{
 	"return":   true,
 	"pub":      true,
 	"union":    true,
+	"error":    true,
 }
 
 // when true, wrap the generated main function in a benchmark block
@@ -1246,13 +1248,13 @@ func (m *MapLit) emit(w io.Writer) {
 							if strings.HasPrefix(f.Type, "[]") {
 								if ll, ok := e.Value.(*ListLit); ok {
 									ll.ElemType = strings.TrimPrefix(f.Type, "[]")
-                                                               if len(ll.Elems) == 0 {
-                                                                       ll.emit(w)
-                                                               } else {
-                                                                       io.WriteString(w, "@constCast(")
-                                                                       ll.emit(w)
-                                                                       io.WriteString(w, ")")
-                                                               }
+									if len(ll.Elems) == 0 {
+										ll.emit(w)
+									} else {
+										io.WriteString(w, "@constCast(")
+										ll.emit(w)
+										io.WriteString(w, ")")
+									}
 									goto emitted
 								}
 							} else {
@@ -2033,7 +2035,9 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 					if allConst {
 						if kw == "var" {
 							fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", elem)
+							dupListElems = true
 							ll.emit(w)
+							dupListElems = false
 							io.WriteString(w, ") catch unreachable")
 						} else {
 							io.WriteString(w, "@constCast(")
@@ -2041,7 +2045,10 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 							io.WriteString(w, ")")
 						}
 					} else {
+						dup := dupListElems
+						dupListElems = true
 						ll.emit(w)
+						dupListElems = dup
 					}
 				}
 			} else {
@@ -2798,14 +2805,23 @@ func (l *ListLit) emit(w io.Writer) {
 			fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", lbl, tmp, et)
 			for _, e := range l.Elems {
 				fmt.Fprintf(w, "%s.append(", tmp)
+				dup := dupListElems
 				if ll, ok := e.(*ListLit); ok {
-					ll.ElemType = strings.TrimPrefix(et, "[]")
-					io.WriteString(w, "@constCast(")
-					ll.emit(w)
-					io.WriteString(w, ")")
+					inner := strings.TrimPrefix(et, "[]")
+					ll.ElemType = inner
+					if dupListElems {
+						fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", inner)
+						ll.emit(w)
+						io.WriteString(w, ") catch unreachable")
+					} else {
+						io.WriteString(w, "@constCast(")
+						ll.emit(w)
+						io.WriteString(w, ")")
+					}
 				} else {
 					e.emit(w)
 				}
+				dupListElems = dup
 				io.WriteString(w, ") catch unreachable; ")
 			}
 			fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch unreachable); }", lbl, tmp)
@@ -2822,14 +2838,22 @@ func (l *ListLit) emit(w io.Writer) {
 				if i > 0 {
 					io.WriteString(w, ", ")
 				}
+				dup := dupListElems
 				if ll, ok := e.(*ListLit); ok {
 					ll.ElemType = inner
-					io.WriteString(w, "@constCast(")
-					ll.emit(w)
-					io.WriteString(w, ")")
+					if dupListElems {
+						fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", inner)
+						ll.emit(w)
+						io.WriteString(w, ") catch unreachable")
+					} else {
+						io.WriteString(w, "@constCast(")
+						ll.emit(w)
+						io.WriteString(w, ")")
+					}
 				} else {
 					e.emit(w)
 				}
+				dupListElems = dup
 			}
 			fmt.Fprintf(w, "})[0..%d]", len(l.Elems))
 			return
@@ -2980,36 +3004,36 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Value.emit(w)
 			io.WriteString(w, ")")
 		}
-       case "float", "f64":
-               if inner, ok := c.Value.(*CastExpr); ok && (inner.Type == "f64" || inner.Type == "float") {
-                       inner.emit(w)
-                       return
-               }
-               if call, ok := c.Value.(*CallExpr); ok && call.Func == "float" && len(call.Args) == 1 {
-                       io.WriteString(w, "@as(f64, @floatFromInt(")
-                       call.Args[0].emit(w)
-                       io.WriteString(w, "))")
-                       return
-               }
-               if v, ok := c.Value.(*VarRef); ok && strings.HasPrefix(v.Name, "float(") && strings.HasSuffix(v.Name, ")") {
-                       arg := v.Name[len("float("):len(v.Name)-1]
-                       fmt.Fprintf(w, "@as(f64, @floatFromInt(%s))", arg)
-                       return
-               }
-               vt := zigTypeFromExpr(c.Value)
-               if vt == "f64" {
-                       io.WriteString(w, "@as(f64, ")
-                       c.Value.emit(w)
-                       io.WriteString(w, ")")
-               } else if isIntType(vt) {
-                       io.WriteString(w, "@as(f64, @floatFromInt(")
-                       c.Value.emit(w)
-                       io.WriteString(w, "))")
-               } else {
-                       io.WriteString(w, "@as(f64, ")
-                       c.Value.emit(w)
-                       io.WriteString(w, ")")
-               }
+	case "float", "f64":
+		if inner, ok := c.Value.(*CastExpr); ok && (inner.Type == "f64" || inner.Type == "float") {
+			inner.emit(w)
+			return
+		}
+		if call, ok := c.Value.(*CallExpr); ok && call.Func == "float" && len(call.Args) == 1 {
+			io.WriteString(w, "@as(f64, @floatFromInt(")
+			call.Args[0].emit(w)
+			io.WriteString(w, "))")
+			return
+		}
+		if v, ok := c.Value.(*VarRef); ok && strings.HasPrefix(v.Name, "float(") && strings.HasSuffix(v.Name, ")") {
+			arg := v.Name[len("float(") : len(v.Name)-1]
+			fmt.Fprintf(w, "@as(f64, @floatFromInt(%s))", arg)
+			return
+		}
+		vt := zigTypeFromExpr(c.Value)
+		if vt == "f64" {
+			io.WriteString(w, "@as(f64, ")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		} else if isIntType(vt) {
+			io.WriteString(w, "@as(f64, @floatFromInt(")
+			c.Value.emit(w)
+			io.WriteString(w, "))")
+		} else {
+			io.WriteString(w, "@as(f64, ")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		}
 	default:
 		c.Value.emit(w)
 		if zigTypeFromExpr(c.Value) == "Value" {
@@ -3394,22 +3418,22 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "0")
 		}
-       case "to_float":
-               if len(c.Args) == 1 {
-                       io.WriteString(w, "@as(f64, @floatFromInt(")
-                       c.Args[0].emit(w)
-                       io.WriteString(w, "))")
-               } else {
-                       io.WriteString(w, "0.0")
-               }
-       case "float":
-               if len(c.Args) == 1 {
-                       io.WriteString(w, "@as(f64, @floatFromInt(")
-                       c.Args[0].emit(w)
-                       io.WriteString(w, "))")
-               } else {
-                       io.WriteString(w, "0.0")
-               }
+	case "to_float":
+		if len(c.Args) == 1 {
+			io.WriteString(w, "@as(f64, @floatFromInt(")
+			c.Args[0].emit(w)
+			io.WriteString(w, "))")
+		} else {
+			io.WriteString(w, "0.0")
+		}
+	case "float":
+		if len(c.Args) == 1 {
+			io.WriteString(w, "@as(f64, @floatFromInt(")
+			c.Args[0].emit(w)
+			io.WriteString(w, "))")
+		} else {
+			io.WriteString(w, "0.0")
+		}
 	case "avg":
 		if len(c.Args) == 1 {
 			lbl := newLabel()
@@ -4199,14 +4223,14 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
 				continue
 			}
-                       if name, ok := exprToString(expr); ok {
-                               if name == "floor" {
-                                       expr = &CallExpr{Func: "std.math.floor", Args: args}
-                               } else {
-                                       expr = &CallExpr{Func: name, Args: args}
-                               }
-                               continue
-                       }
+			if name, ok := exprToString(expr); ok {
+				if name == "floor" {
+					expr = &CallExpr{Func: "std.math.floor", Args: args}
+				} else {
+					expr = &CallExpr{Func: name, Args: args}
+				}
+				continue
+			}
 			return nil, fmt.Errorf("unsupported call target")
 		}
 		if op.Field != nil {
@@ -5788,9 +5812,18 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			mapVars[s.Var.Name] = false
 			mapVars[alias] = false
 		}
-		if funDepth <= 1 && blockDepth == 0 && !isConstExpr(expr) {
-			vd.Value = nil
-			globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})
+		if funDepth <= 1 && blockDepth == 0 {
+			// Global mutable slice variables cannot be fully
+			// initialised at compile time. Even when the
+			// expression is a constant list literal, Zig would
+			// attempt to perform allocator work during
+			// comptime, resulting in errors. Defer such
+			// initialisations to runtime by emitting an
+			// assignment in the main function instead.
+			if !isConstExpr(expr) || (strings.HasPrefix(vd.Type, "[]") && isConstExpr(expr)) {
+				vd.Value = nil
+				globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})
+			}
 		}
 		return vd, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
@@ -5810,6 +5843,15 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 	case s.Assign != nil && len(s.Assign.Field) > 0:
 		alias := resolveAlias(s.Assign.Name)
 		var target Expr = &VarRef{Name: alias}
+		imap := mapVars[s.Assign.Name]
+		for _, idx := range s.Assign.Index {
+			ix, err := compileExpr(idx.Start)
+			if err != nil {
+				return nil, err
+			}
+			target = &IndexExpr{Target: target, Index: ix, Map: imap}
+			imap = false
+		}
 		for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
 			target = &FieldExpr{Target: target, Name: f.Name}
 		}
@@ -6228,19 +6270,19 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 	var walkExpr func(e Expr)
 	walkExpr = func(e Expr) {
 		switch t := e.(type) {
-               case *VarRef:
-                       key := scope + ":" + t.Name
-                       uses[key]++
-                       if idx := strings.IndexByte(t.Name, '.'); idx >= 0 {
-                               base := t.Name[:idx]
-                               baseKey := scope + ":" + base
-                               uses[baseKey]++
-                               if globalNames[base] {
-                                       uses[":"+base]++
-                               }
-                       } else if globalNames[t.Name] {
-                               uses[":"+t.Name]++
-                       }
+		case *VarRef:
+			key := scope + ":" + t.Name
+			uses[key]++
+			if idx := strings.IndexByte(t.Name, '.'); idx >= 0 {
+				base := t.Name[:idx]
+				baseKey := scope + ":" + base
+				uses[baseKey]++
+				if globalNames[base] {
+					uses[":"+base]++
+				}
+			} else if globalNames[t.Name] {
+				uses[":"+t.Name]++
+			}
 		case *BinaryExpr:
 			walkExpr(t.Left)
 			walkExpr(t.Right)

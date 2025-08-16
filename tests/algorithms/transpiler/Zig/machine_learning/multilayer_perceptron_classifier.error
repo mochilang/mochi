@@ -1,0 +1,16 @@
+signal: aborted
+Segmentation fault at address 0x2019d0
+/workspace/mochi/tests/algorithms/transpiler/Zig/machine_learning/multilayer_perceptron_classifier.zig:59:171: 0x226ea8 in train (multilayer_perceptron_classifier)
+            w1_var_1[_idx(w1_var_1.len, 1)][_idx(w1_var_1[_idx(w1_var_1.len, 1)].len, 0)] = w1_var_1[_idx(w1_var_1.len, 1)][_idx(w1_var_1[_idx(w1_var_1.len, 1)].len, 0)] - lr * d1 * x1;
+                                                                                                                                                                          ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/machine_learning/multilayer_perceptron_classifier.zig:107:14: 0x222641 in main (multilayer_perceptron_classifier)
+        train(4000, 0.5);
+             ^
+/usr/local/zig/lib/std/start.zig:564:22: 0x221e19 in main (multilayer_perceptron_classifier)
+            root.main();
+                     ^
+???:?:?: 0x7f9b4743d1c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f9b4743d1c9` was not available, trace may be incomplete
+
+???:?:?: 0x7f9b4743d28a in ??? (libc.so.6)
+???:?:?: 0x221aa4 in ??? (???)

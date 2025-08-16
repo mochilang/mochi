@@ -1,0 +1,16 @@
+signal: aborted
+thread 12658 panic: index out of bounds: index 0, len 0
+/workspace/mochi/tests/algorithms/transpiler/Zig/machine_learning/polynomial_regression.zig:106:104: 0x2321d0 in matvec_mul (polynomial_regression)
+            sum_1 = sum_1 + A_1[_idx(A_1.len, i_var_4)][_idx(A_1[_idx(A_1.len, i_var_4)].len, j_3)] * v[_idx(v.len, j_3)];
+                                                                                                       ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/machine_learning/polynomial_regression.zig:203:31: 0x22ed71 in main (polynomial_regression)
+        Xty_var_1 = matvec_mul(Xt_var_1, ys_var_1);
+                              ^
+/usr/local/zig/lib/std/start.zig:564:22: 0x22e829 in main (polynomial_regression)
+            root.main();
+                     ^
+???:?:?: 0x7f66304231c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f66304231c9` was not available, trace may be incomplete
+
+???:?:?: 0x7f663042328a in ??? (libc.so.6)
+???:?:?: 0x22e4b4 in ??? (???)

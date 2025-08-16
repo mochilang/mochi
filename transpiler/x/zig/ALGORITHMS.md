@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-16 14:44 +0700
+Last updated: 2025-08-16 21:23 +0700
 
-## Program Checklist (397/1077)
+## Program Checklist (407/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -512,16 +512,16 @@ Last updated: 2025-08-16 14:44 +0700
 | 503 | machine_learning/forecasting/run |   |  |  |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
-| 507 | machine_learning/k_means_clust |   |  |  |
-| 508 | machine_learning/k_nearest_neighbours |   |  |  |
-| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
-| 510 | machine_learning/linear_regression |   |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
-| 512 | machine_learning/logistic_regression |   |  |  |
-| 513 | machine_learning/loss_functions |   |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
-| 515 | machine_learning/mfcc |   |  |  |
+| 506 | machine_learning/gradient_descent | ✓ | 439.723ms | 94.0 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 1.978ms | 640.0 KB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 818µs | 512.0 KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 8.95ms | 2.2 MB |
+| 510 | machine_learning/linear_regression | ✓ | 2.509ms | 512.0 KB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 4.191ms | 1.1 MB |
+| 512 | machine_learning/logistic_regression | ✓ | 42.141ms | 8.1 MB |
+| 513 | machine_learning/loss_functions | ✓ | 999µs | 384.0 KB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 357.756ms | 78.5 MB |
+| 515 | machine_learning/mfcc | ✓ | 2.341ms | 648.0 KB |
 | 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
 | 517 | machine_learning/polynomial_regression |   |  |  |
 | 518 | machine_learning/principle_component_analysis |   |  |  |
