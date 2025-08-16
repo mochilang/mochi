@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
 Completed programs: 870/1077
-Last updated: 2025-08-16 11:48 +0700
+Last updated: 2025-08-16 12:21 +0700
 
 Checklist:
 
@@ -552,56 +552,56 @@ Checklist:
 | 543 | maths/binomial_coefficient | ✓ | 2.0ms | 1.05KB |
 | 544 | maths/binomial_distribution | ✓ | 824.0µs | 1.13KB |
 | 545 | maths/ceil | ✓ | 591.0µs | 1.04KB |
-| 546 | maths/chebyshev_distance | ✓ | 461.0µs | 1000B |
-| 547 | maths/check_polygon | ✓ | 575.0µs | 1.11KB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 223.0µs | 1.07KB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 495.0µs | 1.09KB |
-| 550 | maths/collatz_sequence | ✓ | 310.0µs | 1.53KB |
-| 551 | maths/combinations | ✓ | 464.0µs | 1.62KB |
-| 552 | maths/continued_fraction | ✓ | 193.0µs | 1.27KB |
-| 553 | maths/decimal_isolate | ✓ | 414.0µs | 1.18KB |
-| 554 | maths/decimal_to_fraction | ✓ | 545.0µs | 1.52KB |
-| 555 | maths/dodecahedron | ✓ | 510.0µs | 1.03KB |
-| 556 | maths/double_factorial | ✓ | 402.0µs | 936B |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 326.0µs | 3.30KB |
-| 558 | maths/entropy | ✓ | 15.0ms | 720.96KB |
-| 559 | maths/euclidean_distance | ✓ | 305.0µs | 1.12KB |
-| 560 | maths/euler_method | ✓ | 539.0µs | 16.96KB |
-| 561 | maths/euler_modified | ✓ | 679.0µs | 1.19KB |
-| 562 | maths/eulers_totient | ✓ | 305.0µs | 2.10KB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 485.0µs | 984B |
-| 564 | maths/factorial | ✓ | 396.0µs | 936B |
-| 565 | maths/factors | ✓ | 451.0µs | 1.93KB |
-| 566 | maths/fast_inverse_sqrt | ✓ | 561.0µs | 2.67KB |
-| 567 | maths/fermat_little_theorem | ✓ | 383.0µs | 936B |
-| 568 | maths/fibonacci | ✓ | 578.0µs | 4.02KB |
-| 569 | maths/find_max | ✓ | 333.0µs | 1000B |
-| 570 | maths/find_min | ✓ | 267.0µs | 968B |
-| 571 | maths/floor | ✓ | 395.0µs | 968B |
-| 572 | maths/gamma | ✓ | 16.0ms | 1.05KB |
-| 573 | maths/gaussian | ✓ | 367.0µs | 1000B |
-| 574 | maths/gcd_of_n_numbers | ✓ | 338.0µs | 1000B |
-| 575 | maths/geometric_mean | ✓ | 284.0µs | 968B |
-| 576 | maths/germain_primes | ✓ | 265.0µs | 936B |
-| 577 | maths/greatest_common_divisor | ✓ | 379.0µs | 1.16KB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 549.0µs | 1.10KB |
-| 579 | maths/integer_square_root | ✓ | 365.0µs | 952B |
-| 580 | maths/interquartile_range | ✓ | 346.0µs | 1.88KB |
-| 581 | maths/is_int_palindrome | ✓ | 279.0µs | 936B |
-| 582 | maths/is_ip_v4_address_valid | ✓ | 814.0µs | 3.91KB |
-| 583 | maths/is_square_free | ✓ | 533.0µs | 1000B |
-| 584 | maths/jaccard_similarity | ✓ | 397.0µs | 1.18KB |
-| 585 | maths/joint_probability_distribution | ✓ | 500.0µs | 2.00KB |
-| 586 | maths/josephus_problem | ✓ | 485.0µs | 1.45KB |
-| 587 | maths/juggler_sequence | ✓ | 346.0µs | 1.43KB |
-| 588 | maths/karatsuba | ✓ | 242.0µs | 1.12KB |
-| 589 | maths/kth_lexicographic_permutation | ✓ | 289.0µs | 1.90KB |
-| 590 | maths/largest_of_very_large_numbers | ✓ | 458.0µs | 1000B |
-| 591 | maths/least_common_multiple | ✓ | 433.0µs | 1016B |
-| 592 | maths/line_length | ✓ | 461.0µs | 1.07KB |
-| 593 | maths/liouville_lambda | ✓ | 507.0µs | 968B |
-| 594 | maths/lucas_lehmer_primality_test |   | 633.0µs | 984B |
-| 595 | maths/lucas_series | ✓ | 480.0µs | 1.09KB |
+| 546 | maths/chebyshev_distance | ✓ | 273.0µs | 1000B |
+| 547 | maths/check_polygon | ✓ | 410.0µs | 1.11KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 257.0µs | 1.07KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 338.0µs | 1.09KB |
+| 550 | maths/collatz_sequence | ✓ | 341.0µs | 1.53KB |
+| 551 | maths/combinations | ✓ | 364.0µs | 1.62KB |
+| 552 | maths/continued_fraction | ✓ | 194.0µs | 1.27KB |
+| 553 | maths/decimal_isolate | ✓ | 183.0µs | 1.18KB |
+| 554 | maths/decimal_to_fraction | ✓ | 404.0µs | 1.52KB |
+| 555 | maths/dodecahedron | ✓ | 204.0µs | 1.02KB |
+| 556 | maths/double_factorial | ✓ | 197.0µs | 936B |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 233.0µs | 3.30KB |
+| 558 | maths/entropy | ✓ | 17.0ms | 699.15KB |
+| 559 | maths/euclidean_distance | ✓ | 409.0µs | 1.12KB |
+| 560 | maths/euler_method | ✓ | 578.0µs | 16.96KB |
+| 561 | maths/euler_modified | ✓ | 245.0µs | 1.19KB |
+| 562 | maths/eulers_totient | ✓ | 417.0µs | 2.10KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 158.0µs | 984B |
+| 564 | maths/factorial | ✓ | 284.0µs | 936B |
+| 565 | maths/factors | ✓ | 448.0µs | 1.93KB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 255.0µs | 2.67KB |
+| 567 | maths/fermat_little_theorem | ✓ | 297.0µs | 936B |
+| 568 | maths/fibonacci | ✓ | 489.0µs | 4.02KB |
+| 569 | maths/find_max | ✓ | 221.0µs | 1000B |
+| 570 | maths/find_min | ✓ | 295.0µs | 968B |
+| 571 | maths/floor | ✓ | 141.0µs | 968B |
+| 572 | maths/gamma | ✓ | 10.0ms | 1.05KB |
+| 573 | maths/gaussian | ✓ | 653.0µs | 1000B |
+| 574 | maths/gcd_of_n_numbers | ✓ | 166.0µs | 1000B |
+| 575 | maths/geometric_mean | ✓ | 321.0µs | 968B |
+| 576 | maths/germain_primes | ✓ | 211.0µs | 936B |
+| 577 | maths/greatest_common_divisor | ✓ | 440.0µs | 1.18KB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 505.0µs | 1.10KB |
+| 579 | maths/integer_square_root | ✓ | 380.0µs | 952B |
+| 580 | maths/interquartile_range | ✓ | 310.0µs | 1.88KB |
+| 581 | maths/is_int_palindrome | ✓ | 293.0µs | 936B |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 623.0µs | 3.91KB |
+| 583 | maths/is_square_free | ✓ | 575.0µs | 1000B |
+| 584 | maths/jaccard_similarity | ✓ | 416.0µs | 1.18KB |
+| 585 | maths/joint_probability_distribution | ✓ | 277.0µs | 2.00KB |
+| 586 | maths/josephus_problem | ✓ | 395.0µs | 1.45KB |
+| 587 | maths/juggler_sequence | ✓ | 643.0µs | 1.45KB |
+| 588 | maths/karatsuba | ✓ | 250.0µs | 1.12KB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 265.0µs | 1.90KB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 294.0µs | 1000B |
+| 591 | maths/least_common_multiple | ✓ | 432.0µs | 1016B |
+| 592 | maths/line_length | ✓ | 330.0µs | 1.07KB |
+| 593 | maths/liouville_lambda | ✓ | 223.0µs | 968B |
+| 594 | maths/lucas_lehmer_primality_test |   | 231.0µs | 984B |
+| 595 | maths/lucas_series | ✓ | 384.0µs | 1.09KB |
 | 596 | maths/maclaurin_series | ✓ | 343.0µs | 1.30KB |
 | 597 | maths/manhattan_distance | ✓ | 460.0µs | 1.01KB |
 | 598 | maths/matrix_exponentiation | ✓ | 421.0µs | 3.58KB |
