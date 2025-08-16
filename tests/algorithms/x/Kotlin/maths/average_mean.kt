@@ -1,5 +1,11 @@
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -44,9 +50,9 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(mean(mutableListOf(3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0)).toString())
-        println(mean(mutableListOf(5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0)).toString())
-        println(mean(mutableListOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)).toString())
+        println(_numToStr(mean(mutableListOf(3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0))))
+        println(_numToStr(mean(mutableListOf(5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0))))
+        println(_numToStr(mean(mutableListOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0))))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

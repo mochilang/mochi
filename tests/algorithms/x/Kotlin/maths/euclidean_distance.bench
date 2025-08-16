@@ -1,6 +1,6 @@
 2.82842712474619
 3.4641016151377544
-8.0
-8.0
+8
+8
 2.82842712474619
-{"duration_us":16582, "memory_bytes":116272, "name":"main"}
+{"duration_us":28822, "memory_bytes":116520, "name":"main"}

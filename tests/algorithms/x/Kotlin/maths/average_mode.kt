@@ -78,14 +78,14 @@ fun sort_int(xs: MutableList<Int>): MutableList<Int> {
     var arr: MutableList<Int> = xs
     var i: Int = (0).toInt()
     while (i < arr.size) {
-        var j: BigInteger = ((i + 1).toBigInteger())
-        while (j.compareTo((arr.size).toBigInteger()) < 0) {
-            if (arr[(j).toInt()]!! < arr[i]!!) {
+        var j: Int = (i + 1).toInt()
+        while (j < arr.size) {
+            if (arr[j]!! < arr[i]!!) {
                 var tmp: Int = (arr[i]!!).toInt()
-                _listSet(arr, i, arr[(j).toInt()]!!)
-                _listSet(arr, (j).toInt(), tmp)
+                _listSet(arr, i, arr[j]!!)
+                _listSet(arr, j, tmp)
             }
-            j = j.add((1).toBigInteger())
+            j = j + 1
         }
         i = i + 1
     }
@@ -96,14 +96,14 @@ fun sort_string(xs: MutableList<String>): MutableList<String> {
     var arr: MutableList<String> = xs
     var i: Int = (0).toInt()
     while (i < arr.size) {
-        var j: BigInteger = ((i + 1).toBigInteger())
-        while (j.compareTo((arr.size).toBigInteger()) < 0) {
-            if (arr[(j).toInt()]!! < arr[i]!!) {
+        var j: Int = (i + 1).toInt()
+        while (j < arr.size) {
+            if (arr[j]!! < arr[i]!!) {
                 var tmp: String = arr[i]!!
-                _listSet(arr, i, arr[(j).toInt()]!!)
-                _listSet(arr, (j).toInt(), tmp)
+                _listSet(arr, i, arr[j]!!)
+                _listSet(arr, j, tmp)
             }
-            j = j.add((1).toBigInteger())
+            j = j + 1
         }
         i = i + 1
     }

@@ -1,5 +1,11 @@
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -133,7 +139,7 @@ fun unique(arr: MutableList<Int>): MutableList<Int> {
     var idx: Int = (0).toInt()
     while (idx < arr.size) {
         var v: Int = (arr[idx]!!).toInt()
-        if (!((result.contains(v)) as Boolean)) {
+        if (!contains(result, v)) {
             result = run { val _tmp = result.toMutableList(); _tmp.add(v); _tmp }
         }
         idx = idx + 1
@@ -162,9 +168,9 @@ fun main() {
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
         println(prime_factors(100).toString())
-        println(number_of_divisors(100).toString())
-        println(sum_of_divisors(100).toString())
-        println(euler_phi(100).toString())
+        println(_numToStr(number_of_divisors(100)))
+        println(_numToStr(sum_of_divisors(100)))
+        println(_numToStr(euler_phi(100)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

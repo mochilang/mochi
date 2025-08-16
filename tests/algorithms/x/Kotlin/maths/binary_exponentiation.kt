@@ -84,13 +84,13 @@ fun binary_exp_mod_iterative(base: Int, exponent: Int, modulus: Int): Int {
         panic("modulus must be positive")
     }
     var result: Int = (Math.floorMod(1, modulus)).toInt()
-    var b: BigInteger = ((Math.floorMod(base, modulus)).toBigInteger())
+    var b: Int = (Math.floorMod(base, modulus)).toInt()
     var e: Int = (exponent).toInt()
     while (e > 0) {
         if ((Math.floorMod(e, 2)) == 1) {
-            result = ((((result).toBigInteger().multiply((b))).remainder((modulus).toBigInteger())).toInt())
+            result = Math.floorMod((result * b), modulus)
         }
-        b = (b.multiply((b))).remainder((modulus).toBigInteger())
+        b = Math.floorMod((b * b), modulus)
         e = e / 2
     }
     return result

@@ -1,5 +1,11 @@
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -47,7 +53,7 @@ fun user_main(): Unit {
     var n: Int = (11).toInt()
     var seq: MutableList<Int> = collatz_sequence(n)
     println(seq.toString())
-    println(((("Collatz sequence from " + n.toString()) + " took ") + seq.size.toString()) + " steps.")
+    println(((("Collatz sequence from " + _numToStr(n)) + " took ") + _numToStr(seq.size)) + " steps.")
 }
 
 fun main() {

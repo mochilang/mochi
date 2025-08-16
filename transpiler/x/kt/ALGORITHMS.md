@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-16 12:44 GMT+7
+Last updated: 2025-08-16 15:07 GMT+7
 
-## Algorithms Golden Test Checklist (552/1077)
+## Algorithms Golden Test Checklist (553/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -531,57 +531,57 @@ Last updated: 2025-08-16 12:44 GMT+7
 | 522 | machine_learning/similarity_search | ✓ | 9.59ms | 124.20KiB |
 | 523 | machine_learning/support_vector_machines | ✓ | 10.07ms | 134.24KiB |
 | 524 | machine_learning/word_frequency_functions | ✓ | 43.77ms | 105.53KiB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 26.89ms | 123.48KiB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 27.77ms | 112.51KiB |
-| 527 | maths/abs | ✓ | 25.42ms | 112.92KiB |
-| 528 | maths/addition_without_arithmetic | ✓ | 9.65ms | 134.14KiB |
-| 529 | maths/aliquot_sum | ✓ | 9.39ms | 134.14KiB |
-| 530 | maths/allocation_number | ✓ | 24.14ms | 124.12KiB |
-| 531 | maths/arc_length | ✓ | 8.62ms | 124.31KiB |
-| 532 | maths/area | ✓ | 12.04ms | 122.95KiB |
-| 533 | maths/area_under_curve | ✓ | 48.87ms | 75.65KiB |
-| 534 | maths/average_absolute_deviation | ✓ | 23.81ms | 113.77KiB |
-| 535 | maths/average_mean | ✓ | 26.23ms | 113.78KiB |
-| 536 | maths/average_median | ✓ | 23.20ms | 113.84KiB |
-| 537 | maths/average_mode | ✓ | 30.21ms | 113.77KiB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 396.98ms | 113.84KiB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 27.63ms | 123.49KiB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 32.32ms | 112.46KiB |
+| 527 | maths/abs | ✓ | 27.02ms | 112.88KiB |
+| 528 | maths/addition_without_arithmetic | ✓ | 14.39ms | 130.42KiB |
+| 529 | maths/aliquot_sum | ✓ | 12.51ms | 130.42KiB |
+| 530 | maths/allocation_number | ✓ | 25.48ms | 123.92KiB |
+| 531 | maths/arc_length | ✓ | 13.07ms | 120.60KiB |
+| 532 | maths/area | ✓ | 15.16ms | 119.23KiB |
+| 533 | maths/area_under_curve | ✓ | 47.84ms | 75.55KiB |
+| 534 | maths/average_absolute_deviation | ✓ | 24.05ms | 113.68KiB |
+| 535 | maths/average_mean | ✓ | 23.24ms | 113.79KiB |
+| 536 | maths/average_median | ✓ | 21.81ms | 113.74KiB |
+| 537 | maths/average_mode | ✓ | 26.64ms | 122.55KiB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 389.75ms | 122.88KiB |
 | 539 | maths/base_neg2_conversion | error |  |  |
-| 540 | maths/basic_maths | ✓ | 25.81ms | 124.03KiB |
-| 541 | maths/binary_exponentiation | ✓ | 16.30ms | 111.75KiB |
-| 542 | maths/binary_multiplication | ✓ | 9.81ms | 134.19KiB |
-| 543 | maths/binomial_coefficient | ✓ | 27.82ms | 124.03KiB |
-| 544 | maths/binomial_distribution | ✓ | 9.15ms | 134.62KiB |
-| 545 | maths/ceil | ✓ | 10.80ms | 133.95KiB |
-| 546 | maths/chebyshev_distance | ✓ | 23.79ms | 113.78KiB |
-| 547 | maths/check_polygon | ✓ | 27.86ms | 113.62KiB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 9.76ms | 134.11KiB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 9.56ms | 124.06KiB |
-| 550 | maths/collatz_sequence | ✓ | 16.34ms | 122.38KiB |
-| 551 | maths/combinations | ✓ | 5.26ms | 133.18KiB |
-| 552 | maths/continued_fraction | ✓ | 15.79ms | 123.56KiB |
-| 553 | maths/decimal_isolate | ✓ | 7.65ms | 124.14KiB |
-| 554 | maths/decimal_to_fraction | ✓ | 9.46ms | 110.75KiB |
-| 555 | maths/dodecahedron | ✓ | 5.28ms | 124.14KiB |
-| 556 | maths/double_factorial | ✓ | 5.08ms | 133.95KiB |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 20.90ms | 106.32KiB |
-| 558 | maths/entropy | ✓ | 13.67ms | 129.39KiB |
-| 559 | maths/euclidean_distance | ✓ | 16.58ms | 113.55KiB |
-| 560 | maths/euler_method | ✓ | 27.78ms | 123.45KiB |
-| 561 | maths/euler_modified | ✓ | 20.18ms | 108.68KiB |
-| 562 | maths/eulers_totient | ✓ | 15.86ms | 123.56KiB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 6.06ms | 133.81KiB |
-| 564 | maths/factorial | ✓ | 5.58ms | 133.95KiB |
-| 565 | maths/factors | ✓ | 17.23ms | 114.70KiB |
-| 566 | maths/fast_inverse_sqrt | ✓ | 7.41ms | 124.03KiB |
-| 567 | maths/fermat_little_theorem | ✓ | 8.27ms | 130.54KiB |
-| 568 | maths/fibonacci | ✓ | 14.37ms | 125.98KiB |
-| 569 | maths/find_max | ✓ | 14.56ms | 113.59KiB |
-| 570 | maths/find_min | ✓ | 15.33ms | 113.59KiB |
-| 571 | maths/floor | ✓ | 14.70ms | 123.24KiB |
-| 572 | maths/gamma | ✓ | 17.59ms | 123.58KiB |
-| 573 | maths/gaussian | ✓ | 6.19ms | 124.14KiB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 15.13ms | 123.45KiB |
-| 575 | maths/geometric_mean | error |  |  |
+| 540 | maths/basic_maths | ✓ | 23.22ms | 124.04KiB |
+| 541 | maths/binary_exponentiation | ✓ | 10.32ms | 124.33KiB |
+| 542 | maths/binary_multiplication | ✓ | 12.94ms | 130.47KiB |
+| 543 | maths/binomial_coefficient | ✓ | 24.77ms | 124.04KiB |
+| 544 | maths/binomial_distribution | ✓ | 8.76ms | 134.58KiB |
+| 545 | maths/ceil | ✓ | 9.99ms | 133.90KiB |
+| 546 | maths/chebyshev_distance | ✓ | 25.11ms | 113.73KiB |
+| 547 | maths/check_polygon | ✓ | 23.72ms | 113.57KiB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 13.82ms | 130.37KiB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 12.76ms | 120.24KiB |
+| 550 | maths/collatz_sequence | ✓ | 24.30ms | 122.52KiB |
+| 551 | maths/combinations | ✓ | 12.08ms | 129.70KiB |
+| 552 | maths/continued_fraction | ✓ | 22.61ms | 123.80KiB |
+| 553 | maths/decimal_isolate | ✓ | 13.84ms | 120.66KiB |
+| 554 | maths/decimal_to_fraction | ✓ | 15.80ms | 110.68KiB |
+| 555 | maths/dodecahedron | ✓ | 9.74ms | 124.33KiB |
+| 556 | maths/double_factorial | ✓ | 8.45ms | 134.14KiB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 35.86ms | 106.51KiB |
+| 558 | maths/entropy | ✓ | 20.94ms | 129.53KiB |
+| 559 | maths/euclidean_distance | ✓ | 28.82ms | 113.79KiB |
+| 560 | maths/euler_method | ✓ | 43.99ms | 123.65KiB |
+| 561 | maths/euler_modified | ✓ | 29.74ms | 108.87KiB |
+| 562 | maths/eulers_totient | ✓ | 23.92ms | 123.80KiB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 12.75ms | 130.30KiB |
+| 564 | maths/factorial | ✓ | 9.61ms | 134.14KiB |
+| 565 | maths/factors | ✓ | 28.55ms | 122.73KiB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 15.53ms | 120.45KiB |
+| 567 | maths/fermat_little_theorem | ✓ | 13.65ms | 130.73KiB |
+| 568 | maths/fibonacci | ✓ | 23.35ms | 126.23KiB |
+| 569 | maths/find_max | ✓ | 25.27ms | 113.77KiB |
+| 570 | maths/find_min | ✓ | 23.46ms | 123.64KiB |
+| 571 | maths/floor | ✓ | 23.44ms | 123.48KiB |
+| 572 | maths/gamma | ✓ | 25.12ms | 123.77KiB |
+| 573 | maths/gaussian | ✓ | 10.71ms | 124.33KiB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 23.22ms | 123.70KiB |
+| 575 | maths/geometric_mean | ✓ |  |  |
 | 576 | maths/germain_primes |   |  |  |
 | 577 | maths/greatest_common_divisor |   |  |  |
 | 578 | maths/hardy_ramanujanalgo |   |  |  |

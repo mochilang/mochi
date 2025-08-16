@@ -2,6 +2,12 @@ fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -42,7 +48,7 @@ fun binomial_coefficient(n: Int, r: Int): Int {
     _listSet(c, 0, 1)
     var i: Int = (1).toInt()
     while (i <= n) {
-        var j: Int = ((if (i < r) i else r as Int)).toInt()
+        var j: Int = ((if (i < r) i else r.toInt())).toInt()
         while (j > 0) {
             _listSet(c, j, c[j]!! + c[j - 1]!!)
             j = j - 1
@@ -57,7 +63,7 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(binomial_coefficient(10, 5).toString())
+        println(_numToStr(binomial_coefficient(10, 5)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

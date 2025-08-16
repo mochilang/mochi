@@ -7,6 +7,12 @@ fun <T> concat(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
 
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -41,7 +47,7 @@ fun mean(xs: MutableList<Double>): Double {
         sum = sum + xs[i]!!
         i = i + 1
     }
-    return sum / (xs.size * 1.0)
+    return sum / ((xs.size).toDouble() * 1.0)
 }
 
 fun stump_predict(s: Stump, x: MutableList<Double>): Double {
@@ -68,9 +74,9 @@ fun train_stump(features: MutableList<MutableList<Double>>, residuals: MutableLi
             var j: Int = (0).toInt()
             while (j < features.size) {
                 if ((((features[j]!!) as MutableList<Double>))[f]!! < threshold) {
-                    left = ((concat(left, mutableListOf(residuals[j]!!))) as MutableList<Double>)
+                    left = concat(left, mutableListOf(residuals[j]!!))
                 } else {
-                    right = ((concat(right, mutableListOf(residuals[j]!!))) as MutableList<Double>)
+                    right = concat(right, mutableListOf(residuals[j]!!))
                 }
                 j = j + 1
             }
@@ -105,7 +111,7 @@ fun boost(features: MutableList<MutableList<Double>>, targets: MutableList<Int>,
     var preds: MutableList<Double> = mutableListOf<Double>()
     var i: Int = (0).toInt()
     while (i < targets.size) {
-        preds = ((concat(preds, mutableListOf(0.0))) as MutableList<Double>)
+        preds = concat(preds, mutableListOf(0.0))
         i = i + 1
     }
     var r: Int = (0).toInt()
@@ -113,11 +119,11 @@ fun boost(features: MutableList<MutableList<Double>>, targets: MutableList<Int>,
         var residuals: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < targets.size) {
-            residuals = ((concat(residuals, mutableListOf(targets[j]!! - preds[j]!!))) as MutableList<Double>)
+            residuals = concat(residuals, mutableListOf((targets[j]!!).toDouble() - preds[j]!!))
             j = j + 1
         }
         var stump: Stump = train_stump(features, residuals)
-        model = ((concat(model, mutableListOf(stump))) as MutableList<Stump>)
+        model = concat(model, mutableListOf(stump))
         j = 0
         while (j < preds.size) {
             _listSet(preds, j, preds[j]!! + stump_predict(stump, features[j]!!))
@@ -153,9 +159,9 @@ fun user_main(): Unit {
         var s: Double = predict(model, features[i]!!)
         var label: Int = (if (s >= 0.5) 1 else 0).toInt()
         if (i == 0) {
-            out = label.toString()
+            out = _numToStr(label)
         } else {
-            out = (out + " ") + label.toString()
+            out = (out + " ") + _numToStr(label)
         }
         i = i + 1
     }

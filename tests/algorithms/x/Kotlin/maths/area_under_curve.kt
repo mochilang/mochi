@@ -1,3 +1,9 @@
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -63,7 +69,7 @@ fun main() {
         var i: Int = (10).toInt()
         while (i <= 100000) {
             var result: Double = trapezoidal_area(::f, 0.0 - 5.0, 5.0, i)
-            println((("with " + i.toString()) + " steps: ") + result.toString())
+            println((("with " + _numToStr(i)) + " steps: ") + _numToStr(result))
             i = (i * 10).toInt()
         }
         System.gc()

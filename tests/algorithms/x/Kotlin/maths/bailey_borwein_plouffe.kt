@@ -1,5 +1,11 @@
 import java.math.BigInteger
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 var _nowSeed = 0L
@@ -32,13 +38,13 @@ var digits: String = ""
 var i: Int = (1).toInt()
 fun mod_pow(base: Int, exponent: Int, modulus: Int): Int {
     var result: Int = (1).toInt()
-    var b: BigInteger = ((Math.floorMod(base, modulus)).toBigInteger())
+    var b: Int = (Math.floorMod(base, modulus)).toInt()
     var e: Int = (exponent).toInt()
     while (e > 0) {
         if ((Math.floorMod(e, 2)) == 1) {
-            result = ((((result).toBigInteger().multiply((b))).mod((modulus).toBigInteger())).toInt())
+            result = Math.floorMod((result * b), modulus)
         }
-        b = (b.multiply((b))).mod((modulus).toBigInteger())
+        b = Math.floorMod((b * b), modulus)
         e = e / 2
     }
     return result
@@ -63,7 +69,7 @@ fun pow_float(base: Double, exponent: Int): Double {
 
 fun hex_digit(n: Int): String {
     if (n < 10) {
-        return n.toString()
+        return _numToStr(n)
     }
     var letters: MutableList<String> = mutableListOf("a", "b", "c", "d", "e", "f")
     return letters[n - 10]!!

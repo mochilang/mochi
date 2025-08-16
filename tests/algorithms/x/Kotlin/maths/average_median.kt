@@ -1,5 +1,11 @@
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -62,9 +68,9 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(median(mutableListOf(0)).toString())
-        println(median(mutableListOf(4, 1, 3, 2)).toString())
-        println(median(mutableListOf(2, 70, 6, 50, 20, 8, 4)).toString())
+        println(_numToStr(median(mutableListOf(0))))
+        println(_numToStr(median(mutableListOf(4, 1, 3, 2))))
+        println(_numToStr(median(mutableListOf(2, 70, 6, 50, 20, 8, 4))))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

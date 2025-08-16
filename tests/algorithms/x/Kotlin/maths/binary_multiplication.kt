@@ -1,3 +1,9 @@
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -53,10 +59,10 @@ fun binary_mod_multiply(a: Int, b: Int, modulus: Int): Int {
 }
 
 fun user_main(): Unit {
-    println(binary_multiply(2, 3).toString())
-    println(binary_multiply(5, 0).toString())
-    println(binary_mod_multiply(2, 3, 5).toString())
-    println(binary_mod_multiply(10, 5, 13).toString())
+    println(_numToStr(binary_multiply(2, 3)))
+    println(_numToStr(binary_multiply(5, 0)))
+    println(_numToStr(binary_mod_multiply(2, 3, 5)))
+    println(_numToStr(binary_mod_multiply(10, 5, 13)))
 }
 
 fun main() {

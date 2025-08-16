@@ -79,7 +79,7 @@ fun compute_geometric_mean(nums: MutableList<Double>): Double {
     if ((product < 0.0) && ((Math.floorMod(nums.size, 2)) == 0)) {
         panic("Cannot Compute Geometric Mean for these numbers.")
     }
-    var mean: Double = nth_root(kotlin.math.abs(product), nums.size)
+    var mean: Double = nth_root(abs(product), nums.size)
     if (product < 0.0) {
         mean = 0.0 - mean
     }
@@ -93,23 +93,23 @@ fun compute_geometric_mean(nums: MutableList<Double>): Double {
 fun test_compute_geometric_mean(): Unit {
     var eps: Double = 0.0001
     var m1: Double = compute_geometric_mean(mutableListOf(2.0, 8.0))
-    if (kotlin.math.abs(m1 - 4.0) > eps) {
+    if (abs(m1 - 4.0) > eps) {
         panic("test1 failed")
     }
     var m2: Double = compute_geometric_mean(mutableListOf(5.0, 125.0))
-    if (kotlin.math.abs(m2 - 25.0) > eps) {
+    if (abs(m2 - 25.0) > eps) {
         panic("test2 failed")
     }
     var m3: Double = compute_geometric_mean(mutableListOf(1.0, 0.0))
-    if (kotlin.math.abs(m3 - 0.0) > eps) {
+    if (abs(m3 - 0.0) > eps) {
         panic("test3 failed")
     }
     var m4: Double = compute_geometric_mean(mutableListOf(1.0, 5.0, 25.0, 5.0))
-    if (kotlin.math.abs(m4 - 5.0) > eps) {
+    if (abs(m4 - 5.0) > eps) {
         panic("test4 failed")
     }
     var m5: Double = compute_geometric_mean(mutableListOf(0.0 - 5.0, 25.0, 1.0))
-    if (kotlin.math.abs(m5 + 5.0) > eps) {
+    if (abs(m5 + 5.0) > eps) {
         panic("test5 failed")
     }
 }
