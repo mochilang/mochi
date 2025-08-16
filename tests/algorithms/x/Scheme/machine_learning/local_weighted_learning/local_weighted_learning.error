@@ -1,0 +1,12 @@
+run: exit status 70
+ERROR: Matrix is singular
+  called from <anonymous> on line 1057 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/local_weighted_learning/local_weighted_learning.scm
+  called from loop12 on line 1007 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/local_weighted_learning/local_weighted_learning.scm
+  called from <anonymous> on line 995 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/local_weighted_learning/local_weighted_learning.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from loop23 on line 2065 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/local_weighted_learning/local_weighted_learning.scm
+  called from <anonymous> on line 2053 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/local_weighted_learning/local_weighted_learning.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
