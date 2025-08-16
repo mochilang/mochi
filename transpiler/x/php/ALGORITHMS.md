@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-16 14:52 GMT+7
+Last updated: 2025-08-16 20:02 GMT+7
 
 ## Algorithms Golden Test Checklist (990/1077)
 | Index | Name | Status | Duration | Memory |
@@ -515,22 +515,22 @@ Last updated: 2025-08-16 14:52 GMT+7
 | 506 | machine_learning/gradient_descent | ✓ | 26.276ms | 40.9 KB |
 | 507 | machine_learning/k_means_clust | ✓ | 146µs | 72.1 KB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 115µs | 40.1 KB |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 273µs | 68.3 KB |
-| 510 | machine_learning/linear_regression | ✓ | 109µs | 40.0 KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 364µs | 68.4 KB |
+| 510 | machine_learning/linear_regression | ✓ | 288µs | 40.1 KB |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 191µs | 72.7 KB |
 | 512 | machine_learning/logistic_regression | ✓ | 5.652ms | 38.6 KB |
-| 513 | machine_learning/loss_functions | ✓ | 197µs | 107.8 KB |
+| 513 | machine_learning/loss_functions | ✓ | 205µs | 107.9 KB |
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 13.199ms | 73.7 KB |
 | 515 | machine_learning/mfcc | ✓ | 333µs | 72.8 KB |
 | 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 29.012ms | 38.9 KB |
 | 517 | machine_learning/polynomial_regression | ✓ | 479µs | 68.3 KB |
-| 518 | machine_learning/principle_component_analysis | ✓ | 123µs | 72.5 KB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 157µs | 72.6 KB |
 | 519 | machine_learning/scoring_functions | ✓ | 84µs | 40.5 KB |
-| 520 | machine_learning/self_organizing_map | ✓ | 119µs | 34.9 KB |
+| 520 | machine_learning/self_organizing_map | ✓ | 139µs | 35.0 KB |
 | 521 | machine_learning/sequential_minimum_optimization | ✓ | 140µs | 82.9 KB |
 | 522 | machine_learning/similarity_search | ✓ | 125µs | 39.3 KB |
 | 523 | machine_learning/support_vector_machines | ✓ | 925µs | 35.3 KB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 405µs | 74.8 KB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 632µs | 74.8 KB |
 | 525 | machine_learning/xgboost_classifier | ✓ | 126µs | 37.2 KB |
 | 526 | machine_learning/xgboost_regressor | ✓ | 100µs | 41.0 KB |
 | 527 | maths/abs | ✓ | 86µs | 37.4 KB |
@@ -551,7 +551,7 @@ Last updated: 2025-08-16 14:52 GMT+7
 | 542 | maths/binary_multiplication | ✓ | 45µs | 35.2 KB |
 | 543 | maths/binomial_coefficient | ✓ | 71µs | 39.7 KB |
 | 544 | maths/binomial_distribution | ✓ | 1µs | 34.3 KB |
-| 545 | maths/ceil | ✓ | 44µs | 39.0 KB |
+| 545 | maths/ceil | ✓ | 57µs | 39.1 KB |
 | 546 | maths/chebyshev_distance | ✓ | 97µs | 40.6 KB |
 | 547 | maths/check_polygon | ✓ | 150µs | 41.4 KB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 187µs | 71.6 KB |
