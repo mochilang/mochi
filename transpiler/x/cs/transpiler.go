@@ -255,6 +255,33 @@ func (s *VarStmt) emit(w io.Writer) {
 		if v := typeOfExpr(s.Value); v != "" && v != "object" {
 			t = v
 		}
+		if l, ok := s.Value.(*ListLit); ok && len(l.Elems) == 0 {
+			if tt := varTypes[s.Name]; tt != "" && strings.HasSuffix(tt, "[]") {
+				l.ElemType = tt
+				t = tt
+			} else if tt, ok2 := finalVarTypes[s.Name]; ok2 && tt != "" && strings.HasSuffix(tt, "[]") {
+				l.ElemType = tt
+				t = tt
+			}
+		} else if m, ok := s.Value.(*MapLit); ok && len(m.Items) == 0 {
+			if tt := varTypes[s.Name]; tt != "" && strings.HasPrefix(tt, "Dictionary<") {
+				inside := strings.TrimPrefix(strings.TrimSuffix(tt, ">"), "Dictionary<")
+				parts := strings.Split(inside, ",")
+				if len(parts) == 2 {
+					m.KeyType = strings.TrimSpace(parts[0])
+					m.ValType = strings.TrimSpace(parts[1])
+					t = tt
+				}
+			} else if tt, ok2 := finalVarTypes[s.Name]; ok2 && tt != "" && strings.HasPrefix(tt, "Dictionary<") {
+				inside := strings.TrimPrefix(strings.TrimSuffix(tt, ">"), "Dictionary<")
+				parts := strings.Split(inside, ",")
+				if len(parts) == 2 {
+					m.KeyType = strings.TrimSpace(parts[0])
+					m.ValType = strings.TrimSpace(parts[1])
+					t = tt
+				}
+			}
+		}
 	}
 	if vt, ok := varTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
 		t = vt
@@ -291,6 +318,20 @@ func (s *AssignStmt) emit(w io.Writer) {
 		// no-op assignment.
 		return
 	}
+	if l, ok := s.Value.(*ListLit); ok && len(l.Elems) == 0 {
+		if t := finalVarTypes[s.Name]; t != "" && strings.HasSuffix(t, "[]") {
+			l.ElemType = t
+		}
+	} else if m, ok := s.Value.(*MapLit); ok && len(m.Items) == 0 {
+		if t := finalVarTypes[s.Name]; t != "" && strings.HasPrefix(t, "Dictionary<") {
+			inside := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+			parts := strings.Split(inside, ",")
+			if len(parts) == 2 {
+				m.KeyType = strings.TrimSpace(parts[0])
+				m.ValType = strings.TrimSpace(parts[1])
+			}
+		}
+	}
 	fmt.Fprintf(w, "%s = ", safeName(s.Name))
 	ltype := finalVarTypes[s.Name]
 	rtype := typeOfExpr(s.Value)
@@ -325,6 +366,15 @@ func (s *AssignIndexStmt) emit(w io.Writer) {
 	}
 	targetType := typeOfExpr(s.Target)
 	idxType := typeOfExpr(s.Index)
+	if targetType == "object" || targetType == "" {
+		fmt.Fprint(w, "((dynamic)")
+		s.Target.emit(w)
+		fmt.Fprint(w, ")[")
+		s.Index.emit(w)
+		fmt.Fprint(w, "] = ")
+		s.Value.emit(w)
+		return
+	}
 	s.Target.emit(w)
 	fmt.Fprint(w, "[")
 	if strings.HasSuffix(targetType, "[]") && idxType != "int" {
@@ -535,10 +585,22 @@ func (f *ForInStmt) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, "foreach (%s %s in ", elem, v)
 		if isMapExpr(f.Iterable) {
-			f.Iterable.emit(w)
-			fmt.Fprint(w, ".Keys")
+			if t == "object" || t == "" {
+				fmt.Fprint(w, "((dynamic)(")
+				f.Iterable.emit(w)
+				fmt.Fprint(w, ")).Keys")
+			} else {
+				f.Iterable.emit(w)
+				fmt.Fprint(w, ".Keys")
+			}
 		} else {
-			f.Iterable.emit(w)
+			if t == "object" || t == "" {
+				fmt.Fprint(w, "((dynamic)(")
+				f.Iterable.emit(w)
+				fmt.Fprint(w, ")).Keys")
+			} else {
+				f.Iterable.emit(w)
+			}
 		}
 		fmt.Fprint(w, ") {\n")
 	}
@@ -2452,13 +2514,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 	elem := "object"
 	if strings.HasSuffix(t, "[]") {
 		elem = strings.TrimSuffix(t, "[]")
-	} else if et := typeOfExpr(a.Item); et != "" && et != "object" {
+	}
+	if et := typeOfExpr(a.Item); et != "" && et != "object" {
 		elem = et
 	}
 	listStr := exprString(a.List)
 	itemStr := exprString(a.Item)
 	if listStr == "null" {
-		// handle appending to a nil slice by creating a new array
 		fmt.Fprintf(w, "new %s[]{%s}", elem, itemStr)
 		return
 	}
@@ -2471,7 +2533,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 			itemStr = fmt.Sprintf("(%s)%s", elem, itemStr)
 		}
 	}
-	fmt.Fprintf(w, "((Func<%s[]>)(() => { var _tmp = %s.ToList(); _tmp.Add(%s); return _tmp.ToArray(); }))()", elem, listStr, itemStr)
+	fmt.Fprintf(w, "((Func<%s[]>)(() => { var _tmp = %s.Cast<%s>().ToList(); _tmp.Add(%s); return _tmp.ToArray(); }))()", elem, listStr, elem, itemStr)
 }
 
 type ConcatExpr struct {
@@ -2756,22 +2818,22 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			return &BoolOpExpr{Op: op, Left: left, Right: right}
 		case "in":
 			return &InExpr{Item: left, Collection: right}
-               case "union", "union_all", "except", "intersect":
-                       usesLinq = true
-                       fallthrough
-               default:
-                       if op == "+" && (isListExpr(left) && isListExpr(right) ||
-                               (strings.HasSuffix(typeOfExpr(left), "[]") && strings.HasSuffix(typeOfExpr(right), "[]"))) {
-                               usesLinq = true
-                       }
-                       if op == "/" {
-                               usesFloorDiv = true
-                       }
-                       if op == "%" {
-                               usesMod = true
-                       }
-                       return &BinaryExpr{Op: op, Left: left, Right: right}
-               }
+		case "union", "union_all", "except", "intersect":
+			usesLinq = true
+			fallthrough
+		default:
+			if op == "+" && (isListExpr(left) && isListExpr(right) ||
+				(strings.HasSuffix(typeOfExpr(left), "[]") && strings.HasSuffix(typeOfExpr(right), "[]"))) {
+				usesLinq = true
+			}
+			if op == "/" {
+				usesFloorDiv = true
+			}
+			if op == "%" {
+				usesMod = true
+			}
+			return &BinaryExpr{Op: op, Left: left, Right: right}
+		}
 	}
 
 	for _, level := range levels {
@@ -4123,6 +4185,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "append":
 			if len(args) == 2 {
 				usesLinq = true
+				if vr, ok := args[0].(*VarRef); ok {
+					if t := typeOfExpr(args[1]); t != "" && t != "object" {
+						vt := t + "[]"
+						varTypes[vr.Name] = vt
+						finalVarTypes[vr.Name] = vt
+					}
+				}
 				return &AppendExpr{List: args[0], Item: args[1]}, nil
 			}
 		case "concat":
