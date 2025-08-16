@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-16 14:50 GMT+7
+Last updated: 2025-08-16 19:52 GMT+7
 
 ## Algorithms Golden Test Checklist (1026/1077)
 | Index | Name | Status | Duration | Memory |
@@ -511,26 +511,26 @@ Last updated: 2025-08-16 14:50 GMT+7
 | 502 | machine_learning/dimensionality_reduction | ✓ | 1.0ms | 12.80KB |
 | 503 | machine_learning/forecasting/run | ✓ | 2.0ms | 26.30KB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.0ms | 13.76KB |
-| 506 | machine_learning/gradient_descent | ✓ | 4.0ms | 2.62MB |
-| 507 | machine_learning/k_means_clust | ✓ | 2.0ms | 19.57KB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 2.0ms | 14.65KB |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 3.0ms | 111.46KB |
-| 510 | machine_learning/linear_regression | ✓ | 17.0µs | 544B |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 6.0ms | 88.58KB |
-| 512 | machine_learning/logistic_regression | ✓ | 2.0ms | 13.83KB |
-| 513 | machine_learning/loss_functions | ✓ | 3.0ms | 20.16KB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 2.0ms | 13.84KB |
-| 515 | machine_learning/mfcc | ✓ | 2.0ms | 27.95KB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 3.0ms | 16.90KB |
-| 517 | machine_learning/polynomial_regression | ✓ | 2.0ms | 33.44KB |
-| 518 | machine_learning/principle_component_analysis | ✓ | 2.0ms | 16.79KB |
-| 519 | machine_learning/scoring_functions | ✓ | 2.0ms | 15.05KB |
-| 520 | machine_learning/self_organizing_map | ✓ | 2.0ms | 20.41KB |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 2.0ms | 13.84KB |
-| 522 | machine_learning/similarity_search | ✓ | 2.0ms | 14.82KB |
-| 523 | machine_learning/support_vector_machines | ✓ | 1.0ms | 17.38KB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 2.0ms | 273.95KB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.0µs | 13.58KB |
+| 506 | machine_learning/gradient_descent | ✓ | 1.0µs | 6.28MB |
+| 507 | machine_learning/k_means_clust | ✓ | 1.0µs | 19.39KB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 1.0µs | 17.05KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.0µs | 295.91KB |
+| 510 | machine_learning/linear_regression | ✓ | 1.0µs | 568B |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 1.0µs | 82.61KB |
+| 512 | machine_learning/logistic_regression | ✓ | 1.0µs | 13.65KB |
+| 513 | machine_learning/loss_functions | ✓ | 1.0µs | 23.27KB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 1.0µs | 13.66KB |
+| 515 | machine_learning/mfcc | ✓ | 1.0µs | 49.41KB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 1.0µs | 17.52KB |
+| 517 | machine_learning/polynomial_regression | ✓ | 1.0µs | 58.12KB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 1.0µs | 16.61KB |
+| 519 | machine_learning/scoring_functions | ✓ | 1.0µs | 14.87KB |
+| 520 | machine_learning/self_organizing_map | ✓ | 1.0µs | 20.23KB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 1.0µs | 13.66KB |
+| 522 | machine_learning/similarity_search | ✓ | 1.0µs | 14.64KB |
+| 523 | machine_learning/support_vector_machines | ✓ | 1.0µs | 17.20KB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 1.0µs | 274.68KB |
 | 525 | machine_learning/xgboost_classifier | ✓ | 1.0µs | 39.05KB |
 | 526 | machine_learning/xgboost_regressor | ✓ | 1.0µs | 19.59KB |
 | 527 | maths/abs | ✓ | 1.0µs | 14.60KB |
