@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (542/1077) - Last updated 2025-08-16 11:48 +0700:
+Checklist of programs that currently transpile and run (543/1077) - Last updated 2025-08-16 12:42 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -500,10 +500,10 @@ Checklist of programs that currently transpile and run (542/1077) - Last updated
 | 493 | linear_algebra/src/schur_complement |  |  |  |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 333us | 1.5 MB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 516us | 1.7 MB |
-| 496 | linear_programming/simplex | ✓ | 523us | 1.6 MB |
+| 496 | linear_programming/simplex |  | 523us | 1.6 MB |
 | 497 | machine_learning/apriori_algorithm |  |  |  |
-| 498 | machine_learning/astar |  |  |  |
-| 499 | machine_learning/automatic_differentiation |  |  |  |
+| 498 | machine_learning/astar | ✓ | 375us | 1.4 MB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 364us | 1.6 MB |
 | 500 | machine_learning/data_transformations | ✓ | 412us | 1.7 MB |
 | 501 | machine_learning/decision_tree |  |  |  |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 441us | 1.4 MB |
