@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-15 10:24 GMT+7
+Last updated: 2025-08-16 09:33 GMT+7
 
 ## Algorithms Golden Test Checklist (1042/1077)
 | Index | Name | Status | Duration | Memory |
@@ -711,7 +711,7 @@ Last updated: 2025-08-15 10:24 GMT+7
 | 702 | matrix/inverse_of_matrix | ✓ | 135µs | 1.5 KB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 123µs | 2.7 KB |
 | 704 | matrix/matrix_based_game | ✓ | 264µs | 3.1 KB |
-| 705 | matrix/matrix_class | ✓ | 919µs | 5.9 KB |
+| 705 | matrix/matrix_class | ✓ | 2.62ms | 1.9 KB |
 | 706 | matrix/matrix_equalization | ✓ | 269µs | 912 B |
 | 707 | matrix/matrix_multiplication_recursion | ✓ | 243µs | 26.6 KB |
 | 708 | matrix/matrix_operation | ✓ | 910µs | 1.2 KB |

@@ -1058,6 +1058,12 @@ end)(`)
         parts[#parts+1] = "}"
         return table.concat(parts)
       end
+    elseif type(x) == "number" then
+      if (math.type and math.type(x) == "integer") or x % 1 == 0 then
+        return string.format("%d", x)
+      else
+        return tostring(x)
+      end
     elseif type(x) == "string" then
       return '"' .. x .. '"'
     else
