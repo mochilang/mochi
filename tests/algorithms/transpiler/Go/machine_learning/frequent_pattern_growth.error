@@ -1,8 +1,13 @@
-error[T005]: parameter `name` is missing a type
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:15:1
-
- 15 | fun make_node(name, count, parent) {
-    | ^
-
-help:
-  Add a type like `x: int` to this parameter.
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:159:8: invalid operation: cannot index child (variable of interface type any)
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:159:25: cannot convert func(v any) map[string]any {…}(child)["count"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:169:10: invalid operation: cannot index in_tree (variable of interface type any)
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:174:10: invalid operation: cannot index in_tree (variable of interface type any)
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:194:9: invalid operation: cannot index entry (variable of interface type any)
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:206:15: invalid operation: cannot index header_table (variable of interface type any)
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:301:21: invalid operation: counts[item] + 1 (mismatched types any and int)
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:322:6: invalid operation: cnt >= min_sup (operator >= not defined on interface)
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:361:18: cannot use sort_items(func(v any) []string {…}(local_items), header_table) (value of type []string) as []any value in assignment
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:524:20: cannot range over header_table (variable of interface type any)
+../../../tests/algorithms/transpiler/Go/machine_learning/frequent_pattern_growth.go:524:20: too many errors
