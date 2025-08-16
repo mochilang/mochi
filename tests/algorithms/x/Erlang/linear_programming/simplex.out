@@ -1,5 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/linear_programming/simplex.erl:248:18: Warning: variable 'P_3' exported from 'case' (line 208, column 9)
-%  248| {LastCol, NVars, P_3, Result_4, T_6} = Fun_7(lists:seq(0, (NVars) - 1), LastCol, NVars, P_3, Result_2, T_6),
+/workspace/mochi/tests/algorithms/x/Erlang/linear_programming/simplex.erl:259:18: Warning: variable 'P_3' exported from 'case' (line 219, column 9)
+%  259| {LastCol, NVars, P_3, Result_4, T_6} = Fun_7(lists:seq(0, (NVars) - 1), LastCol, NVars, P_3, Result_2, T_6),
 %     |                  ^
 
 "P: 2.0"
