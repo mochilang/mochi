@@ -1246,13 +1246,13 @@ func (m *MapLit) emit(w io.Writer) {
 							if strings.HasPrefix(f.Type, "[]") {
 								if ll, ok := e.Value.(*ListLit); ok {
 									ll.ElemType = strings.TrimPrefix(f.Type, "[]")
-									if len(ll.Elems) == 0 {
-										ll.emit(w)
-									} else {
-										io.WriteString(w, "@constCast(&(")
-										ll.emit(w)
-										io.WriteString(w, "))[0..]")
-									}
+                                                               if len(ll.Elems) == 0 {
+                                                                       ll.emit(w)
+                                                               } else {
+                                                                       io.WriteString(w, "@constCast(")
+                                                                       ll.emit(w)
+                                                                       io.WriteString(w, ")")
+                                                               }
 									goto emitted
 								}
 							} else {
@@ -2980,21 +2980,36 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Value.emit(w)
 			io.WriteString(w, ")")
 		}
-	case "float", "f64":
-		vt := zigTypeFromExpr(c.Value)
-		if vt == "f64" {
-			io.WriteString(w, "@as(f64, ")
-			c.Value.emit(w)
-			io.WriteString(w, ")")
-		} else if isIntType(vt) {
-			io.WriteString(w, "@as(f64, @floatFromInt(")
-			c.Value.emit(w)
-			io.WriteString(w, "))")
-		} else {
-			io.WriteString(w, "@as(f64, ")
-			c.Value.emit(w)
-			io.WriteString(w, ")")
-		}
+       case "float", "f64":
+               if inner, ok := c.Value.(*CastExpr); ok && (inner.Type == "f64" || inner.Type == "float") {
+                       inner.emit(w)
+                       return
+               }
+               if call, ok := c.Value.(*CallExpr); ok && call.Func == "float" && len(call.Args) == 1 {
+                       io.WriteString(w, "@as(f64, @floatFromInt(")
+                       call.Args[0].emit(w)
+                       io.WriteString(w, "))")
+                       return
+               }
+               if v, ok := c.Value.(*VarRef); ok && strings.HasPrefix(v.Name, "float(") && strings.HasSuffix(v.Name, ")") {
+                       arg := v.Name[len("float("):len(v.Name)-1]
+                       fmt.Fprintf(w, "@as(f64, @floatFromInt(%s))", arg)
+                       return
+               }
+               vt := zigTypeFromExpr(c.Value)
+               if vt == "f64" {
+                       io.WriteString(w, "@as(f64, ")
+                       c.Value.emit(w)
+                       io.WriteString(w, ")")
+               } else if isIntType(vt) {
+                       io.WriteString(w, "@as(f64, @floatFromInt(")
+                       c.Value.emit(w)
+                       io.WriteString(w, "))")
+               } else {
+                       io.WriteString(w, "@as(f64, ")
+                       c.Value.emit(w)
+                       io.WriteString(w, ")")
+               }
 	default:
 		c.Value.emit(w)
 		if zigTypeFromExpr(c.Value) == "Value" {
@@ -3379,14 +3394,22 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "0")
 		}
-	case "to_float":
-		if len(c.Args) == 1 {
-			io.WriteString(w, "@as(f64, @floatFromInt(")
-			c.Args[0].emit(w)
-			io.WriteString(w, "))")
-		} else {
-			io.WriteString(w, "0.0")
-		}
+       case "to_float":
+               if len(c.Args) == 1 {
+                       io.WriteString(w, "@as(f64, @floatFromInt(")
+                       c.Args[0].emit(w)
+                       io.WriteString(w, "))")
+               } else {
+                       io.WriteString(w, "0.0")
+               }
+       case "float":
+               if len(c.Args) == 1 {
+                       io.WriteString(w, "@as(f64, @floatFromInt(")
+                       c.Args[0].emit(w)
+                       io.WriteString(w, "))")
+               } else {
+                       io.WriteString(w, "0.0")
+               }
 	case "avg":
 		if len(c.Args) == 1 {
 			lbl := newLabel()
@@ -4176,14 +4199,14 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
 				continue
 			}
-			if name, ok := exprToString(expr); ok {
-				if name == "floor" {
-					expr = &CallExpr{Func: "std.math.floor", Args: args}
-				} else {
-					expr = &CallExpr{Func: name, Args: args}
-				}
-				continue
-			}
+                       if name, ok := exprToString(expr); ok {
+                               if name == "floor" {
+                                       expr = &CallExpr{Func: "std.math.floor", Args: args}
+                               } else {
+                                       expr = &CallExpr{Func: name, Args: args}
+                               }
+                               continue
+                       }
 			return nil, fmt.Errorf("unsupported call target")
 		}
 		if op.Field != nil {
@@ -6205,12 +6228,19 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 	var walkExpr func(e Expr)
 	walkExpr = func(e Expr) {
 		switch t := e.(type) {
-		case *VarRef:
-			key := scope + ":" + t.Name
-			uses[key]++
-			if globalNames[t.Name] {
-				uses[":"+t.Name]++
-			}
+               case *VarRef:
+                       key := scope + ":" + t.Name
+                       uses[key]++
+                       if idx := strings.IndexByte(t.Name, '.'); idx >= 0 {
+                               base := t.Name[:idx]
+                               baseKey := scope + ":" + base
+                               uses[baseKey]++
+                               if globalNames[base] {
+                                       uses[":"+base]++
+                               }
+                       } else if globalNames[t.Name] {
+                               uses[":"+t.Name]++
+                       }
 		case *BinaryExpr:
 			walkExpr(t.Left)
 			walkExpr(t.Right)

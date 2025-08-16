@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/maths/abs.zig:43:44: error: expected integer type, found 'f64'
+/workspace/mochi/tests/algorithms/transpiler/Zig/maths/abs.zig:70:48: error: expected integer type, found 'f64'
+/workspace/mochi/tests/algorithms/transpiler/Zig/maths/abs.zig:25:44: error: expected integer type, found 'f64'
