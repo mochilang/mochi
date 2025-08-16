@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-16 09:41 GMT+7
+Last updated: 2025-08-16 11:58 GMT+7
 
-## Algorithms Golden Test Checklist (949/1077)
+## Algorithms Golden Test Checklist (950/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -551,7 +551,7 @@ Last updated: 2025-08-16 09:41 GMT+7
 | 542 | maths/binary_multiplication | ✓ | 12.861ms | 9.8 MB |
 | 543 | maths/binomial_coefficient | ✓ | 7.503ms | 3.1 MB |
 | 544 | maths/binomial_distribution | ✓ | 15.961ms | 11.1 MB |
-| 545 | maths/ceil | error |  |  |
+| 545 | maths/ceil | ✓ |  |  |
 | 546 | maths/chebyshev_distance | ✓ | 13.256ms | 1.9 MB |
 | 547 | maths/check_polygon | error |  |  |
 | 548 | maths/chinese_remainder_theorem | ✓ | 9.241ms | 2.0 MB |
