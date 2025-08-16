@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 893/1077
-Last updated: 2025-08-16 13:01 +0700
+Completed programs: 894/1077
+Last updated: 2025-08-16 13:48 +0700
 
 Checklist:
 
@@ -698,7 +698,7 @@ Checklist:
 | 689 | maths/three_sum | ✓ | 343.0µs | 1.27KB |
 | 690 | maths/trapezoidal_rule | ✓ | 285.0µs | 1.25KB |
 | 691 | maths/triplet_sum | ✓ | 237.0µs | 1.62KB |
-| 692 | maths/twin_prime | ✓ | 387.0µs | 936B |
+| 692 | maths/twin_prime | ✓ | 597.0µs | 936B |
 | 693 | maths/two_pointer | ✓ | 587.0µs | 3.41KB |
 | 694 | maths/two_sum | ✓ | 290.0µs | 1008B |
 | 695 | maths/volume | ✓ | 472.0µs | 2.23KB |
@@ -996,7 +996,7 @@ Checklist:
 | 987 | sorts/wiggle_sort | ✓ | 697.0µs | 2.13KB |
 | 988 | strings/aho_corasick | ✓ | 534.0µs | 1.98KB |
 | 989 | strings/alternative_string_arrange | ✓ | 196.0µs | 1.05KB |
-| 990 | strings/anagrams |   |  |  |
+| 990 | strings/anagrams | ✓ | 236.0µs | 128B |
 | 991 | strings/autocomplete_using_trie | ✓ | 287.0µs | 1.39KB |
 | 992 | strings/barcode_validator | ✓ | 715.0µs | 3.83KB |
 | 993 | strings/bitap_string_match | ✓ | 501.0µs | 3.30KB |
