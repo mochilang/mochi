@@ -1,4 +1,4 @@
-// Generated 2025-08-14 17:48 +0700
+// Generated 2025-08-16 12:36 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -31,7 +31,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%g" f
+    | :? float as f -> sprintf "%.15g" f
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")
