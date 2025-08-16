@@ -1,5 +1,25 @@
 # 📦 CHANGELOG.md
 
+## [0.10.67] – 2025-08-16T10:44:34+00:00
+
+### Added
+
+* Scheme and TypeScript transpilers gain CSV load support.
+* Go transpiler reads files and adds `pow_int` and `nth_root` helpers.
+* Lua ships a Chebyshev distance algorithm; Kotlin adds Apriori and simplex implementations.
+
+### Changed
+
+* Racket defaults to safe indexing and sanitizes numeric operations.
+* Float formatting and numeric casts refined across languages.
+* Algorithm and benchmark outputs refreshed throughout the ecosystem.
+
+### Fixed
+
+* Swift resolves scoping, panic handling, array indexing, and substring issues.
+* For-loop scoping and parameter aliasing corrected across transpilers.
+* Python and Ruby improve built-in handling and string formatting.
+
 ## [0.10.66] – 2025-08-14T10:19:34+00:00
 
 ### Added
