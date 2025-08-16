@@ -83,6 +83,7 @@ var (
 	needMapSetII            bool
 	needMapGetSD            bool
 	needMapSetSD            bool
+	needPrintMapSD          bool
 	needMapSetSMI           bool
 	needMapGetSMI           bool
 	needContainsMapInt      bool
@@ -465,6 +466,10 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "puts(str_list_str(%s, %s_len));\n", v.Name, v.Name)
 				continue
+			case "map_sd":
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "print_map_sd(%s_keys, %s_vals, %s_len);\n", v.Name, v.Name, v.Name)
+				continue
 			case "list_list_int":
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "puts(str_list_list_int(%s, %s_len, %s_lens));\n", v.Name, v.Name, v.Name)
@@ -472,6 +477,11 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 			case "list_list_double":
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "puts(str_list_list_double(%s, %s_len, %s_lens));\n", v.Name, v.Name, v.Name)
+				continue
+			}
+			if _, ok := structTypes[p.Types[i]]; ok {
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "puts(%s_to_string(%s));\n", strings.ToLower(p.Types[i]), v.Name)
 				continue
 			}
 			if p.Types[i] == "string" || exprIsString(a) {
@@ -1182,6 +1192,10 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	}
 	if currentFuncReturn == "MapSD" {
 		switch v := r.Expr.(type) {
+		case *VarRef:
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "return (MapSD){ %s_keys, %s_vals, %s_len, 16 };\n", v.Name, v.Name, v.Name)
+			return
 		case *MapLit:
 			tmp := fmt.Sprintf("__ret%d", tempCounter)
 			tempCounter++
@@ -4994,6 +5008,16 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    keys[*len] = key; vals[*len] = val; (*len)++;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needPrintMapSD {
+		buf.WriteString("static void print_map_sd(const char *keys[], const double vals[], size_t len) {\n")
+		buf.WriteString("    printf(\"{\");\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        if (i) printf(\", \" );\n")
+		buf.WriteString("        printf(\"%s: %s\", keys[i], str_float(vals[i]));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    printf(\"}\\n\");\n")
+		buf.WriteString("}\n\n")
+	}
 	if needMapGetII {
 		buf.WriteString("static int map_get_ii(const int keys[], const int vals[], size_t len, int key) {\n")
 		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
@@ -6142,6 +6166,15 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						return &RawStmt{Code: genPrintGroupSort()}, nil
 					}
 				}
+				if vname := varName(call.Args[0]); vname != "" && isMapVar(vname) {
+					keyT := mapKeyTypes[vname]
+					valT := mapValTypes[vname]
+					if keyT == "const char*" && valT == "double" {
+						needPrintMapSD = true
+						needStrFloat = true
+						return &RawStmt{Code: fmt.Sprintf("print_map_sd(%s_keys, %s_vals, %s_len);\n", vname, vname, vname)}, nil
+					}
+				}
 			}
 			var args []Expr
 			var typesList []string
@@ -6197,6 +6230,14 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 							tname = "string"
 						case vt == "double":
 							tname = "float"
+						case vt == "MapSD":
+							tname = "map_sd"
+							needStrFloat = true
+							needPrintMapSD = true
+						default:
+							if _, ok2 := structTypes[strings.TrimPrefix(vt, "struct ")]; ok2 {
+								tname = strings.TrimPrefix(vt, "struct ")
+							}
 						}
 					} else if t, err := env.GetVar(v.Name); err == nil {
 						switch t.(type) {
@@ -6204,6 +6245,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 							tname = "string"
 						case types.FloatType:
 							tname = "float"
+						case types.StructType:
+							tname = t.(types.StructType).Name
 						}
 					}
 				case func() bool { _, ok := ex.(*IndexExpr); return ok }():
@@ -7310,6 +7353,25 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				buf.WriteString("map_set_smi(&")
 				buf.WriteString(s.Assign.Name)
 				buf.WriteString(", ")
+				idxs[0].emitExpr(&buf)
+				buf.WriteString(", ")
+				valExpr.emitExpr(&buf)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			}
+			if keyT == "const char*" && valT == "double" {
+				needMapSetSD = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_sd(")
+				if varTypes[s.Assign.Name] == "MapSD" {
+					buf.WriteString(mapField(s.Assign.Name, "keys") + ", ")
+					buf.WriteString(mapField(s.Assign.Name, "vals") + ", &")
+					buf.WriteString(mapField(s.Assign.Name, "len") + ", ")
+				} else {
+					buf.WriteString(s.Assign.Name + "_keys, ")
+					buf.WriteString(s.Assign.Name + "_vals, &")
+					buf.WriteString(s.Assign.Name + "_len, ")
+				}
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
 				valExpr.emitExpr(&buf)
