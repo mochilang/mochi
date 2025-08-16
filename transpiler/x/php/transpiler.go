@@ -2556,7 +2556,7 @@ func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
 func Emit(w io.Writer, p *Program) error {
 	transpileEnv = p.Env
 	defer func() { transpileEnv = nil }()
-	if _, err := io.WriteString(w, "<?php\nini_set('memory_limit', '-1');\n"); err != nil {
+	if _, err := io.WriteString(w, "<?php\nerror_reporting(E_ALL & ~E_DEPRECATED);\nini_set('memory_limit', '-1');\n"); err != nil {
 		return err
 	}
 	if usesLookupHost {

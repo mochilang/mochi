@@ -1,20 +1,6 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -31,9 +17,7 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function mean($xs) {
+function mean($xs) {
   $sum = 0.0;
   $i = 0;
   while ($i < count($xs)) {
@@ -41,14 +25,14 @@ $__start = _now();
   $i = $i + 1;
 };
   return $sum / (count($xs) * 1.0);
-};
-  function stump_predict($s, $x) {
+}
+function stump_predict($s, $x) {
   if ($x[$s['feature']] < $s['threshold']) {
   return $s['left'];
 }
   return $s['right'];
-};
-  function train_stump($features, $residuals) {
+}
+function train_stump($features, $residuals) {
   $best_feature = 0;
   $best_threshold = 0.0;
   $best_error = 1000000000.0;
@@ -95,8 +79,8 @@ $__start = _now();
   $f = $f + 1;
 };
   return ['feature' => $best_feature, 'threshold' => $best_threshold, 'left' => $best_left, 'right' => $best_right];
-};
-  function boost($features, $targets, $rounds) {
+}
+function boost($features, $targets, $rounds) {
   $model = [];
   $preds = [];
   $i = 0;
@@ -122,8 +106,8 @@ $__start = _now();
   $r = $r + 1;
 };
   return $model;
-};
-  function predict($model, $x) {
+}
+function predict($model, $x) {
   $score = 0.0;
   $i = 0;
   while ($i < count($model)) {
@@ -136,8 +120,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $score;
-};
-  function main() {
+}
+function main() {
   $features = [[5.1, 3.5], [4.9, 3.0], [6.2, 3.4], [5.9, 3.0]];
   $targets = [0, 0, 1, 1];
   $model = boost($features, $targets, 3);
@@ -154,13 +138,5 @@ $__start = _now();
   $i = $i + 1;
 };
   echo rtrim($out), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();
