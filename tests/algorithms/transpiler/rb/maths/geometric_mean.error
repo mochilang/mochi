@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/rb/maths/geometric_mean.rb:122:in `panic': test4 failed (RuntimeError)
-	from /workspace/mochi/tests/algorithms/transpiler/rb/maths/geometric_mean.rb:203:in `test_compute_geometric_mean'
-	from /workspace/mochi/tests/algorithms/transpiler/rb/maths/geometric_mean.rb:211:in `main'
-	from /workspace/mochi/tests/algorithms/transpiler/rb/maths/geometric_mean.rb:214:in `<main>'
