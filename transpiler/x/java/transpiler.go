@@ -5488,7 +5488,11 @@ func applyBinaryOp(left Expr, op *parser.BinaryOp, right Expr) (Expr, error) {
 			lt := inferType(left)
 			rt := inferType(right)
 			if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" && lt != "java.math.BigInteger" && rt != "java.math.BigInteger" {
-				return &BinaryExpr{Left: left, Op: "/", Right: right}, nil
+				if lt == "long" || rt == "long" {
+					left = &CastExpr{Type: "long", Value: left}
+					right = &CastExpr{Type: "long", Value: right}
+				}
+				return &CallExpr{Func: "Math.floorDiv", Args: []Expr{left, right}}, nil
 			}
 		}
 		return &BinaryExpr{Left: left, Op: op.Op, Right: right}, nil

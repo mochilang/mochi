@@ -18,48 +18,82 @@ public class Main {
     }
 
     static double pow_float(double base, long exp) {
-        double res = 1.0;
+        double res = (double)(1.0);
         long i_1 = 0L;
-        while (i_1 < exp) {
-            res = res * base;
-            i_1 = i_1 + 1;
+        while ((long)(i_1) < (long)(exp)) {
+            res = (double)((double)(res) * (double)(base));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return res;
     }
 
     static Dual add(Dual a, Dual b) {
-        return new Dual(a.value + b.value, a.deriv + b.deriv);
+        return new Dual((double)(a.value) + (double)(b.value), (double)(a.deriv) + (double)(b.deriv));
     }
 
     static Dual sub(Dual a, Dual b) {
-        return new Dual(a.value - b.value, a.deriv - b.deriv);
+        return new Dual((double)(a.value) - (double)(b.value), (double)(a.deriv) - (double)(b.deriv));
     }
 
     static Dual mul(Dual a, Dual b) {
-        return new Dual(a.value * b.value, a.deriv * b.value + b.deriv * a.value);
+        return new Dual((double)(a.value) * (double)(b.value), (double)((double)(a.deriv) * (double)(b.value)) + (double)((double)(b.deriv) * (double)(a.value)));
     }
 
     static Dual div(Dual a, Dual b) {
-        return new Dual(a.value / b.value, (a.deriv * b.value - b.deriv * a.value) / (b.value * b.value));
+        return new Dual((double)(a.value) / (double)(b.value), (double)(((double)((double)(a.deriv) * (double)(b.value)) - (double)((double)(b.deriv) * (double)(a.value)))) / (double)(((double)(b.value) * (double)(b.value))));
     }
 
     static Dual power(Dual a, long p) {
-        return new Dual(pow_float(a.value, p), (1.0 * p) * pow_float(a.value, p - 1) * a.deriv);
+        return new Dual(pow_float((double)(a.value), (long)(p)), (double)((double)(((double)(1.0) * (double)(p))) * (double)(pow_float((double)(a.value), (long)((long)(p) - 1L)))) * (double)(a.deriv));
     }
 
     static void main() {
-        Dual a = dual(2.0, 1.0);
-        Dual b_1 = dual(1.0, 0.0);
+        Dual a = dual((double)(2.0), (double)(1.0));
+        Dual b_1 = dual((double)(1.0), (double)(0.0));
         Dual c_1 = add(a, b_1);
         Dual d_1 = mul(a, b_1);
         Dual e_1 = div(c_1, d_1);
         System.out.println(_p(e_1.deriv));
-        Dual x_1 = dual(2.0, 1.0);
+        Dual x_1 = dual((double)(2.0), (double)(1.0));
         Dual y_1 = power(x_1, 3L);
         System.out.println(_p(y_1.deriv));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -77,7 +111,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

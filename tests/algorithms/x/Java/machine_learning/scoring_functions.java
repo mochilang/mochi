@@ -1,116 +1,116 @@
 public class Main {
 
     static double absf(double x) {
-        if (x < 0.0) {
-            return 0.0 - x;
+        if ((double)(x) < (double)(0.0)) {
+            return (double)(0.0) - (double)(x);
         }
         return x;
     }
 
     static double sqrtApprox(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
-        double guess_1 = x;
-        long i_1 = 0;
-        while (i_1 < 20) {
-            guess_1 = (guess_1 + x / guess_1) / 2.0;
-            i_1 = i_1 + 1;
+        double guess_1 = (double)(x);
+        long i_1 = 0L;
+        while ((long)(i_1) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return guess_1;
     }
 
     static double ln_series(double x) {
-        double t = (x - 1.0) / (x + 1.0);
-        double term_1 = t;
-        double sum_1 = 0.0;
-        long n_1 = 1;
-        while (n_1 <= 19) {
-            sum_1 = sum_1 + term_1 / (((Number)(n_1)).doubleValue());
-            term_1 = term_1 * t * t;
-            n_1 = n_1 + 2;
+        double t = (double)((double)(((double)(x) - (double)(1.0))) / (double)(((double)(x) + (double)(1.0))));
+        double term_1 = (double)(t);
+        double sum_1 = (double)(0.0);
+        long n_1 = 1L;
+        while ((long)(n_1) <= 19L) {
+            sum_1 = (double)((double)(sum_1) + (double)((double)(term_1) / (double)((((Number)(n_1)).doubleValue()))));
+            term_1 = (double)((double)((double)(term_1) * (double)(t)) * (double)(t));
+            n_1 = (long)((long)(n_1) + 2L);
         }
-        return 2.0 * sum_1;
+        return (double)(2.0) * (double)(sum_1);
     }
 
     static double ln(double x) {
-        double y = x;
-        long k_1 = 0;
-        while (y >= 10.0) {
-            y = y / 10.0;
-            k_1 = k_1 + 1;
+        double y = (double)(x);
+        long k_1 = 0L;
+        while ((double)(y) >= (double)(10.0)) {
+            y = (double)((double)(y) / (double)(10.0));
+            k_1 = (long)((long)(k_1) + 1L);
         }
-        while (y < 1.0) {
-            y = y * 10.0;
-            k_1 = k_1 - 1;
+        while ((double)(y) < (double)(1.0)) {
+            y = (double)((double)(y) * (double)(10.0));
+            k_1 = (long)((long)(k_1) - 1L);
         }
-        return ln_series(y) + (((Number)(k_1)).doubleValue()) * ln_series(10.0);
+        return (double)(ln_series((double)(y))) + (double)((double)((((Number)(k_1)).doubleValue())) * (double)(ln_series((double)(10.0))));
     }
 
     static double mae(double[] predict, double[] actual) {
-        double sum_2 = 0.0;
-        long i_3 = 0;
-        while (i_3 < predict.length) {
-            double diff_1 = predict[(int)(i_3)] - actual[(int)(i_3)];
-            sum_2 = sum_2 + absf(diff_1);
-            i_3 = i_3 + 1;
+        double sum_2 = (double)(0.0);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(predict.length)) {
+            double diff_1 = (double)((double)(predict[(int)((long)(i_3))]) - (double)(actual[(int)((long)(i_3))]));
+            sum_2 = (double)((double)(sum_2) + (double)(absf((double)(diff_1))));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return sum_2 / (((Number)(predict.length)).doubleValue());
+        return (double)(sum_2) / (double)((((Number)(predict.length)).doubleValue()));
     }
 
     static double mse(double[] predict, double[] actual) {
-        double sum_3 = 0.0;
-        long i_5 = 0;
-        while (i_5 < predict.length) {
-            double diff_3 = predict[(int)(i_5)] - actual[(int)(i_5)];
-            sum_3 = sum_3 + diff_3 * diff_3;
-            i_5 = i_5 + 1;
+        double sum_3 = (double)(0.0);
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(predict.length)) {
+            double diff_3 = (double)((double)(predict[(int)((long)(i_5))]) - (double)(actual[(int)((long)(i_5))]));
+            sum_3 = (double)((double)(sum_3) + (double)((double)(diff_3) * (double)(diff_3)));
+            i_5 = (long)((long)(i_5) + 1L);
         }
-        return sum_3 / (((Number)(predict.length)).doubleValue());
+        return (double)(sum_3) / (double)((((Number)(predict.length)).doubleValue()));
     }
 
     static double rmse(double[] predict, double[] actual) {
-        return sqrtApprox(mse(((double[])(predict)), ((double[])(actual))));
+        return sqrtApprox((double)(mse(((double[])(predict)), ((double[])(actual)))));
     }
 
     static double rmsle(double[] predict, double[] actual) {
-        double sum_4 = 0.0;
-        long i_7 = 0;
-        while (i_7 < predict.length) {
-            double lp_1 = ln(predict[(int)(i_7)] + 1.0);
-            double la_1 = ln(actual[(int)(i_7)] + 1.0);
-            double diff_5 = lp_1 - la_1;
-            sum_4 = sum_4 + diff_5 * diff_5;
-            i_7 = i_7 + 1;
+        double sum_4 = (double)(0.0);
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(predict.length)) {
+            double lp_1 = (double)(ln((double)((double)(predict[(int)((long)(i_7))]) + (double)(1.0))));
+            double la_1 = (double)(ln((double)((double)(actual[(int)((long)(i_7))]) + (double)(1.0))));
+            double diff_5 = (double)((double)(lp_1) - (double)(la_1));
+            sum_4 = (double)((double)(sum_4) + (double)((double)(diff_5) * (double)(diff_5)));
+            i_7 = (long)((long)(i_7) + 1L);
         }
-        return sqrtApprox(sum_4 / (((Number)(predict.length)).doubleValue()));
+        return sqrtApprox((double)((double)(sum_4) / (double)((((Number)(predict.length)).doubleValue()))));
     }
 
     static double mbd(double[] predict, double[] actual) {
-        double diff_sum = 0.0;
-        double actual_sum_1 = 0.0;
-        long i_9 = 0;
-        while (i_9 < predict.length) {
-            diff_sum = diff_sum + (predict[(int)(i_9)] - actual[(int)(i_9)]);
-            actual_sum_1 = actual_sum_1 + actual[(int)(i_9)];
-            i_9 = i_9 + 1;
+        double diff_sum = (double)(0.0);
+        double actual_sum_1 = (double)(0.0);
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(predict.length)) {
+            diff_sum = (double)((double)(diff_sum) + (double)(((double)(predict[(int)((long)(i_9))]) - (double)(actual[(int)((long)(i_9))]))));
+            actual_sum_1 = (double)((double)(actual_sum_1) + (double)(actual[(int)((long)(i_9))]));
+            i_9 = (long)((long)(i_9) + 1L);
         }
-        double n_3 = ((Number)(predict.length)).doubleValue();
-        double numerator_1 = diff_sum / n_3;
-        double denominator_1 = actual_sum_1 / n_3;
-        return numerator_1 / denominator_1 * 100.0;
+        double n_3 = (double)(((Number)(predict.length)).doubleValue());
+        double numerator_1 = (double)((double)(diff_sum) / (double)(n_3));
+        double denominator_1 = (double)((double)(actual_sum_1) / (double)(n_3));
+        return (double)((double)(numerator_1) / (double)(denominator_1)) * (double)(100.0);
     }
 
     static double manual_accuracy(double[] predict, double[] actual) {
-        long correct = 0;
-        long i_11 = 0;
-        while (i_11 < predict.length) {
-            if (predict[(int)(i_11)] == actual[(int)(i_11)]) {
-                correct = correct + 1;
+        long correct = 0L;
+        long i_11 = 0L;
+        while ((long)(i_11) < (long)(predict.length)) {
+            if ((double)(predict[(int)((long)(i_11))]) == (double)(actual[(int)((long)(i_11))])) {
+                correct = (long)((long)(correct) + 1L);
             }
-            i_11 = i_11 + 1;
+            i_11 = (long)((long)(i_11) + 1L);
         }
-        return (((Number)(correct)).doubleValue()) / (((Number)(predict.length)).doubleValue());
+        return (double)((((Number)(correct)).doubleValue())) / (double)((((Number)(predict.length)).doubleValue()));
     }
 
     static void main() {
@@ -125,7 +125,41 @@ public class Main {
         System.out.println(_p(manual_accuracy(((double[])(predict_1)), ((double[])(actual)))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -143,7 +177,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

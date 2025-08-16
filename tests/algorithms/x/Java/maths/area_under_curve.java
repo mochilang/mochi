@@ -1,8 +1,8 @@
 public class Main {
-    static long i_2 = 0;
+    static long i_2 = 10L;
 
     static double abs_float(double x) {
-        if (x < 0.0) {
+        if ((double)(x) < (double)(0.0)) {
             return -x;
         } else {
             return x;
@@ -10,34 +10,67 @@ public class Main {
     }
 
     static double trapezoidal_area(java.util.function.Function<Double,Double> f, double x_start, double x_end, long steps) {
-        double step = (x_end - x_start) / (((Number)(steps)).doubleValue());
-        double x1_1 = x_start;
-        double fx1_1 = f.apply(x_start);
-        double area_1 = 0.0;
-        long i_1 = 0;
-        while (i_1 < steps) {
-            double x2_1 = x1_1 + step;
-            double fx2_1 = f.apply(x2_1);
-            area_1 = area_1 + abs_float(fx2_1 + fx1_1) * step / 2.0;
-            x1_1 = x2_1;
-            fx1_1 = fx2_1;
-            i_1 = i_1 + 1;
+        double step = (double)((double)(((double)(x_end) - (double)(x_start))) / (double)((((Number)(steps)).doubleValue())));
+        double x1_1 = (double)(x_start);
+        double fx1_1 = (double)(f.apply((double)(x_start)));
+        double area_1 = (double)(0.0);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(steps)) {
+            double x2_1 = (double)((double)(x1_1) + (double)(step));
+            double fx2_1 = (double)(f.apply((double)(x2_1)));
+            area_1 = (double)((double)(area_1) + (double)((double)((double)(abs_float((double)((double)(fx2_1) + (double)(fx1_1)))) * (double)(step)) / (double)(2.0)));
+            x1_1 = (double)(x2_1);
+            fx1_1 = (double)(fx2_1);
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return area_1;
     }
 
     static double f(double x) {
-        return x * x * x + x * x;
+        return (double)((double)((double)(x) * (double)(x)) * (double)(x)) + (double)((double)(x) * (double)(x));
     }
     public static void main(String[] args) {
-        System.out.println("f(x) = x^3 + x^2");
-        System.out.println("The area between the curve, x = -5, x = 5 and the x axis is:");
-        i_2 = 10;
-        while (i_2 <= 100000) {
-            double result = trapezoidal_area(Main::f, -5.0, 5.0, i_2);
-            System.out.println("with " + _p(i_2) + " steps: " + _p(result));
-            i_2 = i_2 * 10;
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println("f(x) = x^3 + x^2");
+            System.out.println("The area between the curve, x = -5, x = 5 and the x axis is:");
+            while ((long)(i_2) <= 100000L) {
+                double result = (double)(trapezoidal_area(Main::f, (double)(-5.0), (double)(5.0), (long)(i_2)));
+                System.out.println("with " + _p(i_2) + " steps: " + _p(result));
+                i_2 = (long)((long)(i_2) * 10L);
+            }
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -55,7 +88,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

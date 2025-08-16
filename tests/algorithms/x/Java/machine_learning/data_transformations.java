@@ -1,91 +1,91 @@
 public class Main {
 
     static double floor(double x) {
-        long i = ((Number)(x)).intValue();
-        if ((((Number)(i)).doubleValue()) > x) {
-            i = i - 1;
+        long i = (long)(((Number)(x)).intValue());
+        if ((double)((((Number)(i)).doubleValue())) > (double)(x)) {
+            i = (long)((long)(i) - 1L);
         }
         return ((Number)(i)).doubleValue();
     }
 
     static double pow10(long n) {
-        double result = 1.0;
+        double result = (double)(1.0);
         long i_2 = 0L;
-        while (i_2 < n) {
-            result = result * 10.0;
-            i_2 = i_2 + 1;
+        while ((long)(i_2) < (long)(n)) {
+            result = (double)((double)(result) * (double)(10.0));
+            i_2 = (long)((long)(i_2) + 1L);
         }
         return result;
     }
 
     static double round(double x, long n) {
-        double m = pow10(n);
-        double y_1 = ((Number)(floor(x * m + 0.5))).doubleValue();
-        return y_1 / m;
+        double m = (double)(pow10((long)(n)));
+        double y_1 = (double)(((Number)(Math.floor((double)((double)(x) * (double)(m)) + (double)(0.5)))).doubleValue());
+        return (double)(y_1) / (double)(m);
     }
 
     static double sqrtApprox(double x) {
-        double guess = x;
+        double guess = (double)(x);
         long i_4 = 0L;
-        while (i_4 < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i_4 = i_4 + 1;
+        while ((long)(i_4) < 20L) {
+            guess = (double)((double)(((double)(guess) + (double)((double)(x) / (double)(guess)))) / (double)(2.0));
+            i_4 = (long)((long)(i_4) + 1L);
         }
         return guess;
     }
 
     static double mean(double[] data) {
-        double total = 0.0;
+        double total = (double)(0.0);
         long i_6 = 0L;
-        long n_1 = data.length;
-        while (i_6 < n_1) {
-            total = total + data[(int)(i_6)];
-            i_6 = i_6 + 1;
+        long n_1 = (long)(data.length);
+        while ((long)(i_6) < (long)(n_1)) {
+            total = (double)((double)(total) + (double)(data[(int)((long)(i_6))]));
+            i_6 = (long)((long)(i_6) + 1L);
         }
-        return total / (((Number)(n_1)).doubleValue());
+        return (double)(total) / (double)((((Number)(n_1)).doubleValue()));
     }
 
     static double stdev(double[] data) {
-        long n_2 = data.length;
-        if (n_2 <= 1) {
+        long n_2 = (long)(data.length);
+        if ((long)(n_2) <= 1L) {
             throw new RuntimeException(String.valueOf("data length must be > 1"));
         }
-        double m_2 = mean(((double[])(data)));
-        double sum_sq_1 = 0.0;
+        double m_2 = (double)(mean(((double[])(data))));
+        double sum_sq_1 = (double)(0.0);
         long i_8 = 0L;
-        while (i_8 < n_2) {
-            double diff_1 = data[(int)(i_8)] - m_2;
-            sum_sq_1 = sum_sq_1 + diff_1 * diff_1;
-            i_8 = i_8 + 1;
+        while ((long)(i_8) < (long)(n_2)) {
+            double diff_1 = (double)((double)(data[(int)((long)(i_8))]) - (double)(m_2));
+            sum_sq_1 = (double)((double)(sum_sq_1) + (double)((double)(diff_1) * (double)(diff_1)));
+            i_8 = (long)((long)(i_8) + 1L);
         }
-        return sqrtApprox(sum_sq_1 / (((Number)((n_2 - 1))).doubleValue()));
+        return sqrtApprox((double)((double)(sum_sq_1) / (double)((((Number)(((long)(n_2) - 1L))).doubleValue()))));
     }
 
     static double[] normalization(double[] data, long ndigits) {
-        double x_min = ((Number)(_min(data))).doubleValue();
-        double x_max_1 = ((Number)(_max(data))).doubleValue();
-        double denom_1 = x_max_1 - x_min;
+        double x_min = (double)(((Number)(_min(data))).doubleValue());
+        double x_max_1 = (double)(((Number)(_max(data))).doubleValue());
+        double denom_1 = (double)((double)(x_max_1) - (double)(x_min));
         double[] result_2 = ((double[])(new double[]{}));
         long i_10 = 0L;
-        long n_4 = data.length;
-        while (i_10 < n_4) {
-            double norm_1 = (data[(int)(i_10)] - x_min) / denom_1;
-            result_2 = ((double[])(appendDouble(result_2, round(norm_1, ndigits))));
-            i_10 = i_10 + 1;
+        long n_4 = (long)(data.length);
+        while ((long)(i_10) < (long)(n_4)) {
+            double norm_1 = (double)((double)(((double)(data[(int)((long)(i_10))]) - (double)(x_min))) / (double)(denom_1));
+            result_2 = ((double[])(appendDouble(result_2, (double)(round((double)(norm_1), (long)(ndigits))))));
+            i_10 = (long)((long)(i_10) + 1L);
         }
         return result_2;
     }
 
     static double[] standardization(double[] data, long ndigits) {
-        double mu = mean(((double[])(data)));
-        double sigma_1 = stdev(((double[])(data)));
+        double mu = (double)(mean(((double[])(data))));
+        double sigma_1 = (double)(stdev(((double[])(data))));
         double[] result_4 = ((double[])(new double[]{}));
         long i_12 = 0L;
-        long n_6 = data.length;
-        while (i_12 < n_6) {
-            double z_1 = (data[(int)(i_12)] - mu) / sigma_1;
-            result_4 = ((double[])(appendDouble(result_4, round(z_1, ndigits))));
-            i_12 = i_12 + 1;
+        long n_6 = (long)(data.length);
+        while ((long)(i_12) < (long)(n_6)) {
+            double z_1 = (double)((double)(((double)(data[(int)((long)(i_12))]) - (double)(mu))) / (double)(sigma_1));
+            result_4 = ((double[])(appendDouble(result_4, (double)(round((double)(z_1), (long)(ndigits))))));
+            i_12 = (long)((long)(i_12) + 1L);
         }
         return result_4;
     }
@@ -180,7 +180,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

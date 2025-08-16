@@ -14,16 +14,16 @@ public class Main {
         }
     }
 
-    static double[][] data;
-    static long k;
+    static double[][] data = ((double[][])(new double[][]{new double[]{1.0, 2.0}, new double[]{1.5, 1.8}, new double[]{5.0, 8.0}, new double[]{8.0, 8.0}, new double[]{1.0, 0.6}, new double[]{9.0, 11.0}}));
+    static long k = 3L;
     static double[][] initial_centroids;
     static KMeansResult result;
 
     static double distance_sq(double[] a, double[] b) {
-        double sum = 0.0;
+        double sum = (double)(0.0);
         for (int i = 0; i < a.length; i++) {
-            double diff_1 = a[(int)(i)] - b[(int)(i)];
-            sum = sum + diff_1 * diff_1;
+            double diff_1 = (double)((double)(a[(int)((long)(i))]) - (double)(b[(int)((long)(i))]));
+            sum = (double)((double)(sum) + (double)((double)(diff_1) * (double)(diff_1)));
         }
         return sum;
     }
@@ -31,71 +31,71 @@ public class Main {
     static long[] assign_clusters(double[][] data, double[][] centroids) {
         long[] assignments = ((long[])(new long[]{}));
         for (int i = 0; i < data.length; i++) {
-            long best_idx_1 = 0;
-            double best_1 = distance_sq(((double[])(data[(int)(i)])), ((double[])(centroids[(int)(0)])));
+            long best_idx_1 = 0L;
+            double best_1 = (double)(distance_sq(((double[])(data[(int)((long)(i))])), ((double[])(centroids[(int)(0L)]))));
             for (int j = 1; j < centroids.length; j++) {
-                double dist_1 = distance_sq(((double[])(data[(int)(i)])), ((double[])(centroids[(int)(j)])));
-                if (dist_1 < best_1) {
-                    best_1 = dist_1;
-                    best_idx_1 = j;
+                double dist_1 = (double)(distance_sq(((double[])(data[(int)((long)(i))])), ((double[])(centroids[(int)((long)(j))]))));
+                if ((double)(dist_1) < (double)(best_1)) {
+                    best_1 = (double)(dist_1);
+                    best_idx_1 = (long)(j);
                 }
             }
-            assignments = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(assignments), java.util.stream.LongStream.of(best_idx_1)).toArray()));
+            assignments = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(assignments), java.util.stream.LongStream.of((long)(best_idx_1))).toArray()));
         }
         return assignments;
     }
 
     static double[][] revise_centroids(double[][] data, long k, long[] assignment) {
-        long dim = data[(int)(0)].length;
+        long dim = (long)(data[(int)(0L)].length);
         double[][] sums_1 = ((double[][])(new double[][]{}));
         long[] counts_1 = ((long[])(new long[]{}));
         for (int i = 0; i < k; i++) {
             double[] row_1 = ((double[])(new double[]{}));
             for (int j = 0; j < dim; j++) {
-                row_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_1), java.util.stream.DoubleStream.of(0.0)).toArray()));
+                row_1 = ((double[])(appendDouble(row_1, (double)(0.0))));
             }
-            sums_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(sums_1), java.util.stream.Stream.of(row_1)).toArray(double[][]::new)));
-            counts_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(counts_1), java.util.stream.LongStream.of(0)).toArray()));
+            sums_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(sums_1), java.util.stream.Stream.of(new double[][]{row_1})).toArray(double[][]::new)));
+            counts_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(counts_1), java.util.stream.LongStream.of(0L)).toArray()));
         }
         for (int i = 0; i < data.length; i++) {
-            long c_1 = assignment[(int)(i)];
-counts_1[(int)(c_1)] = counts_1[(int)(c_1)] + 1;
+            long c_1 = (long)(assignment[(int)((long)(i))]);
+counts_1[(int)((long)(c_1))] = (long)((long)(counts_1[(int)((long)(c_1))]) + 1L);
             for (int j = 0; j < dim; j++) {
-sums_1[(int)(c_1)][(int)(j)] = sums_1[(int)(c_1)][(int)(j)] + data[(int)(i)][(int)(j)];
+sums_1[(int)((long)(c_1))][(int)((long)(j))] = (double)((double)(sums_1[(int)((long)(c_1))][(int)((long)(j))]) + (double)(data[(int)((long)(i))][(int)((long)(j))]));
             }
         }
         double[][] centroids_1 = ((double[][])(new double[][]{}));
         for (int i = 0; i < k; i++) {
             double[] row_3 = ((double[])(new double[]{}));
-            if (counts_1[(int)(i)] > 0) {
+            if ((long)(counts_1[(int)((long)(i))]) > 0L) {
                 for (int j = 0; j < dim; j++) {
-                    row_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_3), java.util.stream.DoubleStream.of(sums_1[(int)(i)][(int)(j)] / (((double)(counts_1[(int)(i)]))))).toArray()));
+                    row_3 = ((double[])(appendDouble(row_3, (double)((double)(sums_1[(int)((long)(i))][(int)((long)(j))]) / (double)((((double)(counts_1[(int)((long)(i))]))))))));
                 }
             } else {
                 for (int j = 0; j < dim; j++) {
-                    row_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_3), java.util.stream.DoubleStream.of(0.0)).toArray()));
+                    row_3 = ((double[])(appendDouble(row_3, (double)(0.0))));
                 }
             }
-            centroids_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(centroids_1), java.util.stream.Stream.of(row_3)).toArray(double[][]::new)));
+            centroids_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(centroids_1), java.util.stream.Stream.of(new double[][]{row_3})).toArray(double[][]::new)));
         }
         return centroids_1;
     }
 
     static double compute_heterogeneity(double[][] data, double[][] centroids, long[] assignment) {
-        double total = 0.0;
+        double total = (double)(0.0);
         for (int i = 0; i < data.length; i++) {
-            long c_3 = assignment[(int)(i)];
-            total = total + distance_sq(((double[])(data[(int)(i)])), ((double[])(centroids[(int)(c_3)])));
+            long c_3 = (long)(assignment[(int)((long)(i))]);
+            total = (double)((double)(total) + (double)(distance_sq(((double[])(data[(int)((long)(i))])), ((double[])(centroids[(int)((long)(c_3))])))));
         }
         return total;
     }
 
     static boolean lists_equal(long[] a, long[] b) {
-        if (a.length != b.length) {
+        if ((long)(a.length) != (long)(b.length)) {
             return false;
         }
         for (int i = 0; i < a.length; i++) {
-            if (a[(int)(i)] != b[(int)(i)]) {
+            if ((long)(a[(int)((long)(i))]) != (long)(b[(int)((long)(i))])) {
                 return false;
             }
         }
@@ -107,28 +107,66 @@ sums_1[(int)(c_1)][(int)(j)] = sums_1[(int)(c_1)][(int)(j)] + data[(int)(i)][(in
         long[] assignment_1 = ((long[])(new long[]{}));
         long[] prev_1 = ((long[])(new long[]{}));
         double[] heterogeneity_1 = ((double[])(new double[]{}));
-        long iter_1 = 0;
-        while (iter_1 < max_iter) {
+        long iter_1 = 0L;
+        while ((long)(iter_1) < (long)(max_iter)) {
             assignment_1 = ((long[])(assign_clusters(((double[][])(data)), ((double[][])(centroids_2)))));
-            centroids_2 = ((double[][])(revise_centroids(((double[][])(data)), k, ((long[])(assignment_1)))));
-            double h_1 = compute_heterogeneity(((double[][])(data)), ((double[][])(centroids_2)), ((long[])(assignment_1)));
-            heterogeneity_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(heterogeneity_1), java.util.stream.DoubleStream.of(h_1)).toArray()));
-            if (iter_1 > 0 && ((Boolean)(lists_equal(((long[])(prev_1)), ((long[])(assignment_1)))))) {
+            centroids_2 = ((double[][])(revise_centroids(((double[][])(data)), (long)(k), ((long[])(assignment_1)))));
+            double h_1 = (double)(compute_heterogeneity(((double[][])(data)), ((double[][])(centroids_2)), ((long[])(assignment_1))));
+            heterogeneity_1 = ((double[])(appendDouble(heterogeneity_1, (double)(h_1))));
+            if ((long)(iter_1) > 0L && lists_equal(((long[])(prev_1)), ((long[])(assignment_1)))) {
                 break;
             }
             prev_1 = ((long[])(assignment_1));
-            iter_1 = iter_1 + 1;
+            iter_1 = (long)((long)(iter_1) + 1L);
         }
         return new KMeansResult(centroids_2, assignment_1, heterogeneity_1);
     }
     public static void main(String[] args) {
-        data = ((double[][])(new double[][]{new double[]{1.0, 2.0}, new double[]{1.5, 1.8}, new double[]{5.0, 8.0}, new double[]{8.0, 8.0}, new double[]{1.0, 0.6}, new double[]{9.0, 11.0}}));
-        k = 3;
-        initial_centroids = ((double[][])(new double[][]{data[(int)(0)], data[(int)(2)], data[(int)(5)]}));
-        result = kmeans(((double[][])(data)), k, ((double[][])(initial_centroids)), 10);
-        System.out.println(_p(result.centroids));
-        System.out.println(_p(result.assignments));
-        System.out.println(_p(result.heterogeneity));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            initial_centroids = ((double[][])(new double[][]{data[(int)(0L)], data[(int)(2L)], data[(int)(5L)]}));
+            result = kmeans(((double[][])(data)), (long)(k), ((double[][])(initial_centroids)), 10L);
+            System.out.println(_p(result.centroids));
+            System.out.println(_p(result.assignments));
+            System.out.println(_p(result.heterogeneity));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -146,7 +184,6 @@ sums_1[(int)(c_1)][(int)(j)] = sums_1[(int)(c_1)][(int)(j)] + data[(int)(i)][(in
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

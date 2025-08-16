@@ -1,95 +1,127 @@
 public class Main {
-    static String digits = null;
-    static long i_3 = 0;
+    static String digits = "";
+    static long i_3 = 1L;
 
     static long mod_pow(long base, long exponent, long modulus) {
-        long result = 1;
+        long result = 1L;
         long b_1 = Math.floorMod(base, modulus);
-        long e_1 = exponent;
-        while (e_1 > 0) {
-            if (Math.floorMod(e_1, 2) == 1) {
-                result = Math.floorMod((result * b_1), modulus);
+        long e_1 = (long)(exponent);
+        while ((long)(e_1) > 0L) {
+            if (Math.floorMod(e_1, 2) == 1L) {
+                result = Math.floorMod(((long)(result) * (long)(b_1)), modulus);
             }
-            b_1 = Math.floorMod((b_1 * b_1), modulus);
-            e_1 = Math.floorDiv(e_1, 2);
+            b_1 = Math.floorMod(((long)(b_1) * (long)(b_1)), modulus);
+            e_1 = (long)((long)(e_1) / 2L);
         }
         return result;
     }
 
     static double pow_float(double base, long exponent) {
-        long exp = exponent;
-        double result_2 = 1.0;
-        if (exp < 0) {
-            exp = -exp;
+        long exp = (long)(exponent);
+        double result_2 = (double)(1.0);
+        if ((long)(exp) < 0L) {
+            exp = (long)(-exp);
         }
-        long i_1 = 0;
-        while (i_1 < exp) {
-            result_2 = result_2 * base;
-            i_1 = i_1 + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(exp)) {
+            result_2 = (double)((double)(result_2) * (double)(base));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        if (exponent < 0) {
-            result_2 = 1.0 / result_2;
+        if ((long)(exponent) < 0L) {
+            result_2 = (double)((double)(1.0) / (double)(result_2));
         }
         return result_2;
     }
 
     static String hex_digit(long n) {
-        if (n < 10) {
+        if ((long)(n) < 10L) {
             return _p(n);
         }
         String[] letters_1 = ((String[])(new String[]{"a", "b", "c", "d", "e", "f"}));
-        return letters_1[(int)(n - 10)];
+        return letters_1[(int)((long)((long)(n) - 10L))];
     }
 
     static double floor_float(double x) {
-        long i_2 = ((Number)(x)).intValue();
-        if ((((Number)(i_2)).doubleValue()) > x) {
-            i_2 = i_2 - 1;
+        long i_2 = (long)(((Number)(x)).intValue());
+        if ((double)((((Number)(i_2)).doubleValue())) > (double)(x)) {
+            i_2 = (long)((long)(i_2) - 1L);
         }
         return ((Number)(i_2)).doubleValue();
     }
 
     static double subsum(long digit_pos_to_extract, long denominator_addend, long precision) {
-        double total = 0.0;
-        long sum_index_1 = 0;
-        while (sum_index_1 < digit_pos_to_extract + precision) {
-            long denominator_1 = 8 * sum_index_1 + denominator_addend;
-            if (sum_index_1 < digit_pos_to_extract) {
-                long exponent_2 = digit_pos_to_extract - 1 - sum_index_1;
-                long exponential_term_2 = mod_pow(16, exponent_2, denominator_1);
-                total = total + (((Number)(exponential_term_2)).doubleValue()) / (((Number)(denominator_1)).doubleValue());
+        double total = (double)(0.0);
+        long sum_index_1 = 0L;
+        while ((long)(sum_index_1) < (long)((long)(digit_pos_to_extract) + (long)(precision))) {
+            long denominator_1 = (long)((long)(8L * (long)(sum_index_1)) + (long)(denominator_addend));
+            if ((long)(sum_index_1) < (long)(digit_pos_to_extract)) {
+                long exponent_2 = (long)((long)((long)(digit_pos_to_extract) - 1L) - (long)(sum_index_1));
+                long exponential_term_2 = (long)(mod_pow(16L, (long)(exponent_2), (long)(denominator_1)));
+                total = (double)((double)(total) + (double)((double)((((Number)(exponential_term_2)).doubleValue())) / (double)((((Number)(denominator_1)).doubleValue()))));
             } else {
-                long exponent_3 = digit_pos_to_extract - 1 - sum_index_1;
-                double exponential_term_3 = pow_float(16.0, exponent_3);
-                total = total + exponential_term_3 / (((Number)(denominator_1)).doubleValue());
+                long exponent_3 = (long)((long)((long)(digit_pos_to_extract) - 1L) - (long)(sum_index_1));
+                double exponential_term_3 = (double)(pow_float((double)(16.0), (long)(exponent_3)));
+                total = (double)((double)(total) + (double)((double)(exponential_term_3) / (double)((((Number)(denominator_1)).doubleValue()))));
             }
-            sum_index_1 = sum_index_1 + 1;
+            sum_index_1 = (long)((long)(sum_index_1) + 1L);
         }
         return total;
     }
 
     static String bailey_borwein_plouffe(long digit_position, long precision) {
-        if (digit_position <= 0) {
+        if ((long)(digit_position) <= 0L) {
             throw new RuntimeException(String.valueOf("Digit position must be a positive integer"));
         }
-        if (precision < 0) {
+        if ((long)(precision) < 0L) {
             throw new RuntimeException(String.valueOf("Precision must be a nonnegative integer"));
         }
-        double sum_result_1 = 4.0 * subsum(digit_position, 1, precision) - 2.0 * subsum(digit_position, 4, precision) - 1.0 * subsum(digit_position, 5, precision) - 1.0 * subsum(digit_position, 6, precision);
-        double fraction_1 = sum_result_1 - floor_float(sum_result_1);
-        long digit_1 = ((Number)((fraction_1 * 16.0))).intValue();
-        String hd_1 = String.valueOf(hex_digit(digit_1));
+        double sum_result_1 = (double)((double)((double)((double)((double)(4.0) * (double)(subsum((long)(digit_position), 1L, (long)(precision)))) - (double)((double)(2.0) * (double)(subsum((long)(digit_position), 4L, (long)(precision))))) - (double)((double)(1.0) * (double)(subsum((long)(digit_position), 5L, (long)(precision))))) - (double)((double)(1.0) * (double)(subsum((long)(digit_position), 6L, (long)(precision)))));
+        double fraction_1 = (double)((double)(sum_result_1) - (double)(floor_float((double)(sum_result_1))));
+        long digit_1 = (long)(((Number)(((double)(fraction_1) * (double)(16.0)))).intValue());
+        String hd_1 = String.valueOf(hex_digit((long)(digit_1)));
         return hd_1;
     }
     public static void main(String[] args) {
-        digits = "";
-        i_3 = 1;
-        while (i_3 <= 10) {
-            digits = digits + String.valueOf(bailey_borwein_plouffe(i_3, 1000));
-            i_3 = i_3 + 1;
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            while ((long)(i_3) <= 10L) {
+                digits = digits + String.valueOf(bailey_borwein_plouffe((long)(i_3), 1000L));
+                i_3 = (long)((long)(i_3) + 1L);
+            }
+            System.out.println(digits);
+            System.out.println(bailey_borwein_plouffe(5L, 10000L));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
-        System.out.println(digits);
-        System.out.println(bailey_borwein_plouffe(5, 10000));
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -107,7 +139,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

@@ -70,33 +70,33 @@ public class Main {
         }
     }
 
-    static double[] data;
-    static long look_back;
-    static long epochs;
-    static double lr;
+    static double[] data = ((double[])(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8}));
+    static long look_back = 3L;
+    static long epochs = 200L;
+    static double lr = (double)(0.1);
     static LSTMWeights w_2;
-    static double[] test_seq;
+    static double[] test_seq = ((double[])(new double[]{0.6, 0.7, 0.8}));
     static double pred;
 
     static double exp_approx(double x) {
-        double sum = 1.0;
-        double term_1 = 1.0;
-        long n_1 = 1;
-        while (n_1 < 20) {
-            term_1 = term_1 * x / (((Number)(n_1)).doubleValue());
-            sum = sum + term_1;
-            n_1 = n_1 + 1;
+        double sum = (double)(1.0);
+        double term_1 = (double)(1.0);
+        long n_1 = 1L;
+        while ((long)(n_1) < 20L) {
+            term_1 = (double)((double)((double)(term_1) * (double)(x)) / (double)((((Number)(n_1)).doubleValue())));
+            sum = (double)((double)(sum) + (double)(term_1));
+            n_1 = (long)((long)(n_1) + 1L);
         }
         return sum;
     }
 
     static double sigmoid(double x) {
-        return 1.0 / (1.0 + exp_approx(-x));
+        return (double)(1.0) / (double)(((double)(1.0) + (double)(exp_approx((double)(-x)))));
     }
 
     static double tanh_approx(double x) {
-        double e = exp_approx(2.0 * x);
-        return (e - 1.0) / (e + 1.0);
+        double e = (double)(exp_approx((double)((double)(2.0) * (double)(x))));
+        return (double)(((double)(e) - (double)(1.0))) / (double)(((double)(e) + (double)(1.0)));
     }
 
     static LSTMState forward(double[] seq, LSTMWeights w) {
@@ -106,112 +106,112 @@ public class Main {
         double[] g_arr_1 = ((double[])(new double[]{}));
         double[] c_arr_1 = ((double[])(new double[]{0.0}));
         double[] h_arr_1 = ((double[])(new double[]{0.0}));
-        long t_1 = 0;
-        while (t_1 < seq.length) {
-            double x_1 = seq[(int)(t_1)];
-            double h_prev_1 = h_arr_1[(int)(t_1)];
-            double c_prev_1 = c_arr_1[(int)(t_1)];
-            double i_t_1 = sigmoid(w.w_i * x_1 + w.u_i * h_prev_1 + w.b_i);
-            double f_t_1 = sigmoid(w.w_f * x_1 + w.u_f * h_prev_1 + w.b_f);
-            double o_t_1 = sigmoid(w.w_o * x_1 + w.u_o * h_prev_1 + w.b_o);
-            double g_t_1 = tanh_approx(w.w_c * x_1 + w.u_c * h_prev_1 + w.b_c);
-            double c_t_1 = f_t_1 * c_prev_1 + i_t_1 * g_t_1;
-            double h_t_1 = o_t_1 * tanh_approx(c_t_1);
-            i_arr = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(i_arr), java.util.stream.DoubleStream.of(i_t_1)).toArray()));
-            f_arr_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(f_arr_1), java.util.stream.DoubleStream.of(f_t_1)).toArray()));
-            o_arr_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(o_arr_1), java.util.stream.DoubleStream.of(o_t_1)).toArray()));
-            g_arr_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(g_arr_1), java.util.stream.DoubleStream.of(g_t_1)).toArray()));
-            c_arr_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(c_arr_1), java.util.stream.DoubleStream.of(c_t_1)).toArray()));
-            h_arr_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(h_arr_1), java.util.stream.DoubleStream.of(h_t_1)).toArray()));
-            t_1 = t_1 + 1;
+        long t_1 = 0L;
+        while ((long)(t_1) < (long)(seq.length)) {
+            double x_1 = (double)(seq[(int)((long)(t_1))]);
+            double h_prev_1 = (double)(h_arr_1[(int)((long)(t_1))]);
+            double c_prev_1 = (double)(c_arr_1[(int)((long)(t_1))]);
+            double i_t_1 = (double)(sigmoid((double)((double)((double)((double)(w.w_i) * (double)(x_1)) + (double)((double)(w.u_i) * (double)(h_prev_1))) + (double)(w.b_i))));
+            double f_t_1 = (double)(sigmoid((double)((double)((double)((double)(w.w_f) * (double)(x_1)) + (double)((double)(w.u_f) * (double)(h_prev_1))) + (double)(w.b_f))));
+            double o_t_1 = (double)(sigmoid((double)((double)((double)((double)(w.w_o) * (double)(x_1)) + (double)((double)(w.u_o) * (double)(h_prev_1))) + (double)(w.b_o))));
+            double g_t_1 = (double)(tanh_approx((double)((double)((double)((double)(w.w_c) * (double)(x_1)) + (double)((double)(w.u_c) * (double)(h_prev_1))) + (double)(w.b_c))));
+            double c_t_1 = (double)((double)((double)(f_t_1) * (double)(c_prev_1)) + (double)((double)(i_t_1) * (double)(g_t_1)));
+            double h_t_1 = (double)((double)(o_t_1) * (double)(tanh_approx((double)(c_t_1))));
+            i_arr = ((double[])(appendDouble(i_arr, (double)(i_t_1))));
+            f_arr_1 = ((double[])(appendDouble(f_arr_1, (double)(f_t_1))));
+            o_arr_1 = ((double[])(appendDouble(o_arr_1, (double)(o_t_1))));
+            g_arr_1 = ((double[])(appendDouble(g_arr_1, (double)(g_t_1))));
+            c_arr_1 = ((double[])(appendDouble(c_arr_1, (double)(c_t_1))));
+            h_arr_1 = ((double[])(appendDouble(h_arr_1, (double)(h_t_1))));
+            t_1 = (long)((long)(t_1) + 1L);
         }
         return new LSTMState(i_arr, f_arr_1, o_arr_1, g_arr_1, c_arr_1, h_arr_1);
     }
 
     static LSTMWeights backward(double[] seq, double target, LSTMWeights w, LSTMState s, double lr) {
-        double dw_i = 0.0;
-        double du_i_1 = 0.0;
-        double db_i_1 = 0.0;
-        double dw_f_1 = 0.0;
-        double du_f_1 = 0.0;
-        double db_f_1 = 0.0;
-        double dw_o_1 = 0.0;
-        double du_o_1 = 0.0;
-        double db_o_1 = 0.0;
-        double dw_c_1 = 0.0;
-        double du_c_1 = 0.0;
-        double db_c_1 = 0.0;
-        double dw_y_1 = 0.0;
-        double db_y_1 = 0.0;
-        long T_1 = seq.length;
-        double h_last_1 = s.h[(int)(T_1)];
-        double y_1 = w.w_y * h_last_1 + w.b_y;
-        double dy_1 = y_1 - target;
-        dw_y_1 = dy_1 * h_last_1;
-        db_y_1 = dy_1;
-        double dh_next_1 = dy_1 * w.w_y;
-        double dc_next_1 = 0.0;
-        long t_3 = T_1 - 1;
-        while (t_3 >= 0) {
-            double i_t_3 = s.i[(int)(t_3)];
-            double f_t_3 = s.f[(int)(t_3)];
-            double o_t_3 = s.o[(int)(t_3)];
-            double g_t_3 = s.g[(int)(t_3)];
-            double c_t_3 = s.c[(int)(t_3 + 1)];
-            double c_prev_3 = s.c[(int)(t_3)];
-            double h_prev_3 = s.h[(int)(t_3)];
-            double tanh_c_1 = tanh_approx(c_t_3);
-            double do_t_1 = dh_next_1 * tanh_c_1;
-            double da_o_1 = do_t_1 * o_t_3 * (1.0 - o_t_3);
-            double dc_1 = dh_next_1 * o_t_3 * (1.0 - tanh_c_1 * tanh_c_1) + dc_next_1;
-            double di_t_1 = dc_1 * g_t_3;
-            double da_i_1 = di_t_1 * i_t_3 * (1.0 - i_t_3);
-            double dg_t_1 = dc_1 * i_t_3;
-            double da_g_1 = dg_t_1 * (1.0 - g_t_3 * g_t_3);
-            double df_t_1 = dc_1 * c_prev_3;
-            double da_f_1 = df_t_1 * f_t_3 * (1.0 - f_t_3);
-            dw_i = dw_i + da_i_1 * seq[(int)(t_3)];
-            du_i_1 = du_i_1 + da_i_1 * h_prev_3;
-            db_i_1 = db_i_1 + da_i_1;
-            dw_f_1 = dw_f_1 + da_f_1 * seq[(int)(t_3)];
-            du_f_1 = du_f_1 + da_f_1 * h_prev_3;
-            db_f_1 = db_f_1 + da_f_1;
-            dw_o_1 = dw_o_1 + da_o_1 * seq[(int)(t_3)];
-            du_o_1 = du_o_1 + da_o_1 * h_prev_3;
-            db_o_1 = db_o_1 + da_o_1;
-            dw_c_1 = dw_c_1 + da_g_1 * seq[(int)(t_3)];
-            du_c_1 = du_c_1 + da_g_1 * h_prev_3;
-            db_c_1 = db_c_1 + da_g_1;
-            dh_next_1 = da_i_1 * w.u_i + da_f_1 * w.u_f + da_o_1 * w.u_o + da_g_1 * w.u_c;
-            dc_next_1 = dc_1 * f_t_3;
-            t_3 = t_3 - 1;
+        double dw_i = (double)(0.0);
+        double du_i_1 = (double)(0.0);
+        double db_i_1 = (double)(0.0);
+        double dw_f_1 = (double)(0.0);
+        double du_f_1 = (double)(0.0);
+        double db_f_1 = (double)(0.0);
+        double dw_o_1 = (double)(0.0);
+        double du_o_1 = (double)(0.0);
+        double db_o_1 = (double)(0.0);
+        double dw_c_1 = (double)(0.0);
+        double du_c_1 = (double)(0.0);
+        double db_c_1 = (double)(0.0);
+        double dw_y_1 = (double)(0.0);
+        double db_y_1 = (double)(0.0);
+        long T_1 = (long)(seq.length);
+        double h_last_1 = (double)(s.h[(int)((long)(T_1))]);
+        double y_1 = (double)((double)((double)(w.w_y) * (double)(h_last_1)) + (double)(w.b_y));
+        double dy_1 = (double)((double)(y_1) - (double)(target));
+        dw_y_1 = (double)((double)(dy_1) * (double)(h_last_1));
+        db_y_1 = (double)(dy_1);
+        double dh_next_1 = (double)((double)(dy_1) * (double)(w.w_y));
+        double dc_next_1 = (double)(0.0);
+        long t_3 = (long)((long)(T_1) - 1L);
+        while ((long)(t_3) >= 0L) {
+            double i_t_3 = (double)(s.i[(int)((long)(t_3))]);
+            double f_t_3 = (double)(s.f[(int)((long)(t_3))]);
+            double o_t_3 = (double)(s.o[(int)((long)(t_3))]);
+            double g_t_3 = (double)(s.g[(int)((long)(t_3))]);
+            double c_t_3 = (double)(s.c[(int)((long)((long)(t_3) + 1L))]);
+            double c_prev_3 = (double)(s.c[(int)((long)(t_3))]);
+            double h_prev_3 = (double)(s.h[(int)((long)(t_3))]);
+            double tanh_c_1 = (double)(tanh_approx((double)(c_t_3)));
+            double do_t_1 = (double)((double)(dh_next_1) * (double)(tanh_c_1));
+            double da_o_1 = (double)((double)((double)(do_t_1) * (double)(o_t_3)) * (double)(((double)(1.0) - (double)(o_t_3))));
+            double dc_1 = (double)((double)((double)((double)(dh_next_1) * (double)(o_t_3)) * (double)(((double)(1.0) - (double)((double)(tanh_c_1) * (double)(tanh_c_1))))) + (double)(dc_next_1));
+            double di_t_1 = (double)((double)(dc_1) * (double)(g_t_3));
+            double da_i_1 = (double)((double)((double)(di_t_1) * (double)(i_t_3)) * (double)(((double)(1.0) - (double)(i_t_3))));
+            double dg_t_1 = (double)((double)(dc_1) * (double)(i_t_3));
+            double da_g_1 = (double)((double)(dg_t_1) * (double)(((double)(1.0) - (double)((double)(g_t_3) * (double)(g_t_3)))));
+            double df_t_1 = (double)((double)(dc_1) * (double)(c_prev_3));
+            double da_f_1 = (double)((double)((double)(df_t_1) * (double)(f_t_3)) * (double)(((double)(1.0) - (double)(f_t_3))));
+            dw_i = (double)((double)(dw_i) + (double)((double)(da_i_1) * (double)(seq[(int)((long)(t_3))])));
+            du_i_1 = (double)((double)(du_i_1) + (double)((double)(da_i_1) * (double)(h_prev_3)));
+            db_i_1 = (double)((double)(db_i_1) + (double)(da_i_1));
+            dw_f_1 = (double)((double)(dw_f_1) + (double)((double)(da_f_1) * (double)(seq[(int)((long)(t_3))])));
+            du_f_1 = (double)((double)(du_f_1) + (double)((double)(da_f_1) * (double)(h_prev_3)));
+            db_f_1 = (double)((double)(db_f_1) + (double)(da_f_1));
+            dw_o_1 = (double)((double)(dw_o_1) + (double)((double)(da_o_1) * (double)(seq[(int)((long)(t_3))])));
+            du_o_1 = (double)((double)(du_o_1) + (double)((double)(da_o_1) * (double)(h_prev_3)));
+            db_o_1 = (double)((double)(db_o_1) + (double)(da_o_1));
+            dw_c_1 = (double)((double)(dw_c_1) + (double)((double)(da_g_1) * (double)(seq[(int)((long)(t_3))])));
+            du_c_1 = (double)((double)(du_c_1) + (double)((double)(da_g_1) * (double)(h_prev_3)));
+            db_c_1 = (double)((double)(db_c_1) + (double)(da_g_1));
+            dh_next_1 = (double)((double)((double)((double)((double)(da_i_1) * (double)(w.u_i)) + (double)((double)(da_f_1) * (double)(w.u_f))) + (double)((double)(da_o_1) * (double)(w.u_o))) + (double)((double)(da_g_1) * (double)(w.u_c)));
+            dc_next_1 = (double)((double)(dc_1) * (double)(f_t_3));
+            t_3 = (long)((long)(t_3) - 1L);
         }
-w.w_y = w.w_y - lr * dw_y_1;
-w.b_y = w.b_y - lr * db_y_1;
-w.w_i = w.w_i - lr * dw_i;
-w.u_i = w.u_i - lr * du_i_1;
-w.b_i = w.b_i - lr * db_i_1;
-w.w_f = w.w_f - lr * dw_f_1;
-w.u_f = w.u_f - lr * du_f_1;
-w.b_f = w.b_f - lr * db_f_1;
-w.w_o = w.w_o - lr * dw_o_1;
-w.u_o = w.u_o - lr * du_o_1;
-w.b_o = w.b_o - lr * db_o_1;
-w.w_c = w.w_c - lr * dw_c_1;
-w.u_c = w.u_c - lr * du_c_1;
-w.b_c = w.b_c - lr * db_c_1;
+w.w_y = (double)(w.w_y) - (double)((double)(lr) * (double)(dw_y_1));
+w.b_y = (double)(w.b_y) - (double)((double)(lr) * (double)(db_y_1));
+w.w_i = (double)(w.w_i) - (double)((double)(lr) * (double)(dw_i));
+w.u_i = (double)(w.u_i) - (double)((double)(lr) * (double)(du_i_1));
+w.b_i = (double)(w.b_i) - (double)((double)(lr) * (double)(db_i_1));
+w.w_f = (double)(w.w_f) - (double)((double)(lr) * (double)(dw_f_1));
+w.u_f = (double)(w.u_f) - (double)((double)(lr) * (double)(du_f_1));
+w.b_f = (double)(w.b_f) - (double)((double)(lr) * (double)(db_f_1));
+w.w_o = (double)(w.w_o) - (double)((double)(lr) * (double)(dw_o_1));
+w.u_o = (double)(w.u_o) - (double)((double)(lr) * (double)(du_o_1));
+w.b_o = (double)(w.b_o) - (double)((double)(lr) * (double)(db_o_1));
+w.w_c = (double)(w.w_c) - (double)((double)(lr) * (double)(dw_c_1));
+w.u_c = (double)(w.u_c) - (double)((double)(lr) * (double)(du_c_1));
+w.b_c = (double)(w.b_c) - (double)((double)(lr) * (double)(db_c_1));
         return w;
     }
 
     static Samples make_samples(double[] data, long look_back) {
         double[][] X = ((double[][])(new double[][]{}));
         double[] Y_1 = ((double[])(new double[]{}));
-        long i_1 = 0;
-        while (i_1 + look_back < data.length) {
-            double[] seq_1 = ((double[])(java.util.Arrays.copyOfRange(data, (int)(i_1), (int)(i_1 + look_back))));
-            X = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(X), java.util.stream.Stream.of(seq_1)).toArray(double[][]::new)));
-            Y_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(Y_1), java.util.stream.DoubleStream.of(data[(int)(i_1 + look_back)])).toArray()));
-            i_1 = i_1 + 1;
+        long i_1 = 0L;
+        while ((long)((long)(i_1) + (long)(look_back)) < (long)(data.length)) {
+            double[] seq_1 = ((double[])(java.util.Arrays.copyOfRange(data, (int)((long)(i_1)), (int)((long)((long)(i_1) + (long)(look_back))))));
+            X = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(X), java.util.stream.Stream.of(new double[][]{seq_1})).toArray(double[][]::new)));
+            Y_1 = ((double[])(appendDouble(Y_1, (double)(data[(int)((long)((long)(i_1) + (long)(look_back)))]))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return new Samples(X, Y_1);
     }
@@ -221,37 +221,72 @@ w.b_c = w.b_c - lr * db_c_1;
     }
 
     static LSTMWeights train(double[] data, long look_back, long epochs, double lr) {
-        Samples samples = make_samples(((double[])(data)), look_back);
+        Samples samples = make_samples(((double[])(data)), (long)(look_back));
         LSTMWeights w_1 = init_weights();
-        long ep_1 = 0;
-        while (ep_1 < epochs) {
-            long j_1 = 0;
-            while (j_1 < samples.x.length) {
-                double[] seq_3 = ((double[])(samples.x[(int)(j_1)]));
-                double target_1 = samples.y[(int)(j_1)];
+        long ep_1 = 0L;
+        while ((long)(ep_1) < (long)(epochs)) {
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(samples.x.length)) {
+                double[] seq_3 = ((double[])(samples.x[(int)((long)(j_1))]));
+                double target_1 = (double)(samples.y[(int)((long)(j_1))]);
                 LSTMState state_1 = forward(((double[])(seq_3)), w_1);
-                w_1 = backward(((double[])(seq_3)), target_1, w_1, state_1, lr);
-                j_1 = j_1 + 1;
+                w_1 = backward(((double[])(seq_3)), (double)(target_1), w_1, state_1, (double)(lr));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            ep_1 = ep_1 + 1;
+            ep_1 = (long)((long)(ep_1) + 1L);
         }
         return w_1;
     }
 
     static double predict(double[] seq, LSTMWeights w) {
         LSTMState state_2 = forward(((double[])(seq)), w);
-        double h_last_3 = state_2.h[(int)(state_2.h.length - 1)];
-        return w.w_y * h_last_3 + w.b_y;
+        double h_last_3 = (double)(state_2.h[(int)((long)((long)(state_2.h.length) - 1L))]);
+        return (double)((double)(w.w_y) * (double)(h_last_3)) + (double)(w.b_y);
     }
     public static void main(String[] args) {
-        data = ((double[])(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8}));
-        look_back = 3;
-        epochs = 200;
-        lr = 0.1;
-        w_2 = train(((double[])(data)), look_back, epochs, lr);
-        test_seq = ((double[])(new double[]{0.6, 0.7, 0.8}));
-        pred = predict(((double[])(test_seq)), w_2);
-        System.out.println("Predicted value: " + _p(pred));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            w_2 = train(((double[])(data)), (long)(look_back), (long)(epochs), (double)(lr));
+            pred = (double)(predict(((double[])(test_seq)), w_2));
+            System.out.println("Predicted value: " + _p(pred));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -269,7 +304,6 @@ w.b_c = w.b_c - lr * db_c_1;
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);
