@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-15 10:23 +0700
+Last updated: 2025-08-16 09:25 +0700
 
-## Program Checklist (341/1077)
+## Program Checklist (356/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -711,22 +711,22 @@ Last updated: 2025-08-15 10:23 +0700
 | 702 | matrix/inverse_of_matrix | ✓ | 1.374ms | 384.0 KB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 1.15ms | 572.0 KB |
 | 704 | matrix/matrix_based_game | ✓ | 2.896ms | 768.0 KB |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut | ✓ | 1.565ms | 640.0 KB |
+| 705 | matrix/matrix_class | ✓ | 15.953ms | 3.5 MB |
+| 706 | matrix/matrix_equalization | ✓ | 921µs | 256.0 KB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 1.696ms | 512.0 KB |
+| 708 | matrix/matrix_operation | ✓ | 7.021ms | 1.8 MB |
+| 709 | matrix/max_area_of_island | ✓ | 9.301ms | 2.4 MB |
+| 710 | matrix/median_matrix | ✓ | 821µs | 256.0 KB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 6.077ms | 1.5 MB |
+| 712 | matrix/pascal_triangle | ✓ | 2.471ms | 640.0 KB |
+| 713 | matrix/rotate_matrix | ✓ | 9.539ms | 1.9 MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 858µs | 512.0 KB |
+| 715 | matrix/sherman_morrison | ✓ | 1.991ms | 768.0 KB |
+| 716 | matrix/spiral_print | ✓ | 1.719ms | 512.0 KB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 2.886ms | 896.0 KB |
+| 718 | matrix/validate_sudoku_board | ✓ | 3.433ms | 896.0 KB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 1.421ms | 384.0 KB |
+| 720 | networking_flow/minimum_cut | ✓ | 2.536ms | 768.0 KB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 613µs | 256.0 KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 496µs | 512.0 KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 595µs | 444.0 KB |
