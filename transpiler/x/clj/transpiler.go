@@ -727,50 +727,50 @@ var nestedFunArgs map[string][]string
 
 // mutParam describes a parameter that may be mutated by a function call.
 type mutParam struct {
-        Index int
-        Name  string
+	Index int
+	Name  string
 }
 
 func collectMutatedParams(f *parser.FunStmt) []mutParam {
-        mutated := map[string]bool{}
-        var walk func([]*parser.Statement)
-        walk = func(stmts []*parser.Statement) {
-                for _, st := range stmts {
-                        switch {
-                        case st.Assign != nil:
-                                name := st.Assign.Name
-                                if idx := strings.Index(name, "."); idx >= 0 {
-                                        name = name[:idx]
-                                }
-                                mutated[name] = true
-                        case st.If != nil:
-                                walk(st.If.Then)
-                                if st.If.Else != nil {
-                                        walk(st.If.Else)
-                                }
-                                for it := st.If.ElseIf; it != nil; it = it.ElseIf {
-                                        walk(it.Then)
-                                        if it.Else != nil {
-                                                walk(it.Else)
-                                        }
-                                }
-                        case st.While != nil:
-                                walk(st.While.Body)
-                        case st.For != nil:
-                                walk(st.For.Body)
-                        case st.Fun != nil:
-                                walk(st.Fun.Body)
-                        }
-                }
-        }
-        walk(f.Body)
-        mps := []mutParam{}
-        for i, p := range f.Params {
-                if mutated[p.Name] {
-                        mps = append(mps, mutParam{Index: i, Name: f.Name + "_" + p.Name})
-                }
-        }
-        return mps
+	mutated := map[string]bool{}
+	var walk func([]*parser.Statement)
+	walk = func(stmts []*parser.Statement) {
+		for _, st := range stmts {
+			switch {
+			case st.Assign != nil:
+				name := st.Assign.Name
+				if idx := strings.Index(name, "."); idx >= 0 {
+					name = name[:idx]
+				}
+				mutated[name] = true
+			case st.If != nil:
+				walk(st.If.Then)
+				if st.If.Else != nil {
+					walk(st.If.Else)
+				}
+				for it := st.If.ElseIf; it != nil; it = it.ElseIf {
+					walk(it.Then)
+					if it.Else != nil {
+						walk(it.Else)
+					}
+				}
+			case st.While != nil:
+				walk(st.While.Body)
+			case st.For != nil:
+				walk(st.For.Body)
+			case st.Fun != nil:
+				walk(st.Fun.Body)
+			}
+		}
+	}
+	walk(f.Body)
+	mps := []mutParam{}
+	for i, p := range f.Params {
+		if mutated[p.Name] {
+			mps = append(mps, mutParam{Index: i, Name: f.Name + "_" + p.Name})
+		}
+	}
+	return mps
 }
 
 // funcMutatedParams keeps track of functions that mutate their arguments.
@@ -848,20 +848,20 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	// emit (ns main)
 	funNames := []string{}
 	builtinUsed := map[string]bool{}
-        for _, st := range prog.Statements {
-                if st.Fun != nil {
-                        if _, ok := bigIntHelpers[st.Fun.Name]; ok {
-                                builtinUsed[st.Fun.Name] = true
-                                continue
-                        }
-                        funNames = append(funNames, st.Fun.Name)
-                        if funcMutatedParams != nil {
-                                if mps := collectMutatedParams(st.Fun); len(mps) > 0 {
-                                        funcMutatedParams[st.Fun.Name] = mps
-                                }
-                        }
-                }
-        }
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			if _, ok := bigIntHelpers[st.Fun.Name]; ok {
+				builtinUsed[st.Fun.Name] = true
+				continue
+			}
+			funNames = append(funNames, st.Fun.Name)
+			if funcMutatedParams != nil {
+				if mps := collectMutatedParams(st.Fun); len(mps) > 0 {
+					funcMutatedParams[st.Fun.Name] = mps
+				}
+			}
+		}
+	}
 	nsElems := []Node{Symbol("ns"), Symbol("main")}
 	if len(funNames) > 0 {
 		vec := &Vector{}
@@ -1448,12 +1448,12 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	checkAssign = func(stmts []*parser.Statement) {
 		for _, st := range stmts {
 			switch {
-                        case st.Assign != nil:
-                                name := st.Assign.Name
-                                if idx := strings.Index(name, "."); idx >= 0 {
-                                        name = name[:idx]
-                                }
-                                mutated[name] = true
+			case st.Assign != nil:
+				name := st.Assign.Name
+				if idx := strings.Index(name, "."); idx >= 0 {
+					name = name[:idx]
+				}
+				mutated[name] = true
 			case st.If != nil:
 				checkAssign(st.If.Then)
 				if st.If.Else != nil {
@@ -1571,6 +1571,16 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		} else {
 			bodyNode = &List{Elems: []Node{Symbol("try"), bodyNode, catchExpr}}
 		}
+	} else if len(mutParams) > 0 {
+		finallyElems := []Node{Symbol("finally")}
+		for _, mp := range mutParams {
+			finallyElems = append(finallyElems, &List{Elems: []Node{
+				Symbol("alter-var-root"),
+				&List{Elems: []Node{Symbol("var"), Symbol(mp.Name)}},
+				&List{Elems: []Node{Symbol("constantly"), Symbol(mp.Name)}},
+			}})
+		}
+		bodyNode = &List{Elems: []Node{Symbol("try"), bodyNode, &List{Elems: finallyElems}}}
 	}
 	if !hasReturn && f.Return == nil && len(f.Params) > 0 {
 		sym := Symbol(renameVar(f.Params[0].Name))
@@ -3730,21 +3740,21 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 }
 
 func transpileForStmt(f *parser.ForStmt) (Node, error) {
-        name := renameVar(f.Name)
-        if funDepth > 0 {
-                if declVars != nil {
-                        declVars[name] = true
-                }
-                if localVars != nil {
-                        localVars[name] = true
-                }
-        }
-        useCtrl := hasLoopCtrl(f.Body)
-        var prevSeq string
-        if useCtrl {
-                prevSeq = currentSeqVar
-                currentSeqVar = name + "_seq"
-        }
+	name := renameVar(f.Name)
+	if funDepth > 0 {
+		if declVars != nil {
+			declVars[name] = true
+		}
+		if localVars != nil {
+			localVars[name] = true
+		}
+	}
+	useCtrl := hasLoopCtrl(f.Body)
+	var prevSeq string
+	if useCtrl {
+		prevSeq = currentSeqVar
+		currentSeqVar = name + "_seq"
+	}
 	bodyNodes := []Node{}
 	for _, st := range f.Body {
 		n, err := transpileStmt(st)
@@ -3773,54 +3783,54 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 	} else {
 		bodyNode = &List{Elems: append([]Node{Symbol("do")}, bodyNodes...)}
 	}
-        var seq Node
-        useDotimes := false
-        if f.RangeEnd != nil {
-                start, err := transpileExpr(f.Source)
-                if err != nil {
-                        return nil, err
-                }
-                end, err := transpileExpr(f.RangeEnd)
-                if err != nil {
-                        return nil, err
-                }
-                if isZeroNode(start) {
-                        useDotimes = true
-                        seq = end
-                } else {
-                        seq = &List{Elems: []Node{Symbol("range"), start, end}}
-                }
-        } else {
-                iter, err := transpileExpr(f.Source)
-                if err != nil {
-                        return nil, err
-                }
-                if isMapNode(iter) {
-                        if l, ok := iter.(*List); ok {
-                                if sym, ok := l.Elems[0].(Symbol); ok && sym == "get" {
-                                        seq = iter
-                                } else {
-                                        seq = &List{Elems: []Node{Symbol("keys"), iter}}
-                                }
-                        } else {
-                                seq = &List{Elems: []Node{Symbol("keys"), iter}}
-                        }
-                } else {
-                        seq = iter
-                }
-        }
-        if !useCtrl {
-                binding := &Vector{Elems: []Node{Symbol(name), seq}}
-                if useDotimes {
-                        return &List{Elems: []Node{Symbol("dotimes"), binding, bodyNode}}, nil
-                }
-                return &List{Elems: []Node{Symbol("doseq"), binding, bodyNode}}, nil
-        }
+	var seq Node
+	useDotimes := false
+	if f.RangeEnd != nil {
+		start, err := transpileExpr(f.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := transpileExpr(f.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		if isZeroNode(start) {
+			useDotimes = true
+			seq = end
+		} else {
+			seq = &List{Elems: []Node{Symbol("range"), start, end}}
+		}
+	} else {
+		iter, err := transpileExpr(f.Source)
+		if err != nil {
+			return nil, err
+		}
+		if isMapNode(iter) {
+			if l, ok := iter.(*List); ok {
+				if sym, ok := l.Elems[0].(Symbol); ok && sym == "get" {
+					seq = iter
+				} else {
+					seq = &List{Elems: []Node{Symbol("keys"), iter}}
+				}
+			} else {
+				seq = &List{Elems: []Node{Symbol("keys"), iter}}
+			}
+		} else {
+			seq = iter
+		}
+	}
+	if !useCtrl {
+		binding := &Vector{Elems: []Node{Symbol(name), seq}}
+		if useDotimes {
+			return &List{Elems: []Node{Symbol("dotimes"), binding, bodyNode}}, nil
+		}
+		return &List{Elems: []Node{Symbol("doseq"), binding, bodyNode}}, nil
+	}
 
-        seqSym := name + "_seq"
-        binding := &Vector{Elems: []Node{Symbol(seqSym), seq}}
-        iterBinding := &Vector{Elems: []Node{Symbol(name), &List{Elems: []Node{Symbol("first"), Symbol(seqSym)}}}}
-        nextSeq := &List{Elems: []Node{Symbol("rest"), Symbol(seqSym)}}
+	seqSym := name + "_seq"
+	binding := &Vector{Elems: []Node{Symbol(seqSym), seq}}
+	iterBinding := &Vector{Elems: []Node{Symbol(name), &List{Elems: []Node{Symbol("first"), Symbol(seqSym)}}}}
+	nextSeq := &List{Elems: []Node{Symbol("rest"), Symbol(seqSym)}}
 
 	condElems := []Node{}
 	other := []Node{}
