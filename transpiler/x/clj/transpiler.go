@@ -678,6 +678,7 @@ func transpileImportStmt(im *parser.ImportStmt) (Node, error) {
 			{Keyword("sqrt"), fn1("Math/sqrt", []string{"x"})},
 			{Keyword("pow"), fn1("Math/pow", []string{"x", "y"})},
 			{Keyword("sin"), fn1("Math/sin", []string{"x"})},
+			{Keyword("exp"), fn1("Math/exp", []string{"x"})},
 			{Keyword("log"), fn1("Math/log", []string{"x"})},
 			{Keyword("pi"), Symbol("Math/PI")},
 			{Keyword("e"), Symbol("Math/E")},
