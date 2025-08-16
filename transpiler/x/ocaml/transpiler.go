@@ -1805,12 +1805,12 @@ func (l *ListLit) emitPrint(w io.Writer) {
 
 // MapEntry represents a key/value pair in a map literal.
 type MapEntry struct {
-        Key   Expr
-       Value Expr
-       // ValueTyp holds the type string of the value. It is optional but allows
-       // emitters to insert type annotations for empty literals, avoiding OCaml
-       // value restriction errors.
-       ValueTyp string
+	Key   Expr
+	Value Expr
+	// ValueTyp holds the type string of the value. It is optional but allows
+	// emitters to insert type annotations for empty literals, avoiding OCaml
+	// value restriction errors.
+	ValueTyp string
 }
 
 // MapLit represents a simple map literal implemented as a list of
@@ -1823,31 +1823,31 @@ type MapLit struct {
 
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "[")
-        for i, it := range m.Items {
-                if i > 0 {
-                        io.WriteString(w, "; ")
-                }
-                io.WriteString(w, "(")
-                io.WriteString(w, "__str (")
-                it.Key.emit(w)
-                io.WriteString(w, "), ")
-                if m.Dynamic {
-                        io.WriteString(w, "Obj.repr (")
-                        it.Value.emit(w)
-                        io.WriteString(w, ")")
-                } else {
-                       // If the value is an empty list, annotate it with the
-                       // expected element type to avoid weakly polymorphic
-                       // expressions when the literal is bound via `ref`.
-                       if lst, ok := it.Value.(*ListLit); ok && len(lst.Elems) == 0 && it.ValueTyp != "" {
-                               fmt.Fprintf(w, "([] : %s)", ocamlType(it.ValueTyp))
-                       } else {
-                               it.Value.emit(w)
-                       }
-                }
-                io.WriteString(w, ")")
-        }
-        io.WriteString(w, "]")
+	for i, it := range m.Items {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		io.WriteString(w, "(")
+		io.WriteString(w, "__str (")
+		it.Key.emit(w)
+		io.WriteString(w, "), ")
+		if m.Dynamic {
+			io.WriteString(w, "Obj.repr (")
+			it.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			// If the value is an empty list, annotate it with the
+			// expected element type to avoid weakly polymorphic
+			// expressions when the literal is bound via `ref`.
+			if lst, ok := it.Value.(*ListLit); ok && len(lst.Elems) == 0 && it.ValueTyp != "" {
+				fmt.Fprintf(w, "([] : %s)", ocamlType(it.ValueTyp))
+			} else {
+				it.Value.emit(w)
+			}
+		}
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, "]")
 }
 
 func (m *MapLit) emitPrint(w io.Writer) { m.emit(w) }
@@ -1901,36 +1901,36 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		mi.Key.emit(w)
 		io.WriteString(w, ")) (")
 		mi.Map.emit(w)
-io.WriteString(w, ") with Some v -> (Obj.obj (v : Obj.t) : ")
-if strings.HasPrefix(mi.Typ, "map") {
-keyTyp := "string"
-if mi.KeyTyp != "" {
-keyTyp = ocamlType(mi.KeyTyp)
-}
-// Dynamic maps store values as Obj.t; avoid casting to a concrete type
-// when the retrieved value itself is a map.
-io.WriteString(w, "( "+keyTyp+" * Obj.t ) list")
-} else {
-io.WriteString(w, ocamlType(mi.Typ))
-}
+		io.WriteString(w, ") with Some v -> (Obj.obj (v : Obj.t) : ")
+		if strings.HasPrefix(mi.Typ, "map") {
+			keyTyp := "string"
+			if mi.KeyTyp != "" {
+				keyTyp = ocamlType(mi.KeyTyp)
+			}
+			// Dynamic maps store values as Obj.t; avoid casting to a concrete type
+			// when the retrieved value itself is a map.
+			io.WriteString(w, "( "+keyTyp+" * Obj.t ) list")
+		} else {
+			io.WriteString(w, ocamlType(mi.Typ))
+		}
 		io.WriteString(w, ") | None -> ")
 		io.WriteString(w, zeroValue(mi.Typ))
 		io.WriteString(w, ")")
 	} else {
-               io.WriteString(w, "(match List.assoc_opt (__str (")
-               mi.Key.emit(w)
-               io.WriteString(w, ")) (")
-               mi.Map.emit(w)
-               io.WriteString(w, ") with Some v -> v | None -> ")
-               def := zeroValue(mi.Typ)
-               if def == "\"\"" {
-                       if n, ok := mi.Map.(*Name); ok && strings.HasPrefix(n.Typ, "map-list") {
-                               def = "[]"
-                       }
-               }
-               io.WriteString(w, def)
-               io.WriteString(w, ")")
-       }
+		io.WriteString(w, "(match List.assoc_opt (__str (")
+		mi.Key.emit(w)
+		io.WriteString(w, ")) (")
+		mi.Map.emit(w)
+		io.WriteString(w, ") with Some v -> v | None -> ")
+		def := zeroValue(mi.Typ)
+		if def == "\"\"" {
+			if n, ok := mi.Map.(*Name); ok && strings.HasPrefix(n.Typ, "map-list") {
+				def = "[]"
+			}
+		}
+		io.WriteString(w, def)
+		io.WriteString(w, ")")
+	}
 }
 
 func (mi *MapIndexExpr) emitPrint(w io.Writer) {
@@ -3692,7 +3692,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					} else {
 						v = defaultValueExpr(fields[n])
 					}
-                                       items[i] = MapEntry{Key: &StringLit{Value: n}, Value: v, ValueTyp: fields[n]}
+					items[i] = MapEntry{Key: &StringLit{Value: n}, Value: v, ValueTyp: fields[n]}
 				}
 				expr = &MapLit{Items: items, Dynamic: true}
 				valTyp = typ
@@ -3752,15 +3752,15 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		var expr Expr
 		var typ string
 		var valTyp string
-               if st.Var.Type != nil {
-                       typ = typeRefString(st.Var.Type)
-                       if ts := typeString(types.ResolveTypeRef(st.Var.Type, env)); ts != "" {
-                               // Only overwrite when the resolved type adds information.
-                               if typ == "" || (!strings.Contains(typ, "-") && typ != "map" && typ != "list") {
-                                       typ = ts
-                               }
-                       }
-               }
+		if st.Var.Type != nil {
+			typ = typeRefString(st.Var.Type)
+			if ts := typeString(types.ResolveTypeRef(st.Var.Type, env)); ts != "" {
+				// Only overwrite when the resolved type adds information.
+				if typ == "" || (!strings.Contains(typ, "-") && typ != "map" && typ != "list") {
+					typ = ts
+				}
+			}
+		}
 		if st.Var.Value != nil {
 			valExpr, typVal, err := convertExpr(st.Var.Value, env, vars)
 			if err != nil {
@@ -4944,52 +4944,52 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			}
 			key := &StringLit{Value: op.Field.Name}
 			dyn := isDynamicMapType(typ)
-                       if ft, ok := mapFieldType(typ, op.Field.Name); ok {
-                               expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn, KeyTyp: "string"}
-                               typ = ft
-                       } else {
-                               expr = &MapIndexExpr{Map: expr, Key: key, Typ: "", Dyn: true, KeyTyp: "string"}
-                               typ = ""
-                       }
+			if ft, ok := mapFieldType(typ, op.Field.Name); ok {
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn, KeyTyp: "string"}
+				typ = ft
+			} else {
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "", Dyn: true, KeyTyp: "string"}
+				typ = ""
+			}
 			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.End == nil && op.Index.Step == nil:
-                       idxExpr, idxTyp, err := convertExpr(op.Index.Start, env, vars)
-                       if err != nil {
-                               return nil, "", err
-                       }
-                       dyn := isDynamicMapType(typ)
-                       if !dyn {
-                               if mi, ok := expr.(*MapIndexExpr); ok && mi.Dyn {
-                                       dyn = true
-                               }
-                       }
-                       if sl, ok := idxExpr.(*StringLit); ok {
-                               if ft, ok := mapFieldType(typ, sl.Value); ok {
-                                       expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft, Dyn: dyn, KeyTyp: "string"}
-                                       typ = ft
-                               } else if strings.HasPrefix(typ, "map-") {
-                                       valTyp := strings.TrimPrefix(typ, "map-")
-                                       expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
-                                       typ = valTyp
-                               } else if typ == "map" || strings.HasPrefix(typ, "map{") {
-                                       valTyp := "dyn"
-                                       if strings.HasPrefix(typ, "map{") {
-                                               inner := strings.TrimSuffix(strings.TrimPrefix(typ, "map{"), "}")
-                                               if i := strings.Index(inner, ":"); i >= 0 {
-                                                       valTyp = strings.TrimSpace(inner[i+1:])
-                                                       if j := strings.Index(valTyp, ","); j >= 0 {
-                                                               valTyp = valTyp[:j]
-                                                       }
-                                               }
-                                       }
-                                       expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
-                                       typ = valTyp
-                               } else {
-                                       expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "", Dyn: true, KeyTyp: "string"}
-                                       typ = ""
-                               }
-                       } else if strings.HasPrefix(typ, "map-") {
-                               valTyp := strings.TrimPrefix(typ, "map-")
+			idxExpr, idxTyp, err := convertExpr(op.Index.Start, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			dyn := isDynamicMapType(typ)
+			if !dyn {
+				if mi, ok := expr.(*MapIndexExpr); ok && mi.Dyn {
+					dyn = true
+				}
+			}
+			if sl, ok := idxExpr.(*StringLit); ok {
+				if ft, ok := mapFieldType(typ, sl.Value); ok {
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft, Dyn: dyn, KeyTyp: "string"}
+					typ = ft
+				} else if strings.HasPrefix(typ, "map-") {
+					valTyp := strings.TrimPrefix(typ, "map-")
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
+					typ = valTyp
+				} else if typ == "map" || strings.HasPrefix(typ, "map{") {
+					valTyp := "dyn"
+					if strings.HasPrefix(typ, "map{") {
+						inner := strings.TrimSuffix(strings.TrimPrefix(typ, "map{"), "}")
+						if i := strings.Index(inner, ":"); i >= 0 {
+							valTyp = strings.TrimSpace(inner[i+1:])
+							if j := strings.Index(valTyp, ","); j >= 0 {
+								valTyp = valTyp[:j]
+							}
+						}
+					}
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
+					typ = valTyp
+				} else {
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "", Dyn: true, KeyTyp: "string"}
+					typ = ""
+				}
+			} else if strings.HasPrefix(typ, "map-") {
+				valTyp := strings.TrimPrefix(typ, "map-")
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: idxTyp}
 				typ = valTyp
 			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
@@ -5007,7 +5007,9 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				typ = valTyp
 			} else if typ == "" || typ == "dyn" {
 				if idxTyp == "int" {
-					expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: typ}
+					// When the collection type is unknown but indexed by an int,
+					// treat it as a list to avoid emitting an empty expression.
+					expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: "list"}
 					typ = ""
 				} else {
 					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "dyn", Dyn: true, KeyTyp: idxTyp}
@@ -5450,7 +5452,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			} else {
 				fieldTypes = nil
 			}
-                       items[i] = MapEntry{Key: k, Value: v, ValueTyp: vt}
+			items[i] = MapEntry{Key: k, Value: v, ValueTyp: vt}
 		}
 		typ := "map"
 		if dynamic {
@@ -5476,7 +5478,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if err != nil {
 				return nil, "", err
 			}
-                               items = append(items, MapEntry{Key: key, Value: val})
+			items = append(items, MapEntry{Key: key, Value: val})
 		}
 		dyn := true
 		typ := "map-dyn"
@@ -5978,30 +5980,30 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return &FuncCall{Name: "Float.pow", Args: []Expr{a1, a2}, Ret: "float"}, "float", nil
 		}
 	}
-        if c.Func == "str" && len(c.Args) == 1 {
-                arg, typ, err := convertExpr(c.Args[0], env, vars)
-                if err != nil {
-                        return nil, "", err
-                }
-                switch {
-                case typ == "int", typ == "float", typ == "bigint", typ == "bigrat", typ == "bool", typ == "string", strings.HasPrefix(typ, "list"):
-                        return &StrBuiltin{Expr: arg, Typ: typ}, "string", nil
-                default:
-                        return &FuncCall{Name: "__show", Args: []Expr{arg}, Ret: "string"}, "string", nil
-                }
-        }
-       if c.Func == "toi" && len(c.Args) == 1 {
-               arg, _, err := convertExpr(c.Args[0], env, vars)
-               if err != nil {
-                       return nil, "", err
-               }
-               return &FuncCall{Name: "int_of_string", Args: []Expr{arg}, Ret: "int"}, "int", nil
-       }
-        if c.Func == "len" && len(c.Args) == 1 {
-                arg, typ, err := convertExpr(c.Args[0], env, vars)
-                if err != nil {
-                        return nil, "", err
-                }
+	if c.Func == "str" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		switch {
+		case typ == "int", typ == "float", typ == "bigint", typ == "bigrat", typ == "bool", typ == "string", strings.HasPrefix(typ, "list"):
+			return &StrBuiltin{Expr: arg, Typ: typ}, "string", nil
+		default:
+			return &FuncCall{Name: "__show", Args: []Expr{arg}, Ret: "string"}, "string", nil
+		}
+	}
+	if c.Func == "toi" && len(c.Args) == 1 {
+		arg, _, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		return &FuncCall{Name: "int_of_string", Args: []Expr{arg}, Ret: "int"}, "int", nil
+	}
+	if c.Func == "len" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
 		// If the argument type is not obviously a container, consult the
 		// type environment in case this is a variable with a known list
 		// or string type. This helps when the inferred type loses the
@@ -6133,19 +6135,19 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-               if !strings.HasPrefix(typ, "list") {
-                       if n, ok := listArg.(*Name); ok {
-                               if t, err := env.GetVar(n.Ident); err == nil {
-                                       nt := typeString(t)
-                                       if nt != "" {
-                                               typ = nt
-                                       }
-                               }
-                       }
-               }
-               if !strings.HasPrefix(typ, "list") {
-                       typ = "list"
-               }
+		if !strings.HasPrefix(typ, "list") {
+			if n, ok := listArg.(*Name); ok {
+				if t, err := env.GetVar(n.Ident); err == nil {
+					nt := typeString(t)
+					if nt != "" {
+						typ = nt
+					}
+				}
+			}
+		}
+		if !strings.HasPrefix(typ, "list") {
+			typ = "list"
+		}
 		valArg, vtyp, err := convertExpr(c.Args[1], env, vars)
 		if err != nil {
 			return nil, "", err
@@ -6216,20 +6218,20 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &AbsBuiltin{Value: val, Typ: resTyp}, resTyp, nil
 	}
-       if c.Func == "floor" && len(c.Args) == 1 {
-               if _, ok := env.GetFunc("floor"); !ok {
-                       arg, typ, err := convertExpr(c.Args[0], env, vars)
-                       if err != nil {
-                               return nil, "", err
-                       }
-                       if typ == "int" {
-                               arg = &CastExpr{Expr: arg, Type: "int_to_float"}
-                       } else if typ != "float" {
-                               return nil, "", fmt.Errorf("floor expects numeric")
-                       }
-                       return &FuncCall{Name: "floor", Args: []Expr{arg}, Ret: "float"}, "float", nil
-               }
-       }
+	if c.Func == "floor" && len(c.Args) == 1 {
+		if _, ok := env.GetFunc("floor"); !ok {
+			arg, typ, err := convertExpr(c.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if typ == "int" {
+				arg = &CastExpr{Expr: arg, Type: "int_to_float"}
+			} else if typ != "float" {
+				return nil, "", fmt.Errorf("floor expects numeric")
+			}
+			return &FuncCall{Name: "floor", Args: []Expr{arg}, Ret: "float"}, "float", nil
+		}
+	}
 	if c.Func == "int" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
@@ -6410,7 +6412,15 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if typ != "map" && !strings.HasPrefix(typ, "map-") && !strings.HasPrefix(typ, "map{") {
 			return nil, "", fmt.Errorf("values expects map")
 		}
-		return &ValuesBuiltin{Map: mapArg}, "list", nil
+		valTyp := ""
+		if strings.HasPrefix(typ, "map-") {
+			valTyp = strings.TrimPrefix(typ, "map-")
+		}
+		retTyp := "list"
+		if valTyp != "" {
+			retTyp = "list-" + valTyp
+		}
+		return &ValuesBuiltin{Map: mapArg}, retTyp, nil
 	}
 	if c.Func == "keys" && len(c.Args) == 1 {
 		if _, ok := env.GetFunc("keys"); !ok {

@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 827/1077
-Last updated: 2025-08-15 10:25 +0700
+Completed programs: 828/1077
+Last updated: 2025-08-15 15:17 +0700
 
 Checklist:
 
@@ -433,16 +433,16 @@ Checklist:
 | 424 | graphs/even_tree | ✓ |  |  |
 | 425 | graphs/finding_bridges | ✓ | 586.0µs | 58.26KB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 1.0ms | 192.70KB |
-| 427 | graphs/g_topological_sort | ✓ | 287.0µs | 15.49KB |
+| 427 | graphs/g_topological_sort | ✓ | 347.0µs | 14.23KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 222.0µs | 7.48KB |
-| 429 | graphs/graph_adjacency_list | ✓ | 158.0µs | 12.41KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 244.0µs | 13.85KB |
 | 430 | graphs/graph_adjacency_matrix | ✓ |  |  |
 | 431 | graphs/graph_list | ✓ | 249.0µs | 14.49KB |
 | 432 | graphs/graphs_floyd_warshall | ✓ | 149.0µs | 2.80KB |
 | 433 | graphs/greedy_best_first | ✓ | 3.0ms | 290.62KB |
 | 434 | graphs/greedy_min_vertex_cover | ✓ | 77.0µs | 4.13KB |
 | 435 | graphs/kahns_algorithm_long | ✓ | 228.0µs | 12.35KB |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 206.0µs | 7.52KB |
 | 437 | graphs/karger |   |  |  |
 | 438 | graphs/lanczos_eigenvectors | ✓ | 243.0µs | 5.73KB |
 | 439 | graphs/markov_chain | ✓ | 10.0ms | 1.13MB |
