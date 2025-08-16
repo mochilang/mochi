@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-16 09:35 GMT+7
+Last updated: 2025-08-16 11:57 GMT+7
 
-## Algorithms Golden Test Checklist (960/1077)
+## Algorithms Golden Test Checklist (964/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -502,7 +502,7 @@ Last updated: 2025-08-16 09:35 GMT+7
 | 493 | linear_algebra/src/schur_complement | ✓ | 83.0µs | 13.68MB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 265.0µs | 14.71MB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 80.0µs | 13.68MB |
-| 496 | linear_programming/simplex | ✓ | 70.0µs | 13.67MB |
+| 496 | linear_programming/simplex | ✓ | 60.0µs | 14.00MB |
 | 497 | machine_learning/apriori_algorithm | ✓ | 937.0µs | 14.02MB |
 | 498 | machine_learning/astar | ✓ | 2.0ms | 13.68MB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 41.0µs | 12.55MB |
@@ -519,9 +519,9 @@ Last updated: 2025-08-16 09:35 GMT+7
 | 510 | machine_learning/linear_regression | ✓ | 123.0µs | 13.43MB |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 239.0µs | 13.74MB |
 | 512 | machine_learning/logistic_regression | ✓ | 36.0ms | 13.11MB |
-| 513 | machine_learning/loss_functions | error |  |  |
+| 513 | machine_learning/loss_functions | ✓ |  |  |
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 70.0ms | 14.11MB |
-| 515 | machine_learning/mfcc | error |  |  |
+| 515 | machine_learning/mfcc | ✓ |  |  |
 | 516 | machine_learning/multilayer_perceptron_classifier | error |  |  |
 | 517 | machine_learning/polynomial_regression | ✓ | 143.0µs | 14.05MB |
 | 518 | machine_learning/principle_component_analysis | ✓ | 1.0ms | 14.46MB |
@@ -529,8 +529,8 @@ Last updated: 2025-08-16 09:35 GMT+7
 | 520 | machine_learning/self_organizing_map | ✓ | 47.0µs | 13.77MB |
 | 521 | machine_learning/sequential_minimum_optimization | ✓ | 123.0µs | 14.45MB |
 | 522 | machine_learning/similarity_search | ✓ | 905.0µs | 13.70MB |
-| 523 | machine_learning/support_vector_machines | error |  |  |
-| 524 | machine_learning/word_frequency_functions | error |  |  |
+| 523 | machine_learning/support_vector_machines | ✓ |  |  |
+| 524 | machine_learning/word_frequency_functions | ✓ |  |  |
 | 525 | machine_learning/xgboost_classifier | ✓ | 120.0µs | 14.09MB |
 | 526 | machine_learning/xgboost_regressor | ✓ | 54.0µs | 13.72MB |
 | 527 | maths/abs | ✓ | 35.0µs | 13.68MB |

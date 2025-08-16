@@ -152,8 +152,8 @@ def panic(msg):
 const helperStr = `
 def _str(v):
     if isinstance(v, float):
-        if v.is_integer():
-            return str(int(v))
+        if abs(v - round(v)) < 1e-9:
+            return str(float(round(v)))
         return format(v, ".15g")
     return str(v)
 `
