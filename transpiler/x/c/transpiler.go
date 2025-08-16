@@ -122,6 +122,7 @@ var (
 	needSliceStr            bool
 	needSliceDoublePtr      bool
 	needSliceStrPtr         bool
+	needSliceIntPtr         bool
 	needRepeat              bool
 	needParseIntStr         bool
 	needGMP                 bool
@@ -1845,6 +1846,18 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 				fmt.Fprintf(w, "size_t %s_len = %s;\n", d.Name, sliceLen)
 				return
 			}
+			if call.Func == "_slice_intptr" {
+				fmt.Fprintf(w, "%s **%s = ", base, d.Name)
+				d.Value.emitExpr(w)
+				io.WriteString(w, ";\n")
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = _slice_intptr_len;\n", d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t *%s_lens = _slice_intptr_lens;\n", d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_lens_len = _slice_intptr_len;\n", d.Name)
+				return
+			}
 			if call.Func == "_slice_doubleptr" {
 				fmt.Fprintf(w, "%s **%s = ", base, d.Name)
 				d.Value.emitExpr(w)
@@ -2340,6 +2353,30 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				fmt.Fprintf(w, "%s_len = %s;\n", a.Name, sliceLen)
 			} else {
 				fmt.Fprintf(w, "size_t %s_len = %s;\n", a.Name, sliceLen)
+			}
+			return
+		}
+		if call.Func == "_slice_intptr" {
+			sliceLen := "_slice_intptr_len"
+			writeIndent(w, indent)
+			if len(a.Fields) == 1 {
+				fmt.Fprintf(w, "%s.%s_len = %s;\n", a.Name, a.Fields[0], sliceLen)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s.%s_lens = _slice_intptr_lens;\n", a.Name, a.Fields[0])
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s.%s_lens_len = %s;\n", a.Name, a.Fields[0], sliceLen)
+			} else if _, declared := varTypes[a.Name]; declared {
+				fmt.Fprintf(w, "%s_len = %s;\n", a.Name, sliceLen)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s_lens = _slice_intptr_lens;\n", a.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s_lens_len = %s;\n", a.Name, sliceLen)
+			} else {
+				fmt.Fprintf(w, "size_t %s_len = %s;\n", a.Name, sliceLen)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t *%s_lens = _slice_intptr_lens;\n", a.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_lens_len = %s;\n", a.Name, sliceLen)
 			}
 			return
 		}
@@ -3521,6 +3558,25 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			return
 		}
 	}
+	if c.Func == "_slice_intptr" && len(c.Args) == 7 {
+		needSliceIntPtr = true
+		io.WriteString(w, "_slice_intptr(")
+		c.Args[0].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[1].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[2].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[3].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[4].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[5].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[6].emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if c.Func == "_slice_doubleptr" && len(c.Args) == 7 {
 		needSliceDoublePtr = true
 		io.WriteString(w, "_slice_doubleptr(")
@@ -4437,7 +4493,7 @@ func (p *Program) Emit() []byte {
 	// Additional features may require standard library functions such as
 	// malloc, free, or atoi. Since we already include <stdlib.h> above, avoid
 	// emitting a duplicate include here.
-	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needStrListListInt || needStrListDouble || needStrListListDouble || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needSliceDoublePtr || needSliceStrPtr || needRepeat || needParseIntStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
+	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needStrListListInt || needStrListDouble || needStrListListDouble || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needSliceDoublePtr || needSliceStrPtr || needSliceIntPtr || needRepeat || needParseIntStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
 		// placeholder to keep condition for future custom includes
 	}
 	if needMem {
@@ -4486,6 +4542,10 @@ func (p *Program) Emit() []byte {
 	if needSliceStrPtr {
 		buf.WriteString("size_t _slice_strptr_len;\n")
 		buf.WriteString("size_t *_slice_strptr_lens;\n")
+	}
+	if needSliceIntPtr {
+		buf.WriteString("size_t _slice_intptr_len;\n")
+		buf.WriteString("size_t *_slice_intptr_lens;\n")
 	}
 	if len(needSliceStruct) > 0 {
 		for typ := range needSliceStruct {
@@ -5319,6 +5379,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return arr + start;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needSliceIntPtr {
+		buf.WriteString("static long long** _slice_intptr(long long **arr, size_t len, size_t *lens, int start, int end, size_t *out_len, size_t **out_lens) {\n")
+		buf.WriteString("    if (start < 0) start = 0;\n")
+		buf.WriteString("    if ((size_t)end > len) end = len;\n")
+		buf.WriteString("    if (start > end) start = end;\n")
+		buf.WriteString("    size_t n = end - start;\n")
+		buf.WriteString("    *out_len = n;\n")
+		buf.WriteString("    _slice_intptr_len = n;\n")
+		buf.WriteString("    *out_lens = lens + start;\n")
+		buf.WriteString("    _slice_intptr_lens = lens + start;\n")
+		buf.WriteString("    return arr + start;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needSliceStrPtr {
 		buf.WriteString("static const char*** _slice_strptr(const char ***arr, size_t len, size_t *lens, int start, int end, size_t *out_len, size_t **out_lens) {\n")
 		buf.WriteString("    if (start < 0) start = 0;\n")
@@ -5710,6 +5783,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needSliceStr = false
 	needSliceDoublePtr = false
 	needSliceStrPtr = false
+	needSliceIntPtr = false
 	needRepeat = false
 	needParseIntStr = false
 	needGMP = false
@@ -6936,6 +7010,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			} else if valT == "int" && keyT == "const char*" {
 				varTypes[s.Var.Name] = "MapSI"
 				needMapGetSI = true
+			} else if valT == "MapSI" && keyT == "const char*" {
+				varTypes[s.Var.Name] = "MapSMI"
+				needMapGetSMI = true
 			} else if valT == "int" && keyT == "int" {
 				varTypes[s.Var.Name] = "MapII"
 				needMapGetII = true
@@ -6954,6 +7031,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				} else if valT == "int" && keyT == "int" {
 					var buf bytes.Buffer
 					fmt.Fprintf(&buf, "MapII %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
+					return &RawStmt{Code: buf.String()}, nil
+				} else if valT == "MapSI" && keyT == "const char*" {
+					var buf bytes.Buffer
+					fmt.Fprintf(&buf, "MapSMI %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
 					return &RawStmt{Code: buf.String()}, nil
 				}
 			}
@@ -7396,7 +7477,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				listVar := name + "_keys"
 				lenVar := name + "_len"
-				if vt := varTypes[name]; strings.HasPrefix(vt, "MapSL") || strings.HasPrefix(vt, "MapSS") || strings.HasPrefix(vt, "MapSI") || strings.HasPrefix(vt, "MapSD") || strings.HasPrefix(vt, "MapIS") || strings.HasPrefix(vt, "MapIL") {
+				if vt := varTypes[name]; strings.HasPrefix(vt, "MapSL") || strings.HasPrefix(vt, "MapSS") || strings.HasPrefix(vt, "MapSI") || strings.HasPrefix(vt, "MapSD") || strings.HasPrefix(vt, "MapIS") || strings.HasPrefix(vt, "MapIL") || strings.HasPrefix(vt, "MapSMI") {
 					listVar = name + ".keys"
 					lenVar = name + ".len"
 				}
@@ -8840,6 +8921,27 @@ func convertUnary(u *parser.Unary) Expr {
 					default:
 						return nil
 					}
+				} else if typ == "long long[][]" {
+					switch v := current.(type) {
+					case *VarRef:
+						if sliceEnd == nil {
+							sliceEnd = &VarRef{Name: v.Name + "_len"}
+						}
+						needSliceIntPtr = true
+						funcReturnTypes["_slice_intptr"] = "long long[][]"
+						current = &CallExpr{Func: "_slice_intptr", Args: []Expr{current, &VarRef{Name: v.Name + "_len"}, &VarRef{Name: v.Name + "_lens"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_intptr_len"}}, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_intptr_lens"}}}}
+					case *FieldExpr:
+						lenField := &FieldExpr{Target: v.Target, Name: v.Name + "_len"}
+						lensField := &FieldExpr{Target: v.Target, Name: v.Name + "_lens"}
+						if sliceEnd == nil {
+							sliceEnd = lenField
+						}
+						needSliceIntPtr = true
+						funcReturnTypes["_slice_intptr"] = "long long[][]"
+						current = &CallExpr{Func: "_slice_intptr", Args: []Expr{current, lenField, lensField, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_intptr_len"}}, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_intptr_lens"}}}}
+					default:
+						return nil
+					}
 				} else if typ == "const char*[][]" {
 					switch v := current.(type) {
 					case *VarRef:
@@ -9238,6 +9340,11 @@ func convertUnary(u *parser.Unary) Expr {
 					funcReturnTypes["_slice_doubleptr"] = "double[][]"
 					return &CallExpr{Func: "_slice_doubleptr", Args: []Expr{arg0, lenVar, &VarRef{Name: v.Name + "_lens"}, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_doubleptr_len"}}, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_doubleptr_lens"}}}}
 				}
+				if typ == "long long[][]" {
+					needSliceIntPtr = true
+					funcReturnTypes["_slice_intptr"] = "long long[][]"
+					return &CallExpr{Func: "_slice_intptr", Args: []Expr{arg0, lenVar, &VarRef{Name: v.Name + "_lens"}, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_intptr_len"}}, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_intptr_lens"}}}}
+				}
 				if typ == "const char*[]" {
 					needSliceStr = true
 					funcReturnTypes["_slice_str"] = "const char*[]"
@@ -9264,6 +9371,11 @@ func convertUnary(u *parser.Unary) Expr {
 					needSliceDoublePtr = true
 					funcReturnTypes["_slice_doubleptr"] = "double[][]"
 					return &CallExpr{Func: "_slice_doubleptr", Args: []Expr{arg0, lenField, &FieldExpr{Target: v.Target, Name: v.Name + "_lens"}, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_doubleptr_len"}}, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_doubleptr_lens"}}}}
+				}
+				if typ == "long long[][]" {
+					needSliceIntPtr = true
+					funcReturnTypes["_slice_intptr"] = "long long[][]"
+					return &CallExpr{Func: "_slice_intptr", Args: []Expr{arg0, lenField, &FieldExpr{Target: v.Target, Name: v.Name + "_lens"}, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_intptr_len"}}, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_intptr_lens"}}}}
 				}
 				if typ == "const char*[]" {
 					needSliceStr = true
