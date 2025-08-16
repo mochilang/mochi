@@ -1017,7 +1017,7 @@ func (f *FunLit) emit(w io.Writer) {
 			if strings.HasPrefix(p.Type, "&mut ") {
 				fmt.Fprintf(w, "&mut %s", rustIdent(p.Name))
 			} else if strings.HasPrefix(p.Type, "&") {
-				io.WriteString(w, rustIdent(p.Name))
+				fmt.Fprintf(w, "&%s", rustIdent(p.Name))
 			} else {
 				io.WriteString(w, rustIdent(p.Name))
 			}
@@ -4624,6 +4624,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	svCopy := copyBoolMap(stringVars)
 	mvCopy := copyBoolMap(mapVars)
 	caps := collectCaptures(body, params, localsCopy, name)
+	selfRef := funcUsesName(body, name)
 	// Treat any function referencing variables outside its scope as a
 	// closure. Previously, we only generated closures for nested functions
 	// or when a top-level mutable variable existed and captures were
@@ -4635,6 +4636,25 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	// closures and can access surrounding state safely.
 	useClosure := nested || topLevelNonConstLet || len(caps) > 0
 	if useClosure {
+		// If the function is not recursive, emit a simple closure and
+		// let Rust capture the surrounding environment automatically.
+		if !selfRef {
+			paramSig := make([]string, len(params))
+			for i, p := range params {
+				paramSig[i] = p.Type
+			}
+			varTypes[name] = fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(paramSig, ", "), ret)
+			prevVarTypes[name] = varTypes[name]
+			vd := &VarDecl{Name: name, Expr: &FunLit{Params: params, Return: ret, Body: body}, Mutable: true}
+			if len(localVarStack) > 0 {
+				localVarStack[len(localVarStack)-1][name] = true
+			}
+			if currentFuncLocals != nil {
+				currentFuncLocals[name] = true
+			}
+			currentFuncLocals = nil
+			return vd, nil
+		}
 		var flit *FunLit
 		if len(caps) > 0 {
 			addCaptureArgs(body, name, caps)
@@ -4644,11 +4664,17 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 				if t, ok := currentParamTypes[c]; ok && t != "" {
 					ct = t
 				}
-				if ct == "" {
-					ct = "i64"
-				}
 				paramType := ct
-				if strings.HasPrefix(ct, "&") {
+				if ct == "" {
+					paramType = "i64"
+				} else if ct == "fn" || strings.HasPrefix(ct, "fn(") {
+					pts := funParamTypes[c]
+					r := funReturns[c]
+					paramType = "&mut impl FnMut(" + strings.Join(pts, ", ") + ")"
+					if r != "" && r != "()" {
+						paramType += " -> " + r
+					}
+				} else if strings.HasPrefix(ct, "&") {
 					paramType = ct
 				} else if ct == "i64" || ct == "f64" || ct == "bool" {
 					paramType = ct
@@ -5325,15 +5351,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					args[i] = &FloatCastExpr{Expr: args[i]}
 				} else if nr, ok := args[i].(*NameRef); ok && boxVars[nr.Name] && !strings.HasPrefix(pts[i], "Box<") {
 					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
-				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
-					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
-				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") {
+				} else if nr, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") {
 					t := inferType(args[i])
-					if t != "i64" && t != "bool" && t != "f64" && t != "String" && !strings.HasPrefix(t, "Vec<") && !strings.HasPrefix(t, "HashMap<") {
-						args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+					if t != "i64" && t != "bool" && t != "f64" {
+						args[i] = &MethodCallExpr{Receiver: nr, Name: "clone"}
 					}
-				} else if _, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
-					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+				} else if fe, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(pts[i], "&") {
+					t := inferType(args[i])
+					if t != "i64" && t != "bool" && t != "f64" {
+						args[i] = &MethodCallExpr{Receiver: fe, Name: "clone"}
+					}
 				}
 			}
 		} else {
@@ -5354,13 +5381,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			for i := 0; i < len(args) && i < len(paramTypes); i++ {
 				if paramTypes[i] == "f64" && inferType(args[i]) == "i64" {
 					args[i] = &FloatCastExpr{Expr: args[i]}
-				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(paramTypes[i], "&") {
+				} else if nr, ok := args[i].(*NameRef); ok && !strings.HasPrefix(paramTypes[i], "&") {
 					t := inferType(args[i])
-					if t == "String" || strings.HasPrefix(t, "Vec<") || strings.HasPrefix(t, "HashMap<") || (t != "i64" && t != "bool" && t != "f64" && t != "String" && !strings.HasPrefix(t, "Vec<") && !strings.HasPrefix(t, "HashMap<")) {
-						args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+					if t != "i64" && t != "bool" && t != "f64" {
+						args[i] = &MethodCallExpr{Receiver: nr, Name: "clone"}
 					}
-				} else if _, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(paramTypes[i], "&") && (paramTypes[i] == "String" || strings.HasPrefix(paramTypes[i], "Vec<") || strings.HasPrefix(paramTypes[i], "HashMap<")) {
-					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+				} else if fe, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(paramTypes[i], "&") {
+					t := inferType(args[i])
+					if t != "i64" && t != "bool" && t != "f64" {
+						args[i] = &MethodCallExpr{Receiver: fe, Name: "clone"}
+					}
 				}
 			}
 			for i, a := range args {
@@ -5372,10 +5402,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			if len(paramTypes) == 0 {
 				for i, a := range args {
-					if _, ok := a.(*NameRef); ok {
+					if nr, ok := a.(*NameRef); ok {
 						t := inferType(a)
-						if t != "i64" && t != "bool" && t != "f64" && t != "String" && !strings.HasPrefix(t, "Vec<") && !strings.HasPrefix(t, "HashMap<") {
-							args[i] = &MethodCallExpr{Receiver: a, Name: "clone"}
+						if t != "i64" && t != "bool" && t != "f64" {
+							args[i] = &MethodCallExpr{Receiver: nr, Name: "clone"}
 						}
 					}
 				}
@@ -6724,6 +6754,12 @@ func collectNamesExpr(names map[string]bool, e Expr) {
 		if ex.End != nil {
 			collectNamesExpr(names, ex.End)
 		}
+	case *MatchExpr:
+		collectNamesExpr(names, ex.Target)
+		for _, arm := range ex.Arms {
+			collectNamesExpr(names, arm.Pattern)
+			collectNamesExpr(names, arm.Result)
+		}
 	}
 }
 
@@ -6788,15 +6824,41 @@ func collectCaptures(body []Stmt, params []Param, locals map[string]bool, name s
 	var out []string
 	for n := range names {
 		if _, ok := funReturns[n]; ok {
-			continue
-		}
-		if varTypes[n] == "" && currentParamTypes[n] == "" {
+			// Skip pure function declarations, but allow names
+			// that also have variable type info. Some Mochi
+			// functions are converted to captured closures during
+			// transpilation and retain entries in funReturns. In
+			// such cases, we still need to treat them as captures
+			// so that the generated closure receives the required
+			// environment variables.
+			if varTypes[n] == "" && currentParamTypes[n] == "" {
+				continue
+			}
+		} else if varTypes[n] == "" && currentParamTypes[n] == "" {
 			continue
 		}
 		out = append(out, n)
 	}
 	sort.Strings(out)
 	return out
+}
+
+func funcUsesName(body []Stmt, name string) bool {
+	names := map[string]bool{}
+	for _, st := range body {
+		collectNamesStmt(names, st)
+	}
+	if names[name] {
+		return true
+	}
+	// Fallback: crude string search in case some expression kinds are not
+	// handled by collectNamesExpr/Stmt yet.
+	for _, st := range body {
+		if strings.Contains(fmt.Sprintf("%v", st), name) {
+			return true
+		}
+	}
+	return false
 }
 
 func collectLocalNames(m map[string]bool, s Stmt) {
