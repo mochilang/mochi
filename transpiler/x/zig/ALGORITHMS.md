@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-16 09:25 +0700
+Last updated: 2025-08-16 11:48 +0700
 
-## Program Checklist (356/1077)
+## Program Checklist (357/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -502,7 +502,7 @@ Last updated: 2025-08-16 09:25 +0700
 | 493 | linear_algebra/src/schur_complement |   |  |  |
 | 494 | linear_algebra/src/test_linear_algebra |   |  |  |
 | 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
+| 496 | linear_programming/simplex | ✓ | 1.032ms | 640.0 KB |
 | 497 | machine_learning/apriori_algorithm |   |  |  |
 | 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation |   |  |  |
@@ -726,7 +726,7 @@ Last updated: 2025-08-16 09:25 +0700
 | 717 | matrix/tests/test_matrix_operation | ✓ | 2.886ms | 896.0 KB |
 | 718 | matrix/validate_sudoku_board | ✓ | 3.433ms | 896.0 KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 1.421ms | 384.0 KB |
-| 720 | networking_flow/minimum_cut | ✓ | 2.536ms | 768.0 KB |
+| 720 | networking_flow/minimum_cut | ✓ | 1.565ms | 640.0 KB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 613µs | 256.0 KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 496µs | 512.0 KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 595µs | 444.0 KB |

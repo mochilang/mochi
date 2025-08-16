@@ -43,6 +43,7 @@ var builtinAliases map[string]string
 var transEnv *types.Env
 var loopCounter int
 var labelCounter int
+var blockDepth int
 var mainFuncName string
 var useNow bool
 var useStr bool
@@ -2810,7 +2811,7 @@ func (l *ListLit) emit(w io.Writer) {
 			fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch unreachable); }", lbl, tmp)
 			return
 		}
-		if strings.HasPrefix(et, "[]") {
+		if strings.HasPrefix(et, "[]") && !isStringType(et) {
 			inner := strings.TrimPrefix(et, "[]")
 			if len(l.Elems) == 0 {
 				fmt.Fprintf(w, "(&[_][]%s{})[0..0]", inner)
@@ -3661,6 +3662,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	funcParamTypes = map[string][]string{}
 	builtinAliases = map[string]string{}
 	mainFuncName = ""
+	loopCounter = 0
+	labelCounter = 0
+	blockDepth = 0
 	useNow = false
 	useStr = false
 	useConcat = false
@@ -3678,6 +3682,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	globalNames = map[string]bool{}
 	funDepth++
 	funParamsStack = append(funParamsStack, nil)
+	currentFunc = "main"
 	for _, st := range prog.Statements {
 		if st.Let != nil {
 			globalNames[st.Let.Name] = true
@@ -3776,6 +3781,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	}
 	funParamsStack = funParamsStack[:len(funParamsStack)-1]
 	funDepth--
+	currentFunc = ""
 	if len(globalInits) > 0 {
 		newBody := make([]Stmt, 0, len(globalInits)+len(main.Body))
 		newBody = append(newBody, globalInits...)
@@ -4796,6 +4802,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 	}
 	var thenStmts []Stmt
 	pushAliasScope()
+	blockDepth++
 	for _, s := range is.Then {
 		st, err := compileStmt(s, prog)
 		if err != nil {
@@ -4805,6 +4812,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 			thenStmts = append(thenStmts, st)
 		}
 	}
+	blockDepth--
 	popAliasScope()
 	thenStmts = removeTrailingReturnAfterPanic(thenStmts)
 	var elseStmts []Stmt
@@ -4816,6 +4824,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 		elseStmts = []Stmt{st}
 	} else if len(is.Else) > 0 {
 		pushAliasScope()
+		blockDepth++
 		for _, s := range is.Else {
 			st, err := compileStmt(s, prog)
 			if err != nil {
@@ -4825,6 +4834,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 				elseStmts = append(elseStmts, st)
 			}
 		}
+		blockDepth--
 		popAliasScope()
 	}
 	elseStmts = removeTrailingReturnAfterPanic(elseStmts)
@@ -4851,6 +4861,7 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 	}
 	body := make([]Stmt, 0, len(ws.Body))
 	pushAliasScope()
+	blockDepth++
 	funDepth++
 	for _, s := range ws.Body {
 		st, err := compileStmt(s, prog)
@@ -4863,6 +4874,7 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 		}
 	}
 	funDepth--
+	blockDepth--
 	popAliasScope()
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }
@@ -4895,6 +4907,7 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 	}
 	body := make([]Stmt, 0, len(fs.Body))
 	pushAliasScope()
+	blockDepth++
 	base := fs.Name
 	if globalNames[base] || varTypes[base] != "" {
 		base = base + "_iter"
@@ -4915,6 +4928,7 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 			body = append(body, st)
 		}
 	}
+	blockDepth--
 	popAliasScope()
 	return &ForStmt{Name: alias, Start: start, End: end, Iterable: iter, Body: body, ElemType: elemType}, nil
 }
@@ -4922,6 +4936,7 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 func compileBenchStmt(bs *parser.BenchBlock, prog *parser.Program) (Stmt, error) {
 	body := make([]Stmt, 0, len(bs.Body))
 	pushAliasScope()
+	blockDepth++
 	for _, s := range bs.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
@@ -4929,6 +4944,7 @@ func compileBenchStmt(bs *parser.BenchBlock, prog *parser.Program) (Stmt, error)
 		}
 		body = append(body, st)
 	}
+	blockDepth--
 	popAliasScope()
 	useNow = true
 	useMem = true
@@ -5586,7 +5602,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			mapVars[s.Let.Name] = true
 			mapVars[alias] = true
 		}
-		if funDepth <= 1 && !isConstExpr(expr) {
+		if funDepth <= 1 && blockDepth == 0 && !isConstExpr(expr) {
 			vd.Value = nil
 			vd.Mutable = true
 			globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})
@@ -5734,7 +5750,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			mapVars[s.Var.Name] = false
 			mapVars[alias] = false
 		}
-		if funDepth <= 1 && !isConstExpr(expr) {
+		if funDepth <= 1 && blockDepth == 0 && !isConstExpr(expr) {
 			vd.Value = nil
 			globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})
 		}
