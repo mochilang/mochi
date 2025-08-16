@@ -2165,11 +2165,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				case *IndexExpr:
 					if inner, ok := t.Target.(*VarRef); ok {
 						name := sanitize(inner.Name)
-						if t.Field != "" {
+						if t.Field != "" || len(st.Assign.Field) > 0 {
 							var buf bytes.Buffer
 							t.Index.emit(&buf)
 							idxStr := buf.String()
-							assignName := fmt.Sprintf("%s[%s].%s", name, idxStr, sanitizeField(t.Field))
+							fieldName := sanitizeField(t.Field)
+							if fieldName == "" && len(st.Assign.Field) > 0 {
+								fieldName = sanitizeField(st.Assign.Field[0].Name)
+							}
+							assignName := fmt.Sprintf("%s[%s].%s", name, idxStr, fieldName)
 							pr.Stmts = append(pr.Stmts, &AssignStmt{Name: assignName, Expr: val})
 						} else {
 							pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
@@ -2540,7 +2544,19 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			case *IndexExpr:
 				if inner, ok := t.Target.(*VarRef); ok {
 					name := inner.Name
-					out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+					if t.Field != "" || len(st.Assign.Field) > 0 {
+						var buf bytes.Buffer
+						t.Index.emit(&buf)
+						idxStr := buf.String()
+						fieldName := sanitizeField(t.Field)
+						if fieldName == "" && len(st.Assign.Field) > 0 {
+							fieldName = sanitizeField(st.Assign.Field[0].Name)
+						}
+						assignName := fmt.Sprintf("%s[%s].%s", name, idxStr, fieldName)
+						out = append(out, &AssignStmt{Name: assignName, Expr: val})
+					} else {
+						out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+					}
 				} else if innerIdx, ok := t.Target.(*IndexExpr); ok {
 					if base, ok := innerIdx.Target.(*VarRef); ok {
 						name := base.Name
@@ -2623,9 +2639,16 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					}
 					out = append(out, &AssignStmt{Name: name, Expr: &CallExpr{Name: ctorName(rec.Type), Args: args}})
 				} else {
-					if vd.Type == "" {
+					if call, ok := ex.(*CallExpr); ok && (call.Name == "copy" || call.Name == "slice") {
+						if tt := types.ExprType(st.Let.Value, env); tt != nil {
+							if t := pasTypeFromType(tt); t != "" {
+								vd.Type = t
+							}
+						}
+					}
+					if vd.Type == "" || vd.Type == "array of integer" {
 						t := inferType(ex)
-						if t == "" {
+						if t == "" || t == "array of integer" {
 							if tt := types.ExprType(st.Let.Value, env); tt != nil {
 								t = pasTypeFromType(tt)
 							}
