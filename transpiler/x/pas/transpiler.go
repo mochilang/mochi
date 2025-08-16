@@ -1788,12 +1788,21 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	funcNames = make(map[string]struct{})
 	funcReturns = make(map[string]string)
 	funcReturns["_input"] = "string"
+	typeNames := map[string]struct{}{}
+	for _, st := range prog.Statements {
+		if st.Type != nil {
+			typeNames[strings.ToLower(st.Type.Name)] = struct{}{}
+		}
+	}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			name := st.Fun.Name
 			switch name {
 			case "xor", "and", "or", "div", "mod", "type", "repeat", "ord", "panic":
 				name = name + "_"
+			}
+			if _, ok := typeNames[strings.ToLower(name)]; ok {
+				name = name + "_fn"
 			}
 			funcNames[strings.ToLower(name)] = struct{}{}
 			if name != st.Fun.Name {
@@ -2186,25 +2195,34 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				typ := "int64"
 				if st.For.RangeEnd == nil {
-					if t := inferType(start); strings.HasPrefix(t, "array of ") {
-						typ = strings.TrimPrefix(t, "array of ")
-					} else if strings.HasPrefix(t, "specialize TFPGMap") {
-						parts := strings.TrimPrefix(t, "specialize TFPGMap<")
-						parts = strings.TrimSuffix(parts, ">")
-						kv := strings.Split(parts, ",")
-						if len(kv) == 2 {
-							typ = strings.TrimSpace(kv[0])
-						}
-					} else {
-						tt := types.ExprType(st.For.Source, env)
-						if lt, ok := tt.(types.ListType); ok {
-							typ = pasTypeFromType(lt.Elem)
-							if strings.HasPrefix(typ, "array of ") {
-								elem := strings.TrimPrefix(typ, "array of ")
-								typ = currProg.addArrayAlias(elem)
+					if name := exprToVarRef(start); name != "" {
+						if t, ok := currentVarTypes[name]; ok {
+							if tt := resolveAlias(t); strings.HasPrefix(tt, "array of ") {
+								typ = strings.TrimPrefix(tt, "array of ")
 							}
-						} else if mt, ok := tt.(types.MapType); ok {
-							typ = pasTypeFromType(mt.Key)
+						}
+					}
+					if typ == "int64" {
+						if t := resolveAlias(inferType(start)); strings.HasPrefix(t, "array of ") {
+							typ = strings.TrimPrefix(t, "array of ")
+						} else if strings.HasPrefix(t, "specialize TFPGMap") {
+							parts := strings.TrimPrefix(t, "specialize TFPGMap<")
+							parts = strings.TrimSuffix(parts, ">")
+							kv := strings.Split(parts, ",")
+							if len(kv) == 2 {
+								typ = strings.TrimSpace(kv[0])
+							}
+						} else {
+							tt := types.ExprType(st.For.Source, env)
+							if lt, ok := tt.(types.ListType); ok {
+								typ = pasTypeFromType(lt.Elem)
+								if strings.HasPrefix(typ, "array of ") {
+									elem := strings.TrimPrefix(typ, "array of ")
+									typ = currProg.addArrayAlias(elem)
+								}
+							} else if mt, ok := tt.(types.MapType); ok {
+								typ = pasTypeFromType(mt.Key)
+							}
 						}
 					}
 				}
