@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/maths/average_absolute_deviation.zig:30:62: error: use of undeclared identifier 'x_2'
