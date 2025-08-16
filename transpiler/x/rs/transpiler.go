@@ -4635,6 +4635,13 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	// considering `topLevelNonConstLet`, we ensure such functions become
 	// closures and can access surrounding state safely.
 	useClosure := nested || topLevelNonConstLet || len(caps) > 0
+	// However, top-level recursive functions that do not capture
+	// any external state can be emitted as normal `fn` items. Rust
+	// closures cannot call themselves recursively, so treat such
+	// functions as plain functions instead of closures.
+	if useClosure && selfRef && len(caps) == 0 && !nested {
+		useClosure = false
+	}
 	if useClosure {
 		// If the function is not recursive, emit a simple closure and
 		// let Rust capture the surrounding environment automatically.
@@ -6759,6 +6766,17 @@ func collectNamesExpr(names map[string]bool, e Expr) {
 		for _, arm := range ex.Arms {
 			collectNamesExpr(names, arm.Pattern)
 			collectNamesExpr(names, arm.Result)
+		}
+	case *IfExpr:
+		collectNamesExpr(names, ex.Cond)
+		if ex.Then != nil {
+			collectNamesExpr(names, ex.Then)
+		}
+		if ex.ElseIf != nil {
+			collectNamesExpr(names, ex.ElseIf)
+		}
+		if ex.Else != nil {
+			collectNamesExpr(names, ex.Else)
 		}
 	}
 }
