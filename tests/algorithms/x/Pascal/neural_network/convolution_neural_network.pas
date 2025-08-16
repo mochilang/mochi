@@ -1,9 +1,8 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
-uses SysUtils;
+uses SysUtils, Variants;
 type RealArray = array of real;
 type RealArrayArray = array of RealArray;
-type TrainSampleArray = array of TrainSample;
 type RealArrayArrayArray = array of RealArrayArray;
 type CNN = record
   conv_kernels: array of RealArrayArray;
@@ -21,6 +20,7 @@ type TrainSample = record
   image: array of RealArray;
   target: array of real;
 end;
+type TrainSampleArray = array of TrainSample;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -57,6 +57,34 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure show_list_real(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(' ');
+  end;
+  write(']');
+end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
@@ -73,27 +101,27 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   seed: integer;
-  maps: RealArrayArrayArray;
-  b: RealArray;
-  step: integer;
-  kernel: RealArrayArray;
   x: real;
-  data: RealArrayArray;
-  bias: real;
-  m: RealArrayArray;
-  samples: TrainSampleArray;
-  v: RealArray;
+  step: integer;
   a: RealArray;
-  epochs: integer;
-  map: RealArrayArray;
+  kernel: RealArrayArray;
   size: integer;
+  data: RealArrayArray;
+  maps: RealArrayArrayArray;
+  samples: TrainSampleArray;
+  m: RealArrayArray;
+  v: RealArray;
+  map: RealArrayArray;
+  bias: real;
+  b: RealArray;
   cnn_var: CNN;
+  epochs: integer;
 function makeTrainSample(image: RealArrayArray; target: RealArray): TrainSample; forward;
 function makeCNN(conv_kernels: RealArrayArrayArray; conv_bias: RealArray; conv_step: integer; pool_size: integer; w_hidden: RealArrayArray; w_out: RealArrayArray; b_hidden: RealArray; b_out: RealArray; rate_weight: real; rate_bias: real): CNN; forward;
 function random(): real; forward;
 function sigmoid(x: real): real; forward;
 function to_float(x: integer): real; forward;
-function exp(x: real): real; forward;
+function exp_(x: real): real; forward;
 function convolve(data: RealArrayArray; kernel: RealArrayArray; step: integer; bias: real): RealArrayArray; forward;
 function average_pool(map: RealArrayArray; size: integer): RealArrayArray; forward;
 function flatten(maps: RealArrayArrayArray): RealArray; forward;
@@ -104,8 +132,8 @@ function vec_sub(a: RealArray; b: RealArray): RealArray; forward;
 function vec_mul(a: RealArray; b: RealArray): RealArray; forward;
 function vec_map_sig(v: RealArray): RealArray; forward;
 function new_cnn(): CNN; forward;
-function forward(cnn_var: CNN; data: RealArrayArray): RealArray; forward;
-function train(cnn_var: CNN; samples: TrainSampleArray; epochs: integer): CNN; forward;
+function forward(forward_cnn_var: CNN; data: RealArrayArray): RealArray; forward;
+function train(forward_cnn_var: CNN; samples: TrainSampleArray; epochs: integer): CNN; forward;
 procedure main(); forward;
 function makeTrainSample(image: RealArrayArray; target: RealArray): TrainSample;
 begin
@@ -138,27 +166,27 @@ function to_float(x: integer): real;
 begin
   exit(x * 1);
 end;
-function exp(x: real): real;
+function exp_(x: real): real;
 var
-  exp_term: real;
-  exp_sum: real;
-  exp_n: integer;
+  exp__term: real;
+  exp__sum: real;
+  exp__n: integer;
 begin
-  exp_term := 1;
-  exp_sum := 1;
-  exp_n := 1;
-  while exp_n < 20 do begin
-  exp_term := (exp_term * x) / to_float(exp_n);
-  exp_sum := exp_sum + exp_term;
-  exp_n := exp_n + 1;
+  exp__term := 1;
+  exp__sum := 1;
+  exp__n := 1;
+  while exp__n < 20 do begin
+  exp__term := (exp__term * x) / to_float(exp__n);
+  exp__sum := exp__sum + exp__term;
+  exp__n := exp__n + 1;
 end;
-  exit(exp_sum);
+  exit(exp__sum);
 end;
 function convolve(data: RealArrayArray; kernel: RealArrayArray; step: integer; bias: real): RealArrayArray;
 var
   convolve_size_data: integer;
   convolve_size_kernel: integer;
-  convolve_out: array of RealArray;
+  convolve_out_: array of RealArray;
   convolve_i: integer;
   convolve_row: array of real;
   convolve_j: integer;
@@ -168,7 +196,7 @@ var
 begin
   convolve_size_data := Length(data);
   convolve_size_kernel := Length(kernel);
-  convolve_out := [];
+  convolve_out_ := [];
   convolve_i := 0;
   while convolve_i <= (convolve_size_data - convolve_size_kernel) do begin
   convolve_row := [];
@@ -187,14 +215,14 @@ end;
   convolve_row := concat(convolve_row, [sigmoid(convolve_sum - bias)]);
   convolve_j := convolve_j + step;
 end;
-  convolve_out := concat(convolve_out, [convolve_row]);
+  convolve_out_ := concat(convolve_out_, [convolve_row]);
   convolve_i := convolve_i + step;
 end;
-  exit(convolve_out);
+  exit(convolve_out_);
 end;
 function average_pool(map: RealArrayArray; size: integer): RealArrayArray;
 var
-  average_pool_out: array of RealArray;
+  average_pool_out_: array of RealArray;
   average_pool_i: integer;
   average_pool_row: array of real;
   average_pool_j: integer;
@@ -202,7 +230,7 @@ var
   average_pool_a: integer;
   average_pool_b: integer;
 begin
-  average_pool_out := [];
+  average_pool_out_ := [];
   average_pool_i := 0;
   while average_pool_i < Length(map) do begin
   average_pool_row := [];
@@ -221,33 +249,33 @@ end;
   average_pool_row := concat(average_pool_row, [average_pool_sum / Double(size * size)]);
   average_pool_j := average_pool_j + size;
 end;
-  average_pool_out := concat(average_pool_out, [average_pool_row]);
+  average_pool_out_ := concat(average_pool_out_, [average_pool_row]);
   average_pool_i := average_pool_i + size;
 end;
-  exit(average_pool_out);
+  exit(average_pool_out_);
 end;
 function flatten(maps: RealArrayArrayArray): RealArray;
 var
-  flatten_out: array of real;
+  flatten_out_: array of real;
   flatten_i: integer;
   flatten_j: integer;
   flatten_k: integer;
 begin
-  flatten_out := [];
+  flatten_out_ := [];
   flatten_i := 0;
   while flatten_i < Length(maps) do begin
   flatten_j := 0;
   while flatten_j < Length(maps[flatten_i]) do begin
   flatten_k := 0;
   while flatten_k < Length(maps[flatten_i][flatten_j]) do begin
-  flatten_out := concat(flatten_out, [maps[flatten_i][flatten_j][flatten_k]]);
+  flatten_out_ := concat(flatten_out_, [maps[flatten_i][flatten_j][flatten_k]]);
   flatten_k := flatten_k + 1;
 end;
   flatten_j := flatten_j + 1;
 end;
   flatten_i := flatten_i + 1;
 end;
-  exit(flatten_out);
+  exit(flatten_out_);
 end;
 function vec_mul_mat(v: RealArray; m: RealArrayArray): RealArray;
 var
@@ -401,7 +429,7 @@ end;
   new_cnn_b_out := [0, 0];
   exit(makeCNN(new_cnn_conv_kernels, new_cnn_conv_bias, new_cnn_conv_step, new_cnn_pool_size, new_cnn_w_hidden, new_cnn_w_out, new_cnn_b_hidden, new_cnn_b_out, 0.2, 0.2));
 end;
-function forward(cnn_var: CNN; data: RealArrayArray): RealArray;
+function forward(forward_cnn_var: CNN; data: RealArrayArray): RealArray;
 var
   forward_maps: array of RealArrayArray;
   forward_i: integer;
@@ -411,7 +439,7 @@ var
   forward_hidden_net: RealArray;
   forward_hidden_out: RealArray;
   forward_out_net: RealArray;
-  forward_out: RealArray;
+  forward_out_: RealArray;
 begin
   forward_maps := [];
   forward_i := 0;
@@ -425,15 +453,15 @@ end;
   forward_hidden_net := vec_add(vec_mul_mat(forward_flat, cnn_var.w_hidden), cnn_var.b_hidden);
   forward_hidden_out := vec_map_sig(forward_hidden_net);
   forward_out_net := vec_add(vec_mul_mat(forward_hidden_out, cnn_var.w_out), cnn_var.b_out);
-  forward_out := vec_map_sig(forward_out_net);
-  exit(forward_out);
+  forward_out_ := vec_map_sig(forward_out_net);
+  exit(forward_out_);
 end;
-function train(cnn_var: CNN; samples: TrainSampleArray; epochs: integer): CNN;
+function train(forward_cnn_var: CNN; samples: TrainSampleArray; epochs: integer): CNN;
 var
-  train_w_out: array of RealArray;
-  train_b_out: array of real;
-  train_w_hidden: array of RealArray;
-  train_b_hidden: array of real;
+  train_w_out: Variant;
+  train_b_out: Variant;
+  train_w_hidden: Variant;
+  train_b_hidden: Variant;
   train_e: integer;
   train_s: integer;
   train_data: array of RealArray;
@@ -446,7 +474,7 @@ var
   train_hidden_net: RealArray;
   train_hidden_out: RealArray;
   train_out_net: RealArray;
-  train_out: RealArray;
+  train_out_: RealArray;
   train_error_out: RealArray;
   train_pd_out: RealArray;
   train_error_hidden: RealArray;
@@ -478,9 +506,9 @@ end;
   train_hidden_net := vec_add(vec_mul_mat(train_flat, train_w_hidden), train_b_hidden);
   train_hidden_out := vec_map_sig(train_hidden_net);
   train_out_net := vec_add(vec_mul_mat(train_hidden_out, train_w_out), train_b_out);
-  train_out := vec_map_sig(train_out_net);
-  train_error_out := vec_sub(train_target, train_out);
-  train_pd_out := vec_mul(train_error_out, vec_mul(train_out, vec_sub([1, 1], train_out)));
+  train_out_ := vec_map_sig(train_out_net);
+  train_error_out := vec_sub(train_target, train_out_);
+  train_pd_out := vec_mul(train_error_out, vec_mul(train_out_, vec_sub([1, 1], train_out_)));
   train_error_hidden := matT_vec_mul(train_w_out, train_pd_out);
   train_pd_hidden := vec_mul(train_error_hidden, vec_mul(train_hidden_out, vec_sub([1, 1], train_hidden_out)));
   train_j := 0;

@@ -1,11 +1,6 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type Datasets = record
-  train: DataSet;
-  validation: DataSet;
-  test_ds: DataSet;
-end;
 type IntArray = array of integer;
 type IntArrayArray = array of IntArray;
 type DataSet = record
@@ -14,6 +9,11 @@ type DataSet = record
   num_examples: integer;
   index_in_epoch: integer;
   epochs_completed: integer;
+end;
+type Datasets = record
+  train: DataSet;
+  validation: DataSet;
+  test_ds: DataSet;
 end;
 type BatchResult = record
   dataset: DataSet;
@@ -56,6 +56,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_int_to_str(xs: array of integer): string;
 var i: integer;
 begin
@@ -81,17 +103,17 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
+  batch_size: integer;
+  test_labels_raw: IntArray;
+  num_classes: integer;
   labels: IntArrayArray;
+  images: IntArrayArray;
+  validation_size: integer;
   ds: DataSet;
   train_labels_raw: IntArray;
-  test_labels_raw: IntArray;
-  images: IntArrayArray;
-  num_classes: integer;
-  batch_size: integer;
   train_images: IntArrayArray;
-  validation_size: integer;
   test_images: IntArrayArray;
-function makeBatchResult(dataset: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult; forward;
+function makeBatchResult(dataset_var: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult; forward;
 function makeDatasets(train: DataSet; validation: DataSet; test_ds: DataSet): Datasets; forward;
 function makeDataSet(images: IntArrayArray; labels: IntArrayArray; num_examples: integer; index_in_epoch: integer; epochs_completed: integer): DataSet; forward;
 function dense_to_one_hot(labels: IntArray; num_classes: integer): IntArrayArray; forward;
@@ -99,9 +121,9 @@ function new_dataset(images: IntArrayArray; labels: IntArrayArray): DataSet; for
 function next_batch(ds: DataSet; batch_size: integer): BatchResult; forward;
 function read_data_sets(train_images: IntArrayArray; train_labels_raw: IntArray; test_images: IntArrayArray; test_labels_raw: IntArray; validation_size: integer; num_classes: integer): Datasets; forward;
 procedure main(); forward;
-function makeBatchResult(dataset: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult;
+function makeBatchResult(dataset_var: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult;
 begin
-  Result.dataset := dataset;
+  Result.dataset := dataset_var;
   Result.images := images;
   Result.labels := labels;
 end;

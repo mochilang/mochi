@@ -14,12 +14,12 @@ type LFUCache = record
   miss: integer;
   tick: integer;
 end;
+type EntryArray = array of Entry;
 type GetResult = record
   cache: LFUCache;
   value: integer;
   ok: boolean;
 end;
-type EntryArray = array of Entry;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -56,16 +56,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  cap: integer;
   key: integer;
-  entries: EntryArray;
   cache: LFUCache;
+  entries: EntryArray;
   value: integer;
+  cap: integer;
 function makeGetResult(cache: LFUCache; value: integer; ok: boolean): GetResult; forward;
 function makeLFUCache(entries: EntryArray; capacity: integer; hits: integer; miss: integer; tick: integer): LFUCache; forward;
 function makeEntry(key: integer; val: integer; freq: integer; order: integer): Entry; forward;

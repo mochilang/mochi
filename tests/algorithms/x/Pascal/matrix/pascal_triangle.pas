@@ -39,6 +39,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_int_to_str(xs: array of integer): string;
 var i: integer;
 begin
@@ -65,11 +87,11 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   triangle: IntArrayArray;
-  num_rows: integer;
   row_idx: integer;
-  total_rows: integer;
   current_row_idx: integer;
+  num_rows: integer;
   row: IntArray;
+  total_rows: integer;
 function populate_current_row(triangle: IntArrayArray; current_row_idx: integer): IntArray; forward;
 function generate_pascal_triangle(num_rows: integer): IntArrayArray; forward;
 function row_to_string(row: IntArray; total_rows: integer; row_idx: integer): string; forward;

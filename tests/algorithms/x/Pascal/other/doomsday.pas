@@ -37,6 +37,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -45,21 +67,21 @@ var
   DOOMSDAY_LEAP: array of integer;
   DOOMSDAY_NOT_LEAP: array of integer;
   WEEK_DAY_NAMES: specialize TFPGMap<integer, string>;
-  day: integer;
   year: integer;
+  day: integer;
   month: integer;
 function Map1(): specialize TFPGMap<integer, string>; forward;
 function get_week_day(year: integer; month: integer; day: integer): string; forward;
 function Map1(): specialize TFPGMap<integer, string>;
 begin
   Result := specialize TFPGMap<integer, string>.Create();
-  Result.AddOrSetData(0, Variant('Sunday'));
-  Result.AddOrSetData(1, Variant('Monday'));
-  Result.AddOrSetData(2, Variant('Tuesday'));
-  Result.AddOrSetData(3, Variant('Wednesday'));
-  Result.AddOrSetData(4, Variant('Thursday'));
-  Result.AddOrSetData(5, Variant('Friday'));
-  Result.AddOrSetData(6, Variant('Saturday'));
+  Result.AddOrSetData(0, 'Sunday');
+  Result.AddOrSetData(1, 'Monday');
+  Result.AddOrSetData(2, 'Tuesday');
+  Result.AddOrSetData(3, 'Wednesday');
+  Result.AddOrSetData(4, 'Thursday');
+  Result.AddOrSetData(5, 'Friday');
+  Result.AddOrSetData(6, 'Saturday');
 end;
 function get_week_day(year: integer; month: integer; day: integer): string;
 var

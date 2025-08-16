@@ -1,9 +1,10 @@
-compile: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/algorithms/x/Pascal/matrix/matrix_equalization.pas
-matrix_equalization.pas(89,51) Error: Incompatible type for arg no. 1: Got "Constant String", expected "TRuntimeError"
-matrix_equalization.pas(130) Fatal: There were 1 errors compiling module, stopping
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode
+run: exit status 217
+4
+5
+0
+2
+An unhandled exception occurred at $0000000000401920:
+EAccessViolation: Access violation
+  $0000000000401920
+  $0000000000401FA9
+

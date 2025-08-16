@@ -38,6 +38,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -53,9 +75,9 @@ procedure main(); forward;
 function Map1(): specialize TFPGMap<string, string>;
 begin
   Result := specialize TFPGMap<string, string>.Create();
-  Result.AddOrSetData('(', Variant(')'));
-  Result.AddOrSetData('[', Variant(']'));
-  Result.AddOrSetData('{', Variant('}'));
+  Result.AddOrSetData('(', ')');
+  Result.AddOrSetData('[', ']');
+  Result.AddOrSetData('{', '}');
 end;
 function slice_without_last(xs: StrArray): StrArray;
 var

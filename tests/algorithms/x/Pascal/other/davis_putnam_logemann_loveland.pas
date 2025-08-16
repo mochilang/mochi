@@ -5,10 +5,6 @@ type Clause = record
   literals: specialize TFPGMap<string, integer>;
   names: array of string;
 end;
-type EvalResult = record
-  value: integer;
-  clause: Clause;
-end;
 type Formula = record
   clauses: array of Clause;
 end;
@@ -18,6 +14,10 @@ type DPLLResult = record
 end;
 type StrArray = array of string;
 type ClauseArray = array of Clause;
+type EvalResult = record
+  value: integer;
+  clause: Clause;
+end;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -54,6 +54,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -67,15 +89,15 @@ var
   symbols: array of string;
   model: specialize TFPGMap<string, integer>;
   result_: DPLLResult;
-  c: Clause;
-  f: Formula;
   s: string;
+  f: Formula;
   lits: StrArray;
+  c: Clause;
   cs: ClauseArray;
 function Map1(): specialize TFPGMap<string, integer>; forward;
 function makeDPLLResult(sat: boolean; model: specialize TFPGMap<string, integer>): DPLLResult; forward;
 function makeFormula(clauses: ClauseArray): Formula; forward;
-function makeEvalResult(value: integer; clause: Clause): EvalResult; forward;
+function makeEvalResult(value: integer; clause_var: Clause): EvalResult; forward;
 function makeClause(literals: specialize TFPGMap<string, integer>; names: StrArray): Clause; forward;
 function new_clause(lits: StrArray): Clause; forward;
 function assign_clause(c: Clause; model: specialize TFPGMap<string, integer>): Clause; forward;
@@ -98,10 +120,10 @@ function makeFormula(clauses: ClauseArray): Formula;
 begin
   Result.clauses := clauses;
 end;
-function makeEvalResult(value: integer; clause: Clause): EvalResult;
+function makeEvalResult(value: integer; clause_var: Clause): EvalResult;
 begin
   Result.value := value;
-  Result.clause := clause;
+  Result.clause := clause_var;
 end;
 function makeClause(literals: specialize TFPGMap<string, integer>; names: StrArray): Clause;
 begin

@@ -40,6 +40,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_to_str(xs: array of string): string;
 var i: integer;
 begin
@@ -77,9 +99,9 @@ var
   seed: integer;
   integers: array of integer;
   strings: array of string;
+  b: integer;
   data: StrArray;
   a: integer;
-  b: integer;
 function rand(): integer; forward;
 function randint(a: integer; b: integer): integer; forward;
 function fisher_yates_shuffle_int(data: IntArray): IntArray; forward;

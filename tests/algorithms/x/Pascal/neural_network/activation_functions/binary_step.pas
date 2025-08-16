@@ -47,6 +47,10 @@ function _to_float(x: integer): real;
 begin
   _to_float := x;
 end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
 procedure json(xs: array of real);
 var i: integer;
 begin

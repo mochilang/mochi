@@ -43,6 +43,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -56,7 +78,7 @@ var
   seed: integer;
 function makeLCG(multiplier: integer; increment: integer; modulo: integer; seed: integer): LCG; forward;
 function make_lcg(multiplier: integer; increment: integer; modulo: integer; seed: integer): LCG; forward;
-function next_number(lcg_var: LCG): integer; forward;
+function next_number(next_number_lcg_var: LCG): integer; forward;
 function makeLCG(multiplier: integer; increment: integer; modulo: integer; seed: integer): LCG;
 begin
   Result.multiplier := multiplier;
@@ -68,7 +90,7 @@ function make_lcg(multiplier: integer; increment: integer; modulo: integer; seed
 begin
   exit(makeLCG(multiplier, increment, modulo, seed));
 end;
-function next_number(lcg_var: LCG): integer;
+function next_number(next_number_lcg_var: LCG): integer;
 begin
   lcg_var.seed := ((lcg_var.multiplier * lcg_var.seed) + lcg_var.increment) mod lcg_var.modulo;
   exit(lcg_var.seed);

@@ -2,8 +2,6 @@
 program Main;
 uses SysUtils, Math;
 type RealArray = array of real;
-type IntArray = array of integer;
-type IntArrayArray = array of IntArray;
 type RealArrayArray = array of RealArray;
 type RealArrayArrayArray = array of RealArrayArray;
 var _nowSeed: int64 = 0;
@@ -42,22 +40,44 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
   Result := '[';
   for i := 0 to High(xs) do begin
-    Result := Result + IntToStr(xs[i]);
+    Result := Result + FloatToStr(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
 end;
-function list_list_int_to_str(xs: array of IntArray): string;
+function list_list_real_to_str(xs: array of RealArray): string;
 var i: integer;
 begin
   Result := '[';
   for i := 0 to High(xs) do begin
-    Result := Result + list_int_to_str(xs[i]);
+    Result := Result + list_real_to_str(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
@@ -67,12 +87,12 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  matrix: RealArrayArray;
-  matrices: RealArrayArrayArray;
-  b: RealArrayArray;
-  row: integer;
-  n: integer;
   a: RealArrayArray;
+  row: integer;
+  b: RealArrayArray;
+  n: integer;
+  matrices: RealArrayArrayArray;
+  matrix: RealArrayArray;
   column: integer;
 function add(matrices: RealArrayArrayArray): RealArrayArray; forward;
 function subtract(a: RealArrayArray; b: RealArrayArray): RealArrayArray; forward;
@@ -361,12 +381,12 @@ begin
   main_matrix_b := [[3, 4], [7, 4]];
   main_matrix_c := [[11, 12, 13, 14], [21, 22, 23, 24], [31, 32, 33, 34], [41, 42, 43, 44]];
   main_matrix_d := [[3, 0, 2], [2, 0, -2], [0, 1, 1]];
-  writeln(('Add Operation, add(matrix_a, matrix_b) = ' + list_int_to_str(add([main_matrix_a, main_matrix_b]))) + ' ' + #10 + '');
-  writeln(('Multiply Operation, multiply(matrix_a, matrix_b) = ' + list_int_to_str(multiply(main_matrix_a, main_matrix_b))) + ' ' + #10 + '');
-  writeln(('Identity: ' + list_int_to_str(identity(5))) + '' + #10 + '');
-  writeln(((('Minor of ' + list_list_int_to_str(main_matrix_c)) + ' = ') + list_int_to_str(minor(main_matrix_c, 1, 2))) + ' ' + #10 + '');
-  writeln(((('Determinant of ' + list_list_int_to_str(main_matrix_b)) + ' = ') + FloatToStr(determinant(main_matrix_b))) + ' ' + #10 + '');
-  writeln(((('Inverse of ' + list_list_int_to_str(main_matrix_d)) + ' = ') + list_int_to_str(inverse(main_matrix_d))) + '' + #10 + '');
+  writeln(('Add Operation, add(matrix_a, matrix_b) = ' + list_list_real_to_str(add([main_matrix_a, main_matrix_b]))) + ' ' + #10 + '');
+  writeln(('Multiply Operation, multiply(matrix_a, matrix_b) = ' + list_list_real_to_str(multiply(main_matrix_a, main_matrix_b))) + ' ' + #10 + '');
+  writeln(('Identity: ' + list_list_real_to_str(identity(5))) + '' + #10 + '');
+  writeln(((('Minor of ' + list_list_real_to_str(main_matrix_c)) + ' = ') + list_list_real_to_str(minor(main_matrix_c, 1, 2))) + ' ' + #10 + '');
+  writeln(((('Determinant of ' + list_list_real_to_str(main_matrix_b)) + ' = ') + FloatToStr(determinant(main_matrix_b))) + ' ' + #10 + '');
+  writeln(((('Inverse of ' + list_list_real_to_str(main_matrix_d)) + ' = ') + list_list_real_to_str(inverse(main_matrix_d))) + '' + #10 + '');
 end;
 begin
   init_now();

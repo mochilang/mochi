@@ -38,23 +38,45 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  array_: IntArray;
-  start: integer;
-  right_half: IntArray;
   end_: integer;
   citations: IntArray;
   xs: IntArray;
   left_half: IntArray;
-function subarray(xs: IntArray; start: integer; end_: integer): IntArray; forward;
+  start: integer;
+  right_half: IntArray;
+  array_: IntArray;
+function subarray(xs: IntArray; start: integer; subarray_end_: integer): IntArray; forward;
 function merge(left_half: IntArray; right_half: IntArray): IntArray; forward;
-function merge_sort(array_: IntArray): IntArray; forward;
+function merge_sort(merge_sort_array_: IntArray): IntArray; forward;
 function h_index(citations: IntArray): integer; forward;
-function subarray(xs: IntArray; start: integer; end_: integer): IntArray;
+function subarray(xs: IntArray; start: integer; subarray_end_: integer): IntArray;
 var
   subarray_result_: array of integer;
   subarray_k: integer;
@@ -95,7 +117,7 @@ end;
 end;
   exit(merge_result_);
 end;
-function merge_sort(array_: IntArray): IntArray;
+function merge_sort(merge_sort_array_: IntArray): IntArray;
 var
   merge_sort_middle: integer;
   merge_sort_left_half: IntArray;

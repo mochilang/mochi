@@ -39,6 +39,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_int_to_str(xs: array of integer): string;
 var i: integer;
 begin
@@ -66,9 +88,9 @@ var
   bench_memdiff_0: int64;
   number_2: integer;
   lower: integer;
-  higher: integer;
-  number_1: integer;
   to_guess: integer;
+  number_1: integer;
+  higher: integer;
 function get_avg(number_1: integer; number_2: integer): integer; forward;
 function guess_the_number(lower: integer; higher: integer; to_guess: integer): IntArray; forward;
 function get_avg(number_1: integer; number_2: integer): integer;
@@ -82,7 +104,7 @@ var
   guess_the_number_last_numbers: array of integer;
   guess_the_number_number: integer;
   guess_the_number_resp: string;
-  function answer(guess_the_number_number: integer): string;
+  function answer(answer_guess_the_number_number: integer): string;
 begin
   if guess_the_number_number > to_guess then begin
   exit('high');

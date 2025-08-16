@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-14 10:04 GMT+7
+Last updated: 2025-08-16 09:43 GMT+7
 
-## Algorithms Golden Test Checklist (403/1077)
+## Algorithms Golden Test Checklist (407/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -711,62 +711,62 @@ Last updated: 2025-08-14 10:04 GMT+7
 | 702 | matrix/inverse_of_matrix | error | 0ns | 896B |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 0ns | 128B |
 | 704 | matrix/matrix_based_game | ✓ | 0ns | 0B |
-| 705 | matrix/matrix_class | error |  |  |
+| 705 | matrix/matrix_class | ✓ | 1.0µs | 64B |
 | 706 | matrix/matrix_equalization | error |  |  |
 | 707 | matrix/matrix_multiplication_recursion | error |  |  |
-| 708 | matrix/matrix_operation | error |  |  |
+| 708 | matrix/matrix_operation | ✓ | 1.0µs | 0B |
 | 709 | matrix/max_area_of_island | ✓ | 0ns | 8.28KB |
 | 710 | matrix/median_matrix | ✓ | 0ns | 512B |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 0ns | 0B |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 1.0µs | 0B |
 | 712 | matrix/pascal_triangle | ✓ | 0ns | 0B |
-| 713 | matrix/rotate_matrix | ✓ | 0ns | 1.25KB |
+| 713 | matrix/rotate_matrix | ✓ | 1.0µs | 1.25KB |
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 0ns | 0B |
-| 715 | matrix/sherman_morrison | ✓ | 0ns | 0B |
-| 716 | matrix/spiral_print | ✓ | 0ns | 0B |
-| 717 | matrix/tests/test_matrix_operation | error |  |  |
-| 718 | matrix/validate_sudoku_board | error | 1.0µs | 41.81KB |
+| 715 | matrix/sherman_morrison | ✓ | 1.0µs | 0B |
+| 716 | matrix/spiral_print | ✓ | 1.0µs | 0B |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 0ns | 0B |
+| 718 | matrix/validate_sudoku_board | ✓ | 2.0µs | 41.81KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 0ns | 544B |
-| 720 | networking_flow/minimum_cut | ✓ | 0ns | 640B |
+| 720 | networking_flow/minimum_cut | ✓ | 1.0µs | 640B |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 0ns | 0B |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 1.0µs | 192B |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 0ns | 256B |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 0ns | 256B |
-| 725 | neural_network/activation_functions/mish | ✓ | 0ns | 0B |
+| 725 | neural_network/activation_functions/mish | ✓ | 1.0µs | 0B |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 0ns | 128B |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 0ns | 192B |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 0ns | 0B |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 1.0µs | 0B |
 | 729 | neural_network/activation_functions/softplus | ✓ | 0ns | 0B |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 0ns | 0B |
-| 731 | neural_network/activation_functions/swish | ✓ | 0ns | 0B |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 1.0µs | 0B |
+| 731 | neural_network/activation_functions/swish | ✓ | 1.0µs | 0B |
 | 732 | neural_network/back_propagation_neural_network | error |  |  |
 | 733 | neural_network/convolution_neural_network | error |  |  |
 | 734 | neural_network/input_data | error |  |  |
-| 735 | neural_network/simple_neural_network | ✓ | 103.0µs | 0B |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 0ns | 0B |
+| 735 | neural_network/simple_neural_network | ✓ | 149.0µs | 0B |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 1.0µs | 0B |
 | 737 | other/activity_selection | ✓ | 0ns | 128B |
 | 738 | other/alternative_list_arrange | error |  |  |
-| 739 | other/bankers_algorithm | ✓ | 1.0µs | 832B |
+| 739 | other/bankers_algorithm | ✓ | 0ns | 832B |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 0ns | 9.66KB |
-| 741 | other/doomsday | ✓ | 1.0µs | 3.66KB |
-| 742 | other/fischer_yates_shuffle | ✓ | 1.0µs | 1.12KB |
+| 741 | other/doomsday | ✓ | 0ns | 3.66KB |
+| 742 | other/fischer_yates_shuffle | ✓ | 0ns | 1.12KB |
 | 743 | other/gauss_easter | error |  |  |
-| 744 | other/greedy | ✓ | 1.0µs | 6.41KB |
+| 744 | other/greedy | ✓ | 0ns | 6.41KB |
 | 745 | other/guess_the_number_search | ✓ | 0ns | 0B |
 | 746 | other/h_index | ✓ | 0ns | 128B |
-| 747 | other/least_recently_used | ✓ | 0ns | 4.56KB |
+| 747 | other/least_recently_used | ✓ | 1.0µs | 4.56KB |
 | 748 | other/lfu_cache | ✓ | 0ns | 0B |
 | 749 | other/linear_congruential_generator | error |  |  |
-| 750 | other/lru_cache | ✓ | 0ns | 1.44KB |
+| 750 | other/lru_cache | ✓ | 1.0µs | 1.44KB |
 | 751 | other/magicdiamondpattern | ✓ | 0ns | 0B |
 | 752 | other/majority_vote_algorithm | ✓ | 0ns | 0B |
 | 753 | other/maximum_subsequence | ✓ | 0ns | 64B |
-| 754 | other/nested_brackets | ✓ | 0ns | 2.66KB |
+| 754 | other/nested_brackets | ✓ | 1.0µs | 2.66KB |
 | 755 | other/number_container_system | ✓ | 0ns | 448B |
 | 756 | other/quine | ✓ | 0ns | 0B |
 | 757 | other/scoring_algorithm | ✓ | 0ns | 608B |
 | 758 | other/sdes | ✓ | 0ns | 1.00KB |
 | 759 | other/tower_of_hanoi | ✓ | 0ns | 0B |
-| 760 | other/word_search | ✓ | 2.0µs | 0B |
+| 760 | other/word_search | ✓ | 0ns | 0B |
 | 761 | physics/altitude_pressure | ✓ | 0ns | 64B |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 0ns | 0B |
 | 763 | physics/basic_orbital_capture | error |  |  |

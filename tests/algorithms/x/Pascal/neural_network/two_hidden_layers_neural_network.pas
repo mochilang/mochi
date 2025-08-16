@@ -44,17 +44,39 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
+  net: Network;
   input: RealArray;
   x: real;
-  net: Network;
   iterations: integer;
-  outputs: RealArray;
   inputs: RealArrayArray;
+  outputs: RealArray;
 function makeNetwork(w1: RealArrayArray; w2: RealArrayArray; w3: RealArrayArray): Network; forward;
 function exp_approx(x: real): real; forward;
 function sigmoid(x: real): real; forward;
@@ -111,7 +133,7 @@ var
   feedforward_j2: integer;
   feedforward_sum3: real;
   feedforward_k2: integer;
-  feedforward_out: real;
+  feedforward_out_: real;
 begin
   feedforward_hidden1 := [];
   feedforward_j := 0;
@@ -143,8 +165,8 @@ end;
   feedforward_sum3 := feedforward_sum3 + (feedforward_hidden2[feedforward_k2] * net.w3[feedforward_k2][0]);
   feedforward_k2 := feedforward_k2 + 1;
 end;
-  feedforward_out := sigmoid(feedforward_sum3);
-  exit(feedforward_out);
+  feedforward_out_ := sigmoid(feedforward_sum3);
+  exit(feedforward_out_);
 end;
 procedure train(net: Network; inputs: RealArrayArray; outputs: RealArray; iterations: integer);
 var
@@ -285,10 +307,10 @@ end;
 end;
 function predict(net: Network; input: RealArray): integer;
 var
-  predict_out: real;
+  predict_out_: real;
 begin
-  predict_out := feedforward(net, input);
-  if predict_out > 0.6 then begin
+  predict_out_ := feedforward(net, input);
+  if predict_out_ > 0.6 then begin
   exit(1);
 end;
   exit(0);

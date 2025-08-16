@@ -2,8 +2,6 @@
 program Main;
 uses SysUtils;
 type RealArray = array of real;
-type IntArray = array of integer;
-type IntArrayArray = array of IntArray;
 type RealArrayArray = array of RealArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -41,22 +39,44 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
   Result := '[';
   for i := 0 to High(xs) do begin
-    Result := Result + IntToStr(xs[i]);
+    Result := Result + FloatToStr(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
 end;
-function list_list_int_to_str(xs: array of IntArray): string;
+function list_list_real_to_str(xs: array of RealArray): string;
 var i: integer;
 begin
   Result := '[';
   for i := 0 to High(xs) do begin
-    Result := Result + list_int_to_str(xs[i]);
+    Result := Result + list_real_to_str(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
@@ -66,11 +86,11 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  b: RealArrayArray;
   s: real;
-  n: integer;
-  mat: RealArrayArray;
   a: RealArrayArray;
+  n: integer;
+  b: RealArrayArray;
+  mat: RealArrayArray;
 procedure check_matrix(mat: RealArrayArray); forward;
 function add(a: RealArrayArray; b: RealArrayArray): RealArrayArray; forward;
 function subtract(a: RealArrayArray; b: RealArrayArray): RealArrayArray; forward;
@@ -269,12 +289,12 @@ begin
   main_mat_a := [[12, 10], [3, 9]];
   main_mat_b := [[3, 4], [7, 4]];
   main_mat_c := [[3, 0, 2], [2, 0, -2], [0, 1, 1]];
-  writeln(list_int_to_str(add(main_mat_a, main_mat_b)));
-  writeln(list_int_to_str(subtract(main_mat_a, main_mat_b)));
-  writeln(list_int_to_str(multiply(main_mat_a, main_mat_b)));
-  writeln(list_int_to_str(scalar_multiply(main_mat_a, 3.5)));
-  writeln(list_int_to_str(identity(5)));
-  writeln(list_int_to_str(transpose(main_mat_c)));
+  writeln(list_list_real_to_str(add(main_mat_a, main_mat_b)));
+  writeln(list_list_real_to_str(subtract(main_mat_a, main_mat_b)));
+  writeln(list_list_real_to_str(multiply(main_mat_a, main_mat_b)));
+  writeln(list_list_real_to_str(scalar_multiply(main_mat_a, 3.5)));
+  writeln(list_list_real_to_str(identity(5)));
+  writeln(list_list_real_to_str(transpose(main_mat_c)));
 end;
 begin
   init_now();

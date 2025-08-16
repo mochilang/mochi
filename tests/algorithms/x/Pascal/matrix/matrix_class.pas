@@ -2,8 +2,6 @@
 program Main;
 uses SysUtils, Math;
 type RealArray = array of real;
-type IntArray = array of integer;
-type IntArrayArray = array of IntArray;
 type RealArrayArray = array of RealArray;
 type Matrix = record
   data: array of RealArray;
@@ -46,22 +44,44 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
   Result := '[';
   for i := 0 to High(xs) do begin
-    Result := Result + IntToStr(xs[i]);
+    Result := Result + FloatToStr(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
 end;
-function list_list_int_to_str(xs: array of IntArray): string;
+function list_list_real_to_str(xs: array of RealArray): string;
 var i: integer;
 begin
   Result := '[';
   for i := 0 to High(xs) do begin
-    Result := Result + list_int_to_str(xs[i]);
+    Result := Result + list_real_to_str(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
@@ -71,16 +91,16 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  values: RealArrayArray;
+  b: Matrix;
+  s: real;
   r: integer;
-  col: RealArray;
-  p: integer;
   m: Matrix;
   c: integer;
-  b: Matrix;
-  a: Matrix;
   row: RealArray;
-  s: real;
+  values: RealArrayArray;
+  col: RealArray;
+  p: integer;
+  a: Matrix;
 function makeMatrix(data: RealArrayArray; rows: integer; cols: integer): Matrix; forward;
 function make_matrix(values: RealArrayArray): Matrix; forward;
 function matrix_columns(m: Matrix): RealArrayArray; forward;
@@ -371,7 +391,7 @@ function matrix_add(a: Matrix; b: Matrix): Matrix;
 var
   matrix_add_vals: array of RealArray;
   matrix_add_i: integer;
-  matrix_add_row: array of real;
+  matrix_add_row_var: array of real;
   matrix_add_j: integer;
 begin
   if (a.rows <> b.rows) or (a.cols <> b.cols) then begin
@@ -380,13 +400,13 @@ end;
   matrix_add_vals := [];
   matrix_add_i := 0;
   while matrix_add_i < a.rows do begin
-  matrix_add_row := [];
+  matrix_add_row_var := [];
   matrix_add_j := 0;
   while matrix_add_j < a.cols do begin
-  matrix_add_row := concat(@matrix_add_row, [a.data[matrix_add_i][matrix_add_j] + b.data[matrix_add_i][matrix_add_j]]);
+  matrix_add_row_var := concat(matrix_add_row_var, [a.data[matrix_add_i][matrix_add_j] + b.data[matrix_add_i][matrix_add_j]]);
   matrix_add_j := matrix_add_j + 1;
 end;
-  matrix_add_vals := concat(matrix_add_vals, [@matrix_add_row]);
+  matrix_add_vals := concat(matrix_add_vals, [matrix_add_row_var]);
   matrix_add_i := matrix_add_i + 1;
 end;
   exit(makeMatrix(matrix_add_vals, a.rows, a.cols));
@@ -515,7 +535,7 @@ var
 begin
   main_m := make_matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
   writeln(matrix_to_string(main_m));
-  writeln(list_int_to_str(matrix_columns(main_m)));
+  writeln(list_list_real_to_str(matrix_columns(main_m)));
   writeln((IntToStr(main_m.rows) + ',') + IntToStr(main_m.cols));
   writeln(LowerCase(BoolToStr(matrix_is_invertible(main_m), true)));
   writeln(matrix_to_string(matrix_identity(main_m)));

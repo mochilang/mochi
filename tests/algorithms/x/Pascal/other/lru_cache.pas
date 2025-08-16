@@ -12,6 +12,7 @@ type DoubleLinkedList = record
   head: integer;
   tail: integer;
 end;
+type NodeArray = array of Node;
 type LRUCache = record
   list: DoubleLinkedList;
   capacity: integer;
@@ -25,7 +26,6 @@ type GetResult = record
   value: integer;
   ok: boolean;
 end;
-type NodeArray = array of Node;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -62,19 +62,41 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  cap: integer;
-  c: LRUCache;
-  lst: DoubleLinkedList;
   cache: LRUCache;
-  idx: integer;
   res: GetResult;
   key: integer;
+  lst: DoubleLinkedList;
+  cap: integer;
+  c: LRUCache;
   value: integer;
+  idx: integer;
 function makeGetResult(cache: LRUCache; value: integer; ok: boolean): GetResult; forward;
 function makeLRUCache(list: DoubleLinkedList; capacity: integer; num_keys: integer; hits: integer; misses: integer; cache: specialize TFPGMap<string, integer>): LRUCache; forward;
 function makeDoubleLinkedList(nodes: NodeArray; head: integer; tail: integer): DoubleLinkedList; forward;

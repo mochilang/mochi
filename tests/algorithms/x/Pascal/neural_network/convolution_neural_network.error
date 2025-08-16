@@ -1,13 +1,8 @@
-compile: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/algorithms/x/Pascal/neural_network/convolution_neural_network.pas
-convolution_neural_network.pas(6,34) Error: Identifier not found "TrainSample"
-convolution_neural_network.pas(6,45) Error: Error in type definition
-convolution_neural_network.pas(467,34) Error: Illegal qualifier
-convolution_neural_network.pas(468,36) Error: Illegal qualifier
-convolution_neural_network.pas(531,52) Error: Incompatible type for arg no. 2: Got "{Array Of Const/Constant Open} Array of TrainSample", expected "TrainSampleArray"
-convolution_neural_network.pas(548) Fatal: There were 5 errors compiling module, stopping
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode
+run: exit status 217
+Before training: An unhandled exception occurred at $0000000000402BED:
+EAccessViolation: Access violation
+  $0000000000402BED
+  $0000000000404FA1
+  $00000000004067C8
+  $0000000000406AC6
+

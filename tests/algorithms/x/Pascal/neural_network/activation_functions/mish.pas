@@ -38,6 +38,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
@@ -53,11 +75,11 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  x: real;
   vector: RealArray;
+  x: real;
 function exp_approx(x: real): real; forward;
 function ln_series(x: real): real; forward;
-function ln(x: real): real; forward;
+function ln_(x: real): real; forward;
 function softplus(x: real): real; forward;
 function tanh_approx(x: real): real; forward;
 function mish(vector: RealArray): RealArray; forward;
@@ -107,22 +129,22 @@ begin
 end;
   exit(2 * ln_series_acc);
 end;
-function ln(x: real): real;
+function ln_(x: real): real;
 var
-  ln_y: real;
-  ln_k: integer;
+  ln__y: real;
+  ln__k: integer;
 begin
-  ln_y := x;
-  ln_k := 0;
-  while ln_y >= 10 do begin
-  ln_y := ln_y / 10;
-  ln_k := ln_k + 1;
+  ln__y := x;
+  ln__k := 0;
+  while ln__y >= 10 do begin
+  ln__y := ln__y / 10;
+  ln__k := ln__k + 1;
 end;
-  while ln_y < 1 do begin
-  ln_y := ln_y * 10;
-  ln_k := ln_k - 1;
+  while ln__y < 1 do begin
+  ln__y := ln__y * 10;
+  ln__k := ln__k - 1;
 end;
-  exit(ln_series(ln_y) + (Double(ln_k) * ln_series(10)));
+  exit(ln_series(ln__y) + (Double(ln__k) * ln_series(10)));
 end;
 function softplus(x: real): real;
 begin

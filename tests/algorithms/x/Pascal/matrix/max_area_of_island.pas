@@ -39,18 +39,40 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   matrix: array of IntArray;
-  col: integer;
   mat: IntArrayArray;
   row: integer;
-  key: string;
-  cols: integer;
   rows: integer;
+  key: string;
+  col: integer;
+  cols: integer;
   seen: specialize TFPGMap<string, boolean>;
 function encode(row: integer; col: integer): string; forward;
 function is_safe(row: integer; col: integer; rows: integer; cols: integer): boolean; forward;
