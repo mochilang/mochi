@@ -1,0 +1,5 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/scc_kosaraju.c: In function ‘kosaraju’:
+/workspace/mochi/tests/algorithms/x/C/graphs/scc_kosaraju.c:159:193: error: request for member ‘lens’ in something not a structure or union
+  159 |                 reversed_graph[(int)(v)] = list_append_int_new(reversed_graph[(int)({long long _mochi_idx = v; _mochi_idx < 0 ? reversed_graph_len + _mochi_idx : _mochi_idx;})], reversed_graph.lens[(int)(v)], i);
+      |                                                                                                                                                                                                 ^

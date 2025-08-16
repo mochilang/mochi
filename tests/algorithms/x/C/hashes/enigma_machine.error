@@ -1,0 +1,32 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c: In function ‘enigma_encrypt’:
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:181:9: error: too few arguments to function ‘_rotator’
+  181 |         _rotator();
+      |         ^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:106:6: note: declared here
+  106 | void _rotator(long long * gear_one, size_t gear_one_len, long long gear_one_pos, long long gear_two_pos, long long n);
+      |      ^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:187:45: warning: implicit declaration of function ‘engine’ [-Wimplicit-function-declaration]
+  187 |         result = str_concat(result, str_int(engine((const char[]){message[idx], 0})));
+      |                                             ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c: In function ‘_rotator’:
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:200:13: error: ‘gear_two’ undeclared (first use in this function)
+  200 |         i = gear_two[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? gear_two_len + _mochi_idx : _mochi_idx;})];
+      |             ^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:200:13: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:200:74: error: ‘gear_two_len’ undeclared (first use in this function); did you mean ‘gear_two_pos’?
+  200 |         i = gear_two[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? gear_two_len + _mochi_idx : _mochi_idx;})];
+      |                                                                          ^~~~~~~~~~~~
+      |                                                                          gear_two_pos
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:206:17: error: ‘gear_three’ undeclared (first use in this function); did you mean ‘gear_one’?
+  206 |             i = gear_three[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? gear_three_len + _mochi_idx : _mochi_idx;})];
+      |                 ^~~~~~~~~~
+      |                 gear_one
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:206:80: error: ‘gear_three_len’ undeclared (first use in this function); did you mean ‘gear_one_len’?
+  206 |             i = gear_three[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? gear_three_len + _mochi_idx : _mochi_idx;})];
+      |                                                                                ^~~~~~~~~~~~~~
+      |                                                                                gear_one_len
+/workspace/mochi/tests/algorithms/x/C/hashes/enigma_machine.c:210:13: error: ‘gear_three_pos’ undeclared (first use in this function); did you mean ‘gear_two_pos’?
+  210 |             gear_three_pos = gear_three_pos + 1LL;
+      |             ^~~~~~~~~~~~~~
+      |             gear_two_pos

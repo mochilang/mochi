@@ -1,0 +1,21 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/greedy_methods/fractional_cover_problem.c: In function ‘fractional_cover’:
+/workspace/mochi/tests/algorithms/x/C/greedy_methods/fractional_cover_problem.c:91:19: error: ‘sorted_len’ undeclared (first use in this function); did you mean ‘sorted’?
+   91 |     while ((idx < sorted_len) && (remaining > 0LL)) {
+      |                   ^~~~~~~~~~
+      |                   sorted
+/workspace/mochi/tests/algorithms/x/C/greedy_methods/fractional_cover_problem.c:91:19: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/greedy_methods/fractional_cover_problem.c:94:17: error: request for member ‘weight’ in something not a structure or union
+   94 |         if (item.weight < remaining) {
+      |                 ^
+/workspace/mochi/tests/algorithms/x/C/greedy_methods/fractional_cover_problem.c:95:24: error: request for member ‘weight’ in something not a structure or union
+   95 |             take = item.weight;
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/greedy_methods/fractional_cover_problem.c:99:49: error: incompatible type for argument 1 of ‘ratio’
+   99 |         total = total + ((double)(take) * ratio(item));
+      |                                                 ^~~~
+      |                                                 |
+      |                                                 long long int
+/workspace/mochi/tests/algorithms/x/C/greedy_methods/fractional_cover_problem.c:79:19: note: expected ‘Item’ but argument is of type ‘long long int’
+   79 | double ratio(Item item) {
+      |              ~~~~~^~~~

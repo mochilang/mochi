@@ -1,0 +1,18 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/linear_programming/simplex.c: In function ‘interpret’:
+/workspace/mochi/tests/algorithms/x/C/linear_programming/simplex.c:196:5: error: ‘result’ undeclared (first use in this function)
+  196 |     result[(int)("P")] = p;
+      |     ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/linear_programming/simplex.c:196:5: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/linear_programming/simplex.c:196:12: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  196 |     result[(int)("P")] = p;
+      |            ^
+/workspace/mochi/tests/algorithms/x/C/linear_programming/simplex.c:207:182: error: array subscript is not an integer
+  207 |         if ((nzCount == 1LL) && (t[(int)({long long _mochi_idx = nzRow; _mochi_idx < 0 ? t_len + _mochi_idx : _mochi_idx;})][(int)({long long _mochi_idx = i; _mochi_idx < 0 ? t_lens[nzRow] + _mochi_idx : _mochi_idx;})] == 1LL)) {
+      |                                                                                                                                                                                      ^
+/workspace/mochi/tests/algorithms/x/C/linear_programming/simplex.c:208:20: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  208 |             result[(int)(str_concat("x", str_int(i + 1LL)))] = t[(int)({long long _mochi_idx = nzRow; _mochi_idx < 0 ? t_len + _mochi_idx : _mochi_idx;})][(int)({long long _mochi_idx = lastCol; _mochi_idx < 0 ? t_lens[nzRow] + _mochi_idx : _mochi_idx;})];
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/linear_programming/simplex.c:208:218: error: array subscript is not an integer
+  208 |             result[(int)(str_concat("x", str_int(i + 1LL)))] = t[(int)({long long _mochi_idx = nzRow; _mochi_idx < 0 ? t_len + _mochi_idx : _mochi_idx;})][(int)({long long _mochi_idx = lastCol; _mochi_idx < 0 ? t_lens[nzRow] + _mochi_idx : _mochi_idx;})];
+      |                                                                                                                                                                                                                          ^

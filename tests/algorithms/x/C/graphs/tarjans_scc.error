@@ -1,0 +1,58 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c: In function ‘tarjan’:
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:170:29: error: cast specifies array type
+  170 |             _strong_connect((long long[])v, v_len, 0LL, 0);
+      |                             ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:170:45: error: ‘v_len’ undeclared (first use in this function); did you mean ‘g_len’?
+  170 |             _strong_connect((long long[])v, v_len, 0LL, 0);
+      |                                             ^~~~~
+      |                                             g_len
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:170:45: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:170:13: error: too few arguments to function ‘_strong_connect’
+  170 |             _strong_connect((long long[])v, v_len, 0LL, 0);
+      |             ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:141:11: note: declared here
+  141 | long long _strong_connect(long long * index_of, size_t index_of_len, long long * lowlink_of, size_t lowlink_of_len, long long * stack, size_t stack_len, long long v, long long index);
+      |           ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c: In function ‘_strong_connect’:
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:182:5: error: ‘on_stack’ undeclared (first use in this function); did you mean ‘stack’?
+  182 |     on_stack[(int)(v)] = 1LL;
+      |     ^~~~~~~~
+      |     stack
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:184:29: error: ‘g’ undeclared (first use in this function)
+  184 |         long long* __tmp0 = g[(int)({long long _mochi_idx = v; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})];
+      |                             ^
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:184:81: error: ‘g_len’ undeclared (first use in this function)
+  184 |         long long* __tmp0 = g[(int)({long long _mochi_idx = v; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})];
+      |                                                                                 ^~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:185:29: error: ‘g_lens’ undeclared (first use in this function)
+  185 |         size_t __tmp0_len = g_lens[v];
+      |                             ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:189:33: warning: implicit declaration of function ‘strong_connect’; did you mean ‘_strong_connect’? [-Wimplicit-function-declaration]
+  189 |                 current_index = strong_connect(w, current_index);
+      |                                 ^~~~~~~~~~~~~~
+      |                                 _strong_connect
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:194:80: error: ‘on_stack_len’ undeclared (first use in this function); did you mean ‘stack_len’?
+  194 |                 if (on_stack[(int)({long long _mochi_idx = w; _mochi_idx < 0 ? on_stack_len + _mochi_idx : _mochi_idx;})]) {
+      |                                                                                ^~~~~~~~~~~~
+      |                                                                                stack_len
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:217:9: error: ‘components’ undeclared (first use in this function); did you mean ‘component’?
+  217 |         components = list_append_intptr(components, &components_len, component);
+      |         ^~~~~~~~~~
+      |         component
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:217:54: error: ‘components_len’ undeclared (first use in this function); did you mean ‘component_len’?
+  217 |         components = list_append_intptr(components, &components_len, component);
+      |                                                      ^~~~~~~~~~~~~~
+      |                                                      component_len
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:218:9: error: ‘components_lens’ undeclared (first use in this function); did you mean ‘component_len’?
+  218 |         components_lens = list_append_szt(components_lens, &components_lens_len, component_len);
+      |         ^~~~~~~~~~~~~~~
+      |         component_len
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:218:61: error: ‘components_lens_len’ undeclared (first use in this function); did you mean ‘component_len’?
+  218 |         components_lens = list_append_szt(components_lens, &components_lens_len, component_len);
+      |                                                             ^~~~~~~~~~~~~~~~~~~
+      |                                                             component_len
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c: In function ‘create_graph’:
+/workspace/mochi/tests/algorithms/x/C/graphs/tarjans_scc.c:239:133: error: request for member ‘lens’ in something not a structure or union
+  239 |         g[(int)(u)] = list_append_int_new(g[(int)({long long _mochi_idx = u; _mochi_idx < 0 ? g_len + _mochi_idx : _mochi_idx;})], g.lens[(int)(u)], v);
+      |                                                                                                                                     ^

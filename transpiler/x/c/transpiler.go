@@ -5299,7 +5299,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needSHA256 {
-		buf.WriteString("static int* _sha256(const int *arr, size_t len) {\n")
+		buf.WriteString("static long long* _sha256(const char *arr, size_t len) {\n")
 		buf.WriteString("    char tmpl[] = \"/tmp/mochi_sha256_XXXXXX\";\n")
 		buf.WriteString("    int fd = mkstemp(tmpl);\n")
 		buf.WriteString("    if (fd < 0) return NULL;\n")
@@ -5312,10 +5312,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    char hex[65] = {0};\n")
 		buf.WriteString("    if (p) { fscanf(p, \"%64s\", hex); pclose(p); }\n")
 		buf.WriteString("    unlink(tmpl);\n")
-		buf.WriteString("    int *out = malloc(32 * sizeof(int));\n")
+		buf.WriteString("    long long *out = malloc(32 * sizeof(long long));\n")
 		buf.WriteString("    for (int i = 0; i < 32; i++) {\n")
 		buf.WriteString("        char b[3] = {hex[i*2], hex[i*2+1], 0};\n")
-		buf.WriteString("        out[i] = (int)strtol(b, NULL, 16);\n")
+		buf.WriteString("        out[i] = (long long)strtol(b, NULL, 16);\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    _sha256_len = 32;\n")
 		buf.WriteString("    return out;\n")
@@ -9487,6 +9487,8 @@ func convertUnary(u *parser.Unary) Expr {
 				l = &VarRef{Name: vr.Name + "_len"}
 			} else if ce, ok := arg.(*CallExpr); ok {
 				l = &VarRef{Name: ce.Func + "_len"}
+			} else if sl, ok := arg.(*StringLit); ok {
+				l = &IntLit{Value: len(sl.Value)}
 			} else {
 				return nil
 			}
