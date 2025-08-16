@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -22,13 +22,15 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -38,7 +40,7 @@ let rec find_min_iterative (nums: float array) =
     let mutable nums = nums
     try
         if (Seq.length (nums)) = 0 then
-            failwith ("find_min_iterative() arg is an empty sequence")
+            ignore (failwith ("find_min_iterative() arg is an empty sequence"))
         let mutable min_num: float = _idx nums (int 0)
         let mutable i: int = 0
         while i < (Seq.length (nums)) do
@@ -59,9 +61,9 @@ and find_min_recursive (nums: float array) (left: int) (right: int) =
     try
         let n: int = Seq.length (nums)
         if n = 0 then
-            failwith ("find_min_recursive() arg is an empty sequence")
+            ignore (failwith ("find_min_recursive() arg is an empty sequence"))
         if (((left >= n) || (left < (0 - n))) || (right >= n)) || (right < (0 - n)) then
-            failwith ("list index out of range")
+            ignore (failwith ("list index out of range"))
         let mutable l: int = left
         let mutable r: int = right
         if l < 0 then
@@ -71,7 +73,7 @@ and find_min_recursive (nums: float array) (left: int) (right: int) =
         if l = r then
             __ret <- _idx nums (int l)
             raise Return
-        let mid: int = _floordiv (l + r) 2
+        let mid: int = _floordiv (int (l + r)) (int 2)
         let left_min: float = find_min_recursive (nums) (l) (mid)
         let right_min: float = find_min_recursive (nums) (mid + 1) (r)
         if left_min <= right_min then
@@ -83,37 +85,37 @@ and find_min_recursive (nums: float array) (left: int) (right: int) =
     with
         | Return -> __ret
 and test_find_min () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let a: float array = unbox<float array> [|3.0; 2.0; 1.0|]
         if (find_min_iterative (a)) <> 1.0 then
-            failwith ("iterative test1 failed")
+            ignore (failwith ("iterative test1 failed"))
         if (find_min_recursive (a) (0) ((Seq.length (a)) - 1)) <> 1.0 then
-            failwith ("recursive test1 failed")
+            ignore (failwith ("recursive test1 failed"))
         let b: float array = unbox<float array> [|-3.0; -2.0; -1.0|]
         if (find_min_iterative (b)) <> (-3.0) then
-            failwith ("iterative test2 failed")
+            ignore (failwith ("iterative test2 failed"))
         if (find_min_recursive (b) (0) ((Seq.length (b)) - 1)) <> (-3.0) then
-            failwith ("recursive test2 failed")
+            ignore (failwith ("recursive test2 failed"))
         let c: float array = unbox<float array> [|3.0; -3.0; 0.0|]
         if (find_min_iterative (c)) <> (-3.0) then
-            failwith ("iterative test3 failed")
+            ignore (failwith ("iterative test3 failed"))
         if (find_min_recursive (c) (0) ((Seq.length (c)) - 1)) <> (-3.0) then
-            failwith ("recursive test3 failed")
+            ignore (failwith ("recursive test3 failed"))
         let d: float array = unbox<float array> [|1.0; 3.0; 5.0; 7.0; 9.0; 2.0; 4.0; 6.0; 8.0; 10.0|]
         if (find_min_recursive (d) (0 - (Seq.length (d))) (0 - 1)) <> 1.0 then
-            failwith ("negative index test failed")
+            ignore (failwith ("negative index test failed"))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_find_min()
+        ignore (test_find_min())
         let sample: float array = unbox<float array> [|0.0; 1.0; 2.0; 3.0; 4.0; 5.0; -3.0; 24.0; -56.0|]
-        printfn "%s" (_str (find_min_iterative (sample)))
+        ignore (printfn "%s" (_str (find_min_iterative (sample))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -121,4 +123,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

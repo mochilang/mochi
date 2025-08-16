@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -39,23 +41,23 @@ let rec combinations (n: int) (k: int) =
     let mutable k = k
     try
         if (k < 0) || (n < k) then
-            failwith ("Please enter positive integers for n and k where n >= k")
+            ignore (failwith ("Please enter positive integers for n and k where n >= k"))
         let mutable res: int = 1
         let mutable i: int = 0
         while i < k do
             res <- res * (n - i)
-            res <- _floordiv res (i + 1)
+            res <- _floordiv (int res) (int (i + 1))
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" ("The number of five-card hands possible from a standard fifty-two card deck is: " + (_str (combinations (52) (5))))
-printfn "%s" ("")
-printfn "%s" (("If a class of 40 students must be arranged into groups of 4 for group projects, there are " + (_str (combinations (40) (4)))) + " ways to arrange them.")
-printfn "%s" ("")
-printfn "%s" (("If 10 teams are competing in a Formula One race, there are " + (_str (combinations (10) (3)))) + " ways that first, second and third place can be awarded.")
+ignore (printfn "%s" ("The number of five-card hands possible from a standard fifty-two card deck is: " + (_str (combinations (52) (5)))))
+ignore (printfn "%s" (""))
+ignore (printfn "%s" (("If a class of 40 students must be arranged into groups of 4 for group projects, there are " + (_str (combinations (40) (4)))) + " ways to arrange them."))
+ignore (printfn "%s" (""))
+ignore (printfn "%s" (("If 10 teams are competing in a Formula One race, there are " + (_str (combinations (10) (3)))) + " ways that first, second and third place can be awarded."))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

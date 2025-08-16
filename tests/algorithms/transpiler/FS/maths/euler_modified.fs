@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,16 @@ let _now () =
 _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec ceil_float (x: float) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable x = x
@@ -96,14 +106,14 @@ and f2 (x: float) (y: float) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let y1: float array = euler_modified (unbox<float -> float -> float> f1) (1.0) (0.0) (0.2) (1.0)
-        printfn "%g" (_idx y1 (int ((Seq.length (y1)) - 1)))
+        ignore (printfn "%s" (_str (_idx y1 (int ((Seq.length (y1)) - 1)))))
         let y2: float array = euler_modified (unbox<float -> float -> float> f2) (1.0) (0.0) (0.1) (0.3)
-        printfn "%g" (_idx y2 (int ((Seq.length (y2)) - 1)))
+        ignore (printfn "%s" (_str (_idx y2 (int ((Seq.length (y2)) - 1)))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -111,4 +121,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

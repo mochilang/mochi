@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,25 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -55,7 +46,7 @@ let rec to_unsigned (n: int) =
         __ret
     with
         | Return -> __ret
-let rec from_unsigned (n: int) =
+and from_unsigned (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     try
@@ -64,7 +55,7 @@ let rec from_unsigned (n: int) =
         __ret
     with
         | Return -> __ret
-let rec bit_and (a: int) (b: int) =
+and bit_and (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable b = b
@@ -77,8 +68,8 @@ let rec bit_and (a: int) (b: int) =
         while i < 32 do
             if ((((x % 2 + 2) % 2)) = 1) && ((((y % 2 + 2) % 2)) = 1) then
                 res <- res + bit
-            x <- _floordiv x 2
-            y <- _floordiv y 2
+            x <- _floordiv (int x) (int 2)
+            y <- _floordiv (int y) (int 2)
             bit <- bit * 2
             i <- i + 1
         __ret <- res
@@ -86,7 +77,7 @@ let rec bit_and (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-let rec bit_xor (a: int) (b: int) =
+and bit_xor (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable b = b
@@ -101,8 +92,8 @@ let rec bit_xor (a: int) (b: int) =
             let bbit: int = ((y % 2 + 2) % 2)
             if ((((abit + bbit) % 2 + 2) % 2)) = 1 then
                 res <- res + bit
-            x <- _floordiv x 2
-            y <- _floordiv y 2
+            x <- _floordiv (int x) (int 2)
+            y <- _floordiv (int y) (int 2)
             bit <- bit * 2
             i <- i + 1
         __ret <- res
@@ -110,7 +101,7 @@ let rec bit_xor (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-let rec lshift1 (num: int) =
+and lshift1 (num: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable num = num
     try
@@ -119,7 +110,7 @@ let rec lshift1 (num: int) =
         __ret
     with
         | Return -> __ret
-let rec add (a: int) (b: int) =
+and add (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable b = b
@@ -136,11 +127,11 @@ let rec add (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (add (3) (5)))
-printfn "%s" (_str (add (13) (5)))
-printfn "%s" (_str (add (-7) (2)))
-printfn "%s" (_str (add (0) (-7)))
-printfn "%s" (_str (add (-321) (0)))
+ignore (printfn "%s" (_str (add (3) (5))))
+ignore (printfn "%s" (_str (add (13) (5))))
+ignore (printfn "%s" (_str (add (-7) (2))))
+ignore (printfn "%s" (_str (add (0) (-7))))
+ignore (printfn "%s" (_str (add (-321) (0))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

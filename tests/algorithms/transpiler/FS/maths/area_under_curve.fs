@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:07 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,25 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec abs_float (x: float) =
@@ -53,7 +44,7 @@ let rec abs_float (x: float) =
         __ret
     with
         | Return -> __ret
-let rec trapezoidal_area (f: float -> float) (x_start: float) (x_end: float) (steps: int) =
+and trapezoidal_area (f: float -> float) (x_start: float) (x_end: float) (steps: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable f = f
     let mutable x_start = x_start
@@ -77,7 +68,7 @@ let rec trapezoidal_area (f: float -> float) (x_start: float) (x_end: float) (st
         __ret
     with
         | Return -> __ret
-let rec f (x: float) =
+and f (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -86,12 +77,12 @@ let rec f (x: float) =
         __ret
     with
         | Return -> __ret
-printfn "%s" ("f(x) = x^3 + x^2")
-printfn "%s" ("The area between the curve, x = -5, x = 5 and the x axis is:")
+ignore (printfn "%s" ("f(x) = x^3 + x^2"))
+ignore (printfn "%s" ("The area between the curve, x = -5, x = 5 and the x axis is:"))
 let mutable i: int = 10
 while i <= 100000 do
     let result: float = trapezoidal_area (unbox<float -> float> f) (-5.0) (5.0) (i)
-    printfn "%s" ((("with " + (_str (i))) + " steps: ") + (_str (result)))
+    ignore (printfn "%s" ((("with " + (_str (i))) + " steps: ") + (_str (result))))
     i <- i * 10
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,6 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let PI: float = 3.141592653589793
 let rec absf (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
@@ -34,7 +44,7 @@ and sqrt (x: float) =
     let mutable x = x
     try
         if x < 0.0 then
-            failwith ("sqrt domain error")
+            ignore (failwith ("sqrt domain error"))
         let mutable guess: float = x / 2.0
         let mutable i: int = 0
         while i < 20 do
@@ -50,7 +60,7 @@ and ln (x: float) =
     let mutable x = x
     try
         if x <= 0.0 then
-            failwith ("ln domain error")
+            ignore (failwith ("ln domain error"))
         let y: float = (x - 1.0) / (x + 1.0)
         let y2: float = y * y
         let mutable term: float = y
@@ -107,7 +117,7 @@ and gamma_iterative (num: float) =
     let mutable num = num
     try
         if num <= 0.0 then
-            failwith ("math domain error")
+            ignore (failwith ("math domain error"))
         let step: float = 0.001
         let limit: float = 100.0
         let mutable x: float = step
@@ -125,13 +135,13 @@ and gamma_recursive (num: float) =
     let mutable num = num
     try
         if num <= 0.0 then
-            failwith ("math domain error")
+            ignore (failwith ("math domain error"))
         if num > 171.5 then
-            failwith ("math range error")
+            ignore (failwith ("math range error"))
         let int_part: int = int (num)
         let frac: float = num - (float int_part)
         if not (((absf (frac)) < 0.000001) || ((absf (frac - 0.5)) < 0.000001)) then
-            failwith ("num must be an integer or a half-integer")
+            ignore (failwith ("num must be an integer or a half-integer"))
         if (absf (num - 0.5)) < 0.000001 then
             __ret <- sqrt (PI)
             raise Return
@@ -144,13 +154,13 @@ and gamma_recursive (num: float) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        printfn "%g" (gamma_iterative (5.0))
-        printfn "%g" (gamma_recursive (5.0))
-        printfn "%g" (gamma_recursive (0.5))
+        ignore (printfn "%s" (_str (gamma_iterative (5.0))))
+        ignore (printfn "%s" (_str (gamma_recursive (5.0))))
+        ignore (printfn "%s" (_str (gamma_recursive (0.5))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -158,4 +168,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

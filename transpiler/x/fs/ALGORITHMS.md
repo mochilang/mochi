@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
 Completed programs: 925/1077
-Last updated: 2025-08-16 12:48 +0700
+Last updated: 2025-08-16 14:41 +0700
 
 Checklist:
 
@@ -532,55 +532,55 @@ Checklist:
 | 523 | machine_learning/support_vector_machines | ✓ | 571.223ms | 40.0 KB |
 | 524 | machine_learning/word_frequency_functions | ✓ | 571.223ms | 74.5 KB |
 | 525 | machine_learning/xgboost_classifier | ✓ | 571.223ms | 55.3 KB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 571.223ms | 68.4 KB |
-| 527 | maths/abs | ✓ | 571.223ms | 36.3 KB |
-| 528 | maths/addition_without_arithmetic | ✓ | 571.223ms | 59.2 KB |
-| 529 | maths/aliquot_sum | ✓ | 571.223ms | 55.2 KB |
-| 530 | maths/allocation_number | ✓ | 571.223ms | 62.1 KB |
-| 531 | maths/arc_length | ✓ | 571.223ms | 60.1 KB |
-| 532 | maths/area | ✓ | 571.223ms | 57.5 KB |
-| 533 | maths/area_under_curve | ✓ | 571.223ms | 65.9 KB |
-| 534 | maths/average_absolute_deviation | ✓ | 571.223ms | 56.8 KB |
-| 535 | maths/average_mean | ✓ | 571.223ms | 56.1 KB |
-| 536 | maths/average_median | ✓ | 571.223ms | 60.0 KB |
-| 537 | maths/average_mode | ✓ | 571.223ms | 58.1 KB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 571.223ms | 58.7 KB |
-| 539 | maths/base_neg2_conversion | ✓ | 571.223ms | 62.4 KB |
-| 540 | maths/basic_maths | ✓ | 571.223ms | 62.2 KB |
-| 541 | maths/binary_exponentiation | ✓ | 571.223ms | 36.5 KB |
-| 542 | maths/binary_multiplication | ✓ | 571.223ms | 54.8 KB |
-| 543 | maths/binomial_coefficient | ✓ | 571.223ms | 54.8 KB |
-| 544 | maths/binomial_distribution | ✓ | 571.223ms | 3.7 KB |
-| 545 | maths/ceil | ✓ | 571.223ms | 45.8 KB |
-| 546 | maths/chebyshev_distance | ✓ | 571.223ms | 33.8 KB |
-| 547 | maths/check_polygon | ✓ | 571.223ms | 63.1 KB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 571.223ms | 55.6 KB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 571.223ms | 58.6 KB |
-| 550 | maths/collatz_sequence | ✓ | 571.223ms | 80.8 KB |
-| 551 | maths/combinations | ✓ | 571.223ms | 78.1 KB |
-| 552 | maths/continued_fraction | ✓ | 571.223ms | 78.0 KB |
-| 553 | maths/decimal_isolate | ✓ | 571.223ms | 79.1 KB |
-| 554 | maths/decimal_to_fraction | ✓ | 571.223ms | 68.8 KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 571.223ms | 61.1 KB |
+| 527 | maths/abs | ✓ | 571.223ms | 36.9 KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 571.223ms | 57.0 KB |
+| 529 | maths/aliquot_sum | ✓ | 571.223ms | 67.9 KB |
+| 530 | maths/allocation_number | ✓ | 571.223ms | 58.3 KB |
+| 531 | maths/arc_length | ✓ | 571.223ms | 37.4 KB |
+| 532 | maths/area | ✓ | 571.223ms | 38.8 KB |
+| 533 | maths/area_under_curve | ✓ | 571.223ms | 60.0 KB |
+| 534 | maths/average_absolute_deviation | ✓ | 571.223ms | 37.6 KB |
+| 535 | maths/average_mean | ✓ | 571.223ms | 37.5 KB |
+| 536 | maths/average_median | ✓ | 571.223ms | 37.5 KB |
+| 537 | maths/average_mode | ✓ | 571.223ms | 58.0 KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 571.223ms | 55.3 KB |
+| 539 | maths/base_neg2_conversion | ✓ | 571.223ms | 56.0 KB |
+| 540 | maths/basic_maths | ✓ | 571.223ms | 58.6 KB |
+| 541 | maths/binary_exponentiation | ✓ | 571.223ms | 40.1 KB |
+| 542 | maths/binary_multiplication | ✓ | 571.223ms | 67.9 KB |
+| 543 | maths/binomial_coefficient | ✓ | 571.223ms | 55.0 KB |
+| 544 | maths/binomial_distribution | ✓ | 571.223ms |  |
+| 545 | maths/ceil | ✓ | 571.223ms | 29.3 KB |
+| 546 | maths/chebyshev_distance | ✓ | 571.223ms | 37.4 KB |
+| 547 | maths/check_polygon | ✓ | 571.223ms | 63.2 KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 571.223ms | 55.7 KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 571.223ms | 60.0 KB |
+| 550 | maths/collatz_sequence | ✓ | 571.223ms | 67.1 KB |
+| 551 | maths/combinations | ✓ | 571.223ms | 55.3 KB |
+| 552 | maths/continued_fraction | ✓ | 571.223ms | 55.1 KB |
+| 553 | maths/decimal_isolate | ✓ | 571.223ms | 37.4 KB |
+| 554 | maths/decimal_to_fraction | ✓ | 571.223ms | 60.6 KB |
 | 555 | maths/dodecahedron | ✓ | 571.223ms | 37.1 KB |
-| 556 | maths/double_factorial | ✓ | 571.223ms | 43.4 KB |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 571.223ms | 34.0 KB |
-| 558 | maths/entropy | ✓ | 571.223ms | 78.7 KB |
-| 559 | maths/euclidean_distance | ✓ | 571.223ms | 79.1 KB |
-| 560 | maths/euler_method | ✓ | 571.223ms | 33.5 KB |
-| 561 | maths/euler_modified | ✓ | 571.223ms | 34.0 KB |
-| 562 | maths/eulers_totient | ✓ | 571.223ms | 77.6 KB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 571.223ms | 77.6 KB |
-| 564 | maths/factorial | ✓ | 571.223ms | 31.5 KB |
-| 565 | maths/factors | ✓ | 571.223ms | 78.0 KB |
-| 566 | maths/fast_inverse_sqrt | ✓ | 571.223ms | 81.4 KB |
-| 567 | maths/fermat_little_theorem | ✓ | 571.223ms | 35.4 KB |
-| 568 | maths/fibonacci | ✓ | 571.223ms | 78.9 KB |
-| 569 | maths/find_max | ✓ | 571.223ms | 33.8 KB |
-| 570 | maths/find_min | ✓ | 571.223ms | 78.6 KB |
-| 571 | maths/floor | ✓ | 571.223ms | 77.6 KB |
-| 572 | maths/gamma | ✓ | 571.223ms | 33.6 KB |
-| 573 | maths/gaussian | ✓ | 571.223ms | 33.2 KB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 571.223ms | 78.1 KB |
+| 556 | maths/double_factorial | ✓ | 571.223ms | 43.0 KB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 571.223ms | 37.6 KB |
+| 558 | maths/entropy | ✓ | 571.223ms | 55.9 KB |
+| 559 | maths/euclidean_distance | ✓ | 571.223ms | 37.5 KB |
+| 560 | maths/euler_method | ✓ | 571.223ms | 37.3 KB |
+| 561 | maths/euler_modified | ✓ | 571.223ms | 37.5 KB |
+| 562 | maths/eulers_totient | ✓ | 571.223ms | 75.9 KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 571.223ms | 54.8 KB |
+| 564 | maths/factorial | ✓ | 571.223ms | 44.0 KB |
+| 565 | maths/factors | ✓ | 571.223ms | 55.1 KB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 571.223ms | 60.0 KB |
+| 567 | maths/fermat_little_theorem | ✓ | 571.223ms | 30.0 KB |
+| 568 | maths/fibonacci | ✓ | 571.223ms | 56.2 KB |
+| 569 | maths/find_max | ✓ | 571.223ms | 37.4 KB |
+| 570 | maths/find_min | ✓ | 571.223ms | 36.9 KB |
+| 571 | maths/floor | ✓ | 571.223ms | 54.8 KB |
+| 572 | maths/gamma | ✓ | 571.223ms | 37.2 KB |
+| 573 | maths/gaussian | ✓ | 571.223ms | 36.9 KB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 571.223ms | 55.4 KB |
 | 575 | maths/geometric_mean |   |  |  |
 | 576 | maths/germain_primes | ✓ | 571.223ms | 42.5 KB |
 | 577 | maths/greatest_common_divisor | ✓ | 571.223ms | 81.8 KB |

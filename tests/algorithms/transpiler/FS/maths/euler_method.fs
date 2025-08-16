@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,6 +29,16 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
         a <- na
     a.[i] <- v
     a
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec ceil_int (x: float) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable x = x
@@ -77,25 +87,25 @@ and abs_float (a: float) =
     with
         | Return -> __ret
 and test_explicit_euler () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let f: float -> float -> float =         fun (x: float) (y: float) -> y
         let ys: float array = explicit_euler (f) (1.0) (0.0) (0.01) (5.0)
         let last: float = _idx ys (int ((Seq.length (ys)) - 1))
         if (abs_float (last - 144.77277243257308)) > 0.001 then
-            failwith ("explicit_euler failed")
+            ignore (failwith ("explicit_euler failed"))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_explicit_euler()
+        ignore (test_explicit_euler())
         let f: float -> float -> float =         fun (x: float) (y: float) -> y
         let ys: float array = explicit_euler (f) (1.0) (0.0) (0.01) (5.0)
-        printfn "%g" (_idx ys (int ((Seq.length (ys)) - 1)))
+        ignore (printfn "%s" (_str (_idx ys (int ((Seq.length (ys)) - 1)))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -103,4 +113,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

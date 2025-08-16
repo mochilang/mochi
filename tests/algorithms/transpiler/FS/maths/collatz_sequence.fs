@@ -1,4 +1,4 @@
-// Generated 2025-08-12 08:17 +0700
+// Generated 2025-08-16 14:41 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -36,12 +38,12 @@ let rec collatz_sequence (n: int) =
     let mutable n = n
     try
         if n < 1 then
-            failwith ("Sequence only defined for positive integers")
+            ignore (failwith ("Sequence only defined for positive integers"))
         let mutable seq: int array = unbox<int array> [|n|]
         let mutable current: int = n
         while current <> 1 do
             if (((current % 2 + 2) % 2)) = 0 then
-                current <- _floordiv current 2
+                current <- _floordiv (int current) (int 2)
             else
                 current <- (3 * current) + 1
             seq <- Array.append seq [|current|]
@@ -51,14 +53,14 @@ let rec collatz_sequence (n: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let n: int = 11
         let mutable seq: int array = collatz_sequence (n)
-        printfn "%s" (_str (seq))
-        printfn "%s" (((("Collatz sequence from " + (_str (n))) + " took ") + (_str (Seq.length (seq)))) + " steps.")
+        ignore (printfn "%s" (_str (seq)))
+        ignore (printfn "%s" (((("Collatz sequence from " + (_str (n))) + " took ") + (_str (Seq.length (seq)))) + " steps."))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -66,4 +68,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())
