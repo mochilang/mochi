@@ -6209,62 +6209,62 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						}
 					}
 				case func() bool { _, ok := ex.(*IndexExpr); return ok }():
-					ix := ex.(*IndexExpr)
-					if v, ok := ix.Target.(*VarRef); ok {
-						if vt, ok2 := varTypes[v.Name]; ok2 {
-							if strings.HasSuffix(vt, "[][]") {
-								base := strings.TrimSuffix(vt, "[][]")
-								switch base {
-								case "int", "long long":
-									tname = "list_int"
-									needStrListInt = true
-								case "double":
-									tname = "list_double"
-									needStrListDouble = true
-								case "const char*":
-									tname = "list_str"
-									needStrListStr = true
-								}
-							}
-						}
+					// Determine the type of an indexed expression using the
+					// expression itself rather than the container. Previously we
+					// inferred the type from the target variable which caused a
+					// list of floats like `vote[i]` to be treated as a list of
+					// ints, resulting in calls to `str_list_int` with missing
+					// `*_lens` arrays. By inspecting the indexed expression we
+					// correctly identify whether the result is a scalar or a
+					// nested list.
+					ft := inferExprType(env, ex)
+					if ft == "" {
+						ft = inferExprType(currentEnv, ex)
 					}
-					if tname == "" {
-						ft := inferExprType(env, ix.Target)
-						if ft == "" {
-							ft = inferExprType(currentEnv, ix.Target)
-						}
-						ftc := strings.ReplaceAll(ft, " ", "")
-						switch {
-						case strings.HasSuffix(ftc, "**"):
-							base := strings.TrimSuffix(ftc, "**")
-							switch base {
-							case "longlong":
-								tname = "list_int"
-								needStrListInt = true
-							case "double":
-								tname = "list_double"
-								needStrListDouble = true
-							case "constchar*":
-								tname = "list_str"
-								needStrListStr = true
-							}
-						case strings.HasSuffix(ftc, "*"):
-							base := strings.TrimSuffix(ftc, "*")
-							switch base {
-							case "longlong":
-								tname = "list_int"
-								needStrListInt = true
-							case "double":
-								tname = "list_double"
-								needStrListDouble = true
-							case "constchar*":
-								tname = "list_str"
-								needStrListStr = true
-							}
-						}
-						if tname == "" {
+					ftc := strings.ReplaceAll(ft, " ", "")
+					switch {
+					case ftc == "double":
+						tname = "float"
+					case ftc == "constchar*":
+						tname = "string"
+					case strings.HasSuffix(ftc, "**"):
+						base := strings.TrimSuffix(ftc, "**")
+						switch base {
+						case "longlong":
 							tname = "list_int"
 							needStrListInt = true
+						case "double":
+							tname = "list_double"
+							needStrListDouble = true
+						case "constchar*":
+							tname = "list_str"
+							needStrListStr = true
+						}
+					case strings.HasSuffix(ftc, "*"):
+						base := strings.TrimSuffix(ftc, "*")
+						switch base {
+						case "longlong":
+							tname = "list_int"
+							needStrListInt = true
+						case "double":
+							tname = "list_double"
+							needStrListDouble = true
+						case "constchar*":
+							tname = "list_str"
+							needStrListStr = true
+						}
+					case strings.HasSuffix(ftc, "[]"):
+						base := strings.TrimSuffix(ftc, "[]")
+						switch base {
+						case "longlong":
+							tname = "list_int"
+							needStrListInt = true
+						case "double":
+							tname = "list_double"
+							needStrListDouble = true
+						case "constchar*":
+							tname = "list_str"
+							needStrListStr = true
 						}
 					}
 				default:
@@ -10385,9 +10385,12 @@ func inferExprType(env *types.Env, e Expr) string {
 	case *IntLit:
 		return "long long"
 	case *FloatLit:
-		if math.Trunc(v.Value) == v.Value {
-			return "long long"
-		}
+		// Treat all float literals as double to preserve floating-point
+		// intent even when the literal has an integer value (e.g. 2.0).
+		// Previous logic returned a long long when the fractional part
+		// was zero, which caused slices of floats such as `[2.0, 3.0]`
+		// to be inferred as integer lists and led to type mismatches
+		// when used with float parameters.
 		return "double"
 	case *ListLit:
 		if len(v.Elems) > 0 {

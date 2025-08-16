@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (543/1077) - Last updated 2025-08-16 12:42 +0700:
+Checklist of programs that currently transpile and run (543/1077) - Last updated 2025-08-16 13:01 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -506,8 +506,8 @@ Checklist of programs that currently transpile and run (543/1077) - Last updated
 | 499 | machine_learning/automatic_differentiation | ✓ | 364us | 1.6 MB |
 | 500 | machine_learning/data_transformations | ✓ | 412us | 1.7 MB |
 | 501 | machine_learning/decision_tree |  |  |  |
-| 502 | machine_learning/dimensionality_reduction | ✓ | 441us | 1.4 MB |
-| 503 | machine_learning/forecasting/run | ✓ | 385us | 1.7 MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 250us | 1.6 MB |
+| 503 | machine_learning/forecasting/run | ✓ | 442us | 1.6 MB |
 | 504 | machine_learning/frequent_pattern_growth |  |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 485us | 1.5 MB |
 | 506 | machine_learning/gradient_descent | ✓ | 7.88ms | 1.9 MB |
