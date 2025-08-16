@@ -2720,11 +2720,17 @@ func (i *IntLit) emitExpr(w io.Writer) {
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emitExpr(w io.Writer) {
-	if math.Trunc(f.Value) == f.Value {
-		fmt.Fprintf(w, "%.0fLL", f.Value)
-	} else {
-		fmt.Fprintf(w, "%g", f.Value)
+	// Always emit a decimal representation to ensure the literal is
+	// treated as a floating-point value in C. Without a decimal point, C
+	// interprets numeric literals as integers which can lead to inferred
+	// integer types for float slices (e.g. 1.0 -> 1). By formatting using
+	// strconv and appending ".0" when necessary, we preserve the float
+	// intent even when the value is mathematically an integer.
+	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		s += ".0"
 	}
+	io.WriteString(w, s)
 }
 
 // NullLit represents a null literal, emitted as NULL.
@@ -4012,8 +4018,10 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		return
 	}
 	if c.Func == "to_float" && len(c.Args) == 1 {
-		needToFloat = true
-		funcReturnTypes["to_float"] = "double"
+		if _, ok := funcReturnTypes["to_float"]; !ok {
+			needToFloat = true
+			funcReturnTypes["to_float"] = "double"
+		}
 		io.WriteString(w, "to_float(")
 		c.Args[0].emitExpr(w)
 		io.WriteString(w, ")")
