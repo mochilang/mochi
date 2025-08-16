@@ -4547,6 +4547,24 @@ func detectGlobals(stmts []Stmt, local, global *types.Env) []string {
 				if _, err := global.GetVar(st.Name); err == nil {
 					names[st.Name] = true
 				}
+			case *IndexAssignStmt:
+				if n := baseName(st.Target); n != "" {
+					if _, ok := local.Types()[n]; ok {
+						continue
+					}
+					if _, err := global.GetVar(n); err == nil {
+						names[n] = true
+					}
+				}
+			case *FieldAssignStmt:
+				if n := baseName(st.Target); n != "" {
+					if _, ok := local.Types()[n]; ok {
+						continue
+					}
+					if _, err := global.GetVar(n); err == nil {
+						names[n] = true
+					}
+				}
 			case *WhileStmt:
 				walk(st.Body)
 			case *ForStmt:
@@ -4585,6 +4603,24 @@ func detectNonlocals(stmts []Stmt, local, parent *types.Env) []string {
 				if _, err := parent.GetVar(st.Name); err == nil {
 					names[st.Name] = true
 				}
+			case *IndexAssignStmt:
+				if n := baseName(st.Target); n != "" {
+					if _, ok := local.Types()[n]; ok {
+						continue
+					}
+					if _, err := parent.GetVar(n); err == nil {
+						names[n] = true
+					}
+				}
+			case *FieldAssignStmt:
+				if n := baseName(st.Target); n != "" {
+					if _, ok := local.Types()[n]; ok {
+						continue
+					}
+					if _, err := parent.GetVar(n); err == nil {
+						names[n] = true
+					}
+				}
 			case *WhileStmt:
 				walk(st.Body)
 			case *ForStmt:
@@ -4622,6 +4658,19 @@ func filterNames(list, remove []string) []string {
 		}
 	}
 	return out
+}
+
+func baseName(e Expr) string {
+	switch v := e.(type) {
+	case *Name:
+		return v.Name
+	case *IndexExpr:
+		return baseName(v.Target)
+	case *FieldExpr:
+		return baseName(v.Target)
+	default:
+		return ""
+	}
 }
 
 func gatherNames(stmts []Stmt) map[string]bool {
