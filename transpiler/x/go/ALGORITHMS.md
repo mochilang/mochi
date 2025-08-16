@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 890/1077
-Last updated: 2025-08-16 12:49 +0700
+Completed programs: 893/1077
+Last updated: 2025-08-16 13:01 +0700
 
 Checklist:
 
@@ -648,56 +648,56 @@ Checklist:
 | 639 | maths/print_multiplication_table | ✓ | 472.0µs | 2.23KB |
 | 640 | maths/pythagoras | ✓ | 330.0µs | 1.15KB |
 | 641 | maths/qr_decomposition | ✓ | 938.0µs | 6.06KB |
-| 642 | maths/quadratic_equations_complex_numbers | ✓ | 681.0µs | 1.05KB |
-| 643 | maths/radians | ✓ | 541.0µs | 1.11KB |
-| 644 | maths/radix2_fft | ✓ | 659.0µs | 5.69KB |
-| 645 | maths/remove_digit | ✓ | 278.0µs | 936B |
-| 646 | maths/segmented_sieve | ✓ | 724.0µs | 3.20KB |
-| 647 | maths/series/arithmetic |   |  |  |
-| 648 | maths/series/geometric |   |  |  |
-| 649 | maths/series/geometric_series |   |  |  |
-| 650 | maths/series/harmonic | ✓ | 517.0µs | 1.18KB |
-| 651 | maths/series/harmonic_series | ✓ | 370.0µs | 1.35KB |
-| 652 | maths/series/hexagonal_numbers | ✓ | 372.0µs | 2.13KB |
-| 653 | maths/series/p_series | ✓ | 675.0µs | 4.47KB |
-| 654 | maths/sieve_of_eratosthenes | ✓ | 669.0µs | 2.47KB |
-| 655 | maths/sigmoid | ✓ | 381.0µs | 1.31KB |
-| 656 | maths/signum | ✓ | 528.0µs | 952B |
-| 657 | maths/simultaneous_linear_equation_solver | ✓ | 499.0µs | 2.77KB |
-| 658 | maths/sin | ✓ | 387.0µs | 1000B |
-| 659 | maths/sock_merchant | ✓ | 661.0µs | 1.54KB |
-| 660 | maths/softmax | ✓ | 442.0µs | 1.51KB |
-| 661 | maths/solovay_strassen_primality_test |   | 395.0µs | 1000B |
-| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 333.0µs | 2.40KB |
-| 663 | maths/special_numbers/armstrong_numbers | ✓ | 262.0µs | 1.40KB |
-| 664 | maths/special_numbers/automorphic_number | ✓ | 442.0µs | 1.05KB |
-| 665 | maths/special_numbers/bell_numbers | ✓ | 365.0µs | 1.14KB |
-| 666 | maths/special_numbers/carmichael_number | ✓ | 576.0µs | 1.02KB |
-| 667 | maths/special_numbers/catalan_number | ✓ | 514.0µs | 952B |
-| 668 | maths/special_numbers/hamming_numbers | ✓ | 551.0µs | 4.03KB |
-| 669 | maths/special_numbers/happy_number | ✓ | 186.0µs | 1.32KB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 474.0µs | 1.05KB |
+| 643 | maths/radians | ✓ | 374.0µs | 1.11KB |
+| 644 | maths/radix2_fft | ✓ | 433.0µs | 5.69KB |
+| 645 | maths/remove_digit | ✓ | 366.0µs | 936B |
+| 646 | maths/segmented_sieve | ✓ | 610.0µs | 3.20KB |
+| 647 | maths/series/arithmetic | ✓ | 364.0µs | 1.01KB |
+| 648 | maths/series/geometric | ✓ | 284.0µs | 1000B |
+| 649 | maths/series/geometric_series | ✓ | 620.0µs | 3.58KB |
+| 650 | maths/series/harmonic | ✓ | 398.0µs | 1.18KB |
+| 651 | maths/series/harmonic_series | ✓ | 509.0µs | 1.35KB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 447.0µs | 2.13KB |
+| 653 | maths/series/p_series | ✓ | 921.0µs | 4.66KB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 337.0µs | 2.47KB |
+| 655 | maths/sigmoid | ✓ | 473.0µs | 1.31KB |
+| 656 | maths/signum | ✓ | 247.0µs | 936B |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 291.0µs | 2.77KB |
+| 658 | maths/sin | ✓ | 186.0µs | 1000B |
+| 659 | maths/sock_merchant | ✓ | 289.0µs | 1.54KB |
+| 660 | maths/softmax | ✓ | 251.0µs | 1.51KB |
+| 661 | maths/solovay_strassen_primality_test |   | 204.0µs | 1000B |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 544.0µs | 2.40KB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 330.0µs | 1.40KB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 289.0µs | 1.05KB |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 445.0µs | 1.14KB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 547.0µs | 1.02KB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 327.0µs | 952B |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 594.0µs | 4.03KB |
+| 669 | maths/special_numbers/happy_number | ✓ | 141.0µs | 1.32KB |
 | 670 | maths/special_numbers/harshad_numbers | ✓ | 1.0ms | 99.66KB |
-| 671 | maths/special_numbers/hexagonal_number | ✓ | 123.0µs | 960B |
-| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 157.0µs | 1000B |
-| 673 | maths/special_numbers/perfect_number | ✓ | 488.0µs | 1.38KB |
-| 674 | maths/special_numbers/polygonal_numbers | ✓ | 378.0µs | 952B |
-| 675 | maths/special_numbers/pronic_number | ✓ | 267.0µs | 936B |
-| 676 | maths/special_numbers/proth_number | ✓ | 257.0µs | 2.77KB |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 242.0µs | 936B |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 519.0µs | 7.51KB |
-| 679 | maths/special_numbers/weird_number | ✓ | 260.0µs | 3.09KB |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 311.0µs | 936B |
-| 681 | maths/sum_of_digits | ✓ | 249.0µs | 1.20KB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 384.0µs | 968B |
-| 683 | maths/sum_of_harmonic_series | ✓ | 275.0µs | 1.09KB |
-| 684 | maths/sumset | ✓ | 615.0µs | 1.35KB |
-| 685 | maths/sylvester_sequence | ✓ | 562.0µs | 1000B |
-| 686 | maths/tanh | ✓ | 526.0µs | 1.77KB |
-| 687 | maths/test_factorial | ✓ | 389.0µs | 936B |
-| 688 | maths/test_prime_check | ✓ | 292.0µs | 1.26KB |
-| 689 | maths/three_sum | ✓ | 296.0µs | 1.27KB |
-| 690 | maths/trapezoidal_rule | ✓ | 420.0µs | 1.25KB |
-| 691 | maths/triplet_sum | ✓ | 210.0µs | 1.62KB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 206.0µs | 960B |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 292.0µs | 1000B |
+| 673 | maths/special_numbers/perfect_number | ✓ | 442.0µs | 1.38KB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 515.0µs | 952B |
+| 675 | maths/special_numbers/pronic_number | ✓ | 284.0µs | 936B |
+| 676 | maths/special_numbers/proth_number | ✓ | 367.0µs | 2.77KB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 322.0µs | 936B |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 523.0µs | 7.51KB |
+| 679 | maths/special_numbers/weird_number | ✓ | 250.0µs | 3.09KB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 386.0µs | 936B |
+| 681 | maths/sum_of_digits | ✓ | 364.0µs | 1.20KB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 447.0µs | 968B |
+| 683 | maths/sum_of_harmonic_series | ✓ | 352.0µs | 1.09KB |
+| 684 | maths/sumset | ✓ | 400.0µs | 1.35KB |
+| 685 | maths/sylvester_sequence | ✓ | 281.0µs | 1000B |
+| 686 | maths/tanh | ✓ | 529.0µs | 1.77KB |
+| 687 | maths/test_factorial | ✓ | 370.0µs | 936B |
+| 688 | maths/test_prime_check | ✓ | 327.0µs | 1.26KB |
+| 689 | maths/three_sum | ✓ | 343.0µs | 1.27KB |
+| 690 | maths/trapezoidal_rule | ✓ | 285.0µs | 1.25KB |
+| 691 | maths/triplet_sum | ✓ | 237.0µs | 1.62KB |
 | 692 | maths/twin_prime | ✓ | 387.0µs | 936B |
 | 693 | maths/two_pointer | ✓ | 587.0µs | 3.41KB |
 | 694 | maths/two_sum | ✓ | 290.0µs | 1008B |
