@@ -2756,18 +2756,22 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			return &BoolOpExpr{Op: op, Left: left, Right: right}
 		case "in":
 			return &InExpr{Item: left, Collection: right}
-		case "union", "union_all", "except", "intersect":
-			usesLinq = true
-			fallthrough
-		default:
-			if op == "/" {
-				usesFloorDiv = true
-			}
-			if op == "%" {
-				usesMod = true
-			}
-			return &BinaryExpr{Op: op, Left: left, Right: right}
-		}
+               case "union", "union_all", "except", "intersect":
+                       usesLinq = true
+                       fallthrough
+               default:
+                       if op == "+" && (isListExpr(left) && isListExpr(right) ||
+                               (strings.HasSuffix(typeOfExpr(left), "[]") && strings.HasSuffix(typeOfExpr(right), "[]"))) {
+                               usesLinq = true
+                       }
+                       if op == "/" {
+                               usesFloorDiv = true
+                       }
+                       if op == "%" {
+                               usesMod = true
+                       }
+                       return &BinaryExpr{Op: op, Left: left, Right: right}
+               }
 	}
 
 	for _, level := range levels {
