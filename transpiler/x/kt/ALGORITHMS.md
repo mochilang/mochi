@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-16 15:07 GMT+7
+Last updated: 2025-08-16 19:52 GMT+7
 
 ## Algorithms Golden Test Checklist (553/1077)
 | Index | Name | Status | Duration | Memory |
@@ -511,7 +511,7 @@ Last updated: 2025-08-16 15:07 GMT+7
 | 502 | machine_learning/dimensionality_reduction | ✓ | 10.40ms | 134.13KiB |
 | 503 | machine_learning/forecasting/run | ✓ | 28.89ms | 112.58KiB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 10.69ms | 124.16KiB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 6.03ms | 133.92KiB |
 | 506 | machine_learning/gradient_descent | ✓ | 52.42ms | 128.84KiB |
 | 507 | machine_learning/k_means_clust | ✓ | 11.68ms | 124.30KiB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 10.74ms | 133.23KiB |

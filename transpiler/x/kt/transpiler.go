@@ -785,11 +785,11 @@ func (s *StringLit) emit(w io.Writer) {
 type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
-        if i.Value > 2147483647 || i.Value < -2147483648 {
-                fmt.Fprintf(w, "%dL", i.Value)
-                return
-        }
-        fmt.Fprintf(w, "%d", i.Value)
+	if i.Value > 2147483647 || i.Value < -2147483648 {
+		fmt.Fprintf(w, "%dL", i.Value)
+		return
+	}
+	fmt.Fprintf(w, "%d", i.Value)
 }
 
 type FloatLit struct{ Value float64 }
@@ -1126,7 +1126,6 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	io.WriteString(w, "(")
 	needParens := false
 	switch c.Value.(type) {
 	case *BinaryExpr, *CastExpr, *IndexExpr, *CallExpr, *FieldExpr,
@@ -1183,7 +1182,6 @@ func (c *CastExpr) emit(w io.Writer) {
 	default:
 		io.WriteString(w, " as "+c.Type)
 	}
-	io.WriteString(w, ")")
 }
 
 type UnionExpr struct{ Left, Right Expr }
