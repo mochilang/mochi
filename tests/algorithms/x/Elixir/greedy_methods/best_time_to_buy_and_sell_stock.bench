@@ -1,28 +1,21 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "max_profit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 46 │       {i, max_profit, min_price} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:46:8: Main.max_profit/1
-
-    warning: variable "max_profit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 46 │       {i, max_profit, min_price} = try do
+ 46 │       {_, max_profit, min_price} = try do
     │           ~
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:46:11: Main.max_profit/1
 
     warning: variable "min_price" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 46 │       {i, max_profit, min_price} = try do
+ 46 │       {_, max_profit, min_price} = try do
     │                       ~
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:46:23: Main.max_profit/1
 
-#Function<1.60239542/1 in Main.max_profit>
-#Function<1.60239542/1 in Main.max_profit>
+#Function<1.121165707/1 in Main.max_profit>
+#Function<1.121165707/1 in Main.max_profit>
 {
-  "duration_us": 4606,
+  "duration_us": 6394,
   "memory_bytes": 25576,
   "name": "main"
 }
@@ -44,7 +37,7 @@ warning: variable "i" is unused (there is a variable with the same name in the c
 
     typing violation found at:
     │
- 34 │           {max_profit} = if profit > &max_profit/1 do
-    │                                    ~
+ 34 │           max_profit = if profit > &max_profit/1 do
+    │                                  ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:34:36: Main.max_profit/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/best_time_to_buy_and_sell_stock.exs:34:34: Main.max_profit/1

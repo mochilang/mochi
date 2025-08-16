@@ -5,13 +5,6 @@ warning: variable "dist" is unused (there is a variable with the same name in th
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:17:9: Main.prims_algo/1
 
-    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 95 │             {k, queue} = try do
-    │              ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:95:14: Main.prims_algo/1
-
     warning: variable "parent" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
  76 │           {parent, queue} = if dist[neighbour] > dist[start] + w do
@@ -60,20 +53,6 @@ warning: variable "dist" is unused (there is a variable with the same name in th
      │            ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:152:12: Main.prims_algo/1
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 41 │       {i, min_idx} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:41:8: Main.prims_algo/1
-
-    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 65 │       {j, new_q} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:65:8: Main.prims_algo/1
 
      warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │

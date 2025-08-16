@@ -26,11 +26,5 @@ warning: variable "cell_n" is unused (there is a variable with the same name in 
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs:70:25: Main.min_path_sum/1
 
-    error: undefined function error/1 (expected Main to define such a function or for it to be imported, but none are available)
-    │
- 39 │         error("The grid does not contain the appropriate information")
-    │         ^^^^^
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs:39:9: Main.min_path_sum/1
-
-** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs: cannot compile module Main (errors have been logged)
+7
+20
