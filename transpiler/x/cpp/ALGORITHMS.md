@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 1013/1077
-Last updated: 2025-08-16 13:47 +0700
+Completed programs: 1016/1077
+Last updated: 2025-08-16 19:42 +0700
 
 Checklist:
 
@@ -511,56 +511,56 @@ Checklist:
 | 502 | machine_learning/dimensionality_reduction | ✓ | 297.0µs | 3.69MB |
 | 503 | machine_learning/forecasting/run | ✓ | 658.0µs | 3.83MB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 608.0µs | 3.69MB |
-| 506 | machine_learning/gradient_descent | ✓ | 50.0ms | 3.82MB |
-| 507 | machine_learning/k_means_clust | ✓ | 504.0µs | 3.78MB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 253.0µs | 3.50MB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 525.0µs | 3.77MB |
+| 506 | machine_learning/gradient_descent | ✓ | 51.0ms | 3.82MB |
+| 507 | machine_learning/k_means_clust | ✓ | 670.0µs | 3.81MB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 238.0µs | 3.57MB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.0ms | 3.75MB |
-| 510 | machine_learning/linear_regression | ✓ | 589.0µs | 3.81MB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 459.0µs | 3.54MB |
+| 510 | machine_learning/linear_regression | ✓ | 598.0µs | 3.73MB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 400.0µs | 3.57MB |
 | 512 | machine_learning/logistic_regression | ✓ | 7.0ms | 3.77MB |
-| 513 | machine_learning/loss_functions | ✓ | 786.0µs | 3.79MB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 14.0ms | 3.81MB |
-| 515 | machine_learning/mfcc | ✓ | 620.0µs | 3.93MB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 37.0ms | 3.53MB |
-| 517 | machine_learning/polynomial_regression | ✓ | 756.0µs | 3.73MB |
-| 518 | machine_learning/principle_component_analysis | ✓ | 702.0µs | 3.73MB |
-| 519 | machine_learning/scoring_functions | ✓ | 605.0µs | 3.75MB |
-| 520 | machine_learning/self_organizing_map | ✓ | 668.0µs | 3.73MB |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 556.0µs | 3.72MB |
-| 522 | machine_learning/similarity_search | ✓ | 516.0µs | 3.82MB |
-| 523 | machine_learning/support_vector_machines | ✓ | 1.0ms | 3.66MB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 1.0ms | 3.79MB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 481.0µs | 3.56MB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 632.0µs | 3.82MB |
-| 527 | maths/abs | ✓ | 445.0µs | 3.70MB |
-| 528 | maths/addition_without_arithmetic | ✓ | 305.0µs | 3.68MB |
-| 529 | maths/aliquot_sum | ✓ | 284.0µs | 3.59MB |
-| 530 | maths/allocation_number | ✓ | 394.0µs | 3.81MB |
-| 531 | maths/arc_length | ✓ | 591.0µs | 3.74MB |
-| 532 | maths/area | ✓ | 569.0µs | 3.70MB |
-| 533 | maths/area_under_curve | ✓ | 6.0ms | 3.71MB |
-| 534 | maths/average_absolute_deviation | ✓ | 606.0µs | 3.73MB |
-| 535 | maths/average_mean | ✓ | 675.0µs | 3.85MB |
-| 536 | maths/average_median | ✓ | 577.0µs | 3.82MB |
-| 537 | maths/average_mode | ✓ | 343.0µs | 3.59MB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 685.0ms | 3.75MB |
-| 539 | maths/base_neg2_conversion | ✓ | 341.0µs | 3.68MB |
-| 540 | maths/basic_maths | ✓ | 361.0µs | 3.62MB |
-| 541 | maths/binary_exponentiation | ✓ | 622.0µs | 3.79MB |
-| 542 | maths/binary_multiplication | ✓ | 228.0µs | 3.57MB |
-| 543 | maths/binomial_coefficient | ✓ | 289.0µs | 3.52MB |
-| 544 | maths/binomial_distribution | ✓ | 2.0µs | 3.53MB |
-| 545 | maths/ceil | ✓ | 193.0µs | 3.52MB |
-| 546 | maths/chebyshev_distance | ✓ | 761.0µs | 3.75MB |
-| 547 | maths/check_polygon | ✓ | 547.0µs | 3.75MB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 351.0µs | 3.69MB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 510.0µs | 3.70MB |
-| 550 | maths/collatz_sequence | ✓ | 360.0µs | 3.64MB |
-| 551 | maths/combinations | ✓ | 338.0µs | 3.61MB |
-| 552 | maths/continued_fraction | ✓ | 273.0µs | 3.61MB |
-| 553 | maths/decimal_isolate | ✓ | 477.0µs | 3.78MB |
-| 554 | maths/decimal_to_fraction | ✓ | 687.0µs | 3.79MB |
+| 513 | machine_learning/loss_functions | ✓ | 676.0µs | 3.95MB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 15.0ms | 3.78MB |
+| 515 | machine_learning/mfcc | ✓ | 704.0µs | 3.83MB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 39.0ms | 3.57MB |
+| 517 | machine_learning/polynomial_regression | ✓ | 743.0µs | 3.73MB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 597.0µs | 3.70MB |
+| 519 | machine_learning/scoring_functions | ✓ | 624.0µs | 3.73MB |
+| 520 | machine_learning/self_organizing_map | ✓ | 602.0µs | 3.74MB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 522.0µs | 3.82MB |
+| 522 | machine_learning/similarity_search | ✓ | 548.0µs | 3.68MB |
+| 523 | machine_learning/support_vector_machines | ✓ | 1.0ms | 3.71MB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 1.0ms | 3.78MB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 515.0µs | 3.73MB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 693.0µs | 3.84MB |
+| 527 | maths/abs | ✓ | 545.0µs | 3.74MB |
+| 528 | maths/addition_without_arithmetic | ✓ | 315.0µs | 3.59MB |
+| 529 | maths/aliquot_sum | ✓ | 320.0µs | 3.71MB |
+| 530 | maths/allocation_number | ✓ | 316.0µs | 3.54MB |
+| 531 | maths/arc_length | ✓ | 504.0µs | 3.66MB |
+| 532 | maths/area | ✓ | 814.0µs | 3.71MB |
+| 533 | maths/area_under_curve | ✓ | 5.0ms | 3.73MB |
+| 534 | maths/average_absolute_deviation | ✓ | 553.0µs | 3.64MB |
+| 535 | maths/average_mean | ✓ | 533.0µs | 3.84MB |
+| 536 | maths/average_median | ✓ | 446.0µs | 3.67MB |
+| 537 | maths/average_mode | ✓ | 372.0µs | 3.56MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 812.0ms | 3.66MB |
+| 539 | maths/base_neg2_conversion | ✓ | 499.0µs | 3.68MB |
+| 540 | maths/basic_maths | ✓ | 382.0µs | 3.57MB |
+| 541 | maths/binary_exponentiation | ✓ | 523.0µs | 3.75MB |
+| 542 | maths/binary_multiplication | ✓ | 410.0µs | 3.60MB |
+| 543 | maths/binomial_coefficient | ✓ | 644.0µs | 3.55MB |
+| 544 | maths/binomial_distribution | ✓ | 2.0µs | 3.38MB |
+| 545 | maths/ceil | ✓ | 169.0µs | 3.52MB |
+| 546 | maths/chebyshev_distance | ✓ | 716.0µs | 3.73MB |
+| 547 | maths/check_polygon | ✓ | 465.0µs | 3.74MB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 343.0µs | 3.75MB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 501.0µs | 3.73MB |
+| 550 | maths/collatz_sequence | ✓ | 346.0µs | 3.64MB |
+| 551 | maths/combinations | ✓ | 305.0µs | 3.75MB |
+| 552 | maths/continued_fraction | ✓ | 419.0µs | 3.70MB |
+| 553 | maths/decimal_isolate | ✓ | 467.0µs | 3.85MB |
+| 554 | maths/decimal_to_fraction | ✓ | 603.0µs | 3.81MB |
 | 555 | maths/dodecahedron | ✓ | 478.0µs | 3.75MB |
 | 556 | maths/double_factorial | ✓ | 201.0µs | 3.63MB |
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 643.0µs | 3.85MB |
@@ -735,18 +735,18 @@ Checklist:
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 669.0µs | 3.78MB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 543.0µs | 3.59MB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 169.0µs | 3.47MB |
-| 729 | neural_network/activation_functions/softplus |   | 622.0µs | 3.80MB |
+| 729 | neural_network/activation_functions/softplus | ✓ | 622.0µs | 3.80MB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 456.0µs | 3.75MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 462.0µs | 3.75MB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 2.47s | 3.91MB |
 | 733 | neural_network/convolution_neural_network | ✓ | 2.0ms | 3.91MB |
 | 734 | neural_network/input_data | ✓ | 396.0µs | 3.66MB |
 | 735 | neural_network/simple_neural_network | ✓ | 104.0ms | 3.71MB |
-| 736 | neural_network/two_hidden_layers_neural_network |   | 2.0ms | 3.73MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 2.0ms | 3.73MB |
 | 737 | other/activity_selection | ✓ | 272.0µs | 3.55MB |
 | 738 | other/alternative_list_arrange | ✓ | 394.0µs | 3.69MB |
 | 739 | other/bankers_algorithm | ✓ | 439.0µs | 3.57MB |
-| 740 | other/davis_putnam_logemann_loveland |   | 187.0µs | 3.57MB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 187.0µs | 3.57MB |
 | 741 | other/doomsday | ✓ | 187.0µs | 3.66MB |
 | 742 | other/fischer_yates_shuffle | ✓ | 262.0µs | 3.69MB |
 | 743 | other/gauss_easter | ✓ | 313.0µs | 3.58MB |
