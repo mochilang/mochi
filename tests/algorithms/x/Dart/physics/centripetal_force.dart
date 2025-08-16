@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 
 Never _error(String msg) {
@@ -58,7 +58,7 @@ double centripetal(double mass, double velocity, double radius) {
 
 double floor(double x) {
   int i = (x).toInt();
-  if ((i.toDouble()) > x) {
+  if (i.toDouble() > x) {
     i = i - 1;
   }
   return i.toDouble();

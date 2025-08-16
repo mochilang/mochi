@@ -78,10 +78,10 @@ double sqrt_newton(double n) {
 double round3(double x) {
   double y = x * 1000.0 + 0.5;
   int yi = (y).toInt();
-  if ((yi.toDouble()) > y) {
+  if (yi.toDouble() > y) {
     yi = yi - 1;
   }
-  return (yi.toDouble()) / 1000.0;
+  return yi.toDouble() / 1000.0;
 }
 
 double escape_velocity(double mass, double radius) {

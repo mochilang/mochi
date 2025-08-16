@@ -48,7 +48,7 @@ double PI = 3.141592653589793;
 double TWO_PI = 6.283185307179586;
 double g = 9.80665;
 double _mod(double x, double m) {
-  return x - ((x / m).toInt().toDouble()) * m;
+  return x - ((x / m).toInt()).toDouble() * m;
 }
 
 double sin(double x) {
@@ -66,7 +66,7 @@ double deg_to_rad(double deg) {
 
 double floor(double x) {
   int i = (x).toInt();
-  if ((i.toDouble()) > x) {
+  if (i.toDouble() > x) {
     i = i - 1;
   }
   return i.toDouble();

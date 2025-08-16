@@ -41,7 +41,7 @@ dynamic _substr(dynamic s, num start, num end) {
 
 double floor(num x) => x.floor().toDouble();
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 
 Never _error(String msg) {
