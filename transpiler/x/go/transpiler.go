@@ -8822,7 +8822,7 @@ func paramNeedsPointer(name string, stmts []Stmt) bool {
 				}
 			}
 		case *AssignStmt:
-			if s.Name == name {
+			if s.Name == name || strings.HasPrefix(s.Name, name+".") {
 				return true
 			}
 		case *ExprStmt:
