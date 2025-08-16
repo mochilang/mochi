@@ -1,7 +1,13 @@
-## Progress (2025-08-15 15:17 +0700)
-- lua: update algorithm outputs (ce2d80d303)
+## Progress (2025-08-16 19:42 +0700)
+- py: remove stale error outputs (c7612b9c83)
 
 - VM valid programs compiled: 102/105
+
+- py: remove stale error outputs (c7612b9c83)
+
+
+- lua: update algorithm outputs (ce2d80d303)
+
 
 - lua: update algorithm outputs (ce2d80d303)
 
