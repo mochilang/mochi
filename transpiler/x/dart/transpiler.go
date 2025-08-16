@@ -3038,7 +3038,10 @@ func (c *CastExpr) emit(w io.Writer) error {
 	}
 	switch c.Type {
 	case "int":
-		_, err := io.WriteString(w, " as int")
+		_, err := io.WriteString(w, ".toInt()")
+		return err
+	case "double":
+		_, err := io.WriteString(w, ".toDouble()")
 		return err
 	case "num":
 		if valType != "num" && valType != "double" {
@@ -5908,6 +5911,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				expr = &CallExpr{Func: &Name{"_bigrat"}, Args: []Expr{expr}}
 			} else if typ == "double" {
 				expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toDouble"}}
+			} else if typ == "int" {
+				expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toInt"}}
 			} else {
 				expr = &CastExpr{Value: expr, Type: typ}
 			}

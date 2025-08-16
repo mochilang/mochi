@@ -14,8 +14,8 @@ String _substr(String s, num start, num end) {
 }
 
 int ceil(double x) {
-  int truncated = x as int;
-  double frac = x - (truncated as double);
+  int truncated = x.toInt();
+  double frac = x - (truncated.toDouble());
   if (frac <= 0.0) {
     return truncated;
   }
