@@ -59,32 +59,32 @@ public class Main {
         long i = 0L;
         while ((long)(i) < (long)(entries.length)) {
             Entry e_1 = entries[(int)((long)(i))];
-            if ((long)(e_1.key) == key) {
+            if ((long)(e_1.key) == (long)(key)) {
                 return i;
             }
-            i = (long)((long)(i) + (long)(1));
+            i = (long)((long)(i) + 1L);
         }
-        return (long)(0) - (long)(1);
+        return 0L - 1L;
     }
 
     static GetResult lfu_get(LFUCache cache, long key) {
-        long idx = find_entry(((Entry[])(cache.entries)), key);
-        if (idx == (long)((long)(0) - (long)(1))) {
-            LFUCache new_cache_1 = new LFUCache(cache.entries, cache.capacity, cache.hits, (long)(cache.miss) + (long)(1), cache.tick);
+        long idx = (long)(find_entry(((Entry[])(cache.entries)), (long)(key)));
+        if ((long)(idx) == (long)(0L - 1L)) {
+            LFUCache new_cache_1 = new LFUCache(cache.entries, cache.capacity, cache.hits, (long)(cache.miss) + 1L, cache.tick);
             return new GetResult(new_cache_1, 0, false);
         }
         Entry[] entries_1 = ((Entry[])(cache.entries));
         Entry e_3 = entries_1[(int)((long)(idx))];
-e_3.freq = (long)(e_3.freq) + (long)(1);
-        long new_tick_1 = (long)((long)(cache.tick) + (long)(1));
+e_3.freq = (long)(e_3.freq) + 1L;
+        long new_tick_1 = (long)((long)(cache.tick) + 1L);
 e_3.order = new_tick_1;
 entries_1[(int)((long)(idx))] = e_3;
-        LFUCache new_cache_3 = new LFUCache(entries_1, cache.capacity, (long)(cache.hits) + (long)(1), cache.miss, new_tick_1);
+        LFUCache new_cache_3 = new LFUCache(entries_1, cache.capacity, (long)(cache.hits) + 1L, cache.miss, new_tick_1);
         return new GetResult(new_cache_3, e_3.val, true);
     }
 
     static Entry[] remove_lfu(Entry[] entries) {
-        if ((long)(entries.length) == (long)(0)) {
+        if ((long)(entries.length) == 0L) {
             return entries;
         }
         long min_idx_1 = 0L;
@@ -95,7 +95,7 @@ entries_1[(int)((long)(idx))] = e_3;
             if ((long)(e_5.freq) < (long)(m_1.freq) || ((long)(e_5.freq) == (long)(m_1.freq) && (long)(e_5.order) < (long)(m_1.order))) {
                 min_idx_1 = (long)(i_2);
             }
-            i_2 = (long)((long)(i_2) + (long)(1));
+            i_2 = (long)((long)(i_2) + 1L);
         }
         Entry[] res_1 = ((Entry[])(new Entry[]{}));
         long j_1 = 0L;
@@ -103,19 +103,19 @@ entries_1[(int)((long)(idx))] = e_3;
             if ((long)(j_1) != (long)(min_idx_1)) {
                 res_1 = ((Entry[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(entries[(int)((long)(j_1))])).toArray(Entry[]::new)));
             }
-            j_1 = (long)((long)(j_1) + (long)(1));
+            j_1 = (long)((long)(j_1) + 1L);
         }
         return res_1;
     }
 
     static LFUCache lfu_put(LFUCache cache, long key, long value) {
         Entry[] entries_2 = ((Entry[])(cache.entries));
-        long idx_2 = find_entry(((Entry[])(entries_2)), key);
-        if (idx_2 != (long)((long)(0) - (long)(1))) {
+        long idx_2 = (long)(find_entry(((Entry[])(entries_2)), (long)(key)));
+        if ((long)(idx_2) != (long)(0L - 1L)) {
             Entry e_7 = entries_2[(int)((long)(idx_2))];
 e_7.val = value;
-e_7.freq = (long)(e_7.freq) + (long)(1);
-            long new_tick_3 = (long)((long)(cache.tick) + (long)(1));
+e_7.freq = (long)(e_7.freq) + 1L;
+            long new_tick_3 = (long)((long)(cache.tick) + 1L);
 e_7.order = new_tick_3;
 entries_2[(int)((long)(idx_2))] = e_7;
             return new LFUCache(entries_2, cache.capacity, cache.hits, cache.miss, new_tick_3);
@@ -123,7 +123,7 @@ entries_2[(int)((long)(idx_2))] = e_7;
         if ((long)(entries_2.length) >= (long)(cache.capacity)) {
             entries_2 = ((Entry[])(remove_lfu(((Entry[])(entries_2)))));
         }
-        long new_tick_5 = (long)((long)(cache.tick) + (long)(1));
+        long new_tick_5 = (long)((long)(cache.tick) + 1L);
         Entry new_entry_1 = new Entry(key, value, 1, new_tick_5);
         entries_2 = ((Entry[])(java.util.stream.Stream.concat(java.util.Arrays.stream(entries_2), java.util.stream.Stream.of(new_entry_1)).toArray(Entry[]::new)));
         return new LFUCache(entries_2, cache.capacity, cache.hits, cache.miss, new_tick_5);
@@ -229,7 +229,6 @@ entries_2[(int)((long)(idx_2))] = e_7;
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

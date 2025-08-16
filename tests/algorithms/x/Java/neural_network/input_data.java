@@ -55,16 +55,16 @@ public class Main {
         while ((long)(i_1) < (long)(labels.length)) {
             long[] row_1 = ((long[])(new long[]{}));
             long j_1 = 0L;
-            while ((long)(j_1) < num_classes) {
-                if ((long)(j_1) == labels[(int)((long)(i_1))]) {
+            while ((long)(j_1) < (long)(num_classes)) {
+                if ((long)(j_1) == (long)(labels[(int)((long)(i_1))])) {
                     row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(1L)).toArray()));
                 } else {
                     row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(0L)).toArray()));
                 }
-                j_1 = (long)((long)(j_1) + (long)(1));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            result = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(row_1)).toArray(long[][]::new)));
-            i_1 = (long)((long)(i_1) + (long)(1));
+            result = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
@@ -75,19 +75,19 @@ public class Main {
 
     static BatchResult next_batch(DataSet ds, long batch_size) {
         long start = (long)(ds.index_in_epoch);
-        if ((long)((long)(start) + batch_size) > (long)(ds.num_examples)) {
+        if ((long)((long)(start) + (long)(batch_size)) > (long)(ds.num_examples)) {
             long rest_1 = (long)((long)(ds.num_examples) - (long)(start));
             long[][] images_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)((long)(start)), (int)((long)(ds.num_examples)))));
             long[][] labels_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)((long)(start)), (int)((long)(ds.num_examples)))));
-            long new_index_1 = (long)(batch_size - (long)(rest_1));
+            long new_index_1 = (long)((long)(batch_size) - (long)(rest_1));
             long[][] images_new_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)((long)(0)), (int)((long)(new_index_1)))));
             long[][] labels_new_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)((long)(0)), (int)((long)(new_index_1)))));
             long[][] batch_images_2 = ((long[][])(concat(images_rest_1, images_new_1)));
             long[][] batch_labels_2 = ((long[][])(concat(labels_rest_1, labels_new_1)));
-            DataSet new_ds_2 = new DataSet(ds.images, ds.labels, ds.num_examples, new_index_1, (long)(ds.epochs_completed) + (long)(1));
+            DataSet new_ds_2 = new DataSet(ds.images, ds.labels, ds.num_examples, new_index_1, (long)(ds.epochs_completed) + 1L);
             return new BatchResult(new_ds_2, batch_images_2, batch_labels_2);
         } else {
-            long end_1 = (long)((long)(start) + batch_size);
+            long end_1 = (long)((long)(start) + (long)(batch_size));
             long[][] batch_images_3 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)((long)(start)), (int)((long)(end_1)))));
             long[][] batch_labels_3 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)((long)(start)), (int)((long)(end_1)))));
             DataSet new_ds_3 = new DataSet(ds.images, ds.labels, ds.num_examples, end_1, ds.epochs_completed);
@@ -96,8 +96,8 @@ public class Main {
     }
 
     static Datasets read_data_sets(long[][] train_images, long[] train_labels_raw, long[][] test_images, long[] test_labels_raw, long validation_size, long num_classes) {
-        long[][] train_labels = ((long[][])(dense_to_one_hot(((long[])(train_labels_raw)), num_classes)));
-        long[][] test_labels_1 = ((long[][])(dense_to_one_hot(((long[])(test_labels_raw)), num_classes)));
+        long[][] train_labels = ((long[][])(dense_to_one_hot(((long[])(train_labels_raw)), (long)(num_classes))));
+        long[][] test_labels_1 = ((long[][])(dense_to_one_hot(((long[])(test_labels_raw)), (long)(num_classes))));
         long[][] validation_images_1 = ((long[][])(java.util.Arrays.copyOfRange(train_images, (int)((long)(0)), (int)((long)(validation_size)))));
         long[][] validation_labels_1 = ((long[][])(java.util.Arrays.copyOfRange(train_labels, (int)((long)(0)), (int)((long)(validation_size)))));
         long[][] train_images_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(train_images, (int)((long)(validation_size)), (int)((long)(train_images.length)))));
@@ -187,7 +187,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

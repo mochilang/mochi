@@ -1,4 +1,106 @@
-## Progress (2025-08-14 15:45 +0700)
+## Progress (2025-08-16 09:25 +0700)
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
+- swift: handle mixed-type string addition (2727b07680)
+
 - java: remove stale error (af736b421f)
 
 - java: remove stale error (af736b421f)

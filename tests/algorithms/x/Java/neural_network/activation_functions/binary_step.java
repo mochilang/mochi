@@ -4,12 +4,12 @@ public class Main {
         long[] out = ((long[])(new long[]{}));
         long i_1 = 0L;
         while ((long)(i_1) < (long)(vector.length)) {
-            if ((double)(vector[(int)((long)(i_1))]) >= 0.0) {
+            if ((double)(vector[(int)((long)(i_1))]) >= (double)(0.0)) {
                 out = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(out), java.util.stream.LongStream.of(1L)).toArray()));
             } else {
                 out = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(out), java.util.stream.LongStream.of(0L)).toArray()));
             }
-            i_1 = (long)((long)(i_1) + (long)(1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return out;
     }

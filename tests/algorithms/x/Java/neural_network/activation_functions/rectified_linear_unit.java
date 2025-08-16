@@ -5,12 +5,12 @@ public class Main {
         long i_1 = 0L;
         while ((long)(i_1) < (long)(vector.length)) {
             double v_1 = (double)(vector[(int)((long)(i_1))]);
-            if ((double)(v_1) > 0.0) {
+            if ((double)(v_1) > (double)(0.0)) {
                 result = ((double[])(appendDouble(result, (double)(v_1))));
             } else {
-                result = ((double[])(appendDouble(result, 0.0)));
+                result = ((double[])(appendDouble(result, (double)(0.0))));
             }
-            i_1 = (long)((long)(i_1) + (long)(1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
@@ -73,7 +73,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

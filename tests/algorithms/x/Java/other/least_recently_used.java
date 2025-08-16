@@ -16,10 +16,10 @@ public class Main {
     static String r = null;
 
     static LRUCache new_cache(long n) {
-        if (n < (long)(0)) {
+        if ((long)(n) < 0L) {
             throw new RuntimeException(String.valueOf("n should be an integer greater than 0."));
         }
-        long cap_1 = (long)(n == (long)(0) ? 2147483647 : n);
+        long cap_1 = (long)((long)(n) == 0L ? 2147483647 : n);
         return new LRUCache(cap_1, new String[]{});
     }
 
@@ -34,7 +34,7 @@ public class Main {
             } else {
                 res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new String[]{v_1})).toArray(String[]::new)));
             }
-            i_1 = (long)((long)(i_1) + (long)(1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return res;
     }
@@ -47,16 +47,16 @@ public class Main {
             if ((store[(int)((long)(i_3))].equals(x))) {
                 exists_1 = true;
             }
-            i_3 = (long)((long)(i_3) + (long)(1));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         if (exists_1) {
             store = ((String[])(remove_element(((String[])(store)), x)));
         } else         if ((long)(store.length) == (long)(cache.max_capacity)) {
             String[] new_store_1 = ((String[])(new String[]{}));
             long j_1 = 0L;
-            while ((long)(j_1) < (long)((long)(store.length) - (long)(1))) {
+            while ((long)(j_1) < (long)((long)(store.length) - 1L)) {
                 new_store_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_store_1), java.util.Arrays.stream(new String[]{store[(int)((long)(j_1))]})).toArray(String[]::new)));
-                j_1 = (long)((long)(j_1) + (long)(1));
+                j_1 = (long)((long)(j_1) + 1L);
             }
             store = ((String[])(new_store_1));
         }
@@ -68,7 +68,7 @@ public class Main {
         long i_4 = 0L;
         while ((long)(i_4) < (long)(cache.store.length)) {
             System.out.println(cache.store[(int)((long)(i_4))]);
-            i_4 = (long)((long)(i_4) + (long)(1));
+            i_4 = (long)((long)(i_4) + 1L);
         }
     }
 
@@ -80,7 +80,7 @@ public class Main {
             if ((ch_1.compareTo("0") < 0) || (ch_1.compareTo("9") > 0)) {
                 all_digits = false;
             }
-            i_6 = (long)((long)(i_6) + (long)(1));
+            i_6 = (long)((long)(i_6) + 1L);
         }
         if (all_digits) {
             return s;
@@ -93,10 +93,10 @@ public class Main {
         long i_8 = 0L;
         while ((long)(i_8) < (long)(cache.store.length)) {
             res_1 = res_1 + String.valueOf(repr_item(cache.store[(int)((long)(i_8))]));
-            if ((long)(i_8) < (long)((long)(cache.store.length) - (long)(1))) {
+            if ((long)(i_8) < (long)((long)(cache.store.length) - 1L)) {
                 res_1 = res_1 + ", ";
             }
-            i_8 = (long)((long)(i_8) + (long)(1));
+            i_8 = (long)((long)(i_8) + 1L);
         }
         res_1 = res_1 + "]";
         return res_1;
@@ -169,7 +169,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

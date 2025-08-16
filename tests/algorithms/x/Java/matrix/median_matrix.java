@@ -1,50 +1,48 @@
 public class Main {
-    static int[][] matrix1;
-    static int[][] matrix2;
+    static long[][] matrix1 = ((long[][])(new long[][]{new long[]{1, 3, 5}, new long[]{2, 6, 9}, new long[]{3, 6, 9}}));
+    static long[][] matrix2 = ((long[][])(new long[][]{new long[]{1, 2, 3}, new long[]{4, 5, 6}}));
 
-    static int[] bubble_sort(int[] a) {
-        int[] arr = ((int[])(a));
-        int n = arr.length;
-        int i = 0;
-        while (i < n) {
-            int j = 0;
-            while (j + 1 < n - i) {
-                if (arr[j] > arr[j + 1]) {
-                    int temp = arr[j];
-arr[j] = arr[j + 1];
-arr[j + 1] = temp;
+    static long[] bubble_sort(long[] a) {
+        long[] arr = ((long[])(a));
+        long n_1 = (long)(arr.length);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n_1)) {
+            long j_1 = 0L;
+            while ((long)((long)(j_1) + 1L) < (long)((long)(n_1) - (long)(i_1))) {
+                if ((long)(arr[(int)((long)(j_1))]) > (long)(arr[(int)((long)((long)(j_1) + 1L))])) {
+                    long temp_1 = (long)(arr[(int)((long)(j_1))]);
+arr[(int)((long)(j_1))] = (long)(arr[(int)((long)((long)(j_1) + 1L))]);
+arr[(int)((long)((long)(j_1) + 1L))] = (long)(temp_1);
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return arr;
     }
 
-    static int median(int[][] matrix) {
-        int[] linear = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < matrix.length) {
-            int[] row = ((int[])(matrix[i_1]));
-            int j_1 = 0;
-            while (j_1 < row.length) {
-                linear = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(linear), java.util.stream.IntStream.of(row[j_1])).toArray()));
-                j_1 = j_1 + 1;
+    static long median(long[][] matrix) {
+        long[] linear = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(matrix.length)) {
+            long[] row_1 = ((long[])(matrix[(int)((long)(i_3))]));
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(row_1.length)) {
+                linear = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(linear), java.util.stream.LongStream.of((long)(row_1[(int)((long)(j_3))]))).toArray()));
+                j_3 = (long)((long)(j_3) + 1L);
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        int[] sorted = ((int[])(bubble_sort(((int[])(linear)))));
-        int mid = Math.floorDiv((sorted.length - 1), 2);
-        return sorted[mid];
+        long[] sorted_1 = ((long[])(bubble_sort(((long[])(linear)))));
+        long mid_1 = (long)((long)(((long)(sorted_1.length) - 1L)) / 2L);
+        return sorted_1[(int)((long)(mid_1))];
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            matrix1 = ((int[][])(new int[][]{new int[]{1, 3, 5}, new int[]{2, 6, 9}, new int[]{3, 6, 9}}));
-            System.out.println(_p(median(((int[][])(matrix1)))));
-            matrix2 = ((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{4, 5, 6}}));
-            System.out.println(_p(median(((int[][])(matrix2)))));
+            System.out.println(_p(median(((long[][])(matrix1)))));
+            System.out.println(_p(median(((long[][])(matrix2)))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -90,6 +88,10 @@ arr[j + 1] = temp;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

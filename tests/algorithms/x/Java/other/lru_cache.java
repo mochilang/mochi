@@ -70,8 +70,8 @@ public class Main {
 
     static DoubleLinkedList new_list() {
         Node[] nodes = ((Node[])(new Node[]{}));
-        Node head_1 = new Node(0, 0, (long)(0) - (long)(1), 1);
-        Node tail_1 = new Node(0, 0, 0, (long)(0) - (long)(1));
+        Node head_1 = new Node(0, 0, 0L - 1L, 1);
+        Node tail_1 = new Node(0, 0, 0, 0L - 1L);
         nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(head_1)).toArray(Node[]::new)));
         nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(tail_1)).toArray(Node[]::new)));
         return new DoubleLinkedList(nodes, 0, 1);
@@ -100,7 +100,7 @@ lst.nodes = nodes_1;
         Node node_3 = nodes_2[(int)((long)(idx))];
         long prev_idx_3 = (long)(node_3.prev);
         long next_idx_1 = (long)(node_3.next);
-        if ((long)(prev_idx_3) == (long)((long)(0) - (long)(1)) || (long)(next_idx_1) == (long)((long)(0) - (long)(1))) {
+        if ((long)(prev_idx_3) == (long)(0L - 1L) || (long)(next_idx_1) == (long)(0L - 1L)) {
             return lst;
         }
         Node prev_node_3 = nodes_2[(int)((long)(prev_idx_3))];
@@ -109,8 +109,8 @@ nodes_2[(int)((long)(prev_idx_3))] = prev_node_3;
         Node next_node_1 = nodes_2[(int)((long)(next_idx_1))];
 next_node_1.prev = prev_idx_3;
 nodes_2[(int)((long)(next_idx_1))] = next_node_1;
-node_3.prev = (long)(0) - (long)(1);
-node_3.next = (long)(0) - (long)(1);
+node_3.prev = 0L - 1L;
+node_3.next = 0L - 1L;
 nodes_2[(int)((long)(idx))] = node_3;
 lst.nodes = nodes_2;
         return lst;
@@ -126,16 +126,16 @@ lst.nodes = nodes_2;
         String key_str_1 = _p(key);
         if (cache.cache.containsKey(key_str_1)) {
             long idx_1 = (long)(((long)(cache.cache).getOrDefault(key_str_1, 0L)));
-            if (idx_1 != (long)((long)(0) - (long)(1))) {
-cache.hits = (long)(cache.hits) + (long)(1);
+            if ((long)(idx_1) != (long)(0L - 1L)) {
+cache.hits = (long)(cache.hits) + 1L;
                 Node node_5 = cache.list.nodes[(int)((long)(idx_1))];
                 long value_1 = (long)(node_5.value);
-cache.list = dll_remove(cache.list, idx_1);
-cache.list = dll_add(cache.list, idx_1);
+cache.list = dll_remove(cache.list, (long)(idx_1));
+cache.list = dll_add(cache.list, (long)(idx_1));
                 return new GetResult(cache, value_1, true);
             }
         }
-cache.misses = (long)(cache.misses) + (long)(1);
+cache.misses = (long)(cache.misses) + 1L;
         return new GetResult(cache, 0, false);
     }
 
@@ -150,20 +150,20 @@ cache.misses = (long)(cache.misses) + (long)(1);
                 long old_key_1 = (long)(first_node_1.key);
 cache_1.list = dll_remove(cache_1.list, (long)(first_idx_1));
                 java.util.Map<String,Long> mdel_1 = cache_1.cache;
-mdel_1.put(_p(old_key_1), (long)((long)(0) - (long)(1)));
+mdel_1.put(_p(old_key_1), (long)(0L - 1L));
 cache_1.cache = mdel_1;
-cache_1.num_keys = (long)(cache_1.num_keys) - (long)(1);
+cache_1.num_keys = (long)(cache_1.num_keys) - 1L;
             }
             Node[] nodes_5 = ((Node[])(cache_1.list.nodes));
-            Node new_node_1 = new Node(key, value, (long)(0) - (long)(1), (long)(0) - (long)(1));
+            Node new_node_1 = new Node(key, value, 0L - 1L, 0L - 1L);
             nodes_5 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes_5), java.util.stream.Stream.of(new_node_1)).toArray(Node[]::new)));
-            long idx_4 = (long)((long)(nodes_5.length) - (long)(1));
+            long idx_4 = (long)((long)(nodes_5.length) - 1L);
 cache_1.list.nodes = nodes_5;
 cache_1.list = dll_add(cache_1.list, (long)(idx_4));
             java.util.Map<String,Long> m_2 = cache_1.cache;
 m_2.put(key_str_3, (long)(idx_4));
 cache_1.cache = m_2;
-cache_1.num_keys = (long)(cache_1.num_keys) + (long)(1);
+cache_1.num_keys = (long)(cache_1.num_keys) + 1L;
         } else {
             java.util.Map<String,Long> m_3 = cache_1.cache;
             long idx_5 = (long)(((long)(m_3).getOrDefault(key_str_3, 0L)));
@@ -172,8 +172,8 @@ cache_1.num_keys = (long)(cache_1.num_keys) + (long)(1);
 node_7.value = value;
 nodes_6[(int)((long)(idx_5))] = node_7;
 cache_1.list.nodes = nodes_6;
-cache_1.list = dll_remove(cache_1.list, idx_5);
-cache_1.list = dll_add(cache_1.list, idx_5);
+cache_1.list = dll_remove(cache_1.list, (long)(idx_5));
+cache_1.list = dll_add(cache_1.list, (long)(idx_5));
 cache_1.cache = m_3;
         }
         return cache_1;
@@ -267,7 +267,6 @@ cache_1.cache = m_3;
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

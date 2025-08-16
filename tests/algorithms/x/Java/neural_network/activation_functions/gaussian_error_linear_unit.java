@@ -2,13 +2,13 @@ public class Main {
     static double[] sample;
 
     static double exp_taylor(double x) {
-        double term = 1.0;
-        double sum_1 = 1.0;
-        double i_1 = 1.0;
-        while (i_1 < 20.0) {
-            term = term * (double)(x) / i_1;
-            sum_1 = sum_1 + term;
-            i_1 = i_1 + 1.0;
+        double term = (double)(1.0);
+        double sum_1 = (double)(1.0);
+        double i_1 = (double)(1.0);
+        while ((double)(i_1) < (double)(20.0)) {
+            term = (double)((double)((double)(term) * (double)(x)) / (double)(i_1));
+            sum_1 = (double)((double)(sum_1) + (double)(term));
+            i_1 = (double)((double)(i_1) + (double)(1.0));
         }
         return sum_1;
     }
@@ -18,9 +18,9 @@ public class Main {
         long i_3 = 0L;
         while ((long)(i_3) < (long)(vector.length)) {
             double x_1 = (double)(vector[(int)((long)(i_3))]);
-            double value_1 = 1.0 / (1.0 + (double)(exp_taylor((double)(-x_1))));
-            result = ((double[])(appendDouble(result, value_1)));
-            i_3 = (long)((long)(i_3) + (long)(1));
+            double value_1 = (double)((double)(1.0) / (double)(((double)(1.0) + (double)(exp_taylor((double)(-x_1))))));
+            result = ((double[])(appendDouble(result, (double)(value_1))));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return result;
     }
@@ -30,9 +30,9 @@ public class Main {
         long i_5 = 0L;
         while ((long)(i_5) < (long)(vector.length)) {
             double x_3 = (double)(vector[(int)((long)(i_5))]);
-            double gelu_1 = (double)(x_3) * (1.0 / (1.0 + (double)(exp_taylor(-1.702 * (double)(x_3)))));
-            result_1 = ((double[])(appendDouble(result_1, gelu_1)));
-            i_5 = (long)((long)(i_5) + (long)(1));
+            double gelu_1 = (double)((double)(x_3) * (double)(((double)(1.0) / (double)(((double)(1.0) + (double)(exp_taylor((double)((double)(-1.702) * (double)(x_3)))))))));
+            result_1 = ((double[])(appendDouble(result_1, (double)(gelu_1))));
+            i_5 = (long)((long)(i_5) + 1L);
         }
         return result_1;
     }

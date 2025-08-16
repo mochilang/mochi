@@ -1,14 +1,14 @@
 public class Main {
 
     static double sqrtApprox(double x) {
-        if ((double)(x) <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
         double guess_1 = (double)(x);
         long i_1 = 0L;
-        while ((long)(i_1) < (long)(20)) {
-            guess_1 = ((double)(guess_1) + (double)(x) / (double)(guess_1)) / 2.0;
-            i_1 = (long)((long)(i_1) + (long)(1));
+        while ((long)(i_1) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return guess_1;
     }
@@ -18,9 +18,9 @@ public class Main {
         long i_3 = 0L;
         while ((long)(i_3) < (long)(vector.length)) {
             double x_1 = (double)(vector[(int)((long)(i_3))]);
-            double val_1 = ((double)(x_1) + (double)(sqrtApprox((double)(x_1) * (double)(x_1) + (double)(beta)))) / 2.0;
-            result = ((double[])(appendDouble(result, val_1)));
-            i_3 = (long)((long)(i_3) + (long)(1));
+            double val_1 = (double)((double)(((double)(x_1) + (double)(sqrtApprox((double)((double)((double)(x_1) * (double)(x_1)) + (double)(beta)))))) / (double)(2.0));
+            result = ((double[])(appendDouble(result, (double)(val_1))));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return result;
     }
@@ -28,8 +28,8 @@ public class Main {
     static void main() {
         double[] v1 = ((double[])(new double[]{2.3, 0.6, -2.0, -3.8}));
         double[] v2_1 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
-        System.out.println(_p(squareplus(((double[])(v1)), 2.0)));
-        System.out.println(_p(squareplus(((double[])(v2_1)), 3.0)));
+        System.out.println(_p(squareplus(((double[])(v1)), (double)(2.0))));
+        System.out.println(_p(squareplus(((double[])(v2_1)), (double)(3.0))));
     }
     public static void main(String[] args) {
         {
@@ -90,7 +90,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

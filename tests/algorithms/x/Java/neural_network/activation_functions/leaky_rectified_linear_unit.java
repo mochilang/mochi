@@ -7,14 +7,14 @@ public class Main {
     static double[] leaky_rectified_linear_unit(double[] vector, double alpha) {
         double[] result = ((double[])(new double[]{}));
         long i_1 = 0L;
-        while (i_1 < (long)(vector.length)) {
+        while ((long)(i_1) < (long)(vector.length)) {
             double x_1 = (double)(vector[(int)((long)(i_1))]);
-            if ((double)(x_1) > 0.0) {
+            if ((double)(x_1) > (double)(0.0)) {
                 result = ((double[])(appendDouble(result, (double)(x_1))));
             } else {
-                result = ((double[])(appendDouble(result, (double)(alpha) * (double)(x_1))));
+                result = ((double[])(appendDouble(result, (double)((double)(alpha) * (double)(x_1)))));
             }
-            i_1 = (long)(i_1 + (long)(1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
@@ -23,10 +23,10 @@ public class Main {
             long _benchStart = _now();
             long _benchMem = _mem();
             vector1 = ((double[])(new double[]{2.3, 0.6, -2.0, -3.8}));
-            result1 = ((double[])(leaky_rectified_linear_unit(((double[])(vector1)), 0.3)));
+            result1 = ((double[])(leaky_rectified_linear_unit(((double[])(vector1)), (double)(0.3))));
             System.out.println(_p(result1));
             vector2 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
-            result2 = ((double[])(leaky_rectified_linear_unit(((double[])(vector2)), 0.067)));
+            result2 = ((double[])(leaky_rectified_linear_unit(((double[])(vector2)), (double)(0.067))));
             System.out.println(_p(result2));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -82,7 +82,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

@@ -2,10 +2,10 @@ public class Main {
 
     static long[] subarray(long[] xs, long start, long end) {
         long[] result = ((long[])(new long[]{}));
-        long k_1 = start;
-        while ((long)(k_1) < end) {
-            result = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result), java.util.stream.LongStream.of(xs[(int)((long)(k_1))])).toArray()));
-            k_1 = (long)((long)(k_1) + (long)(1));
+        long k_1 = (long)(start);
+        while ((long)(k_1) < (long)(end)) {
+            result = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result), java.util.stream.LongStream.of((long)(xs[(int)((long)(k_1))]))).toArray()));
+            k_1 = (long)((long)(k_1) + 1L);
         }
         return result;
     }
@@ -15,30 +15,30 @@ public class Main {
         long i_1 = 0L;
         long j_1 = 0L;
         while ((long)(i_1) < (long)(left_half.length) && (long)(j_1) < (long)(right_half.length)) {
-            if (left_half[(int)((long)(i_1))] < right_half[(int)((long)(j_1))]) {
-                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of(left_half[(int)((long)(i_1))])).toArray()));
-                i_1 = (long)((long)(i_1) + (long)(1));
+            if ((long)(left_half[(int)((long)(i_1))]) < (long)(right_half[(int)((long)(j_1))])) {
+                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(left_half[(int)((long)(i_1))]))).toArray()));
+                i_1 = (long)((long)(i_1) + 1L);
             } else {
-                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of(right_half[(int)((long)(j_1))])).toArray()));
-                j_1 = (long)((long)(j_1) + (long)(1));
+                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(right_half[(int)((long)(j_1))]))).toArray()));
+                j_1 = (long)((long)(j_1) + 1L);
             }
         }
         while ((long)(i_1) < (long)(left_half.length)) {
-            result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of(left_half[(int)((long)(i_1))])).toArray()));
-            i_1 = (long)((long)(i_1) + (long)(1));
+            result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(left_half[(int)((long)(i_1))]))).toArray()));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         while ((long)(j_1) < (long)(right_half.length)) {
-            result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of(right_half[(int)((long)(j_1))])).toArray()));
-            j_1 = (long)((long)(j_1) + (long)(1));
+            result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(right_half[(int)((long)(j_1))]))).toArray()));
+            j_1 = (long)((long)(j_1) + 1L);
         }
         return result_1;
     }
 
     static long[] merge_sort(long[] array) {
-        if ((long)(array.length) <= (long)(1)) {
+        if ((long)(array.length) <= 1L) {
             return array;
         }
-        long middle_1 = Math.floorDiv(array.length, 2);
+        long middle_1 = (long)((long)(array.length) / 2L);
         long[] left_half_1 = ((long[])(subarray(((long[])(array)), 0L, (long)(middle_1))));
         long[] right_half_1 = ((long[])(subarray(((long[])(array)), (long)(middle_1), (long)(array.length))));
         long[] sorted_left_1 = ((long[])(merge_sort(((long[])(left_half_1)))));
@@ -49,19 +49,19 @@ public class Main {
     static long h_index(long[] citations) {
         long idx = 0L;
         while ((long)(idx) < (long)(citations.length)) {
-            if (citations[(int)((long)(idx))] < (long)(0)) {
+            if ((long)(citations[(int)((long)(idx))]) < 0L) {
                 throw new RuntimeException(String.valueOf("The citations should be a list of non negative integers."));
             }
-            idx = (long)((long)(idx) + (long)(1));
+            idx = (long)((long)(idx) + 1L);
         }
         long[] sorted_1 = ((long[])(merge_sort(((long[])(citations)))));
         long n_1 = (long)(sorted_1.length);
         long i_3 = 0L;
         while ((long)(i_3) < (long)(n_1)) {
-            if (sorted_1[(int)((long)((long)((long)(n_1) - (long)(1)) - (long)(i_3)))] <= (long)(i_3)) {
+            if ((long)(sorted_1[(int)((long)((long)((long)(n_1) - 1L) - (long)(i_3)))]) <= (long)(i_3)) {
                 return i_3;
             }
-            i_3 = (long)((long)(i_3) + (long)(1));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return n_1;
     }
@@ -120,7 +120,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

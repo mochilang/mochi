@@ -1,13 +1,13 @@
 public class Main {
 
     static double exp_approx(double x) {
-        double sum = 1.0;
-        double term_1 = 1.0;
+        double sum = (double)(1.0);
+        double term_1 = (double)(1.0);
         long i_1 = 1L;
-        while ((long)(i_1) <= (long)(20)) {
-            term_1 = (double)(term_1) * (double)(x) / (((Number)(i_1)).doubleValue());
-            sum = (double)(sum) + (double)(term_1);
-            i_1 = (long)((long)(i_1) + (long)(1));
+        while ((long)(i_1) <= 20L) {
+            term_1 = (double)((double)((double)(term_1) * (double)(x)) / (double)((((Number)(i_1)).doubleValue())));
+            sum = (double)((double)(sum) + (double)(term_1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return sum;
     }
@@ -17,9 +17,9 @@ public class Main {
         long i_3 = 0L;
         while ((long)(i_3) < (long)(vector.length)) {
             double v_1 = (double)(vector[(int)((long)(i_3))]);
-            double s_1 = 1.0 / (1.0 + (double)(exp_approx((double)(-v_1))));
-            result = ((double[])(appendDouble(result, s_1)));
-            i_3 = (long)((long)(i_3) + (long)(1));
+            double s_1 = (double)((double)(1.0) / (double)(((double)(1.0) + (double)(exp_approx((double)(-v_1))))));
+            result = ((double[])(appendDouble(result, (double)(s_1))));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return result;
     }
@@ -29,20 +29,20 @@ public class Main {
         long i_5 = 0L;
         while ((long)(i_5) < (long)(vector.length)) {
             double v_3 = (double)(vector[(int)((long)(i_5))]);
-            double s_3 = 1.0 / (1.0 + (double)(exp_approx((double)(-beta) * (double)(v_3))));
-            result_1 = ((double[])(appendDouble(result_1, (double)(v_3) * s_3)));
-            i_5 = (long)((long)(i_5) + (long)(1));
+            double s_3 = (double)((double)(1.0) / (double)(((double)(1.0) + (double)(exp_approx((double)((double)(-beta) * (double)(v_3)))))));
+            result_1 = ((double[])(appendDouble(result_1, (double)((double)(v_3) * (double)(s_3)))));
+            i_5 = (long)((long)(i_5) + 1L);
         }
         return result_1;
     }
 
     static double[] sigmoid_linear_unit(double[] vector) {
-        return swish(((double[])(vector)), 1.0);
+        return swish(((double[])(vector)), (double)(1.0));
     }
 
     static boolean approx_equal(double a, double b, double eps) {
-        double diff = (double)(a) > (double)(b) ? (double)(a) - (double)(b) : (double)(b) - (double)(a);
-        return diff < (double)(eps);
+        double diff = (double)((double)(a) > (double)(b) ? (double)(a) - (double)(b) : (double)(b) - (double)(a));
+        return (double)(diff) < (double)(eps);
     }
 
     static boolean approx_equal_list(double[] a, double[] b, double eps) {
@@ -54,24 +54,24 @@ public class Main {
             if (!(Boolean)approx_equal((double)(a[(int)((long)(i_7))]), (double)(b[(int)((long)(i_7))]), (double)(eps))) {
                 return false;
             }
-            i_7 = (long)((long)(i_7) + (long)(1));
+            i_7 = (long)((long)(i_7) + 1L);
         }
         return true;
     }
 
     static void test_swish() {
         double[] v_4 = ((double[])(new double[]{-1.0, 1.0, 2.0}));
-        double eps_1 = 0.001;
-        if (!(Boolean)approx_equal_list(((double[])(sigmoid(((double[])(v_4))))), ((double[])(new double[]{0.26894142, 0.73105858, 0.88079708})), eps_1)) {
+        double eps_1 = (double)(0.001);
+        if (!(Boolean)approx_equal_list(((double[])(sigmoid(((double[])(v_4))))), ((double[])(new double[]{0.26894142, 0.73105858, 0.88079708})), (double)(eps_1))) {
             throw new RuntimeException(String.valueOf("sigmoid incorrect"));
         }
-        if (!(Boolean)approx_equal_list(((double[])(sigmoid_linear_unit(((double[])(v_4))))), ((double[])(new double[]{-0.26894142, 0.73105858, 1.76159416})), eps_1)) {
+        if (!(Boolean)approx_equal_list(((double[])(sigmoid_linear_unit(((double[])(v_4))))), ((double[])(new double[]{-0.26894142, 0.73105858, 1.76159416})), (double)(eps_1))) {
             throw new RuntimeException(String.valueOf("sigmoid_linear_unit incorrect"));
         }
-        if (!(Boolean)approx_equal_list(((double[])(swish(((double[])(v_4)), 2.0))), ((double[])(new double[]{-0.11920292, 0.88079708, 1.96402758})), eps_1)) {
+        if (!(Boolean)approx_equal_list(((double[])(swish(((double[])(v_4)), (double)(2.0)))), ((double[])(new double[]{-0.11920292, 0.88079708, 1.96402758})), (double)(eps_1))) {
             throw new RuntimeException(String.valueOf("swish incorrect"));
         }
-        if (!(Boolean)approx_equal_list(((double[])(swish(((double[])(new double[]{-2.0})), 1.0))), ((double[])(new double[]{-0.23840584})), eps_1)) {
+        if (!(Boolean)approx_equal_list(((double[])(swish(((double[])(new double[]{-2.0})), (double)(1.0)))), ((double[])(new double[]{-0.23840584})), (double)(eps_1))) {
             throw new RuntimeException(String.valueOf("swish with parameter 1 incorrect"));
         }
     }
@@ -80,8 +80,8 @@ public class Main {
         test_swish();
         System.out.println(_p(sigmoid(((double[])(new double[]{-1.0, 1.0, 2.0})))));
         System.out.println(_p(sigmoid_linear_unit(((double[])(new double[]{-1.0, 1.0, 2.0})))));
-        System.out.println(_p(swish(((double[])(new double[]{-1.0, 1.0, 2.0})), 2.0)));
-        System.out.println(_p(swish(((double[])(new double[]{-2.0})), 1.0)));
+        System.out.println(_p(swish(((double[])(new double[]{-1.0, 1.0, 2.0})), (double)(2.0))));
+        System.out.println(_p(swish(((double[])(new double[]{-2.0})), (double)(1.0))));
     }
     public static void main(String[] args) {
         {
@@ -142,7 +142,6 @@ public class Main {
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);

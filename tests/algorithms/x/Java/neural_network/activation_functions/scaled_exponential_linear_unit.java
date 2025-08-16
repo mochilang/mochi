@@ -1,13 +1,13 @@
 public class Main {
 
     static double exp(double x) {
-        double term = 1.0;
-        double sum_1 = 1.0;
+        double term = (double)(1.0);
+        double sum_1 = (double)(1.0);
         long n_1 = 1L;
-        while ((long)(n_1) < (long)(20)) {
-            term = term * (double)(x) / (((Number)(n_1)).doubleValue());
-            sum_1 = sum_1 + term;
-            n_1 = (long)((long)(n_1) + (long)(1));
+        while ((long)(n_1) < 20L) {
+            term = (double)((double)((double)(term) * (double)(x)) / (double)((((Number)(n_1)).doubleValue())));
+            sum_1 = (double)((double)(sum_1) + (double)(term));
+            n_1 = (long)((long)(n_1) + 1L);
         }
         return sum_1;
     }
@@ -17,9 +17,9 @@ public class Main {
         long i_1 = 0L;
         while ((long)(i_1) < (long)(vector.length)) {
             double x_1 = (double)(vector[(int)((long)(i_1))]);
-            double y_1 = (double)(x_1) > 0.0 ? (double)(lambda_) * (double)(x_1) : (double)(lambda_) * (double)(alpha) * ((double)(exp((double)(x_1))) - 1.0);
-            result = ((double[])(appendDouble(result, y_1)));
-            i_1 = (long)((long)(i_1) + (long)(1));
+            double y_1 = (double)((double)(x_1) > (double)(0.0) ? (double)(lambda_) * (double)(x_1) : (double)((double)(lambda_) * (double)(alpha)) * (double)(((double)(exp((double)(x_1))) - (double)(1.0))));
+            result = ((double[])(appendDouble(result, (double)(y_1))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
@@ -27,8 +27,8 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(scaled_exponential_linear_unit(((double[])(new double[]{1.3, 3.7, 2.4})), 1.6732, 1.0507));
-            System.out.println(scaled_exponential_linear_unit(((double[])(new double[]{1.3, 4.7, 8.2})), 1.6732, 1.0507));
+            System.out.println(scaled_exponential_linear_unit(((double[])(new double[]{1.3, 3.7, 2.4})), (double)(1.6732), (double)(1.0507)));
+            System.out.println(scaled_exponential_linear_unit(((double[])(new double[]{1.3, 4.7, 8.2})), (double)(1.6732), (double)(1.0507)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
