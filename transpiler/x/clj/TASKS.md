@@ -1,3 +1,15 @@
+## Progress (2025-08-16 12:13 +0700)
+- clj: map exp to Math/exp
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-16 12:13 +0700)
+- clj: map exp to Math/exp
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-16 12:13 +0700)
+- clj: map exp to Math/exp
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-15 15:17 +0700)
 - lua: update algorithm outputs
 - Regenerated golden files - 102/105 vm valid programs passing
