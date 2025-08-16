@@ -99,11 +99,6 @@ mochi_to_float(V) ->
     end.
 `
 
-const helperTof = `
-to_float(V) ->
-    mochi_to_float(V).
-`
-
 const helperPadStart = `
 mochi_pad_start(S, Len, Ch) ->
     Fill0 = case Ch of
@@ -2679,19 +2674,7 @@ func (f *ForStmt) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 			fmt.Fprintf(w, "C%d", i)
 		}
-		io.WriteString(w, ");\n            {break")
-		for i := range f.Params {
-			io.WriteString(w, ", ")
-			fmt.Fprintf(w, "B%d", i)
-		}
-		io.WriteString(w, "} -> {")
-		for i := range f.Params {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
-			fmt.Fprintf(w, "B%d", i)
-		}
-		io.WriteString(w, "};\n            break -> {")
+		io.WriteString(w, ");\n            {break, Bs} -> Bs;\n            break -> {")
 		for i, p := range f.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -2783,19 +2766,7 @@ func (ws *WhileStmt) emit(w io.Writer) {
 			}
 			fmt.Fprintf(w, "C%d", i)
 		}
-		io.WriteString(w, ");\n                {break")
-		for i := range ws.Params {
-			io.WriteString(w, ", ")
-			fmt.Fprintf(w, "B%d", i)
-		}
-		io.WriteString(w, "} -> {")
-		for i := range ws.Params {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
-			fmt.Fprintf(w, "B%d", i)
-		}
-		io.WriteString(w, "}\n            end;\n        _ -> {")
+		io.WriteString(w, ");\n                {break, Bs} -> Bs\n            end;\n        _ -> {")
 		for i, p := range ws.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -2936,12 +2907,14 @@ func (b *BreakStmt) emit(w io.Writer) {
 		io.WriteString(w, "throw(break)")
 		return
 	}
-	io.WriteString(w, "throw({break")
-	for _, a := range b.Args {
-		io.WriteString(w, ", ")
+	io.WriteString(w, "throw({break, {")
+	for i, a := range b.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
 		io.WriteString(w, a)
 	}
-	io.WriteString(w, "})")
+	io.WriteString(w, "}})")
 }
 func (c *ContinueStmt) emit(w io.Writer) {
 	if len(c.Args) == 0 {
@@ -6605,8 +6578,6 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseToFloat {
 		buf.WriteString(helperToFloat)
-		buf.WriteString("\n")
-		buf.WriteString(helperTof)
 		buf.WriteString("\n")
 	}
 	if p.UseMemberHelper {
