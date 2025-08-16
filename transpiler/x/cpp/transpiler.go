@@ -3924,6 +3924,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useJSON = false
 	useBigInt = false
 	useBigRat = false
+	useRepeat = false
+	useConcat = false
+	useSplit = false
+	useSlice = false
 	useExists = false
 	useAnyVec = false
 	useIndex = false
