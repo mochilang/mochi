@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-15 10:36 GMT+7
+Last updated: 2025-08-16 09:50 GMT+7
 
-## Algorithms Golden Test Checklist (549/1077)
+## Algorithms Golden Test Checklist (550/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -738,7 +738,7 @@ Last updated: 2025-08-15 10:36 GMT+7
 | 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 27.83ms | 112.77KiB |
 | 731 | neural_network/activation_functions/swish | ✓ | 37.20ms | 112.73KiB |
-| 732 | neural_network/back_propagation_neural_network | error |  |  |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 919.51ms | 830.81KiB |
 | 733 | neural_network/convolution_neural_network | error |  |  |
 | 734 | neural_network/input_data | ✓ | 21.02ms | 121.62KiB |
 | 735 | neural_network/simple_neural_network | ✓ | 161.52ms | 124.12KiB |

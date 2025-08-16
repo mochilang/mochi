@@ -1,4 +1,0 @@
-kotlinc: exit status 1
-/workspace/mochi/tests/algorithms/x/Kotlin/neural_network/back_propagation_neural_network.kt:289:71: error: type mismatch: inferred type is Layer but MutableList<Double> was expected
-            var grad: MutableList<Double> = calc_gradient(ydata[i]!!, out)
-                                                                      ^

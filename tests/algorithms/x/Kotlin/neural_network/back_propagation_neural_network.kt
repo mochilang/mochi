@@ -32,12 +32,12 @@ data class Layer(var units: Int = 0, var weight: MutableList<MutableList<Double>
 data class Data(var x: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>(), var y: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>())
 var seed: Int = (1).toInt()
 fun rand(): Int {
-    seed = (((Math.floorMod((((seed * 1103515245) + 12345).toLong()), 2147483648L)).toInt())).toInt()
+    seed = (((Math.floorMod((((seed * 1103515245) + 12345).toLong()), (2147483648L).toInt())).toInt())).toInt()
     return seed
 }
 
 fun random(): Double {
-    return (1.0 * rand()) / 2147483648.0
+    return (1.0 * (rand()).toDouble()) / 2147483648.0
 }
 
 fun expApprox(x: Double): Double {
@@ -285,7 +285,7 @@ fun train(layers: MutableList<Layer>, xdata: MutableList<MutableList<Double>>, y
         var i: Int = (0).toInt()
         while (i < xdata.size) {
             layers = forward(layers, xdata[i]!!)
-            var out: Layer = ((layers[layers.size - 1]!!.output) as Layer)
+            var out: MutableList<Double> = layers[layers.size - 1]!!.output
             var grad: MutableList<Double> = calc_gradient(ydata[i]!!, out)
             layers = backward(layers, grad)
             i = i + 1

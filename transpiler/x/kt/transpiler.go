@@ -294,6 +294,7 @@ return x / pow2(n)
 		"is": true, "in": true, "throw": true, "return": true, "break": true,
 		"continue": true, "object": true, "if": true, "try": true, "else": true,
 		"while": true, "do": true, "when": true, "interface": true,
+		"Int": true, "Long": true, "Double": true, "Float": true, "Boolean": true, "String": true,
 	}
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
@@ -552,7 +553,7 @@ type StructLit struct {
 }
 
 func (s *StructLit) emit(w io.Writer) {
-	io.WriteString(w, s.Name+"(")
+	io.WriteString(w, safeName(s.Name)+"(")
 	for i, f := range s.Fields {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -566,19 +567,19 @@ func (s *StructLit) emit(w io.Writer) {
 func (d *DataClass) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
 	if d.IsObject {
-		io.WriteString(w, "object "+d.Name)
+		io.WriteString(w, "object "+safeName(d.Name))
 		if d.Extends != "" {
-			io.WriteString(w, " : "+d.Extends+"()")
+			io.WriteString(w, " : "+safeName(d.Extends)+"()")
 		}
 		return
 	}
 	if len(d.Fields) == 0 {
-		io.WriteString(w, "class "+d.Name)
+		io.WriteString(w, "class "+safeName(d.Name))
 		if d.Extends != "" {
-			io.WriteString(w, " : "+d.Extends+"()")
+			io.WriteString(w, " : "+safeName(d.Extends)+"()")
 		}
 	} else {
-		io.WriteString(w, "data class "+d.Name+"(")
+		io.WriteString(w, "data class "+safeName(d.Name)+"(")
 		for i, f := range d.Fields {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -2917,9 +2918,9 @@ func kotlinTypeFromType(t types.Type) string {
 		}
 		return "(" + strings.Join(params, ", ") + ") -> " + ret
 	case types.StructType:
-		return tt.Name
+		return safeName(tt.Name)
 	case types.UnionType:
-		return tt.Name
+		return safeName(tt.Name)
 	}
 	return ""
 }
@@ -3584,6 +3585,28 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if strings.Contains(typ, "Any?") && guessType(val) != typ {
 					typ = ""
 				}
+				if ce, ok := val.(*CastExpr); ok {
+					if fe, ok2 := ce.Value.(*FieldExpr); ok2 {
+						if fe.Type == "" {
+							if st, ok3 := findStructByField(env, fe.Name); ok3 {
+								if ft, ok4 := st.Fields[fe.Name]; ok4 {
+									fe.Type = kotlinTypeFromType(ft)
+								}
+							}
+						}
+						if fe.Type != "" {
+							if typ == "" || typ == ce.Type || typ == guessType(fe.Receiver) {
+								val = fe
+								typ = fe.Type
+							}
+						}
+					}
+				}
+				if fe, ok := val.(*FieldExpr); ok && fe.Type != "" {
+					if typ == "" || typ == guessType(fe.Receiver) {
+						typ = fe.Type
+					}
+				}
 				if _, ok := val.(*NullLit); ok {
 					if typ == "" {
 						typ = "Any?"
@@ -4084,6 +4107,28 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if strings.Contains(typ, "Any?") && guessType(v) != typ {
 					typ = ""
+				}
+				if ce, ok := v.(*CastExpr); ok {
+					if fe, ok2 := ce.Value.(*FieldExpr); ok2 {
+						if fe.Type == "" {
+							if st, ok3 := findStructByField(env, fe.Name); ok3 {
+								if ft, ok4 := st.Fields[fe.Name]; ok4 {
+									fe.Type = kotlinTypeFromType(ft)
+								}
+							}
+						}
+						if fe.Type != "" {
+							if typ == "" || typ == ce.Type || typ == guessType(fe.Receiver) {
+								v = fe
+								typ = fe.Type
+							}
+						}
+					}
+				}
+				if fe, ok := v.(*FieldExpr); ok && fe.Type != "" {
+					if typ == "" || typ == guessType(fe.Receiver) {
+						typ = fe.Type
+					}
 				}
 				if ix, ok := v.(*IndexExpr); ok {
 					_ = ix
@@ -4902,7 +4947,7 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				cases = append(cases, WhenCase{Pattern: &TypePattern{Type: call.Func}, Result: &RunExpr{Stmts: stmts, Result: res}})
+				cases = append(cases, WhenCase{Pattern: &TypePattern{Type: safeName(call.Func)}, Result: &RunExpr{Stmts: stmts, Result: res}})
 				continue
 			}
 		}
@@ -4912,7 +4957,7 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				cases = append(cases, WhenCase{Pattern: &TypePattern{Type: ident}, Result: res})
+				cases = append(cases, WhenCase{Pattern: &TypePattern{Type: safeName(ident)}, Result: res})
 				continue
 			}
 		}
