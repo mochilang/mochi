@@ -1322,7 +1322,7 @@ type FuncDecl struct {
 }
 
 func (f *FuncDecl) emit(w io.Writer) error {
-	if f.Name == "sqrt" && len(f.Params) == 1 {
+	if f.Name == "sqrt" && len(f.Params) == 1 && len(f.Body) == 0 {
 		useMath = true
 		_, err := io.WriteString(w, "double sqrt(double x) {\n  return math.sqrt(x);\n}")
 		return err
