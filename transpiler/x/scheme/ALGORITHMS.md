@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-16 13:12 GMT+7
+Last updated: 2025-08-16 13:58 GMT+7
 
-## Algorithms Golden Test Checklist (875/1077)
+## Algorithms Golden Test Checklist (877/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -663,8 +663,8 @@ Last updated: 2025-08-16 13:12 GMT+7
 | 654 | maths/sieve_of_eratosthenes | ✓ | 1ms | 12.9 MB |
 | 655 | maths/sigmoid | ✓ | 0s | 12.6 MB |
 | 656 | maths/signum | ✓ | 3ms | 12.4 MB |
-| 657 | maths/simultaneous_linear_equation_solver |   |  |  |
-| 658 | maths/sin |   |  |  |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 1ms | 13.6 MB |
+| 658 | maths/sin | ✓ | 1ms | 13.0 MB |
 | 659 | maths/sock_merchant | ✓ | 2ms | 12.8 MB |
 | 660 | maths/softmax | ✓ | 1ms | 12.8 MB |
 | 661 | maths/solovay_strassen_primality_test | ✓ | 6ms | 13.4 MB |
