@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-16 12:05 GMT+7
+Last updated: 2025-08-16 12:22 GMT+7
 
-## Algorithms Golden Test Checklist (1024/1077)
+## Algorithms Golden Test Checklist (1026/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -504,8 +504,8 @@ Last updated: 2025-08-16 12:05 GMT+7
 | 495 | linear_algebra/src/transformations_2d | ✓ | 2.0ms | 21.05KB |
 | 496 | linear_programming/simplex | ✓ | 2.0ms | 21.93KB |
 | 497 | machine_learning/apriori_algorithm | ✓ | 1.0µs | 15.29KB |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
+| 498 | machine_learning/astar | ✓ | 1.0µs | 26.24KB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 1.0µs | 13.81KB |
 | 500 | machine_learning/data_transformations | ✓ | 2.0ms | 19.39KB |
 | 501 | machine_learning/decision_tree | ✓ | 6.0ms | 8.25MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 1.0ms | 12.80KB |
