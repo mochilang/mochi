@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare mean)
@@ -26,7 +29,7 @@
 (def ^:dynamic mean_total nil)
 
 (defn mean [mean_nums]
-  (binding [mean_i nil mean_total nil] (try (do (when (= (count mean_nums) 0) (throw (Exception. "List is empty"))) (set! mean_total 0.0) (set! mean_i 0) (while (< mean_i (count mean_nums)) (do (set! mean_total (+ mean_total (nth mean_nums mean_i))) (set! mean_i (+ mean_i 1)))) (throw (ex-info "return" {:v (quot mean_total (double (count mean_nums)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [mean_i nil mean_total nil] (try (do (when (= (count mean_nums) 0) (throw (Exception. "List is empty"))) (set! mean_total 0.0) (set! mean_i 0) (while (< mean_i (count mean_nums)) (do (set! mean_total (+ mean_total (nth mean_nums mean_i))) (set! mean_i (+ mean_i 1)))) (throw (ex-info "return" {:v (/ mean_total (double (count mean_nums)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

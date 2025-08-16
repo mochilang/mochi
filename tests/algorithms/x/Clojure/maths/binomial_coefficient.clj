@@ -17,9 +17,14 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare binomial_coefficient)
+
+(def ^:dynamic binomial_coefficient__ nil)
 
 (def ^:dynamic binomial_coefficient_c nil)
 
@@ -28,7 +33,7 @@
 (def ^:dynamic binomial_coefficient_j nil)
 
 (defn binomial_coefficient [binomial_coefficient_n binomial_coefficient_r]
-  (binding [binomial_coefficient_c nil binomial_coefficient_i nil binomial_coefficient_j nil] (try (do (when (or (< binomial_coefficient_n 0) (< binomial_coefficient_r 0)) (throw (Exception. "n and r must be non-negative integers"))) (when (or (= binomial_coefficient_n 0) (= binomial_coefficient_r 0)) (throw (ex-info "return" {:v 1}))) (set! binomial_coefficient_c []) (dotimes [_ (+ binomial_coefficient_r 1)] (set! binomial_coefficient_c (conj binomial_coefficient_c 0))) (set! binomial_coefficient_c (assoc binomial_coefficient_c 0 1)) (set! binomial_coefficient_i 1) (while (<= binomial_coefficient_i binomial_coefficient_n) (do (set! binomial_coefficient_j (if (< binomial_coefficient_i binomial_coefficient_r) binomial_coefficient_i binomial_coefficient_r)) (while (> binomial_coefficient_j 0) (do (set! binomial_coefficient_c (assoc binomial_coefficient_c binomial_coefficient_j (+ (nth binomial_coefficient_c binomial_coefficient_j) (nth binomial_coefficient_c (- binomial_coefficient_j 1))))) (set! binomial_coefficient_j (- binomial_coefficient_j 1)))) (set! binomial_coefficient_i (+ binomial_coefficient_i 1)))) (throw (ex-info "return" {:v (nth binomial_coefficient_c binomial_coefficient_r)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [binomial_coefficient__ nil binomial_coefficient_c nil binomial_coefficient_i nil binomial_coefficient_j nil] (try (do (when (or (< binomial_coefficient_n 0) (< binomial_coefficient_r 0)) (throw (Exception. "n and r must be non-negative integers"))) (when (or (= binomial_coefficient_n 0) (= binomial_coefficient_r 0)) (throw (ex-info "return" {:v 1}))) (set! binomial_coefficient_c []) (dotimes [binomial_coefficient__ (+ binomial_coefficient_r 1)] (set! binomial_coefficient_c (conj binomial_coefficient_c 0))) (set! binomial_coefficient_c (assoc binomial_coefficient_c 0 1)) (set! binomial_coefficient_i 1) (while (<= binomial_coefficient_i binomial_coefficient_n) (do (set! binomial_coefficient_j (if (< binomial_coefficient_i binomial_coefficient_r) binomial_coefficient_i binomial_coefficient_r)) (while (> binomial_coefficient_j 0) (do (set! binomial_coefficient_c (assoc binomial_coefficient_c binomial_coefficient_j (+ (nth binomial_coefficient_c binomial_coefficient_j) (nth binomial_coefficient_c (- binomial_coefficient_j 1))))) (set! binomial_coefficient_j (- binomial_coefficient_j 1)))) (set! binomial_coefficient_i (+ binomial_coefficient_i 1)))) (throw (ex-info "return" {:v (nth binomial_coefficient_c binomial_coefficient_r)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare dot new_svc fit predict)
@@ -59,18 +62,22 @@
 (defn predict [predict_model predict_x]
   (binding [predict_s nil] (try (do (set! predict_s (+ (dot (:weights predict_model) predict_x) (:bias predict_model))) (if (>= predict_s 0.0) (throw (ex-info "return" {:v 1})) (throw (ex-info "return" {:v (- 1)})))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_xs [[0.0 1.0] [0.0 2.0] [1.0 1.0] [1.0 2.0]])
+(def ^:dynamic main_xs nil)
 
-(def ^:dynamic main_ys [1 1 (- 1) (- 1)])
+(def ^:dynamic main_ys nil)
 
-(def ^:dynamic main_base (new_svc 0.01 0.01 1000))
+(def ^:dynamic main_base nil)
 
-(def ^:dynamic main_model (fit main_base main_xs main_ys))
+(def ^:dynamic main_model nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_xs) (constantly [[0.0 1.0] [0.0 2.0] [1.0 1.0] [1.0 2.0]]))
+      (alter-var-root (var main_ys) (constantly [1 1 (- 1) (- 1)]))
+      (alter-var-root (var main_base) (constantly (new_svc 0.01 0.01 1000)))
+      (alter-var-root (var main_model) (constantly (fit main_base main_xs main_ys)))
       (println (predict main_model [0.0 1.0]))
       (println (predict main_model [1.0 1.0]))
       (println (predict main_model [2.0 2.0]))

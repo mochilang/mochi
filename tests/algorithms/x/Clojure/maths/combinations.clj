@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare combinations)
@@ -26,7 +29,7 @@
 (def ^:dynamic combinations_res nil)
 
 (defn combinations [combinations_n combinations_k]
-  (binding [combinations_i nil combinations_res nil] (try (do (when (or (< combinations_k 0) (< combinations_n combinations_k)) (throw (Exception. "Please enter positive integers for n and k where n >= k"))) (set! combinations_res 1) (set! combinations_i 0) (while (< combinations_i combinations_k) (do (set! combinations_res (* combinations_res (- combinations_n combinations_i))) (set! combinations_res (quot combinations_res (+ combinations_i 1))) (set! combinations_i (+ combinations_i 1)))) (throw (ex-info "return" {:v combinations_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [combinations_i nil combinations_res nil] (try (do (when (or (< combinations_k 0) (< combinations_n combinations_k)) (throw (Exception. "Please enter positive integers for n and k where n >= k"))) (set! combinations_res 1) (set! combinations_i 0) (while (< combinations_i combinations_k) (do (set! combinations_res (* combinations_res (- combinations_n combinations_i))) (set! combinations_res (/ combinations_res (+ combinations_i 1))) (set! combinations_i (+ combinations_i 1)))) (throw (ex-info "return" {:v combinations_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

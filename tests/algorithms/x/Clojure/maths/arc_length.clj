@@ -17,11 +17,14 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare arc_length)
 
-(def ^:dynamic main_PI 3.141592653589793)
+(def ^:dynamic main_PI nil)
 
 (defn arc_length [arc_length_angle arc_length_radius]
   (try (throw (ex-info "return" {:v (* (* (* 2.0 main_PI) arc_length_radius) (/ arc_length_angle 360.0))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -30,6 +33,7 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_PI) (constantly 3.141592653589793))
       (println (str (arc_length 45.0 5.0)))
       (println (str (arc_length 120.0 15.0)))
       (println (str (arc_length 90.0 10.0)))

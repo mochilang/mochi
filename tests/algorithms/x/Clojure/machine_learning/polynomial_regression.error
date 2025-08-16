@@ -1,6 +1,6 @@
 run: exit status 1
-Execution error (IndexOutOfBoundsException) at main/matvec-mul (polynomial_regression.clj:130).
+Execution error (IndexOutOfBoundsException) at main/transpose (polynomial_regression.clj:127).
 null
 
 Full report at:
-/tmp/clojure-9976286307037123571.edn
+/tmp/clojure-4242237583577100701.edn

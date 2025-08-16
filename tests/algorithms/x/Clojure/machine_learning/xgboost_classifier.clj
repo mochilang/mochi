@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare mean stump_predict train_stump boost predict main)
@@ -94,7 +97,7 @@
 (def ^:dynamic train_stump_threshold nil)
 
 (defn mean [mean_xs]
-  (binding [mean_i nil mean_sum nil] (try (do (set! mean_sum 0.0) (set! mean_i 0) (while (< mean_i (count mean_xs)) (do (set! mean_sum (+ mean_sum (nth mean_xs mean_i))) (set! mean_i (+ mean_i 1)))) (throw (ex-info "return" {:v (quot mean_sum (* (count mean_xs) 1.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [mean_i nil mean_sum nil] (try (do (set! mean_sum 0.0) (set! mean_i 0) (while (< mean_i (count mean_xs)) (do (set! mean_sum (+ mean_sum (nth mean_xs mean_i))) (set! mean_i (+ mean_i 1)))) (throw (ex-info "return" {:v (/ mean_sum (* (count mean_xs) 1.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn stump_predict [stump_predict_s stump_predict_x]
   (try (if (< (nth stump_predict_x (:feature stump_predict_s)) (:threshold stump_predict_s)) (:left stump_predict_s) (:right stump_predict_s)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

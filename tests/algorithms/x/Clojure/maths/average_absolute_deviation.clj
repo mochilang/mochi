@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare abs_float average_absolute_deviation)
@@ -29,11 +32,13 @@
 
 (def ^:dynamic average_absolute_deviation_sum nil)
 
+(def ^:dynamic average_absolute_deviation_x nil)
+
 (defn abs_float [abs_float_x]
   (try (if (< abs_float_x 0.0) (- abs_float_x) abs_float_x) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn average_absolute_deviation [average_absolute_deviation_nums]
-  (binding [average_absolute_deviation_dev_sum nil average_absolute_deviation_mean nil average_absolute_deviation_n nil average_absolute_deviation_sum nil] (try (do (when (= (count average_absolute_deviation_nums) 0) (throw (Exception. "List is empty"))) (set! average_absolute_deviation_sum 0) (doseq [x average_absolute_deviation_nums] (set! average_absolute_deviation_sum (+ average_absolute_deviation_sum x))) (set! average_absolute_deviation_n (double (count average_absolute_deviation_nums))) (set! average_absolute_deviation_mean (quot (double average_absolute_deviation_sum) average_absolute_deviation_n)) (set! average_absolute_deviation_dev_sum 0.0) (doseq [x average_absolute_deviation_nums] (set! average_absolute_deviation_dev_sum (+ average_absolute_deviation_dev_sum (abs_float (- (double x) average_absolute_deviation_mean))))) (throw (ex-info "return" {:v (quot average_absolute_deviation_dev_sum average_absolute_deviation_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [average_absolute_deviation_dev_sum nil average_absolute_deviation_mean nil average_absolute_deviation_n nil average_absolute_deviation_sum nil average_absolute_deviation_x nil] (try (do (when (= (count average_absolute_deviation_nums) 0) (throw (Exception. "List is empty"))) (set! average_absolute_deviation_sum 0) (doseq [average_absolute_deviation_x average_absolute_deviation_nums] (set! average_absolute_deviation_sum (+ average_absolute_deviation_sum average_absolute_deviation_x))) (set! average_absolute_deviation_n (double (count average_absolute_deviation_nums))) (set! average_absolute_deviation_mean (/ (double average_absolute_deviation_sum) average_absolute_deviation_n)) (set! average_absolute_deviation_dev_sum 0.0) (doseq [average_absolute_deviation_x average_absolute_deviation_nums] (set! average_absolute_deviation_dev_sum (+ average_absolute_deviation_dev_sum (abs_float (- (double average_absolute_deviation_x) average_absolute_deviation_mean))))) (throw (ex-info "return" {:v (/ average_absolute_deviation_dev_sum average_absolute_deviation_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

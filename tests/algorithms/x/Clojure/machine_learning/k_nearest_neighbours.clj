@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare sqrtApprox make_knn euclidean_distance classify)
@@ -64,7 +67,7 @@
 (def ^:dynamic sqrtApprox_i nil)
 
 (defn sqrtApprox [sqrtApprox_x]
-  (binding [sqrtApprox_guess nil sqrtApprox_i nil] (try (do (when (<= sqrtApprox_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrtApprox_guess sqrtApprox_x) (set! sqrtApprox_i 0) (while (< sqrtApprox_i 20) (do (set! sqrtApprox_guess (/ (+ sqrtApprox_guess (quot sqrtApprox_x sqrtApprox_guess)) 2.0)) (set! sqrtApprox_i (+ sqrtApprox_i 1)))) (throw (ex-info "return" {:v sqrtApprox_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrtApprox_guess nil sqrtApprox_i nil] (try (do (when (<= sqrtApprox_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrtApprox_guess sqrtApprox_x) (set! sqrtApprox_i 0) (while (< sqrtApprox_i 20) (do (set! sqrtApprox_guess (/ (+ sqrtApprox_guess (/ sqrtApprox_x sqrtApprox_guess)) 2.0)) (set! sqrtApprox_i (+ sqrtApprox_i 1)))) (throw (ex-info "return" {:v sqrtApprox_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn make_knn [make_knn_train_data make_knn_train_target make_knn_class_labels]
   (binding [make_knn_i nil make_knn_items nil make_knn_pl nil] (try (do (set! make_knn_items []) (set! make_knn_i 0) (while (< make_knn_i (count make_knn_train_data)) (do (set! make_knn_pl {:label (nth make_knn_train_target make_knn_i) :point (nth make_knn_train_data make_knn_i)}) (set! make_knn_items (conj make_knn_items make_knn_pl)) (set! make_knn_i (+ make_knn_i 1)))) (throw (ex-info "return" {:v {:data make_knn_items :labels make_knn_class_labels}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -75,20 +78,25 @@
 (defn classify [classify_knn classify_pred_point classify_k]
   (binding [classify_d nil classify_distances nil classify_i nil classify_j nil classify_lbl nil classify_m nil classify_max_idx nil classify_min_index nil classify_t nil classify_tally nil classify_v nil classify_votes nil count_v nil] (try (do (set! classify_distances []) (set! classify_i 0) (while (< classify_i (count (:data classify_knn))) (do (set! classify_d (euclidean_distance (:point (get (:data classify_knn) classify_i)) classify_pred_point)) (set! classify_distances (conj classify_distances {:dist classify_d :label (:label (get (:data classify_knn) classify_i))})) (set! classify_i (+ classify_i 1)))) (set! classify_votes []) (set! count_v 0) (while (< count_v classify_k) (do (set! classify_min_index 0) (set! classify_j 1) (while (< classify_j (count classify_distances)) (do (when (< (:dist (nth classify_distances classify_j)) (:dist (nth classify_distances classify_min_index))) (set! classify_min_index classify_j)) (set! classify_j (+ classify_j 1)))) (set! classify_votes (conj classify_votes (:label (nth classify_distances classify_min_index)))) (set! classify_distances (assoc-in classify_distances [classify_min_index :dist] 1000000000000000000.0)) (set! count_v (+ count_v 1)))) (set! classify_tally []) (set! classify_t 0) (while (< classify_t (count (:labels classify_knn))) (do (set! classify_tally (conj classify_tally 0)) (set! classify_t (+ classify_t 1)))) (set! classify_v 0) (while (< classify_v (count classify_votes)) (do (set! classify_lbl (nth classify_votes classify_v)) (set! classify_tally (assoc classify_tally classify_lbl (+ (nth classify_tally classify_lbl) 1))) (set! classify_v (+ classify_v 1)))) (set! classify_max_idx 0) (set! classify_m 1) (while (< classify_m (count classify_tally)) (do (when (> (nth classify_tally classify_m) (nth classify_tally classify_max_idx)) (set! classify_max_idx classify_m)) (set! classify_m (+ classify_m 1)))) (throw (ex-info "return" {:v (get (:labels classify_knn) classify_max_idx)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_train_X [[0.0 0.0] [1.0 0.0] [0.0 1.0] [0.5 0.5] [3.0 3.0] [2.0 3.0] [3.0 2.0]])
+(def ^:dynamic main_train_X nil)
 
-(def ^:dynamic main_train_y [0 0 0 0 1 1 1])
+(def ^:dynamic main_train_y nil)
 
-(def ^:dynamic main_classes ["A" "B"])
+(def ^:dynamic main_classes nil)
 
-(def ^:dynamic main_knn (make_knn main_train_X main_train_y main_classes))
+(def ^:dynamic main_knn nil)
 
-(def ^:dynamic main_point [1.2 1.2])
+(def ^:dynamic main_point nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_train_X) (constantly [[0.0 0.0] [1.0 0.0] [0.0 1.0] [0.5 0.5] [3.0 3.0] [2.0 3.0] [3.0 2.0]]))
+      (alter-var-root (var main_train_y) (constantly [0 0 0 0 1 1 1]))
+      (alter-var-root (var main_classes) (constantly ["A" "B"]))
+      (alter-var-root (var main_knn) (constantly (make_knn main_train_X main_train_y main_classes)))
+      (alter-var-root (var main_point) (constantly [1.2 1.2]))
       (println (classify main_knn main_point 5))
       (System/gc)
       (let [end (System/nanoTime)
