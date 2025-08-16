@@ -1,8 +1,692 @@
-type: error[T005]: parameter `name` is missing a type
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:15:1
-
- 15 | fun make_node(name, count, parent) {
-    | ^
-
-help:
-  Add a type like `x: int` to this parameter.
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:87:215: warning: multi-character character constant [-Wmultichar]
+   87 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << " : "; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In instantiation of ‘update_tree(const std::vector<std::__cxx11::basic_string<char> >&, std::any&, std::any&, int64_t)::<lambda(const auto:48&, const auto:49&)> [with auto:48 = std::any; auto:49 = std::__cxx11::basic_string<char>]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:160:324:   required from here
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:160:281: error: ‘const class std::any’ has no member named ‘begin’
+  160 |     if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(children, first)) {
+      |                                                                                                                                                                                                                                                                                     ~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:160:294: error: ‘const class std::any’ has no member named ‘end’
+  160 |     if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(children, first)) {
+      |                                                                                                                                                                                                                                                                                                  ~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:160:313: error: ‘const class std::any’ has no member named ‘end’
+  160 |     if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(children, first)) {
+      |                                                                                                                                                                                                                                                                                                                     ~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In function ‘std::any create_tree(const std::vector<std::vector<std::__cxx11::basic_string<char> > >&, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:202:24: error: wrong number of template arguments (1, should be at least 2)
+  202 |     std::map<auto, auto> counts = {};
+      |                        ^
+In file included from /usr/include/c++/13/map:63,
+                 from /workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:5:
+/usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
+  102 |     class map
+      |           ^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In instantiation of ‘create_tree(const std::vector<std::vector<std::__cxx11::basic_string<char> > >&, int64_t)::<lambda(const auto:51&, const auto:52&)> [with auto:51 = int; auto:52 = std::__cxx11::basic_string<char>]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:209:332:   required from here
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:209:289: error: request for member ‘begin’ in ‘__c’, which is of non-class type ‘const int’
+  209 |             if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(counts, item)) {
+      |                                                                                                                                                                                                                                                                                             ~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:209:302: error: request for member ‘end’ in ‘__c’, which is of non-class type ‘const int’
+  209 |             if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(counts, item)) {
+      |                                                                                                                                                                                                                                                                                                          ~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:209:321: error: request for member ‘end’ in ‘__c’, which is of non-class type ‘const int’
+  209 |             if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(counts, item)) {
+      |                                                                                                                                                                                                                                                                                                                             ~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:210:24: error: invalid ‘static_cast’ from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘size_t’ {aka ‘long unsigned int’}
+  210 |                 counts[static_cast<size_t>(item)] = (([&](const auto& __m){ auto __it = __m.find(item); if (__it == __m.end()) return auto{}; return __it->second; })(counts) + int64_t(1));
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In instantiation of ‘create_tree(const std::vector<std::vector<std::__cxx11::basic_string<char> > >&, int64_t)::<lambda(const auto:53&)> [with auto:53 = int]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:210:166:   required from here
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:210:93: error: request for member ‘find’ in ‘__m’, which is of non-class type ‘const int’
+  210 |                 counts[static_cast<size_t>(item)] = (([&](const auto& __m){ auto __it = __m.find(item); if (__it == __m.end()) return auto{}; return __it->second; })(counts) + int64_t(1));
+      |                                                                                         ~~~~^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:210:121: error: request for member ‘end’ in ‘__m’, which is of non-class type ‘const int’
+  210 |                 counts[static_cast<size_t>(item)] = (([&](const auto& __m){ auto __it = __m.find(item); if (__it == __m.end()) return auto{}; return __it->second; })(counts) + int64_t(1));
+      |                                                                                                                     ~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:210:140: error: invalid use of ‘auto’
+  210 |                 counts[static_cast<size_t>(item)] = (([&](const auto& __m){ auto __it = __m.find(item); if (__it == __m.end()) return auto{}; return __it->second; })(counts) + int64_t(1));
+      |                                                                                                                                            ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:212:24: error: invalid ‘static_cast’ from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘size_t’ {aka ‘long unsigned int’}
+  212 |                 counts[static_cast<size_t>(item)] = int64_t(1);
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:218:24: error: wrong number of template arguments (1, should be at least 2)
+  218 |     std::map<auto, auto> header_table = {};
+      |                        ^
+/usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
+  102 |     class map
+      |           ^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:219:28: error: ‘begin’ was not declared in this scope
+  219 |     for (const auto& __p : counts) {
+      |                            ^~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:219:28: note: suggested alternatives:
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:2:
+/usr/include/c++/13/bits/range_access.h:114:37: note:   ‘std::begin’
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+In file included from /usr/include/c++/13/string_view:48,
+                 from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/bits/ranges_base.h:489:44: note:   ‘std::ranges::__cust::begin’
+  489 |     inline constexpr __cust_access::_Begin begin{};
+      |                                            ^~~~~
+In file included from /usr/include/c++/13/bits/stl_iterator_base_types.h:71,
+                 from /usr/include/c++/13/bits/stl_construct.h:61,
+                 from /usr/include/c++/13/bits/char_traits.h:57,
+                 from /usr/include/c++/13/ios:42:
+/usr/include/c++/13/bits/iterator_concepts.h:984:10: note:   ‘std::ranges::__cust_access::begin’
+  984 |     void begin(const auto&) = delete;
+      |          ^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:219:28: error: ‘end’ was not declared in this scope
+  219 |     for (const auto& __p : counts) {
+      |                            ^~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:219:28: note: suggested alternatives:
+/usr/include/c++/13/bits/range_access.h:116:37: note:   ‘std::end’
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/usr/include/c++/13/bits/ranges_base.h:490:42: note:   ‘std::ranges::__cust::end’
+  490 |     inline constexpr __cust_access::_End end{};
+      |                                          ^~~
+/usr/include/c++/13/bits/ranges_base.h:137:10: note:   ‘std::ranges::__cust_access::end’
+  137 |     void end(const auto&) = delete;
+      |          ^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In instantiation of ‘create_tree(const std::vector<std::vector<std::__cxx11::basic_string<char> > >&, int64_t)::<lambda(const auto:54&)> [with auto:54 = int]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:221:129:   required from here
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:221:59: error: request for member ‘find’ in ‘__m’, which is of non-class type ‘const int’
+  221 |         auto cnt = ([&](const auto& __m){ auto __it = __m.find(k); if (__it == __m.end()) return auto{}; return __it->second; })(counts);
+      |                                                       ~~~~^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:221:84: error: request for member ‘end’ in ‘__m’, which is of non-class type ‘const int’
+  221 |         auto cnt = ([&](const auto& __m){ auto __it = __m.find(k); if (__it == __m.end()) return auto{}; return __it->second; })(counts);
+      |                                                                                ~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:221:103: error: invalid use of ‘auto’
+  221 |         auto cnt = ([&](const auto& __m){ auto __it = __m.find(k); if (__it == __m.end()) return auto{}; return __it->second; })(counts);
+      |                                                                                                       ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:223:137: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, std::any>::map(<brace-enclosed initializer list>)’
+  223 |             header_table[static_cast<size_t>(k)] = std::map<std::string, std::any>{{"count", std::any(cnt)}, {"node", std::any(nullptr)}};
+      |                                                                                                                                         ^
+/usr/include/c++/13/bits/stl_map.h:302:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  302 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:302:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:223:137: note:   candidate expects 4 arguments, 2 provided
+  223 |             header_table[static_cast<size_t>(k)] = std::map<std::string, std::any>{{"count", std::any(cnt)}, {"node", std::any(nullptr)}};
+      |                                                                                                                                         ^
+/usr/include/c++/13/bits/stl_map.h:285:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  285 |         map(_InputIterator __first, _InputIterator __last)
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:285:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:223:137: note:   couldn’t deduce template parameter ‘_InputIterator’
+  223 |             header_table[static_cast<size_t>(k)] = std::map<std::string, std::any>{{"count", std::any(cnt)}, {"node", std::any(nullptr)}};
+      |                                                                                                                                         ^
+/usr/include/c++/13/bits/stl_map.h:268:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  268 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:268:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:223:137: note:   candidate expects 3 arguments, 2 provided
+  223 |             header_table[static_cast<size_t>(k)] = std::map<std::string, std::any>{{"count", std::any(cnt)}, {"node", std::any(nullptr)}};
+      |                                                                                                                                         ^
+/usr/include/c++/13/bits/stl_map.h:262:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  262 |       map(initializer_list<value_type> __l, const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:262:40: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const std::__cxx11::basic_string<char>, std::any> >’
+  262 |       map(initializer_list<value_type> __l, const allocator_type& __a)
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:256:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  256 |       map(map&& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:256:17: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::map<std::__cxx11::basic_string<char>, std::any>&&’
+  256 |       map(map&& __m, const __type_identity_t<allocator_type>& __a)
+      |           ~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:252:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  252 |       map(const map& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:252:22: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::map<std::__cxx11::basic_string<char>, std::any>&’
+  252 |       map(const map& __m, const __type_identity_t<allocator_type>& __a)
+      |           ~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:248:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  248 |       map(const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:248:7: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/13/bits/stl_map.h:240:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  240 |       map(initializer_list<value_type> __l,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:240:40: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const std::__cxx11::basic_string<char>, std::any> >’
+  240 |       map(initializer_list<value_type> __l,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  227 |       map(map&&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/13/bits/stl_map.h:219:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  219 |       map(const map&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:219:7: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/13/bits/stl_map.h:206:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  206 |       map(const _Compare& __comp,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:206:27: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::less<std::__cxx11::basic_string<char> >&’
+  206 |       map(const _Compare& __comp,
+      |           ~~~~~~~~~~~~~~~~^~~~~~
+/usr/include/c++/13/bits/stl_map.h:197:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map() [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  197 |       map() = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:197:7: note:   candidate expects 0 arguments, 2 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:227:28: error: ‘begin’ was not declared in this scope
+  227 |     for (const auto& __p : header_table) {
+      |                            ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:227:28: note: suggested alternatives:
+/usr/include/c++/13/bits/range_access.h:114:37: note:   ‘std::begin’
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/usr/include/c++/13/bits/ranges_base.h:489:44: note:   ‘std::ranges::__cust::begin’
+  489 |     inline constexpr __cust_access::_Begin begin{};
+      |                                            ^~~~~
+/usr/include/c++/13/bits/iterator_concepts.h:984:10: note:   ‘std::ranges::__cust_access::begin’
+  984 |     void begin(const auto&) = delete;
+      |          ^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:227:28: error: ‘end’ was not declared in this scope
+  227 |     for (const auto& __p : header_table) {
+      |                            ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:227:28: note: suggested alternatives:
+/usr/include/c++/13/bits/range_access.h:116:37: note:   ‘std::end’
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/usr/include/c++/13/bits/ranges_base.h:490:42: note:   ‘std::ranges::__cust::end’
+  490 |     inline constexpr __cust_access::_End end{};
+      |                                          ^~~
+/usr/include/c++/13/bits/ranges_base.h:137:10: note:   ‘std::ranges::__cust_access::end’
+  137 |     void end(const auto&) = delete;
+      |          ^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In instantiation of ‘create_tree(const std::vector<std::vector<std::__cxx11::basic_string<char> > >&, int64_t)::<lambda(const auto:55&, const auto:56&)> [with auto:55 = int; auto:56 = std::__cxx11::basic_string<char>]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:242:332:   required from here
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:242:289: error: request for member ‘begin’ in ‘__c’, which is of non-class type ‘const int’
+  242 |             if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(header_table, item)) {
+      |                                                                                                                                                                                                                                                                                             ~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:242:302: error: request for member ‘end’ in ‘__c’, which is of non-class type ‘const int’
+  242 |             if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(header_table, item)) {
+      |                                                                                                                                                                                                                                                                                                          ~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:242:321: error: request for member ‘end’ in ‘__c’, which is of non-class type ‘const int’
+  242 |             if (([&](const auto& __c, const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(header_table, item)) {
+      |                                                                                                                                                                                                                                                                                                                             ~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:243:79: error: invalid cast from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘int64_t’ {aka ‘long int’}
+  243 |                 local_items = ([&]{ auto __tmp = local_items; __tmp.push_back((int64_t)item); return __tmp; }());
+      |                                                                               ^~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In function ‘std::any create_tree(const std::vector<std::vector<std::__cxx11::basic_string<char> > >&, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:248:76: error: no matching function for call to ‘std::vector<std::__cxx11::basic_string<char> >::vector(std::vector<long int>&)’
+  248 |             local_items = sort_items((std::vector<std::string>)(local_items), (std::any)(header_table));
+      |                                                                            ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:8:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> constexpr std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:248:76: note:   candidate expects 3 arguments, 1 provided
+  248 |             local_items = sort_items((std::vector<std::string>)(local_items), (std::any)(header_table));
+      |                                                                            ^
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::__cxx11::basic_string<char> >]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:43: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::initializer_list<std::__cxx11::basic_string<char> >’
+  678 |       vector(initializer_list<value_type> __l,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; std::__type_identity_t<_Alloc> = std::allocator<std::__cxx11::basic_string<char> >]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::__cxx11::basic_string<char> >; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::__cxx11::basic_string<char> >; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; std::__type_identity_t<_Alloc> = std::allocator<std::__cxx11::basic_string<char> >]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:14: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::vector<std::__cxx11::basic_string<char> >&&’
+  620 |       vector(vector&&) noexcept = default;
+      |              ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:28: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘const std::vector<std::__cxx11::basic_string<char> >&’
+  601 |       vector(const vector& __x)
+      |              ~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; size_type = long unsigned int; value_type = std::__cxx11::basic_string<char>; allocator_type = std::allocator<std::__cxx11::basic_string<char> >]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; size_type = long unsigned int; allocator_type = std::allocator<std::__cxx11::basic_string<char> >]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:24: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::vector<std::__cxx11::basic_string<char> >::size_type’ {aka ‘long unsigned int’}
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |              ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::__cxx11::basic_string<char> >]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:36: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘const std::vector<std::__cxx11::basic_string<char> >::allocator_type&’ {aka ‘const std::allocator<std::__cxx11::basic_string<char> >&’}
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |              ~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector() [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:249:116: error: no matching function for call to ‘std::vector<std::__cxx11::basic_string<char> >::vector(std::vector<long int>&)’
+  249 |             ([&]{ auto __arg2 = (std::any)(header_table); return update_tree((std::vector<std::string>)(local_items), fp_tree, __arg2, int64_t(1)); }());
+      |                                                                                                                    ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> constexpr std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:249:116: note:   candidate expects 3 arguments, 1 provided
+  249 |             ([&]{ auto __arg2 = (std::any)(header_table); return update_tree((std::vector<std::string>)(local_items), fp_tree, __arg2, int64_t(1)); }());
+      |                                                                                                                    ^
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::__cxx11::basic_string<char> >]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:43: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::initializer_list<std::__cxx11::basic_string<char> >’
+  678 |       vector(initializer_list<value_type> __l,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; std::__type_identity_t<_Alloc> = std::allocator<std::__cxx11::basic_string<char> >]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::__cxx11::basic_string<char> >; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::__cxx11::basic_string<char> >; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; std::__type_identity_t<_Alloc> = std::allocator<std::__cxx11::basic_string<char> >]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:14: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::vector<std::__cxx11::basic_string<char> >&&’
+  620 |       vector(vector&&) noexcept = default;
+      |              ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:28: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘const std::vector<std::__cxx11::basic_string<char> >&’
+  601 |       vector(const vector& __x)
+      |              ~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; size_type = long unsigned int; value_type = std::__cxx11::basic_string<char>; allocator_type = std::allocator<std::__cxx11::basic_string<char> >]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; size_type = long unsigned int; allocator_type = std::allocator<std::__cxx11::basic_string<char> >]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:24: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::vector<std::__cxx11::basic_string<char> >::size_type’ {aka ‘long unsigned int’}
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |              ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::__cxx11::basic_string<char> >]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:36: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘const std::vector<std::__cxx11::basic_string<char> >::allocator_type&’ {aka ‘const std::allocator<std::__cxx11::basic_string<char> >&’}
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |              ~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector() [with _Tp = std::__cxx11::basic_string<char>; _Alloc = std::allocator<std::__cxx11::basic_string<char> >]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:274:71: error: invalid cast from type ‘std::map<std::__cxx11::basic_string<char>, std::any>’ to type ‘int64_t’ {aka ‘long int’}
+  274 |             cond_pats = ([&]{ auto __tmp = cond_pats; __tmp.push_back((int64_t)std::map<std::string, std::any>{{"items", std::any(items)}, {"count", std::any(std::any_cast<std::any>(std::any_cast<std::map<std::string, std::any>>(node)[std::string("count")]))}}); return __tmp; }());
+      |                                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In function ‘std::vector<std::any> find_prefix_path(std::string, std::any)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:278:12: error: could not convert ‘cond_pats’ from ‘vector<long int>’ to ‘vector<std::any>’
+  278 |     return cond_pats;
+      |            ^~~~~~~~~
+      |            |
+      |            vector<long int>
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In function ‘std::vector<std::vector<std::__cxx11::basic_string<char> > > mine_tree(std::any, std::any, int64_t, const std::vector<std::__cxx11::basic_string<char> >&, const std::vector<std::vector<std::__cxx11::basic_string<char> > >&)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: error: no matching function for call to ‘begin(std::any&)’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/range_access.h:36:
+/usr/include/c++/13/initializer_list:88:5: note: candidate: ‘template<class _Tp> constexpr const _Tp* std::begin(initializer_list<_Tp>)’
+   88 |     begin(initializer_list<_Tp> __ils) noexcept
+      |     ^~~~~
+/usr/include/c++/13/initializer_list:88:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: note:   ‘std::any’ is not derived from ‘std::initializer_list<_Tp>’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/range_access.h:52:5: note: candidate: ‘template<class _Container> constexpr decltype (__cont.begin()) std::begin(_Container&)’
+   52 |     begin(_Container& __cont) -> decltype(__cont.begin())
+      |     ^~~~~
+/usr/include/c++/13/bits/range_access.h:52:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/range_access.h: In substitution of ‘template<class _Container> constexpr decltype (__cont.begin()) std::begin(_Container&) [with _Container = std::any]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23:   required from here
+/usr/include/c++/13/bits/range_access.h:52:50: error: ‘class std::any’ has no member named ‘begin’
+   52 |     begin(_Container& __cont) -> decltype(__cont.begin())
+      |                                           ~~~~~~~^~~~~
+/usr/include/c++/13/bits/range_access.h:63:5: note: candidate: ‘template<class _Container> constexpr decltype (__cont.begin()) std::begin(const _Container&)’
+   63 |     begin(const _Container& __cont) -> decltype(__cont.begin())
+      |     ^~~~~
+/usr/include/c++/13/bits/range_access.h:63:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/range_access.h: In substitution of ‘template<class _Container> constexpr decltype (__cont.begin()) std::begin(const _Container&) [with _Container = std::any]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23:   required from here
+/usr/include/c++/13/bits/range_access.h:63:56: error: ‘const class std::any’ has no member named ‘begin’
+   63 |     begin(const _Container& __cont) -> decltype(__cont.begin())
+      |                                                 ~~~~~~~^~~~~
+/usr/include/c++/13/bits/range_access.h:95:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr _Tp* std::begin(_Tp (&)[_Nm])’
+   95 |     begin(_Tp (&__arr)[_Nm]) noexcept
+      |     ^~~~~
+/usr/include/c++/13/bits/range_access.h:95:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: note:   mismatched types ‘_Tp [_Nm]’ and ‘std::any’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/range_access.h:113:31: note: candidate: ‘template<class _Tp> _Tp* std::begin(valarray<_Tp>&)’
+  113 |   template<typename _Tp> _Tp* begin(valarray<_Tp>&) noexcept;
+      |                               ^~~~~
+/usr/include/c++/13/bits/range_access.h:113:31: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: note:   ‘std::any’ is not derived from ‘std::valarray<_Tp>’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/range_access.h:114:37: note: candidate: ‘template<class _Tp> const _Tp* std::begin(const valarray<_Tp>&)’
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/usr/include/c++/13/bits/range_access.h:114:37: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: note:   ‘std::any’ is not derived from ‘const std::valarray<_Tp>’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: error: no matching function for call to ‘end(std::any&)’
+/usr/include/c++/13/initializer_list:99:5: note: candidate: ‘template<class _Tp> constexpr const _Tp* std::end(initializer_list<_Tp>)’
+   99 |     end(initializer_list<_Tp> __ils) noexcept
+      |     ^~~
+/usr/include/c++/13/initializer_list:99:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: note:   ‘std::any’ is not derived from ‘std::initializer_list<_Tp>’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/range_access.h:74:5: note: candidate: ‘template<class _Container> constexpr decltype (__cont.end()) std::end(_Container&)’
+   74 |     end(_Container& __cont) -> decltype(__cont.end())
+      |     ^~~
+/usr/include/c++/13/bits/range_access.h:74:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/range_access.h: In substitution of ‘template<class _Container> constexpr decltype (__cont.end()) std::end(_Container&) [with _Container = std::any]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23:   required from here
+/usr/include/c++/13/bits/range_access.h:74:48: error: ‘class std::any’ has no member named ‘end’
+   74 |     end(_Container& __cont) -> decltype(__cont.end())
+      |                                         ~~~~~~~^~~
+/usr/include/c++/13/bits/range_access.h:85:5: note: candidate: ‘template<class _Container> constexpr decltype (__cont.end()) std::end(const _Container&)’
+   85 |     end(const _Container& __cont) -> decltype(__cont.end())
+      |     ^~~
+/usr/include/c++/13/bits/range_access.h:85:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/range_access.h: In substitution of ‘template<class _Container> constexpr decltype (__cont.end()) std::end(const _Container&) [with _Container = std::any]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23:   required from here
+/usr/include/c++/13/bits/range_access.h:85:54: error: ‘const class std::any’ has no member named ‘end’
+   85 |     end(const _Container& __cont) -> decltype(__cont.end())
+      |                                               ~~~~~~~^~~
+/usr/include/c++/13/bits/range_access.h:106:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr _Tp* std::end(_Tp (&)[_Nm])’
+  106 |     end(_Tp (&__arr)[_Nm]) noexcept
+      |     ^~~
+/usr/include/c++/13/bits/range_access.h:106:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: note:   mismatched types ‘_Tp [_Nm]’ and ‘std::any’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/range_access.h:115:31: note: candidate: ‘template<class _Tp> _Tp* std::end(valarray<_Tp>&)’
+  115 |   template<typename _Tp> _Tp* end(valarray<_Tp>&) noexcept;
+      |                               ^~~
+/usr/include/c++/13/bits/range_access.h:115:31: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: note:   ‘std::any’ is not derived from ‘std::valarray<_Tp>’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/range_access.h:116:37: note: candidate: ‘template<class _Tp> const _Tp* std::end(const valarray<_Tp>&)’
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/usr/include/c++/13/bits/range_access.h:116:37: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:284:23: note:   ‘std::any’ is not derived from ‘const std::valarray<_Tp>’
+  284 |     for (std::any k : header_table) {
+      |                       ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:305:78: error: no matching function for call to ‘std::__cxx11::basic_string<char>::basic_string(int64_t&)’
+  305 |         new_freq = ([&]{ auto __tmp = new_freq; __tmp.push_back((std::string)base_pat); return __tmp; }());
+      |                                                                              ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:795:9: note: candidate: ‘template<class _Tp, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  795 |         basic_string(const _Tp& __t, const _Alloc& __a = _Alloc())
+      |         ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:795:9: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/13/bits/move.h:37,
+                 from /usr/include/c++/13/bits/exception_ptr.h:41,
+                 from /usr/include/c++/13/exception:164,
+                 from /usr/include/c++/13/ios:41:
+/usr/include/c++/13/type_traits: In substitution of ‘template<bool _Cond, class _Tp> using std::enable_if_t = typename std::enable_if::type [with bool _Cond = false; _Tp = void]’:
+/usr/include/c++/13/bits/basic_string.h:144:8:   required by substitution of ‘template<class _CharT, class _Traits, class _Alloc> template<class _Tp, class _Res> using std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_If_sv = std::enable_if_t<std::__and_<std::is_convertible<const _Tp&, std::basic_string_view<_CharT, _Traits> >, std::__not_<std::is_convertible<const _Tp*, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>*> >, std::__not_<std::is_convertible<const _Tp&, const _CharT*> > >::value, _Res> [with _Tp = long int; _Res = void; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:792:30:   required from here
+/usr/include/c++/13/type_traits:2610:11: error: no type named ‘type’ in ‘struct std::enable_if<false, void>’
+ 2610 |     using enable_if_t = typename enable_if<_Cond, _Tp>::type;
+      |           ^~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:783:9: note: candidate: ‘template<class _Tp, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, size_type, size_type, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  783 |         basic_string(const _Tp& __t, size_type __pos, size_type __n,
+      |         ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:783:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:305:78: note:   candidate expects 4 arguments, 1 provided
+  305 |         new_freq = ([&]{ auto __tmp = new_freq; __tmp.push_back((std::string)base_pat); return __tmp; }());
+      |                                                                              ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:760:9: note: candidate: ‘template<class _InputIterator, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(_InputIterator, _InputIterator, const _Alloc&) [with <template-parameter-2-2> = _InputIterator; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  760 |         basic_string(_InputIterator __beg, _InputIterator __end,
+      |         ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:760:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:305:78: note:   candidate expects 3 arguments, 1 provided
+  305 |         new_freq = ([&]{ auto __tmp = new_freq; __tmp.push_back((std::string)base_pat); return __tmp; }());
+      |                                                                              ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:664:7: note: candidate: ‘template<class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(size_type, _CharT, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  664 |       basic_string(size_type __n, _CharT __c, const _Alloc& __a = _Alloc())
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:664:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:305:78: note:   candidate expects 3 arguments, 1 provided
+  305 |         new_freq = ([&]{ auto __tmp = new_freq; __tmp.push_back((std::string)base_pat); return __tmp; }());
+      |                                                                              ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:641:7: note: candidate: ‘template<class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  641 |       basic_string(const _CharT* __s, const _Alloc& __a = _Alloc())
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:641:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:305:78: note:   cannot convert ‘base_pat’ (type ‘int64_t’ {aka ‘long int’}) to type ‘const char*’
+  305 |         new_freq = ([&]{ auto __tmp = new_freq; __tmp.push_back((std::string)base_pat); return __tmp; }());
+      |                                                                              ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:716:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  716 |       basic_string(basic_string&& __str, const _Alloc& __a)
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:716:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/basic_string.h:711:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  711 |       basic_string(const basic_string& __str, const _Alloc& __a)
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:711:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/basic_string.h:706:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::initializer_list<_Tp>, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  706 |       basic_string(initializer_list<_CharT> __l, const _Alloc& __a = _Alloc())
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:706:45: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘std::initializer_list<char>’
+  706 |       basic_string(initializer_list<_CharT> __l, const _Alloc& __a = _Alloc())
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/basic_string.h:677:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  677 |       basic_string(basic_string&& __str) noexcept
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:677:35: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘std::__cxx11::basic_string<char>&&’
+  677 |       basic_string(basic_string&& __str) noexcept
+      |                    ~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:619:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+  619 |       basic_string(const _CharT* __s, size_type __n,
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:619:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/basic_string.h:599:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+  599 |       basic_string(const basic_string& __str, size_type __pos,
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:599:7: note:   candidate expects 4 arguments, 1 provided
+/usr/include/c++/13/bits/basic_string.h:581:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+  581 |       basic_string(const basic_string& __str, size_type __pos,
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:581:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/basic_string.h:564:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+  564 |       basic_string(const basic_string& __str, size_type __pos,
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:564:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/basic_string.h:547:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  547 |       basic_string(const basic_string& __str)
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:547:40: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘const std::__cxx11::basic_string<char>&’
+  547 |       basic_string(const basic_string& __str)
+      |                    ~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:535:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  535 |       basic_string(const _Alloc& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:535:34: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘const std::allocator<char>&’
+  535 |       basic_string(const _Alloc& __a) _GLIBCXX_NOEXCEPT
+      |                    ~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/basic_string.h:522:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  522 |       basic_string()
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:522:7: note:   candidate expects 0 arguments, 1 provided
+/usr/include/c++/13/bits/basic_string.h:176:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(__sv_wrapper, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  176 |       basic_string(__sv_wrapper __svw, const _Alloc& __a)
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:176:7: note:   candidate expects 2 arguments, 1 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In function ‘std::vector<std::vector<std::__cxx11::basic_string<char> > > mine_tree(std::any, std::any, int64_t, const std::vector<std::__cxx11::basic_string<char> >&, const std::vector<std::vector<std::__cxx11::basic_string<char> > >&)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:319:89: error: no matching function for call to ‘std::vector<std::vector<std::__cxx11::basic_string<char> > >::vector(std::vector<long int>&)’
+  319 |         std::any res2 = create_tree((std::vector<std::vector<std::string>>)(cond_dataset), min_sup);
+      |                                                                                         ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> constexpr std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:319:89: note:   candidate expects 3 arguments, 1 provided
+  319 |         std::any res2 = create_tree((std::vector<std::vector<std::string>>)(cond_dataset), min_sup);
+      |                                                                                         ^
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:43: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::initializer_list<std::vector<std::__cxx11::basic_string<char> > >’
+  678 |       vector(initializer_list<value_type> __l,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; std::__type_identity_t<_Alloc> = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; std::__type_identity_t<_Alloc> = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:14: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::vector<std::vector<std::__cxx11::basic_string<char> > >&&’
+  620 |       vector(vector&&) noexcept = default;
+      |              ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:28: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘const std::vector<std::vector<std::__cxx11::basic_string<char> > >&’
+  601 |       vector(const vector& __x)
+      |              ~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; size_type = long unsigned int; value_type = std::vector<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; size_type = long unsigned int; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:24: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::vector<std::vector<std::__cxx11::basic_string<char> > >::size_type’ {aka ‘long unsigned int’}
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |              ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:36: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘const std::vector<std::vector<std::__cxx11::basic_string<char> > >::allocator_type&’ {aka ‘const std::allocator<std::vector<std::__cxx11::basic_string<char> > >&’}
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |              ~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector() [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp: In function ‘int main()’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:360:145: error: no matching function for call to ‘std::vector<std::vector<std::__cxx11::basic_string<char> > >::vector(std::vector<long int>&)’
+  360 |         freq_items = mine_tree(fp_tree, header_table, int64_t(3), std::vector<std::string>{}, (std::vector<std::vector<std::string>>)(freq_items));
+      |                                                                                                                                                 ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> constexpr std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/machine_learning/frequent_pattern_growth.cpp:360:145: note:   candidate expects 3 arguments, 1 provided
+  360 |         freq_items = mine_tree(fp_tree, header_table, int64_t(3), std::vector<std::string>{}, (std::vector<std::vector<std::string>>)(freq_items));
+      |                                                                                                                                                 ^
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:43: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::initializer_list<std::vector<std::__cxx11::basic_string<char> > >’
+  678 |       vector(initializer_list<value_type> __l,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; std::__type_identity_t<_Alloc> = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; std::__type_identity_t<_Alloc> = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:14: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::vector<std::vector<std::__cxx11::basic_string<char> > >&&’
+  620 |       vector(vector&&) noexcept = default;
+      |              ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:28: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘const std::vector<std::vector<std::__cxx11::basic_string<char> > >&’
+  601 |       vector(const vector& __x)
+      |              ~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; size_type = long unsigned int; value_type = std::vector<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; size_type = long unsigned int; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:24: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘std::vector<std::vector<std::__cxx11::basic_string<char> > >::size_type’ {aka ‘long unsigned int’}
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |              ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >; allocator_type = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:36: note:   no known conversion for argument 1 from ‘std::vector<long int>’ to ‘const std::vector<std::vector<std::__cxx11::basic_string<char> > >::allocator_type&’ {aka ‘const std::allocator<std::vector<std::__cxx11::basic_string<char> > >&’}
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |              ~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector() [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::vector<std::__cxx11::basic_string<char> > >]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
