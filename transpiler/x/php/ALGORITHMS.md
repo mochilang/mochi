@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-16 12:04 GMT+7
+Last updated: 2025-08-16 14:52 GMT+7
 
 ## Algorithms Golden Test Checklist (990/1077)
 | Index | Name | Status | Duration | Memory |
@@ -531,8 +531,8 @@ Last updated: 2025-08-16 12:04 GMT+7
 | 522 | machine_learning/similarity_search | ✓ | 125µs | 39.3 KB |
 | 523 | machine_learning/support_vector_machines | ✓ | 925µs | 35.3 KB |
 | 524 | machine_learning/word_frequency_functions | ✓ | 405µs | 74.8 KB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 126µs | 37.1 KB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 98µs | 40.9 KB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 126µs | 37.2 KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 100µs | 41.0 KB |
 | 527 | maths/abs | ✓ | 86µs | 37.4 KB |
 | 528 | maths/addition_without_arithmetic | ✓ | 358µs | 36.3 KB |
 | 529 | maths/aliquot_sum | ✓ | 91µs | 35.9 KB |
