@@ -1042,7 +1042,7 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w, "template<typename T> std::string _to_string(const T& v) {")
 	fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, double>) {")
 	fmt.Fprintln(w, "        std::ostringstream ss;")
-	fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(6) << v;")
+	fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(15) << v;")
 	fmt.Fprintln(w, "        auto s = ss.str();")
 	fmt.Fprintln(w, "        auto epos = s.find('e');")
 	fmt.Fprintln(w, "        if(epos == std::string::npos) epos = s.find('E');")
@@ -1223,11 +1223,12 @@ func (p *Program) write(w io.Writer) {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else {
-				if p.ByVal {
-					io.WriteString(w, typ+"&")
-				} else {
-					io.WriteString(w, typ)
-				}
+				// Primitive types in Mochi have value semantics even when
+				// mutated inside the function body. Passing such parameters by
+				// reference in C++ leaks mutations back to the caller, which is
+				// incorrect for programs that expect copies. Always pass
+				// primitives by value regardless of whether they are mutated.
+				io.WriteString(w, typ)
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, safeName(p.Name))
@@ -1300,22 +1301,21 @@ func (f *Func) emit(w io.Writer) {
 		} else {
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
+					// Mutating container parameters should reflect in the caller, so pass by reference.
 					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+"& ")
+					// Struct parameters are copied when mutated to preserve Mochi semantics.
+					io.WriteString(w, typ+" ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else {
-				if p.ByVal {
-					io.WriteString(w, typ+"& ")
-				} else {
-					io.WriteString(w, typ+" ")
-				}
+				// Primitive types are always passed by value.
+				io.WriteString(w, typ+" ")
 			}
 		}
 		io.WriteString(w, safeName(p.Name))
