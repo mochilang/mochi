@@ -1443,6 +1443,7 @@ type BinaryExpr struct {
 	InMap    bool
 	FloatMod bool
 	IntOp    bool
+	StringOp bool
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -1482,32 +1483,37 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 
-	var op string
 	switch b.Op {
 	case "+":
 		if b.IntOp {
-			op = "&+"
+			fmt.Fprintf(w, "(%s &+ %s)", left, right)
+		} else if b.StringOp {
+			fmt.Fprintf(w, "(_p(%s) + _p(%s))", left, right)
 		} else {
-			op = "+"
+			fmt.Fprintf(w, "(%s + %s)", left, right)
 		}
+		return
 	case "-":
 		if b.IntOp {
-			op = "&-"
+			fmt.Fprintf(w, "(%s &- %s)", left, right)
 		} else {
-			op = "-"
+			fmt.Fprintf(w, "(%s - %s)", left, right)
 		}
+		return
 	case "*":
 		if b.IntOp {
-			op = "&*"
+			fmt.Fprintf(w, "(%s &* %s)", left, right)
 		} else {
-			op = "*"
+			fmt.Fprintf(w, "(%s * %s)", left, right)
 		}
+		return
 	case "union":
-		op = "+"
+		fmt.Fprintf(w, "(%s + %s)", left, right)
+		return
 	default:
-		op = b.Op
+		fmt.Fprintf(w, "(%s %s %s)", left, b.Op, right)
+		return
 	}
-	fmt.Fprintf(w, "(%s %s %s)", left, op, right)
 }
 
 type UnaryExpr struct {
@@ -4279,6 +4285,9 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		}
 		if op == "%" && (types.IsFloatType(ltyp) || types.IsFloatType(rtyp)) {
 			be.FloatMod = true
+		}
+		if types.IsStringType(ltyp) || types.IsStringType(rtyp) {
+			be.StringOp = true
 		}
 		exprStack = append(exprStack, be)
 		typeStack = append(typeStack, resType)

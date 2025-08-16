@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 934/1077
-Last updated: 2025-08-15 10:26 +0700
+Completed programs: 935/1077
+Last updated: 2025-08-15 15:17 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -435,56 +435,56 @@ Last updated: 2025-08-15 10:26 +0700
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 2.15ms | 3.8 MB |
 | 427 | graphs/g_topological_sort | ✓ | 430µs | 3.3 MB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 638µs | 3.5 MB |
-| 429 | graphs/graph_adjacency_list | ✓ | 927µs | 3.4 MB |
-| 430 | graphs/graph_adjacency_matrix | ✓ | 1.689ms | 3.8 MB |
-| 431 | graphs/graph_list | ✓ | 499µs | 3.4 MB |
-| 432 | graphs/graphs_floyd_warshall | ✓ | 378µs | 3.2 MB |
-| 433 | graphs/greedy_best_first | ✓ | 2.664ms | 3.4 MB |
-| 434 | graphs/greedy_min_vertex_cover | ✓ | 674µs | 3.3 MB |
-| 435 | graphs/kahns_algorithm_long | ✓ | 349µs | 3.3 MB |
-| 436 | graphs/kahns_algorithm_topo | ✓ | 706µs | 3.2 MB |
-| 437 | graphs/karger | ✓ | 965µs | 3.3 MB |
-| 438 | graphs/lanczos_eigenvectors | ✓ | 450µs | 3.3 MB |
-| 439 | graphs/markov_chain | ✓ | 8.146ms | 3.3 MB |
-| 440 | graphs/matching_min_vertex_cover | ✓ | 815µs | 3.3 MB |
-| 441 | graphs/minimum_path_sum | ✓ | 335µs | 3.1 MB |
-| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 412µs | 3.2 MB |
-| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 430µs | 3.1 MB |
-| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 315µs | 3.3 MB |
-| 445 | graphs/minimum_spanning_tree_prims | ✓ | 395µs | 3.2 MB |
-| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 668µs | 3.4 MB |
-| 447 | graphs/multi_heuristic_astar | ✓ | 399µs | 3.4 MB |
-| 448 | graphs/page_rank |   |  |  |
-| 449 | graphs/prim | ✓ | 546µs | 3.2 MB |
-| 450 | graphs/random_graph_generator | ✓ | 459µs | 3.3 MB |
-| 451 | graphs/scc_kosaraju | ✓ | 939µs | 3.3 MB |
-| 452 | graphs/strongly_connected_components | ✓ | 2.29ms | 3.9 MB |
-| 453 | graphs/tarjans_scc | ✓ | 2.529ms | 3.9 MB |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 2.401ms | 3.8 MB |
-| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 1.776ms | 3.2 MB |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 596µs | 3.3 MB |
-| 457 | greedy_methods/fractional_cover_problem | ✓ | 1.211ms | 3.4 MB |
-| 458 | greedy_methods/fractional_knapsack | ✓ | 624µs | 3.4 MB |
-| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 2.746ms | 3.5 MB |
-| 460 | greedy_methods/gas_station | ✓ | 514µs | 3.0 MB |
-| 461 | greedy_methods/minimum_coin_change | ✓ | 1.439ms | 3.5 MB |
-| 462 | greedy_methods/minimum_waiting_time | ✓ | 661µs | 3.2 MB |
-| 463 | greedy_methods/optimal_merge_pattern | ✓ | 700µs | 3.2 MB |
-| 464 | greedy_methods/smallest_range | ✓ | 846µs | 3.2 MB |
-| 465 | hashes/adler32 | ✓ | 1.216ms | 2.9 MB |
-| 466 | hashes/chaos_machine | ✓ | 3.928ms | 3.4 MB |
-| 467 | hashes/djb2 | ✓ | 2.144ms | 3.2 MB |
-| 468 | hashes/elf | ✓ | 5.444ms | 2.9 MB |
-| 469 | hashes/enigma_machine | ✓ | 2.475ms | 3.1 MB |
-| 470 | hashes/fletcher16 | ✓ | 29.014ms | 3.2 MB |
-| 471 | hashes/hamming_code | ✓ | 3.443ms | 3.2 MB |
-| 472 | hashes/luhn | ✓ | 1.093ms | 3.2 MB |
-| 473 | hashes/md5 | ✓ | 58.226ms | 3.4 MB |
-| 474 | hashes/sdbm | ✓ | 9.747ms | 3.2 MB |
-| 475 | hashes/sha1 | ✓ | 16.032ms | 3.2 MB |
-| 476 | hashes/sha256 | ✓ | 563µs | 3.2 MB |
-| 477 | knapsack/greedy_knapsack | ✓ | 594µs | 3.4 MB |
-| 478 | knapsack/knapsack | ✓ | 550µs | 3.2 MB |
+| 429 | graphs/graph_adjacency_list | ✓ | 1.108ms | 3.5 MB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 2.034ms | 4.0 MB |
+| 431 | graphs/graph_list | ✓ | 693µs | 3.5 MB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 568µs | 3.2 MB |
+| 433 | graphs/greedy_best_first | ✓ | 3.043ms | 3.5 MB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 983µs | 3.4 MB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 481µs | 3.2 MB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 885µs | 2.9 MB |
+| 437 | graphs/karger | ✓ | 975µs | 3.3 MB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 642µs | 3.4 MB |
+| 439 | graphs/markov_chain | ✓ | 8.923ms | 3.4 MB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 1.08ms | 3.6 MB |
+| 441 | graphs/minimum_path_sum | ✓ | 404µs | 3.2 MB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 482µs | 3.2 MB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 554µs | 3.2 MB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 520µs | 3.3 MB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 500µs | 3.2 MB |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 983µs | 3.4 MB |
+| 447 | graphs/multi_heuristic_astar | ✓ | 580µs | 3.3 MB |
+| 448 | graphs/page_rank | ✓ | 1.799ms | 3.5 MB |
+| 449 | graphs/prim | ✓ | 779µs | 3.2 MB |
+| 450 | graphs/random_graph_generator | ✓ | 607µs | 3.3 MB |
+| 451 | graphs/scc_kosaraju | ✓ | 1.261ms | 3.2 MB |
+| 452 | graphs/strongly_connected_components | ✓ | 1.575ms | 3.7 MB |
+| 453 | graphs/tarjans_scc | ✓ | 1.664ms | 3.9 MB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.681ms | 3.8 MB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 1.333ms | 3.3 MB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 336µs | 3.2 MB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 613µs | 3.5 MB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 351µs | 3.4 MB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 1.348ms | 3.4 MB |
+| 460 | greedy_methods/gas_station | ✓ | 451µs | 3.1 MB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 908µs | 3.3 MB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 390µs | 3.0 MB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 458µs | 3.3 MB |
+| 464 | greedy_methods/smallest_range | ✓ | 546µs | 3.1 MB |
+| 465 | hashes/adler32 | ✓ | 929µs | 3.2 MB |
+| 466 | hashes/chaos_machine | ✓ | 2.335ms | 3.4 MB |
+| 467 | hashes/djb2 | ✓ | 1.326ms | 3.2 MB |
+| 468 | hashes/elf | ✓ | 3.929ms | 3.2 MB |
+| 469 | hashes/enigma_machine | ✓ | 1.522ms | 3.2 MB |
+| 470 | hashes/fletcher16 | ✓ | 17.57ms | 3.2 MB |
+| 471 | hashes/hamming_code | ✓ | 2.665ms | 3.2 MB |
+| 472 | hashes/luhn | ✓ | 603µs | 3.3 MB |
+| 473 | hashes/md5 | ✓ | 37.319ms | 3.2 MB |
+| 474 | hashes/sdbm | ✓ | 6.063ms | 3.2 MB |
+| 475 | hashes/sha1 | ✓ | 11.386ms | 3.1 MB |
+| 476 | hashes/sha256 | ✓ | 512µs | 3.2 MB |
+| 477 | knapsack/greedy_knapsack | ✓ | 481µs | 3.3 MB |
+| 478 | knapsack/knapsack | ✓ | 386µs | 3.3 MB |
 | 479 | knapsack/recursive_approach_knapsack | ✓ | 554µs | 2.9 MB |
 | 480 | knapsack/tests/test_greedy_knapsack | ✓ | 812µs | 3.1 MB |
 | 481 | knapsack/tests/test_knapsack | ✓ | 714µs | 3.2 MB |
