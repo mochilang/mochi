@@ -1015,33 +1015,11 @@ func (c *CmpExpr) emit(w io.Writer) {
 	}
 	if (c.Op == "<" || c.Op == "<=" || c.Op == ">" || c.Op == ">=") &&
 		(isDynamicExpr(c.Left) || isDynamicExpr(c.Right)) {
-		lt := typeOfExpr(c.Left)
-		rt := typeOfExpr(c.Right)
-		numeric := func(t string) bool { return t == "int" || t == "long" || t == "double" }
-		if numeric(lt) || numeric(rt) {
-			fmt.Fprint(w, "Convert.ToDouble(")
-			c.Left.emit(w)
-			fmt.Fprintf(w, ") %s Convert.ToDouble(", c.Op)
-			c.Right.emit(w)
-			fmt.Fprint(w, ")")
-			fmt.Fprint(w, ")")
-			return
-		}
-		fmt.Fprint(w, "string.Compare(Convert.ToString(")
+		fmt.Fprint(w, "Convert.ToDouble(")
 		c.Left.emit(w)
-		fmt.Fprint(w, "), Convert.ToString(")
+		fmt.Fprintf(w, ") %s Convert.ToDouble(", c.Op)
 		c.Right.emit(w)
-		fmt.Fprint(w, "))")
-		switch c.Op {
-		case "<":
-			fmt.Fprint(w, " < 0")
-		case "<=":
-			fmt.Fprint(w, " <= 0")
-		case ">":
-			fmt.Fprint(w, " > 0")
-		case ">=":
-			fmt.Fprint(w, " >= 0")
-		}
+		fmt.Fprint(w, ")")
 		fmt.Fprint(w, ")")
 		return
 	}
