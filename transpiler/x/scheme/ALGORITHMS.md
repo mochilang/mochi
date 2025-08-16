@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-16 13:58 GMT+7
+Last updated: 2025-08-16 15:03 GMT+7
 
-## Algorithms Golden Test Checklist (877/1077)
+## Algorithms Golden Test Checklist (896/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -531,8 +531,8 @@ Last updated: 2025-08-16 13:58 GMT+7
 | 522 | machine_learning/similarity_search | ✓ | 1ms | 13.4 MB |
 | 523 | machine_learning/support_vector_machines | ✓ | 33ms | 13.1 MB |
 | 524 | machine_learning/word_frequency_functions | ✓ | 110ms | 16.8 MB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 1ms | 13.8 MB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 1ms | 13.6 MB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 1ms | 14.1 MB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 0s | 13.9 MB |
 | 527 | maths/abs | ✓ | 1ms | 13.2 MB |
 | 528 | maths/addition_without_arithmetic | ✓ | 5ms | 12.6 MB |
 | 529 | maths/aliquot_sum | ✓ | 0s | 12.1 MB |
@@ -884,25 +884,25 @@ Last updated: 2025-08-16 13:58 GMT+7
 | 875 | project_euler/problem_045/sol1 |   |  |  |
 | 876 | project_euler/problem_046/sol1 | ✓ | 1.165s | 12.7 MB |
 | 877 | project_euler/problem_047/sol1 | ✓ | 3.364s | 128.7 MB |
-| 878 | project_euler/problem_048/sol1 |   |  |  |
-| 879 | project_euler/problem_049/sol1 |   |  |  |
-| 880 | project_euler/problem_050/sol1 |   |  |  |
-| 881 | project_euler/problem_051/sol1 |   |  |  |
-| 882 | project_euler/problem_052/sol1 |   |  |  |
-| 883 | project_euler/problem_053/sol1 |   |  |  |
-| 884 | project_euler/problem_054/sol1 |   |  |  |
-| 885 | project_euler/problem_054/test_poker_hand |   |  |  |
-| 886 | project_euler/problem_055/sol1 |   |  |  |
-| 887 | project_euler/problem_056/sol1 |   |  |  |
-| 888 | project_euler/problem_057/sol1 |   |  |  |
-| 889 | project_euler/problem_058/sol1 |   |  |  |
-| 890 | project_euler/problem_059/sol1 |   |  |  |
-| 891 | project_euler/problem_062/sol1 |   |  |  |
-| 892 | project_euler/problem_063/sol1 |   |  |  |
-| 893 | project_euler/problem_064/sol1 |   |  |  |
-| 894 | project_euler/problem_065/sol1 |   |  |  |
-| 895 | project_euler/problem_067/sol1 |   |  |  |
-| 896 | project_euler/problem_067/sol2 |   |  |  |
+| 878 | project_euler/problem_048/sol1 | ✓ | 32ms | 12.0 MB |
+| 879 | project_euler/problem_049/sol1 | ✓ | 12.671s | 16.9 MB |
+| 880 | project_euler/problem_050/sol1 | ✓ |  |  |
+| 881 | project_euler/problem_051/sol1 | ✓ | 8ms | 13.2 MB |
+| 882 | project_euler/problem_052/sol1 | ✓ | 10.487s | 11.9 MB |
+| 883 | project_euler/problem_053/sol1 | ✓ | 35ms | 12.1 MB |
+| 884 | project_euler/problem_054/sol1 | ✓ | 4.75s | 33.0 MB |
+| 885 | project_euler/problem_054/test_poker_hand | ✓ | 2ms | 13.8 MB |
+| 886 | project_euler/problem_055/sol1 | ✓ | 7.357s | 12.0 MB |
+| 887 | project_euler/problem_056/sol1 | ✓ | 27.71s | 12.0 MB |
+| 888 | project_euler/problem_057/sol1 | ✓ | 70ms | 12.3 MB |
+| 889 | project_euler/problem_058/sol1 | ✓ | 42.069s | 12.6 MB |
+| 890 | project_euler/problem_059/sol1 | ✓ | 47.108s | 33.4 MB |
+| 891 | project_euler/problem_062/sol1 | ✓ | 2.566s | 257.1 MB |
+| 892 | project_euler/problem_063/sol1 | ✓ | 2ms | 12.2 MB |
+| 893 | project_euler/problem_064/sol1 | ✓ | 0s | 12.3 MB |
+| 894 | project_euler/problem_065/sol1 | ✓ | 1ms | 12.3 MB |
+| 895 | project_euler/problem_067/sol1 | ✓ | 378ms | 19.5 MB |
+| 896 | project_euler/problem_067/sol2 | ✓ | 87ms | 19.7 MB |
 | 897 | project_euler/problem_068/sol1 |   |  |  |
 | 898 | project_euler/problem_069/sol1 |   |  |  |
 | 899 | project_euler/problem_070/sol1 |   |  |  |
