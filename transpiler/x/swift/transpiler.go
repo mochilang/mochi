@@ -1745,13 +1745,14 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "substring", "substr":
 		if len(c.Args) == 3 {
-			fmt.Fprint(w, "String(Array(String(describing: ")
+			fmt.Fprint(w, "String(_slice(Array(")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, "))[")
+			fmt.Fprint(w, "), ")
 			c.Args[1].emit(w)
-			fmt.Fprint(w, "..<")
+			fmt.Fprint(w, ", ")
 			c.Args[2].emit(w)
-			fmt.Fprint(w, "])")
+			fmt.Fprint(w, "))")
+			usesSlice = true
 			return
 		}
 	case "upper":
@@ -5593,6 +5594,22 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesSlice = true
 			return &SliceExpr{Base: base, Start: start, End: end, AsString: asStr}, nil
+		}
+		if (pr.Call.Func == "substring" || pr.Call.Func == "substr") && len(pr.Call.Args) == 3 {
+			base, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			start, err := convertExpr(env, pr.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertExpr(env, pr.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			usesSlice = true
+			return &CallExpr{Func: pr.Call.Func, Args: []Expr{base, start, end}}, nil
 		}
 		ce := &CallExpr{Func: pr.Call.Func}
 		var paramTypes []types.Type
