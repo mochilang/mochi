@@ -96,49 +96,15 @@ gradients[(int)((long)(k_1))] = (double)((double)(gradients[(int)((long)(k_1))])
         return (double)(total_1) / (double)(predicted_y.length);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            theta_2 = ((double[])(run_linear_regression(((double[][])(data_x)), ((double[])(data_y)))));
-            System.out.println("Resultant Feature vector :");
-            while ((long)(i_10) < (long)(theta_2.length)) {
-                System.out.println(_p(_getd(theta_2, ((Number)(i_10)).intValue())));
-                i_10 = (long)((long)(i_10) + 1L);
-            }
-            predicted_y = ((double[])(new double[]{3.0, -0.5, 2.0, 7.0}));
-            mae = (double)(mean_absolute_error(((double[])(predicted_y)), ((double[])(original_y))));
-            System.out.println("Mean Absolute Error : " + _p(mae));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        theta_2 = ((double[])(run_linear_regression(((double[][])(data_x)), ((double[])(data_y)))));
+        System.out.println("Resultant Feature vector :");
+        while ((long)(i_10) < (long)(theta_2.length)) {
+            System.out.println(_p(_getd(theta_2, ((Number)(i_10)).intValue())));
+            i_10 = (long)((long)(i_10) + 1L);
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        predicted_y = ((double[])(new double[]{3.0, -0.5, 2.0, 7.0}));
+        mae = (double)(mean_absolute_error(((double[])(predicted_y)), ((double[])(original_y))));
+        System.out.println("Mean Absolute Error : " + _p(mae));
     }
 
     static double[] appendDouble(double[] arr, double v) {

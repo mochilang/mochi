@@ -225,48 +225,14 @@ eigenvectors_1[(int)(1L)] = ((double[])(tmp_vec_1));
         return new PCAResult(transformed_1, ratios_1);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            result_2 = apply_pca(((double[][])(data)), 2L);
-            System.out.println("Transformed Data (first 5 rows):");
-            while ((long)(idx) < 5L) {
-                System.out.println(java.util.Arrays.toString(result_2.transformed[(int)((long)(idx))]));
-                idx = (long)((long)(idx) + 1L);
-            }
-            System.out.println("Explained Variance Ratio:");
-            System.out.println(java.util.Arrays.toString(result_2.variance_ratio));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        result_2 = apply_pca(((double[][])(data)), 2L);
+        System.out.println("Transformed Data (first 5 rows):");
+        while ((long)(idx) < 5L) {
+            System.out.println(java.util.Arrays.toString(result_2.transformed[(int)((long)(idx))]));
+            idx = (long)((long)(idx) + 1L);
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println("Explained Variance Ratio:");
+        System.out.println(java.util.Arrays.toString(result_2.variance_ratio));
     }
 
     static double[] appendDouble(double[] arr, double v) {

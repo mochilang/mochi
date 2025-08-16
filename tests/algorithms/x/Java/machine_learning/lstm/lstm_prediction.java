@@ -244,43 +244,9 @@ w.b_c = (double)(w.b_c) - (double)((double)(lr) * (double)(db_c_1));
         return (double)((double)(w.w_y) * (double)(h_last_3)) + (double)(w.b_y);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            w_2 = train(((double[])(data)), (long)(look_back), (long)(epochs), (double)(lr));
-            pred = (double)(predict(((double[])(test_seq)), w_2));
-            System.out.println("Predicted value: " + _p(pred));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        w_2 = train(((double[])(data)), (long)(look_back), (long)(epochs), (double)(lr));
+        pred = (double)(predict(((double[])(test_seq)), w_2));
+        System.out.println("Predicted value: " + _p(pred));
     }
 
     static double[] appendDouble(double[] arr, double v) {

@@ -151,54 +151,20 @@ x_1[(int)((long)(i2_1))] = (double)((double)(sum_5) / (double)(M_1[(int)((long)(
         return result_7;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            while ((long)(i_10) < (long)(xs.length)) {
-                double x_4 = (double)(xs[(int)((long)(i_10))]);
-                ys = ((double[])(appendDouble(ys, (double)((double)((double)((double)((double)((double)(x_4) * (double)(x_4)) * (double)(x_4)) - (double)((double)((double)(2.0) * (double)(x_4)) * (double)(x_4))) + (double)((double)(3.0) * (double)(x_4))) - (double)(5.0)))));
-                i_10 = (long)((long)(i_10) + 1L);
-            }
-            X = ((double[][])(design_matrix(((double[])(xs)), 3L)));
-            Xt = ((double[][])(transpose(((double[][])(X)))));
-            XtX = ((double[][])(matmul(((double[][])(Xt)), ((double[][])(X)))));
-            Xty = ((double[])(matvec_mul(((double[][])(Xt)), ((double[])(ys)))));
-            coeffs = ((double[])(gaussian_elimination(((double[][])(XtX)), ((double[])(Xty)))));
-            System.out.println(_p(coeffs));
-            System.out.println(_p(predict(((double[])(new double[]{-1.0})), ((double[])(coeffs)))));
-            System.out.println(_p(predict(((double[])(new double[]{-2.0})), ((double[])(coeffs)))));
-            System.out.println(_p(predict(((double[])(new double[]{6.0})), ((double[])(coeffs)))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        while ((long)(i_10) < (long)(xs.length)) {
+            double x_4 = (double)(xs[(int)((long)(i_10))]);
+            ys = ((double[])(appendDouble(ys, (double)((double)((double)((double)((double)((double)(x_4) * (double)(x_4)) * (double)(x_4)) - (double)((double)((double)(2.0) * (double)(x_4)) * (double)(x_4))) + (double)((double)(3.0) * (double)(x_4))) - (double)(5.0)))));
+            i_10 = (long)((long)(i_10) + 1L);
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        X = ((double[][])(design_matrix(((double[])(xs)), 3L)));
+        Xt = ((double[][])(transpose(((double[][])(X)))));
+        XtX = ((double[][])(matmul(((double[][])(Xt)), ((double[][])(X)))));
+        Xty = ((double[])(matvec_mul(((double[][])(Xt)), ((double[])(ys)))));
+        coeffs = ((double[])(gaussian_elimination(((double[][])(XtX)), ((double[])(Xty)))));
+        System.out.println(_p(coeffs));
+        System.out.println(_p(predict(((double[])(new double[]{-1.0})), ((double[])(coeffs)))));
+        System.out.println(_p(predict(((double[])(new double[]{-2.0})), ((double[])(coeffs)))));
+        System.out.println(_p(predict(((double[])(new double[]{6.0})), ((double[])(coeffs)))));
     }
 
     static double[] appendDouble(double[] arr, double v) {
