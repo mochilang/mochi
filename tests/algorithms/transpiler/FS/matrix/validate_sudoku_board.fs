@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Break
 exception Continue
@@ -71,7 +71,7 @@ let rec is_valid_sudoku_board (board: string array array) =
                                 let value: string = _idx (_idx board (int r)) (int c)
                                 if value = EMPTY_CELL then
                                     raise Continue
-                                let box: int = ((int (int (_floordiv r 3))) * 3) + (int (_floordiv c 3))
+                                let box: int = int (((int (int (_floordiv (int r) (int 3)))) * 3) + (int (_floordiv (int c) (int 3))))
                                 if ((Seq.contains value (_idx rows (int r))) || (Seq.contains value (_idx cols (int c)))) || (Seq.contains value (_idx boxes (int box))) then
                                     __ret <- false
                                     raise Return

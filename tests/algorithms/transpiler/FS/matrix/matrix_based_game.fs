@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Break
 exception Continue
@@ -35,17 +35,19 @@ let _substring (s:string) (start:int) (finish:int) =
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
-let _floordiv (a:int) (b:int) : int =
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
+let _floordiv64 (a:int64) (b:int64) : int64 =
     let q = a / b
     let r = a % b
-    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
+    if r <> 0L && ((a < 0L) <> (b < 0L)) then q - 1L else q
 type Coord = {
     mutable _x: int
     mutable _y: int
@@ -70,7 +72,7 @@ and to_int (token: string) =
         let mutable res: int = 0
         let mutable i: int = 0
         while i < (String.length (token)) do
-            res <- (res * 10) + (int (_substring token i (i + 1)))
+            res <- int (((int64 res) * (int64 10)) + (int64 (int (_substring token i (i + 1)))))
             i <- i + 1
         __ret <- res
         raise Return
@@ -134,7 +136,7 @@ and parse_moves (input_str: string) =
     with
         | Return -> __ret
 and validate_matrix_size (size: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable size = size
     try
         if size <= 0 then
@@ -143,7 +145,7 @@ and validate_matrix_size (size: int) =
     with
         | Return -> __ret
 and validate_matrix_content (_matrix: string array) (size: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable _matrix = _matrix
     let mutable size = size
     try
@@ -165,7 +167,7 @@ and validate_matrix_content (_matrix: string array) (size: int) =
     with
         | Return -> __ret
 and validate_moves (moves: Coord array) (size: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable moves = moves
     let mutable size = size
     try
@@ -243,7 +245,7 @@ and increment_score (count: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable count = count
     try
-        __ret <- _floordiv (count * (count + 1)) 2
+        __ret <- int (_floordiv64 (int64 ((int64 count) * (int64 (count + 1)))) (int64 (int64 2)))
         raise Return
         __ret
     with
@@ -392,16 +394,16 @@ and process_game (size: int) (_matrix: string array) (moves: Coord array) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let size: int = 4
         let _matrix: string array = unbox<string array> [|"RRBG"; "RBBG"; "YYGG"; "XYGG"|]
         let mutable moves: Coord array = parse_moves ("0 1,1 1")
-        validate_matrix_size (size)
-        validate_matrix_content (_matrix) (size)
-        validate_moves (moves) (size)
+        ignore (validate_matrix_size (size))
+        ignore (validate_matrix_content (_matrix) (size))
+        ignore (validate_moves (moves) (size))
         let _score: int = process_game (size) (_matrix) (moves)
         ignore (printfn "%s" (_str (_score)))
         let __bench_end = _now()
@@ -411,4 +413,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

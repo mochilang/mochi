@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -22,15 +22,17 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec check_matrix (mat: float array array) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable mat = mat
     try
         if ((Seq.length (mat)) < 2) || ((Seq.length (_idx mat (int 0))) < 2) then
@@ -43,8 +45,8 @@ and add (a: float array array) (b: float array array) =
     let mutable a = a
     let mutable b = b
     try
-        check_matrix (a)
-        check_matrix (b)
+        ignore (check_matrix (a))
+        ignore (check_matrix (b))
         if ((Seq.length (a)) <> (Seq.length (b))) || ((Seq.length (_idx a (int 0))) <> (Seq.length (_idx b (int 0)))) then
             ignore (failwith ("Matrices must have the same dimensions"))
         let rows: int = Seq.length (a)
@@ -69,8 +71,8 @@ and subtract (a: float array array) (b: float array array) =
     let mutable a = a
     let mutable b = b
     try
-        check_matrix (a)
-        check_matrix (b)
+        ignore (check_matrix (a))
+        ignore (check_matrix (b))
         if ((Seq.length (a)) <> (Seq.length (b))) || ((Seq.length (_idx a (int 0))) <> (Seq.length (_idx b (int 0)))) then
             ignore (failwith ("Matrices must have the same dimensions"))
         let rows: int = Seq.length (a)
@@ -95,7 +97,7 @@ and scalar_multiply (a: float array array) (s: float) =
     let mutable a = a
     let mutable s = s
     try
-        check_matrix (a)
+        ignore (check_matrix (a))
         let rows: int = Seq.length (a)
         let cols: int = Seq.length (_idx a (int 0))
         let mutable result: float array array = Array.empty<float array>
@@ -118,8 +120,8 @@ and multiply (a: float array array) (b: float array array) =
     let mutable a = a
     let mutable b = b
     try
-        check_matrix (a)
-        check_matrix (b)
+        ignore (check_matrix (a))
+        ignore (check_matrix (b))
         if (Seq.length (_idx a (int 0))) <> (Seq.length (b)) then
             ignore (failwith ("Invalid dimensions for matrix multiplication"))
         let rows: int = Seq.length (a)
@@ -170,7 +172,7 @@ and transpose (a: float array array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable a = a
     try
-        check_matrix (a)
+        ignore (check_matrix (a))
         let rows: int = Seq.length (a)
         let cols: int = Seq.length (_idx a (int 0))
         let mutable result: float array array = Array.empty<float array>
@@ -189,7 +191,7 @@ and transpose (a: float array array) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -209,4 +211,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

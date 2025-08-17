@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Break
 exception Continue
@@ -22,28 +22,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -68,7 +58,7 @@ let rec generate_large_matrix () =
         __ret
     with
         | Return -> __ret
-let rec find_negative_index (arr: int array) =
+and find_negative_index (arr: int array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable arr = arr
     try
@@ -81,7 +71,7 @@ let rec find_negative_index (arr: int array) =
             __ret <- 0
             raise Return
         while left <= right do
-            let mid: int = _floordiv (left + right) 2
+            let mid: int = _floordiv (int (left + right)) (int 2)
             let num: int = _idx arr (int mid)
             if num < 0 then
                 if mid = 0 then
@@ -98,7 +88,7 @@ let rec find_negative_index (arr: int array) =
         __ret
     with
         | Return -> __ret
-let rec count_negatives_binary_search (grid: int array array) =
+and count_negatives_binary_search (grid: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable grid = grid
     try
@@ -116,7 +106,7 @@ let rec count_negatives_binary_search (grid: int array array) =
         __ret
     with
         | Return -> __ret
-let rec count_negatives_brute_force (grid: int array array) =
+and count_negatives_brute_force (grid: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable grid = grid
     try
@@ -135,7 +125,7 @@ let rec count_negatives_brute_force (grid: int array array) =
         __ret
     with
         | Return -> __ret
-let rec count_negatives_brute_force_with_break (grid: int array array) =
+and count_negatives_brute_force_with_break (grid: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable grid = grid
     try
@@ -179,19 +169,19 @@ let mutable i: int = 0
 while i < (Seq.length (test_grids)) do
     results_bin <- Array.append results_bin [|(count_negatives_binary_search (_idx test_grids (int i)))|]
     i <- i + 1
-printfn "%s" (_str (results_bin))
+ignore (printfn "%s" (_str (results_bin)))
 let mutable results_brute: int array = Array.empty<int>
 i <- 0
 while i < (Seq.length (test_grids)) do
     results_brute <- Array.append results_brute [|(count_negatives_brute_force (_idx test_grids (int i)))|]
     i <- i + 1
-printfn "%s" (_str (results_brute))
+ignore (printfn "%s" (_str (results_brute)))
 let mutable results_break: int array = Array.empty<int>
 i <- 0
 while i < (Seq.length (test_grids)) do
     results_break <- Array.append results_break [|(count_negatives_brute_force_with_break (_idx test_grids (int i)))|]
     i <- i + 1
-printfn "%s" (_str (results_break))
+ignore (printfn "%s" (_str (results_break)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

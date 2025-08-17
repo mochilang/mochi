@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -22,15 +22,17 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec search_in_sorted_matrix (mat: float array array) (m: int) (n: int) (key: float) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable mat = mat
     let mutable m = m
     let mutable n = n
@@ -52,16 +54,16 @@ let rec search_in_sorted_matrix (mat: float array array) (m: int) (n: int) (key:
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let mat: float array array = [|[|2.0; 5.0; 7.0|]; [|4.0; 8.0; 13.0|]; [|9.0; 11.0; 15.0|]; [|12.0; 17.0; 20.0|]|]
-        search_in_sorted_matrix (mat) (Seq.length (mat)) (Seq.length (_idx mat (int 0))) (5.0)
-        search_in_sorted_matrix (mat) (Seq.length (mat)) (Seq.length (_idx mat (int 0))) (21.0)
+        ignore (search_in_sorted_matrix (mat) (Seq.length (mat)) (Seq.length (_idx mat (int 0))) (5.0))
+        ignore (search_in_sorted_matrix (mat) (Seq.length (mat)) (Seq.length (_idx mat (int 0))) (21.0))
         let mat2: float array array = [|[|2.1; 5.0; 7.0|]; [|4.0; 8.0; 13.0|]; [|9.0; 11.0; 15.0|]; [|12.0; 17.0; 20.0|]|]
-        search_in_sorted_matrix (mat2) (Seq.length (mat2)) (Seq.length (_idx mat2 (int 0))) (2.1)
-        search_in_sorted_matrix (mat2) (Seq.length (mat2)) (Seq.length (_idx mat2 (int 0))) (2.2)
+        ignore (search_in_sorted_matrix (mat2) (Seq.length (mat2)) (Seq.length (_idx mat2 (int 0))) (2.1))
+        ignore (search_in_sorted_matrix (mat2) (Seq.length (mat2)) (Seq.length (_idx mat2 (int 0))) (2.2))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -69,4 +71,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

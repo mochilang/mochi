@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -42,13 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec bubble_sort (nums: int array) =
@@ -63,8 +53,8 @@ let rec bubble_sort (nums: int array) =
             while j < (n - 1) do
                 if (_idx arr (int j)) > (_idx arr (int (j + 1))) then
                     let temp: int = _idx arr (int j)
-                    arr.[int j] <- _idx arr (int (j + 1))
-                    arr.[int (j + 1)] <- temp
+                    arr.[j] <- _idx arr (int (j + 1))
+                    arr.[(j + 1)] <- temp
                 j <- j + 1
             i <- i + 1
         __ret <- arr
@@ -72,7 +62,7 @@ let rec bubble_sort (nums: int array) =
         __ret
     with
         | Return -> __ret
-let rec three_sum (nums: int array) =
+and three_sum (nums: int array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable nums = nums
     try
@@ -107,8 +97,8 @@ let rec three_sum (nums: int array) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (three_sum (unbox<int array> [|-1; 0; 1; 2; -1; -4|])))
-printfn "%s" (_str (three_sum (unbox<int array> [|1; 2; 3; 4|])))
+ignore (printfn "%s" (_str (three_sum (unbox<int array> [|-1; 0; 1; 2; -1; -4|]))))
+ignore (printfn "%s" (_str (three_sum (unbox<int array> [|1; 2; 3; 4|]))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

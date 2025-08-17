@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -30,13 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Network = {
     mutable _w1: float array array
     mutable _w2: float array array
@@ -121,7 +123,7 @@ and feedforward (net: Network) (input: float array) =
     with
         | Return -> __ret
 and train (net: Network) (inputs: float array array) (outputs: float array) (iterations: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable net = net
     let mutable inputs = inputs
     let mutable outputs = outputs
@@ -234,7 +236,7 @@ and example () =
         let inputs: float array array = [|[|0.0; 0.0; 0.0|]; [|0.0; 0.0; 1.0|]; [|0.0; 1.0; 0.0|]; [|0.0; 1.0; 1.0|]; [|1.0; 0.0; 0.0|]; [|1.0; 0.0; 1.0|]; [|1.0; 1.0; 0.0|]; [|1.0; 1.0; 1.0|]|]
         let outputs: float array = unbox<float array> [|0.0; 1.0; 1.0; 0.0; 1.0; 0.0; 0.0; 1.0|]
         let mutable net: Network = new_network()
-        train (net) (inputs) (outputs) (10)
+        ignore (train (net) (inputs) (outputs) (10))
         let result: int = predict (net) (unbox<float array> [|1.0; 1.0; 1.0|])
         ignore (printfn "%s" (_str (result)))
         __ret <- result
@@ -243,7 +245,7 @@ and example () =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -255,4 +257,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

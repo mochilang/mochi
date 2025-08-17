@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -61,7 +61,7 @@ and matrix_multiply (a: int array array) (b: int array array) =
                 let mutable sum: int = 0
                 let mutable k: int = 0
                 while k < inner do
-                    sum <- sum + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
+                    sum <- int ((int64 sum) + ((int64 (_idx (_idx a (int i)) (int k))) * (int64 (_idx (_idx b (int k)) (int j)))))
                     k <- k + 1
                 row <- Array.append row [|sum|]
                 j <- j + 1
@@ -73,7 +73,7 @@ and matrix_multiply (a: int array array) (b: int array array) =
     with
         | Return -> __ret
 and multiply (i: int) (j: int) (k: int) (a: int array array) (b: int array array) (result: int array array) (n: int) (m: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable i = i
     let mutable j = j
     let mutable k = k
@@ -87,15 +87,15 @@ and multiply (i: int) (j: int) (k: int) (a: int array array) (b: int array array
             __ret <- ()
             raise Return
         if j >= m then
-            multiply (i + 1) (0) (0) (a) (b) (result) (n) (m)
+            ignore (multiply (i + 1) (0) (0) (a) (b) (result) (n) (m))
             __ret <- ()
             raise Return
         if k >= (Seq.length (b)) then
-            multiply (i) (j + 1) (0) (a) (b) (result) (n) (m)
+            ignore (multiply (i) (j + 1) (0) (a) (b) (result) (n) (m))
             __ret <- ()
             raise Return
-        result.[i].[j] <- (_idx (_idx result (int i)) (int j)) + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
-        multiply (i) (j) (k + 1) (a) (b) (result) (n) (m)
+        result.[i].[j] <- int ((int64 (_idx (_idx result (int i)) (int j))) + ((int64 (_idx (_idx a (int i)) (int k))) * (int64 (_idx (_idx b (int k)) (int j)))))
+        ignore (multiply (i) (j) (k + 1) (a) (b) (result) (n) (m))
         __ret
     with
         | Return -> __ret
@@ -121,7 +121,7 @@ and matrix_multiply_recursive (a: int array array) (b: int array array) =
                 j <- j + 1
             result <- Array.append result [|row|]
             i <- i + 1
-        multiply (0) (0) (0) (a) (b) (result) (n) (m)
+        ignore (multiply (0) (0) (0) (a) (b) (result) (n) (m))
         __ret <- result
         raise Return
         __ret
