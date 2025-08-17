@@ -3004,11 +3004,11 @@ func kotlinZeroValue(t types.Type) string {
 
 func guessType(e Expr) string {
 	switch v := e.(type) {
-        case *IntLit:
-                if v.Value >= 2147483647 || v.Value <= -2147483648 {
-                        return "Long"
-                }
-                return "Int"
+	case *IntLit:
+		if v.Value >= 2147483647 || v.Value <= -2147483648 {
+			return "Long"
+		}
+		return "Int"
 	case *FloatLit:
 		return "Double"
 	case *CharLit:
@@ -5644,6 +5644,22 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	expr, err := convertPrimary(env, p.Target)
 	if err != nil {
 		return nil, err
+	}
+	if v, ok := expr.(*VarRef); ok && len(p.Ops) == 1 && p.Ops[0].Call != nil {
+		args := make([]Expr, len(p.Ops[0].Call.Args))
+		for i, a := range p.Ops[0].Call.Args {
+			ex, err := convertExpr(env, a)
+			if err != nil {
+				return nil, err
+			}
+			args[i] = ex
+		}
+		switch v.Name {
+		case "ln":
+			return &CallExpr{Func: "kotlin.math.ln", Args: args}, nil
+		case "exp":
+			return &CallExpr{Func: "kotlin.math.exp", Args: args}, nil
+		}
 	}
 	baseIsMap := types.IsMapPrimary(p.Target, env)
 	if !baseIsMap {

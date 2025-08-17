@@ -36,7 +36,7 @@ fun ln(x: Double): Double {
     var sum: Double = 0.0
     var k: Int = (0).toInt()
     while (k < 10) {
-        var denom: Double = (((2 * k) + 1).toDouble())
+        var denom: Double = ((2 * k) + 1).toDouble()
         sum = sum + (term / denom)
         term = term * y2
         k = k + 1
@@ -49,7 +49,7 @@ fun exp(x: Double): Double {
     var sum: Double = 1.0
     var n: Int = (1).toInt()
     while (n < 20) {
-        term = (term * x) / ((n.toDouble()))
+        term = (term * x) / (n.toDouble())
         sum = sum + term
         n = n + 1
     }
