@@ -1005,7 +1005,18 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    if(v.type() == typeid(std::string)) return std::any_cast<std::string>(v);")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return std::to_string(std::any_cast<int>(v));")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int64_t)) return std::to_string(std::any_cast<int64_t>(v));")
-		fmt.Fprintln(w, "    if(v.type() == typeid(double)) { std::ostringstream ss; ss << std::any_cast<double>(v); return ss.str(); }")
+		fmt.Fprintln(w, "    if(v.type() == typeid(double)) {")
+		fmt.Fprintln(w, "        std::ostringstream ss;")
+		fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(17) << std::any_cast<double>(v);")
+		fmt.Fprintln(w, "        auto s = ss.str();")
+		fmt.Fprintln(w, "        auto epos = s.find('e');")
+		fmt.Fprintln(w, "        if(epos == std::string::npos) epos = s.find('E');")
+		fmt.Fprintln(w, "        std::string exp;")
+		fmt.Fprintln(w, "        if(epos != std::string::npos){ exp = s.substr(epos); s = s.substr(0, epos); }")
+		fmt.Fprintln(w, "        auto pos = s.find('.');")
+		fmt.Fprintln(w, "        if(pos != std::string::npos){ while(!s.empty() && s.back() == '0') s.pop_back(); if(!s.empty() && s.back() == '.') s.pop_back(); }")
+		fmt.Fprintln(w, "        return s + exp;")
+		fmt.Fprintln(w, "    }")
 		fmt.Fprintln(w, "    if(v.type() == typeid(bool)) return std::any_cast<bool>(v) ? \"true\" : \"false\";")
 		fmt.Fprintln(w, "    return std::string();")
 		fmt.Fprintln(w, "}")
@@ -1044,9 +1055,9 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, double>) {")
 	fmt.Fprintln(w, "        std::ostringstream ss;")
 	// match Mochi's default string conversion for floating point numbers
-	// which uses a precision of 6 significant digits. This keeps outputs
-	// consistent with other transpiler targets and existing golden files.
-	fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(6) << v;")
+	// using high precision to preserve significant digits and avoid
+	// rounding differences.
+	fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(17) << v;")
 	fmt.Fprintln(w, "        auto s = ss.str();")
 	fmt.Fprintln(w, "        auto epos = s.find('e');")
 	fmt.Fprintln(w, "        if(epos == std::string::npos) epos = s.find('E');")
