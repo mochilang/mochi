@@ -1409,6 +1409,10 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 		if t == "Double" {
+			if _, ok := c.Expr.(*BinaryExpr); ok {
+				c.Expr.emit(w)
+				return
+			}
 			fmt.Fprint(w, "Double(")
 			c.Expr.emit(w)
 			fmt.Fprint(w, ")")
@@ -1469,6 +1473,52 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	b.Right.emit(&rightBuf)
 	left := strings.TrimRight(leftBuf.String(), "\n")
 	right := strings.TrimLeft(rightBuf.String(), "\n")
+
+	// Break up very long expressions into temporary variables to help the
+	// Swift compiler type-check deeply nested arithmetic.
+	if len(left)+len(right) > 200 {
+		tmpVarCounter++
+		ltmp := fmt.Sprintf("_tmp%d", tmpVarCounter)
+		tmpVarCounter++
+		rtmp := fmt.Sprintf("_tmp%d", tmpVarCounter)
+		fmt.Fprintf(w, "{ let %s = %s; let %s = %s; return ", ltmp, left, rtmp, right)
+		switch b.Op {
+		case "&&", "||", "<", "<=", ">", ">=", "==", "!=":
+			fmt.Fprintf(w, "%s %s %s", ltmp, b.Op, rtmp)
+		case "%":
+			if b.FloatMod {
+				fmt.Fprintf(w, "%s.truncatingRemainder(dividingBy: %s)", ltmp, rtmp)
+			} else {
+				fmt.Fprintf(w, "((%s %% %s + %s) %% %s)", ltmp, rtmp, rtmp, rtmp)
+			}
+		case "+":
+			if b.IntOp {
+				fmt.Fprintf(w, "%s &+ %s", ltmp, rtmp)
+			} else if b.StringOp {
+				fmt.Fprintf(w, "(_p(%s) + _p(%s))", ltmp, rtmp)
+			} else {
+				fmt.Fprintf(w, "%s + %s", ltmp, rtmp)
+			}
+		case "-":
+			if b.IntOp {
+				fmt.Fprintf(w, "%s &- %s", ltmp, rtmp)
+			} else {
+				fmt.Fprintf(w, "%s - %s", ltmp, rtmp)
+			}
+		case "*":
+			if b.IntOp {
+				fmt.Fprintf(w, "%s &* %s", ltmp, rtmp)
+			} else {
+				fmt.Fprintf(w, "%s * %s", ltmp, rtmp)
+			}
+		case "union":
+			fmt.Fprintf(w, "%s + %s", ltmp, rtmp)
+		default:
+			fmt.Fprintf(w, "%s %s %s", ltmp, b.Op, rtmp)
+		}
+		fmt.Fprint(w, "}()")
+		return
+	}
 
 	switch b.Op {
 	case "&&", "||", "<", "<=", ">", ">=", "==", "!=":
