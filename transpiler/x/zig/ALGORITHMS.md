@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-17 12:10 +0700
+Last updated: 2025-08-17 13:40 +0700
 
-## Program Checklist (409/1077)
+## Program Checklist (410/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -576,8 +576,8 @@ Last updated: 2025-08-17 12:10 +0700
 | 567 | maths/fermat_little_theorem | ✓ | 344µs | 128.0 KB |
 | 568 | maths/fibonacci | ✓ | 1.477ms | 572.0 KB |
 | 569 | maths/find_max | ✓ | 357µs | 128.0 KB |
-| 570 | maths/find_min | ✓ | 541µs | 384.0 KB |
-| 571 | maths/floor |   |  |  |
+| 570 | maths/find_min | ✓ | 570µs | 512.0 KB |
+| 571 | maths/floor | ✓ | 595µs |  |
 | 572 | maths/gamma | ✓ | 27.203ms | 256.0 KB |
 | 573 | maths/gaussian | ✓ | 271µs | 128.0 KB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 341µs | 256.0 KB |

@@ -1116,12 +1116,20 @@ func zigTypeFromExpr(e Expr) string {
 		return "i64"
 	case *CallExpr:
 		ce := e.(*CallExpr)
+		if ce.Func == "floor" && globalNames["floor"] {
+			if rt, ok := funcReturns[ce.Func]; ok {
+				if rt == "" {
+					return "void"
+				}
+				return rt
+			}
+		}
 		switch ce.Func {
 		case "len", "count", "exists":
 			return "i64"
 		case "int":
 			return "i64"
-		case "to_float":
+		case "to_float", "float":
 			return "f64"
 		case "_lower", "_upper":
 			return "[]const u8"
@@ -1151,7 +1159,12 @@ func zigTypeFromExpr(e Expr) string {
 			return "i64"
 		case "_input":
 			return "[]const u8"
-		case "floor", "std.math.floor":
+		case "floor":
+			if !globalNames["floor"] {
+				return "f64"
+			}
+			fallthrough
+		case "std.math.floor":
 			return "f64"
 		default:
 			if strings.HasPrefix(ce.Func, "std.math.") {
@@ -3595,7 +3608,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	default:
 		name := c.Func
-		if name == "floor" {
+		if name == "floor" && !globalNames["floor"] {
 			name = "std.math.floor"
 		}
 		io.WriteString(w, name)
@@ -4237,7 +4250,7 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				continue
 			}
 			if name, ok := exprToString(expr); ok {
-				if name == "floor" {
+				if name == "floor" && !globalNames["floor"] {
 					expr = &CallExpr{Func: "std.math.floor", Args: args}
 				} else {
 					expr = &CallExpr{Func: name, Args: args}
