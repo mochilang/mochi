@@ -1,4 +1,3 @@
-Exception in thread "main" java.lang.RuntimeException: factors 12 failed
-	at Main.run_tests(Main.java:84)
-	at Main.main(Main.java:131)
-	at Main.main(Main.java:145)
+69 is not weird.
+70 is weird.
+71 is not weird.

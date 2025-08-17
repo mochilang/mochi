@@ -1,4 +1,1 @@
-Exception in thread "main" java.lang.RuntimeException: factors 12 failed
-	at Main.run_tests(Main.java:84)
-	at Main.main(Main.java:131)
-	at Main.main(Main.java:148)
+{"duration_us": 37128, "memory_bytes": 39176, "name": "main"}
