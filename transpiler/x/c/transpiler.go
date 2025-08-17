@@ -108,6 +108,9 @@ var (
 	needListMax             bool
 	needListMinDouble       bool
 	needListMaxDouble       bool
+	needListEqInt           bool
+	needListEqDouble        bool
+	needListEqStr           bool
 	needSHA256              bool
 	needMD5Hex              bool
 	needNow                 bool
@@ -2792,7 +2795,24 @@ func (l *ListLit) emitExpr(w io.Writer) {
 		}
 	}
 	if elemType == "long long" || elemType == "" {
-		if t := inferExprType(currentEnv, l.Elems[0]); t != "" {
+		// Determine element type by scanning all items. This prevents
+		// float literals like 0.0 from being mistaken for integers and
+		// ensures slices containing any floating-point value are
+		// emitted as double arrays instead of long long arrays.
+		detected := ""
+		for _, e := range l.Elems {
+			if exprIsFloat(e) || inferExprType(currentEnv, e) == "double" {
+				detected = "double"
+				break
+			}
+			if exprIsString(e) || inferExprType(currentEnv, e) == "const char*" {
+				detected = "const char*"
+				// continue scanning in case a float appears later
+			}
+		}
+		if detected != "" {
+			elemType = detected
+		} else if t := inferExprType(currentEnv, l.Elems[0]); t != "" {
 			elemType = t
 		} else if exprIsString(l.Elems[0]) {
 			elemType = "const char*"
@@ -4326,6 +4346,36 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 	}
 	lt := inferExprType(currentEnv, b.Left)
 	rt := inferExprType(currentEnv, b.Right)
+	if (b.Op == "==" || b.Op == "!=") && lt == rt && strings.HasSuffix(lt, "[]") {
+		base := strings.TrimSuffix(lt, "[]")
+		switch base {
+		case "long long":
+			needListEqInt = true
+			io.WriteString(w, "list_eq_int(")
+		case "double":
+			needListEqDouble = true
+			io.WriteString(w, "list_eq_double(")
+		case "const char*":
+			needListEqStr = true
+			io.WriteString(w, "list_eq_str(")
+		}
+		if base == "long long" || base == "double" || base == "const char*" {
+			b.Left.emitExpr(w)
+			io.WriteString(w, ", ")
+			emitLenExpr(w, b.Left)
+			io.WriteString(w, ", ")
+			b.Right.emitExpr(w)
+			io.WriteString(w, ", ")
+			emitLenExpr(w, b.Right)
+			io.WriteString(w, ")")
+			if b.Op == "!=" {
+				io.WriteString(w, " == 0")
+			} else {
+				io.WriteString(w, " != 0")
+			}
+			return
+		}
+	}
 	if (b.Op == "/" || b.Op == "%") && lt == "bigint" && rt == "bigint" {
 		needGMP = true
 		emitBigIntInt(w, b.Left)
@@ -4696,6 +4746,33 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        if (strcmp(arr[i], val) == 0) return 1;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListEqInt {
+		buf.WriteString("static int list_eq_int(const long long a[], size_t alen, const long long b[], size_t blen) {\n")
+		buf.WriteString("    if (alen != blen) return 0;\n")
+		buf.WriteString("    for (size_t i = 0; i < alen; i++) {\n")
+		buf.WriteString("        if (a[i] != b[i]) return 0;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 1;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListEqDouble {
+		buf.WriteString("static int list_eq_double(const double a[], size_t alen, const double b[], size_t blen) {\n")
+		buf.WriteString("    if (alen != blen) return 0;\n")
+		buf.WriteString("    for (size_t i = 0; i < alen; i++) {\n")
+		buf.WriteString("        if (a[i] != b[i]) return 0;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 1;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListEqStr {
+		buf.WriteString("static int list_eq_str(const char *a[], size_t alen, const char *b[], size_t blen) {\n")
+		buf.WriteString("    if (alen != blen) return 0;\n")
+		buf.WriteString("    for (size_t i = 0; i < alen; i++) {\n")
+		buf.WriteString("        if (strcmp(a[i], b[i]) != 0) return 0;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 1;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needListMin {
@@ -6197,12 +6274,17 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			newParams = append(newParams, s.Fun.Params...)
 			fnExpr.Params = newParams
 			innerName := currentFuncName + "_" + s.Fun.Name
+			if currentFuncName == "" {
+				innerName = fmt.Sprintf("_%s_%d", s.Fun.Name, anonFuncCounter)
+				anonFuncCounter++
+			}
 			fun, err := compileFunction(env, innerName, fnExpr)
 			if err != nil {
 				return nil, err
 			}
 			extraFuncs = append(extraFuncs, fun)
 			funcAliases[s.Fun.Name] = innerName
+			varAliases[s.Fun.Name] = innerName
 			if len(capNames) > 0 {
 				localFuncArgs[innerName] = capNames
 			}

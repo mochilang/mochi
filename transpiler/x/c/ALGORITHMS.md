@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (569/1077) - Last updated 2025-08-17 12:10 +0700:
+Checklist of programs that currently transpile and run (580/1077) - Last updated 2025-08-17 12:29 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -610,17 +610,17 @@ Checklist of programs that currently transpile and run (569/1077) - Last updated
 | 603 | maths/monte_carlo | ✓ | 487us | 1.5 MB |
 | 604 | maths/monte_carlo_dice | ✓ | 386us | 1.5 MB |
 | 605 | maths/number_of_digits | ✓ | 335us | 1.4 MB |
-| 606 | maths/numerical_analysis/adams_bashforth |  |  |  |
-| 607 | maths/numerical_analysis/bisection |  |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |  |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |  |  |  |
-| 610 | maths/numerical_analysis/intersection |  |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |  |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |  |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |  |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |  |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |  |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |  |  |  |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 425us | 1.6 MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 396us | 1.6 MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 500us | 1.5 MB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 511us | 1.7 MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 434us | 1.7 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 372us | 1.7 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 513us | 1.7 MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 487us | 1.6 MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 1.43ms | 1.6 MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 741us | 1.6 MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 564us | 1.5 MB |
 | 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |  |  |  |
 | 618 | maths/numerical_analysis/runge_kutta_gills |  |  |  |
 | 619 | maths/numerical_analysis/secant_method |  |  |  |
