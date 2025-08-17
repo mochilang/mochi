@@ -158,7 +158,7 @@ func init() {
 		"expect":   `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
 		"panic":    `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
 		"input":    `fun input(): String = readLine() ?: ""`,
-		"_listSet": `fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }`,
+		"_listSet": `fun <T> _listSet(lst: MutableList<T>, idx: Long, v: T) { while (lst.size <= idx.toInt()) lst.add(v); lst[idx.toInt()] = v }`,
 		"_sliceStr": `fun _sliceStr(s: String, start: Int, end: Int): String {
     val st = if (start < 0) 0 else start
     val en = if (end > s.length) s.length else end
@@ -1282,7 +1282,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	boolOp := b.Op == "&&" || b.Op == "||"
 	bigOp := leftType == "BigInteger" || rightType == "BigInteger"
 	ratOp := leftType == "BigRat" || rightType == "BigRat"
-	useLong := leftType == "Long" || rightType == "Long"
+	useLong := leftType == "Long" || rightType == "Long" || guessType(b) == "Long"
 	wrapToInt := false
 	if numOp && useLong {
 		if li, ok := b.Left.(*IntLit); ok && li.Value == 0 {
@@ -1356,6 +1356,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if numOp {
 			t := guessType(e)
 			ot := guessType(other)
+			if useLong && t == "Int" {
+				cast(e, "Long")
+				return
+			}
 			if t == "Int" && ot == "Long" {
 				cast(e, "Long")
 				return
@@ -1774,6 +1778,9 @@ func (s *AssignStmt) emit(w io.Writer, indentLevel int) {
 	if ce, ok := s.Value.(*CastExpr); ok && ce.Type == "Any?" {
 		s.Value = ce.Value
 		valType = guessType(s.Value)
+	}
+	if typ == "" && valType == "Long" {
+		typ = "Long"
 	}
 	if typ == "Int" {
 		io.WriteString(w, "(")
@@ -3174,7 +3181,29 @@ func guessType(e Expr) string {
 			}
 			return "Int"
 		}
-		if v.Op == "-" || v.Op == "*" || v.Op == "%" {
+		if v.Op == "*" {
+			if lvr, ok := v.Left.(*VarRef); ok {
+				if rvr, ok := v.Right.(*VarRef); ok && lvr.Name == rvr.Name {
+					return "Long"
+				}
+			}
+			lt := guessType(v.Left)
+			rt := guessType(v.Right)
+			if lt == "BigInteger" || rt == "BigInteger" {
+				return "BigInteger"
+			}
+			if lt == "Long" || rt == "Long" {
+				return "Long"
+			}
+			if lt == "String" || rt == "String" {
+				return "String"
+			}
+			if lt == "Double" || rt == "Double" {
+				return "Double"
+			}
+			return "Int"
+		}
+		if v.Op == "-" || v.Op == "%" {
 			lt := guessType(v.Left)
 			rt := guessType(v.Right)
 			if lt == "BigInteger" || rt == "BigInteger" {
@@ -3246,6 +3275,12 @@ func guessType(e Expr) string {
 	case *CallExpr:
 		if ret, ok := funcRets[v.Func]; ok {
 			return ret
+		}
+		if vs, ok := varDecls[v.Func]; ok {
+			if strings.Contains(vs.Type, "->") {
+				parts := strings.Split(vs.Type, "->")
+				return strings.TrimSpace(parts[len(parts)-1])
+			}
 		}
 		switch v.Func {
 		case "input":

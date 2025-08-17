@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-17 09:01 GMT+7
+Last updated: 2025-08-17 09:30 GMT+7
 
-## Algorithms Golden Test Checklist (554/1077)
+## Algorithms Golden Test Checklist (604/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -584,57 +584,57 @@ Last updated: 2025-08-17 09:01 GMT+7
 | 575 | maths/geometric_mean | ✓ |  |  |
 | 576 | maths/germain_primes |   |  |  |
 | 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
-| 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
-| 583 | maths/is_square_free |   |  |  |
-| 584 | maths/jaccard_similarity |   |  |  |
-| 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
-| 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
-| 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
-| 605 | maths/number_of_digits |   |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
-| 626 | maths/persistence |   |  |  |
-| 627 | maths/pi_generator |   |  |  |
-| 628 | maths/pi_monte_carlo_estimation |   |  |  |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 7.51ms | 120.34KiB |
+| 579 | maths/integer_square_root | ✓ | 15.06ms | 123.74KiB |
+| 580 | maths/interquartile_range | ✓ | 16.22ms | 122.64KiB |
+| 581 | maths/is_int_palindrome | ✓ | 5.79ms | 134.19KiB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 21.96ms | 114.80KiB |
+| 583 | maths/is_square_free | ✓ | 14.65ms | 123.74KiB |
+| 584 | maths/jaccard_similarity | ✓ | 16.19ms | 112.85KiB |
+| 585 | maths/joint_probability_distribution | ✓ | 16.42ms | 114.41KiB |
+| 586 | maths/josephus_problem | ✓ | 15.75ms | 124.20KiB |
+| 587 | maths/juggler_sequence | ✓ | 16.61ms | 122.80KiB |
+| 588 | maths/karatsuba | ✓ | 7.35ms | 130.52KiB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 16.31ms | 122.63KiB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 7.26ms | 130.23KiB |
+| 591 | maths/least_common_multiple | ✓ | 8.05ms | 130.47KiB |
+| 592 | maths/line_length | ✓ | 11.11ms | 116.24KiB |
+| 593 | maths/liouville_lambda | ✓ | 14.72ms | 124.22KiB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 5.16ms | 134.19KiB |
+| 595 | maths/lucas_series | ✓ | 8.29ms | 130.27KiB |
+| 596 | maths/maclaurin_series | ✓ | 8.43ms | 120.64KiB |
+| 597 | maths/manhattan_distance | ✓ | 16.11ms | 113.84KiB |
+| 598 | maths/matrix_exponentiation | ✓ | 15.76ms | 123.28KiB |
+| 599 | maths/max_sum_sliding_window | ✓ | 16.11ms | 123.80KiB |
+| 600 | maths/minkowski_distance | ✓ | 15.91ms | 113.78KiB |
+| 601 | maths/mobius_function | ✓ | 15.16ms | 123.64KiB |
+| 602 | maths/modular_division | ✓ | 15.80ms | 123.84KiB |
+| 603 | maths/monte_carlo | ✓ | 39.18ms | 119.42KiB |
+| 604 | maths/monte_carlo_dice | ✓ | 20.76ms | 113.95KiB |
+| 605 | maths/number_of_digits | ✓ | 9.49ms | 130.51KiB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 9.90ms | 122.27KiB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 10.73ms | 117.30KiB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 5.25ms | 124.38KiB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 13.46ms | 116.45KiB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 11.03ms | 117.24KiB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 18.05ms | 113.59KiB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 10.46ms | 122.77KiB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 5.62ms | 124.02KiB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 34.76ms | 75.59KiB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 19.96ms | 122.34KiB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 27.08ms | 109.28KiB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 20.72ms | 109.22KiB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 6.35ms | 123.55KiB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 7.14ms | 120.65KiB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 5.47ms | 124.37KiB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 9.19ms | 120.54KiB |
+| 622 | maths/odd_sieve | error |  |  |
+| 623 | maths/perfect_cube | ✓ | 6.26ms | 134.19KiB |
+| 624 | maths/perfect_number | ✓ | 68.88ms | 133.98KiB |
+| 625 | maths/perfect_square | ✓ | 5.38ms | 134.19KiB |
+| 626 | maths/persistence | ✓ | 7.40ms | 130.52KiB |
+| 627 | maths/pi_generator | ✓ | 7.51ms | 131.25KiB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 10.29ms | 120.07KiB |
 | 629 | maths/points_are_collinear_3d |   |  |  |
 | 630 | maths/pollard_rho |   |  |  |
 | 631 | maths/polynomial_evaluation |   |  |  |
