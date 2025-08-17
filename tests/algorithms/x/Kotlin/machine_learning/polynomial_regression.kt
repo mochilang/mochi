@@ -31,11 +31,6 @@ fun toJson(v: Any?): String = when (v) {
 var xs: MutableList<Double> = mutableListOf(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0)
 var ys: MutableList<Double> = mutableListOf<Double>()
 var i: Int = (0).toInt()
-var X: MutableList<MutableList<Double>> = design_matrix(xs, 3)
-var Xt: MutableList<MutableList<Double>> = transpose(X)
-var XtX: MutableList<MutableList<Double>> = matmul(Xt, X)
-var Xty: MutableList<Double> = matvec_mul(Xt, ys)
-var coeffs: MutableList<Double> = gaussian_elimination(XtX, Xty)
 fun design_matrix(xs: MutableList<Double>, degree: Int): MutableList<MutableList<Double>> {
     var i: Int = (0).toInt()
     var matrix: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>()
@@ -63,7 +58,7 @@ fun transpose(matrix: MutableList<MutableList<Double>>): MutableList<MutableList
         var row: MutableList<Double> = mutableListOf<Double>()
         var i: Int = (0).toInt()
         while (i < rows) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((matrix[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((matrix[i]!!) as MutableList<Double>)[j]!!); _tmp }
             i = (i + 1).toInt()
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
@@ -85,7 +80,7 @@ fun matmul(A: MutableList<MutableList<Double>>, B: MutableList<MutableList<Doubl
             var sum: Double = 0.0
             var j: Int = (0).toInt()
             while (j < m) {
-                sum = sum + ((((A[i]!!) as MutableList<Double>))[j]!! * (((B[j]!!) as MutableList<Double>))[k]!!)
+                sum = sum + (((A[i]!!) as MutableList<Double>)[j]!! * ((B[j]!!) as MutableList<Double>)[k]!!)
                 j = j + 1
             }
             row = run { val _tmp = row.toMutableList(); _tmp.add(sum); _tmp }
@@ -106,7 +101,7 @@ fun matvec_mul(A: MutableList<MutableList<Double>>, v: MutableList<Double>): Mut
         var sum: Double = 0.0
         var j: Int = (0).toInt()
         while (j < m) {
-            sum = sum + ((((A[i]!!) as MutableList<Double>))[j]!! * v[j]!!)
+            sum = sum + (((A[i]!!) as MutableList<Double>)[j]!! * v[j]!!)
             j = j + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(sum); _tmp }
@@ -125,18 +120,18 @@ fun gaussian_elimination(A: MutableList<MutableList<Double>>, b: MutableList<Dou
     }
     var k: Int = (0).toInt()
     while (k < n) {
-        var j: BigInteger = ((k + 1).toBigInteger())
-        while (j.compareTo((n).toBigInteger()) < 0) {
-            var factor: Double = (((M[(j).toInt()]!!) as MutableList<Double>))[k]!! / (((M[k]!!) as MutableList<Double>))[k]!!
-            var rowj: MutableList<Double> = M[(j).toInt()]!!
+        var j: Int = (k + 1).toInt()
+        while (j < n) {
+            var factor: Double = ((M[j]!!) as MutableList<Double>)[k]!! / ((M[k]!!) as MutableList<Double>)[k]!!
+            var rowj: MutableList<Double> = M[j]!!
             var rowk: MutableList<Double> = M[k]!!
             var l: Int = (k).toInt()
             while (l <= n) {
                 _listSet(rowj, l, rowj[l]!! - (factor * rowk[l]!!))
                 l = l + 1
             }
-            _listSet(M, (j).toInt(), rowj)
-            j = j.add((1).toBigInteger())
+            _listSet(M, j, rowj)
+            j = j + 1
         }
         k = k + 1
     }
@@ -146,16 +141,16 @@ fun gaussian_elimination(A: MutableList<MutableList<Double>>, b: MutableList<Dou
         x = run { val _tmp = x.toMutableList(); _tmp.add(0.0); _tmp }
         t = t + 1
     }
-    var i2: BigInteger = ((n - 1).toBigInteger())
-    while (i2.compareTo((0).toBigInteger()) >= 0) {
-        var sum: Double = (((M[(i2).toInt()]!!) as MutableList<Double>))[n]!!
-        var j2: BigInteger = i2.add((1).toBigInteger())
-        while (j2.compareTo((n).toBigInteger()) < 0) {
-            sum = sum - ((((M[(i2).toInt()]!!) as MutableList<Double>))[(j2).toInt()]!! * x[(j2).toInt()]!!)
-            j2 = j2.add((1).toBigInteger())
+    var i2: Int = (n - 1).toInt()
+    while (i2 >= 0) {
+        var sum: Double = ((M[i2]!!) as MutableList<Double>)[n]!!
+        var j2: Int = (i2 + 1).toInt()
+        while (j2 < n) {
+            sum = sum - (((M[i2]!!) as MutableList<Double>)[j2]!! * x[j2]!!)
+            j2 = j2 + 1
         }
-        _listSet(x, (i2).toInt(), sum / (((M[(i2).toInt()]!!) as MutableList<Double>))[(i2).toInt()]!!)
-        i2 = i2.subtract((1).toBigInteger())
+        _listSet(x, i2, sum / ((M[i2]!!) as MutableList<Double>)[i2]!!)
+        i2 = i2 - 1
     }
     return x
 }
@@ -189,6 +184,11 @@ fun main() {
             ys = run { val _tmp = ys.toMutableList(); _tmp.add(((((x * x) * x) - ((2.0 * x) * x)) + (3.0 * x)) - 5.0); _tmp }
             i = (i + 1).toInt()
         }
+        var X: MutableList<MutableList<Double>> = design_matrix(xs, 3)
+        var Xt: MutableList<MutableList<Double>> = transpose(X)
+        var XtX: MutableList<MutableList<Double>> = matmul(Xt, X)
+        var Xty: MutableList<Double> = matvec_mul(Xt, ys)
+        var coeffs: MutableList<Double> = gaussian_elimination(XtX, Xty)
         println(coeffs.toString())
         println(predict(mutableListOf(0.0 - 1.0), coeffs).toString())
         println(predict(mutableListOf(0.0 - 2.0), coeffs).toString())

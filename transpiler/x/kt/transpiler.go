@@ -3939,16 +3939,20 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, stmt)
+			seenStmt = true
 		case st.For != nil:
 			stmt, err := convertForStmt(env, st.For)
 			if err != nil {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, stmt)
+			seenStmt = true
 		case st.Break != nil:
 			p.Stmts = append(p.Stmts, &BreakStmt{})
+			seenStmt = true
 		case st.Continue != nil:
 			p.Stmts = append(p.Stmts, &ContinueStmt{})
+			seenStmt = true
 		case st.Type != nil:
 			if st.Type.Alias != nil {
 				typ := kotlinType(st.Type.Alias)
