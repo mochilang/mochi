@@ -68,11 +68,9 @@ var
   bench_memdiff_0: int64;
   matrix1: array of IntArray;
   matrix2: array of IntArray;
-  matrix: IntArrayArray;
-  a: IntArray;
-function bubble_sort(a: IntArray): IntArray; forward;
-function median(matrix: IntArrayArray): integer; forward;
-function bubble_sort(a: IntArray): IntArray;
+function bubble_sort(bubble_sort_a: IntArray): IntArray; forward;
+function median(median_matrix: IntArrayArray): integer; forward;
+function bubble_sort(bubble_sort_a: IntArray): IntArray;
 var
   bubble_sort_arr: array of integer;
   bubble_sort_n: integer;
@@ -80,7 +78,7 @@ var
   bubble_sort_j: integer;
   bubble_sort_temp: integer;
 begin
-  bubble_sort_arr := a;
+  bubble_sort_arr := bubble_sort_a;
   bubble_sort_n := Length(bubble_sort_arr);
   bubble_sort_i := 0;
   while bubble_sort_i < bubble_sort_n do begin
@@ -97,7 +95,7 @@ end;
 end;
   exit(bubble_sort_arr);
 end;
-function median(matrix: IntArrayArray): integer;
+function median(median_matrix: IntArrayArray): integer;
 var
   median_linear: array of integer;
   median_i: integer;
@@ -108,8 +106,8 @@ var
 begin
   median_linear := [];
   median_i := 0;
-  while median_i < Length(matrix) do begin
-  median_row := matrix[median_i];
+  while median_i < Length(median_matrix) do begin
+  median_row := median_matrix[median_i];
   median_j := 0;
   while median_j < Length(median_row) do begin
   median_linear := concat(median_linear, IntArray([median_row[median_j]]));

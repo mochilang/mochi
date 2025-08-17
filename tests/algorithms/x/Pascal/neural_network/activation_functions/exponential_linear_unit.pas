@@ -75,12 +75,9 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  x: real;
-  vector: RealArray;
-  alpha: real;
-function exp_approx(x: real): real; forward;
-function exponential_linear_unit(vector: RealArray; alpha: real): RealArray; forward;
-function exp_approx(x: real): real;
+function exp_approx(exp_approx_x: real): real; forward;
+function exponential_linear_unit(exponential_linear_unit_vector: RealArray; exponential_linear_unit_alpha: real): RealArray; forward;
+function exp_approx(exp_approx_x: real): real;
 var
   exp_approx_sum: real;
   exp_approx_term: real;
@@ -90,22 +87,22 @@ begin
   exp_approx_sum := 1;
   exp_approx_term := 1;
   exp_approx_i := 1;
-  if x < 0 then begin
-  exp_approx_absx := -x;
+  if exp_approx_x < 0 then begin
+  exp_approx_absx := -exp_approx_x;
 end else begin
-  exp_approx_absx := x;
+  exp_approx_absx := exp_approx_x;
 end;
   while exp_approx_i <= 20 do begin
   exp_approx_term := (exp_approx_term * exp_approx_absx) / Double(exp_approx_i);
   exp_approx_sum := exp_approx_sum + exp_approx_term;
   exp_approx_i := exp_approx_i + 1;
 end;
-  if x < 0 then begin
+  if exp_approx_x < 0 then begin
   exit(1 / exp_approx_sum);
 end;
   exit(exp_approx_sum);
 end;
-function exponential_linear_unit(vector: RealArray; alpha: real): RealArray;
+function exponential_linear_unit(exponential_linear_unit_vector: RealArray; exponential_linear_unit_alpha: real): RealArray;
 var
   exponential_linear_unit_result_: array of real;
   exponential_linear_unit_i: integer;
@@ -114,12 +111,12 @@ var
 begin
   exponential_linear_unit_result_ := [];
   exponential_linear_unit_i := 0;
-  while exponential_linear_unit_i < Length(vector) do begin
-  exponential_linear_unit_v := vector[exponential_linear_unit_i];
+  while exponential_linear_unit_i < Length(exponential_linear_unit_vector) do begin
+  exponential_linear_unit_v := exponential_linear_unit_vector[exponential_linear_unit_i];
   if exponential_linear_unit_v > 0 then begin
   exponential_linear_unit_result_ := concat(exponential_linear_unit_result_, [exponential_linear_unit_v]);
 end else begin
-  exponential_linear_unit_neg := alpha * (exp_approx(exponential_linear_unit_v) - 1);
+  exponential_linear_unit_neg := exponential_linear_unit_alpha * (exp_approx(exponential_linear_unit_v) - 1);
   exponential_linear_unit_result_ := concat(exponential_linear_unit_result_, [exponential_linear_unit_neg]);
 end;
   exponential_linear_unit_i := exponential_linear_unit_i + 1;

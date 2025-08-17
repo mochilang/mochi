@@ -39,6 +39,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 procedure show_list_real(xs: array of real);
 var i: integer;
 begin
@@ -58,6 +80,26 @@ begin
   end;
   writeln('');
 end;
+function list_real_to_str(xs: array of real): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + FloatToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+function list_list_real_to_str(xs: array of RealArray): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + list_real_to_str(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -65,46 +107,46 @@ var
   bench_memdiff_0: int64;
   m2: array of RealArray;
   m3: array of RealArray;
-  matrix: RealArrayArray;
-function inverse_of_matrix(matrix: RealArrayArray): RealArrayArray; forward;
-function inverse_of_matrix(matrix: RealArrayArray): RealArrayArray;
+function inverse_of_matrix(inverse_of_matrix_matrix: RealArrayArray): RealArrayArray; forward;
+function inverse_of_matrix(inverse_of_matrix_matrix: RealArrayArray): RealArrayArray;
 var
   inverse_of_matrix_det: real;
+  inverse_of_matrix_det_5: real;
   inverse_of_matrix_cof: array of RealArray;
   inverse_of_matrix_inv: array of RealArray;
   inverse_of_matrix_i: integer;
   inverse_of_matrix_j: integer;
 begin
-  if ((Length(matrix) = 2) and (Length(matrix[0]) = 2)) and (Length(matrix[1]) = 2) then begin
-  inverse_of_matrix_det := (matrix[0][0] * matrix[1][1]) - (matrix[1][0] * matrix[0][1]);
+  if ((Length(inverse_of_matrix_matrix) = 2) and (Length(inverse_of_matrix_matrix[0]) = 2)) and (Length(inverse_of_matrix_matrix[1]) = 2) then begin
+  inverse_of_matrix_det := (inverse_of_matrix_matrix[0][0] * inverse_of_matrix_matrix[1][1]) - (inverse_of_matrix_matrix[1][0] * inverse_of_matrix_matrix[0][1]);
   if inverse_of_matrix_det = 0 then begin
   writeln('This matrix has no inverse.');
   exit([]);
 end;
-  exit([[matrix[1][1] / inverse_of_matrix_det, -matrix[0][1] / inverse_of_matrix_det], [-matrix[1][0] / inverse_of_matrix_det, matrix[0][0] / inverse_of_matrix_det]]);
+  exit([[inverse_of_matrix_matrix[1][1] / inverse_of_matrix_det, -inverse_of_matrix_matrix[0][1] / inverse_of_matrix_det], [-inverse_of_matrix_matrix[1][0] / inverse_of_matrix_det, inverse_of_matrix_matrix[0][0] / inverse_of_matrix_det]]);
 end else begin
-  if (((Length(matrix) = 3) and (Length(matrix[0]) = 3)) and (Length(matrix[1]) = 3)) and (Length(matrix[2]) = 3) then begin
-  inverse_of_matrix_det := ((((matrix[0][0] * matrix[1][1]) * matrix[2][2]) + ((matrix[0][1] * matrix[1][2]) * matrix[2][0])) + ((matrix[0][2] * matrix[1][0]) * matrix[2][1])) - ((((matrix[0][2] * matrix[1][1]) * matrix[2][0]) + ((matrix[0][1] * matrix[1][0]) * matrix[2][2])) + ((matrix[0][0] * matrix[1][2]) * matrix[2][1]));
-  if inverse_of_matrix_det = 0 then begin
+  if (((Length(inverse_of_matrix_matrix) = 3) and (Length(inverse_of_matrix_matrix[0]) = 3)) and (Length(inverse_of_matrix_matrix[1]) = 3)) and (Length(inverse_of_matrix_matrix[2]) = 3) then begin
+  inverse_of_matrix_det_5 := ((((inverse_of_matrix_matrix[0][0] * inverse_of_matrix_matrix[1][1]) * inverse_of_matrix_matrix[2][2]) + ((inverse_of_matrix_matrix[0][1] * inverse_of_matrix_matrix[1][2]) * inverse_of_matrix_matrix[2][0])) + ((inverse_of_matrix_matrix[0][2] * inverse_of_matrix_matrix[1][0]) * inverse_of_matrix_matrix[2][1])) - ((((inverse_of_matrix_matrix[0][2] * inverse_of_matrix_matrix[1][1]) * inverse_of_matrix_matrix[2][0]) + ((inverse_of_matrix_matrix[0][1] * inverse_of_matrix_matrix[1][0]) * inverse_of_matrix_matrix[2][2])) + ((inverse_of_matrix_matrix[0][0] * inverse_of_matrix_matrix[1][2]) * inverse_of_matrix_matrix[2][1]));
+  if inverse_of_matrix_det_5 = 0 then begin
   writeln('This matrix has no inverse.');
   exit([]);
 end;
   inverse_of_matrix_cof := [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-  inverse_of_matrix_cof[0][0] := (matrix[1][1] * matrix[2][2]) - (matrix[1][2] * matrix[2][1]);
-  inverse_of_matrix_cof[0][1] := -((matrix[1][0] * matrix[2][2]) - (matrix[1][2] * matrix[2][0]));
-  inverse_of_matrix_cof[0][2] := (matrix[1][0] * matrix[2][1]) - (matrix[1][1] * matrix[2][0]);
-  inverse_of_matrix_cof[1][0] := -((matrix[0][1] * matrix[2][2]) - (matrix[0][2] * matrix[2][1]));
-  inverse_of_matrix_cof[1][1] := (matrix[0][0] * matrix[2][2]) - (matrix[0][2] * matrix[2][0]);
-  inverse_of_matrix_cof[1][2] := -((matrix[0][0] * matrix[2][1]) - (matrix[0][1] * matrix[2][0]));
-  inverse_of_matrix_cof[2][0] := (matrix[0][1] * matrix[1][2]) - (matrix[0][2] * matrix[1][1]);
-  inverse_of_matrix_cof[2][1] := -((matrix[0][0] * matrix[1][2]) - (matrix[0][2] * matrix[1][0]));
-  inverse_of_matrix_cof[2][2] := (matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]);
+  inverse_of_matrix_cof[0][0] := (inverse_of_matrix_matrix[1][1] * inverse_of_matrix_matrix[2][2]) - (inverse_of_matrix_matrix[1][2] * inverse_of_matrix_matrix[2][1]);
+  inverse_of_matrix_cof[0][1] := -((inverse_of_matrix_matrix[1][0] * inverse_of_matrix_matrix[2][2]) - (inverse_of_matrix_matrix[1][2] * inverse_of_matrix_matrix[2][0]));
+  inverse_of_matrix_cof[0][2] := (inverse_of_matrix_matrix[1][0] * inverse_of_matrix_matrix[2][1]) - (inverse_of_matrix_matrix[1][1] * inverse_of_matrix_matrix[2][0]);
+  inverse_of_matrix_cof[1][0] := -((inverse_of_matrix_matrix[0][1] * inverse_of_matrix_matrix[2][2]) - (inverse_of_matrix_matrix[0][2] * inverse_of_matrix_matrix[2][1]));
+  inverse_of_matrix_cof[1][1] := (inverse_of_matrix_matrix[0][0] * inverse_of_matrix_matrix[2][2]) - (inverse_of_matrix_matrix[0][2] * inverse_of_matrix_matrix[2][0]);
+  inverse_of_matrix_cof[1][2] := -((inverse_of_matrix_matrix[0][0] * inverse_of_matrix_matrix[2][1]) - (inverse_of_matrix_matrix[0][1] * inverse_of_matrix_matrix[2][0]));
+  inverse_of_matrix_cof[2][0] := (inverse_of_matrix_matrix[0][1] * inverse_of_matrix_matrix[1][2]) - (inverse_of_matrix_matrix[0][2] * inverse_of_matrix_matrix[1][1]);
+  inverse_of_matrix_cof[2][1] := -((inverse_of_matrix_matrix[0][0] * inverse_of_matrix_matrix[1][2]) - (inverse_of_matrix_matrix[0][2] * inverse_of_matrix_matrix[1][0]));
+  inverse_of_matrix_cof[2][2] := (inverse_of_matrix_matrix[0][0] * inverse_of_matrix_matrix[1][1]) - (inverse_of_matrix_matrix[0][1] * inverse_of_matrix_matrix[1][0]);
   inverse_of_matrix_inv := [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
   inverse_of_matrix_i := 0;
   while inverse_of_matrix_i < 3 do begin
   inverse_of_matrix_j := 0;
   while inverse_of_matrix_j < 3 do begin
-  inverse_of_matrix_inv[inverse_of_matrix_i][inverse_of_matrix_j] := inverse_of_matrix_cof[inverse_of_matrix_j][inverse_of_matrix_i] / inverse_of_matrix_det;
+  inverse_of_matrix_inv[inverse_of_matrix_i][inverse_of_matrix_j] := inverse_of_matrix_cof[inverse_of_matrix_j][inverse_of_matrix_i] / inverse_of_matrix_det_5;
   inverse_of_matrix_j := inverse_of_matrix_j + 1;
 end;
   inverse_of_matrix_i := inverse_of_matrix_i + 1;

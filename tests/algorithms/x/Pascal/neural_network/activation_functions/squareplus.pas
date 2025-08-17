@@ -75,29 +75,26 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  x: real;
-  vector: RealArray;
-  beta: real;
-function sqrtApprox(x: real): real; forward;
-function squareplus(vector: RealArray; beta: real): RealArray; forward;
+function sqrtApprox(sqrtApprox_x: real): real; forward;
+function squareplus(squareplus_vector: RealArray; squareplus_beta: real): RealArray; forward;
 procedure main(); forward;
-function sqrtApprox(x: real): real;
+function sqrtApprox(sqrtApprox_x: real): real;
 var
   sqrtApprox_guess: real;
   sqrtApprox_i: integer;
 begin
-  if x <= 0 then begin
+  if sqrtApprox_x <= 0 then begin
   exit(0);
 end;
-  sqrtApprox_guess := x;
+  sqrtApprox_guess := sqrtApprox_x;
   sqrtApprox_i := 0;
   while sqrtApprox_i < 20 do begin
-  sqrtApprox_guess := (sqrtApprox_guess + (x / sqrtApprox_guess)) / 2;
+  sqrtApprox_guess := (sqrtApprox_guess + (sqrtApprox_x / sqrtApprox_guess)) / 2;
   sqrtApprox_i := sqrtApprox_i + 1;
 end;
   exit(sqrtApprox_guess);
 end;
-function squareplus(vector: RealArray; beta: real): RealArray;
+function squareplus(squareplus_vector: RealArray; squareplus_beta: real): RealArray;
 var
   squareplus_result_: array of real;
   squareplus_i: integer;
@@ -106,9 +103,9 @@ var
 begin
   squareplus_result_ := [];
   squareplus_i := 0;
-  while squareplus_i < Length(vector) do begin
-  squareplus_x := vector[squareplus_i];
-  squareplus_val := (squareplus_x + sqrtApprox((squareplus_x * squareplus_x) + beta)) / 2;
+  while squareplus_i < Length(squareplus_vector) do begin
+  squareplus_x := squareplus_vector[squareplus_i];
+  squareplus_val := (squareplus_x + sqrtApprox((squareplus_x * squareplus_x) + squareplus_beta)) / 2;
   squareplus_result_ := concat(squareplus_result_, [squareplus_val]);
   squareplus_i := squareplus_i + 1;
 end;

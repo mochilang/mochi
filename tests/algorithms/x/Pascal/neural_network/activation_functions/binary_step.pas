@@ -76,18 +76,17 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  vector: RealArray;
-function binary_step(vector: RealArray): IntArray; forward;
+function binary_step(binary_step_vector: RealArray): IntArray; forward;
 procedure main(); forward;
-function binary_step(vector: RealArray): IntArray;
+function binary_step(binary_step_vector: RealArray): IntArray;
 var
   binary_step_out_: array of integer;
   binary_step_i: integer;
 begin
   binary_step_out_ := [];
   binary_step_i := 0;
-  while binary_step_i < Length(vector) do begin
-  if vector[binary_step_i] >= 0 then begin
+  while binary_step_i < Length(binary_step_vector) do begin
+  if binary_step_vector[binary_step_i] >= 0 then begin
   binary_step_out_ := concat(binary_step_out_, IntArray([1]));
 end else begin
   binary_step_out_ := concat(binary_step_out_, IntArray([0]));

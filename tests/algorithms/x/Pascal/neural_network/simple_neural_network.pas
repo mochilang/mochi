@@ -67,28 +67,22 @@ var
   seed: integer;
   INITIAL_VALUE: real;
   result_: real;
-  number_propagations: integer;
-  expected: integer;
-  sig_val: real;
-  x: real;
-  high: integer;
-  low: integer;
 function rand(): integer; forward;
-function randint(low: integer; high: integer): integer; forward;
-function expApprox(x: real): real; forward;
-function sigmoid(x: real): real; forward;
-function sigmoid_derivative(sig_val: real): real; forward;
-function forward_propagation(expected: integer; number_propagations: integer): real; forward;
+function randint(randint_low: integer; randint_high: integer): integer; forward;
+function expApprox(expApprox_x: real): real; forward;
+function sigmoid(sigmoid_x: real): real; forward;
+function sigmoid_derivative(sigmoid_derivative_sig_val: real): real; forward;
+function forward_propagation(forward_propagation_expected: integer; forward_propagation_number_propagations: integer): real; forward;
 function rand(): integer;
 begin
   seed := ((seed * 1103515245) + 12345) mod 2147483648;
   exit(seed);
 end;
-function randint(low: integer; high: integer): integer;
+function randint(randint_low: integer; randint_high: integer): integer;
 begin
-  exit((rand() mod ((high - low) + 1)) + low);
+  exit((rand() mod ((randint_high - randint_low) + 1)) + randint_low);
 end;
-function expApprox(x: real): real;
+function expApprox(expApprox_x: real): real;
 var
   expApprox_y: real;
   expApprox_is_neg: boolean;
@@ -96,11 +90,11 @@ var
   expApprox_sum: real;
   expApprox_n: integer;
 begin
-  expApprox_y := x;
+  expApprox_y := expApprox_x;
   expApprox_is_neg := false;
-  if x < 0 then begin
+  if expApprox_x < 0 then begin
   expApprox_is_neg := true;
-  expApprox_y := -x;
+  expApprox_y := -expApprox_x;
 end;
   expApprox_term := 1;
   expApprox_sum := 1;
@@ -115,15 +109,15 @@ end;
 end;
   exit(expApprox_sum);
 end;
-function sigmoid(x: real): real;
+function sigmoid(sigmoid_x: real): real;
 begin
-  exit(1 / (1 + expApprox(-x)));
+  exit(1 / (1 + expApprox(-sigmoid_x)));
 end;
-function sigmoid_derivative(sig_val: real): real;
+function sigmoid_derivative(sigmoid_derivative_sig_val: real): real;
 begin
-  exit(sig_val * (1 - sig_val));
+  exit(sigmoid_derivative_sig_val * (1 - sigmoid_derivative_sig_val));
 end;
-function forward_propagation(expected: integer; number_propagations: integer): real;
+function forward_propagation(forward_propagation_expected: integer; forward_propagation_number_propagations: integer): real;
 var
   forward_propagation_weight: real;
   forward_propagation_layer_1: real;
@@ -134,9 +128,9 @@ begin
   forward_propagation_weight := (2 * Double(randint(1, 100))) - 1;
   forward_propagation_layer_1 := 0;
   forward_propagation_i := 0;
-  while forward_propagation_i < number_propagations do begin
+  while forward_propagation_i < forward_propagation_number_propagations do begin
   forward_propagation_layer_1 := sigmoid(INITIAL_VALUE * forward_propagation_weight);
-  forward_propagation_layer_1_error := (Double(expected) / 100) - forward_propagation_layer_1;
+  forward_propagation_layer_1_error := (Double(forward_propagation_expected) / 100) - forward_propagation_layer_1;
   forward_propagation_layer_1_delta := forward_propagation_layer_1_error * sigmoid_derivative(forward_propagation_layer_1);
   forward_propagation_weight := forward_propagation_weight + (INITIAL_VALUE * forward_propagation_layer_1_delta);
   forward_propagation_i := forward_propagation_i + 1;

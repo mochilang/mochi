@@ -41,48 +41,66 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  row: integer;
-  grid: IntArrayArray;
-  visit: BoolArrayArray;
-  col: integer;
-function depth_first_search(grid: IntArrayArray; row: integer; col: integer; visit: BoolArrayArray): integer; forward;
-function count_paths(grid: IntArrayArray): integer; forward;
+function depth_first_search(depth_first_search_grid: IntArrayArray; depth_first_search_row: integer; depth_first_search_col: integer; depth_first_search_visit: BoolArrayArray): integer; forward;
+function count_paths(count_paths_grid: IntArrayArray): integer; forward;
 procedure main(); forward;
-function depth_first_search(grid: IntArrayArray; row: integer; col: integer; visit: BoolArrayArray): integer;
+function depth_first_search(depth_first_search_grid: IntArrayArray; depth_first_search_row: integer; depth_first_search_col: integer; depth_first_search_visit: BoolArrayArray): integer;
 var
   depth_first_search_row_length: integer;
   depth_first_search_col_length: integer;
   depth_first_search_count: integer;
 begin
-  depth_first_search_row_length := Length(grid);
-  depth_first_search_col_length := Length(grid[0]);
-  if (((row < 0) or (col < 0)) or (row = depth_first_search_row_length)) or (col = depth_first_search_col_length) then begin
+  depth_first_search_row_length := Length(depth_first_search_grid);
+  depth_first_search_col_length := Length(depth_first_search_grid[0]);
+  if (((depth_first_search_row < 0) or (depth_first_search_col < 0)) or (depth_first_search_row = depth_first_search_row_length)) or (depth_first_search_col = depth_first_search_col_length) then begin
   exit(0);
 end;
-  if visit[row][col] then begin
+  if depth_first_search_visit[depth_first_search_row][depth_first_search_col] then begin
   exit(0);
 end;
-  if grid[row][col] = 1 then begin
+  if depth_first_search_grid[depth_first_search_row][depth_first_search_col] = 1 then begin
   exit(0);
 end;
-  if (row = (depth_first_search_row_length - 1)) and (col = (depth_first_search_col_length - 1)) then begin
+  if (depth_first_search_row = (depth_first_search_row_length - 1)) and (depth_first_search_col = (depth_first_search_col_length - 1)) then begin
   exit(1);
 end;
-  visit[row][col] := true;
+  depth_first_search_visit[depth_first_search_row][depth_first_search_col] := true;
   depth_first_search_count := 0;
-  depth_first_search_count := depth_first_search_count + depth_first_search(grid, row + 1, col, visit);
-  depth_first_search_count := depth_first_search_count + depth_first_search(grid, row - 1, col, visit);
-  depth_first_search_count := depth_first_search_count + depth_first_search(grid, row, col + 1, visit);
-  depth_first_search_count := depth_first_search_count + depth_first_search(grid, row, col - 1, visit);
-  visit[row][col] := false;
+  depth_first_search_count := depth_first_search_count + depth_first_search(depth_first_search_grid, depth_first_search_row + 1, depth_first_search_col, depth_first_search_visit);
+  depth_first_search_count := depth_first_search_count + depth_first_search(depth_first_search_grid, depth_first_search_row - 1, depth_first_search_col, depth_first_search_visit);
+  depth_first_search_count := depth_first_search_count + depth_first_search(depth_first_search_grid, depth_first_search_row, depth_first_search_col + 1, depth_first_search_visit);
+  depth_first_search_count := depth_first_search_count + depth_first_search(depth_first_search_grid, depth_first_search_row, depth_first_search_col - 1, depth_first_search_visit);
+  depth_first_search_visit[depth_first_search_row][depth_first_search_col] := false;
   exit(depth_first_search_count);
 end;
-function count_paths(grid: IntArrayArray): integer;
+function count_paths(count_paths_grid: IntArrayArray): integer;
 var
   count_paths_rows: integer;
   count_paths_cols: integer;
@@ -91,8 +109,8 @@ var
   count_paths_row_visit: array of boolean;
   count_paths_j: integer;
 begin
-  count_paths_rows := Length(grid);
-  count_paths_cols := Length(grid[0]);
+  count_paths_rows := Length(count_paths_grid);
+  count_paths_cols := Length(count_paths_grid[0]);
   count_paths_visit := [];
   count_paths_i := 0;
   while count_paths_i < count_paths_rows do begin
@@ -105,7 +123,7 @@ end;
   count_paths_visit := concat(count_paths_visit, [count_paths_row_visit]);
   count_paths_i := count_paths_i + 1;
 end;
-  exit(depth_first_search(grid, 0, 0, count_paths_visit));
+  exit(depth_first_search(count_paths_grid, 0, 0, count_paths_visit));
 end;
 procedure main();
 var

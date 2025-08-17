@@ -79,10 +79,8 @@ var
   result1: RealArray;
   vector2: array of real;
   result2: RealArray;
-  alpha: real;
-  vector: RealArray;
-function leaky_rectified_linear_unit(vector: RealArray; alpha: real): RealArray; forward;
-function leaky_rectified_linear_unit(vector: RealArray; alpha: real): RealArray;
+function leaky_rectified_linear_unit(leaky_rectified_linear_unit_vector: RealArray; leaky_rectified_linear_unit_alpha: real): RealArray; forward;
+function leaky_rectified_linear_unit(leaky_rectified_linear_unit_vector: RealArray; leaky_rectified_linear_unit_alpha: real): RealArray;
 var
   leaky_rectified_linear_unit_result_: array of real;
   leaky_rectified_linear_unit_i: integer;
@@ -90,12 +88,12 @@ var
 begin
   leaky_rectified_linear_unit_result_ := [];
   leaky_rectified_linear_unit_i := 0;
-  while leaky_rectified_linear_unit_i < Length(vector) do begin
-  leaky_rectified_linear_unit_x := vector[leaky_rectified_linear_unit_i];
+  while leaky_rectified_linear_unit_i < Length(leaky_rectified_linear_unit_vector) do begin
+  leaky_rectified_linear_unit_x := leaky_rectified_linear_unit_vector[leaky_rectified_linear_unit_i];
   if leaky_rectified_linear_unit_x > 0 then begin
   leaky_rectified_linear_unit_result_ := concat(leaky_rectified_linear_unit_result_, [leaky_rectified_linear_unit_x]);
 end else begin
-  leaky_rectified_linear_unit_result_ := concat(leaky_rectified_linear_unit_result_, [alpha * leaky_rectified_linear_unit_x]);
+  leaky_rectified_linear_unit_result_ := concat(leaky_rectified_linear_unit_result_, [leaky_rectified_linear_unit_alpha * leaky_rectified_linear_unit_x]);
 end;
   leaky_rectified_linear_unit_i := leaky_rectified_linear_unit_i + 1;
 end;

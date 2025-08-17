@@ -38,6 +38,28 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -48,29 +70,27 @@ var
   steps: real;
   boundary: array of real;
   y: real;
-  x: real;
-  h: real;
-function f(x: real): real; forward;
-function make_points(a: real; b: real; h: real): RealArray; forward;
-function trapezoidal_rule(boundary: RealArray; steps: real): real; forward;
-function f(x: real): real;
+function f(f_x: real): real; forward;
+function make_points(make_points_a: real; make_points_b: real; make_points_h: real): RealArray; forward;
+function trapezoidal_rule(trapezoidal_rule_boundary: RealArray; trapezoidal_rule_steps: real): real; forward;
+function f(f_x: real): real;
 begin
-  exit(x * x);
+  exit(f_x * f_x);
 end;
-function make_points(a: real; b: real; h: real): RealArray;
+function make_points(make_points_a: real; make_points_b: real; make_points_h: real): RealArray;
 var
   make_points_xs: array of real;
   make_points_x: real;
 begin
   make_points_xs := [];
-  make_points_x := a + h;
-  while make_points_x <= (b - h) do begin
+  make_points_x := make_points_a + make_points_h;
+  while make_points_x <= (make_points_b - make_points_h) do begin
   make_points_xs := concat(make_points_xs, [make_points_x]);
-  make_points_x := make_points_x + h;
+  make_points_x := make_points_x + make_points_h;
 end;
   exit(make_points_xs);
 end;
-function trapezoidal_rule(boundary: RealArray; steps: real): real;
+function trapezoidal_rule(trapezoidal_rule_boundary: RealArray; trapezoidal_rule_steps: real): real;
 var
   trapezoidal_rule_h: real;
   trapezoidal_rule_a: real;
@@ -79,9 +99,9 @@ var
   trapezoidal_rule_y: real;
   trapezoidal_rule_i: integer;
 begin
-  trapezoidal_rule_h := (boundary[1] - boundary[0]) / steps;
-  trapezoidal_rule_a := boundary[0];
-  trapezoidal_rule_b := boundary[1];
+  trapezoidal_rule_h := (trapezoidal_rule_boundary[1] - trapezoidal_rule_boundary[0]) / trapezoidal_rule_steps;
+  trapezoidal_rule_a := trapezoidal_rule_boundary[0];
+  trapezoidal_rule_b := trapezoidal_rule_boundary[1];
   trapezoidal_rule_xs := make_points(trapezoidal_rule_a, trapezoidal_rule_b, trapezoidal_rule_h);
   trapezoidal_rule_y := (trapezoidal_rule_h / 2) * f(trapezoidal_rule_a);
   trapezoidal_rule_i := 0;

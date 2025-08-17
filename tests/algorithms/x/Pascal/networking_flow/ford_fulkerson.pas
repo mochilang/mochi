@@ -1,8 +1,8 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type BoolArray = array of boolean;
 type IntArray = array of integer;
+type BoolArray = array of boolean;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -69,12 +69,9 @@ var
   bench_memdiff_0: int64;
   INF: integer;
   graph: array of IntArray;
-  sink: integer;
-  parent: IntArray;
-  source: integer;
-function breadth_first_search(graph: IntArrayArray; source: integer; sink: integer; parent: IntArray): boolean; forward;
-function ford_fulkerson(graph: IntArrayArray; source: integer; sink: integer): integer; forward;
-function breadth_first_search(graph: IntArrayArray; source: integer; sink: integer; parent: IntArray): boolean;
+function breadth_first_search(breadth_first_search_graph: IntArrayArray; breadth_first_search_source: integer; breadth_first_search_sink: integer; breadth_first_search_parent: IntArray): boolean; forward;
+function ford_fulkerson(ford_fulkerson_graph: IntArrayArray; ford_fulkerson_source: integer; ford_fulkerson_sink: integer): integer; forward;
+function breadth_first_search(breadth_first_search_graph: IntArrayArray; breadth_first_search_source: integer; breadth_first_search_sink: integer; breadth_first_search_parent: IntArray): boolean;
 var
   breadth_first_search_visited: array of boolean;
   breadth_first_search_i: integer;
@@ -87,32 +84,32 @@ var
 begin
   breadth_first_search_visited := [];
   breadth_first_search_i := 0;
-  while breadth_first_search_i < Length(graph) do begin
+  while breadth_first_search_i < Length(breadth_first_search_graph) do begin
   breadth_first_search_visited := concat(breadth_first_search_visited, [false]);
   breadth_first_search_i := breadth_first_search_i + 1;
 end;
   breadth_first_search_queue := [];
-  breadth_first_search_queue := concat(breadth_first_search_queue, IntArray([source]));
-  breadth_first_search_visited[source] := true;
+  breadth_first_search_queue := concat(breadth_first_search_queue, IntArray([breadth_first_search_source]));
+  breadth_first_search_visited[breadth_first_search_source] := true;
   breadth_first_search_head := 0;
   while breadth_first_search_head < Length(breadth_first_search_queue) do begin
   breadth_first_search_u := breadth_first_search_queue[breadth_first_search_head];
   breadth_first_search_head := breadth_first_search_head + 1;
-  breadth_first_search_row := graph[breadth_first_search_u];
+  breadth_first_search_row := breadth_first_search_graph[breadth_first_search_u];
   breadth_first_search_ind := 0;
   while breadth_first_search_ind < Length(breadth_first_search_row) do begin
   breadth_first_search_capacity := breadth_first_search_row[breadth_first_search_ind];
   if (breadth_first_search_visited[breadth_first_search_ind] = false) and (breadth_first_search_capacity > 0) then begin
   breadth_first_search_queue := concat(breadth_first_search_queue, IntArray([breadth_first_search_ind]));
   breadth_first_search_visited[breadth_first_search_ind] := true;
-  parent[breadth_first_search_ind] := breadth_first_search_u;
+  breadth_first_search_parent[breadth_first_search_ind] := breadth_first_search_u;
 end;
   breadth_first_search_ind := breadth_first_search_ind + 1;
 end;
 end;
-  exit(breadth_first_search_visited[sink]);
+  exit(breadth_first_search_visited[breadth_first_search_sink]);
 end;
-function ford_fulkerson(graph: IntArrayArray; source: integer; sink: integer): integer;
+function ford_fulkerson(ford_fulkerson_graph: IntArrayArray; ford_fulkerson_source: integer; ford_fulkerson_sink: integer): integer;
 var
   ford_fulkerson_parent: array of integer;
   ford_fulkerson_i: integer;
@@ -127,28 +124,28 @@ var
 begin
   ford_fulkerson_parent := [];
   ford_fulkerson_i := 0;
-  while ford_fulkerson_i < Length(graph) do begin
+  while ford_fulkerson_i < Length(ford_fulkerson_graph) do begin
   ford_fulkerson_parent := concat(ford_fulkerson_parent, IntArray([-1]));
   ford_fulkerson_i := ford_fulkerson_i + 1;
 end;
   ford_fulkerson_max_flow := 0;
-  while breadth_first_search(graph, source, sink, ford_fulkerson_parent) do begin
+  while breadth_first_search(ford_fulkerson_graph, ford_fulkerson_source, ford_fulkerson_sink, ford_fulkerson_parent) do begin
   ford_fulkerson_path_flow := INF;
-  ford_fulkerson_s := sink;
-  while ford_fulkerson_s <> source do begin
+  ford_fulkerson_s := ford_fulkerson_sink;
+  while ford_fulkerson_s <> ford_fulkerson_source do begin
   ford_fulkerson_prev := ford_fulkerson_parent[ford_fulkerson_s];
-  ford_fulkerson_cap := graph[ford_fulkerson_prev][ford_fulkerson_s];
+  ford_fulkerson_cap := ford_fulkerson_graph[ford_fulkerson_prev][ford_fulkerson_s];
   if ford_fulkerson_cap < ford_fulkerson_path_flow then begin
   ford_fulkerson_path_flow := ford_fulkerson_cap;
 end;
   ford_fulkerson_s := ford_fulkerson_prev;
 end;
   ford_fulkerson_max_flow := ford_fulkerson_max_flow + ford_fulkerson_path_flow;
-  ford_fulkerson_v := sink;
-  while ford_fulkerson_v <> source do begin
+  ford_fulkerson_v := ford_fulkerson_sink;
+  while ford_fulkerson_v <> ford_fulkerson_source do begin
   ford_fulkerson_u := ford_fulkerson_parent[ford_fulkerson_v];
-  graph[ford_fulkerson_u][ford_fulkerson_v] := graph[ford_fulkerson_u][ford_fulkerson_v] - ford_fulkerson_path_flow;
-  graph[ford_fulkerson_v][ford_fulkerson_u] := graph[ford_fulkerson_v][ford_fulkerson_u] + ford_fulkerson_path_flow;
+  ford_fulkerson_graph[ford_fulkerson_u][ford_fulkerson_v] := ford_fulkerson_graph[ford_fulkerson_u][ford_fulkerson_v] - ford_fulkerson_path_flow;
+  ford_fulkerson_graph[ford_fulkerson_v][ford_fulkerson_u] := ford_fulkerson_graph[ford_fulkerson_v][ford_fulkerson_u] + ford_fulkerson_path_flow;
   ford_fulkerson_v := ford_fulkerson_u;
 end;
   ford_fulkerson_j := 0;

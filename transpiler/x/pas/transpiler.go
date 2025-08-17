@@ -5661,16 +5661,18 @@ func inferType(e Expr) string {
 			}
 		}
 		return "integer"
-	case *SliceExpr:
-		if v.String {
-			return "string"
-		}
-		return "array of integer"
-	case *SelectorExpr:
-		root := v.Root
-		if s, ok := lookupName(root); ok {
-			root = s
-		}
+       case *SliceExpr:
+               if v.String {
+                       return "string"
+               }
+               // Preserve the element type of the sliced expression so nested
+               // lists keep their alias information (e.g. IntArrayArray).
+               return inferType(v.Target)
+       case *SelectorExpr:
+               root := v.Root
+               if s, ok := lookupName(root); ok {
+                       root = s
+               }
 		t, ok := currentVarTypes[root]
 		if !ok {
 			return ""

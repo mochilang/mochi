@@ -66,31 +66,27 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  m: integer;
-  mat: RealArrayArray;
-  key: real;
-  n: integer;
-procedure search_in_sorted_matrix(mat: RealArrayArray; m: integer; n: integer; key: real); forward;
+procedure search_in_sorted_matrix(search_in_sorted_matrix_mat: RealArrayArray; search_in_sorted_matrix_m: integer; search_in_sorted_matrix_n: integer; search_in_sorted_matrix_key: real); forward;
 procedure main(); forward;
-procedure search_in_sorted_matrix(mat: RealArrayArray; m: integer; n: integer; key: real);
+procedure search_in_sorted_matrix(search_in_sorted_matrix_mat: RealArrayArray; search_in_sorted_matrix_m: integer; search_in_sorted_matrix_n: integer; search_in_sorted_matrix_key: real);
 var
   search_in_sorted_matrix_i: integer;
   search_in_sorted_matrix_j: integer;
 begin
-  search_in_sorted_matrix_i := m - 1;
+  search_in_sorted_matrix_i := search_in_sorted_matrix_m - 1;
   search_in_sorted_matrix_j := 0;
-  while (search_in_sorted_matrix_i >= 0) and (search_in_sorted_matrix_j < n) do begin
-  if key = mat[search_in_sorted_matrix_i][search_in_sorted_matrix_j] then begin
-  writeln((((('Key ' + FloatToStr(key)) + ' found at row- ') + IntToStr(search_in_sorted_matrix_i + 1)) + ' column- ') + IntToStr(search_in_sorted_matrix_j + 1));
+  while (search_in_sorted_matrix_i >= 0) and (search_in_sorted_matrix_j < search_in_sorted_matrix_n) do begin
+  if search_in_sorted_matrix_key = search_in_sorted_matrix_mat[search_in_sorted_matrix_i][search_in_sorted_matrix_j] then begin
+  writeln((((('Key ' + FloatToStr(search_in_sorted_matrix_key)) + ' found at row- ') + IntToStr(search_in_sorted_matrix_i + 1)) + ' column- ') + IntToStr(search_in_sorted_matrix_j + 1));
   exit();
 end;
-  if key < mat[search_in_sorted_matrix_i][search_in_sorted_matrix_j] then begin
+  if search_in_sorted_matrix_key < search_in_sorted_matrix_mat[search_in_sorted_matrix_i][search_in_sorted_matrix_j] then begin
   search_in_sorted_matrix_i := search_in_sorted_matrix_i - 1;
 end else begin
   search_in_sorted_matrix_j := search_in_sorted_matrix_j + 1;
 end;
 end;
-  writeln(('Key ' + FloatToStr(key)) + ' not found');
+  writeln(('Key ' + FloatToStr(search_in_sorted_matrix_key)) + ' not found');
 end;
 procedure main();
 var
