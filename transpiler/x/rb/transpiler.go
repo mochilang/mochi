@@ -108,13 +108,15 @@ def _str(x)
   if x.is_a?(Array)
     x.map { |e| _str(e) }.join(' ')
   elsif x.is_a?(Float)
-    s = x.to_s
-    if s.include?('e') || s.include?('E')
-      s
-    elsif x == x.to_i
+    if x == x.to_i
       x.to_i.to_s
     else
-      s
+      s = x.to_s
+      if s.include?('e') || s.include?('E')
+        s
+      else
+        s
+      end
     end
   else
     x.to_s
@@ -4314,6 +4316,56 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				return fmt.Errorf("unsupported binary op")
 			}
 			expr = &BinaryExpr{Op: op.op, Left: left, Right: right}
+			// Constant fold multiplications of the form
+			//   <number> * pow10(<int>)
+			// These arise in some algorithms where a float
+			// literal is multiplied by a power of ten.  Using
+			// regular floating-point arithmetic introduces
+			// rounding errors large enough to break strict
+			// comparisons (e.g. abs(diff) > 1).  By evaluating
+			// the expression at transpile time we can emit a
+			// single float literal in scientific notation which
+			// avoids the runtime multiplication and preserves
+			// precision.
+			if op.op == "*" {
+				if fl, ok := left.(*FloatLit); ok {
+					if call, ok2 := right.(*CallExpr); ok2 && call.Func == "pow10" && len(call.Args) == 1 {
+						if il, ok3 := call.Args[0].(*IntLit); ok3 {
+							s := strconv.FormatFloat(fl.Value, 'f', -1, 64) + "e" + strconv.Itoa(il.Value)
+							if v, err := strconv.ParseFloat(s, 64); err == nil {
+								expr = &FloatLit{Value: v}
+							}
+						}
+					}
+				} else if fl, ok := right.(*FloatLit); ok {
+					if call, ok2 := left.(*CallExpr); ok2 && call.Func == "pow10" && len(call.Args) == 1 {
+						if il, ok3 := call.Args[0].(*IntLit); ok3 {
+							s := strconv.FormatFloat(fl.Value, 'f', -1, 64) + "e" + strconv.Itoa(il.Value)
+							if v, err := strconv.ParseFloat(s, 64); err == nil {
+								expr = &FloatLit{Value: v}
+							}
+						}
+					}
+				} else if ilit, ok := left.(*IntLit); ok {
+					if call, ok2 := right.(*CallExpr); ok2 && call.Func == "pow10" && len(call.Args) == 1 {
+						if n, ok3 := call.Args[0].(*IntLit); ok3 {
+							s := strconv.Itoa(ilit.Value) + "e" + strconv.Itoa(n.Value)
+							if v, err := strconv.ParseFloat(s, 64); err == nil {
+								expr = &FloatLit{Value: v}
+							}
+						}
+					}
+				} else if ilit, ok := right.(*IntLit); ok {
+					if call, ok2 := left.(*CallExpr); ok2 && call.Func == "pow10" && len(call.Args) == 1 {
+						if n, ok3 := call.Args[0].(*IntLit); ok3 {
+							s := strconv.Itoa(ilit.Value) + "e" + strconv.Itoa(n.Value)
+							if v, err := strconv.ParseFloat(s, 64); err == nil {
+								expr = &FloatLit{Value: v}
+							}
+						}
+					}
+				}
+			}
 		}
 		operands[i] = expr
 		operands = append(operands[:i+1], operands[i+2:]...)
