@@ -4868,8 +4868,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
-	case p.Call != nil:
-		name := p.Call.Func
+        case p.Call != nil:
+                name := p.Call.Func
+                if s, ok := lookupName(name); ok {
+                        name = s
+                }
 		if name == "sum" && len(p.Call.Args) == 1 {
 			if q := queryFromExpr(p.Call.Args[0]); q != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
 				src, err := convertExpr(env, q.Source)
@@ -5523,38 +5526,39 @@ func inferType(e Expr) string {
 			return lt
 		}
 		return rt
-	case *CallExpr:
-		switch v.Name {
-		case "Length", "Pos":
-			return "integer"
-		case "IntToStr":
-			return "string"
-		case "UpperCase", "LowerCase":
-			return "string"
-		case "avg":
-			return "real"
-		case "min", "max":
-			return "integer"
-		case "num", "denom":
-			return "integer"
-		case "Sqrt", "Sin", "Ln", "Power":
-			return "real"
-		case "Double":
-			return "real"
-		case "copy":
-			if len(v.Args) > 0 {
-				return inferType(v.Args[0])
-			}
-			return ""
-		case "concat":
-			if len(v.Args) > 0 {
-				t := inferType(v.Args[0])
-				if strings.HasPrefix(t, "array of ") {
-					return t
-				}
-			}
-			return ""
-		default:
+        case *CallExpr:
+                name := strings.ToLower(v.Name)
+                switch name {
+                case "length", "pos":
+                        return "integer"
+                case "inttostr":
+                        return "string"
+                case "uppercase", "lowercase":
+                        return "string"
+                case "avg":
+                        return "real"
+                case "min", "max":
+                        return "integer"
+                case "num", "denom":
+                        return "integer"
+                case "sqrt", "sin", "ln", "power":
+                        return "real"
+                case "double":
+                        return "real"
+                case "copy":
+                        if len(v.Args) > 0 {
+                                return inferType(v.Args[0])
+                        }
+                        return ""
+                case "concat":
+                        if len(v.Args) > 0 {
+                                t := inferType(v.Args[0])
+                                if strings.HasPrefix(t, "array of ") {
+                                        return t
+                                }
+                        }
+                        return ""
+                default:
 			if rt, ok := funcReturns[v.Name]; ok {
 				return rt
 			}

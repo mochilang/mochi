@@ -39,21 +39,43 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  f1: integer;
-  n: integer;
-  exp: integer;
+  a: IntArrayArray;
   b: IntArrayArray;
   base: IntArrayArray;
+  exp_: integer;
+  f1: integer;
   f2: integer;
-  a: IntArrayArray;
+  n: integer;
 function identity(n: integer): IntArrayArray; forward;
 function matrix_mul(a: IntArrayArray; b: IntArrayArray): IntArrayArray; forward;
-function matrix_pow(base: IntArrayArray; exp: integer): IntArrayArray; forward;
+function matrix_pow(base: IntArrayArray; matrix_pow_exp_: integer): IntArrayArray; forward;
 function fibonacci_with_matrix_exponentiation(n: integer; f1: integer; f2: integer): integer; forward;
 function simple_fibonacci(n: integer; f1: integer; f2: integer): integer; forward;
 function identity(n: integer): IntArrayArray;
@@ -112,7 +134,7 @@ end;
 end;
   exit(matrix_mul_result_);
 end;
-function matrix_pow(base: IntArrayArray; exp: integer): IntArrayArray;
+function matrix_pow(base: IntArrayArray; matrix_pow_exp_: integer): IntArrayArray;
 var
   matrix_pow_result_: IntArrayArray;
   matrix_pow_b: array of IntArray;
@@ -120,7 +142,7 @@ var
 begin
   matrix_pow_result_ := identity(Length(base));
   matrix_pow_b := base;
-  matrix_pow_e := exp;
+  matrix_pow_e := exp_;
   while matrix_pow_e > 0 do begin
   if (matrix_pow_e mod 2) = 1 then begin
   matrix_pow_result_ := matrix_mul(matrix_pow_result_, matrix_pow_b);

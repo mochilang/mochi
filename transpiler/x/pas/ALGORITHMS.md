@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-17 08:59 GMT+7
+Last updated: 2025-08-17 09:22 GMT+7
 
-## Algorithms Golden Test Checklist (442/1077)
+## Algorithms Golden Test Checklist (469/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -585,13 +585,13 @@ Last updated: 2025-08-17 08:59 GMT+7
 | 576 | maths/germain_primes | ✓ | 0ns | 0B |
 | 577 | maths/greatest_common_divisor | ✓ | 0ns | 128B |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 0ns | 0B |
-| 579 | maths/integer_square_root | ✓ |  |  |
-| 580 | maths/interquartile_range | ✓ | 1.0µs | 0B |
+| 579 | maths/integer_square_root | error |  |  |
+| 580 | maths/interquartile_range | ✓ | 0ns | 0B |
 | 581 | maths/is_int_palindrome | ✓ | 0ns | 0B |
-| 582 | maths/is_ip_v4_address_valid | ✓ | 2.0µs | 128B |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 1.0µs | 128B |
 | 583 | maths/is_square_free | ✓ | 0ns | 192B |
 | 584 | maths/jaccard_similarity | ✓ | 1.0µs | 0B |
-| 585 | maths/joint_probability_distribution | ✓ | 0ns | 3.50KB |
+| 585 | maths/joint_probability_distribution | ✓ | 1.0µs | 3.50KB |
 | 586 | maths/josephus_problem | ✓ | 0ns | 64B |
 | 587 | maths/juggler_sequence | ✓ | 0ns | 128B |
 | 588 | maths/karatsuba | ✓ | 0ns | 0B |
@@ -606,35 +606,35 @@ Last updated: 2025-08-17 08:59 GMT+7
 | 597 | maths/manhattan_distance | ✓ | 0ns | 192B |
 | 598 | maths/matrix_exponentiation | ✓ | 0ns | 64B |
 | 599 | maths/max_sum_sliding_window | ✓ | 0ns | 0B |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
-| 605 | maths/number_of_digits |   |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
-| 626 | maths/persistence |   |  |  |
-| 627 | maths/pi_generator |   |  |  |
-| 628 | maths/pi_monte_carlo_estimation |   |  |  |
+| 600 | maths/minkowski_distance | error |  |  |
+| 601 | maths/mobius_function | ✓ | 1.0µs | 320B |
+| 602 | maths/modular_division | ✓ | 0ns | 0B |
+| 603 | maths/monte_carlo | ✓ | 1.0µs | 0B |
+| 604 | maths/monte_carlo_dice | ✓ | 1.0µs | 0B |
+| 605 | maths/number_of_digits | ✓ | 0ns | 0B |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 0ns | 576B |
+| 607 | maths/numerical_analysis/bisection | ✓ |  |  |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 0ns | 0B |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 0ns | 64B |
+| 610 | maths/numerical_analysis/intersection | ✓ |  |  |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 0ns | 0B |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 0ns | 192B |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 1.0µs | 224B |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ |  |  |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ |  |  |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ |  |  |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 1.0µs | 0B |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 1.0µs | 416B |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 0ns | 64B |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 0ns | 128B |
+| 621 | maths/numerical_analysis/square_root | ✓ | 0ns | 64B |
+| 622 | maths/odd_sieve | ✓ | 0ns | 160B |
+| 623 | maths/perfect_cube | ✓ | 0ns | 128B |
+| 624 | maths/perfect_number | ✓ | 138.0µs | 128B |
+| 625 | maths/perfect_square | ✓ | 0ns | 128B |
+| 626 | maths/persistence | ✓ | 0ns | 0B |
+| 627 | maths/pi_generator | ✓ | 0ns | 0B |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 1.0µs | 0B |
 | 629 | maths/points_are_collinear_3d |   |  |  |
 | 630 | maths/pollard_rho |   |  |  |
 | 631 | maths/polynomial_evaluation |   |  |  |
