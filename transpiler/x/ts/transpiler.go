@@ -2358,17 +2358,23 @@ function sha256(bs: number[]): number[] {
 	if useLen {
 		prelude = append(prelude, &RawStmt{Code: `function _len(x: any): number { return Array.isArray(x) || typeof x === 'string' ? x.length : Object.keys(x ?? {}).length; }`})
 	}
-	if useStr {
-		prelude = append(prelude, &RawStmt{Code: `function _str(x: any): string {
+        if useStr {
+                prelude = append(prelude, &RawStmt{Code: `function _str(x: any): string {
   if (typeof x === 'number') {
     if (Object.is(x, -0)) return '0';
     if (x === Infinity) return '+Inf';
     if (x === -Infinity) return '-Inf';
     if (Number.isNaN(x)) return 'NaN';
   }
+  if (Array.isArray(x)) {
+    return '[' + x.map(_str).join(', ') + ']';
+  }
+  if (x && typeof x === 'object') {
+    try { return JSON.stringify(x); } catch { return String(x); }
+  }
   return String(x);
 }`})
-	}
+        }
 	if useEqual {
 		prelude = append(prelude, &RawStmt{Code: helperEqual})
 	}
