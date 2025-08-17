@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-16 19:50 GMT+7
+Last updated: 2025-08-17 09:16 GMT+7
 
 ## Algorithms Golden Test Checklist (988/1077)
 | Index | Name | Status | Duration | Memory |
@@ -584,7 +584,7 @@ Last updated: 2025-08-16 19:50 GMT+7
 | 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 8.815ms | 2.6 MB |
 | 577 | maths/greatest_common_divisor | ✓ | 8.255ms | 2.4 MB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 9.259ms | 3.5 MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 8.845ms | 2.9 MB |
 | 579 | maths/integer_square_root | ✓ | 7.632ms | 2.9 MB |
 | 580 | maths/interquartile_range | ✓ | 9.62ms | 3.4 MB |
 | 581 | maths/is_int_palindrome | ✓ | 8.118ms | 2.9 MB |
