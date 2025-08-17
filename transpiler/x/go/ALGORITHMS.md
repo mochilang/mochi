@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 897/1077
-Last updated: 2025-08-17 14:08 +0700
+Completed programs: 898/1077
+Last updated: 2025-08-17 14:55 +0700
 
 Checklist:
 
@@ -769,7 +769,7 @@ Checklist:
 | 760 | other/word_search | ✓ | 886.0µs | 21.23KB |
 | 761 | physics/altitude_pressure | ✓ | 385.0µs | 1.03KB |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 204.0µs | 1.01KB |
-| 763 | physics/basic_orbital_capture |   |  |  |
+| 763 | physics/basic_orbital_capture | ✓ | 378.0µs | 1.02KB |
 | 764 | physics/casimir_effect | ✓ | 448.0µs | 2.15KB |
 | 765 | physics/center_of_mass | ✓ | 394.0µs | 1.13KB |
 | 766 | physics/centripetal_force | ✓ | 306.0µs | 1.07KB |
