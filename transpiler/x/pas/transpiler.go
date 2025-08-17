@@ -2423,7 +2423,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 		}
 	}
-	for name, typ := range varTypes {
+	var names []string
+	for name := range varTypes {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		typ := varTypes[name]
 		exists := false
 		for _, v := range pr.Vars {
 			if v.Name == name {

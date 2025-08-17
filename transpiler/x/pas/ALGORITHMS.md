@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-16 19:52 GMT+7
+Last updated: 2025-08-17 08:59 GMT+7
 
 ## Algorithms Golden Test Checklist (442/1077)
 | Index | Name | Status | Duration | Memory |
@@ -512,7 +512,7 @@ Last updated: 2025-08-16 19:52 GMT+7
 | 503 | machine_learning/forecasting/run |   |  |  |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.0µs | 640B |
-| 506 | machine_learning/gradient_descent | ✓ | 21.0µs | 704B |
+| 506 | machine_learning/gradient_descent | ✓ | 14.0µs | 704B |
 | 507 | machine_learning/k_means_clust | ✓ | 0ns | 928B |
 | 508 | machine_learning/k_nearest_neighbours | error |  |  |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.0µs | 0B |
