@@ -4209,7 +4209,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 1 {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
 				switch tt := t.(type) {
-				case types.StringType, types.IntType, types.FloatType, types.BoolType:
+				case types.FloatType:
+					inner := &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}
+					trim := &CallExpr{Func: "String.trim_trailing", Args: []Expr{inner, &StringLit{Value: ".0"}}}
+					return trim, nil
+				case types.StringType, types.IntType, types.BoolType:
 					return &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}, nil
 				case types.ListType:
 					if _, ok := tt.Elem.(types.IntType); ok {

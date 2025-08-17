@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-17 12:20 GMT+7
+Last updated: 2025-08-17 12:36 GMT+7
 
-## Algorithms Golden Test Checklist (850/1077)
+## Algorithms Golden Test Checklist (848/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -638,7 +638,7 @@ Last updated: 2025-08-17 12:20 GMT+7
 | 629 | maths/points_are_collinear_3d | ✓ | 11.55ms | 33.0 MB |
 | 630 | maths/pollard_rho | ✓ | 213us | 25.0 MB |
 | 631 | maths/polynomial_evaluation | ✓ | 4.55ms | 32.7 MB |
-| 632 | maths/polynomials/single_indeterminate_operations | ✓ |  |  |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 13.29ms | 25.0 MB |
 | 633 | maths/power_using_recursion | ✓ | 4.58ms | 12.5 MB |
 | 634 | maths/prime_check | ✓ | 4.69ms | 25.0 MB |
 | 635 | maths/prime_factors | ✓ | 6.49ms | 32.7 MB |
@@ -650,7 +650,7 @@ Last updated: 2025-08-17 12:20 GMT+7
 | 641 | maths/qr_decomposition | ✓ | 3.70ms | 26.7 MB |
 | 642 | maths/quadratic_equations_complex_numbers | ✓ | 1.88ms | 17.3 MB |
 | 643 | maths/radians | ✓ | 4.67ms | 25.0 MB |
-| 644 | maths/radix2_fft | ✓ | 6.87ms | 17.3 MB |
+| 644 | maths/radix2_fft | error | 6.87ms | 17.3 MB |
 | 645 | maths/remove_digit | ✓ | 4.86ms | 12.5 MB |
 | 646 | maths/segmented_sieve | ✓ | 8.04ms | 25.0 MB |
 | 647 | maths/series/arithmetic | ✓ | 7.22ms | 32.8 MB |
@@ -665,7 +665,7 @@ Last updated: 2025-08-17 12:20 GMT+7
 | 656 | maths/signum | ✓ | 4.12ms | 12.5 MB |
 | 657 | maths/simultaneous_linear_equation_solver | ✓ | 7.48ms | 25.0 MB |
 | 658 | maths/sin | ✓ | 1.41ms | 15.4 MB |
-| 659 | maths/sock_merchant | ✓ | 6.05ms | 17.3 MB |
+| 659 | maths/sock_merchant | error | 6.05ms | 17.3 MB |
 | 660 | maths/softmax | ✓ | 6.01ms | 32.7 MB |
 | 661 | maths/solovay_strassen_primality_test | ✓ | 4.58ms | 32.9 MB |
 | 662 | maths/spearman_rank_correlation_coefficient | ✓ | 4.21ms | 7.7 MB |
