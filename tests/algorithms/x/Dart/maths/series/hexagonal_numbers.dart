@@ -22,25 +22,16 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
-  int s0 = start.toInt();
-  int e0 = end.toInt();
-  if (s0 < 0) s0 += n;
-  if (e0 < 0) e0 += n;
-  if (s0 < 0) s0 = 0;
-  if (s0 > n) s0 = n;
-  if (e0 < 0) e0 = 0;
-  if (e0 > n) e0 = n;
-  if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
-}
+String _str(dynamic v) => v.toString();
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
+}
 
 List<int> hexagonal_numbers(int length) {
   if (length <= 0) {
-    throw Exception("Length must be a positive integer.");
+    _error("Length must be a positive integer.");
   }
   List<int> res = <int>[];
   int n = 0;
@@ -54,13 +45,13 @@ List<int> hexagonal_numbers(int length) {
 void test_hexagonal_numbers() {
   List<int> expected5 = [0, 1, 6, 15, 28];
   List<int> result5 = hexagonal_numbers(5);
-  if (jsonEncode(result5) != jsonEncode(expected5)) {
-    throw Exception("hexagonal_numbers(5) failed");
+  if (!_listEq(result5, expected5)) {
+    _error("hexagonal_numbers(5) failed");
   }
   List<int> expected10 = [0, 1, 6, 15, 28, 45, 66, 91, 120, 153];
   List<int> result10 = hexagonal_numbers(10);
-  if (jsonEncode(result10) != jsonEncode(expected10)) {
-    throw Exception("hexagonal_numbers(10) failed");
+  if (!_listEq(result10, expected10)) {
+    _error("hexagonal_numbers(10) failed");
   }
 }
 
@@ -82,3 +73,19 @@ void main() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
+
+
+bool _listEq(List a, List b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    final x = a[i];
+    final y = b[i];
+    if (x is List && y is List) {
+      if (!_listEq(x, y)) return false;
+    } else if (x != y) {
+      return false;
+    }
+  }
+  return true;
+}
+
