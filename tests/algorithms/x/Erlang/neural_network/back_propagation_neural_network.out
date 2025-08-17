@@ -1,9 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/neural_network/back_propagation_neural_network.erl:148:2: Warning: variable 'Is_neg_3' exported from 'case' (line 127, column 9)
-%  148| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/back_propagation_neural_network.erl:153:2: Warning: variable 'Is_neg_3' exported from 'case' (line 132, column 16)
+%  153| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
 %     |  ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/neural_network/back_propagation_neural_network.erl:148:35: Warning: variable 'Y_3' exported from 'case' (line 127, column 9)
-%  148| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
-%     |                                   ^
 
 0.0
