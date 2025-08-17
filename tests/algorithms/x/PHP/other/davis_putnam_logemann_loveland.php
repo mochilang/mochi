@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -28,7 +29,7 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function new_clause($lits) {
-  global $clause1, $clause2, $formula, $formula_str, $clauses, $symbols, $model, $result;
+  global $clause1, $clause2, $clauses, $formula, $formula_str, $model, $result, $symbols;
   $m = [];
   $names = [];
   $i = 0;
@@ -41,7 +42,7 @@ $__start = _now();
   return ['literals' => $m, 'names' => $names];
 };
   function assign_clause($c, $model) {
-  global $clause1, $clause2, $formula, $formula_str, $clauses, $symbols, $result;
+  global $clause1, $clause2, $clauses, $formula, $formula_str, $result, $symbols;
   $lits = $c['literals'];
   $i = 0;
   while ($i < _len($c['names'])) {
@@ -60,7 +61,7 @@ $__start = _now();
   return $c;
 };
   function evaluate_clause($c, $model) {
-  global $clause1, $clause2, $formula, $formula_str, $clauses, $symbols, $result;
+  global $clause1, $clause2, $clauses, $formula, $formula_str, $result, $symbols;
   $i = 0;
   while ($i < _len($c['names'])) {
   $lit = $c['names'][$i];
@@ -95,11 +96,11 @@ $__start = _now();
   return ['value' => $any_true, 'clause' => $c];
 };
   function new_formula($cs) {
-  global $clause1, $clause2, $formula, $formula_str, $clauses, $symbols, $model, $result;
+  global $clause1, $clause2, $clauses, $formula, $formula_str, $model, $result, $symbols;
   return ['clauses' => $cs];
 };
   function remove_symbol($symbols, $s) {
-  global $clause1, $clause2, $formula, $formula_str, $clauses, $model, $result;
+  global $clause1, $clause2, $clauses, $formula, $formula_str, $model, $result;
   $res = [];
   $i = 0;
   while ($i < count($symbols)) {
@@ -142,7 +143,7 @@ $__start = _now();
   return dpll_algorithm($clauses, $rest, $tmp2);
 };
   function str_clause($c) {
-  global $clause1, $clause2, $formula, $formula_str, $clauses, $symbols, $model, $result;
+  global $clause1, $clause2, $clauses, $formula, $formula_str, $model, $result, $symbols;
   $line = '{';
   $first = true;
   $i = 0;
@@ -160,7 +161,7 @@ $__start = _now();
   return $line;
 };
   function str_formula($f) {
-  global $clause1, $clause2, $formula, $formula_str, $clauses, $symbols, $model, $result;
+  global $clause1, $clause2, $clauses, $formula, $formula_str, $model, $result, $symbols;
   $line = '{';
   $i = 0;
   while ($i < _len($f['clauses'])) {

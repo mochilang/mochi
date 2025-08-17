@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -22,16 +23,9 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function mochi_exp($x) {
-  $term = 1.0;
-  $sum = 1.0;
-  $n = 1;
-  while ($n < 20) {
-  $term = $term * $x / (floatval($n));
-  $sum = $sum + $term;
-  $n = $n + 1;
-};
-  return $sum;
-};
+  return exp($x);
+}
+;
   function scaled_exponential_linear_unit($vector, $alpha, $lambda_) {
   $result = [];
   $i = 0;

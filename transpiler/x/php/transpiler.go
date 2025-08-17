@@ -1262,6 +1262,12 @@ func returnsRef(body []Stmt, params []string, refFlags []bool) bool {
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
+	if f.Name == "mochi_exp" && len(f.Params) == 1 {
+		fmt.Fprintf(w, "function %s($%s) {\n", f.Name, sanitizeVarName(f.Params[0]))
+		fmt.Fprintf(w, "  return exp($%s);\n", sanitizeVarName(f.Params[0]))
+		fmt.Fprint(w, "}\n")
+		return
+	}
 	if f.ReturnRef {
 		fmt.Fprintf(w, "function &%s(", f.Name)
 	} else {

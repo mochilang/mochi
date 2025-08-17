@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -37,22 +38,14 @@ $__start = _now();
   global $seed;
   return 1.0 / (1.0 + mochi_exp(-$x));
 };
-  function to_float($x) {
+  function mochi_to_float($x) {
   global $seed;
   return $x * 1.0;
 };
   function mochi_exp($x) {
-  global $seed;
-  $term = 1.0;
-  $sum = 1.0;
-  $n = 1;
-  while ($n < 20) {
-  $term = $term * $x / floatval($n);
-  $sum = $sum + $term;
-  $n = $n + 1;
-};
-  return $sum;
-};
+  return exp($x);
+}
+;
   function convolve($data, $kernel, $step, $bias) {
   global $seed;
   $size_data = count($data);

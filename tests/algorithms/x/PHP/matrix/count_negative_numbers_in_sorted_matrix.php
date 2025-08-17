@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -36,17 +37,20 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   function generate_large_matrix() {
-  global $grid, $test_grids, $results_bin, $results_brute, $results_break;
+  global $grid, $results_bin, $results_break, $results_brute, $test_grids;
   $result = [];
   $i = 0;
   while ($i < 1000) {
@@ -62,7 +66,7 @@ $__start = _now();
   return $result;
 };
   function find_negative_index($arr) {
-  global $grid, $test_grids, $results_bin, $i, $results_brute, $results_break;
+  global $grid, $i, $results_bin, $results_break, $results_brute, $test_grids;
   $left = 0;
   $right = count($arr) - 1;
   if (count($arr) == 0) {
@@ -89,13 +93,13 @@ $__start = _now();
   return count($arr);
 };
   function count_negatives_binary_search($grid) {
-  global $test_grids, $results_bin, $results_brute, $results_break;
+  global $results_bin, $results_break, $results_brute, $test_grids;
   $total = 0;
   $bound = count($grid[0]);
   $i = 0;
   while ($i < count($grid)) {
   $row = $grid[$i];
-  $idx = find_negative_index(array_slice($row, 0, $bound - 0));
+  $idx = find_negative_index(array_slice($row, 0, $bound));
   $bound = $idx;
   $total = $total + $idx;
   $i = $i + 1;
@@ -103,7 +107,7 @@ $__start = _now();
   return (count($grid) * count($grid[0])) - $total;
 };
   function count_negatives_brute_force($grid) {
-  global $test_grids, $results_bin, $results_brute, $results_break;
+  global $results_bin, $results_break, $results_brute, $test_grids;
   $count = 0;
   $i = 0;
   while ($i < count($grid)) {
@@ -120,7 +124,7 @@ $__start = _now();
   return $count;
 };
   function count_negatives_brute_force_with_break($grid) {
-  global $test_grids, $results_bin, $results_brute, $results_break;
+  global $results_bin, $results_break, $results_brute, $test_grids;
   $total = 0;
   $i = 0;
   while ($i < count($grid)) {

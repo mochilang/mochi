@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -28,14 +29,14 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   $NUM_SQUARES = 9;
   $EMPTY_CELL = '.';
   function is_valid_sudoku_board($board) {
-  global $NUM_SQUARES, $EMPTY_CELL, $valid_board, $invalid_board;
+  global $EMPTY_CELL, $NUM_SQUARES, $invalid_board, $valid_board;
   if (count($board) != $NUM_SQUARES) {
   return false;
 }
