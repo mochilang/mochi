@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -15,6 +16,10 @@ function _now() {
     }
     return hrtime(true);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function signum($num) {
@@ -28,31 +33,31 @@ $__start = _now();
 };
   function test_signum() {
   if (signum(5.0) != 1) {
-  $panic('signum(5) failed');
+  _panic('signum(5) failed');
 }
   if (signum(-5.0) != (-1)) {
-  $panic('signum(-5) failed');
+  _panic('signum(-5) failed');
 }
   if (signum(0.0) != 0) {
-  $panic('signum(0) failed');
+  _panic('signum(0) failed');
 }
   if (signum(10.5) != 1) {
-  $panic('signum(10.5) failed');
+  _panic('signum(10.5) failed');
 }
   if (signum(-10.5) != (-1)) {
-  $panic('signum(-10.5) failed');
+  _panic('signum(-10.5) failed');
 }
   if (signum(0.000001) != 1) {
-  $panic('signum(1e-6) failed');
+  _panic('signum(1e-6) failed');
 }
   if (signum(-0.000001) != (-1)) {
-  $panic('signum(-1e-6) failed');
+  _panic('signum(-1e-6) failed');
 }
   if (signum(123456789.0) != 1) {
-  $panic('signum(123456789) failed');
+  _panic('signum(123456789) failed');
 }
   if (signum(-123456789.0) != (-1)) {
-  $panic('signum(-123456789) failed');
+  _panic('signum(-123456789) failed');
 }
 };
   function main() {

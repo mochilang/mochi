@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -34,6 +35,10 @@ function _str($x) {
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -87,15 +92,15 @@ $__start = _now();
   $i = $i + 1;
 };
   if (!approx_equal($sum1, 1.0)) {
-  $panic('sum test failed');
+  _panic('sum test failed');
 }
   $s2 = softmax([5.0, 5.0]);
   if (!(approx_equal($s2[0], 0.5) && approx_equal($s2[1], 0.5))) {
-  $panic('equal elements test failed');
+  _panic('equal elements test failed');
 }
   $s3 = softmax([0.0]);
   if (!approx_equal($s3[0], 1.0)) {
-  $panic('zero vector test failed');
+  _panic('zero vector test failed');
 }
 };
   function main() {

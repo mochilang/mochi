@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -35,6 +36,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function isqrt($n) {
@@ -46,7 +51,7 @@ $__start = _now();
 };
   function prime_sieve($num) {
   if ($num <= 0) {
-  $panic('Invalid input, please enter a positive integer.');
+  _panic('Invalid input, please enter a positive integer.');
 }
   $sieve = [];
   $i = 0;

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -37,7 +38,7 @@ function _append($arr, $x) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function contains($xs, $value) {
+  function mochi_contains($xs, $value) {
   $i = 0;
   while ($i < count($xs)) {
   if ($xs[$i] == $value) {
@@ -54,7 +55,7 @@ $__start = _now();
   $j = 0;
   while ($j < count($set_b)) {
   $s = $set_a[$i] + $set_b[$j];
-  if (!contains($result, $s)) {
+  if (!mochi_contains($result, $s)) {
   $result = _append($result, $s);
 }
   $j = $j + 1;

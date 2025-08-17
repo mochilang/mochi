@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -34,6 +35,10 @@ function _str($x) {
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -75,13 +80,13 @@ $__start = _now();
   function solve_simultaneous($equations) {
   $n = count($equations);
   if ($n == 0) {
-  $panic('solve_simultaneous() requires n lists of length n+1');
+  _panic('solve_simultaneous() requires n lists of length n+1');
 }
   $m = $n + 1;
   $i = 0;
   while ($i < $n) {
   if (count($equations[$i]) != $m) {
-  $panic('solve_simultaneous() requires n lists of length n+1');
+  _panic('solve_simultaneous() requires n lists of length n+1');
 }
   $i = $i + 1;
 };
@@ -93,7 +98,7 @@ $__start = _now();
   $pivot = $pivot + 1;
 };
   if ($pivot == $n) {
-  $panic('solve_simultaneous() requires at least 1 full equation');
+  _panic('solve_simultaneous() requires at least 1 full equation');
 }
   if ($pivot != $row) {
   $temp = $a[$row];
@@ -132,12 +137,12 @@ $__start = _now();
   $a = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
   $r1 = solve_simultaneous($a);
   if (!(count($r1) == 2 && $r1[0] == (0.0 - 1.0) && $r1[1] == 2.0)) {
-  $panic('test1 failed');
+  _panic('test1 failed');
 }
   $b = [[0.0, (0.0 - 3.0), 1.0, 7.0], [3.0, 2.0, (0.0 - 1.0), 11.0], [5.0, 1.0, (0.0 - 2.0), 12.0]];
   $r2 = solve_simultaneous($b);
   if (!(count($r2) == 3 && $r2[0] == 6.4 && $r2[1] == 1.2 && $r2[2] == 10.6)) {
-  $panic('test2 failed');
+  _panic('test2 failed');
 }
 };
   function main() {

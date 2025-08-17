@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -36,12 +37,19 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -60,7 +68,7 @@ $__start = _now();
 };
   function sieve($n) {
   if ($n <= 0) {
-  $panic('Number must instead be a positive integer');
+  _panic('Number must instead be a positive integer');
 }
   $in_prime = [];
   $start = 2;
@@ -140,11 +148,11 @@ $__start = _now();
   function test_sieve() {
   $e1 = sieve(8);
   if (!lists_equal($e1, [2, 3, 5, 7])) {
-  $panic('sieve(8) failed');
+  _panic('sieve(8) failed');
 }
   $e2 = sieve(27);
   if (!lists_equal($e2, [2, 3, 5, 7, 11, 13, 17, 19, 23])) {
-  $panic('sieve(27) failed');
+  _panic('sieve(27) failed');
 }
 };
   function main() {

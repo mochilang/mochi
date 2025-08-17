@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -36,12 +37,19 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -84,11 +92,11 @@ $__start = _now();
   function test_sock_merchant() {
   $example1 = [10, 20, 20, 10, 10, 30, 50, 10, 20];
   if (sock_merchant($example1) != 3) {
-  $panic('example1 failed');
+  _panic('example1 failed');
 }
   $example2 = [1, 1, 3, 3];
   if (sock_merchant($example2) != 2) {
-  $panic('example2 failed');
+  _panic('example2 failed');
 }
 };
   function main() {

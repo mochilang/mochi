@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -15,12 +16,16 @@ function _now() {
     }
     return hrtime(true);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function hexagonal($n) {
   global $samples;
   if ($n < 1) {
-  $panic('Input must be a positive integer');
+  _panic('Input must be a positive integer');
 }
   return $n * (2 * $n - 1);
 };

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -14,6 +15,10 @@ function _now() {
         return $now_seed;
     }
     return hrtime(true);
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -36,31 +41,31 @@ $__start = _now();
 };
   function test_is_pronic() {
   if (is_pronic(-1)) {
-  $panic('-1 should not be pronic');
+  _panic('-1 should not be pronic');
 }
   if (!is_pronic(0)) {
-  $panic('0 should be pronic');
+  _panic('0 should be pronic');
 }
   if (!is_pronic(2)) {
-  $panic('2 should be pronic');
+  _panic('2 should be pronic');
 }
   if (is_pronic(5)) {
-  $panic('5 should not be pronic');
+  _panic('5 should not be pronic');
 }
   if (!is_pronic(6)) {
-  $panic('6 should be pronic');
+  _panic('6 should be pronic');
 }
   if (is_pronic(8)) {
-  $panic('8 should not be pronic');
+  _panic('8 should not be pronic');
 }
   if (!is_pronic(30)) {
-  $panic('30 should be pronic');
+  _panic('30 should be pronic');
 }
   if (is_pronic(32)) {
-  $panic('32 should not be pronic');
+  _panic('32 should not be pronic');
 }
   if (!is_pronic(2147441940)) {
-  $panic('2147441940 should be pronic');
+  _panic('2147441940 should be pronic');
 }
 };
   function main() {

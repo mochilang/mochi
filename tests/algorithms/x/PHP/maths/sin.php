@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -14,6 +15,10 @@ function _now() {
         return $now_seed;
     }
     return hrtime(true);
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -78,16 +83,16 @@ $__start = _now();
   global $PI;
   $eps = 0.0000001;
   if (mochi_abs(taylor_sin(0.0, 18, 10) - 0.0) > $eps) {
-  $panic('sin(0) failed');
+  _panic('sin(0) failed');
 }
   if (mochi_abs(taylor_sin(90.0, 18, 10) - 1.0) > $eps) {
-  $panic('sin(90) failed');
+  _panic('sin(90) failed');
 }
   if (mochi_abs(taylor_sin(180.0, 18, 10) - 0.0) > $eps) {
-  $panic('sin(180) failed');
+  _panic('sin(180) failed');
 }
   if (mochi_abs(taylor_sin(270.0, 18, 10) - (-1.0)) > $eps) {
-  $panic('sin(270) failed');
+  _panic('sin(270) failed');
 }
 };
   function main() {

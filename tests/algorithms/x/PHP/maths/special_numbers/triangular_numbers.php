@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -16,27 +17,34 @@ function _now() {
     return hrtime(true);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   function triangular_number($position) {
   if ($position < 0) {
-  $panic('position must be non-negative');
+  _panic('position must be non-negative');
 }
   return _intdiv($position * ($position + 1), 2);
 };
   function test_triangular_number() {
   if (triangular_number(1) != 1) {
-  $panic('triangular_number(1) failed');
+  _panic('triangular_number(1) failed');
 }
   if (triangular_number(3) != 6) {
-  $panic('triangular_number(3) failed');
+  _panic('triangular_number(3) failed');
 }
 };
   function main() {

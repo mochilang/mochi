@@ -203,7 +203,7 @@ const helperIntDiv = `function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }`
 
 const helperBigInt = `function _iadd($a, $b) {
