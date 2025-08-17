@@ -1473,6 +1473,16 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 			return err
 		}
 		if typ == "int" {
+			lt := inferType(b.Left)
+			if lt != "int" && lt != "num" && lt != "double" && lt != "BigInt" {
+				var lbuf bytes.Buffer
+				if err := b.Left.emit(&lbuf); err != nil {
+					return err
+				}
+				expr := strings.TrimSpace(lbuf.String())
+				_, err := io.WriteString(w, "(int.tryParse("+expr+".toString()) ?? "+expr+".toString().codeUnitAt(0))")
+				return err
+			}
 			if _, err := io.WriteString(w, "("); err != nil {
 				return err
 			}
@@ -3013,47 +3023,14 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
-	if cType == "int" && valType == "String" {
-		if _, err := io.WriteString(w, "int.parse("); err != nil {
-			return err
-		}
-		if err := c.Value.emit(w); err != nil {
-			return err
-		}
-		_, err := io.WriteString(w, ")")
-		return err
-	}
-
 	if cType == "int" {
-		if call, ok := c.Value.(*CallExpr); ok {
-			if sel, ok := call.Func.(*SelectorExpr); ok && sel.Field == "substring" {
-				if _, err := io.WriteString(w, "int.parse("); err != nil {
-					return err
-				}
-				if err := c.Value.emit(w); err != nil {
-					return err
-				}
-				_, err := io.WriteString(w, ")")
+		if valType != "int" && valType != "num" && valType != "double" && valType != "BigInt" {
+			var vbuf bytes.Buffer
+			if err := c.Value.emit(&vbuf); err != nil {
 				return err
 			}
-			if name, ok := call.Func.(*Name); ok && name.Name == "_substr" {
-				if _, err := io.WriteString(w, "int.parse("); err != nil {
-					return err
-				}
-				if err := c.Value.emit(w); err != nil {
-					return err
-				}
-				_, err := io.WriteString(w, ")")
-				return err
-			}
-		} else if _, ok := c.Value.(*IndexExpr); ok || (valType != "int" && valType != "num" && valType != "double" && valType != "BigInt") {
-			if _, err := io.WriteString(w, "int.parse("); err != nil {
-				return err
-			}
-			if err := c.Value.emit(w); err != nil {
-				return err
-			}
-			_, err := io.WriteString(w, ")")
+			expr := strings.TrimSpace(vbuf.String())
+			_, err := io.WriteString(w, "(int.tryParse("+expr+".toString()) ?? "+expr+".toString().codeUnitAt(0))")
 			return err
 		}
 		if _, err := io.WriteString(w, "("); err != nil {
@@ -5973,7 +5950,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else if typ == "double" {
 				expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toDouble"}}
 			} else if typ == "int" {
-				expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toInt"}}
+				expr = &CastExpr{Value: expr, Type: "int"}
 			} else {
 				expr = &CastExpr{Value: expr, Type: typ}
 			}
