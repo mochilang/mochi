@@ -117,7 +117,15 @@ func TestOCamlTranspiler_Algorithms_Golden(t *testing.T) {
 				t.Fatalf("write code: %v", err)
 			}
 			exe := filepath.Join(filepath.Dir(codePath), filepath.Base(rel))
-			if out, err := exec.Command("ocamlc", "-I", "+zarith", "-I", "+sha", "zarith.cma", "sha.cma", "unix.cma", codePath, "-o", exe).CombinedOutput(); err != nil {
+			args := []string{}
+			if ocaml.UsesBigInt() {
+				args = append(args, "-I", "+zarith", "zarith.cma")
+			}
+			if ocaml.UsesSHA() {
+				args = append(args, "-I", "+sha", "sha.cma")
+			}
+			args = append(args, "unix.cma", codePath, "-o", exe)
+			if out, err := exec.Command("ocamlc", args...).CombinedOutput(); err != nil {
 				_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
 				t.Fatalf("compile: %v", err)
 			}
