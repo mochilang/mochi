@@ -4363,6 +4363,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSplit = false
 	usesDynLen = false
 	usesFetch = false
+	structFields = map[string]map[string]string{}
+	funcMutations = map[string]map[string]bool{}
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
