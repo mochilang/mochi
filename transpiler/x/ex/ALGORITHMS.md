@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-17 08:54 GMT+7
+Last updated: 2025-08-17 09:16 GMT+7
 
 ## Algorithms Golden Test Checklist (849/1077)
 | Index | Name | Status | Duration | Memory |
@@ -584,7 +584,7 @@ Last updated: 2025-08-17 08:54 GMT+7
 | 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 3.81ms | 12.5 MB |
 | 577 | maths/greatest_common_divisor | ✓ | 11.62ms | 17.3 MB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 4.91ms | 32.7 MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 8.87ms | 32.7 MB |
 | 579 | maths/integer_square_root | ✓ | 3.80ms | 25.0 MB |
 | 580 | maths/interquartile_range | ✓ | 4.50ms | 25.0 MB |
 | 581 | maths/is_int_palindrome | ✓ | 4.38ms | 25.0 MB |
