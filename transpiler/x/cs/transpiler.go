@@ -1246,7 +1246,11 @@ func (b *BoolLit) emit(w io.Writer) {
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) {
-	s := strconv.FormatFloat(f.Value, 'g', 17, 64)
+	// Use FormatFloat with precision -1 so that constants keep only the
+	// necessary digits. The previous 17-digit formatting introduced small
+	// rounding differences (e.g. 3.1415926535897931) which affected
+	// numerical comparisons in generated programs.
+	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
 	if strings.ContainsAny(s, "eE") {
 		s = strings.ReplaceAll(s, "e+", "e")
 		s = strings.ReplaceAll(s, "E+", "E")
