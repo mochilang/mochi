@@ -150,8 +150,8 @@ def panic(msg):
 `
 
 const helperStr = `
+import builtins
 def _str(v):
-    import builtins
     if isinstance(v, float):
         if abs(v - builtins.round(v)) < 1e-9:
             return builtins.str(float(builtins.round(v)))
