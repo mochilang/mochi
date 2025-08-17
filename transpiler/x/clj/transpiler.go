@@ -3682,10 +3682,23 @@ func blockForms(stmts []*parser.Statement) ([]Node, error) {
 			return nil, err
 		}
 		if n != nil {
-			forms = append(forms, n)
+			forms = append(forms, flattenDo(n)...)
 		}
 	}
 	return forms, nil
+}
+
+func flattenDo(n Node) []Node {
+	if l, ok := n.(*List); ok && len(l.Elems) > 0 {
+		if sym, ok := l.Elems[0].(Symbol); ok && sym == "do" {
+			var out []Node
+			for _, e := range l.Elems[1:] {
+				out = append(out, flattenDo(e)...)
+			}
+			return out
+		}
+	}
+	return []Node{n}
 }
 
 func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
@@ -3720,7 +3733,7 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 			return nil, err
 		}
 		if n != nil {
-			bodyNodes = append(bodyNodes, n)
+			bodyNodes = append(bodyNodes, flattenDo(n)...)
 		}
 	}
 
