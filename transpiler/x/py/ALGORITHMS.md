@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-17 12:17 GMT+7
+Last updated: 2025-08-17 13:32 GMT+7
 
 ## Algorithms Golden Test Checklist (970/1077)
 | Index | Name | Status | Duration | Memory |
@@ -688,7 +688,7 @@ Last updated: 2025-08-17 12:17 GMT+7
 | 679 | maths/special_numbers/weird_number | ✓ | 306.0µs | 13.77MB |
 | 680 | maths/sum_of_arithmetic_series | ✓ | 21.0µs | 12.64MB |
 | 681 | maths/sum_of_digits | ✓ | 106.0µs | 12.94MB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 28.0µs | 12.42MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 26.0µs | 0B |
 | 683 | maths/sum_of_harmonic_series | ✓ | 39.0µs | 12.37MB |
 | 684 | maths/sumset | ✓ | 43.0µs | 12.86MB |
 | 685 | maths/sylvester_sequence | ✓ | 20.0µs | 12.35MB |
