@@ -1,9 +1,9 @@
 Unhandled exception:
 Exception: add failed
-#0      _error (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:46:3)
-#1      test_polynomial (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:227:5)
-#2      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:251:3)
-#3      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:264:3)
-#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:274:16)
+#0      _error (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:29:3)
+#1      test_polynomial (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:210:5)
+#2      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:234:3)
+#3      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:247:3)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/polynomials/single_indeterminate_operations.dart:257:16)
 #5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
 #6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
