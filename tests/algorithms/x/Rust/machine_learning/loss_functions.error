@@ -1,0 +1,2050 @@
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:375:36
+    |
+375 |     println!("{}", format!("{:?}", binary_cross_entropy(y_true_bc.clone(), y_pred_bc.clone(), 0.000000000000001)));
+    |                                    ^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:376:36
+    |
+376 |     println!("{}", format!("{:?}", binary_focal_cross_entropy(y_true_bc.clone(), y_pred_bc.clone(), 2.0, 0.25, 0.000000000000001)));
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:379:36
+    |
+379 |     println!("{}", format!("{:?}", categorical_cross_entropy(y_true_cce.clone(), y_pred_cce.clone(), 0.000000000000001)));
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:381:36
+    |
+381 |     println!("{}", format!("{:?}", categorical_focal_cross_entropy(y_true_cce.clone(), y_pred_cce.clone(), alpha.clone(), 2.0, 0.00000000...
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:384:36
+    |
+384 |     println!("{}", format!("{:?}", hinge_loss(y_true_hinge.clone(), y_pred_hinge.clone())));
+    |                                    ^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:387:36
+    |
+387 |     println!("{}", format!("{:?}", huber_loss(y_true_huber.clone(), y_pred_huber.clone(), 1.0)));
+    |                                    ^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:388:36
+    |
+388 |     println!("{}", format!("{:?}", mean_squared_error(y_true_huber.clone(), y_pred_huber.clone())));
+    |                                    ^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:389:36
+    |
+389 |     println!("{}", format!("{:?}", mean_absolute_error(y_true_huber.clone(), y_pred_huber.clone())));
+    |                                    ^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:390:36
+    |
+390 |     println!("{}", format!("{:?}", mean_squared_logarithmic_error(y_true_huber.clone(), y_pred_huber.clone())));
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:393:36
+    |
+393 |     println!("{}", format!("{:?}", mean_absolute_percentage_error(y_true_mape.clone(), y_pred_mape.clone(), 0.000000000000001)));
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:396:36
+    |
+396 |     println!("{}", format!("{:?}", perplexity_loss(y_true_perp.clone(), y_pred_perp.clone(), 0.0000001)));
+    |                                    ^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:399:36
+    |
+399 |     println!("{}", format!("{:?}", smooth_l1_loss(y_true_smooth.clone(), y_pred_smooth.clone(), 1.0)));
+    |                                    ^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:402:36
+    |
+402 |     println!("{}", format!("{:?}", kullback_leibler_divergence(y_true_kl.clone(), y_pred_kl.clone())));
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:46:2
+   |
+46 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:52:2
+   |
+52 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:58:2
+   |
+58 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:64:2
+   |
+64 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:74:2
+   |
+74 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:77:2
+   |
+77 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:80:2
+   |
+80 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:89:2
+   |
+89 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:403:2
+    |
+403 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:42:8
+   |
+42 |     if (x < 0.0) {
+   |        ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+42 -     if (x < 0.0) {
+42 +     if x < 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:48:8
+   |
+48 |     if (a > b) {
+   |        ^     ^
+   |
+help: remove these parentheses
+   |
+48 -     if (a > b) {
+48 +     if a > b {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:54:8
+   |
+54 |     if (a < b) {
+   |        ^     ^
+   |
+help: remove these parentheses
+   |
+54 -     if (a < b) {
+54 +     if a < b {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:63:12
+   |
+63 |     return ((x as f64) * 1.0)
+   |            ^                ^
+   |
+help: remove these parentheses
+   |
+63 -     return ((x as f64) * 1.0)
+63 +     return (x as f64) * 1.0
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:68:18
+   |
+68 |     let n: i64 = (exp as i64);
+   |                  ^          ^
+   |
+help: remove these parentheses
+   |
+68 -     let n: i64 = (exp as i64);
+68 +     let n: i64 = exp as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:69:11
+   |
+69 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+69 -     while (i < n) {
+69 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:70:18
+   |
+70 |         result = (result * base);
+   |                  ^             ^
+   |
+help: remove these parentheses
+   |
+70 -         result = (result * base);
+70 +         result = result * base;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:71:13
+   |
+71 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+71 -         i = (i + 1);
+71 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:84:11
+   |
+84 |     while (i < (v.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+84 -     while (i < (v.len() as i64)) {
+84 +     while i < (v.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:85:17
+   |
+85 |         total = (total + v[i as usize]);
+   |                 ^                     ^
+   |
+help: remove these parentheses
+   |
+85 -         total = (total + v[i as usize]);
+85 +         total = total + v[i as usize];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:86:13
+   |
+86 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+86 -         i = (i + 1);
+86 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:88:12
+   |
+88 |     return (total / ((v.len() as i64) as f64))
+   |            ^                                 ^
+   |
+help: remove these parentheses
+   |
+88 -     return (total / ((v.len() as i64) as f64))
+88 +     return total / ((v.len() as i64) as f64)
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:91:8
+   |
+91 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+   |        ^                                              ^
+   |
+help: remove these parentheses
+   |
+91 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+91 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:96:11
+   |
+96 |     while (i < (y_true.len() as i64)) {
+   |           ^                         ^
+   |
+help: remove these parentheses
+   |
+96 -     while (i < (y_true.len() as i64)) {
+96 +     while i < (y_true.len() as i64) {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:98:57
+   |
+98 |         let yp: f64 = clip(y_pred[i as usize], epsilon, (1.0 - epsilon));
+   |                                                         ^             ^
+   |
+help: remove these parentheses
+   |
+98 -         let yp: f64 = clip(y_pred[i as usize], epsilon, (1.0 - epsilon));
+98 +         let yp: f64 = clip(y_pred[i as usize], epsilon, 1.0 - epsilon);
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:99:60
+   |
+99 |         let loss: f64 = -((yt * ln(yp)) + ((1.0 - yt) * ln((1.0 - yp))));
+   |                                                            ^        ^
+   |
+help: remove these parentheses
+   |
+99 -         let loss: f64 = -((yt * ln(yp)) + ((1.0 - yt) * ln((1.0 - yp))));
+99 +         let loss: f64 = -((yt * ln(yp)) + ((1.0 - yt) * ln(1.0 - yp)));
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:101:13
+    |
+101 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+101 -         i = (i + 1);
+101 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:106:8
+    |
+106 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+106 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+106 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:111:11
+    |
+111 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+111 -     while (i < (y_true.len() as i64)) {
+111 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:113:57
+    |
+113 |         let yp: f64 = clip(y_pred[i as usize], epsilon, (1.0 - epsilon));
+    |                                                         ^             ^
+    |
+help: remove these parentheses
+    |
+113 -         let yp: f64 = clip(y_pred[i as usize], epsilon, (1.0 - epsilon));
+113 +         let yp: f64 = clip(y_pred[i as usize], epsilon, 1.0 - epsilon);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:114:26
+    |
+114 |         let term1: f64 = (((alpha * powf((1.0 - yp), gamma)) * yt) * ln(yp));
+    |                          ^                                                 ^
+    |
+help: remove these parentheses
+    |
+114 -         let term1: f64 = (((alpha * powf((1.0 - yp), gamma)) * yt) * ln(yp));
+114 +         let term1: f64 = ((alpha * powf((1.0 - yp), gamma)) * yt) * ln(yp);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:114:42
+    |
+114 |         let term1: f64 = (((alpha * powf((1.0 - yp), gamma)) * yt) * ln(yp));
+    |                                          ^        ^
+    |
+help: remove these parentheses
+    |
+114 -         let term1: f64 = (((alpha * powf((1.0 - yp), gamma)) * yt) * ln(yp));
+114 +         let term1: f64 = (((alpha * powf(1.0 - yp, gamma)) * yt) * ln(yp));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:115:26
+    |
+115 |         let term2: f64 = ((((1.0 - alpha) * powf(yp, gamma)) * (1.0 - yt)) * ln((1.0 - yp)));
+    |                          ^                                                                 ^
+    |
+help: remove these parentheses
+    |
+115 -         let term2: f64 = ((((1.0 - alpha) * powf(yp, gamma)) * (1.0 - yt)) * ln((1.0 - yp)));
+115 +         let term2: f64 = (((1.0 - alpha) * powf(yp, gamma)) * (1.0 - yt)) * ln((1.0 - yp));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:115:81
+    |
+115 |         let term2: f64 = ((((1.0 - alpha) * powf(yp, gamma)) * (1.0 - yt)) * ln((1.0 - yp)));
+    |                                                                                 ^        ^
+    |
+help: remove these parentheses
+    |
+115 -         let term2: f64 = ((((1.0 - alpha) * powf(yp, gamma)) * (1.0 - yt)) * ln((1.0 - yp)));
+115 +         let term2: f64 = ((((1.0 - alpha) * powf(yp, gamma)) * (1.0 - yt)) * ln(1.0 - yp));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:117:13
+    |
+117 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+117 -         i = (i + 1);
+117 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:122:8
+    |
+122 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+122 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+122 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:125:21
+    |
+125 |     let rows: i64 = (y_true.len() as i64);
+    |                     ^                   ^
+    |
+help: remove these parentheses
+    |
+125 -     let rows: i64 = (y_true.len() as i64);
+125 +     let rows: i64 = y_true.len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:128:11
+    |
+128 |     while (i < rows) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+128 -     while (i < rows) {
+128 +     while i < rows {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:129:12
+    |
+129 |         if ((y_true[i as usize].clone().len() as i64) != (y_pred[i as usize].clone().len() as i64)) {
+    |            ^                                                                                      ^
+    |
+help: remove these parentheses
+    |
+129 -         if ((y_true[i as usize].clone().len() as i64) != (y_pred[i as usize].clone().len() as i64)) {
+129 +         if (y_true[i as usize].clone().len() as i64) != (y_pred[i as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:135:15
+    |
+135 |         while (j < (y_true[i as usize].clone().len() as i64)) {
+    |               ^                                             ^
+    |
+help: remove these parentheses
+    |
+135 -         while (j < (y_true[i as usize].clone().len() as i64)) {
+135 +         while j < (y_true[i as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:138:16
+    |
+138 |             if ((yt != 0.0) && (yt != 1.0)) {
+    |                ^                          ^
+    |
+help: remove these parentheses
+    |
+138 -             if ((yt != 0.0) && (yt != 1.0)) {
+138 +             if (yt != 0.0) && (yt != 1.0) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:141:24
+    |
+141 |             sum_true = (sum_true + yt);
+    |                        ^             ^
+    |
+help: remove these parentheses
+    |
+141 -             sum_true = (sum_true + yt);
+141 +             sum_true = sum_true + yt;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:142:24
+    |
+142 |             sum_pred = (sum_pred + yp);
+    |                        ^             ^
+    |
+help: remove these parentheses
+    |
+142 -             sum_pred = (sum_pred + yp);
+142 +             sum_pred = sum_pred + yp;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:143:17
+    |
+143 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+143 -             j = (j + 1);
+143 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:145:12
+    |
+145 |         if (sum_true != 1.0) {
+    |            ^               ^
+    |
+help: remove these parentheses
+    |
+145 -         if (sum_true != 1.0) {
+145 +         if sum_true != 1.0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:148:12
+    |
+148 |         if (absf((sum_pred - 1.0)) > epsilon) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+148 -         if (absf((sum_pred - 1.0)) > epsilon) {
+148 +         if absf((sum_pred - 1.0)) > epsilon {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:148:18
+    |
+148 |         if (absf((sum_pred - 1.0)) > epsilon) {
+    |                  ^              ^
+    |
+help: remove these parentheses
+    |
+148 -         if (absf((sum_pred - 1.0)) > epsilon) {
+148 +         if (absf(sum_pred - 1.0) > epsilon) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:152:15
+    |
+152 |         while (j < (y_true[i as usize].clone().len() as i64)) {
+    |               ^                                             ^
+    |
+help: remove these parentheses
+    |
+152 -         while (j < (y_true[i as usize].clone().len() as i64)) {
+152 +         while j < (y_true[i as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:154:21
+    |
+154 |             total = (total - (y_true[i as usize].clone()[j as usize] * ln(yp)));
+    |                     ^                                                         ^
+    |
+help: remove these parentheses
+    |
+154 -             total = (total - (y_true[i as usize].clone()[j as usize] * ln(yp)));
+154 +             total = total - (y_true[i as usize].clone()[j as usize] * ln(yp));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:155:17
+    |
+155 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+155 -             j = (j + 1);
+155 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:157:13
+    |
+157 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+157 -         i = (i + 1);
+157 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:162:8
+    |
+162 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+162 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+162 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:165:21
+    |
+165 |     let rows: i64 = (y_true.len() as i64);
+    |                     ^                   ^
+    |
+help: remove these parentheses
+    |
+165 -     let rows: i64 = (y_true.len() as i64);
+165 +     let rows: i64 = y_true.len() as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:166:21
+    |
+166 |     let cols: i64 = (y_true[0 as usize].clone().len() as i64);
+    |                     ^                                       ^
+    |
+help: remove these parentheses
+    |
+166 -     let cols: i64 = (y_true[0 as usize].clone().len() as i64);
+166 +     let cols: i64 = y_true[0 as usize].clone().len() as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:168:8
+    |
+168 |     if ((a.len() as i64) == 0) {
+    |        ^                     ^
+    |
+help: remove these parentheses
+    |
+168 -     if ((a.len() as i64) == 0) {
+168 +     if (a.len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:171:15
+    |
+171 |         while (j < cols) {
+    |               ^        ^
+    |
+help: remove these parentheses
+    |
+171 -         while (j < cols) {
+171 +         while j < cols {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:173:17
+    |
+173 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+173 -             j = (j + 1);
+173 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:177:8
+    |
+177 |     if ((a.len() as i64) != cols) {
+    |        ^                        ^
+    |
+help: remove these parentheses
+    |
+177 -     if ((a.len() as i64) != cols) {
+177 +     if (a.len() as i64) != cols {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:182:11
+    |
+182 |     while (i < rows) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+182 -     while (i < rows) {
+182 +     while i < rows {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:183:12
+    |
+183 |         if (((y_true[i as usize].clone().len() as i64) != cols) || ((y_pred[i as usize].clone().len() as i64) != cols)) {
+    |            ^                                                                                                          ^
+    |
+help: remove these parentheses
+    |
+183 -         if (((y_true[i as usize].clone().len() as i64) != cols) || ((y_pred[i as usize].clone().len() as i64) != cols)) {
+183 +         if ((y_true[i as usize].clone().len() as i64) != cols) || ((y_pred[i as usize].clone().len() as i64) != cols) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:189:15
+    |
+189 |         while (j < cols) {
+    |               ^        ^
+    |
+help: remove these parentheses
+    |
+189 -         while (j < cols) {
+189 +         while j < cols {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:192:16
+    |
+192 |             if ((yt != 0.0) && (yt != 1.0)) {
+    |                ^                          ^
+    |
+help: remove these parentheses
+    |
+192 -             if ((yt != 0.0) && (yt != 1.0)) {
+192 +             if (yt != 0.0) && (yt != 1.0) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:195:24
+    |
+195 |             sum_true = (sum_true + yt);
+    |                        ^             ^
+    |
+help: remove these parentheses
+    |
+195 -             sum_true = (sum_true + yt);
+195 +             sum_true = sum_true + yt;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:196:24
+    |
+196 |             sum_pred = (sum_pred + yp);
+    |                        ^             ^
+    |
+help: remove these parentheses
+    |
+196 -             sum_pred = (sum_pred + yp);
+196 +             sum_pred = sum_pred + yp;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:197:17
+    |
+197 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+197 -             j = (j + 1);
+197 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:199:12
+    |
+199 |         if (sum_true != 1.0) {
+    |            ^               ^
+    |
+help: remove these parentheses
+    |
+199 -         if (sum_true != 1.0) {
+199 +         if sum_true != 1.0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:202:12
+    |
+202 |         if (absf((sum_pred - 1.0)) > epsilon) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+202 -         if (absf((sum_pred - 1.0)) > epsilon) {
+202 +         if absf((sum_pred - 1.0)) > epsilon {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:202:18
+    |
+202 |         if (absf((sum_pred - 1.0)) > epsilon) {
+    |                  ^              ^
+    |
+help: remove these parentheses
+    |
+202 -         if (absf((sum_pred - 1.0)) > epsilon) {
+202 +         if (absf(sum_pred - 1.0) > epsilon) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:207:15
+    |
+207 |         while (j < cols) {
+    |               ^        ^
+    |
+help: remove these parentheses
+    |
+207 -         while (j < cols) {
+207 +         while j < cols {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:209:24
+    |
+209 |             row_loss = (row_loss + (((a[j as usize] * powf((1.0 - yp), gamma)) * y_true[i as usize].clone()[j as usize]) * ln(yp)));
+    |                        ^                                                                                                          ^
+    |
+help: remove these parentheses
+    |
+209 -             row_loss = (row_loss + (((a[j as usize] * powf((1.0 - yp), gamma)) * y_true[i as usize].clone()[j as usize]) * ln(yp)));
+209 +             row_loss = row_loss + (((a[j as usize] * powf((1.0 - yp), gamma)) * y_true[i as usize].clone()[j as usize]) * ln(yp));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:209:60
+    |
+209 |             row_loss = (row_loss + (((a[j as usize] * powf((1.0 - yp), gamma)) * y_true[i as usize].clone()[j as usize]) * ln(yp)));
+    |                                                            ^        ^
+    |
+help: remove these parentheses
+    |
+209 -             row_loss = (row_loss + (((a[j as usize] * powf((1.0 - yp), gamma)) * y_true[i as usize].clone()[j as usize]) * ln(yp)));
+209 +             row_loss = (row_loss + (((a[j as usize] * powf(1.0 - yp, gamma)) * y_true[i as usize].clone()[j as usize]) * ln(yp)));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:210:17
+    |
+210 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+210 -             j = (j + 1);
+210 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:212:17
+    |
+212 |         total = (total - row_loss);
+    |                 ^                ^
+    |
+help: remove these parentheses
+    |
+212 -         total = (total - row_loss);
+212 +         total = total - row_loss;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:213:13
+    |
+213 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+213 -         i = (i + 1);
+213 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:215:12
+    |
+215 |     return (total / (rows as f64))
+    |            ^                     ^
+    |
+help: remove these parentheses
+    |
+215 -     return (total / (rows as f64))
+215 +     return total / (rows as f64)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:218:8
+    |
+218 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+218 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+218 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:223:11
+    |
+223 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+223 -     while (i < (y_true.len() as i64)) {
+223 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:225:12
+    |
+225 |         if ((yt != -1.0) && (yt != 1.0)) {
+    |            ^                           ^
+    |
+help: remove these parentheses
+    |
+225 -         if ((yt != -1.0) && (yt != 1.0)) {
+225 +         if (yt != -1.0) && (yt != 1.0) {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:229:32
+    |
+229 |         let l: f64 = maxf(0.0, (1.0 - (yt * pred)));
+    |                                ^                 ^
+    |
+help: remove these parentheses
+    |
+229 -         let l: f64 = maxf(0.0, (1.0 - (yt * pred)));
+229 +         let l: f64 = maxf(0.0, 1.0 - (yt * pred));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:231:13
+    |
+231 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+231 -         i = (i + 1);
+231 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:236:8
+    |
+236 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+236 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+236 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:241:11
+    |
+241 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+241 -     while (i < (y_true.len() as i64)) {
+241 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:242:25
+    |
+242 |         let diff: f64 = (y_true[i as usize] - y_pred[i as usize]);
+    |                         ^                                       ^
+    |
+help: remove these parentheses
+    |
+242 -         let diff: f64 = (y_true[i as usize] - y_pred[i as usize]);
+242 +         let diff: f64 = y_true[i as usize] - y_pred[i as usize];
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:244:12
+    |
+244 |         if (adiff <= delta) {
+    |            ^              ^
+    |
+help: remove these parentheses
+    |
+244 -         if (adiff <= delta) {
+244 +         if adiff <= delta {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:245:21
+    |
+245 |             total = (total + ((0.5 * diff) * diff));
+    |                     ^                             ^
+    |
+help: remove these parentheses
+    |
+245 -             total = (total + ((0.5 * diff) * diff));
+245 +             total = total + ((0.5 * diff) * diff);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:247:21
+    |
+247 |             total = (total + (delta * (adiff - (0.5 * delta))));
+    |                     ^                                         ^
+    |
+help: remove these parentheses
+    |
+247 -             total = (total + (delta * (adiff - (0.5 * delta))));
+247 +             total = total + (delta * (adiff - (0.5 * delta)));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:249:13
+    |
+249 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+249 -         i = (i + 1);
+249 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:251:12
+    |
+251 |     return (total / ((y_true.len() as i64) as f64))
+    |            ^                                      ^
+    |
+help: remove these parentheses
+    |
+251 -     return (total / ((y_true.len() as i64) as f64))
+251 +     return total / ((y_true.len() as i64) as f64)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:254:8
+    |
+254 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+254 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+254 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:259:11
+    |
+259 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+259 -     while (i < (y_true.len() as i64)) {
+259 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:260:25
+    |
+260 |         let diff: f64 = (y_true[i as usize] - y_pred[i as usize]);
+    |                         ^                                       ^
+    |
+help: remove these parentheses
+    |
+260 -         let diff: f64 = (y_true[i as usize] - y_pred[i as usize]);
+260 +         let diff: f64 = y_true[i as usize] - y_pred[i as usize];
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:261:57
+    |
+261 |         losses = { let mut _v = losses.clone(); _v.push((diff * diff)); _v };
+    |                                                         ^           ^
+    |
+help: remove these parentheses
+    |
+261 -         losses = { let mut _v = losses.clone(); _v.push((diff * diff)); _v };
+261 +         losses = { let mut _v = losses.clone(); _v.push(diff * diff); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:262:13
+    |
+262 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+262 -         i = (i + 1);
+262 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:267:8
+    |
+267 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+267 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+267 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:272:11
+    |
+272 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+272 -     while (i < (y_true.len() as i64)) {
+272 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:273:17
+    |
+273 |         total = (total + absf((y_true[i as usize] - y_pred[i as usize])));
+    |                 ^                                                       ^
+    |
+help: remove these parentheses
+    |
+273 -         total = (total + absf((y_true[i as usize] - y_pred[i as usize])));
+273 +         total = total + absf((y_true[i as usize] - y_pred[i as usize]));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:273:31
+    |
+273 |         total = (total + absf((y_true[i as usize] - y_pred[i as usize])));
+    |                               ^                                       ^
+    |
+help: remove these parentheses
+    |
+273 -         total = (total + absf((y_true[i as usize] - y_pred[i as usize])));
+273 +         total = (total + absf(y_true[i as usize] - y_pred[i as usize]));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:274:13
+    |
+274 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+274 -         i = (i + 1);
+274 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:276:12
+    |
+276 |     return (total / ((y_true.len() as i64) as f64))
+    |            ^                                      ^
+    |
+help: remove these parentheses
+    |
+276 -     return (total / ((y_true.len() as i64) as f64))
+276 +     return total / ((y_true.len() as i64) as f64)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:279:8
+    |
+279 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+279 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+279 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:284:11
+    |
+284 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+284 -     while (i < (y_true.len() as i64)) {
+284 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:285:25
+    |
+285 |         let a: f64 = ln((1.0 + y_true[i as usize]));
+    |                         ^                        ^
+    |
+help: remove these parentheses
+    |
+285 -         let a: f64 = ln((1.0 + y_true[i as usize]));
+285 +         let a: f64 = ln(1.0 + y_true[i as usize]);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:286:25
+    |
+286 |         let b: f64 = ln((1.0 + y_pred[i as usize]));
+    |                         ^                        ^
+    |
+help: remove these parentheses
+    |
+286 -         let b: f64 = ln((1.0 + y_pred[i as usize]));
+286 +         let b: f64 = ln(1.0 + y_pred[i as usize]);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:287:25
+    |
+287 |         let diff: f64 = (a - b);
+    |                         ^     ^
+    |
+help: remove these parentheses
+    |
+287 -         let diff: f64 = (a - b);
+287 +         let diff: f64 = a - b;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:288:17
+    |
+288 |         total = (total + (diff * diff));
+    |                 ^                     ^
+    |
+help: remove these parentheses
+    |
+288 -         total = (total + (diff * diff));
+288 +         total = total + (diff * diff);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:289:13
+    |
+289 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+289 -         i = (i + 1);
+289 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:291:12
+    |
+291 |     return (total / ((y_true.len() as i64) as f64))
+    |            ^                                      ^
+    |
+help: remove these parentheses
+    |
+291 -     return (total / ((y_true.len() as i64) as f64))
+291 +     return total / ((y_true.len() as i64) as f64)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:294:8
+    |
+294 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+294 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+294 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:299:11
+    |
+299 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+299 -     while (i < (y_true.len() as i64)) {
+299 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:301:12
+    |
+301 |         if (yt == 0.0) {
+    |            ^         ^
+    |
+help: remove these parentheses
+    |
+301 -         if (yt == 0.0) {
+301 +         if yt == 0.0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:304:17
+    |
+304 |         total = (total + absf(((yt - y_pred[i as usize]) / yt)));
+    |                 ^                                              ^
+    |
+help: remove these parentheses
+    |
+304 -         total = (total + absf(((yt - y_pred[i as usize]) / yt)));
+304 +         total = total + absf(((yt - y_pred[i as usize]) / yt));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:304:31
+    |
+304 |         total = (total + absf(((yt - y_pred[i as usize]) / yt)));
+    |                               ^                              ^
+    |
+help: remove these parentheses
+    |
+304 -         total = (total + absf(((yt - y_pred[i as usize]) / yt)));
+304 +         total = (total + absf((yt - y_pred[i as usize]) / yt));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:305:13
+    |
+305 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+305 -         i = (i + 1);
+305 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:307:12
+    |
+307 |     return (total / ((y_true.len() as i64) as f64))
+    |            ^                                      ^
+    |
+help: remove these parentheses
+    |
+307 -     return (total / ((y_true.len() as i64) as f64))
+307 +     return total / ((y_true.len() as i64) as f64)
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:310:22
+    |
+310 |     let batch: i64 = (y_true.len() as i64);
+    |                      ^                   ^
+    |
+help: remove these parentheses
+    |
+310 -     let batch: i64 = (y_true.len() as i64);
+310 +     let batch: i64 = y_true.len() as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:311:8
+    |
+311 |     if (batch != (y_pred.len() as i64)) {
+    |        ^                              ^
+    |
+help: remove these parentheses
+    |
+311 -     if (batch != (y_pred.len() as i64)) {
+311 +     if batch != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:314:29
+    |
+314 |     let sentence_len: i64 = (y_true[0 as usize].clone().len() as i64);
+    |                             ^                                       ^
+    |
+help: remove these parentheses
+    |
+314 -     let sentence_len: i64 = (y_true[0 as usize].clone().len() as i64);
+314 +     let sentence_len: i64 = y_true[0 as usize].clone().len() as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:315:8
+    |
+315 |     if (sentence_len != (y_pred[0 as usize].clone().len() as i64)) {
+    |        ^                                                         ^
+    |
+help: remove these parentheses
+    |
+315 -     if (sentence_len != (y_pred[0 as usize].clone().len() as i64)) {
+315 +     if sentence_len != (y_pred[0 as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:318:27
+    |
+318 |     let vocab_size: i64 = (y_pred[0 as usize].clone()[0 as usize].clone().len() as i64);
+    |                           ^                                                           ^
+    |
+help: remove these parentheses
+    |
+318 -     let vocab_size: i64 = (y_pred[0 as usize].clone()[0 as usize].clone().len() as i64);
+318 +     let vocab_size: i64 = y_pred[0 as usize].clone()[0 as usize].clone().len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:321:11
+    |
+321 |     while (b < batch) {
+    |           ^         ^
+    |
+help: remove these parentheses
+    |
+321 -     while (b < batch) {
+321 +     while b < batch {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:322:12
+    |
+322 |         if (((y_true[b as usize].clone().len() as i64) != sentence_len) || ((y_pred[b as usize].clone().len() as i64) != sentence_len)) {
+    |            ^                                                                                                                          ^
+    |
+help: remove these parentheses
+    |
+322 -         if (((y_true[b as usize].clone().len() as i64) != sentence_len) || ((y_pred[b as usize].clone().len() as i64) != sentence_len)) {
+322 +         if ((y_true[b as usize].clone().len() as i64) != sentence_len) || ((y_pred[b as usize].clone().len() as i64) != sentence_len) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:327:15
+    |
+327 |         while (j < sentence_len) {
+    |               ^                ^
+    |
+help: remove these parentheses
+    |
+327 -         while (j < sentence_len) {
+327 +         while j < sentence_len {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:329:16
+    |
+329 |             if (label >= vocab_size) {
+    |                ^                   ^
+    |
+help: remove these parentheses
+    |
+329 -             if (label >= vocab_size) {
+329 +             if label >= vocab_size {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:333:23
+    |
+333 |             sum_log = (sum_log + ln(prob));
+    |                       ^                  ^
+    |
+help: remove these parentheses
+    |
+333 -             sum_log = (sum_log + ln(prob));
+333 +             sum_log = sum_log + ln(prob);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:334:17
+    |
+334 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+334 -             j = (j + 1);
+334 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:336:29
+    |
+336 |         let mean_log: f64 = (sum_log / (sentence_len as f64));
+    |                             ^                               ^
+    |
+help: remove these parentheses
+    |
+336 -         let mean_log: f64 = (sum_log / (sentence_len as f64));
+336 +         let mean_log: f64 = sum_log / (sentence_len as f64);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:338:22
+    |
+338 |         total_perp = (total_perp + perp);
+    |                      ^                 ^
+    |
+help: remove these parentheses
+    |
+338 -         total_perp = (total_perp + perp);
+338 +         total_perp = total_perp + perp;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:339:13
+    |
+339 |         b = (b + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+339 -         b = (b + 1);
+339 +         b = b + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:341:12
+    |
+341 |     return (total_perp / (batch as f64))
+    |            ^                           ^
+    |
+help: remove these parentheses
+    |
+341 -     return (total_perp / (batch as f64))
+341 +     return total_perp / (batch as f64)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:344:8
+    |
+344 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+344 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+344 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:349:11
+    |
+349 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+349 -     while (i < (y_true.len() as i64)) {
+349 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:350:30
+    |
+350 |         let diff: f64 = absf((y_true[i as usize] - y_pred[i as usize]));
+    |                              ^                                       ^
+    |
+help: remove these parentheses
+    |
+350 -         let diff: f64 = absf((y_true[i as usize] - y_pred[i as usize]));
+350 +         let diff: f64 = absf(y_true[i as usize] - y_pred[i as usize]);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:351:12
+    |
+351 |         if (diff < beta) {
+    |            ^           ^
+    |
+help: remove these parentheses
+    |
+351 -         if (diff < beta) {
+351 +         if diff < beta {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:352:21
+    |
+352 |             total = (total + (((0.5 * diff) * diff) / beta));
+    |                     ^                                      ^
+    |
+help: remove these parentheses
+    |
+352 -             total = (total + (((0.5 * diff) * diff) / beta));
+352 +             total = total + (((0.5 * diff) * diff) / beta);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:354:21
+    |
+354 |             total = ((total + diff) - (0.5 * beta));
+    |                     ^                             ^
+    |
+help: remove these parentheses
+    |
+354 -             total = ((total + diff) - (0.5 * beta));
+354 +             total = (total + diff) - (0.5 * beta);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:356:13
+    |
+356 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+356 -         i = (i + 1);
+356 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:358:12
+    |
+358 |     return (total / ((y_true.len() as i64) as f64))
+    |            ^                                      ^
+    |
+help: remove these parentheses
+    |
+358 -     return (total / ((y_true.len() as i64) as f64))
+358 +     return total / ((y_true.len() as i64) as f64)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:361:8
+    |
+361 |     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+    |        ^                                              ^
+    |
+help: remove these parentheses
+    |
+361 -     if ((y_true.len() as i64) != (y_pred.len() as i64)) {
+361 +     if (y_true.len() as i64) != (y_pred.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:366:11
+    |
+366 |     while (i < (y_true.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+366 -     while (i < (y_true.len() as i64)) {
+366 +     while i < (y_true.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:367:17
+    |
+367 |         total = (total + (y_true[i as usize] * ln((y_true[i as usize] / y_pred[i as usize]))));
+    |                 ^                                                                            ^
+    |
+help: remove these parentheses
+    |
+367 -         total = (total + (y_true[i as usize] * ln((y_true[i as usize] / y_pred[i as usize]))));
+367 +         total = total + (y_true[i as usize] * ln((y_true[i as usize] / y_pred[i as usize])));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:367:51
+    |
+367 |         total = (total + (y_true[i as usize] * ln((y_true[i as usize] / y_pred[i as usize]))));
+    |                                                   ^                                       ^
+    |
+help: remove these parentheses
+    |
+367 -         total = (total + (y_true[i as usize] * ln((y_true[i as usize] / y_pred[i as usize]))));
+367 +         total = (total + (y_true[i as usize] * ln(y_true[i as usize] / y_pred[i as usize])));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:368:13
+    |
+368 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+368 -         i = (i + 1);
+368 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:406:28
+    |
+406 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+406 -     let duration_us: i64 = ((_end - _start) / 1000);
+406 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unused variable: `binary_cross_entropy`
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:90:13
+   |
+90 |     let mut binary_cross_entropy = |y_true: Vec<f64>, y_pred: Vec<f64>, epsilon: f64| -> f64 {
+   |             ^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_binary_cross_entropy`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: unused variable: `binary_focal_cross_entropy`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:105:13
+    |
+105 |     let mut binary_focal_cross_entropy = |y_true: Vec<f64>, y_pred: Vec<f64>, gamma: f64, alpha: f64, epsilon: f64| -> f64 {
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_binary_focal_cross_entropy`
+
+warning: unused variable: `categorical_cross_entropy`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:121:13
+    |
+121 |     let mut categorical_cross_entropy = |y_true: Vec<Vec<f64>>, y_pred: Vec<Vec<f64>>, epsilon: f64| -> f64 {
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_categorical_cross_entropy`
+
+warning: unused variable: `categorical_focal_cross_entropy`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:161:13
+    |
+161 | ...mut categorical_focal_cross_entropy = |y_true: Vec<Vec<f64>>, y_pred: Vec<Vec<f64>>, alpha: Vec<f64>, gamma: f64, epsilon: f64| -> f64 {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_categorical_focal_cross_entropy`
+
+warning: unused variable: `hinge_loss`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:217:13
+    |
+217 |     let mut hinge_loss = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_hinge_loss`
+
+warning: unused variable: `huber_loss`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:235:13
+    |
+235 |     let mut huber_loss = |y_true: Vec<f64>, y_pred: Vec<f64>, delta: f64| -> f64 {
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_huber_loss`
+
+warning: unused variable: `mean_squared_error`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:253:13
+    |
+253 |     let mut mean_squared_error = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |             ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_mean_squared_error`
+
+warning: unused variable: `mean_absolute_error`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:266:13
+    |
+266 |     let mut mean_absolute_error = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |             ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_mean_absolute_error`
+
+warning: unused variable: `mean_squared_logarithmic_error`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:278:13
+    |
+278 |     let mut mean_squared_logarithmic_error = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_mean_squared_logarithmic_error`
+
+warning: unused variable: `mean_absolute_percentage_error`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:293:13
+    |
+293 |     let mut mean_absolute_percentage_error = |y_true: Vec<f64>, y_pred: Vec<f64>, epsilon: f64| -> f64 {
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_mean_absolute_percentage_error`
+
+warning: unused variable: `perplexity_loss`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:309:13
+    |
+309 |     let mut perplexity_loss = |y_true: Vec<Vec<i64>>, y_pred: Vec<Vec<Vec<f64>>>, epsilon: f64| -> f64 {
+    |             ^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_perplexity_loss`
+
+warning: unused variable: `smooth_l1_loss`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:343:13
+    |
+343 |     let mut smooth_l1_loss = |y_true: Vec<f64>, y_pred: Vec<f64>, beta: f64| -> f64 {
+    |             ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_smooth_l1_loss`
+
+warning: unused variable: `kullback_leibler_divergence`
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:360:13
+    |
+360 |     let mut kullback_leibler_divergence = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_kullback_leibler_divergence`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:59:9
+   |
+59 |     let mut clip = |x: f64, lo: f64, hi: f64| -> f64 {
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:90:9
+   |
+90 |     let mut binary_cross_entropy = |y_true: Vec<f64>, y_pred: Vec<f64>, epsilon: f64| -> f64 {
+   |         ----^^^^^^^^^^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:105:9
+    |
+105 |     let mut binary_focal_cross_entropy = |y_true: Vec<f64>, y_pred: Vec<f64>, gamma: f64, alpha: f64, epsilon: f64| -> f64 {
+    |         ----^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:121:9
+    |
+121 |     let mut categorical_cross_entropy = |y_true: Vec<Vec<f64>>, y_pred: Vec<Vec<f64>>, epsilon: f64| -> f64 {
+    |         ----^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:161:9
+    |
+161 |     let mut categorical_focal_cross_entropy = |y_true: Vec<Vec<f64>>, y_pred: Vec<Vec<f64>>, alpha: Vec<f64>, gamma: f64, epsilon: f64| -...
+    |         ----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:217:9
+    |
+217 |     let mut hinge_loss = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:235:9
+    |
+235 |     let mut huber_loss = |y_true: Vec<f64>, y_pred: Vec<f64>, delta: f64| -> f64 {
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:253:9
+    |
+253 |     let mut mean_squared_error = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |         ----^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:266:9
+    |
+266 |     let mut mean_absolute_error = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |         ----^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:278:9
+    |
+278 |     let mut mean_squared_logarithmic_error = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |         ----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:293:9
+    |
+293 |     let mut mean_absolute_percentage_error = |y_true: Vec<f64>, y_pred: Vec<f64>, epsilon: f64| -> f64 {
+    |         ----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:309:9
+    |
+309 |     let mut perplexity_loss = |y_true: Vec<Vec<i64>>, y_pred: Vec<Vec<Vec<f64>>>, epsilon: f64| -> f64 {
+    |         ----^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:343:9
+    |
+343 |     let mut smooth_l1_loss = |y_true: Vec<f64>, y_pred: Vec<f64>, beta: f64| -> f64 {
+    |         ----^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:360:9
+    |
+360 |     let mut kullback_leibler_divergence = |y_true: Vec<f64>, y_pred: Vec<f64>| -> f64 {
+    |         ----^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:41:13
+   |
+41 |     fn absf(mut x: f64) -> f64 {
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:47:13
+   |
+47 |     fn maxf(mut a: f64, mut b: f64) -> f64 {
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:47:25
+   |
+47 |     fn maxf(mut a: f64, mut b: f64) -> f64 {
+   |                         ----^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:53:13
+   |
+53 |     fn minf(mut a: f64, mut b: f64) -> f64 {
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:53:25
+   |
+53 |     fn minf(mut a: f64, mut b: f64) -> f64 {
+   |                         ----^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:62:17
+   |
+62 |     fn to_float(mut x: i64) -> f64 {
+   |                 ----^
+   |                 |
+   |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:65:13
+   |
+65 |     fn powf(mut base: f64, mut exp: f64) -> f64 {
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:65:28
+   |
+65 |     fn powf(mut base: f64, mut exp: f64) -> f64 {
+   |                            ----^^^
+   |                            |
+   |                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:75:11
+   |
+75 |     fn ln(mut x: f64) -> f64 {
+   |           ----^
+   |           |
+   |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:78:12
+   |
+78 |     fn exp(mut x: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/machine_learning/loss_functions.rs:81:13
+   |
+81 |     fn mean(mut v: Vec<f64>) -> f64 {
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+error: aborting due to 13 previous errors; 181 warnings emitted
+
+For more information about this error, try `rustc --explain E0434`.

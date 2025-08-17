@@ -2,7 +2,7 @@
 
 This experimental transpiler converts a subset of Mochi into readable Rust code.
 Generated sources for the golden tests live under `tests/transpiler/x/rs`.
-Last updated: 2025-08-16 19:42 +0700
+Last updated: 2025-08-17 08:49 +0700
 
 ## VM Golden Test Checklist (103/105)
 - [x] append_builtin.mochi

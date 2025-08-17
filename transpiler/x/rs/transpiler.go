@@ -2242,7 +2242,11 @@ func (v *VarDecl) emit(w io.Writer) {
 		io.WriteString(w, ": ")
 		io.WriteString(w, typ)
 		io.WriteString(w, " = ")
-		io.WriteString(w, zeroValue(typ))
+		if v.Expr != nil {
+			v.Expr.emit(w)
+		} else {
+			io.WriteString(w, zeroValue(typ))
+		}
 		io.WriteString(w, ";")
 		return
 	}
@@ -3779,14 +3783,28 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = inferType(e)
 		}
 		vd := &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}
-		if funcDepth == 0 && len(localVarStack) == 0 {
-			topLevelNonConstLet = true
-		}
-		if len(localVarStack) > 0 {
-			localVarStack[len(localVarStack)-1][stmt.Var.Name] = true
-		}
-		if currentFuncLocals != nil {
-			currentFuncLocals[stmt.Var.Name] = true
+		if funcDepth == 0 && len(localVarStack) == 0 && isConstExpr(e) {
+			vd.Global = true
+			newName := "g_" + stmt.Var.Name
+			globalRenames[stmt.Var.Name] = newName
+			globalRenameBack[newName] = stmt.Var.Name
+			vd.Name = newName
+			globalVars[newName] = true
+			varTypes[newName] = typ
+			if strings.HasPrefix(typ, "HashMap") {
+				useLazy = true
+				useRefCell = true
+			}
+		} else {
+			if funcDepth == 0 && len(localVarStack) == 0 {
+				topLevelNonConstLet = true
+			}
+			if len(localVarStack) > 0 {
+				localVarStack[len(localVarStack)-1][stmt.Var.Name] = true
+			}
+			if currentFuncLocals != nil {
+				currentFuncLocals[stmt.Var.Name] = true
+			}
 		}
 		return vd, nil
 	case stmt.Assign != nil:
@@ -6844,6 +6862,13 @@ func collectCaptures(body []Stmt, params []Param, locals map[string]bool, name s
 	delete(names, name)
 	var out []string
 	for n := range names {
+		orig := n
+		if gn, ok := globalRenames[n]; ok {
+			n = gn
+		}
+		if globalVars[n] {
+			continue
+		}
 		if _, ok := funReturns[n]; ok {
 			// Skip pure function declarations, but allow names
 			// that also have variable type info. Some Mochi
@@ -6858,7 +6883,7 @@ func collectCaptures(body []Stmt, params []Param, locals map[string]bool, name s
 		} else if varTypes[n] == "" && currentParamTypes[n] == "" {
 			continue
 		}
-		out = append(out, n)
+		out = append(out, orig)
 	}
 	sort.Strings(out)
 	return out
