@@ -3462,10 +3462,10 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useSafeDiv = false
 	useSafeFmod = false
 	useIDiv = false
-        useMod = false
-        // mochi_nth is used for safe list indexing; include helper when needed
-        useNth = false
-        useFirst = false
+	useMod = false
+	// mochi_nth is used for safe list indexing; include helper when needed
+	useNth = false
+	useFirst = false
 	mutatedFuncs = map[string]int{
 		"topple":       0,
 		"fill":         0,
@@ -6620,6 +6620,31 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 // Emit renders Erlang source for the program.
 
 func (p *Program) Emit() []byte {
+	// First emit functions and main body to capture helper usage such as mochi_nth.
+	useNth = false
+	var body bytes.Buffer
+	for _, f := range p.Funs {
+		f.emit(&body)
+	}
+	body.WriteString("main(_) ->\n")
+	body.WriteString("    try\n")
+	for i, s := range p.Stmts {
+		body.WriteString("        ")
+		s.emit(&body)
+		if i < len(p.Stmts)-1 {
+			body.WriteString(",\n")
+		} else {
+			body.WriteString("\n")
+		}
+	}
+	body.WriteString("    catch\n")
+	body.WriteString("        _:Err -> io:format(\"~p~n\", [Err])\n")
+	body.WriteString("    end.\n")
+
+	if useNth {
+		p.UseNth = true
+	}
+
 	var buf bytes.Buffer
 	hash := ""
 	if out, err := exec.Command("git", "rev-parse", "--short", "HEAD").Output(); err == nil {
@@ -6746,23 +6771,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperMod)
 		buf.WriteString("\n")
 	}
-	for _, f := range p.Funs {
-		f.emit(&buf)
-	}
-	buf.WriteString("main(_) ->\n")
-	buf.WriteString("    try\n")
-	for i, s := range p.Stmts {
-		buf.WriteString("        ")
-		s.emit(&buf)
-		if i < len(p.Stmts)-1 {
-			buf.WriteString(",\n")
-		} else {
-			buf.WriteString("\n")
-		}
-	}
-	buf.WriteString("    catch\n")
-	buf.WriteString("        _:Err -> io:format(\"~p~n\", [Err])\n")
-	buf.WriteString("    end.\n")
+	buf.Write(body.Bytes())
 	return buf.Bytes()
 }
 

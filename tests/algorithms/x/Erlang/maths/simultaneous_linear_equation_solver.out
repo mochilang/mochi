@@ -1,10 +1,2 @@
-/workspace/mochi/tests/algorithms/x/Erlang/maths/simultaneous_linear_equation_solver.erl:211:67: Warning: variable 'Temp_2' exported from 'case' (line 191, column 13)
-%  211| {A_5, Col_2, Equations, I_9, M_2, N_3, Pivot_2, Pivot_val, Row_3, Temp_2} = Fun_6(A_4, Col, Equations, I_9, M_2, N_3, Pivot_2, Pivot_val, Row_3, Temp_2),
-%     |                                                                   ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/maths/simultaneous_linear_equation_solver.erl:243:72: Warning: variable 'Temp_2' exported from 'case' (line 191, column 13)
-%  243| {A_7, Col_2, Equations, I_9, M_2, N_3, Pivot_2, Pivot_val, R_2, Row_3, Temp_2} = Fun_9(A_5, Col_2, Equations, I_9, M_2, N_3, Pivot_2, Pivot_val, R, Row_3, Temp_2),
-%     |                                                                        ^
-
 [-1.0 0.0 1.0 2.0 3.0]
 [0.5]
