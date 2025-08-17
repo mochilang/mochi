@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-16 19:52 GMT+7
+Last updated: 2025-08-17 09:01 GMT+7
 
-## Algorithms Golden Test Checklist (553/1077)
+## Algorithms Golden Test Checklist (554/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -523,7 +523,7 @@ Last updated: 2025-08-16 19:52 GMT+7
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 13.51ms | 83.28KiB |
 | 515 | machine_learning/mfcc | ✓ | 10.67ms | 123.76KiB |
 | 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 93.39ms | 140.77KiB |
-| 517 | machine_learning/polynomial_regression | error |  |  |
+| 517 | machine_learning/polynomial_regression | ✓ | 15.16ms | 118.88KiB |
 | 518 | machine_learning/principle_component_analysis | ✓ | 10.86ms | 124.23KiB |
 | 519 | machine_learning/scoring_functions | ✓ | 27.20ms | 113.78KiB |
 | 520 | machine_learning/self_organizing_map | ✓ | 26.43ms | 113.84KiB |
