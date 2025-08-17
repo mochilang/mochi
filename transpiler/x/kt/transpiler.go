@@ -3004,11 +3004,11 @@ func kotlinZeroValue(t types.Type) string {
 
 func guessType(e Expr) string {
 	switch v := e.(type) {
-	case *IntLit:
-		if v.Value > 2147483647 || v.Value < -2147483648 {
-			return "Long"
-		}
-		return "Int"
+        case *IntLit:
+                if v.Value >= 2147483647 || v.Value <= -2147483648 {
+                        return "Long"
+                }
+                return "Int"
 	case *FloatLit:
 		return "Double"
 	case *CharLit:

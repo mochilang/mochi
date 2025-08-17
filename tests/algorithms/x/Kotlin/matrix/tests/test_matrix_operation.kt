@@ -46,7 +46,7 @@ fun add(a: MutableList<MutableList<Double>>, b: MutableList<MutableList<Double>>
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((a[i]!!) as MutableList<Double>))[j]!! + (((b[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((a[i]!!) as MutableList<Double>)[j]!! + ((b[i]!!) as MutableList<Double>)[j]!!); _tmp }
             j = j + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
@@ -69,7 +69,7 @@ fun subtract(a: MutableList<MutableList<Double>>, b: MutableList<MutableList<Dou
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((a[i]!!) as MutableList<Double>))[j]!! - (((b[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((a[i]!!) as MutableList<Double>)[j]!! - ((b[i]!!) as MutableList<Double>)[j]!!); _tmp }
             j = j + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
@@ -88,7 +88,7 @@ fun scalar_multiply(a: MutableList<MutableList<Double>>, s: Double): MutableList
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((a[i]!!) as MutableList<Double>))[j]!! * s); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((a[i]!!) as MutableList<Double>)[j]!! * s); _tmp }
             j = j + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
@@ -114,7 +114,7 @@ fun multiply(a: MutableList<MutableList<Double>>, b: MutableList<MutableList<Dou
             var sum: Double = 0.0
             var k: Int = (0).toInt()
             while (k < b.size) {
-                sum = sum + ((((a[i]!!) as MutableList<Double>))[k]!! * (((b[k]!!) as MutableList<Double>))[j]!!)
+                sum = sum + (((a[i]!!) as MutableList<Double>)[k]!! * ((b[k]!!) as MutableList<Double>)[j]!!)
                 k = k + 1
             }
             row = run { val _tmp = row.toMutableList(); _tmp.add(sum); _tmp }
@@ -156,7 +156,7 @@ fun transpose(a: MutableList<MutableList<Double>>): MutableList<MutableList<Doub
         var row: MutableList<Double> = mutableListOf<Double>()
         var i: Int = (0).toInt()
         while (i < rows) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((a[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((a[i]!!) as MutableList<Double>)[j]!!); _tmp }
             i = i + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }

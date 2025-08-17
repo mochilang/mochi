@@ -1,5 +1,11 @@
 import java.math.BigInteger
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -46,35 +52,35 @@ fun spiral_traversal(matrix: MutableList<MutableList<Int>>): MutableList<Int> {
     var rows: Int = (matrix.size).toInt()
     var cols: Int = ((matrix[0]!!).size).toInt()
     var top: Int = (0).toInt()
-    var bottom: BigInteger = ((rows - 1).toBigInteger())
+    var bottom: Int = (rows - 1).toInt()
     var left: Int = (0).toInt()
-    var right: BigInteger = ((cols - 1).toBigInteger())
+    var right: Int = (cols - 1).toInt()
     var result: MutableList<Int> = mutableListOf<Int>()
-    while (((left).toBigInteger().compareTo((right)) <= 0) && ((top).toBigInteger().compareTo((bottom)) <= 0)) {
+    while ((left <= right) && (top <= bottom)) {
         var i: Int = (left).toInt()
-        while ((i).toBigInteger().compareTo((right)) <= 0) {
-            result = run { val _tmp = result.toMutableList(); _tmp.add((((matrix[top]!!) as MutableList<Int>))[i]!!); _tmp }
+        while (i <= right) {
+            result = run { val _tmp = result.toMutableList(); _tmp.add(((matrix[top]!!) as MutableList<Int>)[i]!!); _tmp }
             i = i + 1
         }
         top = top + 1
         i = top
-        while ((i).toBigInteger().compareTo((bottom)) <= 0) {
-            result = run { val _tmp = result.toMutableList(); _tmp.add((((matrix[i]!!) as MutableList<Int>))[(right).toInt()]!!); _tmp }
+        while (i <= bottom) {
+            result = run { val _tmp = result.toMutableList(); _tmp.add(((matrix[i]!!) as MutableList<Int>)[right]!!); _tmp }
             i = i + 1
         }
-        right = right.subtract((1).toBigInteger())
-        if ((top).toBigInteger().compareTo((bottom)) <= 0) {
-            i = (right.toInt())
+        right = right - 1
+        if (top <= bottom) {
+            i = right
             while (i >= left) {
-                result = run { val _tmp = result.toMutableList(); _tmp.add((((matrix[(bottom).toInt()]!!) as MutableList<Int>))[i]!!); _tmp }
+                result = run { val _tmp = result.toMutableList(); _tmp.add(((matrix[bottom]!!) as MutableList<Int>)[i]!!); _tmp }
                 i = i - 1
             }
-            bottom = bottom.subtract((1).toBigInteger())
+            bottom = bottom - 1
         }
-        if ((left).toBigInteger().compareTo((right)) <= 0) {
-            i = (bottom.toInt())
+        if (left <= right) {
+            i = bottom
             while (i >= top) {
-                result = run { val _tmp = result.toMutableList(); _tmp.add((((matrix[i]!!) as MutableList<Int>))[left]!!); _tmp }
+                result = run { val _tmp = result.toMutableList(); _tmp.add(((matrix[i]!!) as MutableList<Int>)[left]!!); _tmp }
                 i = i - 1
             }
             left = left + 1
@@ -85,7 +91,7 @@ fun spiral_traversal(matrix: MutableList<MutableList<Int>>): MutableList<Int> {
 
 fun spiral_print_clockwise(matrix: MutableList<MutableList<Int>>): Unit {
     for (value in spiral_traversal(matrix)) {
-        println(value.toString())
+        println(_numToStr(value))
     }
 }
 

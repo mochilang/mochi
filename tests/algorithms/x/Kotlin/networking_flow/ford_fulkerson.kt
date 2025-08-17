@@ -1,5 +1,11 @@
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -65,12 +71,12 @@ fun ford_fulkerson(graph: MutableList<MutableList<Int>>, source: Int, sink: Int)
         i = i + 1
     }
     var max_flow: Int = (0).toInt()
-    while (((breadth_first_search(graph, source, sink, parent)) as Boolean)) {
+    while ((breadth_first_search(graph, source, sink, parent)) as Boolean) {
         var path_flow: Int = (INF).toInt()
         var s: Int = (sink).toInt()
         while (s != source) {
             var prev: Int = (parent[s]!!).toInt()
-            var cap: Int = ((((graph[prev]!!) as MutableList<Int>))[s]!!).toInt()
+            var cap: Int = (((graph[prev]!!) as MutableList<Int>)[s]!!).toInt()
             if (cap < path_flow) {
                 path_flow = cap
             }
@@ -80,8 +86,8 @@ fun ford_fulkerson(graph: MutableList<MutableList<Int>>, source: Int, sink: Int)
         var v: Int = (sink).toInt()
         while (v != source) {
             var u: Int = (parent[v]!!).toInt()
-            _listSet(graph[u]!!, v, (((graph[u]!!) as MutableList<Int>))[v]!! - path_flow)
-            _listSet(graph[v]!!, u, (((graph[v]!!) as MutableList<Int>))[u]!! + path_flow)
+            _listSet(graph[u]!!, v, ((graph[u]!!) as MutableList<Int>)[v]!! - path_flow)
+            _listSet(graph[v]!!, u, ((graph[v]!!) as MutableList<Int>)[u]!! + path_flow)
             v = u
         }
         var j: Int = (0).toInt()
@@ -98,7 +104,7 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(ford_fulkerson(graph, 0, 5).toString())
+        println(_numToStr(ford_fulkerson(graph, 0, 5)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

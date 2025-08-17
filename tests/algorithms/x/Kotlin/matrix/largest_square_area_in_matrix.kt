@@ -36,7 +36,7 @@ fun update_area_of_max_square(row: Int, col: Int, rows: Int, cols: Int, mat: Mut
     var right: Int = (update_area_of_max_square(row, col + 1, rows, cols, mat, largest_square_area)).toInt()
     var diagonal: Int = (update_area_of_max_square(row + 1, col + 1, rows, cols, mat, largest_square_area)).toInt()
     var down: Int = (update_area_of_max_square(row + 1, col, rows, cols, mat, largest_square_area)).toInt()
-    if ((((mat[row]!!) as MutableList<Int>))[col]!! == 1) {
+    if (((mat[row]!!) as MutableList<Int>)[col]!! == 1) {
         var sub: Int = (1 + mutableListOf(right, diagonal, down).min()!!).toInt()
         if (sub > largest_square_area[0]!!) {
             _listSet(largest_square_area, 0, sub)
@@ -57,13 +57,13 @@ fun update_area_of_max_square_with_dp(row: Int, col: Int, rows: Int, cols: Int, 
     if ((row >= rows) || (col >= cols)) {
         return 0
     }
-    if ((((dp_array[row]!!) as MutableList<Int>))[col]!! != (0 - 1)) {
-        return (((dp_array[row]!!) as MutableList<Int>))[col]!!
+    if (((dp_array[row]!!) as MutableList<Int>)[col]!! != (0 - 1)) {
+        return ((dp_array[row]!!) as MutableList<Int>)[col]!!
     }
     var right: Int = (update_area_of_max_square_with_dp(row, col + 1, rows, cols, mat, dp_array, largest_square_area)).toInt()
     var diagonal: Int = (update_area_of_max_square_with_dp(row + 1, col + 1, rows, cols, mat, dp_array, largest_square_area)).toInt()
     var down: Int = (update_area_of_max_square_with_dp(row + 1, col, rows, cols, mat, dp_array, largest_square_area)).toInt()
-    if ((((mat[row]!!) as MutableList<Int>))[col]!! == 1) {
+    if (((mat[row]!!) as MutableList<Int>)[col]!! == 1) {
         var sub: Int = (1 + mutableListOf(right, diagonal, down).min()!!).toInt()
         if (sub > largest_square_area[0]!!) {
             _listSet(largest_square_area, 0, sub)
@@ -108,25 +108,25 @@ fun largest_square_area_in_matrix_bottom_up(rows: Int, cols: Int, mat: MutableLi
         r = r + 1
     }
     var largest: Int = (0).toInt()
-    var row: BigInteger = ((rows - 1).toBigInteger())
-    while (row.compareTo((0).toBigInteger()) >= 0) {
-        var col: BigInteger = ((cols - 1).toBigInteger())
-        while (col.compareTo((0).toBigInteger()) >= 0) {
-            var right: Int = ((((dp_array[(row).toInt()]!!) as MutableList<Int>))[(col.add((1).toBigInteger())).toInt()]!!).toInt()
-            var diagonal: Int = ((((dp_array[(row.add((1).toBigInteger())).toInt()]!!) as MutableList<Int>))[(col.add((1).toBigInteger())).toInt()]!!).toInt()
-            var bottom: Int = ((((dp_array[(row.add((1).toBigInteger())).toInt()]!!) as MutableList<Int>))[(col).toInt()]!!).toInt()
-            if ((((mat[(row).toInt()]!!) as MutableList<Int>))[(col).toInt()]!! == 1) {
+    var row: Int = (rows - 1).toInt()
+    while (row >= 0) {
+        var col: Int = (cols - 1).toInt()
+        while (col >= 0) {
+            var right: Int = (((dp_array[row]!!) as MutableList<Int>)[col + 1]!!).toInt()
+            var diagonal: Int = (((dp_array[row + 1]!!) as MutableList<Int>)[col + 1]!!).toInt()
+            var bottom: Int = (((dp_array[row + 1]!!) as MutableList<Int>)[col]!!).toInt()
+            if (((mat[row]!!) as MutableList<Int>)[col]!! == 1) {
                 var value: Int = (1 + mutableListOf(right, diagonal, bottom).min()!!).toInt()
-                _listSet(dp_array[(row).toInt()]!!, (col).toInt(), value)
+                _listSet(dp_array[row]!!, col, value)
                 if (value > largest) {
                     largest = value
                 }
             } else {
-                _listSet(dp_array[(row).toInt()]!!, (col).toInt(), 0)
+                _listSet(dp_array[row]!!, col, 0)
             }
-            col = col.subtract((1).toBigInteger())
+            col = col - 1
         }
-        row = row.subtract((1).toBigInteger())
+        row = row - 1
     }
     return largest
 }
@@ -145,23 +145,23 @@ fun largest_square_area_in_matrix_bottom_up_space_optimization(rows: Int, cols: 
         j = j + 1
     }
     var largest: Int = (0).toInt()
-    var row: BigInteger = ((rows - 1).toBigInteger())
-    while (row.compareTo((0).toBigInteger()) >= 0) {
-        var col: BigInteger = ((cols - 1).toBigInteger())
-        while (col.compareTo((0).toBigInteger()) >= 0) {
-            var right: Int = (current_row[(col.add((1).toBigInteger())).toInt()]!!).toInt()
-            var diagonal: Int = (next_row[(col.add((1).toBigInteger())).toInt()]!!).toInt()
-            var bottom: Int = (next_row[(col).toInt()]!!).toInt()
-            if ((((mat[(row).toInt()]!!) as MutableList<Int>))[(col).toInt()]!! == 1) {
+    var row: Int = (rows - 1).toInt()
+    while (row >= 0) {
+        var col: Int = (cols - 1).toInt()
+        while (col >= 0) {
+            var right: Int = (current_row[col + 1]!!).toInt()
+            var diagonal: Int = (next_row[col + 1]!!).toInt()
+            var bottom: Int = (next_row[col]!!).toInt()
+            if (((mat[row]!!) as MutableList<Int>)[col]!! == 1) {
                 var value: Int = (1 + mutableListOf(right, diagonal, bottom).min()!!).toInt()
-                _listSet(current_row, (col).toInt(), value)
+                _listSet(current_row, col, value)
                 if (value > largest) {
                     largest = value
                 }
             } else {
-                _listSet(current_row, (col).toInt(), 0)
+                _listSet(current_row, col, 0)
             }
-            col = col.subtract((1).toBigInteger())
+            col = col - 1
         }
         next_row = current_row
         current_row = mutableListOf<Int>()
@@ -170,7 +170,7 @@ fun largest_square_area_in_matrix_bottom_up_space_optimization(rows: Int, cols: 
             current_row = run { val _tmp = current_row.toMutableList(); _tmp.add(0); _tmp }
             t = t + 1
         }
-        row = row.subtract((1).toBigInteger())
+        row = row - 1
     }
     return largest
 }

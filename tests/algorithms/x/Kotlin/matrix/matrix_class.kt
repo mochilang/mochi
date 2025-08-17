@@ -1,3 +1,9 @@
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -48,7 +54,7 @@ fun matrix_columns(m: Matrix): MutableList<MutableList<Double>> {
         var col: MutableList<Double> = mutableListOf<Double>()
         var i: Int = (0).toInt()
         while (i < m.rows) {
-            col = run { val _tmp = col.toMutableList(); _tmp.add(((((m.data)[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            col = run { val _tmp = col.toMutableList(); _tmp.add((((m.data)[i]!!) as MutableList<Double>)[j]!!); _tmp }
             i = i + 1
         }
         cols = run { val _tmp = cols.toMutableList(); _tmp.add(col); _tmp }
@@ -64,7 +70,7 @@ fun matrix_identity(m: Matrix): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < m.cols) {
-            var v: Double = (if (i == j) 1.0 else 0.0.toDouble())
+            var v: Double = if (i == j) 1.0 else 0.0.toDouble()
             row = run { val _tmp = row.toMutableList(); _tmp.add(v); _tmp }
             j = j + 1
         }
@@ -83,7 +89,7 @@ fun matrix_minor(m: Matrix, r: Int, c: Int): Double {
             var j: Int = (0).toInt()
             while (j < m.cols) {
                 if (j != c) {
-                    row = run { val _tmp = row.toMutableList(); _tmp.add(((((m.data)[i]!!) as MutableList<Double>))[j]!!); _tmp }
+                    row = run { val _tmp = row.toMutableList(); _tmp.add((((m.data)[i]!!) as MutableList<Double>)[j]!!); _tmp }
                 }
                 j = j + 1
             }
@@ -143,15 +149,15 @@ fun matrix_determinant(m: Matrix): Double {
         return 0.0
     }
     if (m.rows == 1) {
-        return ((((m.data)[0]!!) as MutableList<Double>))[0]!!
+        return (((m.data)[0]!!) as MutableList<Double>)[0]!!
     }
     if (m.rows == 2) {
-        return (((((m.data)[0]!!) as MutableList<Double>))[0]!! * ((((m.data)[1]!!) as MutableList<Double>))[1]!!) - (((((m.data)[0]!!) as MutableList<Double>))[1]!! * ((((m.data)[1]!!) as MutableList<Double>))[0]!!)
+        return ((((m.data)[0]!!) as MutableList<Double>)[0]!! * (((m.data)[1]!!) as MutableList<Double>)[1]!!) - ((((m.data)[0]!!) as MutableList<Double>)[1]!! * (((m.data)[1]!!) as MutableList<Double>)[0]!!)
     }
     var sum: Double = 0.0
     var j: Int = (0).toInt()
     while (j < m.cols) {
-        sum = sum + (((((m.data)[0]!!) as MutableList<Double>))[j]!! * matrix_cofactor(m, 0, j))
+        sum = sum + ((((m.data)[0]!!) as MutableList<Double>)[j]!! * matrix_cofactor(m, 0, j))
         j = j + 1
     }
     return sum
@@ -169,7 +175,7 @@ fun matrix_adjugate(m: Matrix): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < m.cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((((cof.data)[j]!!) as MutableList<Double>))[i]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((cof.data)[j]!!) as MutableList<Double>)[i]!!); _tmp }
             j = j + 1
         }
         vals = run { val _tmp = vals.toMutableList(); _tmp.add(row); _tmp }
@@ -184,7 +190,7 @@ fun matrix_inverse(m: Matrix): Matrix {
         return Matrix(data = mutableListOf<MutableList<Double>>(), rows = 0, cols = 0)
     }
     var adj: Matrix = matrix_adjugate(m)
-    return ((matrix_mul_scalar(adj, 1.0 / det)) as Matrix)
+    return (matrix_mul_scalar(adj, 1.0 / det)) as Matrix
 }
 
 fun matrix_add_row(m: Matrix, row: MutableList<Double>): Matrix {
@@ -210,7 +216,7 @@ fun matrix_mul_scalar(m: Matrix, s: Double): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < m.cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((((m.data)[i]!!) as MutableList<Double>))[j]!! * s); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((m.data)[i]!!) as MutableList<Double>)[j]!! * s); _tmp }
             j = j + 1
         }
         vals = run { val _tmp = vals.toMutableList(); _tmp.add(row); _tmp }
@@ -233,7 +239,7 @@ fun matrix_add(a: Matrix, b: Matrix): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < a.cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((((a.data)[i]!!) as MutableList<Double>))[j]!! + ((((b.data)[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((a.data)[i]!!) as MutableList<Double>)[j]!! + (((b.data)[i]!!) as MutableList<Double>)[j]!!); _tmp }
             j = j + 1
         }
         vals = run { val _tmp = vals.toMutableList(); _tmp.add(row); _tmp }
@@ -252,7 +258,7 @@ fun matrix_sub(a: Matrix, b: Matrix): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < a.cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((((a.data)[i]!!) as MutableList<Double>))[j]!! - ((((b.data)[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((a.data)[i]!!) as MutableList<Double>)[j]!! - (((b.data)[i]!!) as MutableList<Double>)[j]!!); _tmp }
             j = j + 1
         }
         vals = run { val _tmp = vals.toMutableList(); _tmp.add(row); _tmp }
@@ -296,7 +302,7 @@ fun matrix_pow(m: Matrix, p: Int): Matrix {
         return matrix_identity(m)
     }
     if (p < 0) {
-        if (((matrix_is_invertible(m)) as Boolean)) {
+        if ((matrix_is_invertible(m)) as Boolean) {
             return matrix_pow(matrix_inverse(m), 0 - p)
         }
         return Matrix(data = mutableListOf<MutableList<Double>>(), rows = 0, cols = 0)
@@ -320,7 +326,7 @@ fun matrix_to_string(m: Matrix): String {
         s = s + "["
         var j: Int = (0).toInt()
         while (j < m.cols) {
-            s = s + (((((m.data)[i]!!) as MutableList<Double>))[j]!!).toString()
+            s = s + _numToStr((((m.data)[i]!!) as MutableList<Double>)[j]!!)
             if (j < (m.cols - 1)) {
                 s = s + " "
             }
@@ -340,10 +346,10 @@ fun user_main(): Unit {
     var m: Matrix = make_matrix(mutableListOf(mutableListOf(1.0, 2.0, 3.0), mutableListOf(4.0, 5.0, 6.0), mutableListOf(7.0, 8.0, 9.0)))
     println(matrix_to_string(m))
     println(matrix_columns(m).toString())
-    println((m.rows.toString() + ",") + m.cols.toString())
+    println((_numToStr(m.rows) + ",") + _numToStr(m.cols))
     println(matrix_is_invertible(m).toString())
     println(matrix_to_string(matrix_identity(m)))
-    println(matrix_determinant(m).toString())
+    println(_numToStr(matrix_determinant(m)))
     println(matrix_to_string(matrix_minors(m)))
     println(matrix_to_string(matrix_cofactors(m)))
     println(matrix_to_string(matrix_adjugate(m)))

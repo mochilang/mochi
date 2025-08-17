@@ -1,5 +1,11 @@
 import java.math.BigInteger
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -33,8 +39,8 @@ fun populate_current_row(triangle: MutableList<MutableList<Int>>, current_row_id
         if ((i == 0) || (i == current_row_idx)) {
             row = run { val _tmp = row.toMutableList(); _tmp.add(1); _tmp }
         } else {
-            var left: Int = ((((triangle[current_row_idx - 1]!!) as MutableList<Int>))[i - 1]!!).toInt()
-            var right: Int = ((((triangle[current_row_idx - 1]!!) as MutableList<Int>))[i]!!).toInt()
+            var left: Int = (((triangle[current_row_idx - 1]!!) as MutableList<Int>)[i - 1]!!).toInt()
+            var right: Int = (((triangle[current_row_idx - 1]!!) as MutableList<Int>)[i]!!).toInt()
             row = run { val _tmp = row.toMutableList(); _tmp.add(left + right); _tmp }
         }
         i = i + 1
@@ -58,15 +64,15 @@ fun generate_pascal_triangle(num_rows: Int): MutableList<MutableList<Int>> {
 
 fun row_to_string(row: MutableList<Int>, total_rows: Int, row_idx: Int): String {
     var line: String = ""
-    var spaces: BigInteger = (((total_rows - row_idx) - 1).toBigInteger())
+    var spaces: Int = ((total_rows - row_idx) - 1).toInt()
     var s: Int = (0).toInt()
-    while ((s).toBigInteger().compareTo((spaces)) < 0) {
+    while (s < spaces) {
         line = line + " "
         s = s + 1
     }
     var c: Int = (0).toInt()
     while (c <= row_idx) {
-        line = line + (row[c]!!).toString()
+        line = line + _numToStr(row[c]!!)
         if (c != row_idx) {
             line = line + " "
         }

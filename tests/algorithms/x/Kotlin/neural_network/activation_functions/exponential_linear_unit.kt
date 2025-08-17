@@ -28,9 +28,9 @@ fun exp_approx(x: Double): Double {
     var sum: Double = 1.0
     var term: Double = 1.0
     var i: Int = (1).toInt()
-    var absx: Double = (if (x < 0.0) 0.0 - x else x.toDouble())
+    var absx: Double = if (x < 0.0) 0.0 - x else x.toDouble()
     while (i <= 20) {
-        term = (term * absx) / ((i.toDouble()))
+        term = (term * absx) / (i.toDouble())
         sum = sum + term
         i = i + 1
     }

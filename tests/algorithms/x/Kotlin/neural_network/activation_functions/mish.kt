@@ -35,11 +35,11 @@ fun exp_approx(x: Double): Double {
     var sum: Double = 1.0
     var n: Int = (1).toInt()
     while (n < 30) {
-        term = (term * y) / ((n.toDouble()))
+        term = (term * y) / (n.toDouble())
         sum = sum + term
         n = n + 1
     }
-    if ((neg as Boolean)) {
+    if (neg as Boolean) {
         return 1.0 / sum
     }
     return sum
@@ -51,7 +51,7 @@ fun ln_series(x: Double): Double {
     var acc: Double = 0.0
     var n: Int = (1).toInt()
     while (n <= 19) {
-        acc = acc + (term / ((n.toDouble())))
+        acc = acc + (term / (n.toDouble()))
         term = (term * t) * t
         n = n + 2
     }
@@ -69,7 +69,7 @@ fun ln(x: Double): Double {
         y = y * 10.0
         k = k - 1
     }
-    return ln_series(y) + (((k.toDouble())) * ln_series(10.0))
+    return ln_series(y) + ((k.toDouble()) * ln_series(10.0))
 }
 
 fun softplus(x: Double): Double {

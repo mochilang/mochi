@@ -1,5 +1,11 @@
 import java.math.BigInteger
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -27,20 +33,20 @@ fun toJson(v: Any?): String = when (v) {
 }
 
 fun search_in_sorted_matrix(mat: MutableList<MutableList<Double>>, m: Int, n: Int, key: Double): Unit {
-    var i: BigInteger = ((m - 1).toBigInteger())
+    var i: Int = (m - 1).toInt()
     var j: Int = (0).toInt()
-    while ((i.compareTo((0).toBigInteger()) >= 0) && (j < n)) {
-        if (key == (((mat[(i).toInt()]!!) as MutableList<Double>))[j]!!) {
-            println((((("Key " + key.toString()) + " found at row- ") + (i.add((1).toBigInteger())).toString()) + " column- ") + (j + 1).toString())
+    while ((i >= 0) && (j < n)) {
+        if (key == ((mat[i]!!) as MutableList<Double>)[j]!!) {
+            println((((("Key " + _numToStr(key)) + " found at row- ") + _numToStr(i + 1)) + " column- ") + _numToStr(j + 1))
             return
         }
-        if (key < (((mat[(i).toInt()]!!) as MutableList<Double>))[j]!!) {
-            i = i.subtract((1).toBigInteger())
+        if (key < ((mat[i]!!) as MutableList<Double>)[j]!!) {
+            i = i - 1
         } else {
             j = j + 1
         }
     }
-    println(("Key " + key.toString()) + " not found")
+    println(("Key " + _numToStr(key)) + " not found")
 }
 
 fun user_main(): Unit {

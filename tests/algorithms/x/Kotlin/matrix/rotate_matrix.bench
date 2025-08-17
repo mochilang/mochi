@@ -39,4 +39,4 @@ rotate 270 counterclockwise:
 14 10 6 2
 15 11 7 3
 16 12 8 4
-{"duration_us":16422, "memory_bytes":125792, "name":"main"}
+{"duration_us":9402, "memory_bytes":135008, "name":"main"}

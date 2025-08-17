@@ -1,5 +1,11 @@
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -32,10 +38,10 @@ fun depth_first_search(grid: MutableList<MutableList<Int>>, row: Int, col: Int, 
     if ((((((row < 0) || (col < 0) as Boolean)) || (row == row_length) as Boolean)) || (col == col_length)) {
         return 0
     }
-    if ((((((visit[row]!!) as MutableList<Boolean>))[col]!!) as Boolean)) {
+    if ((((visit[row]!!) as MutableList<Boolean>)[col]!!) as Boolean) {
         return 0
     }
-    if ((((grid[row]!!) as MutableList<Int>))[col]!! == 1) {
+    if (((grid[row]!!) as MutableList<Int>)[col]!! == 1) {
         return 0
     }
     if ((row == (row_length - 1)) && (col == (col_length - 1))) {
@@ -71,9 +77,9 @@ fun count_paths(grid: MutableList<MutableList<Int>>): Int {
 
 fun user_main(): Unit {
     var grid1: MutableList<MutableList<Int>> = mutableListOf(mutableListOf(0, 0, 0, 0), mutableListOf(1, 1, 0, 0), mutableListOf(0, 0, 0, 1), mutableListOf(0, 1, 0, 0))
-    println(count_paths(grid1).toString())
+    println(_numToStr(count_paths(grid1)))
     var grid2: MutableList<MutableList<Int>> = mutableListOf(mutableListOf(0, 0, 0, 0, 0), mutableListOf(0, 1, 1, 1, 0), mutableListOf(0, 1, 1, 1, 0), mutableListOf(0, 0, 0, 0, 0))
-    println(count_paths(grid2).toString())
+    println(_numToStr(count_paths(grid2)))
 }
 
 fun main() {

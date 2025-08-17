@@ -43,7 +43,7 @@ fun bfs(graph: MutableList<MutableList<Int>>, s: Int, t: Int, parent: MutableLis
         head = head + 1
         var ind: Int = (0).toInt()
         while (ind < (graph[u]!!).size) {
-            if ((visited[ind]!! == false) && ((((graph[u]!!) as MutableList<Int>))[ind]!! > 0)) {
+            if ((visited[ind]!! == false) && (((graph[u]!!) as MutableList<Int>)[ind]!! > 0)) {
                 queue = run { val _tmp = queue.toMutableList(); _tmp.add(ind); _tmp }
                 _listSet(visited, ind, true)
                 _listSet(parent, ind, u)
@@ -68,18 +68,18 @@ fun mincut(graph: MutableList<MutableList<Int>>, source: Int, sink: Int): Mutabl
         var row: MutableList<Int> = mutableListOf<Int>()
         var j: Int = (0).toInt()
         while (j < (g[i]!!).size) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((g[i]!!) as MutableList<Int>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((g[i]!!) as MutableList<Int>)[j]!!); _tmp }
             j = j + 1
         }
         temp = run { val _tmp = temp.toMutableList(); _tmp.add(row); _tmp }
         i = i + 1
     }
-    while (((bfs(g, source, sink, parent)) as Boolean)) {
+    while ((bfs(g, source, sink, parent)) as Boolean) {
         var path_flow: Int = (1000000000).toInt()
         var s: Int = (sink).toInt()
         while (s != source) {
             var p: Int = (parent[s]!!).toInt()
-            var cap: Int = ((((g[p]!!) as MutableList<Int>))[s]!!).toInt()
+            var cap: Int = (((g[p]!!) as MutableList<Int>)[s]!!).toInt()
             if (cap < path_flow) {
                 path_flow = cap
             }
@@ -88,8 +88,8 @@ fun mincut(graph: MutableList<MutableList<Int>>, source: Int, sink: Int): Mutabl
         var v: Int = (sink).toInt()
         while (v != source) {
             var u: Int = (parent[v]!!).toInt()
-            _listSet(g[u]!!, v, (((g[u]!!) as MutableList<Int>))[v]!! - path_flow)
-            _listSet(g[v]!!, u, (((g[v]!!) as MutableList<Int>))[u]!! + path_flow)
+            _listSet(g[u]!!, v, ((g[u]!!) as MutableList<Int>)[v]!! - path_flow)
+            _listSet(g[v]!!, u, ((g[v]!!) as MutableList<Int>)[u]!! + path_flow)
             v = u
         }
     }
@@ -98,7 +98,7 @@ fun mincut(graph: MutableList<MutableList<Int>>, source: Int, sink: Int): Mutabl
     while (i < g.size) {
         var j: Int = (0).toInt()
         while (j < (g[0]!!).size) {
-            if (((((g[i]!!) as MutableList<Int>))[j]!! == 0) && ((((temp[i]!!) as MutableList<Int>))[j]!! > 0)) {
+            if ((((g[i]!!) as MutableList<Int>)[j]!! == 0) && (((temp[i]!!) as MutableList<Int>)[j]!! > 0)) {
                 res = run { val _tmp = res.toMutableList(); _tmp.add(mutableListOf(i, j)); _tmp }
             }
             j = j + 1

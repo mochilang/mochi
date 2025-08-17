@@ -1,3 +1,9 @@
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -26,7 +32,7 @@ fun toJson(v: Any?): String = when (v) {
 
 fun add(matrices: MutableList<MutableList<MutableList<Double>>>): MutableList<MutableList<Double>> {
     var rows: Int = ((matrices[0]!!).size).toInt()
-    var cols: Int = (((((matrices[0]!!) as MutableList<MutableList<Double>>))[0]!!).size).toInt()
+    var cols: Int = ((((matrices[0]!!) as MutableList<MutableList<Double>>)[0]!!).size).toInt()
     var r: Int = (0).toInt()
     var result: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>()
     while (r < rows) {
@@ -36,7 +42,7 @@ fun add(matrices: MutableList<MutableList<MutableList<Double>>>): MutableList<Mu
             var sum: Double = 0.0
             var m: Int = (0).toInt()
             while (m < matrices.size) {
-                sum = sum + ((((((matrices[m]!!) as MutableList<MutableList<Double>>))[r]!!) as MutableList<Double>))[c]!!
+                sum = sum + ((((matrices[m]!!) as MutableList<MutableList<Double>>)[r]!!) as MutableList<Double>)[c]!!
                 m = m + 1
             }
             row = run { val _tmp = row.toMutableList(); _tmp.add(sum); _tmp }
@@ -57,7 +63,7 @@ fun subtract(a: MutableList<MutableList<Double>>, b: MutableList<MutableList<Dou
         var row: MutableList<Double> = mutableListOf<Double>()
         var c: Int = (0).toInt()
         while (c < cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((a[r]!!) as MutableList<Double>))[c]!! - (((b[r]!!) as MutableList<Double>))[c]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((a[r]!!) as MutableList<Double>)[c]!! - ((b[r]!!) as MutableList<Double>)[c]!!); _tmp }
             c = c + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
@@ -73,7 +79,7 @@ fun scalar_multiply(matrix: MutableList<MutableList<Double>>, n: Double): Mutabl
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < (matrix[i]!!).size) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((matrix[i]!!) as MutableList<Double>))[j]!! * n); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((matrix[i]!!) as MutableList<Double>)[j]!! * n); _tmp }
             j = j + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
@@ -96,7 +102,7 @@ fun multiply(a: MutableList<MutableList<Double>>, b: MutableList<MutableList<Dou
             var sum: Double = 0.0
             var k: Int = (0).toInt()
             while (k < colsA) {
-                sum = sum + ((((a[i]!!) as MutableList<Double>))[k]!! * (((b[k]!!) as MutableList<Double>))[j]!!)
+                sum = sum + (((a[i]!!) as MutableList<Double>)[k]!! * ((b[k]!!) as MutableList<Double>)[j]!!)
                 k = k + 1
             }
             row = run { val _tmp = row.toMutableList(); _tmp.add(sum); _tmp }
@@ -137,7 +143,7 @@ fun transpose(matrix: MutableList<MutableList<Double>>): MutableList<MutableList
         var row: MutableList<Double> = mutableListOf<Double>()
         var r: Int = (0).toInt()
         while (r < rows) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((matrix[r]!!) as MutableList<Double>))[c]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((matrix[r]!!) as MutableList<Double>)[c]!!); _tmp }
             r = r + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
@@ -155,7 +161,7 @@ fun minor(matrix: MutableList<MutableList<Double>>, row: Int, column: Int): Muta
             var j: Int = (0).toInt()
             while (j < (matrix[i]!!).size) {
                 if (j != column) {
-                    new_row = run { val _tmp = new_row.toMutableList(); _tmp.add((((matrix[i]!!) as MutableList<Double>))[j]!!); _tmp }
+                    new_row = run { val _tmp = new_row.toMutableList(); _tmp.add(((matrix[i]!!) as MutableList<Double>)[j]!!); _tmp }
                 }
                 j = j + 1
             }
@@ -168,14 +174,14 @@ fun minor(matrix: MutableList<MutableList<Double>>, row: Int, column: Int): Muta
 
 fun determinant(matrix: MutableList<MutableList<Double>>): Double {
     if (matrix.size == 1) {
-        return (((matrix[0]!!) as MutableList<Double>))[0]!!
+        return ((matrix[0]!!) as MutableList<Double>)[0]!!
     }
     var det: Double = 0.0
     var c: Int = (0).toInt()
     while (c < (matrix[0]!!).size) {
         var sub: MutableList<MutableList<Double>> = minor(matrix, 0, c)
-        var sign: Double = (if ((Math.floorMod(c, 2)) == 0) 1.0 else 0.0 - 1.0.toDouble())
-        det = det + (((((matrix[0]!!) as MutableList<Double>))[c]!! * determinant(sub)) * sign)
+        var sign: Double = if ((Math.floorMod(c, 2)) == 0) 1.0 else 0.0 - 1.0.toDouble()
+        det = det + ((((matrix[0]!!) as MutableList<Double>)[c]!! * determinant(sub)) * sign)
         c = c + 1
     }
     return det
@@ -206,8 +212,8 @@ fun inverse(matrix: MutableList<MutableList<Double>>): MutableList<MutableList<D
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < size) {
-            var sign: Double = (if ((Math.floorMod((i + j), 2)) == 0) 1.0 else 0.0 - 1.0.toDouble())
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((matrix_minor[i]!!) as MutableList<Double>))[j]!! * sign); _tmp }
+            var sign: Double = if ((Math.floorMod((i + j), 2)) == 0) 1.0 else 0.0 - 1.0.toDouble()
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((matrix_minor[i]!!) as MutableList<Double>)[j]!! * sign); _tmp }
             j = j + 1
         }
         cofactors = run { val _tmp = cofactors.toMutableList(); _tmp.add(row); _tmp }
@@ -226,7 +232,7 @@ fun user_main(): Unit {
     println(("Multiply Operation, multiply(matrix_a, matrix_b) = " + multiply(matrix_a, matrix_b).toString()) + " \n")
     println(("Identity: " + identity(5).toString()) + "\n")
     println(((("Minor of " + matrix_c.toString()) + " = ") + minor(matrix_c, 1, 2).toString()) + " \n")
-    println(((("Determinant of " + matrix_b.toString()) + " = ") + determinant(matrix_b).toString()) + " \n")
+    println(((("Determinant of " + matrix_b.toString()) + " = ") + _numToStr(determinant(matrix_b))) + " \n")
     println(((("Inverse of " + matrix_d.toString()) + " = ") + inverse(matrix_d).toString()) + "\n")
 }
 

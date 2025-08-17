@@ -31,7 +31,7 @@ fun exp(x: Double): Double {
     var sum: Double = 1.0
     var n: Int = (1).toInt()
     while (n < 20) {
-        term = (term * x) / ((n.toDouble()))
+        term = (term * x) / (n.toDouble())
         sum = sum + term
         n = n + 1
     }
@@ -54,7 +54,7 @@ fun soboleva_modified_hyperbolic_tangent(vector: MutableList<Double>, a_value: D
 fun user_main(): Unit {
     var vector: MutableList<Double> = mutableListOf(5.4, 0.0 - 2.4, 6.3, 0.0 - 5.23, 3.27, 0.56)
     var res: MutableList<Double> = soboleva_modified_hyperbolic_tangent(vector, 0.2, 0.4, 0.6, 0.8)
-    json((res as Any?))
+    json(res as Any?)
 }
 
 fun main() {

@@ -1,5 +1,11 @@
 import java.math.BigInteger
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -37,7 +43,7 @@ fun multiply(matrix_a: MutableList<MutableList<Int>>, matrix_b: MutableList<Muta
             var _val: Int = (0).toInt()
             var k: Int = (0).toInt()
             while (k < n) {
-                _val = _val + ((((matrix_a[i]!!) as MutableList<Int>))[k]!! * (((matrix_b[k]!!) as MutableList<Int>))[j]!!)
+                _val = _val + (((matrix_a[i]!!) as MutableList<Int>)[k]!! * ((matrix_b[k]!!) as MutableList<Int>)[j]!!)
                 k = k + 1
             }
             row = run { val _tmp = row.toMutableList(); _tmp.add(_val); _tmp }
@@ -75,15 +81,15 @@ fun nth_fibonacci_matrix(n: Int): Int {
     }
     var res_matrix: MutableList<MutableList<Int>> = identity(2)
     var fib_matrix: MutableList<MutableList<Int>> = mutableListOf(mutableListOf(1, 1), mutableListOf(1, 0))
-    var m: BigInteger = ((n - 1).toBigInteger())
-    while (m.compareTo((0).toBigInteger()) > 0) {
-        if ((m.mod((2).toBigInteger())).compareTo((1).toBigInteger()) == 0) {
+    var m: Int = (n - 1).toInt()
+    while (m > 0) {
+        if ((Math.floorMod(m, 2)) == 1) {
             res_matrix = multiply(res_matrix, fib_matrix)
         }
         fib_matrix = multiply(fib_matrix, fib_matrix)
-        m = m.divide((2).toBigInteger())
+        m = m / 2
     }
-    return (((res_matrix[0]!!) as MutableList<Int>))[0]!!
+    return ((res_matrix[0]!!) as MutableList<Int>)[0]!!
 }
 
 fun nth_fibonacci_bruteforce(n: Int): Int {
@@ -108,7 +114,7 @@ fun parse_number(s: String): Int {
     while (i < s.length) {
         var ch: String = s.substring(i, i + 1)
         if ((ch >= "0") && (ch <= "9")) {
-            result = (result * 10) + ((ch.toBigInteger().toInt()))
+            result = (result * 10) + (ch.toBigInteger().toInt())
         }
         i = i + 1
     }
@@ -121,7 +127,7 @@ fun user_main(): Unit {
     while (i < ordinals.size) {
         var ordinal: String = ordinals[i]!!
         var n: Int = (parse_number(ordinal)).toInt()
-        var msg: String = (((ordinal + " fibonacci number using matrix exponentiation is ") + nth_fibonacci_matrix(n).toString()) + " and using bruteforce is ") + nth_fibonacci_bruteforce(n).toString()
+        var msg: String = (((ordinal + " fibonacci number using matrix exponentiation is ") + _numToStr(nth_fibonacci_matrix(n))) + " and using bruteforce is ") + _numToStr(nth_fibonacci_bruteforce(n))
         println(msg)
         i = i + 1
     }

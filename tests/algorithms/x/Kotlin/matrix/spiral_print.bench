@@ -11,4 +11,4 @@
 6
 7
 [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]
-{"duration_us":31399, "memory_bytes":116944, "name":"main"}
+{"duration_us":16118, "memory_bytes":126176, "name":"main"}
