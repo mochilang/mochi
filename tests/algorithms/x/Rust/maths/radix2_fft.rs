@@ -108,7 +108,7 @@ fn main() {
     return arr
 };
         let mut fft = {
-fn fft(PI: f64, c_add: &mut dyn FnMut(Complex, Complex) -> Complex, c_div_scalar: &mut dyn FnMut(Complex, f64) -> Complex, c_mul: &mut dyn FnMut(Complex, Complex) -> Complex, c_sub: &mut dyn FnMut(Complex, Complex) -> Complex, exp_i: &mut dyn FnMut(f64) -> Complex, make_complex_list: &mut dyn FnMut(i64, Complex) -> Vec<Complex>, a: Vec<Complex>, invert: bool) -> Vec<Complex> {
+fn fft(c_add: &mut dyn FnMut(Complex, Complex) -> Complex, c_div_scalar: &mut dyn FnMut(Complex, f64) -> Complex, c_mul: &mut dyn FnMut(Complex, Complex) -> Complex, c_sub: &mut dyn FnMut(Complex, Complex) -> Complex, exp_i: &mut dyn FnMut(f64) -> Complex, make_complex_list: &mut dyn FnMut(i64, Complex) -> Vec<Complex>, a: Vec<Complex>, invert: bool) -> Vec<Complex> {
     let n: i64 = (a.len() as i64);
     if (n == 1) {
         return vec![a[0 as usize].clone().clone()]
@@ -121,8 +121,8 @@ fn fft(PI: f64, c_add: &mut dyn FnMut(Complex, Complex) -> Complex, c_div_scalar
         a1 = { let mut _v = a1.clone(); _v.push(a[((2 * i) + 1) as usize].clone()); _v };
         i = (i + 1);
     }
-    let y0: Vec<Complex> = fft(unsafe { g_PI.clone() }, c_add, c_div_scalar, c_mul, c_sub, exp_i, make_complex_list, a0.clone(), invert);
-    let y1: Vec<Complex> = fft(unsafe { g_PI.clone() }, c_add, c_div_scalar, c_mul, c_sub, exp_i, make_complex_list, a1.clone(), invert);
+    let y0: Vec<Complex> = fft(c_add, c_div_scalar, c_mul, c_sub, exp_i, make_complex_list, a0.clone(), invert);
+    let y1: Vec<Complex> = fft(c_add, c_div_scalar, c_mul, c_sub, exp_i, make_complex_list, a1.clone(), invert);
     let angle: f64 = (((2.0 * unsafe { g_PI.clone() }) / (n as f64)) * if invert { -1.0 } else { 1.0 });
     let mut w: Complex = Complex {re: 1.0, im: 0.0};
     let wn: Complex = exp_i(angle);
@@ -144,7 +144,7 @@ fn fft(PI: f64, c_add: &mut dyn FnMut(Complex, Complex) -> Complex, c_div_scalar
     }
     return y
 }
-|a: Vec<Complex>, invert: bool| -> Vec<Complex> { fft(PI, &mut c_add, &mut c_div_scalar, &mut c_mul, &mut c_sub, &mut exp_i, &mut make_complex_list, a, invert) }
+|a: Vec<Complex>, invert: bool| -> Vec<Complex> { fft(&mut c_add, &mut c_div_scalar, &mut c_mul, &mut c_sub, &mut exp_i, &mut make_complex_list, a, invert) }
 };
         fn floor(mut x: f64) -> f64 {
     let mut i: i64 = (x as i64);

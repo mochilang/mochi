@@ -1,0 +1,496 @@
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:134:20
+    |
+134 |     println!("{}", sum_of_digits(103, 12));
+    |                    ^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:135:20
+    |
+135 |     println!("{}", sum_of_digits(1275, 4));
+    |                    ^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:136:20
+    |
+136 |     println!("{}", sum_of_digits(6645, 2));
+    |                    ^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:137:38
+    |
+137 |     println!("{:?}", format!("{:?}", harshad_numbers_in_base(15, 2)));
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:138:38
+    |
+138 |     println!("{:?}", format!("{:?}", harshad_numbers_in_base(12, 34)));
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:139:38
+    |
+139 |     println!("{:?}", format!("{:?}", harshad_numbers_in_base(12, 4)));
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:140:23
+    |
+140 |     println!("{}", if is_harshad_number_in_base(18, 10) { 1 } else { 0 });
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:141:23
+    |
+141 |     println!("{}", if is_harshad_number_in_base(21, 10) { 1 } else { 0 });
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:142:23
+    |
+142 |     println!("{}", if is_harshad_number_in_base(-21, 5) { 1 } else { 0 });
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:41:2
+   |
+41 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:52:2
+   |
+52 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:72:2
+   |
+72 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:143:2
+    |
+143 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:45:11
+   |
+45 |     while (i < (digits.len() as i64)) {
+   |           ^                         ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+45 -     while (i < (digits.len() as i64)) {
+45 +     while i < (digits.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:46:12
+   |
+46 |         if (digits.chars().nth(i as usize).unwrap().to_string().as_str() == c.as_str()) {
+   |            ^                                                                          ^
+   |
+help: remove these parentheses
+   |
+46 -         if (digits.chars().nth(i as usize).unwrap().to_string().as_str() == c.as_str()) {
+46 +         if digits.chars().nth(i as usize).unwrap().to_string().as_str() == c.as_str() {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:49:13
+   |
+49 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+49 -         i = (i + 1);
+49 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:54:8
+   |
+54 |     if ((base < 2) || (base > 36)) {
+   |        ^                         ^
+   |
+help: remove these parentheses
+   |
+54 -     if ((base < 2) || (base > 36)) {
+54 +     if (base < 2) || (base > 36) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:57:8
+   |
+57 |     if (number < 0) {
+   |        ^          ^
+   |
+help: remove these parentheses
+   |
+57 -     if (number < 0) {
+57 +     if number < 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:63:11
+   |
+63 |     while (n > 0) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+63 -     while (n > 0) {
+63 +     while n > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:64:30
+   |
+64 |         let remainder: i64 = (n % base);
+   |                              ^        ^
+   |
+help: remove these parentheses
+   |
+64 -         let remainder: i64 = (n % base);
+64 +         let remainder: i64 = n % base;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:66:13
+   |
+66 |         n = (n / base);
+   |             ^        ^
+   |
+help: remove these parentheses
+   |
+66 -         n = (n / base);
+66 +         n = n / base;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:68:8
+   |
+68 |     if (result.as_str() == "") {
+   |        ^                     ^
+   |
+help: remove these parentheses
+   |
+68 -     if (result.as_str() == "") {
+68 +     if result.as_str() == "" {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:76:11
+   |
+76 |     while (i < (num_str.len() as i64)) {
+   |           ^                          ^
+   |
+help: remove these parentheses
+   |
+76 -     while (i < (num_str.len() as i64)) {
+76 +     while i < (num_str.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:78:17
+   |
+78 |         value = ((value * base) + char_to_value(c.clone()));
+   |                 ^                                         ^
+   |
+help: remove these parentheses
+   |
+78 -         value = ((value * base) + char_to_value(c.clone()));
+78 +         value = (value * base) + char_to_value(c.clone());
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:79:13
+   |
+79 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+79 -         i = (i + 1);
+79 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:84:8
+   |
+84 |     if ((base < 2) || (base > 36)) {
+   |        ^                         ^
+   |
+help: remove these parentheses
+   |
+84 -     if ((base < 2) || (base > 36)) {
+84 +     if (base < 2) || (base > 36) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:90:11
+   |
+90 |     while (i < (num_str.len() as i64)) {
+   |           ^                          ^
+   |
+help: remove these parentheses
+   |
+90 -     while (i < (num_str.len() as i64)) {
+90 +     while i < (num_str.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:92:17
+   |
+92 |         total = (total + char_to_value(c.clone()));
+   |                 ^                                ^
+   |
+help: remove these parentheses
+   |
+92 -         total = (total + char_to_value(c.clone()));
+92 +         total = total + char_to_value(c.clone());
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:93:13
+   |
+93 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+93 -         i = (i + 1);
+93 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:98:8
+   |
+98 |     if ((base < 2) || (base > 36)) {
+   |        ^                         ^
+   |
+help: remove these parentheses
+   |
+98 -     if ((base < 2) || (base > 36)) {
+98 +     if (base < 2) || (base > 36) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:101:8
+    |
+101 |     if (limit < 0) {
+    |        ^         ^
+    |
+help: remove these parentheses
+    |
+101 -     if (limit < 0) {
+101 +     if limit < 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:106:11
+    |
+106 |     while (i < limit) {
+    |           ^         ^
+    |
+help: remove these parentheses
+    |
+106 -     while (i < limit) {
+106 +     while i < limit {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:109:12
+    |
+109 |         if ((i % divisor) == 0) {
+    |            ^                  ^
+    |
+help: remove these parentheses
+    |
+109 -         if ((i % divisor) == 0) {
+109 +         if (i % divisor) == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:112:13
+    |
+112 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+112 -         i = (i + 1);
+112 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:117:8
+    |
+117 |     if ((base < 2) || (base > 36)) {
+    |        ^                         ^
+    |
+help: remove these parentheses
+    |
+117 -     if ((base < 2) || (base > 36)) {
+117 +     if (base < 2) || (base > 36) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:120:8
+    |
+120 |     if (num < 0) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+120 -     if (num < 0) {
+120 +     if num < 0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:127:12
+    |
+127 |     return ((n_val % d_val) == 0)
+    |            ^                    ^
+    |
+help: remove these parentheses
+    |
+127 -     return ((n_val % d_val) == 0)
+127 +     return (n_val % d_val) == 0
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:146:28
+    |
+146 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+146 -     let duration_us: i64 = ((_end - _start) / 1000);
+146 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unused variable: `harshad_numbers_in_base`
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:97:13
+   |
+97 |     let mut harshad_numbers_in_base = |limit: i64, base: i64| -> Vec<String> {
+   |             ^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_harshad_numbers_in_base`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: unused variable: `is_harshad_number_in_base`
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:116:13
+    |
+116 |     let mut is_harshad_number_in_base = |num: i64, base: i64| -> bool {
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_is_harshad_number_in_base`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:73:9
+   |
+73 |     let mut base_to_int = |num_str: String, base: i64| -> i64 {
+   |         ----^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:83:9
+   |
+83 |     let mut sum_of_digits = |num: i64, base: i64| -> String {
+   |         ----^^^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:97:9
+   |
+97 |     let mut harshad_numbers_in_base = |limit: i64, base: i64| -> Vec<String> {
+   |         ----^^^^^^^^^^^^^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:116:9
+    |
+116 |     let mut is_harshad_number_in_base = |num: i64, base: i64| -> bool {
+    |         ----^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: unused variable: `msg`
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:40:18
+   |
+40 |     fn panic(mut msg: String) {
+   |                  ^^^ help: if this is intentional, prefix it with an underscore: `_msg`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:40:14
+   |
+40 |     fn panic(mut msg: String) {
+   |              ----^^^
+   |              |
+   |              help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:42:22
+   |
+42 |     fn char_to_value(mut c: String) -> i64 {
+   |                      ----^
+   |                      |
+   |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:53:20
+   |
+53 |     fn int_to_base(mut number: i64, mut base: i64) -> String {
+   |                    ----^^^^^^
+   |                    |
+   |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/harshad_numbers.rs:53:37
+   |
+53 |     fn int_to_base(mut number: i64, mut base: i64) -> String {
+   |                                     ----^^^^
+   |                                     |
+   |                                     help: remove this `mut`
+
+error: aborting due to 9 previous errors; 41 warnings emitted
+
+For more information about this error, try `rustc --explain E0434`.
