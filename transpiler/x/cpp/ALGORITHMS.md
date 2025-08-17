@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 1016/1077
-Last updated: 2025-08-17 00:45 +0700
+Completed programs: 1017/1077
+Last updated: 2025-08-17 09:08 +0700
 
 Checklist:
 
@@ -581,10 +581,10 @@ Checklist:
 | 572 | maths/gamma | ✓ | 30.0ms | 3.80MB |
 | 573 | maths/gaussian | ✓ | 454.0µs | 3.73MB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 328.0µs | 3.60MB |
-| 575 | maths/geometric_mean |   |  |  |
+| 575 | maths/geometric_mean | ✓ | 608.0µs | 3.79MB |
 | 576 | maths/germain_primes | ✓ | 162.0µs | 3.49MB |
 | 577 | maths/greatest_common_divisor | ✓ | 540.0µs | 3.73MB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 467.0µs | 3.82MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 531.0µs | 3.87MB |
 | 579 | maths/integer_square_root | ✓ | 327.0µs | 3.54MB |
 | 580 | maths/interquartile_range | ✓ | 595.0µs | 3.74MB |
 | 581 | maths/is_int_palindrome | ✓ | 206.0µs | 3.41MB |
