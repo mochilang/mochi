@@ -1763,7 +1763,10 @@ func applyBinOp(op string, left, right Node) Node {
 		inter := &List{Elems: []Node{Symbol("clojure.set/intersection"), &List{Elems: []Node{Symbol("set"), left}}, &List{Elems: []Node{Symbol("set"), right}}}}
 		return &List{Elems: []Node{Symbol("vec"), inter}}
 	case "/":
-		if isIntNode(left) && isIntNode(right) {
+		// Clojure's `/` yields rational numbers when both operands are
+		// integers, whereas Mochi uses truncating integer division in
+		// that case. Use `quot` unless either operand is a float.
+		if !isFloatNode(left) && !isFloatNode(right) {
 			return &List{Elems: []Node{Symbol("quot"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol(sym), left, right}}

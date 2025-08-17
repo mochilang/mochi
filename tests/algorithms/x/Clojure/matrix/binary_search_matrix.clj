@@ -17,6 +17,12 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare binary_search mat_bin_search main)
@@ -38,7 +44,7 @@
   (binding [mat_bin_search_index nil mat_bin_search_r nil] (try (do (set! mat_bin_search_index 0) (when (= (nth (nth mat_bin_search_matrix mat_bin_search_index) 0) mat_bin_search_value) (throw (ex-info "return" {:v [mat_bin_search_index 0]}))) (while (and (< mat_bin_search_index (count mat_bin_search_matrix)) (< (nth (nth mat_bin_search_matrix mat_bin_search_index) 0) mat_bin_search_value)) (do (set! mat_bin_search_r (binary_search (nth mat_bin_search_matrix mat_bin_search_index) 0 (- (count (nth mat_bin_search_matrix mat_bin_search_index)) 1) mat_bin_search_value)) (when (not= mat_bin_search_r (- 1)) (throw (ex-info "return" {:v [mat_bin_search_index mat_bin_search_r]}))) (set! mat_bin_search_index (+ mat_bin_search_index 1)))) (throw (ex-info "return" {:v [(- 1) (- 1)]}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
-  (binding [main_matrix nil main_row nil] (do (set! main_row [1 4 7 11 15]) (println (str (binary_search main_row 0 (- (count main_row) 1) 1))) (println (str (binary_search main_row 0 (- (count main_row) 1) 23))) (set! main_matrix [[1 4 7 11 15] [2 5 8 12 19] [3 6 9 16 22] [10 13 14 17 24] [18 21 23 26 30]]) (println (str (mat_bin_search 1 main_matrix))) (println (str (mat_bin_search 34 main_matrix))))))
+  (binding [main_matrix nil main_row nil] (do (set! main_row [1 4 7 11 15]) (println (mochi_str (binary_search main_row 0 (- (count main_row) 1) 1))) (println (mochi_str (binary_search main_row 0 (- (count main_row) 1) 23))) (set! main_matrix [[1 4 7 11 15] [2 5 8 12 19] [3 6 9 16 22] [10 13 14 17 24] [18 21 23 26 30]]) (println (mochi_str (mat_bin_search 1 main_matrix))) (println (mochi_str (mat_bin_search 34 main_matrix))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

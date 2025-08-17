@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-17 13:39 GMT+7
+Last updated: 2025-08-17 14:52 GMT+7
 
-## Algorithms Golden Test Checklist (785/1077)
+## Algorithms Golden Test Checklist (788/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -703,29 +703,29 @@ Last updated: 2025-08-17 13:39 GMT+7
 | 694 | maths/two_sum | ✓ | 49.669ms | 19.24MB |
 | 695 | maths/volume | ✓ | 34.554ms | 27.80MB |
 | 696 | maths/zellers_congruence | error |  |  |
-| 697 | matrix/binary_search_matrix | ✓ | 45.522ms | 20.70MB |
-| 698 | matrix/count_islands_in_matrix | error | 76.836ms | 22.16MB |
+| 697 | matrix/binary_search_matrix | ✓ | 73.268ms | 23.54MB |
+| 698 | matrix/count_islands_in_matrix | error |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 1.952115s | 54.85MB |
 | 700 | matrix/count_paths | ✓ | 56.55ms | 21.30MB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 60.933ms | 21.03MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 64.474ms | 27.05MB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 47.372ms | 25.28MB |
-| 704 | matrix/matrix_based_game | error | 61.416ms | 30.59MB |
-| 705 | matrix/matrix_class | ✓ | 80.167ms | 1.11MB |
+| 704 | matrix/matrix_based_game | ✓ | 61.416ms | 30.59MB |
+| 705 | matrix/matrix_class | ✓ |  |  |
 | 706 | matrix/matrix_equalization | ✓ | 47.481ms | 20.64MB |
 | 707 | matrix/matrix_multiplication_recursion | ✓ | 77.995ms | 22.70MB |
 | 708 | matrix/matrix_operation | ✓ | 76.924ms | 27.25MB |
 | 709 | matrix/max_area_of_island | ✓ | 157.616ms | 21.97MB |
 | 710 | matrix/median_matrix | ✓ | 46.979ms | 21.07MB |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | error |  |  |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ |  |  |
 | 712 | matrix/pascal_triangle | ✓ | 62.931ms | 21.35MB |
 | 713 | matrix/rotate_matrix | ✓ | 51.071ms | 24.17MB |
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 39.079ms | 20.56MB |
 | 715 | matrix/sherman_morrison | ✓ | 49.305ms | 26.13MB |
 | 716 | matrix/spiral_print | ✓ | 63.517ms | 22.35MB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 75.464ms | 25.25MB |
-| 718 | matrix/validate_sudoku_board | error |  |  |
-| 719 | networking_flow/ford_fulkerson | ✓ | 61.233ms | 21.89MB |
+| 718 | matrix/validate_sudoku_board | ✓ |  |  |
+| 719 | networking_flow/ford_fulkerson | ✓ |  |  |
 | 720 | networking_flow/minimum_cut | ✓ | 77.986ms | 23.97MB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 56.957ms | 19.85MB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 63.032ms | 20.59MB |

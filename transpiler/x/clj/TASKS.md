@@ -1,3 +1,11 @@
+## Progress (2025-08-17 14:42 +0700)
+- fix(dart): handle string digit casts
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-17 14:42 +0700)
+- fix(dart): handle string digit casts
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-17 12:03 +0700)
 - php: regenerate hardy ramanujan algorithm output
 - Regenerated golden files - 102/105 vm valid programs passing

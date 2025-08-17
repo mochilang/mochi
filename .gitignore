@@ -349,3 +349,5 @@ zig-x86_64-linux-0.15.0-dev.1147+69cf40da6/
 !tests/rosetta/transpiler/OCaml/*.bench
 !tests/rosetta/transpiler/OCaml/*.out
 !tests/rosetta/transpiler/OCaml/*.error
+# Local JDK for Clojure tests
+jdk-*/

@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -93,7 +92,7 @@ func compileRunClojureRosetta(t *testing.T, srcPath, outDir, name string) {
 	if err := os.WriteFile(cljPath, code, 0o644); err != nil {
 		t.Fatalf("write clj: %v", err)
 	}
-	cmd := exec.Command("clojure", cljPath)
+	cmd := cljCommand(cljPath)
 	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)

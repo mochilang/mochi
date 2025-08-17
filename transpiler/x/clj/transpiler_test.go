@@ -39,15 +39,40 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-// EnsureClojure checks that the clojure CLI tool is installed.
+// EnsureClojure verifies that a Java runtime and the Clojure jar
+// are available. The tests execute the generated Clojure programs by
+// invoking `java` directly with the jar, avoiding the `clojure` CLI
+// which attempts to reach the network to resolve dependencies.
 func EnsureClojure() error {
-	if _, err := exec.LookPath("clojure"); err == nil {
-		return nil
+	if _, err := exec.LookPath("java"); err != nil {
+		return err
 	}
-	if _, err := exec.LookPath("clj"); err == nil {
-		return nil
+	home := os.Getenv("HOME")
+	jars := []string{
+		filepath.Join(home, ".m2", "repository", "org", "clojure", "clojure", "1.11.1", "clojure-1.11.1.jar"),
+		filepath.Join(home, ".m2", "repository", "org", "clojure", "spec.alpha", "0.3.218", "spec.alpha-0.3.218.jar"),
+		filepath.Join(home, ".m2", "repository", "org", "clojure", "core.specs.alpha", "0.2.62", "core.specs.alpha-0.2.62.jar"),
 	}
-	return exec.ErrNotFound
+	for _, j := range jars {
+		if _, err := os.Stat(j); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// cljCommand constructs a command that runs the given arguments using
+// the Clojure jar on the classpath. This avoids relying on the
+// `clojure` command which may attempt network downloads.
+func cljCommand(args ...string) *exec.Cmd {
+	home := os.Getenv("HOME")
+	cp := strings.Join([]string{
+		filepath.Join(home, ".m2", "repository", "org", "clojure", "clojure", "1.11.1", "clojure-1.11.1.jar"),
+		filepath.Join(home, ".m2", "repository", "org", "clojure", "spec.alpha", "0.3.218", "spec.alpha-0.3.218.jar"),
+		filepath.Join(home, ".m2", "repository", "org", "clojure", "core.specs.alpha", "0.2.62", "core.specs.alpha-0.2.62.jar"),
+	}, ":")
+	jargs := append([]string{"-cp", cp, "clojure.main"}, args...)
+	return exec.Command("java", jargs...)
 }
 
 func TestTranspile_Golden(t *testing.T) {
@@ -109,7 +134,7 @@ func compileAndRunClojure(t *testing.T, srcPath, outDir, name string) {
 		t.Fatalf("write clj: %v", err)
 	}
 	var buf bytes.Buffer
-	cmd := exec.Command("clojure", cljPath)
+	cmd := cljCommand(cljPath)
 	cmd.Stdout = &buf
 	cmd.Stderr = &buf
 	if err := cmd.Run(); err != nil {
