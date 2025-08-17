@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -19,16 +20,16 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   $seed = 1;
   function mochi_rand() {
-  global $seed, $INITIAL_VALUE, $result;
+  global $INITIAL_VALUE, $result, $seed;
   $seed = ($seed * 1103515245 + 12345) % 2147483648;
   return $seed;
 };
   function randint($low, $high) {
-  global $seed, $INITIAL_VALUE, $result;
+  global $INITIAL_VALUE, $result, $seed;
   return (fmod(mochi_rand(), ($high - $low + 1))) + $low;
 };
   function expApprox($x) {
-  global $seed, $INITIAL_VALUE, $result;
+  global $INITIAL_VALUE, $result, $seed;
   $y = $x;
   $is_neg = false;
   if ($x < 0.0) {
@@ -49,16 +50,16 @@ $__start = _now();
   return $sum;
 };
   function sigmoid($x) {
-  global $seed, $INITIAL_VALUE, $result;
+  global $INITIAL_VALUE, $result, $seed;
   return 1.0 / (1.0 + expApprox(-$x));
 };
   function sigmoid_derivative($sig_val) {
-  global $seed, $INITIAL_VALUE, $result;
+  global $INITIAL_VALUE, $result, $seed;
   return $sig_val * (1.0 - $sig_val);
 };
   $INITIAL_VALUE = 0.02;
   function forward_propagation($expected, $number_propagations) {
-  global $seed, $INITIAL_VALUE, $result;
+  global $INITIAL_VALUE, $result, $seed;
   $weight = 2.0 * (floatval(randint(1, 100))) - 1.0;
   $layer_1 = 0.0;
   $i = 0;

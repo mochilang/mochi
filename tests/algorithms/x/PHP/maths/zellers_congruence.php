@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -16,12 +17,15 @@ function _now() {
     return hrtime(true);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
@@ -47,7 +51,7 @@ $__start = _now();
   if (strlen($date_input) != 10) {
   _panic('Must be 10 characters long');
 }
-  $m = parse_decimal(substr($date_input, 0, 2 - 0));
+  $m = parse_decimal(substr($date_input, 0, 2));
   if ($m <= 0 || $m >= 13) {
   _panic('Month must be between 1 - 12');
 }

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -44,7 +45,7 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
@@ -64,7 +65,7 @@ $__start = _now();
 };
   return $res;
 };
-  function split($s, $sep) {
+  function mochi_split($s, $sep) {
   $res = [];
   $current = '';
   $i = 0;
@@ -82,7 +83,7 @@ $__start = _now();
   return $res;
 };
   function parse_moves($input_str) {
-  $pairs = split($input_str, ',');
+  $pairs = mochi_split($input_str, ',');
   $moves = [];
   $i = 0;
   while ($i < count($pairs)) {
@@ -110,7 +111,7 @@ $__start = _now();
 }
   $x = to_int($numbers[0]);
   $y = to_int($numbers[1]);
-  $moves = _append($moves, [$x => $x, $y => $y]);
+  $moves = _append($moves, ['x' => $x, 'y' => $y]);
   $i = $i + 1;
 };
   return $moves;
@@ -151,7 +152,7 @@ $__start = _now();
   $i = $i + 1;
 };
 };
-  function contains($pos, $r, $c) {
+  function mochi_contains($pos, $r, $c) {
   $i = 0;
   while ($i < count($pos)) {
   $p = $pos[$i];
@@ -178,7 +179,7 @@ $__start = _now();
   if ($pos['x'] < 0 || $pos['x'] >= $size || $pos['y'] < 0 || $pos['y'] >= $size) {
   continue;
 }
-  if (contains($visited, $pos['x'], $pos['y'])) {
+  if (mochi_contains($visited, $pos['x'], $pos['y'])) {
   continue;
 }
   $visited = _append($visited, $pos);

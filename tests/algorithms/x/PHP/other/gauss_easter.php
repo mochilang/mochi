@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -40,12 +41,12 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   function gauss_easter($year) {
-  global $years, $i, $y, $e;
+  global $e, $i, $y, $years;
   $metonic_cycle = $year % 19;
   $julian_leap_year = $year % 4;
   $non_leap_year = $year % 7;
@@ -70,7 +71,7 @@ $__start = _now();
   return ['month' => 3, 'day' => $total];
 };
   function format_date($year, $d) {
-  global $years, $i, $y, $e;
+  global $e, $i, $y, $years;
   $month = ($d['month'] < 10 ? '0' . _str($d['month']) : _str($d['month']));
   $day = ($d['day'] < 10 ? '0' . _str($d['day']) : _str($d['day']));
   return _str($year) . '-' . $month . '-' . $day;

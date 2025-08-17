@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -38,7 +39,7 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function leaky_rectified_linear_unit($vector, $alpha) {
-  global $vector1, $result1, $vector2, $result2;
+  global $result1, $result2, $vector1, $vector2;
   $result = [];
   $i = 0;
   while ($i < count($vector)) {

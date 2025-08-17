@@ -1,1 +1,5 @@
-ln domain error
+{
+  "duration_us": 202,
+  "memory_bytes": 35816,
+  "name": "main"
+}

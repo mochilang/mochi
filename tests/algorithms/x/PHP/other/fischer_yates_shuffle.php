@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -40,23 +41,23 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   $seed = 1;
   function mochi_rand() {
-  global $seed, $integers, $strings;
+  global $integers, $seed, $strings;
   $seed = ($seed * 1103515245 + 12345) % 2147483648;
   return _intdiv($seed, 65536);
 };
   function randint($a, $b) {
-  global $seed, $integers, $strings;
+  global $integers, $seed, $strings;
   $r = mochi_rand();
   return $a + $r % ($b - $a + 1);
 };
   function fisher_yates_shuffle_int($data) {
-  global $seed, $integers, $strings;
+  global $integers, $seed, $strings;
   $res = $data;
   $i = 0;
   while ($i < count($res)) {
@@ -70,7 +71,7 @@ $__start = _now();
   return $res;
 };
   function fisher_yates_shuffle_str($data) {
-  global $seed, $integers, $strings;
+  global $integers, $seed, $strings;
   $res = $data;
   $i = 0;
   while ($i < count($res)) {

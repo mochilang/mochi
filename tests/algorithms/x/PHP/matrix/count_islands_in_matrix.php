@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -24,10 +25,13 @@ $__start = _now();
   function is_safe($grid, $visited, $row, $col) {
   $rows = count($grid);
   $cols = count($grid[0]);
-  $visited_cell = $visited[$row][$col];
   $within_bounds = $row >= 0 && $row < $rows && $col >= 0 && $col < $cols;
+  if (!$within_bounds) {
+  return false;
+}
+  $visited_cell = $visited[$row][$col];
   $not_visited = $visited_cell == false;
-  return $within_bounds && $not_visited && $grid[$row][$col] == 1;
+  return $not_visited && $grid[$row][$col] == 1;
 };
   function dfs($grid, &$visited, $row, $col) {
   $row_nbr = [-1, -1, -1, 0, 0, 1, 1, 1];

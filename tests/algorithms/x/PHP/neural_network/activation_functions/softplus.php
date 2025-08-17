@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -43,16 +44,9 @@ $__start = _now();
   return 2.0 * $sum;
 };
   function mochi_exp($x) {
-  $term = 1.0;
-  $sum = 1.0;
-  $n = 1;
-  while ($n < 20) {
-  $term = $term * $x / (floatval($n));
-  $sum = $sum + $term;
-  $n = $n + 1;
-};
-  return $sum;
-};
+  return exp($x);
+}
+;
   function softplus($vector) {
   $result = [];
   $i = 0;

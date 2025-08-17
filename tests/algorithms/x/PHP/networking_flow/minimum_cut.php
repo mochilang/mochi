@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -38,6 +39,7 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function bfs($graph, $s, $t, &$parent) {
+  global $result, $test_graph;
   $visited = [];
   $i = 0;
   while ($i < count($graph)) {
@@ -63,6 +65,7 @@ $__start = _now();
   return $visited[$t];
 };
   function mincut($graph, $source, $sink) {
+  global $result, $test_graph;
   $g = $graph;
   $parent = [];
   $i = 0;
