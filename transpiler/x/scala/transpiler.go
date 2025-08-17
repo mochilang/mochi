@@ -859,14 +859,14 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		loopName = "_" + fe.Name
 	}
 	fmt.Fprintf(w, "  for (%s <- ", loopName)
-        if strings.HasPrefix(iterType, "Map[") || strings.HasPrefix(iterType, "scala.collection.mutable.Map[") {
-                fmt.Fprint(w, "(")
-                fe.Iterable.emit(w)
-                fmt.Fprint(w, ".keys.toSeq.sorted)")
-        } else {
-                fe.Iterable.emit(w)
-        }
-        fmt.Fprint(w, ") {\n")
+	if strings.HasPrefix(iterType, "Map[") || strings.HasPrefix(iterType, "scala.collection.mutable.Map[") {
+		fmt.Fprint(w, "(")
+		fe.Iterable.emit(w)
+		fmt.Fprint(w, ".keys.toSeq.sorted)")
+	} else {
+		fe.Iterable.emit(w)
+	}
+	fmt.Fprint(w, ") {\n")
 	if iterType == "String" {
 		fmt.Fprintf(w, "    val %s: String = %s.toString\n", fe.Name, loopName)
 	}
@@ -1209,21 +1209,21 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-        fmt.Fprint(w, "(")
-        a.List.emit(w)
-        fmt.Fprint(w, " :+ ")
-        if ie, ok := a.Elem.(*IfExpr); ok {
-                t1 := inferTypeWithEnv(ie.Then, nil)
-                t2 := inferTypeWithEnv(ie.Else, nil)
-               if t1 == "BigInt" || t2 == "BigInt" {
-                       needsBigInt = true
-                       fmt.Fprint(w, "BigInt(")
-                       a.Elem.emit(w)
-                       fmt.Fprint(w, ")")
-                       fmt.Fprint(w, ")")
-                       return
-               }
-        }
+	fmt.Fprint(w, "(")
+	a.List.emit(w)
+	fmt.Fprint(w, " :+ ")
+	if ie, ok := a.Elem.(*IfExpr); ok {
+		t1 := inferTypeWithEnv(ie.Then, nil)
+		t2 := inferTypeWithEnv(ie.Else, nil)
+		if t1 == "BigInt" || t2 == "BigInt" {
+			needsBigInt = true
+			fmt.Fprint(w, "BigInt(")
+			a.Elem.emit(w)
+			fmt.Fprint(w, ")")
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
 	if be, ok := a.Elem.(*BinaryExpr); ok {
 		if il, ok2 := be.Left.(*IntLit); ok2 && il.Value == 0 && be.Op == "-" {
 			if _, ok3 := be.Right.(*IntLit); ok3 {
@@ -1696,6 +1696,17 @@ func (u *UnaryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
+	if u.Op == "-" {
+		if il, ok := u.Expr.(*IntLit); ok {
+			needsBigInt = true
+			if il.Value > math.MaxInt32 || il.Value < math.MinInt32 {
+				fmt.Fprintf(w, "BigInt(\"-%d\")", il.Value)
+			} else {
+				fmt.Fprintf(w, "BigInt(%d)", -il.Value)
+			}
+			return
+		}
+	}
 	fmt.Fprint(w, u.Op)
 	u.Expr.emit(w)
 }
@@ -2136,9 +2147,9 @@ func Emit(p *Program) []byte {
 	if needsStr {
 		buf.WriteString("  private def _str(x: Any): String = x match {\n")
 		buf.WriteString("    case m: scala.collection.Map[_, _] => scala.collection.immutable.ListMap(m.toSeq.sortBy(_._1.toString): _*).toString.replace(\"ListMap\", \"Map\")\n")
-                buf.WriteString("    case d: Double => { val s = java.lang.Double.toString(d); if (s.indexOf('.') < 0 && !s.contains(\"e\") && !s.contains(\"E\")) s + \".0\" else s }\n")
-                buf.WriteString("    case other => String.valueOf(other)\n")
-                buf.WriteString("  }\n\n")
+		buf.WriteString("    case d: Double => { val s = java.lang.Double.toString(d); if (s.indexOf('.') < 0 && !s.contains(\"e\") && !s.contains(\"E\")) s + \".0\" else s }\n")
+		buf.WriteString("    case other => String.valueOf(other)\n")
+		buf.WriteString("  }\n\n")
 	}
 	if needsParseIntStr {
 		buf.WriteString("  private def _parseIntStr(s: String, base: BigInt): BigInt = BigInt(s, base.toInt)\n\n")
@@ -5242,14 +5253,14 @@ func toScalaTypeFromType(t types.Type) string {
 		return "BigRat"
 	case types.ListType:
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
-        case types.MapType:
-                return fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
-       case types.UnionType:
-               if tt.Name != "" {
-                       return tt.Name
-               }
-               return "Any"
-        case types.FuncType:
+	case types.MapType:
+		return fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+	case types.UnionType:
+		if tt.Name != "" {
+			return tt.Name
+		}
+		return "Any"
+	case types.FuncType:
 		parts := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
 			s := toScalaTypeFromType(p)
