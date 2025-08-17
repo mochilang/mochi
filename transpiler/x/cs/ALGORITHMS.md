@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-17 01:00 GMT+7
+Last updated: 2025-08-17 12:20 GMT+7
 
 ## Algorithms Golden Test Checklist (1027/1077)
 | Index | Name | Status | Duration | Memory |
@@ -635,7 +635,7 @@ Last updated: 2025-08-17 01:00 GMT+7
 | 626 | maths/persistence | ✓ | 2.0ms | 16.39KB |
 | 627 | maths/pi_generator | ✓ | 1.0ms | 13.21KB |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 2.0ms | 326.52KB |
-| 629 | maths/points_are_collinear_3d | ✓ | 2.0ms | 13.76KB |
+| 629 | maths/points_are_collinear_3d | ✓ | 1.0µs | 13.78KB |
 | 630 | maths/pollard_rho | ✓ | 2.0ms | 16.62KB |
 | 631 | maths/polynomial_evaluation | ✓ | 2.0ms | 14.08KB |
 | 632 | maths/polynomials/single_indeterminate_operations | ✓ | 2.0ms | 21.76KB |
@@ -644,7 +644,7 @@ Last updated: 2025-08-17 01:00 GMT+7
 | 635 | maths/prime_factors | ✓ | 2.0ms | 21.68KB |
 | 636 | maths/prime_numbers | ✓ | 2.0ms | 22.12KB |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 3.0ms | 25.33KB |
-| 638 | maths/primelib | error |  |  |
+| 638 | maths/primelib | error | 1.0µs | 42.45KB |
 | 639 | maths/print_multiplication_table | ✓ | 2.0ms | 20.75KB |
 | 640 | maths/pythagoras | ✓ | 2.0ms | 14.60KB |
 | 641 | maths/qr_decomposition | ✓ | 2.0ms | 32.04KB |
@@ -658,7 +658,7 @@ Last updated: 2025-08-17 01:00 GMT+7
 | 649 | maths/series/geometric_series | ✓ | 2.0ms | 16.99KB |
 | 650 | maths/series/harmonic | ✓ | 2.0ms | 15.38KB |
 | 651 | maths/series/harmonic_series | ✓ | 2.0ms | 17.72KB |
-| 652 | maths/series/hexagonal_numbers | error |  |  |
+| 652 | maths/series/hexagonal_numbers | error | 1.0µs | 27.04KB |
 | 653 | maths/series/p_series | ✓ | 2.0ms | 21.02KB |
 | 654 | maths/sieve_of_eratosthenes | ✓ | 2.0ms | 33.99KB |
 | 655 | maths/sigmoid | ✓ | 2.0ms | 15.16KB |
