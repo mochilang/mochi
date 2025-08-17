@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-16 19:57 GMT+7
+Last updated: 2025-08-17 09:11 GMT+7
 
 ## Algorithms Golden Test Checklist (790/1077)
 | Index | Name | Status | Duration | Memory |
@@ -584,7 +584,7 @@ Last updated: 2025-08-16 19:57 GMT+7
 | 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 65.705ms | 20.74MB |
 | 577 | maths/greatest_common_divisor | ✓ | 65.714ms | 19.57MB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 62.421ms | 21.85MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 33.745ms | 21.57MB |
 | 579 | maths/integer_square_root | ✓ | 71.366ms | 21.72MB |
 | 580 | maths/interquartile_range | ✓ | 74.362ms | 22.56MB |
 | 581 | maths/is_int_palindrome | ✓ | 32.38ms | 19.48MB |
