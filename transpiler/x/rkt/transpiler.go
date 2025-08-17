@@ -383,13 +383,39 @@ type BenchStmt struct {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	// Emit global declarations first so that benchmarked body can invoke them.
+	// Emit declarations that appear before the first executable statement at
+	// the top-level so the benchmark body can reference them. Any variable
+	// declarations encountered after the first non-declaration statement must
+	// preserve evaluation order, so we hoist a zero value definition and emit
+	// an assignment inside the benchmark body instead.
 	var body []Stmt
+	hoist := true
 	for _, st := range b.Body {
-		switch st.(type) {
-		case *FunDecl, StmtList, *LetStmt:
-			st.emit(w)
+		switch s := st.(type) {
+		case *FunDecl, StmtList:
+			if hoist {
+				s.emit(w)
+				continue
+			}
+			body = append(body, st)
+		case *LetStmt:
+			if hoist {
+				s.emit(w)
+			} else {
+				// define zero value outside, then assign inside body
+				io.WriteString(w, "(define ")
+				io.WriteString(w, sanitizeName(s.Name))
+				io.WriteString(w, " ")
+				if z := zeroValueType(s.Type); z != nil {
+					z.emit(w)
+				} else {
+					io.WriteString(w, "#f")
+				}
+				io.WriteString(w, ")\n")
+				body = append(body, &AssignStmt{Name: s.Name, Expr: s.Expr})
+			}
 		default:
+			hoist = false
 			body = append(body, st)
 		}
 	}
