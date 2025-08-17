@@ -3195,7 +3195,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if transpileEnv != nil {
 			if _, ok := transpileEnv.FindUnionByVariant(name); ok {
 				isBuiltin = false
-			} else if fn, defined := transpileEnv.GetFunc(name); defined && fn != nil {
+			} else if fn, defined := transpileEnv.GetFunc(name); defined && fn != nil && fn.Body != nil {
 				// user-defined function overrides builtin
 				isBuiltin = false
 				if closureNames[name] {
