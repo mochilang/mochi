@@ -1,0 +1,5 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/maths/odd_sieve.kt:27:21: error: type mismatch: inferred type is Int but Long was expected
+                j = (j + ((2 * i).toLong())).toInt()
+                    ^
