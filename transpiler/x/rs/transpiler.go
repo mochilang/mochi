@@ -1998,10 +1998,6 @@ func (s *StringCastExpr) emit(w io.Writer) {
 type IntCastExpr struct{ Expr Expr }
 
 func (i *IntCastExpr) emit(w io.Writer) {
-	if inferType(i.Expr) == "i64" {
-		i.Expr.emit(w)
-		return
-	}
 	if idx, ok := i.Expr.(*IndexExpr); ok {
 		if nr, ok2 := idx.Target.(*NameRef); ok2 {
 			ttype := inferType(idx.Target)
@@ -2014,6 +2010,10 @@ func (i *IntCastExpr) emit(w io.Writer) {
 				return
 			}
 		}
+	}
+	if inferType(i.Expr) == "i64" {
+		i.Expr.emit(w)
+		return
 	}
 	io.WriteString(w, "(")
 	i.Expr.emit(w)
@@ -6342,6 +6342,8 @@ func inferType(e Expr) string {
 	case *StringLit:
 		return "String"
 	case *StringCastExpr:
+		return "String"
+	case *StrExpr:
 		return "String"
 	case *LenExpr:
 		// `len` always yields an integer count.

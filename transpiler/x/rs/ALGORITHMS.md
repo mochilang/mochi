@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-17 13:38 GMT+7
+Last updated: 2025-08-17 14:57 GMT+7
 
-## Algorithms Golden Test Checklist (815/1077)
+## Algorithms Golden Test Checklist (814/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -672,37 +672,37 @@ Last updated: 2025-08-17 13:38 GMT+7
 | 663 | maths/special_numbers/armstrong_numbers | ✓ | 137µs | 2.1 MB |
 | 664 | maths/special_numbers/automorphic_number | ✓ | 52µs | 2.1 MB |
 | 665 | maths/special_numbers/bell_numbers | ✓ | 39µs | 2.0 MB |
-| 666 | maths/special_numbers/carmichael_number | ✓ | 404µs | 2.0 MB |
-| 667 | maths/special_numbers/catalan_number | ✓ | 47µs | 2.1 MB |
-| 668 | maths/special_numbers/hamming_numbers | ✓ | 88µs | 2.1 MB |
-| 669 | maths/special_numbers/happy_number | ✓ | 30µs | 1.8 MB |
-| 670 | maths/special_numbers/harshad_numbers | ✓ | 256µs | 2.1 MB |
-| 671 | maths/special_numbers/hexagonal_number | ✓ | 47µs | 2.0 MB |
-| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 42µs | 2.1 MB |
-| 673 | maths/special_numbers/perfect_number | ✓ | 69µs | 2.1 MB |
-| 674 | maths/special_numbers/polygonal_numbers | ✓ | 42µs | 2.0 MB |
-| 675 | maths/special_numbers/pronic_number | ✓ | 60µs | 1.9 MB |
-| 676 | maths/special_numbers/proth_number | ✓ | 171µs | 2.1 MB |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 41µs | 2.1 MB |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 487µs | 2.0 MB |
-| 679 | maths/special_numbers/weird_number | ✓ | 147µs | 2.0 MB |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 57µs | 2.1 MB |
-| 681 | maths/sum_of_digits | error |  |  |
-| 682 | maths/sum_of_geometric_progression | ✓ | 73µs | 2.0 MB |
-| 683 | maths/sum_of_harmonic_series | ✓ | 107µs | 2.0 MB |
-| 684 | maths/sumset | ✓ | 111µs | 2.1 MB |
-| 685 | maths/sylvester_sequence | ✓ | 60µs | 1.8 MB |
-| 686 | maths/tanh | ✓ | 271µs | 2.0 MB |
-| 687 | maths/test_factorial | ✓ | 61µs | 1.9 MB |
-| 688 | maths/test_prime_check | ✓ | 48µs | 2.0 MB |
-| 689 | maths/three_sum | ✓ | 88µs | 2.0 MB |
-| 690 | maths/trapezoidal_rule | ✓ | 29µs | 2.0 MB |
-| 691 | maths/triplet_sum | ✓ | 92µs | 2.0 MB |
-| 692 | maths/twin_prime | ✓ | 135µs | 1.9 MB |
-| 693 | maths/two_pointer | ✓ | 49µs | 2.0 MB |
-| 694 | maths/two_sum | ✓ | 94µs | 2.0 MB |
-| 695 | maths/volume | ✓ | 157µs | 2.1 MB |
-| 696 | maths/zellers_congruence | ✓ | 202µs | 2.1 MB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 896µs | 1.9 MB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 50µs | 2.0 MB |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 141µs | 2.0 MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 80µs | 2.0 MB |
+| 670 | maths/special_numbers/harshad_numbers | error | 448µs | 2.0 MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 31µs | 1.8 MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 38µs | 1.8 MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 125µs | 2.1 MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 104µs | 2.0 MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 52µs | 2.1 MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 174µs | 2.1 MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 135µs | 2.1 MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 843µs | 2.1 MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 187µs | 1.9 MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 46µs | 2.0 MB |
+| 681 | maths/sum_of_digits | ✓ | 68µs | 2.0 MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 38µs | 2.0 MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 94µs | 2.0 MB |
+| 684 | maths/sumset | ✓ | 77µs | 2.0 MB |
+| 685 | maths/sylvester_sequence | ✓ | 38µs | 2.1 MB |
+| 686 | maths/tanh | ✓ | 63µs | 2.1 MB |
+| 687 | maths/test_factorial | ✓ | 49µs | 2.0 MB |
+| 688 | maths/test_prime_check | ✓ | 67µs | 2.0 MB |
+| 689 | maths/three_sum | ✓ | 31µs | 2.0 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 78µs | 2.1 MB |
+| 691 | maths/triplet_sum | ✓ | 52µs | 2.0 MB |
+| 692 | maths/twin_prime | ✓ | 36µs | 2.1 MB |
+| 693 | maths/two_pointer | ✓ | 329µs | 2.1 MB |
+| 694 | maths/two_sum | ✓ | 31µs | 2.1 MB |
+| 695 | maths/volume | ✓ | 81µs | 2.1 MB |
+| 696 | maths/zellers_congruence | error | 202µs | 2.1 MB |
 | 697 | matrix/binary_search_matrix | ✓ | 137µs | 2.1 MB |
 | 698 | matrix/count_islands_in_matrix | ✓ | 165µs | 1.8 MB |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 4.241449s | 33.3 MB |
