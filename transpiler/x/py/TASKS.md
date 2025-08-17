@@ -1,5 +1,5 @@
-## Progress (2025-08-16 11:48 +0700)
-- Commit fa2dc5e881: rb transpiler: map ln/exp to Math and update algorithms
+## Progress (2025-08-17 12:10 +0700)
+- Commit dbe447fdfb: swift transpiler: support complex float math
 - Generated Python for 104/105 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
