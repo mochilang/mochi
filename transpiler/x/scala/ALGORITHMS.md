@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
 Completed programs: 934/1077
-Last updated: 2025-08-17 08:49 +0700
+Last updated: 2025-08-17 09:08 +0700
 
 Checklist:
 
@@ -584,7 +584,7 @@ Checklist:
 | 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 4µs | 8.7 MB |
 | 577 | maths/greatest_common_divisor | ✓ | 4µs | 8.7 MB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 7µs | 8.7 MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 183.317ms | 8.7 MB |
 | 579 | maths/integer_square_root | ✓ | 4µs | 8.7 MB |
 | 580 | maths/interquartile_range | ✓ | 5µs | 8.7 MB |
 | 581 | maths/is_int_palindrome | ✓ | 3µs | 8.7 MB |
