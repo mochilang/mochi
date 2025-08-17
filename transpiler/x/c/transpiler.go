@@ -108,6 +108,7 @@ var (
 	needListMax             bool
 	needListMinDouble       bool
 	needListMaxDouble       bool
+	needListEqualStr        bool
 	needSHA256              bool
 	needMD5Hex              bool
 	needNow                 bool
@@ -2794,6 +2795,9 @@ func (l *ListLit) emitExpr(w io.Writer) {
 	} else if exprIsFloat(l.Elems[0]) {
 		elemType = "double"
 	}
+	if elemType == "long long" && exprIsFloat(l.Elems[0]) {
+		elemType = "double"
+	}
 	dims := strings.Count(elemType, "[]")
 	base := strings.TrimSuffix(elemType, strings.Repeat("[]", dims))
 	allConst := true
@@ -4446,6 +4450,22 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		}
 		return
 	}
+	if (b.Op == "==" || b.Op == "!=") && strings.Contains(lt, "const char*") && strings.Contains(rt, "const char*") && (strings.HasSuffix(lt, "*") || strings.HasSuffix(lt, "[]")) && (strings.HasSuffix(rt, "*") || strings.HasSuffix(rt, "[]")) {
+		needListEqualStr = true
+		if b.Op == "!=" {
+			io.WriteString(w, "!")
+		}
+		io.WriteString(w, "list_eq_str(")
+		b.Left.emitExpr(w)
+		io.WriteString(w, ", ")
+		emitLenExpr(w, b.Left)
+		io.WriteString(w, ", ")
+		b.Right.emitExpr(w)
+		io.WriteString(w, ", ")
+		emitLenExpr(w, b.Right)
+		io.WriteString(w, ")")
+		return
+	}
 	if _, ok := b.Left.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
 		b.Left.emitExpr(w)
@@ -4690,6 +4710,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        if (strcmp(arr[i], val) == 0) return 1;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListEqualStr {
+		buf.WriteString("static int list_eq_str(const char *a[], size_t alen, const char *b[], size_t blen) {\n")
+		buf.WriteString("    if (alen != blen) return 0;\n")
+		buf.WriteString("    for (size_t i = 0; i < alen; i++) {\n")
+		buf.WriteString("        if (strcmp(a[i], b[i]) != 0) return 0;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 1;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needListMin {
@@ -5898,6 +5927,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendStructNew = map[string]bool{}
 	needListAppendStructPtr = map[string]bool{}
 	needSliceStruct = map[string]bool{}
+	needListEqualStr = false
 	needSHA256 = false
 	needMD5Hex = false
 	needNow = false
@@ -6666,6 +6696,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if declType == "" {
 			declType = inferCType(env, s.Let.Name, valExpr)
 		}
+		if vr, ok := valExpr.(*VarRef); ok && strings.Contains(declType, "(*") {
+			if refT, ok2 := varTypes[vr.Name]; ok2 && !strings.Contains(refT, "(*") {
+				declType = refT
+			}
+		}
 		if declType == "int[]" {
 			if lst, ok := valExpr.(*ListLit); ok && len(lst.Elems) > 0 {
 				if sub, ok2 := lst.Elems[0].(*ListLit); ok2 && len(sub.Elems) > 0 {
@@ -7005,6 +7040,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		currentVarType = nil
 		if declType == "" {
 			declType = inferCType(env, s.Var.Name, valExpr)
+		}
+		if vr, ok := valExpr.(*VarRef); ok && strings.Contains(declType, "(*") {
+			if refT, ok2 := varTypes[vr.Name]; ok2 && !strings.Contains(refT, "(*") {
+				declType = refT
+			}
 		}
 		if declType == "const char*" {
 			if vr, ok := valExpr.(*VarRef); ok {
@@ -8354,6 +8394,8 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	localEnv := types.NewEnv(env)
 	prevEnv := currentEnv
 	currentEnv = localEnv
+	prevFunc := currentFuncName
+	currentFuncName = name
 	prevVarTypes := varTypes
 	varTypes = make(map[string]string)
 	for k, v := range prevVarTypes {
@@ -8527,6 +8569,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	declStmts = nil
 	declAliases = nil
 	localFuncs = nil
+	currentFuncName = prevFunc
 	return fnInfo, nil
 }
 

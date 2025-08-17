@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (544/1077) - Last updated 2025-08-17 00:45 +0700:
+Checklist of programs that currently transpile and run (623/1077) - Last updated 2025-08-17 12:10 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -16,15 +16,15 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 9 | backtracking/match_word_pattern | ✓ | 957us | 1.6 MB |
 | 10 | backtracking/minimax | ✓ | 514us | 1.5 MB |
 | 11 | backtracking/n_queens | ✓ | 3.43ms | 1.5 MB |
-| 12 | backtracking/n_queens_math |  |  |  |
+| 12 | backtracking/n_queens_math | ✓ |  |  |
 | 13 | backtracking/power_sum | ✓ | 488us | 1.5 MB |
 | 14 | backtracking/rat_in_maze | ✓ | 1.02ms | 1.6 MB |
-| 15 | backtracking/sudoku |  |  |  |
+| 15 | backtracking/sudoku | ✓ |  |  |
 | 16 | backtracking/sum_of_subsets | ✓ | 528us | 1.5 MB |
 | 17 | backtracking/word_break | ✓ | 328us | 1.5 MB |
-| 18 | backtracking/word_ladder |  |  |  |
-| 19 | backtracking/word_search |  |  |  |
-| 20 | bit_manipulation/binary_and_operator |  |  |  |
+| 18 | backtracking/word_ladder | ✓ |  |  |
+| 19 | backtracking/word_search | ✓ |  |  |
+| 20 | bit_manipulation/binary_and_operator | ✓ |  |  |
 | 21 | bit_manipulation/binary_coded_decimal | ✓ | 490us | 1.5 MB |
 | 22 | bit_manipulation/binary_count_setbits | ✓ | 231us | 1.6 MB |
 | 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 207us | 1.5 MB |
@@ -96,7 +96,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 89 | ciphers/mono_alphabetic_ciphers | ✓ | 316us | 1.5 MB |
 | 90 | ciphers/morse_code | ✓ | 442us | 1.6 MB |
 | 91 | ciphers/onepad_cipher | ✓ | 309us | 1.4 MB |
-| 92 | ciphers/permutation_cipher |  |  |  |
+| 92 | ciphers/permutation_cipher | ✓ |  |  |
 | 93 | ciphers/playfair_cipher | ✓ | 411us | 1.5 MB |
 | 94 | ciphers/polybius | ✓ | 620us | 1.5 MB |
 | 95 | ciphers/porta_cipher | ✓ | 623us | 1.6 MB |
@@ -260,14 +260,14 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 253 | data_structures/stacks/next_greater_element | ✓ | 544us | 1.6 MB |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 480us | 1.6 MB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 682us | 1.6 MB |
-| 256 | data_structures/stacks/stack |  |  |  |
-| 257 | data_structures/stacks/stack_using_two_queues |  |  |  |
+| 256 | data_structures/stacks/stack | ✓ |  |  |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ |  |  |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 709us | 1.5 MB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 523us | 1.4 MB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 257us | 1.6 MB |
 | 261 | data_structures/suffix_tree/example/example_usage | ✓ | 436us | 1.5 MB |
-| 262 | data_structures/suffix_tree/suffix_tree |  |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |  |  |  |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ |  |  |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ |  |  |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 341us | 1.4 MB |
 | 265 | data_structures/trie/radix_tree |  |  |  |
 | 266 | data_structures/trie/trie |  |  |  |
@@ -298,7 +298,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 336us | 1.4 MB |
 | 292 | divide_and_conquer/inversions | ✓ | 366us | 1.5 MB |
 | 293 | divide_and_conquer/kth_order_statistic | ✓ | 307us | 1.5 MB |
-| 294 | divide_and_conquer/max_difference_pair |  |  |  |
+| 294 | divide_and_conquer/max_difference_pair | ✓ |  |  |
 | 295 | divide_and_conquer/max_subarray |  |  |  |
 | 296 | divide_and_conquer/mergesort |  |  |  |
 | 297 | divide_and_conquer/peak |  |  |  |
@@ -336,7 +336,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 329 | dynamic_programming/min_distance_up_bottom | ✓ | 399us | 1.4 MB |
 | 330 | dynamic_programming/minimum_coin_change | ✓ | 378us | 1.5 MB |
 | 331 | dynamic_programming/minimum_cost_path | ✓ | 335us | 1.5 MB |
-| 332 | dynamic_programming/minimum_partition |  |  |  |
+| 332 | dynamic_programming/minimum_partition | ✓ |  |  |
 | 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 331us | 1.4 MB |
 | 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 195us | 1.5 MB |
 | 335 | dynamic_programming/minimum_steps_to_one | ✓ | 289us | 1.6 MB |
@@ -401,7 +401,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 394 | graphs/a_star | ✓ | 266us | 1.4 MB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 3.24ms | 1.9 MB |
 | 396 | graphs/articulation_points | ✓ | 383us | 1.5 MB |
-| 397 | graphs/basic_graphs |  |  |  |
+| 397 | graphs/basic_graphs | ✓ |  |  |
 | 398 | graphs/bellman_ford | ✓ | 478us | 1.6 MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 713us | 1.4 MB |
 | 400 | graphs/bidirectional_a_star | ✓ | 913us | 1.8 MB |
@@ -412,7 +412,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 405 | graphs/breadth_first_search_2 | ✓ | 260us | 1.6 MB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 205us | 1.5 MB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |  |  |  |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ |  |  |
 | 409 | graphs/check_bipatrite | ✓ | 222us | 1.5 MB |
 | 410 | graphs/check_cycle | ✓ | 320us | 1.6 MB |
 | 411 | graphs/connected_components | ✓ | 1.16ms | 1.5 MB |
@@ -452,16 +452,16 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 445 | graphs/minimum_spanning_tree_prims | ✓ | 722us | 1.5 MB |
 | 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 275us | 1.4 MB |
 | 447 | graphs/multi_heuristic_astar |  |  |  |
-| 448 | graphs/page_rank |  |  |  |
-| 449 | graphs/prim |  |  |  |
+| 448 | graphs/page_rank | ✓ |  |  |
+| 449 | graphs/prim | ✓ |  |  |
 | 450 | graphs/random_graph_generator | ✓ | 443us | 1.4 MB |
-| 451 | graphs/scc_kosaraju |  | 230us | 1.5 MB |
-| 452 | graphs/strongly_connected_components |  | 569us | 1.4 MB |
-| 453 | graphs/tarjans_scc |  |  |  |
+| 451 | graphs/scc_kosaraju | ✓ | 230us | 1.5 MB |
+| 452 | graphs/strongly_connected_components | ✓ | 569us | 1.4 MB |
+| 453 | graphs/tarjans_scc | ✓ |  |  |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 198us | 1.6 MB |
-| 455 | graphs/tests/test_min_spanning_tree_prim |  |  |  |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ |  |  |
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 218us | 1.4 MB |
-| 457 | greedy_methods/fractional_cover_problem |  |  |  |
+| 457 | greedy_methods/fractional_cover_problem | ✓ |  |  |
 | 458 | greedy_methods/fractional_knapsack | ✓ | 276us | 1.6 MB |
 | 459 | greedy_methods/fractional_knapsack_2 | ✓ | 217us | 1.4 MB |
 | 460 | greedy_methods/gas_station | ✓ | 194us | 1.6 MB |
@@ -473,7 +473,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 466 | hashes/chaos_machine | ✓ | 591us | 1.4 MB |
 | 467 | hashes/djb2 | ✓ | 225us | 1.4 MB |
 | 468 | hashes/elf | ✓ | 388us | 1.7 MB |
-| 469 | hashes/enigma_machine |  |  |  |
+| 469 | hashes/enigma_machine | ✓ |  |  |
 | 470 | hashes/fletcher16 | ✓ |  |  |
 | 471 | hashes/hamming_code | ✓ | 693us | 1.6 MB |
 | 472 | hashes/luhn | ✓ | 579us | 1.6 MB |
@@ -482,7 +482,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 475 | hashes/sha1 | ✓ | 505us | 1.7 MB |
 | 476 | hashes/sha256 | ✓ | 16.41ms | 1.6 MB |
 | 477 | knapsack/greedy_knapsack | ✓ | 208us | 1.6 MB |
-| 478 | knapsack/knapsack |  |  |  |
+| 478 | knapsack/knapsack | ✓ |  |  |
 | 479 | knapsack/recursive_approach_knapsack | ✓ | 492us | 1.6 MB |
 | 480 | knapsack/tests/test_greedy_knapsack | ✓ | 324us | 1.5 MB |
 | 481 | knapsack/tests/test_knapsack | ✓ | 451us | 1.6 MB |
@@ -494,18 +494,18 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 307us | 1.6 MB |
 | 488 | linear_algebra/src/lib | ✓ | 248us | 1.6 MB |
 | 489 | linear_algebra/src/polynom_for_points | ✓ | 470us | 1.6 MB |
-| 490 | linear_algebra/src/power_iteration |  |  |  |
+| 490 | linear_algebra/src/power_iteration | ✓ |  |  |
 | 491 | linear_algebra/src/rank_of_matrix | ✓ |  |  |
 | 492 | linear_algebra/src/rayleigh_quotient | ✓ | 245us | 1.7 MB |
-| 493 | linear_algebra/src/schur_complement |  |  |  |
+| 493 | linear_algebra/src/schur_complement | ✓ |  |  |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 333us | 1.5 MB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 516us | 1.7 MB |
-| 496 | linear_programming/simplex |  | 523us | 1.6 MB |
+| 496 | linear_programming/simplex | ✓ | 523us | 1.6 MB |
 | 497 | machine_learning/apriori_algorithm |  |  |  |
 | 498 | machine_learning/astar | ✓ | 375us | 1.4 MB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 364us | 1.6 MB |
 | 500 | machine_learning/data_transformations | ✓ | 412us | 1.7 MB |
-| 501 | machine_learning/decision_tree |  |  |  |
+| 501 | machine_learning/decision_tree | ✓ |  |  |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 250us | 1.6 MB |
 | 503 | machine_learning/forecasting/run | ✓ | 442us | 1.6 MB |
 | 504 | machine_learning/frequent_pattern_growth |  |  |  |
@@ -517,12 +517,12 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 510 | machine_learning/linear_regression | ✓ | 299us | 1.6 MB |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 530us | 1.5 MB |
 | 512 | machine_learning/logistic_regression | ✓ | 1.70ms | 1.8 MB |
-| 513 | machine_learning/loss_functions |  |  |  |
+| 513 | machine_learning/loss_functions | ✓ |  |  |
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 669us | 1.7 MB |
 | 515 | machine_learning/mfcc | ✓ | 393us | 1.6 MB |
 | 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 9.83ms | 1.5 MB |
 | 517 | machine_learning/polynomial_regression | ✓ | 286us | 1.5 MB |
-| 518 | machine_learning/principle_component_analysis |  |  |  |
+| 518 | machine_learning/principle_component_analysis | ✓ |  |  |
 | 519 | machine_learning/scoring_functions | ✓ | 711us | 1.6 MB |
 | 520 | machine_learning/self_organizing_map | ✓ | 512us | 1.6 MB |
 | 521 | machine_learning/sequential_minimum_optimization | ✓ | 297us | 1.7 MB |
@@ -561,66 +561,66 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 554 | maths/decimal_to_fraction | ✓ | 907us | 1.5 MB |
 | 555 | maths/dodecahedron | ✓ | 699us | 1.7 MB |
 | 556 | maths/double_factorial | ✓ | 451us | 1.6 MB |
-| 557 | maths/dual_number_automatic_differentiation |  |  |  |
+| 557 | maths/dual_number_automatic_differentiation | ✓ |  |  |
 | 558 | maths/entropy |  |  |  |
 | 559 | maths/euclidean_distance | ✓ | 534us | 1.6 MB |
-| 560 | maths/euler_method |  |  |  |
+| 560 | maths/euler_method | ✓ |  |  |
 | 561 | maths/euler_modified | ✓ | 320us | 1.6 MB |
 | 562 | maths/eulers_totient | ✓ | 276us | 1.6 MB |
 | 563 | maths/extended_euclidean_algorithm | ✓ | 302us | 1.6 MB |
 | 564 | maths/factorial | ✓ | 177us | 1.4 MB |
-| 565 | maths/factors |  |  |  |
+| 565 | maths/factors | ✓ |  |  |
 | 566 | maths/fast_inverse_sqrt | ✓ | 502us | 1.7 MB |
 | 567 | maths/fermat_little_theorem | ✓ | 295us | 1.5 MB |
-| 568 | maths/fibonacci |  |  |  |
+| 568 | maths/fibonacci | ✓ |  |  |
 | 569 | maths/find_max | ✓ | 536us | 1.6 MB |
 | 570 | maths/find_min | ✓ | 328us | 1.6 MB |
 | 571 | maths/floor | ✓ | 518us | 1.5 MB |
 | 572 | maths/gamma | ✓ | 28.51ms | 1.5 MB |
 | 573 | maths/gaussian | ✓ | 327us | 1.6 MB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 270us | 1.5 MB |
-| 575 | maths/geometric_mean |  |  |  |
+| 575 | maths/geometric_mean | ✓ |  |  |
 | 576 | maths/germain_primes | ✓ | 208us | 1.6 MB |
 | 577 | maths/greatest_common_divisor | ✓ | 289us | 1.5 MB |
 | 578 | maths/hardy_ramanujanalgo |  |  |  |
 | 579 | maths/integer_square_root |  |  |  |
 | 580 | maths/interquartile_range |  |  |  |
-| 581 | maths/is_int_palindrome |  |  |  |
-| 582 | maths/is_ip_v4_address_valid |  |  |  |
-| 583 | maths/is_square_free |  |  |  |
-| 584 | maths/jaccard_similarity |  |  |  |
-| 585 | maths/joint_probability_distribution |  |  |  |
-| 586 | maths/josephus_problem |  |  |  |
-| 587 | maths/juggler_sequence |  |  |  |
-| 588 | maths/karatsuba |  |  |  |
-| 589 | maths/kth_lexicographic_permutation |  |  |  |
-| 590 | maths/largest_of_very_large_numbers |  |  |  |
-| 591 | maths/least_common_multiple |  |  |  |
-| 592 | maths/line_length |  |  |  |
-| 593 | maths/liouville_lambda |  |  |  |
-| 594 | maths/lucas_lehmer_primality_test |  |  |  |
-| 595 | maths/lucas_series |  |  |  |
-| 596 | maths/maclaurin_series |  |  |  |
-| 597 | maths/manhattan_distance |  |  |  |
-| 598 | maths/matrix_exponentiation |  |  |  |
-| 599 | maths/max_sum_sliding_window |  |  |  |
-| 600 | maths/minkowski_distance |  |  |  |
-| 601 | maths/mobius_function |  |  |  |
-| 602 | maths/modular_division |  |  |  |
-| 603 | maths/monte_carlo |  |  |  |
-| 604 | maths/monte_carlo_dice |  |  |  |
-| 605 | maths/number_of_digits |  |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |  |  |  |
-| 607 | maths/numerical_analysis/bisection |  |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |  |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |  |  |  |
-| 610 | maths/numerical_analysis/intersection |  |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |  |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |  |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |  |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |  |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |  |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |  |  |  |
+| 581 | maths/is_int_palindrome | ✓ | 275us | 1.4 MB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 494us | 1.6 MB |
+| 583 | maths/is_square_free | ✓ | 269us | 1.4 MB |
+| 584 | maths/jaccard_similarity | ✓ | 287us | 1.5 MB |
+| 585 | maths/joint_probability_distribution | ✓ | 432us | 1.6 MB |
+| 586 | maths/josephus_problem | ✓ | 490us | 1.5 MB |
+| 587 | maths/juggler_sequence | ✓ | 206us | 1.6 MB |
+| 588 | maths/karatsuba | ✓ | 358us | 1.4 MB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 231us | 1.6 MB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 346us | 1.9 MB |
+| 591 | maths/least_common_multiple | ✓ | 328us | 1.6 MB |
+| 592 | maths/line_length | ✓ | 515us | 1.7 MB |
+| 593 | maths/liouville_lambda | ✓ | 218us | 1.4 MB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 286us | 1.5 MB |
+| 595 | maths/lucas_series | ✓ | 325us | 1.5 MB |
+| 596 | maths/maclaurin_series | ✓ | 336us | 1.7 MB |
+| 597 | maths/manhattan_distance | ✓ | 397us | 1.6 MB |
+| 598 | maths/matrix_exponentiation | ✓ | 201us | 1.6 MB |
+| 599 | maths/max_sum_sliding_window | ✓ | 294us | 1.5 MB |
+| 600 | maths/minkowski_distance | ✓ | 204us | 1.7 MB |
+| 601 | maths/mobius_function | ✓ | 255us | 1.4 MB |
+| 602 | maths/modular_division | ✓ | 404us | 1.5 MB |
+| 603 | maths/monte_carlo | ✓ | 506us | 1.7 MB |
+| 604 | maths/monte_carlo_dice | ✓ | 577us | 1.6 MB |
+| 605 | maths/number_of_digits | ✓ | 501us | 1.4 MB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 406us | 1.6 MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 360us | 1.6 MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 298us | 1.7 MB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 250us | 1.6 MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 319us | 1.6 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 341us | 1.5 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 474us | 1.6 MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 934us | 1.7 MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 971us | 1.5 MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 275us | 1.6 MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 279us | 1.5 MB |
 | 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |  |  |  |
 | 618 | maths/numerical_analysis/runge_kutta_gills |  |  |  |
 | 619 | maths/numerical_analysis/secant_method |  |  |  |
@@ -832,7 +832,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 825 | project_euler/problem_009/sol2 | ✓ | 390us | 1.6 MB |
 | 826 | project_euler/problem_009/sol3 | ✓ | 937us | 1.4 MB |
 | 827 | project_euler/problem_010/sol1 | ✓ | 280us | 1.6 MB |
-| 828 | project_euler/problem_010/sol2 |  |  |  |
+| 828 | project_euler/problem_010/sol2 | ✓ |  |  |
 | 829 | project_euler/problem_010/sol3 | ✓ | 2.33ms | 1.8 MB |
 | 830 | project_euler/problem_011/sol1 | ✓ | 404us | 1.6 MB |
 | 831 | project_euler/problem_011/sol2 |  |  |  |
@@ -975,12 +975,12 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 968 | sorts/patience_sort | ✓ | 414us | 1.4 MB |
 | 969 | sorts/pigeon_sort | ✓ | 457us | 1.5 MB |
 | 970 | sorts/pigeonhole_sort | ✓ | 509us | 1.5 MB |
-| 971 | sorts/quick_sort |  |  |  |
-| 972 | sorts/quick_sort_3_partition |  |  |  |
+| 971 | sorts/quick_sort | ✓ |  |  |
+| 972 | sorts/quick_sort_3_partition | ✓ |  |  |
 | 973 | sorts/radix_sort | ✓ | 953us | 1.4 MB |
 | 974 | sorts/recursive_insertion_sort | ✓ | 436us | 1.5 MB |
 | 975 | sorts/recursive_mergesort_array | ✓ | 490us | 1.6 MB |
-| 976 | sorts/recursive_quick_sort |  |  |  |
+| 976 | sorts/recursive_quick_sort | ✓ |  |  |
 | 977 | sorts/selection_sort | ✓ | 445us | 1.5 MB |
 | 978 | sorts/shell_sort | ✓ | 310us | 1.4 MB |
 | 979 | sorts/shrink_shell_sort | ✓ | 318us | 1.5 MB |
@@ -988,10 +988,10 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 981 | sorts/stooge_sort | ✓ | 437us | 1.6 MB |
 | 982 | sorts/strand_sort | ✓ | 392us | 1.5 MB |
 | 983 | sorts/tim_sort | ✓ | 389us | 1.5 MB |
-| 984 | sorts/topological_sort |  |  |  |
-| 985 | sorts/tree_sort |  |  |  |
-| 986 | sorts/unknown_sort |  |  |  |
-| 987 | sorts/wiggle_sort |  |  |  |
+| 984 | sorts/topological_sort | ✓ |  |  |
+| 985 | sorts/tree_sort | ✓ |  |  |
+| 986 | sorts/unknown_sort | ✓ |  |  |
+| 987 | sorts/wiggle_sort | ✓ |  |  |
 | 988 | strings/aho_corasick | ✓ | 813us | 1.4 MB |
 | 989 | strings/alternative_string_arrange | ✓ | 233us | 1.4 MB |
 | 990 | strings/anagrams |  |  |  |
@@ -1009,7 +1009,7 @@ Checklist of programs that currently transpile and run (544/1077) - Last updated
 | 1002 | strings/detecting_english_programmatically | ✓ | 1.26ms | 1.6 MB |
 | 1003 | strings/dna | ✓ | 254us | 1.4 MB |
 | 1004 | strings/edit_distance | ✓ | 24.34ms | 6.1 MB |
-| 1005 | strings/frequency_finder |  |  |  |
+| 1005 | strings/frequency_finder | ✓ |  |  |
 | 1006 | strings/hamming_distance | ✓ | 1.08ms | 1.4 MB |
 | 1007 | strings/indian_phone_validator | ✓ | 277us | 1.5 MB |
 | 1008 | strings/is_contains_unique_chars | ✓ | 778us | 1.6 MB |
