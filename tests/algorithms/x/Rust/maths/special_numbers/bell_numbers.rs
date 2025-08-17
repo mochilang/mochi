@@ -76,7 +76,7 @@ fn main() {
     }
     return bell
 };
-    fn mochi_main() {
+    let mut mochi_main = || {
     println!("{}", format!("{:?}", bell_numbers(5)));
 };
     mochi_main();
