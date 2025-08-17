@@ -203,7 +203,7 @@ end
 const helperIdx = `
 def _idx(arr, idx)
   return nil if arr.nil?
-  if arr.is_a?(Array) && idx.is_a?(Numeric)
+  if (arr.is_a?(Array) || arr.is_a?(String)) && idx.is_a?(Numeric)
     return nil if idx < 0 || idx >= arr.length
   end
   arr[idx]
