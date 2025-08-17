@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (630/1077) - Last updated 2025-08-17 13:11 +0700:
+Checklist of programs that currently transpile and run (651/1077) - Last updated 2025-08-17 13:41 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -672,28 +672,28 @@ Checklist of programs that currently transpile and run (630/1077) - Last updated
 | 665 | maths/special_numbers/bell_numbers | ✓ | 376us | 1.5 MB |
 | 666 | maths/special_numbers/carmichael_number | ✓ | 989us | 1.5 MB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 718us | 1.6 MB |
-| 668 | maths/special_numbers/hamming_numbers |  |  |  |
-| 669 | maths/special_numbers/happy_number |  |  |  |
-| 670 | maths/special_numbers/harshad_numbers |  |  |  |
-| 671 | maths/special_numbers/hexagonal_number |  |  |  |
-| 672 | maths/special_numbers/krishnamurthy_number |  |  |  |
-| 673 | maths/special_numbers/perfect_number |  |  |  |
-| 674 | maths/special_numbers/polygonal_numbers |  |  |  |
-| 675 | maths/special_numbers/pronic_number |  |  |  |
-| 676 | maths/special_numbers/proth_number |  |  |  |
-| 677 | maths/special_numbers/triangular_numbers |  |  |  |
-| 678 | maths/special_numbers/ugly_numbers |  |  |  |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 501us | 1.5 MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 298us | 1.5 MB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 453us | 1.5 MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 359us | 1.4 MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 353us | 1.4 MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 727us | 1.6 MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 670us | 1.6 MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 436us | 1.5 MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 640us | 1.6 MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 690us | 1.6 MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 570us | 1.6 MB |
 | 679 | maths/special_numbers/weird_number |  |  |  |
-| 680 | maths/sum_of_arithmetic_series |  |  |  |
-| 681 | maths/sum_of_digits |  |  |  |
-| 682 | maths/sum_of_geometric_progression |  |  |  |
-| 683 | maths/sum_of_harmonic_series |  |  |  |
-| 684 | maths/sumset |  |  |  |
-| 685 | maths/sylvester_sequence |  |  |  |
-| 686 | maths/tanh |  |  |  |
-| 687 | maths/test_factorial |  |  |  |
-| 688 | maths/test_prime_check |  |  |  |
-| 689 | maths/three_sum |  |  |  |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 488us | 1.5 MB |
+| 681 | maths/sum_of_digits | ✓ | 430us | 1.4 MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 348us | 1.7 MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 421us | 1.6 MB |
+| 684 | maths/sumset | ✓ | 634us | 1.6 MB |
+| 685 | maths/sylvester_sequence | ✓ | 580us | 1.6 MB |
+| 686 | maths/tanh | ✓ | 559us | 1.7 MB |
+| 687 | maths/test_factorial | ✓ | 880us | 1.6 MB |
+| 688 | maths/test_prime_check | ✓ | 376us | 1.6 MB |
+| 689 | maths/three_sum | ✓ | 488us | 1.4 MB |
 | 690 | maths/trapezoidal_rule |  |  |  |
 | 691 | maths/triplet_sum |  |  |  |
 | 692 | maths/twin_prime |  |  |  |

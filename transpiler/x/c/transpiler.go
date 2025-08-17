@@ -2777,6 +2777,15 @@ func exprIsFloat(e Expr) bool {
 }
 
 func (u *UnaryExpr) emitExpr(w io.Writer) {
+	if u.Op == "(int)" {
+		if idx, ok := u.Expr.(*IndexExpr); ok && exprIsString(idx.Target) {
+			idx.Target.emitExpr(w)
+			io.WriteString(w, "[")
+			idx.Index.emitExpr(w)
+			io.WriteString(w, "] - '0'")
+			return
+		}
+	}
 	io.WriteString(w, u.Op)
 	io.WriteString(w, "(")
 	if u.Expr != nil {
@@ -4089,27 +4098,25 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 
 	var pre bytes.Buffer
 	tmpName := ""
-	tmpLen := ""
-	firstCall := ""
 	if len(c.Args) > 0 {
 		if ce, ok := c.Args[0].(*CallExpr); ok {
-			if ret, ok2 := funcReturnTypes[ce.Func]; ok2 && strings.HasSuffix(ret, "[]") {
-				tmpName = fmt.Sprintf("__tmp%d", tempCounter)
-				tempCounter++
-				ceCopy := *ce
-				decl := listPtrType(ret)
-				tmpLen = ce.Func + "_len"
-				firstCall = ce.Func
-				if ce.Func == "_slice_int" || ce.Func == "_slice_double" || ce.Func == "_slice_str" {
-					if len(ceCopy.Args) == 5 {
-						tmpLen = tmpName + "_len"
-						ceCopy.Args[4] = &UnaryExpr{Op: "&", Expr: &VarRef{Name: tmpLen}}
-						pre.WriteString(fmt.Sprintf("size_t %s = 0; ", tmpLen))
+			for _, arg := range c.Args[1:] {
+				if vr, ok2 := arg.(*VarRef); ok2 && vr.Name == ce.Func+"_len" {
+					ret := inferExprType(currentEnv, ce)
+					decl := ret
+					if strings.HasSuffix(ret, "[]") {
+						decl = listPtrType(ret)
 					}
+					if decl == "" || decl == "int" {
+						decl = "long long"
+					}
+					tmpName = fmt.Sprintf("__tmp%d", tempCounter)
+					tempCounter++
+					pre.WriteString(fmt.Sprintf("%s %s = ", decl, tmpName))
+					ce.emitExpr(&pre)
+					pre.WriteString("; ")
+					break
 				}
-				pre.WriteString(fmt.Sprintf("%s %s = ", decl, tmpName))
-				ceCopy.emitExpr(&pre)
-				pre.WriteString("; ")
 			}
 		}
 	}
@@ -4133,19 +4140,8 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
 			paramType = types[i]
 		}
-		if first && tmpName != "" {
+		if i == 0 && tmpName != "" {
 			io.WriteString(w, tmpName)
-			if strings.HasSuffix(paramType, "[][]") {
-				io.WriteString(w, ", ")
-				io.WriteString(w, firstCall+"_len")
-				io.WriteString(w, ", ")
-				io.WriteString(w, firstCall+"_lens")
-				io.WriteString(w, ", ")
-				io.WriteString(w, firstCall+"_len")
-			} else if strings.HasSuffix(paramType, "[]") {
-				io.WriteString(w, ", ")
-				io.WriteString(w, firstCall+"_len")
-			}
 			first = false
 			continue
 		}
@@ -10733,11 +10729,11 @@ func inferExprType(env *types.Env, e Expr) string {
 			}
 			return elem
 		}
-		if strings.HasSuffix(tname, "*") {
-			return strings.TrimSuffix(tname, "*")
-		}
 		if tname == "const char*" {
 			return "const char*"
+		}
+		if strings.HasSuffix(tname, "*") {
+			return strings.TrimSuffix(tname, "*")
 		}
 	case *CallExpr:
 		switch v.Func {
