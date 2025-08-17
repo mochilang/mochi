@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -32,18 +33,25 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   function catalan($n) {
   if ($n < 1) {
-  $panic('Input value of [number=' . _str($n) . '] must be > 0');
+  _panic('Input value of [number=' . _str($n) . '] must be > 0');
 }
   $current = 1;
   $i = 1;
@@ -56,10 +64,10 @@ $__start = _now();
 };
   function main() {
   if (catalan(1) != 1) {
-  $panic('catalan(1) should be 1');
+  _panic('catalan(1) should be 1');
 }
   if (catalan(5) != 14) {
-  $panic('catalan(5) should be 14');
+  _panic('catalan(5) should be 14');
 }
   echo rtrim(_str(catalan(5))), PHP_EOL;
 };

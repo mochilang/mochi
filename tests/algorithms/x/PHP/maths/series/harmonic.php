@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -19,15 +20,19 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function is_harmonic_series($series) {
   if (count($series) == 0) {
-  $panic('Input list must be a non empty list');
+  _panic('Input list must be a non empty list');
 }
   if (count($series) == 1) {
   if ($series[0] == 0.0) {
-  $panic('Input series cannot have 0 as an element');
+  _panic('Input series cannot have 0 as an element');
 };
   return true;
 }
@@ -36,7 +41,7 @@ $__start = _now();
   while ($i < count($series)) {
   $val = $series[$i];
   if ($val == 0.0) {
-  $panic('Input series cannot have 0 as an element');
+  _panic('Input series cannot have 0 as an element');
 }
   $rec_series = _append($rec_series, 1.0 / $val);
   $i = $i + 1;
@@ -53,7 +58,7 @@ $__start = _now();
 };
   function harmonic_mean($series) {
   if (count($series) == 0) {
-  $panic('Input list must be a non empty list');
+  _panic('Input list must be a non empty list');
 }
   $total = 0.0;
   $i = 0;

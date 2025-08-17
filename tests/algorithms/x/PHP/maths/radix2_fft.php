@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -36,38 +37,41 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   function c_add($a, $b) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   return ['re' => $a['re'] + $b['re'], 'im' => $a['im'] + $b['im']];
 };
   function c_sub($a, $b) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   return ['re' => $a['re'] - $b['re'], 'im' => $a['im'] - $b['im']];
 };
   function c_mul($a, $b) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   return ['re' => $a['re'] * $b['re'] - $a['im'] * $b['im'], 'im' => $a['re'] * $b['im'] + $a['im'] * $b['re']];
 };
   function c_mul_scalar($a, $s) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   return ['re' => $a['re'] * $s, 'im' => $a['im'] * $s];
 };
   function c_div_scalar($a, $s) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   return ['re' => $a['re'] / $s, 'im' => $a['im'] / $s];
 };
   $PI = 3.141592653589793;
   function sin_taylor($x) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $term = $x;
   $sum = $x;
   $i = 1;
@@ -81,7 +85,7 @@ $__start = _now();
   return $sum;
 };
   function cos_taylor($x) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $term = 1.0;
   $sum = 1.0;
   $i = 1;
@@ -95,11 +99,11 @@ $__start = _now();
   return $sum;
 };
   function exp_i($theta) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   return ['re' => cos_taylor($theta), 'im' => sin_taylor($theta)];
 };
   function make_complex_list($n, $value) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $arr = [];
   $i = 0;
   while ($i < $n) {
@@ -109,7 +113,7 @@ $__start = _now();
   return $arr;
 };
   function fft($a, $invert) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $n = count($a);
   if ($n == 1) {
   return [$a[0]];
@@ -146,7 +150,7 @@ $__start = _now();
   return $y;
 };
   function mochi_floor($x) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $i = intval($x);
   if ((floatval($i)) > $x) {
   $i = $i - 1;
@@ -154,7 +158,7 @@ $__start = _now();
   return floatval($i);
 };
   function pow10($n) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $p = 1.0;
   $i = 0;
   while ($i < $n) {
@@ -164,12 +168,12 @@ $__start = _now();
   return $p;
 };
   function round_to($x, $ndigits) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $m = pow10($ndigits);
   return mochi_floor($x * $m + 0.5) / $m;
 };
   function list_to_string($l) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $s = '[';
   $i = 0;
   while ($i < count($l)) {
@@ -183,7 +187,7 @@ $__start = _now();
   return $s;
 };
   function multiply_poly($a, $b) {
-  global $PI, $A, $B, $product;
+  global $A, $B, $PI, $product;
   $n = 1;
   while ($n < count($a) + count($b) - 1) {
   $n = $n * 2;
@@ -216,7 +220,7 @@ $__start = _now();
   $i = $i + 1;
 };
   while (count($res) > 0 && $res[count($res) - 1] == 0.0) {
-  $res = array_slice($res, 0, count($res) - 1 - 0);
+  $res = array_slice($res, 0, count($res) - 1);
 };
   return $res;
 };

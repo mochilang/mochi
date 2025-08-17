@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -35,11 +36,15 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function hexagonal_numbers($length) {
   if ($length <= 0) {
-  $panic('Length must be a positive integer.');
+  _panic('Length must be a positive integer.');
 }
   $res = [];
   $n = 0;
@@ -53,12 +58,12 @@ $__start = _now();
   $expected5 = [0, 1, 6, 15, 28];
   $result5 = hexagonal_numbers(5);
   if ($result5 != $expected5) {
-  $panic('hexagonal_numbers(5) failed');
+  _panic('hexagonal_numbers(5) failed');
 }
   $expected10 = [0, 1, 6, 15, 28, 45, 66, 91, 120, 153];
   $result10 = hexagonal_numbers(10);
   if ($result10 != $expected10) {
-  $panic('hexagonal_numbers(10) failed');
+  _panic('hexagonal_numbers(10) failed');
 }
 };
   test_hexagonal_numbers();

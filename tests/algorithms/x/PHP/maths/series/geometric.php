@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -15,11 +16,15 @@ function _now() {
     }
     return hrtime(true);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function is_geometric_series($series) {
   if (count($series) == 0) {
-  $panic('Input list must be a non empty list');
+  _panic('Input list must be a non empty list');
 }
   if (count($series) == 1) {
   return true;
@@ -42,7 +47,7 @@ $__start = _now();
 };
   function geometric_mean($series) {
   if (count($series) == 0) {
-  $panic('Input list must be a non empty list');
+  _panic('Input list must be a non empty list');
 }
   $product = 1.0;
   $i = 0;
@@ -88,11 +93,11 @@ $__start = _now();
   function test_geometric() {
   $a = [2.0, 4.0, 8.0];
   if (!is_geometric_series($a)) {
-  $panic('expected geometric series');
+  _panic('expected geometric series');
 }
   $b = [1.0, 2.0, 3.0];
   if (is_geometric_series($b)) {
-  $panic('expected non geometric series');
+  _panic('expected non geometric series');
 }
 };
   function main() {

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -31,11 +32,15 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function is_arithmetic_series($xs) {
   if (count($xs) == 0) {
-  $panic('Input list must be a non empty list');
+  _panic('Input list must be a non empty list');
 }
   if (count($xs) == 1) {
   return true;
@@ -52,7 +57,7 @@ $__start = _now();
 };
   function arithmetic_mean($xs) {
   if (count($xs) == 0) {
-  $panic('Input list must be a non empty list');
+  _panic('Input list must be a non empty list');
 }
   $total = 0.0;
   $i = 0;

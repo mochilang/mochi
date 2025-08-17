@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -36,12 +37,19 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -64,7 +72,7 @@ $__start = _now();
 };
   function bell_numbers($max_set_length) {
   if ($max_set_length < 0) {
-  $panic('max_set_length must be non-negative');
+  _panic('max_set_length must be non-negative');
 }
   $bell = [];
   $i = 0;

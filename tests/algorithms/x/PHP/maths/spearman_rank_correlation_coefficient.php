@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -35,6 +36,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function assign_ranks($data) {
@@ -57,7 +62,7 @@ $__start = _now();
 };
   function calculate_spearman_rank_correlation($var1, $var2) {
   if (count($var1) != count($var2)) {
-  $panic('Lists must have equal length');
+  _panic('Lists must have equal length');
 }
   $n = count($var1);
   $rank1 = assign_ranks($var1);
@@ -76,15 +81,15 @@ $__start = _now();
   $x = [1.0, 2.0, 3.0, 4.0, 5.0];
   $y_inc = [2.0, 4.0, 6.0, 8.0, 10.0];
   if (calculate_spearman_rank_correlation($x, $y_inc) != 1.0) {
-  $panic('case1');
+  _panic('case1');
 }
   $y_dec = [5.0, 4.0, 3.0, 2.0, 1.0];
   if (calculate_spearman_rank_correlation($x, $y_dec) != (-1.0)) {
-  $panic('case2');
+  _panic('case2');
 }
   $y_mix = [5.0, 1.0, 2.0, 9.0, 5.0];
   if (calculate_spearman_rank_correlation($x, $y_mix) != 0.6) {
-  $panic('case3');
+  _panic('case3');
 }
 };
   function main() {

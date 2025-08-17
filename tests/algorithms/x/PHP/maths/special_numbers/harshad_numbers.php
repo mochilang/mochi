@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -20,16 +21,23 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function panic($msg) {
+  function mochi_panic($msg) {
 };
   function char_to_value($c) {
   $digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -40,14 +48,14 @@ $__start = _now();
 }
   $i = $i + 1;
 };
-  panic('invalid digit');
+  _panic('invalid digit');
 };
   function int_to_base($number, $base) {
   if ($base < 2 || $base > 36) {
-  panic('\'base\' must be between 2 and 36 inclusive');
+  _panic('\'base\' must be between 2 and 36 inclusive');
 }
   if ($number < 0) {
-  panic('number must be a positive integer');
+  _panic('number must be a positive integer');
 }
   $digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $n = $number;
@@ -74,7 +82,7 @@ $__start = _now();
 };
   function sum_of_digits($num, $base) {
   if ($base < 2 || $base > 36) {
-  panic('\'base\' must be between 2 and 36 inclusive');
+  _panic('\'base\' must be between 2 and 36 inclusive');
 }
   $num_str = int_to_base($num, $base);
   $total = 0;
@@ -88,7 +96,7 @@ $__start = _now();
 };
   function harshad_numbers_in_base($limit, $base) {
   if ($base < 2 || $base > 36) {
-  panic('\'base\' must be between 2 and 36 inclusive');
+  _panic('\'base\' must be between 2 and 36 inclusive');
 }
   if ($limit < 0) {
   return [];
@@ -107,7 +115,7 @@ $__start = _now();
 };
   function is_harshad_number_in_base($num, $base) {
   if ($base < 2 || $base > 36) {
-  panic('\'base\' must be between 2 and 36 inclusive');
+  _panic('\'base\' must be between 2 and 36 inclusive');
 }
   if ($num < 0) {
   return false;

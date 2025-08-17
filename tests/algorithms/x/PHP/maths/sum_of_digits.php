@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -32,12 +33,19 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -68,47 +76,47 @@ $__start = _now();
   $res = 0;
   $i = 0;
   while ($i < strlen($s)) {
-  $res = $res + (ord(substr($s, $i, $i + 1 - $i)));
+  $res = $res + ((ctype_digit($s[$i]) ? intval($s[$i]) : ord($s[$i])));
   $i = $i + 1;
 };
   return $res;
 };
   function test_sum_of_digits() {
   if (sum_of_digits(12345) != 15) {
-  $panic('sum_of_digits 12345 failed');
+  _panic('sum_of_digits 12345 failed');
 }
   if (sum_of_digits(123) != 6) {
-  $panic('sum_of_digits 123 failed');
+  _panic('sum_of_digits 123 failed');
 }
   if (sum_of_digits(-123) != 6) {
-  $panic('sum_of_digits -123 failed');
+  _panic('sum_of_digits -123 failed');
 }
   if (sum_of_digits(0) != 0) {
-  $panic('sum_of_digits 0 failed');
+  _panic('sum_of_digits 0 failed');
 }
   if (sum_of_digits_recursion(12345) != 15) {
-  $panic('recursion 12345 failed');
+  _panic('recursion 12345 failed');
 }
   if (sum_of_digits_recursion(123) != 6) {
-  $panic('recursion 123 failed');
+  _panic('recursion 123 failed');
 }
   if (sum_of_digits_recursion(-123) != 6) {
-  $panic('recursion -123 failed');
+  _panic('recursion -123 failed');
 }
   if (sum_of_digits_recursion(0) != 0) {
-  $panic('recursion 0 failed');
+  _panic('recursion 0 failed');
 }
   if (sum_of_digits_compact(12345) != 15) {
-  $panic('compact 12345 failed');
+  _panic('compact 12345 failed');
 }
   if (sum_of_digits_compact(123) != 6) {
-  $panic('compact 123 failed');
+  _panic('compact 123 failed');
 }
   if (sum_of_digits_compact(-123) != 6) {
-  $panic('compact -123 failed');
+  _panic('compact -123 failed');
 }
   if (sum_of_digits_compact(0) != 0) {
-  $panic('compact 0 failed');
+  _panic('compact 0 failed');
 }
 };
   function main() {
