@@ -1461,17 +1461,17 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		}
 		typ := strings.TrimSpace(buf.String())
 
-		// Numeric casts should use toInt()/toDouble() instead of `as`.
-		if typ == "double" {
-			if _, err := io.WriteString(w, "("); err != nil {
-				return err
-			}
-			if err := b.Left.emit(w); err != nil {
-				return err
-			}
-			_, err := io.WriteString(w, ").toDouble()")
-			return err
-		}
+               // Numeric casts should use toInt()/toDouble() instead of `as`.
+               if typ == "double" || typ == "num" {
+                       if _, err := io.WriteString(w, "("); err != nil {
+                               return err
+                       }
+                       if err := b.Left.emit(w); err != nil {
+                               return err
+                       }
+                       _, err := io.WriteString(w, ").toDouble()")
+                       return err
+               }
 		if typ == "int" {
 			lt := inferType(b.Left)
 			if lt != "int" && lt != "num" && lt != "double" && lt != "BigInt" {
@@ -2966,14 +2966,14 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) error {
 	valType := inferType(c.Value)
-	cType := strings.TrimSpace(c.Type)
-	if cType == "double" {
-		if valType == "double" {
-			return c.Value.emit(w)
-		}
-		if _, err := io.WriteString(w, "("); err != nil {
-			return err
-		}
+       cType := strings.TrimSpace(c.Type)
+       if cType == "double" || cType == "num" {
+               if valType == "double" {
+                       return c.Value.emit(w)
+               }
+               if _, err := io.WriteString(w, "("); err != nil {
+                       return err
+               }
 		if err := c.Value.emit(w); err != nil {
 			return err
 		}
