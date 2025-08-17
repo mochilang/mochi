@@ -4645,6 +4645,19 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	svCopy := copyBoolMap(stringVars)
 	mvCopy := copyBoolMap(mapVars)
 	caps := collectCaptures(body, params, localsCopy, name)
+	// Skip names that correspond to other top-level functions. Those
+	// functions are tracked in funReturns and should not force the current
+	// function to be treated as a closure.
+	if len(caps) > 0 {
+		filtered := make([]string, 0, len(caps))
+		for _, c := range caps {
+			if _, ok := funReturns[c]; ok && varTypes[c] == "" && currentParamTypes[c] == "" {
+				continue
+			}
+			filtered = append(filtered, c)
+		}
+		caps = filtered
+	}
 	selfRef := funcUsesName(body, name)
 	// Treat any function referencing variables outside its scope as a
 	// closure. Previously, we only generated closures for nested functions
@@ -4656,6 +4669,13 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	// considering `topLevelNonConstLet`, we ensure such functions become
 	// closures and can access surrounding state safely.
 	useClosure := nested || len(caps) > 0
+	// Always emit the top-level `main` function as a closure so it can
+	// reference other generated closures. This avoids Rust compile errors
+	// when `main` needs to capture variables such as other function
+	// closures.
+	if fn.Name == "main" {
+		useClosure = true
+	}
 	// However, top-level recursive functions that do not capture
 	// any external state can be emitted as normal `fn` items. Rust
 	// closures cannot call themselves recursively, so treat such
@@ -4796,7 +4816,7 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 				base = &StringIndexExpr{Str: b, Index: idx}
 			case *NameRef:
 				bt := inferType(b)
-				if bt == "String" || stringVars[b.Name] || varTypes[b.Name] == "String" {
+				if bt == "String" || stringVars[b.Name] || varTypes[b.Name] == "String" || (bt == "" && !mapVars[b.Name]) {
 					base = &StringIndexExpr{Str: b, Index: idx}
 				} else {
 					base = &IndexExpr{Target: base, Index: idx}
