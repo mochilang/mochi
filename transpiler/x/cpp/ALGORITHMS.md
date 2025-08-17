@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 1018/1077
-Last updated: 2025-08-17 12:25 +0700
+Last updated: 2025-08-17 13:13 +0700
 
 Checklist:
 
@@ -644,7 +644,7 @@ Checklist:
 | 635 | maths/prime_factors | ✓ | 244.0µs | 3.61MB |
 | 636 | maths/prime_numbers | ✓ | 211.0µs | 3.80MB |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 314.0µs | 3.61MB |
-| 638 | maths/primelib | ✓ | 546.0µs | 3.63MB |
+| 638 | maths/primelib |   |  |  |
 | 639 | maths/print_multiplication_table | ✓ | 243.0µs | 3.61MB |
 | 640 | maths/pythagoras | ✓ | 359.0µs | 3.71MB |
 | 641 | maths/qr_decomposition | ✓ | 512.0µs | 3.69MB |
@@ -659,7 +659,7 @@ Checklist:
 | 650 | maths/series/harmonic | ✓ | 476.0µs | 3.74MB |
 | 651 | maths/series/harmonic_series | ✓ | 232.0µs | 3.61MB |
 | 652 | maths/series/hexagonal_numbers | ✓ | 258.0µs | 3.60MB |
-| 653 | maths/series/p_series | ✓ | 440.0µs | 3.73MB |
+| 653 | maths/series/p_series | ✓ | 804.0µs | 3.73MB |
 | 654 | maths/sieve_of_eratosthenes | ✓ | 558.0µs | 3.61MB |
 | 655 | maths/sigmoid | ✓ | 591.0µs | 3.74MB |
 | 656 | maths/signum | ✓ | 253.0µs | 3.57MB |
@@ -1065,11 +1065,11 @@ Checklist:
 | 1056 | web_programming/fetch_github_info |   |  |  |
 | 1057 | web_programming/fetch_jobs | ✓ | 417.0µs | 3.50MB |
 | 1058 | web_programming/fetch_quotes | ✓ | 184.0µs | 3.49MB |
-| 1059 | web_programming/fetch_well_rx_price |   |  |  |
+| 1059 | web_programming/fetch_well_rx_price | ✓ | 356.0µs | 3.58MB |
 | 1060 | web_programming/get_amazon_product_data | ✓ | 835.0µs | 3.80MB |
 | 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 389.0µs | 3.71MB |
 | 1062 | web_programming/get_ip_geolocation |   |  |  |
-| 1063 | web_programming/get_top_billionaires |   |  |  |
+| 1063 | web_programming/get_top_billionaires |   | 98.0µs | 3.57MB |
 | 1064 | web_programming/get_top_hn_posts |   |  |  |
 | 1065 | web_programming/giphy | ✓ | 192.0µs | 3.47MB |
 | 1066 | web_programming/instagram_crawler | ✓ | 684.0µs | 3.71MB |

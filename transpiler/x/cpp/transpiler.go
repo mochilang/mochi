@@ -3134,6 +3134,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "))")
 			return
 		}
+		if _, ok := b.Right.(*NullLit); ok && rt == "std::any" && lt != "std::any" {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, " "+b.Op+" "+defaultValueForType(lt)+")")
+			return
+		}
+		if _, ok := b.Left.(*NullLit); ok && lt == "std::any" && rt != "std::any" {
+			io.WriteString(w, "(")
+			b.Right.emit(w)
+			io.WriteString(w, " "+b.Op+" "+defaultValueForType(rt)+")")
+			return
+		}
 	}
 	if lt == "std::any" && rt != "std::any" {
 		if currentProgram != nil {
