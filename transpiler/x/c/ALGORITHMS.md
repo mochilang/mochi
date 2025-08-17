@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (580/1077) - Last updated 2025-08-17 12:29 +0700:
+Checklist of programs that currently transpile and run (630/1077) - Last updated 2025-08-17 13:11 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -622,56 +622,56 @@ Checklist of programs that currently transpile and run (580/1077) - Last updated
 | 615 | maths/numerical_analysis/proper_fractions | ✓ | 741us | 1.6 MB |
 | 616 | maths/numerical_analysis/runge_kutta | ✓ | 564us | 1.5 MB |
 | 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |  |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |  |  |  |
-| 619 | maths/numerical_analysis/secant_method |  |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |  |  |  |
-| 621 | maths/numerical_analysis/square_root |  |  |  |
-| 622 | maths/odd_sieve |  |  |  |
-| 623 | maths/perfect_cube |  |  |  |
-| 624 | maths/perfect_number |  |  |  |
-| 625 | maths/perfect_square |  |  |  |
-| 626 | maths/persistence |  |  |  |
-| 627 | maths/pi_generator |  |  |  |
-| 628 | maths/pi_monte_carlo_estimation |  |  |  |
-| 629 | maths/points_are_collinear_3d |  |  |  |
-| 630 | maths/pollard_rho |  |  |  |
-| 631 | maths/polynomial_evaluation |  |  |  |
-| 632 | maths/polynomials/single_indeterminate_operations |  |  |  |
-| 633 | maths/power_using_recursion |  |  |  |
-| 634 | maths/prime_check |  |  |  |
-| 635 | maths/prime_factors |  |  |  |
-| 636 | maths/prime_numbers |  |  |  |
-| 637 | maths/prime_sieve_eratosthenes |  |  |  |
-| 638 | maths/primelib |  |  |  |
-| 639 | maths/print_multiplication_table |  |  |  |
-| 640 | maths/pythagoras |  |  |  |
-| 641 | maths/qr_decomposition |  |  |  |
-| 642 | maths/quadratic_equations_complex_numbers |  |  |  |
-| 643 | maths/radians |  |  |  |
-| 644 | maths/radix2_fft |  |  |  |
-| 645 | maths/remove_digit |  |  |  |
-| 646 | maths/segmented_sieve |  |  |  |
-| 647 | maths/series/arithmetic |  |  |  |
-| 648 | maths/series/geometric |  |  |  |
-| 649 | maths/series/geometric_series |  |  |  |
-| 650 | maths/series/harmonic |  |  |  |
-| 651 | maths/series/harmonic_series |  |  |  |
-| 652 | maths/series/hexagonal_numbers |  |  |  |
-| 653 | maths/series/p_series |  |  |  |
-| 654 | maths/sieve_of_eratosthenes |  |  |  |
-| 655 | maths/sigmoid |  |  |  |
-| 656 | maths/signum |  |  |  |
-| 657 | maths/simultaneous_linear_equation_solver |  |  |  |
-| 658 | maths/sin |  |  |  |
-| 659 | maths/sock_merchant |  |  |  |
-| 660 | maths/softmax |  |  |  |
-| 661 | maths/solovay_strassen_primality_test |  |  |  |
-| 662 | maths/spearman_rank_correlation_coefficient |  |  |  |
-| 663 | maths/special_numbers/armstrong_numbers |  |  |  |
-| 664 | maths/special_numbers/automorphic_number |  |  |  |
-| 665 | maths/special_numbers/bell_numbers |  |  |  |
-| 666 | maths/special_numbers/carmichael_number |  |  |  |
-| 667 | maths/special_numbers/catalan_number |  |  |  |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 521us | 1.6 MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 444us | 1.6 MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 433us | 1.6 MB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 514us | 1.6 MB |
+| 622 | maths/odd_sieve | ✓ | 454us | 1.5 MB |
+| 623 | maths/perfect_cube | ✓ | 441us | 1.5 MB |
+| 624 | maths/perfect_number | ✓ | 138.79ms | 1.5 MB |
+| 625 | maths/perfect_square | ✓ | 336us | 1.4 MB |
+| 626 | maths/persistence | ✓ | 421us | 1.6 MB |
+| 627 | maths/pi_generator | ✓ | 294us | 1.4 MB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 718us | 1.6 MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 394us | 1.6 MB |
+| 630 | maths/pollard_rho | ✓ | 446us | 1.5 MB |
+| 631 | maths/polynomial_evaluation | ✓ | 547us | 1.6 MB |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 1.18ms | 1.5 MB |
+| 633 | maths/power_using_recursion | ✓ | 307us | 1.6 MB |
+| 634 | maths/prime_check | ✓ | 412us | 1.5 MB |
+| 635 | maths/prime_factors | ✓ | 648us | 1.4 MB |
+| 636 | maths/prime_numbers | ✓ | 432us | 1.5 MB |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 371us | 1.5 MB |
+| 638 | maths/primelib | ✓ | 425us | 1.6 MB |
+| 639 | maths/print_multiplication_table | ✓ | 381us | 1.6 MB |
+| 640 | maths/pythagoras | ✓ | 379us | 1.6 MB |
+| 641 | maths/qr_decomposition | ✓ | 377us | 1.6 MB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 576us | 1.6 MB |
+| 643 | maths/radians | ✓ | 323us | 1.5 MB |
+| 644 | maths/radix2_fft | ✓ | 727us | 1.7 MB |
+| 645 | maths/remove_digit | ✓ | 236us | 1.5 MB |
+| 646 | maths/segmented_sieve | ✓ | 282us | 1.6 MB |
+| 647 | maths/series/arithmetic | ✓ | 444us | 1.6 MB |
+| 648 | maths/series/geometric | ✓ | 375us | 1.5 MB |
+| 649 | maths/series/geometric_series | ✓ | 475us | 1.7 MB |
+| 650 | maths/series/harmonic | ✓ | 410us | 1.6 MB |
+| 651 | maths/series/harmonic_series | ✓ | 365us | 1.5 MB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 459us | 1.5 MB |
+| 653 | maths/series/p_series | ✓ | 629us | 1.5 MB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 831us | 1.5 MB |
+| 655 | maths/sigmoid | ✓ | 646us | 1.7 MB |
+| 656 | maths/signum | ✓ | 419us | 1.4 MB |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 434us | 1.6 MB |
+| 658 | maths/sin | ✓ | 480us | 1.5 MB |
+| 659 | maths/sock_merchant | ✓ | 428us | 1.5 MB |
+| 660 | maths/softmax | ✓ | 420us | 1.6 MB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 468us | 1.4 MB |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 672us | 1.6 MB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 609us | 1.4 MB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 668us | 1.4 MB |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 376us | 1.5 MB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 989us | 1.5 MB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 718us | 1.6 MB |
 | 668 | maths/special_numbers/hamming_numbers |  |  |  |
 | 669 | maths/special_numbers/happy_number |  |  |  |
 | 670 | maths/special_numbers/harshad_numbers |  |  |  |

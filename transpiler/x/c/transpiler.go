@@ -181,10 +181,16 @@ func emitLenExpr(w io.Writer, e Expr) {
 		if t == "" {
 			t = varTypes[v.Name]
 		}
-		if strings.HasPrefix(t, "Map") || mapKeyTypes[v.Name] != "" {
-			io.WriteString(w, mapField(v.Name, "len"))
+		name := v.Name
+		alias := aliasName(name)
+		if strings.HasPrefix(t, "Map") || mapKeyTypes[name] != "" {
+			field := mapField(name, "len")
+			if alias != name {
+				field = strings.Replace(field, name, alias, 1)
+			}
+			io.WriteString(w, field)
 		} else {
-			io.WriteString(w, v.Name+"_len")
+			io.WriteString(w, alias+"_len")
 		}
 	case *FieldExpr:
 		typ := inferExprType(currentEnv, v.Target)
@@ -10637,8 +10643,13 @@ func inferExprType(env *types.Env, e Expr) string {
 			return t1
 		}
 	case *VarRef:
-		if t, ok := varTypes[v.Name]; ok {
+		if t, ok := varTypes[v.Name]; ok && t != "" {
 			return t
+		}
+		if alias, ok := varAliases[v.Name]; ok {
+			if t, ok2 := varTypes[alias]; ok2 && t != "" {
+				return t
+			}
 		}
 		if t, err := env.GetVar(v.Name); err == nil {
 			return cTypeFromMochiType(t)
@@ -11527,7 +11538,10 @@ func aliasName(name string) string {
 		return a
 	}
 	switch name {
-	case "char", "double", "float", "int", "long", "short", "signed", "unsigned", "void", "enum", "struct", "union", "goto", "sizeof", "typedef":
+	case "char", "double", "float", "int", "long", "short", "signed", "unsigned", "void", "enum", "struct", "union", "goto", "sizeof", "typedef",
+		// y0 and y1 are Bessel function names from <math.h>; guard
+		// against redeclaration by reserving y0-y9.
+		"y0", "y1", "y2", "y3", "y4", "y5", "y6", "y7", "y8", "y9":
 		a := name + "_"
 		varAliases[name] = a
 		return a
