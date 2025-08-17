@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-17 09:12 GMT+7
+Last updated: 2025-08-17 12:17 GMT+7
 
 ## Algorithms Golden Test Checklist (990/1077)
 | Index | Name | Status | Duration | Memory |
@@ -635,7 +635,7 @@ Last updated: 2025-08-17 09:12 GMT+7
 | 626 | maths/persistence | ✓ | 54µs | 37.0 KB |
 | 627 | maths/pi_generator | ✓ | 161µs | 35.7 KB |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 3.554ms | 36.7 KB |
-| 629 | maths/points_are_collinear_3d | ✓ | 115µs | 37.1 KB |
+| 629 | maths/points_are_collinear_3d | ✓ | 129µs | 37.4 KB |
 | 630 | maths/pollard_rho | ✓ | 217µs | 35.9 KB |
 | 631 | maths/polynomial_evaluation | ✓ | 87µs | 35.8 KB |
 | 632 | maths/polynomials/single_indeterminate_operations | ✓ | 147µs | 73.7 KB |
