@@ -165,6 +165,20 @@ def _split(s, sep = ' ')
 end
 `
 
+const helperReadFile = `
+def _read_file(path)
+  p = path
+  if defined?(_dataDir) && !_dataDir.nil? && !File.exist?(p)
+    p = File.join(_dataDir, path)
+  end
+  begin
+    File.read(p)
+  rescue StandardError
+    ''
+  end
+end
+`
+
 const helperLen = `
 def _len(x)
   x.respond_to?(:length) ? x.length : 0
@@ -1421,6 +1435,8 @@ var (
 	usesSplit       bool
 	usesFetch       bool
 	usesMem         bool
+	usesReadFile    bool
+	dataDir         string
 	benchMain       bool
 	loopDepth       int
 	tmpVarCounter   int
@@ -3239,6 +3255,14 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesReadFile {
+		if dataDir != "" {
+			fmt.Fprintf(w, "_dataDir = %q\n", dataDir)
+		}
+		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
+			return err
+		}
+	}
 	if _, err := io.WriteString(w, helperIdx+"\n"); err != nil {
 		return err
 	}
@@ -3319,6 +3343,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSplit = false
 	usesFetch = false
 	usesMem = false
+	usesReadFile = false
+	dataDir = ""
 	currentEnv = env
 	// track top-level variables even when benchmarking so that global
 	// variables are correctly prefixed with '$' when referenced inside
@@ -3335,6 +3361,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if conv != nil {
 			rbProg.Stmts = append(rbProg.Stmts, conv)
 		}
+	}
+	if usesReadFile {
+		dataDir = filepath.Dir(prog.Pos.Filename)
 	}
 	rbProg.Stmts = reorderFuncs(rbProg.Stmts)
 	if benchMain {
@@ -4705,6 +4734,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesSplit = true
 			return &CallExpr{Func: "_split", Args: args}, nil
+		case "read_file":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			usesReadFile = true
+			return &CallExpr{Func: "_read_file", Args: args}, nil
 		case "parseIntStr":
 			usesParseIntStr = true
 			switch len(args) {
