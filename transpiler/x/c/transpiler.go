@@ -1039,7 +1039,10 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 				}
 			}
 		}
+		prevType := currentVarType
+		currentVarType = nil
 		a.emitExpr(w)
+		currentVarType = prevType
 		emitExtraArgs(w, paramType, a)
 	}
 	io.WriteString(w, ");\n")
@@ -2787,12 +2790,15 @@ func (l *ListLit) emitExpr(w io.Writer) {
 		} else {
 			elemType = cTypeFromMochiType(currentVarType)
 		}
-	} else if t := inferExprType(currentEnv, l.Elems[0]); t != "" {
-		elemType = t
-	} else if exprIsString(l.Elems[0]) {
-		elemType = "const char*"
-	} else if exprIsFloat(l.Elems[0]) {
-		elemType = "double"
+	}
+	if elemType == "long long" || elemType == "" {
+		if t := inferExprType(currentEnv, l.Elems[0]); t != "" {
+			elemType = t
+		} else if exprIsString(l.Elems[0]) {
+			elemType = "const char*"
+		} else if exprIsFloat(l.Elems[0]) {
+			elemType = "double"
+		}
 	}
 	dims := strings.Count(elemType, "[]")
 	base := strings.TrimSuffix(elemType, strings.Repeat("[]", dims))
@@ -6702,6 +6708,28 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		varTypes[s.Let.Name] = declType
+		if s.Let.Type != nil {
+			env.SetVar(s.Let.Name, types.ResolveTypeRef(s.Let.Type, env), true)
+		} else {
+			switch {
+			case declType == "const char*":
+				env.SetVar(s.Let.Name, types.StringType{}, true)
+			case declType == "double":
+				env.SetVar(s.Let.Name, types.FloatType{}, true)
+			case strings.HasSuffix(declType, "[]"):
+				base := strings.TrimSuffix(declType, "[]")
+				var elem types.Type = types.IntType{}
+				switch base {
+				case "const char*":
+					elem = types.StringType{}
+				case "double":
+					elem = types.FloatType{}
+				}
+				env.SetVar(s.Let.Name, types.ListType{Elem: elem}, true)
+			default:
+				env.SetVar(s.Let.Name, types.IntType{}, true)
+			}
+		}
 		if declType == "MapSS" {
 			mapKeyTypes[s.Let.Name] = "const char*"
 			mapValTypes[s.Let.Name] = "const char*"
