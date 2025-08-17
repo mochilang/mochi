@@ -6377,6 +6377,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
+		if p.Call.Func == "exp" && len(args) == 1 {
+			if currentProgram != nil {
+				currentProgram.addInclude("<cmath>")
+			}
+			return &CallExpr{Name: "std::exp", Args: args}, nil
+		}
+		if p.Call.Func == "ln" && len(args) == 1 {
+			if currentProgram != nil {
+				currentProgram.addInclude("<cmath>")
+			}
+			return &CallExpr{Name: "std::log", Args: args}, nil
+		}
 		candidates := []string{p.Call.Func, safeName(p.Call.Func), "_" + safeName(p.Call.Func)}
 		for _, cname := range candidates {
 			if fn := findFunc(cname); fn != nil {
@@ -6397,18 +6409,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Call.Func == "panic" || p.Call.Func == "error" {
 			usesPanic = true
 			return &CallExpr{Name: "panic", Args: args}, nil
-		}
-		if p.Call.Func == "exp" && len(args) == 1 {
-			if currentProgram != nil {
-				currentProgram.addInclude("<cmath>")
-			}
-			return &CallExpr{Name: "std::exp", Args: args}, nil
-		}
-		if p.Call.Func == "ln" && len(args) == 1 {
-			if currentProgram != nil {
-				currentProgram.addInclude("<cmath>")
-			}
-			return &CallExpr{Name: "std::log", Args: args}, nil
 		}
 		return &CallExpr{Name: safeName(p.Call.Func), Args: args}, nil
 	case p.Selector != nil:
