@@ -2781,7 +2781,13 @@ func (l *ListLit) emitExpr(w io.Writer) {
 		return
 	}
 	elemType := "long long"
-	if t := inferExprType(currentEnv, l.Elems[0]); t != "" {
+	if currentVarType != nil {
+		if lt, ok := currentVarType.(types.ListType); ok {
+			elemType = cTypeFromMochiType(lt.Elem)
+		} else {
+			elemType = cTypeFromMochiType(currentVarType)
+		}
+	} else if t := inferExprType(currentEnv, l.Elems[0]); t != "" {
 		elemType = t
 	} else if exprIsString(l.Elems[0]) {
 		elemType = "const char*"
@@ -2856,7 +2862,10 @@ func (s *StructLit) emitExpr(w io.Writer) {
 				switch mt := ft.(type) {
 				case types.ListType:
 					if f.Value != nil {
+						prev := currentVarType
+						currentVarType = mt
 						f.Value.emitExpr(w)
+						currentVarType = prev
 					}
 					io.WriteString(w, ", .")
 					io.WriteString(w, f.Name+"_len = ")
