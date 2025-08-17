@@ -49,45 +49,50 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  input_str: string;
-  pos: CoordArray;
-  count: integer;
-  row: integer;
-  matrix_g: StrArrayArray;
-  pos_y: integer;
-  s: string;
-  r: integer;
-  size: integer;
-  moves: CoordArray;
-  pos_x: integer;
-  ch: string;
-  token: string;
-  matrix: StrArray;
-  c: integer;
-  sep: string;
-  column: integer;
 function makePlayResult(matrix: StrArrayArray; score: integer): PlayResult; forward;
 function makeCoord(x: integer; y: integer): Coord; forward;
-function is_alnum(ch: string): boolean; forward;
-function to_int(token: string): integer; forward;
-function split(s: string; sep: string): StrArray; forward;
-function parse_moves(input_str: string): CoordArray; forward;
-procedure validate_matrix_size(size: integer); forward;
-procedure validate_matrix_content(matrix: StrArray; size: integer); forward;
-procedure validate_moves(moves: CoordArray; size: integer); forward;
-function contains(pos: CoordArray; r: integer; c: integer): boolean; forward;
-function find_repeat(matrix_g: StrArrayArray; row: integer; column: integer; size: integer): CoordArray; forward;
-function increment_score(count: integer): integer; forward;
-function move_x(matrix_g: StrArrayArray; column: integer; size: integer): StrArrayArray; forward;
-function move_y(matrix_g: StrArrayArray; size: integer): StrArrayArray; forward;
-function play(matrix_g: StrArrayArray; pos_x: integer; pos_y: integer; size: integer): PlayResult; forward;
-function build_matrix(matrix: StrArray): StrArrayArray; forward;
-function process_game(size: integer; matrix: StrArray; moves: CoordArray): integer; forward;
+function is_alnum(is_alnum_ch: string): boolean; forward;
+function to_int(to_int_token: string): integer; forward;
+function split(split_s: string; split_sep: string): StrArray; forward;
+function parse_moves(parse_moves_input_str: string): CoordArray; forward;
+procedure validate_matrix_size(validate_matrix_size_size: integer); forward;
+procedure validate_matrix_content(validate_matrix_content_matrix: StrArray; validate_matrix_content_size: integer); forward;
+procedure validate_moves(validate_moves_moves: CoordArray; validate_moves_size: integer); forward;
+function contains(contains_pos: CoordArray; contains_r: integer; contains_c: integer): boolean; forward;
+function find_repeat(find_repeat_matrix_g: StrArrayArray; find_repeat_row: integer; find_repeat_column: integer; find_repeat_size: integer): CoordArray; forward;
+function increment_score(increment_score_count: integer): integer; forward;
+function move_x(move_x_matrix_g: StrArrayArray; move_x_column: integer; move_x_size: integer): StrArrayArray; forward;
+function move_y(move_y_matrix_g: StrArrayArray; move_y_size: integer): StrArrayArray; forward;
+function play(play_matrix_g: StrArrayArray; play_pos_x: integer; play_pos_y: integer; play_size: integer): PlayResult; forward;
+function build_matrix(build_matrix_matrix: StrArray): StrArrayArray; forward;
+function process_game(process_game_size: integer; process_game_matrix: StrArray; process_game_moves: CoordArray): integer; forward;
 procedure main(); forward;
 function makePlayResult(matrix: StrArrayArray; score: integer): PlayResult;
 begin
@@ -99,24 +104,24 @@ begin
   Result.x := x;
   Result.y := y;
 end;
-function is_alnum(ch: string): boolean;
+function is_alnum(is_alnum_ch: string): boolean;
 begin
-  exit((((ch >= '0') and (ch <= '9')) or ((ch >= 'A') and (ch <= 'Z'))) or ((ch >= 'a') and (ch <= 'z')));
+  exit((((is_alnum_ch >= '0') and (is_alnum_ch <= '9')) or ((is_alnum_ch >= 'A') and (is_alnum_ch <= 'Z'))) or ((is_alnum_ch >= 'a') and (is_alnum_ch <= 'z')));
 end;
-function to_int(token: string): integer;
+function to_int(to_int_token: string): integer;
 var
   to_int_res: integer;
   to_int_i: integer;
 begin
   to_int_res := 0;
   to_int_i := 0;
-  while to_int_i < Length(token) do begin
-  to_int_res := (to_int_res * 10) + StrToInt(copy(token, to_int_i+1, (to_int_i + 1 - (to_int_i))));
+  while to_int_i < Length(to_int_token) do begin
+  to_int_res := (to_int_res * 10) + StrToInt(copy(to_int_token, to_int_i+1, (to_int_i + 1 - (to_int_i))));
   to_int_i := to_int_i + 1;
 end;
   exit(to_int_res);
 end;
-function split(s: string; sep: string): StrArray;
+function split(split_s: string; split_sep: string): StrArray;
 var
   split_res: array of string;
   split_current: string;
@@ -126,9 +131,9 @@ begin
   split_res := [];
   split_current := '';
   split_i := 0;
-  while split_i < Length(s) do begin
-  split_ch := copy(s, split_i+1, (split_i + 1 - (split_i)));
-  if split_ch = sep then begin
+  while split_i < Length(split_s) do begin
+  split_ch := copy(split_s, split_i+1, (split_i + 1 - (split_i)));
+  if split_ch = split_sep then begin
   split_res := concat(split_res, StrArray([split_current]));
   split_current := '';
 end else begin
@@ -139,7 +144,7 @@ end;
   split_res := concat(split_res, StrArray([split_current]));
   exit(split_res);
 end;
-function parse_moves(input_str: string): CoordArray;
+function parse_moves(parse_moves_input_str: string): CoordArray;
 var
   parse_moves_pairs: StrArray;
   parse_moves_moves: array of Coord;
@@ -152,7 +157,7 @@ var
   parse_moves_x: integer;
   parse_moves_y: integer;
 begin
-  parse_moves_pairs := split(input_str, ',');
+  parse_moves_pairs := split(parse_moves_input_str, ',');
   parse_moves_moves := [];
   parse_moves_i := 0;
   while parse_moves_i < Length(parse_moves_pairs) do begin
@@ -185,30 +190,30 @@ end;
 end;
   exit(parse_moves_moves);
 end;
-procedure validate_matrix_size(size: integer);
+procedure validate_matrix_size(validate_matrix_size_size: integer);
 begin
-  if size <= 0 then begin
+  if validate_matrix_size_size <= 0 then begin
   panic('Matrix size must be a positive integer.');
 end;
 end;
-procedure validate_matrix_content(matrix: StrArray; size: integer);
+procedure validate_matrix_content(validate_matrix_content_matrix: StrArray; validate_matrix_content_size: integer);
 var
   validate_matrix_content_i: integer;
   validate_matrix_content_row: string;
   validate_matrix_content_j: integer;
   validate_matrix_content_ch: string;
 begin
-  if Length(matrix) <> size then begin
+  if Length(validate_matrix_content_matrix) <> validate_matrix_content_size then begin
   panic('The matrix dont match with size.');
 end;
   validate_matrix_content_i := 0;
-  while validate_matrix_content_i < size do begin
-  validate_matrix_content_row := matrix[validate_matrix_content_i];
-  if Length(validate_matrix_content_row) <> size then begin
-  panic(('Each row in the matrix must have exactly ' + IntToStr(size)) + ' characters.');
+  while validate_matrix_content_i < validate_matrix_content_size do begin
+  validate_matrix_content_row := validate_matrix_content_matrix[validate_matrix_content_i];
+  if Length(validate_matrix_content_row) <> validate_matrix_content_size then begin
+  panic(('Each row in the matrix must have exactly ' + IntToStr(validate_matrix_content_size)) + ' characters.');
 end;
   validate_matrix_content_j := 0;
-  while validate_matrix_content_j < size do begin
+  while validate_matrix_content_j < validate_matrix_content_size do begin
   validate_matrix_content_ch := copy(validate_matrix_content_row, validate_matrix_content_j+1, (validate_matrix_content_j + 1 - (validate_matrix_content_j)));
   if not is_alnum(validate_matrix_content_ch) then begin
   panic('Matrix rows can only contain letters and numbers.');
@@ -218,36 +223,36 @@ end;
   validate_matrix_content_i := validate_matrix_content_i + 1;
 end;
 end;
-procedure validate_moves(moves: CoordArray; size: integer);
+procedure validate_moves(validate_moves_moves: CoordArray; validate_moves_size: integer);
 var
   validate_moves_i: integer;
   validate_moves_mv: Coord;
 begin
   validate_moves_i := 0;
-  while validate_moves_i < Length(moves) do begin
-  validate_moves_mv := moves[validate_moves_i];
-  if (((validate_moves_mv.x < 0) or (validate_moves_mv.x >= size)) or (validate_moves_mv.y < 0)) or (validate_moves_mv.y >= size) then begin
+  while validate_moves_i < Length(validate_moves_moves) do begin
+  validate_moves_mv := validate_moves_moves[validate_moves_i];
+  if (((validate_moves_mv.x < 0) or (validate_moves_mv.x >= validate_moves_size)) or (validate_moves_mv.y < 0)) or (validate_moves_mv.y >= validate_moves_size) then begin
   panic('Move is out of bounds for a matrix.');
 end;
   validate_moves_i := validate_moves_i + 1;
 end;
 end;
-function contains(pos: CoordArray; r: integer; c: integer): boolean;
+function contains(contains_pos: CoordArray; contains_r: integer; contains_c: integer): boolean;
 var
   contains_i: integer;
   contains_p: Coord;
 begin
   contains_i := 0;
-  while contains_i < Length(pos) do begin
-  contains_p := pos[contains_i];
-  if (contains_p.x = r) and (contains_p.y = c) then begin
+  while contains_i < Length(contains_pos) do begin
+  contains_p := contains_pos[contains_i];
+  if (contains_p.x = contains_r) and (contains_p.y = contains_c) then begin
   exit(true);
 end;
   contains_i := contains_i + 1;
 end;
   exit(false);
 end;
-function find_repeat(matrix_g: StrArrayArray; row: integer; column: integer; size: integer): CoordArray;
+function find_repeat(find_repeat_matrix_g: StrArrayArray; find_repeat_row: integer; find_repeat_column: integer; find_repeat_size: integer): CoordArray;
 var
   find_repeat_visited: array of Coord;
   find_repeat_repeated: array of Coord;
@@ -256,26 +261,26 @@ var
   find_repeat_idx: integer;
   find_repeat_pos: Coord;
 begin
-  column := (size - 1) - column;
+  find_repeat_column := (find_repeat_size - 1) - find_repeat_column;
   find_repeat_visited := [];
   find_repeat_repeated := [];
-  find_repeat_color := matrix_g[column][row];
+  find_repeat_color := find_repeat_matrix_g[find_repeat_column][find_repeat_row];
   if find_repeat_color = '-' then begin
   exit(find_repeat_repeated);
 end;
-  find_repeat_stack := [makeCoord(column, row)];
+  find_repeat_stack := [makeCoord(find_repeat_column, find_repeat_row)];
   while Length(find_repeat_stack) > 0 do begin
   find_repeat_idx := Length(find_repeat_stack) - 1;
   find_repeat_pos := find_repeat_stack[find_repeat_idx];
   find_repeat_stack := copy(find_repeat_stack, 0, (find_repeat_idx - (0)));
-  if (((find_repeat_pos.x < 0) or (find_repeat_pos.x >= size)) or (find_repeat_pos.y < 0)) or (find_repeat_pos.y >= size) then begin
+  if (((find_repeat_pos.x < 0) or (find_repeat_pos.x >= find_repeat_size)) or (find_repeat_pos.y < 0)) or (find_repeat_pos.y >= find_repeat_size) then begin
   continue;
 end;
   if contains(find_repeat_visited, find_repeat_pos.x, find_repeat_pos.y) then begin
   continue;
 end;
   find_repeat_visited := concat(find_repeat_visited, [find_repeat_pos]);
-  if matrix_g[find_repeat_pos.x][find_repeat_pos.y] = find_repeat_color then begin
+  if find_repeat_matrix_g[find_repeat_pos.x][find_repeat_pos.y] = find_repeat_color then begin
   find_repeat_repeated := concat(find_repeat_repeated, [find_repeat_pos]);
   find_repeat_stack := concat(find_repeat_stack, [makeCoord(find_repeat_pos.x - 1, find_repeat_pos.y)]);
   find_repeat_stack := concat(find_repeat_stack, [makeCoord(find_repeat_pos.x + 1, find_repeat_pos.y)]);
@@ -285,11 +290,11 @@ end;
 end;
   exit(find_repeat_repeated);
 end;
-function increment_score(count: integer): integer;
+function increment_score(increment_score_count: integer): integer;
 begin
-  exit((count * (count + 1)) div 2);
+  exit((increment_score_count * (increment_score_count + 1)) div 2);
 end;
-function move_x(matrix_g: StrArrayArray; column: integer; size: integer): StrArrayArray;
+function move_x(move_x_matrix_g: StrArrayArray; move_x_column: integer; move_x_size: integer): StrArrayArray;
 var
   move_x_new_list: array of string;
   move_x_row: integer;
@@ -297,8 +302,8 @@ var
 begin
   move_x_new_list := [];
   move_x_row := 0;
-  while move_x_row < size do begin
-  move_x_val := matrix_g[move_x_row][column];
+  while move_x_row < move_x_size do begin
+  move_x_val := move_x_matrix_g[move_x_row][move_x_column];
   if move_x_val <> '-' then begin
   move_x_new_list := concat(move_x_new_list, StrArray([move_x_val]));
 end else begin
@@ -307,13 +312,13 @@ end;
   move_x_row := move_x_row + 1;
 end;
   move_x_row := 0;
-  while move_x_row < size do begin
-  matrix_g[move_x_row][column] := move_x_new_list[move_x_row];
+  while move_x_row < move_x_size do begin
+  move_x_matrix_g[move_x_row][move_x_column] := move_x_new_list[move_x_row];
   move_x_row := move_x_row + 1;
 end;
-  exit(matrix_g);
+  exit(move_x_matrix_g);
 end;
-function move_y(matrix_g: StrArrayArray; size: integer): StrArrayArray;
+function move_y(move_y_matrix_g: StrArrayArray; move_y_size: integer): StrArrayArray;
 var
   move_y_empty_cols: array of integer;
   move_y_column: integer;
@@ -325,12 +330,12 @@ var
   move_y_r: integer;
 begin
   move_y_empty_cols := [];
-  move_y_column := size - 1;
+  move_y_column := move_y_size - 1;
   while move_y_column >= 0 do begin
   move_y_row := 0;
   move_y_all_empty := true;
-  while move_y_row < size do begin
-  if matrix_g[move_y_row][move_y_column] <> '-' then begin
+  while move_y_row < move_y_size do begin
+  if move_y_matrix_g[move_y_row][move_y_column] <> '-' then begin
   move_y_all_empty := false;
   break;
 end;
@@ -345,24 +350,24 @@ end;
   while move_y_i < Length(move_y_empty_cols) do begin
   move_y_col := move_y_empty_cols[move_y_i];
   move_y_c := move_y_col + 1;
-  while move_y_c < size do begin
+  while move_y_c < move_y_size do begin
   move_y_r := 0;
-  while move_y_r < size do begin
-  matrix_g[move_y_r][move_y_c - 1] := matrix_g[move_y_r][move_y_c];
+  while move_y_r < move_y_size do begin
+  move_y_matrix_g[move_y_r][move_y_c - 1] := move_y_matrix_g[move_y_r][move_y_c];
   move_y_r := move_y_r + 1;
 end;
   move_y_c := move_y_c + 1;
 end;
   move_y_r := 0;
-  while move_y_r < size do begin
-  matrix_g[move_y_r][size - 1] := '-';
+  while move_y_r < move_y_size do begin
+  move_y_matrix_g[move_y_r][move_y_size - 1] := '-';
   move_y_r := move_y_r + 1;
 end;
   move_y_i := move_y_i + 1;
 end;
-  exit(matrix_g);
+  exit(move_y_matrix_g);
 end;
-function play(matrix_g: StrArrayArray; pos_x: integer; pos_y: integer; size: integer): PlayResult;
+function play(play_matrix_g: StrArrayArray; play_pos_x: integer; play_pos_y: integer; play_size: integer): PlayResult;
 var
   play_same_colors: CoordArray;
   play_i: integer;
@@ -370,25 +375,25 @@ var
   play_column: integer;
   play_sc: integer;
 begin
-  play_same_colors := find_repeat(matrix_g, pos_x, pos_y, size);
+  play_same_colors := find_repeat(play_matrix_g, play_pos_x, play_pos_y, play_size);
   if Length(play_same_colors) <> 0 then begin
   play_i := 0;
   while play_i < Length(play_same_colors) do begin
   play_p := play_same_colors[play_i];
-  matrix_g[play_p.x][play_p.y] := '-';
+  play_matrix_g[play_p.x][play_p.y] := '-';
   play_i := play_i + 1;
 end;
   play_column := 0;
-  while play_column < size do begin
-  matrix_g := move_x(matrix_g, play_column, size);
+  while play_column < play_size do begin
+  play_matrix_g := move_x(play_matrix_g, play_column, play_size);
   play_column := play_column + 1;
 end;
-  matrix_g := move_y(matrix_g, size);
+  play_matrix_g := move_y(play_matrix_g, play_size);
 end;
   play_sc := increment_score(Length(play_same_colors));
-  exit(makePlayResult(matrix_g, play_sc));
+  exit(makePlayResult(play_matrix_g, play_sc));
 end;
-function build_matrix(matrix: StrArray): StrArrayArray;
+function build_matrix(build_matrix_matrix: StrArray): StrArrayArray;
 var
   build_matrix_res: array of StrArray;
   build_matrix_i: integer;
@@ -398,8 +403,8 @@ var
 begin
   build_matrix_res := [];
   build_matrix_i := 0;
-  while build_matrix_i < Length(matrix) do begin
-  build_matrix_row := matrix[build_matrix_i];
+  while build_matrix_i < Length(build_matrix_matrix) do begin
+  build_matrix_row := build_matrix_matrix[build_matrix_i];
   build_matrix_row_list := [];
   build_matrix_j := 0;
   while build_matrix_j < Length(build_matrix_row) do begin
@@ -411,7 +416,7 @@ end;
 end;
   exit(build_matrix_res);
 end;
-function process_game(size: integer; matrix: StrArray; moves: CoordArray): integer;
+function process_game(process_game_size: integer; process_game_matrix: StrArray; process_game_moves: CoordArray): integer;
 var
   process_game_game_matrix: StrArrayArray;
   process_game_total: integer;
@@ -419,12 +424,12 @@ var
   process_game_mv: Coord;
   process_game_res: PlayResult;
 begin
-  process_game_game_matrix := build_matrix(matrix);
+  process_game_game_matrix := build_matrix(process_game_matrix);
   process_game_total := 0;
   process_game_i := 0;
-  while process_game_i < Length(moves) do begin
-  process_game_mv := moves[process_game_i];
-  process_game_res := play(process_game_game_matrix, process_game_mv.x, process_game_mv.y, size);
+  while process_game_i < Length(process_game_moves) do begin
+  process_game_mv := process_game_moves[process_game_i];
+  process_game_res := play(process_game_game_matrix, process_game_mv.x, process_game_mv.y, process_game_size);
   process_game_game_matrix := process_game_res.matrix;
   process_game_total := process_game_total + process_game_res.score;
   process_game_i := process_game_i + 1;

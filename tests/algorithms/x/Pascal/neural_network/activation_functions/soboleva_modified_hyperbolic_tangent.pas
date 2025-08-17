@@ -65,16 +65,10 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  vector: RealArray;
-  a_value: real;
-  x: real;
-  c_value: real;
-  b_value: real;
-  d_value: real;
-function exp_(x: real): real; forward;
-function soboleva_modified_hyperbolic_tangent(vector: RealArray; a_value: real; b_value: real; c_value: real; d_value: real): RealArray; forward;
+function exp_(exp__x: real): real; forward;
+function soboleva_modified_hyperbolic_tangent(soboleva_modified_hyperbolic_tangent_vector: RealArray; soboleva_modified_hyperbolic_tangent_a_value: real; soboleva_modified_hyperbolic_tangent_b_value: real; soboleva_modified_hyperbolic_tangent_c_value: real; soboleva_modified_hyperbolic_tangent_d_value: real): RealArray; forward;
 procedure main(); forward;
-function exp_(x: real): real;
+function exp_(exp__x: real): real;
 var
   exp__term: real;
   exp__sum: real;
@@ -84,13 +78,13 @@ begin
   exp__sum := 1;
   exp__n := 1;
   while exp__n < 20 do begin
-  exp__term := (exp__term * x) / to_float(exp__n);
+  exp__term := (exp__term * exp__x) / to_float(exp__n);
   exp__sum := exp__sum + exp__term;
   exp__n := exp__n + 1;
 end;
   exit(exp__sum);
 end;
-function soboleva_modified_hyperbolic_tangent(vector: RealArray; a_value: real; b_value: real; c_value: real; d_value: real): RealArray;
+function soboleva_modified_hyperbolic_tangent(soboleva_modified_hyperbolic_tangent_vector: RealArray; soboleva_modified_hyperbolic_tangent_a_value: real; soboleva_modified_hyperbolic_tangent_b_value: real; soboleva_modified_hyperbolic_tangent_c_value: real; soboleva_modified_hyperbolic_tangent_d_value: real): RealArray;
 var
   soboleva_modified_hyperbolic_tangent_result_: array of real;
   soboleva_modified_hyperbolic_tangent_i: integer;
@@ -100,10 +94,10 @@ var
 begin
   soboleva_modified_hyperbolic_tangent_result_ := [];
   soboleva_modified_hyperbolic_tangent_i := 0;
-  while soboleva_modified_hyperbolic_tangent_i < Length(vector) do begin
-  soboleva_modified_hyperbolic_tangent_x := vector[soboleva_modified_hyperbolic_tangent_i];
-  soboleva_modified_hyperbolic_tangent_numerator := exp(a_value * soboleva_modified_hyperbolic_tangent_x) - exp(-b_value * soboleva_modified_hyperbolic_tangent_x);
-  soboleva_modified_hyperbolic_tangent_denominator := exp(c_value * soboleva_modified_hyperbolic_tangent_x) + exp(-d_value * soboleva_modified_hyperbolic_tangent_x);
+  while soboleva_modified_hyperbolic_tangent_i < Length(soboleva_modified_hyperbolic_tangent_vector) do begin
+  soboleva_modified_hyperbolic_tangent_x := soboleva_modified_hyperbolic_tangent_vector[soboleva_modified_hyperbolic_tangent_i];
+  soboleva_modified_hyperbolic_tangent_numerator := exp(soboleva_modified_hyperbolic_tangent_a_value * soboleva_modified_hyperbolic_tangent_x) - exp(-soboleva_modified_hyperbolic_tangent_b_value * soboleva_modified_hyperbolic_tangent_x);
+  soboleva_modified_hyperbolic_tangent_denominator := exp(soboleva_modified_hyperbolic_tangent_c_value * soboleva_modified_hyperbolic_tangent_x) + exp(-soboleva_modified_hyperbolic_tangent_d_value * soboleva_modified_hyperbolic_tangent_x);
   soboleva_modified_hyperbolic_tangent_result_ := concat(soboleva_modified_hyperbolic_tangent_result_, [soboleva_modified_hyperbolic_tangent_numerator / soboleva_modified_hyperbolic_tangent_denominator]);
   soboleva_modified_hyperbolic_tangent_i := soboleva_modified_hyperbolic_tangent_i + 1;
 end;

@@ -37,31 +37,51 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  s: string;
-  date_input: string;
 function Map1(): specialize TFPGMap<integer, string>; forward;
-function parse_decimal(s: string): integer; forward;
-function zeller_day(date_input: string): string; forward;
-function zeller(date_input: string): string; forward;
+function parse_decimal(parse_decimal_s: string): integer; forward;
+function zeller_day(zeller_day_date_input: string): string; forward;
+function zeller(zeller_date_input: string): string; forward;
 procedure test_zeller(); forward;
 procedure main(); forward;
 function Map1(): specialize TFPGMap<integer, string>;
 begin
   Result := specialize TFPGMap<integer, string>.Create();
-  Result.AddOrSetData(0, Variant('Sunday'));
-  Result.AddOrSetData(1, Variant('Monday'));
-  Result.AddOrSetData(2, Variant('Tuesday'));
-  Result.AddOrSetData(3, Variant('Wednesday'));
-  Result.AddOrSetData(4, Variant('Thursday'));
-  Result.AddOrSetData(5, Variant('Friday'));
-  Result.AddOrSetData(6, Variant('Saturday'));
+  Result.AddOrSetData(0, 'Sunday');
+  Result.AddOrSetData(1, 'Monday');
+  Result.AddOrSetData(2, 'Tuesday');
+  Result.AddOrSetData(3, 'Wednesday');
+  Result.AddOrSetData(4, 'Thursday');
+  Result.AddOrSetData(5, 'Friday');
+  Result.AddOrSetData(6, 'Saturday');
 end;
-function parse_decimal(s: string): integer;
+function parse_decimal(parse_decimal_s: string): integer;
 var
   parse_decimal_value: integer;
   parse_decimal_i: integer;
@@ -69,8 +89,8 @@ var
 begin
   parse_decimal_value := 0;
   parse_decimal_i := 0;
-  while parse_decimal_i < Length(s) do begin
-  parse_decimal_c := s[parse_decimal_i+1];
+  while parse_decimal_i < Length(parse_decimal_s) do begin
+  parse_decimal_c := parse_decimal_s[parse_decimal_i+1];
   if (parse_decimal_c < '0') or (parse_decimal_c > '9') then begin
   panic('invalid literal');
 end;
@@ -79,7 +99,7 @@ end;
 end;
   exit(parse_decimal_value);
 end;
-function zeller_day(date_input: string): string;
+function zeller_day(zeller_day_date_input: string): string;
 var
   zeller_day_days: specialize TFPGMap<integer, string>;
   zeller_day_m: integer;
@@ -100,26 +120,26 @@ var
   zeller_day_f: integer;
 begin
   zeller_day_days := Map1();
-  if Length(date_input) <> 10 then begin
+  if Length(zeller_day_date_input) <> 10 then begin
   panic('Must be 10 characters long');
 end;
-  zeller_day_m := parse_decimal(copy(date_input, 1, 2));
+  zeller_day_m := parse_decimal(copy(zeller_day_date_input, 1, 2));
   if (zeller_day_m <= 0) or (zeller_day_m >= 13) then begin
   panic('Month must be between 1 - 12');
 end;
-  zeller_day_sep1 := date_input[2+1];
+  zeller_day_sep1 := zeller_day_date_input[2+1];
   if (zeller_day_sep1 <> '-') and (zeller_day_sep1 <> '/') then begin
   panic('Date separator must be ''-'' or ''/''');
 end;
-  zeller_day_d := parse_decimal(copy(date_input, 4, 2));
+  zeller_day_d := parse_decimal(copy(zeller_day_date_input, 4, 2));
   if (zeller_day_d <= 0) or (zeller_day_d >= 32) then begin
   panic('Date must be between 1 - 31');
 end;
-  zeller_day_sep2 := date_input[5+1];
+  zeller_day_sep2 := zeller_day_date_input[5+1];
   if (zeller_day_sep2 <> '-') and (zeller_day_sep2 <> '/') then begin
   panic('Date separator must be ''-'' or ''/''');
 end;
-  zeller_day_y := parse_decimal(copy(date_input, 7, 4));
+  zeller_day_y := parse_decimal(copy(zeller_day_date_input, 7, 4));
   if (zeller_day_y <= 45) or (zeller_day_y >= 8500) then begin
   panic('Year out of range. There has to be some sort of limit...right?');
 end;
@@ -143,12 +163,12 @@ end;
 end;
   exit(zeller_day_days[zeller_day_f]);
 end;
-function zeller(date_input: string): string;
+function zeller(zeller_date_input: string): string;
 var
   zeller_day_var: string;
 begin
-  zeller_day_var := zeller_day(date_input);
-  exit(((('Your date ' + date_input) + ', is a ') + zeller_day_var) + '!');
+  zeller_day_var := zeller_day(zeller_date_input);
+  exit(((('Your date ' + zeller_date_input) + ', is a ') + zeller_day_var) + '!');
 end;
 procedure test_zeller();
 var

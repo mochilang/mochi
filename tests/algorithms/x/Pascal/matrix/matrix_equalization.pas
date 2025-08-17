@@ -65,12 +65,9 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  step_size: integer;
-  nums: IntArray;
-  vector: IntArray;
-function unique(nums: IntArray): IntArray; forward;
-function array_equalization(vector: IntArray; step_size: integer): integer; forward;
-function unique(nums: IntArray): IntArray;
+function unique(unique_nums: IntArray): IntArray; forward;
+function array_equalization(array_equalization_vector: IntArray; array_equalization_step_size: integer): integer; forward;
+function unique(unique_nums: IntArray): IntArray;
 var
   unique_res: array of integer;
   unique_i: integer;
@@ -80,8 +77,8 @@ var
 begin
   unique_res := [];
   unique_i := 0;
-  while unique_i < Length(nums) do begin
-  unique_v := nums[unique_i];
+  while unique_i < Length(unique_nums) do begin
+  unique_v := unique_nums[unique_i];
   unique_found := false;
   unique_j := 0;
   while unique_j < Length(unique_res) do begin
@@ -98,7 +95,7 @@ end;
 end;
   exit(unique_res);
 end;
-function array_equalization(vector: IntArray; step_size: integer): integer;
+function array_equalization(array_equalization_vector: IntArray; array_equalization_step_size: integer): integer;
 var
   array_equalization_elems: IntArray;
   array_equalization_min_updates: integer;
@@ -107,20 +104,20 @@ var
   array_equalization_idx: integer;
   array_equalization_updates: integer;
 begin
-  if step_size <= 0 then begin
+  if array_equalization_step_size <= 0 then begin
   error('Step size must be positive and non-zero.');
 end;
-  array_equalization_elems := unique(vector);
-  array_equalization_min_updates := Length(vector);
+  array_equalization_elems := unique(array_equalization_vector);
+  array_equalization_min_updates := Length(array_equalization_vector);
   array_equalization_i := 0;
   while array_equalization_i < Length(array_equalization_elems) do begin
   array_equalization_target := array_equalization_elems[array_equalization_i];
   array_equalization_idx := 0;
   array_equalization_updates := 0;
-  while array_equalization_idx < Length(vector) do begin
-  if vector[array_equalization_idx] <> array_equalization_target then begin
+  while array_equalization_idx < Length(array_equalization_vector) do begin
+  if array_equalization_vector[array_equalization_idx] <> array_equalization_target then begin
   array_equalization_updates := array_equalization_updates + 1;
-  array_equalization_idx := array_equalization_idx + step_size;
+  array_equalization_idx := array_equalization_idx + array_equalization_step_size;
 end else begin
   array_equalization_idx := array_equalization_idx + 1;
 end;

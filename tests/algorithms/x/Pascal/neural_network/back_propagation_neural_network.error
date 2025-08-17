@@ -1,9 +1,0 @@
-run: exit status 217
-An unhandled exception occurred at $0000000000402EAA:
-EAccessViolation: Access violation
-  $0000000000402EAA
-  $0000000000404701
-  $0000000000404E6D
-  $0000000000405F3A
-  $0000000000406116
-

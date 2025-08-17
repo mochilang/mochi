@@ -89,15 +89,9 @@ var
   bench_memdiff_0: int64;
   test_graph: array of IntArray;
   result_: IntArrayArray;
-  s: integer;
-  parent: IntArray;
-  graph: IntArrayArray;
-  t: integer;
-  source: integer;
-  sink: integer;
-function bfs(graph: IntArrayArray; s: integer; t: integer; parent: IntArray): boolean; forward;
-function mincut(graph: IntArrayArray; source: integer; sink: integer): IntArrayArray; forward;
-function bfs(graph: IntArrayArray; s: integer; t: integer; parent: IntArray): boolean;
+function bfs(bfs_graph: IntArrayArray; bfs_s: integer; bfs_t: integer; bfs_parent: IntArray): boolean; forward;
+function mincut(mincut_graph: IntArrayArray; mincut_source: integer; mincut_sink: integer): IntArrayArray; forward;
+function bfs(bfs_graph: IntArrayArray; bfs_s: integer; bfs_t: integer; bfs_parent: IntArray): boolean;
 var
   bfs_visited: array of boolean;
   bfs_i: integer;
@@ -108,29 +102,29 @@ var
 begin
   bfs_visited := [];
   bfs_i := 0;
-  while bfs_i < Length(graph) do begin
+  while bfs_i < Length(bfs_graph) do begin
   bfs_visited := concat(bfs_visited, [false]);
   bfs_i := bfs_i + 1;
 end;
-  bfs_queue := [s];
+  bfs_queue := [bfs_s];
   bfs_head := 0;
-  bfs_visited[s] := true;
+  bfs_visited[bfs_s] := true;
   while bfs_head < Length(bfs_queue) do begin
   bfs_u := bfs_queue[bfs_head];
   bfs_head := bfs_head + 1;
   bfs_ind := 0;
-  while bfs_ind < Length(graph[bfs_u]) do begin
-  if (bfs_visited[bfs_ind] = false) and (graph[bfs_u][bfs_ind] > 0) then begin
+  while bfs_ind < Length(bfs_graph[bfs_u]) do begin
+  if (bfs_visited[bfs_ind] = false) and (bfs_graph[bfs_u][bfs_ind] > 0) then begin
   bfs_queue := concat(bfs_queue, IntArray([bfs_ind]));
   bfs_visited[bfs_ind] := true;
-  parent[bfs_ind] := bfs_u;
+  bfs_parent[bfs_ind] := bfs_u;
 end;
   bfs_ind := bfs_ind + 1;
 end;
 end;
-  exit(bfs_visited[t]);
+  exit(bfs_visited[bfs_t]);
 end;
-function mincut(graph: IntArrayArray; source: integer; sink: integer): IntArrayArray;
+function mincut(mincut_graph: IntArrayArray; mincut_source: integer; mincut_sink: integer): IntArrayArray;
 var
   mincut_g: array of IntArray;
   mincut_parent: array of integer;
@@ -146,7 +140,7 @@ var
   mincut_u: integer;
   mincut_res: array of IntArray;
 begin
-  mincut_g := graph;
+  mincut_g := mincut_graph;
   mincut_parent := [];
   mincut_i := 0;
   while mincut_i < Length(mincut_g) do begin
@@ -165,10 +159,10 @@ end;
   mincut_temp := concat(mincut_temp, [mincut_row]);
   mincut_i := mincut_i + 1;
 end;
-  while bfs(mincut_g, source, sink, mincut_parent) do begin
+  while bfs(mincut_g, mincut_source, mincut_sink, mincut_parent) do begin
   mincut_path_flow := 1000000000;
-  mincut_s := sink;
-  while mincut_s <> source do begin
+  mincut_s := mincut_sink;
+  while mincut_s <> mincut_source do begin
   mincut_p := mincut_parent[mincut_s];
   mincut_cap := mincut_g[mincut_p][mincut_s];
   if mincut_cap < mincut_path_flow then begin
@@ -176,8 +170,8 @@ end;
 end;
   mincut_s := mincut_p;
 end;
-  mincut_v := sink;
-  while mincut_v <> source do begin
+  mincut_v := mincut_sink;
+  while mincut_v <> mincut_source do begin
   mincut_u := mincut_parent[mincut_v];
   mincut_g[mincut_u][mincut_v] := mincut_g[mincut_u][mincut_v] - mincut_path_flow;
   mincut_g[mincut_v][mincut_u] := mincut_g[mincut_v][mincut_u] + mincut_path_flow;

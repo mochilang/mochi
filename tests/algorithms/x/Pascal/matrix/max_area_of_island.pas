@@ -67,47 +67,40 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   matrix: array of IntArray;
-  mat: IntArrayArray;
-  row: integer;
-  rows: integer;
-  key: string;
-  col: integer;
-  cols: integer;
-  seen: specialize TFPGMap<string, boolean>;
-function encode(row: integer; col: integer): string; forward;
-function is_safe(row: integer; col: integer; rows: integer; cols: integer): boolean; forward;
-function has(seen: specialize TFPGMap<string, boolean>; key: string): boolean; forward;
-function depth_first_search(row: integer; col: integer; seen: specialize TFPGMap<string, boolean>; mat: IntArrayArray): integer; forward;
-function find_max_area(mat: IntArrayArray): integer; forward;
-function encode(row: integer; col: integer): string;
+function encode(encode_row: integer; encode_col: integer): string; forward;
+function is_safe(is_safe_row: integer; is_safe_col: integer; is_safe_rows: integer; is_safe_cols: integer): boolean; forward;
+function has(has_seen: specialize TFPGMap<string, boolean>; has_key: string): boolean; forward;
+function depth_first_search(depth_first_search_row: integer; depth_first_search_col: integer; depth_first_search_seen: specialize TFPGMap<string, boolean>; depth_first_search_mat: IntArrayArray): integer; forward;
+function find_max_area(find_max_area_mat: IntArrayArray): integer; forward;
+function encode(encode_row: integer; encode_col: integer): string;
 begin
-  exit((IntToStr(row) + ',') + IntToStr(col));
+  exit((IntToStr(encode_row) + ',') + IntToStr(encode_col));
 end;
-function is_safe(row: integer; col: integer; rows: integer; cols: integer): boolean;
+function is_safe(is_safe_row: integer; is_safe_col: integer; is_safe_rows: integer; is_safe_cols: integer): boolean;
 begin
-  exit((((row >= 0) and (row < rows)) and (col >= 0)) and (col < cols));
+  exit((((is_safe_row >= 0) and (is_safe_row < is_safe_rows)) and (is_safe_col >= 0)) and (is_safe_col < is_safe_cols));
 end;
-function has(seen: specialize TFPGMap<string, boolean>; key: string): boolean;
+function has(has_seen: specialize TFPGMap<string, boolean>; has_key: string): boolean;
 begin
-  exit(seen.IndexOf(key) <> -1);
+  exit(has_seen.IndexOf(has_key) <> -1);
 end;
-function depth_first_search(row: integer; col: integer; seen: specialize TFPGMap<string, boolean>; mat: IntArrayArray): integer;
+function depth_first_search(depth_first_search_row: integer; depth_first_search_col: integer; depth_first_search_seen: specialize TFPGMap<string, boolean>; depth_first_search_mat: IntArrayArray): integer;
 var
   depth_first_search_rows: integer;
   depth_first_search_cols: integer;
   depth_first_search_key: string;
 begin
-  depth_first_search_rows := Length(mat);
-  depth_first_search_cols := Length(mat[0]);
-  depth_first_search_key := encode(row, col);
-  if (is_safe(row, col, depth_first_search_rows, depth_first_search_cols) and not has(seen, depth_first_search_key)) and (mat[row][col] = 1) then begin
-  seen[depth_first_search_key] := true;
-  exit((((1 + depth_first_search(row + 1, col, seen, mat)) + depth_first_search(row - 1, col, seen, mat)) + depth_first_search(row, col + 1, seen, mat)) + depth_first_search(row, col - 1, seen, mat));
+  depth_first_search_rows := Length(depth_first_search_mat);
+  depth_first_search_cols := Length(depth_first_search_mat[0]);
+  depth_first_search_key := encode(depth_first_search_row, depth_first_search_col);
+  if (is_safe(depth_first_search_row, depth_first_search_col, depth_first_search_rows, depth_first_search_cols) and not has(depth_first_search_seen, depth_first_search_key)) and (depth_first_search_mat[depth_first_search_row][depth_first_search_col] = 1) then begin
+  depth_first_search_seen[depth_first_search_key] := true;
+  exit((((1 + depth_first_search(depth_first_search_row + 1, depth_first_search_col, depth_first_search_seen, depth_first_search_mat)) + depth_first_search(depth_first_search_row - 1, depth_first_search_col, depth_first_search_seen, depth_first_search_mat)) + depth_first_search(depth_first_search_row, depth_first_search_col + 1, depth_first_search_seen, depth_first_search_mat)) + depth_first_search(depth_first_search_row, depth_first_search_col - 1, depth_first_search_seen, depth_first_search_mat));
 end else begin
   exit(0);
 end;
 end;
-function find_max_area(mat: IntArrayArray): integer;
+function find_max_area(find_max_area_mat: IntArrayArray): integer;
 var
   find_max_area_seen: specialize TFPGMap<string, boolean>;
   find_max_area_rows: integer;
@@ -120,18 +113,18 @@ var
   find_max_area_area: integer;
 begin
   find_max_area_seen := specialize TFPGMap<string, boolean>.Create();
-  find_max_area_rows := Length(mat);
+  find_max_area_rows := Length(find_max_area_mat);
   find_max_area_max_area := 0;
   find_max_area_r := 0;
   while find_max_area_r < find_max_area_rows do begin
-  find_max_area_line := mat[find_max_area_r];
+  find_max_area_line := find_max_area_mat[find_max_area_r];
   find_max_area_cols := Length(find_max_area_line);
   find_max_area_c := 0;
   while find_max_area_c < find_max_area_cols do begin
   if find_max_area_line[find_max_area_c] = 1 then begin
   find_max_area_key := encode(find_max_area_r, find_max_area_c);
   if not find_max_area_seen.IndexOf(find_max_area_key) <> -1 then begin
-  find_max_area_area := depth_first_search(find_max_area_r, find_max_area_c, find_max_area_seen, mat);
+  find_max_area_area := depth_first_search(find_max_area_r, find_max_area_c, find_max_area_seen, find_max_area_mat);
   if find_max_area_area > find_max_area_max_area then begin
   find_max_area_max_area := find_max_area_area;
 end;

@@ -70,18 +70,26 @@ begin
   end;
   write(']');
 end;
+function list_real_to_str(xs: array of real): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + FloatToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   sample: array of real;
-  vector: RealArray;
-  x: real;
-function exp_taylor(x: real): real; forward;
-function sigmoid(vector: RealArray): RealArray; forward;
-function gaussian_error_linear_unit(vector: RealArray): RealArray; forward;
-function exp_taylor(x: real): real;
+function exp_taylor(exp_taylor_x: real): real; forward;
+function sigmoid(sigmoid_vector: RealArray): RealArray; forward;
+function gaussian_error_linear_unit(gaussian_error_linear_unit_vector: RealArray): RealArray; forward;
+function exp_taylor(exp_taylor_x: real): real;
 var
   exp_taylor_term: real;
   exp_taylor_sum: real;
@@ -91,13 +99,13 @@ begin
   exp_taylor_sum := 1;
   exp_taylor_i := 1;
   while exp_taylor_i < 20 do begin
-  exp_taylor_term := (exp_taylor_term * x) / exp_taylor_i;
+  exp_taylor_term := (exp_taylor_term * exp_taylor_x) / exp_taylor_i;
   exp_taylor_sum := exp_taylor_sum + exp_taylor_term;
   exp_taylor_i := exp_taylor_i + 1;
 end;
   exit(exp_taylor_sum);
 end;
-function sigmoid(vector: RealArray): RealArray;
+function sigmoid(sigmoid_vector: RealArray): RealArray;
 var
   sigmoid_result_: array of real;
   sigmoid_i: integer;
@@ -106,15 +114,15 @@ var
 begin
   sigmoid_result_ := [];
   sigmoid_i := 0;
-  while sigmoid_i < Length(vector) do begin
-  sigmoid_x := vector[sigmoid_i];
+  while sigmoid_i < Length(sigmoid_vector) do begin
+  sigmoid_x := sigmoid_vector[sigmoid_i];
   sigmoid_value := 1 / (1 + exp_taylor(-sigmoid_x));
   sigmoid_result_ := concat(sigmoid_result_, [sigmoid_value]);
   sigmoid_i := sigmoid_i + 1;
 end;
   exit(sigmoid_result_);
 end;
-function gaussian_error_linear_unit(vector: RealArray): RealArray;
+function gaussian_error_linear_unit(gaussian_error_linear_unit_vector: RealArray): RealArray;
 var
   gaussian_error_linear_unit_result_: array of real;
   gaussian_error_linear_unit_i: integer;
@@ -123,8 +131,8 @@ var
 begin
   gaussian_error_linear_unit_result_ := [];
   gaussian_error_linear_unit_i := 0;
-  while gaussian_error_linear_unit_i < Length(vector) do begin
-  gaussian_error_linear_unit_x := vector[gaussian_error_linear_unit_i];
+  while gaussian_error_linear_unit_i < Length(gaussian_error_linear_unit_vector) do begin
+  gaussian_error_linear_unit_x := gaussian_error_linear_unit_vector[gaussian_error_linear_unit_i];
   gaussian_error_linear_unit_gelu := gaussian_error_linear_unit_x * (1 / (1 + exp_taylor(-1.702 * gaussian_error_linear_unit_x)));
   gaussian_error_linear_unit_result_ := concat(gaussian_error_linear_unit_result_, [gaussian_error_linear_unit_gelu]);
   gaussian_error_linear_unit_i := gaussian_error_linear_unit_i + 1;

@@ -86,28 +86,27 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  matrix: IntArrayArray;
-function is_valid_matrix(matrix: IntArrayArray): boolean; forward;
-function spiral_traversal(matrix: IntArrayArray): IntArray; forward;
-procedure spiral_print_clockwise(matrix: IntArrayArray); forward;
+function is_valid_matrix(is_valid_matrix_matrix: IntArrayArray): boolean; forward;
+function spiral_traversal(spiral_traversal_matrix: IntArrayArray): IntArray; forward;
+procedure spiral_print_clockwise(spiral_print_clockwise_matrix: IntArrayArray); forward;
 procedure main(); forward;
-function is_valid_matrix(matrix: IntArrayArray): boolean;
+function is_valid_matrix(is_valid_matrix_matrix: IntArrayArray): boolean;
 var
   is_valid_matrix_cols: integer;
   is_valid_matrix_row: IntArray;
 begin
-  if Length(matrix) = 0 then begin
+  if Length(is_valid_matrix_matrix) = 0 then begin
   exit(false);
 end;
-  is_valid_matrix_cols := Length(matrix[0]);
-  for is_valid_matrix_row in matrix do begin
+  is_valid_matrix_cols := Length(is_valid_matrix_matrix[0]);
+  for is_valid_matrix_row in is_valid_matrix_matrix do begin
   if Length(is_valid_matrix_row) <> is_valid_matrix_cols then begin
   exit(false);
 end;
 end;
   exit(true);
 end;
-function spiral_traversal(matrix: IntArrayArray): IntArray;
+function spiral_traversal(spiral_traversal_matrix: IntArrayArray): IntArray;
 var
   spiral_traversal_rows: integer;
   spiral_traversal_cols: integer;
@@ -118,11 +117,11 @@ var
   spiral_traversal_result_: array of integer;
   spiral_traversal_i: integer;
 begin
-  if not is_valid_matrix(matrix) then begin
+  if not is_valid_matrix(spiral_traversal_matrix) then begin
   exit([]);
 end;
-  spiral_traversal_rows := Length(matrix);
-  spiral_traversal_cols := Length(matrix[0]);
+  spiral_traversal_rows := Length(spiral_traversal_matrix);
+  spiral_traversal_cols := Length(spiral_traversal_matrix[0]);
   spiral_traversal_top := 0;
   spiral_traversal_bottom := spiral_traversal_rows - 1;
   spiral_traversal_left := 0;
@@ -131,20 +130,20 @@ end;
   while (spiral_traversal_left <= spiral_traversal_right) and (spiral_traversal_top <= spiral_traversal_bottom) do begin
   spiral_traversal_i := spiral_traversal_left;
   while spiral_traversal_i <= spiral_traversal_right do begin
-  spiral_traversal_result_ := concat(spiral_traversal_result_, IntArray([matrix[spiral_traversal_top][spiral_traversal_i]]));
+  spiral_traversal_result_ := concat(spiral_traversal_result_, IntArray([spiral_traversal_matrix[spiral_traversal_top][spiral_traversal_i]]));
   spiral_traversal_i := spiral_traversal_i + 1;
 end;
   spiral_traversal_top := spiral_traversal_top + 1;
   spiral_traversal_i := spiral_traversal_top;
   while spiral_traversal_i <= spiral_traversal_bottom do begin
-  spiral_traversal_result_ := concat(spiral_traversal_result_, IntArray([matrix[spiral_traversal_i][spiral_traversal_right]]));
+  spiral_traversal_result_ := concat(spiral_traversal_result_, IntArray([spiral_traversal_matrix[spiral_traversal_i][spiral_traversal_right]]));
   spiral_traversal_i := spiral_traversal_i + 1;
 end;
   spiral_traversal_right := spiral_traversal_right - 1;
   if spiral_traversal_top <= spiral_traversal_bottom then begin
   spiral_traversal_i := spiral_traversal_right;
   while spiral_traversal_i >= spiral_traversal_left do begin
-  spiral_traversal_result_ := concat(spiral_traversal_result_, IntArray([matrix[spiral_traversal_bottom][spiral_traversal_i]]));
+  spiral_traversal_result_ := concat(spiral_traversal_result_, IntArray([spiral_traversal_matrix[spiral_traversal_bottom][spiral_traversal_i]]));
   spiral_traversal_i := spiral_traversal_i - 1;
 end;
   spiral_traversal_bottom := spiral_traversal_bottom - 1;
@@ -152,7 +151,7 @@ end;
   if spiral_traversal_left <= spiral_traversal_right then begin
   spiral_traversal_i := spiral_traversal_bottom;
   while spiral_traversal_i >= spiral_traversal_top do begin
-  spiral_traversal_result_ := concat(spiral_traversal_result_, IntArray([matrix[spiral_traversal_i][spiral_traversal_left]]));
+  spiral_traversal_result_ := concat(spiral_traversal_result_, IntArray([spiral_traversal_matrix[spiral_traversal_i][spiral_traversal_left]]));
   spiral_traversal_i := spiral_traversal_i - 1;
 end;
   spiral_traversal_left := spiral_traversal_left + 1;
@@ -160,11 +159,11 @@ end;
 end;
   exit(spiral_traversal_result_);
 end;
-procedure spiral_print_clockwise(matrix: IntArrayArray);
+procedure spiral_print_clockwise(spiral_print_clockwise_matrix: IntArrayArray);
 var
   spiral_print_clockwise_value: integer;
 begin
-  for spiral_print_clockwise_value in spiral_traversal(matrix) do begin
+  for spiral_print_clockwise_value in spiral_traversal(spiral_print_clockwise_matrix) do begin
   writeln(IntToStr(spiral_print_clockwise_value));
 end;
 end;

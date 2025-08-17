@@ -89,35 +89,26 @@ var
   matrix_5_to_8: array of IntArray;
   matrix_count_up: array of IntArray;
   matrix_unordered: array of IntArray;
-  b: IntArrayArray;
-  k: integer;
-  matrix: IntArrayArray;
-  n: integer;
-  a: IntArrayArray;
-  i: integer;
-  j: integer;
-  m: integer;
-  result_: IntArrayArray;
-function is_square(matrix: IntArrayArray): boolean; forward;
-function matrix_multiply(a: IntArrayArray; b: IntArrayArray): IntArrayArray; forward;
-procedure multiply(i: integer; j: integer; k: integer; a: IntArrayArray; b: IntArrayArray; multiply_result_: IntArrayArray; n: integer; m: integer); forward;
-function matrix_multiply_recursive(a: IntArrayArray; b: IntArrayArray): IntArrayArray; forward;
-function is_square(matrix: IntArrayArray): boolean;
+function is_square(is_square_matrix: IntArrayArray): boolean; forward;
+function matrix_multiply(matrix_multiply_a: IntArrayArray; matrix_multiply_b: IntArrayArray): IntArrayArray; forward;
+procedure multiply(multiply_i: integer; multiply_j: integer; multiply_k: integer; multiply_a: IntArrayArray; multiply_b: IntArrayArray; multiply_result_: IntArrayArray; multiply_n: integer; multiply_m: integer); forward;
+function matrix_multiply_recursive(matrix_multiply_recursive_a: IntArrayArray; matrix_multiply_recursive_b: IntArrayArray): IntArrayArray; forward;
+function is_square(is_square_matrix: IntArrayArray): boolean;
 var
   is_square_n: integer;
   is_square_i: integer;
 begin
-  is_square_n := Length(matrix);
+  is_square_n := Length(is_square_matrix);
   is_square_i := 0;
   while is_square_i < is_square_n do begin
-  if Length(matrix[is_square_i]) <> is_square_n then begin
+  if Length(is_square_matrix[is_square_i]) <> is_square_n then begin
   exit(false);
 end;
   is_square_i := is_square_i + 1;
 end;
   exit(true);
 end;
-function matrix_multiply(a: IntArrayArray; b: IntArrayArray): IntArrayArray;
+function matrix_multiply(matrix_multiply_a: IntArrayArray; matrix_multiply_b: IntArrayArray): IntArrayArray;
 var
   matrix_multiply_rows: integer;
   matrix_multiply_cols: integer;
@@ -129,9 +120,9 @@ var
   matrix_multiply_sum: integer;
   matrix_multiply_k: integer;
 begin
-  matrix_multiply_rows := Length(a);
-  matrix_multiply_cols := Length(b[0]);
-  matrix_multiply_inner := Length(b);
+  matrix_multiply_rows := Length(matrix_multiply_a);
+  matrix_multiply_cols := Length(matrix_multiply_b[0]);
+  matrix_multiply_inner := Length(matrix_multiply_b);
   matrix_multiply_result_ := [];
   matrix_multiply_i := 0;
   while matrix_multiply_i < matrix_multiply_rows do begin
@@ -141,7 +132,7 @@ begin
   matrix_multiply_sum := 0;
   matrix_multiply_k := 0;
   while matrix_multiply_k < matrix_multiply_inner do begin
-  matrix_multiply_sum := matrix_multiply_sum + (a[matrix_multiply_i][matrix_multiply_k] * b[matrix_multiply_k][matrix_multiply_j]);
+  matrix_multiply_sum := matrix_multiply_sum + (matrix_multiply_a[matrix_multiply_i][matrix_multiply_k] * matrix_multiply_b[matrix_multiply_k][matrix_multiply_j]);
   matrix_multiply_k := matrix_multiply_k + 1;
 end;
   matrix_multiply_row := concat(matrix_multiply_row, IntArray([matrix_multiply_sum]));
@@ -152,23 +143,23 @@ end;
 end;
   exit(matrix_multiply_result_);
 end;
-procedure multiply(i: integer; j: integer; k: integer; a: IntArrayArray; b: IntArrayArray; multiply_result_: IntArrayArray; n: integer; m: integer);
+procedure multiply(multiply_i: integer; multiply_j: integer; multiply_k: integer; multiply_a: IntArrayArray; multiply_b: IntArrayArray; multiply_result_: IntArrayArray; multiply_n: integer; multiply_m: integer);
 begin
-  if i >= n then begin
+  if multiply_i >= multiply_n then begin
   exit();
 end;
-  if j >= m then begin
-  multiply(i + 1, 0, 0, a, b, result_, n, m);
+  if multiply_j >= multiply_m then begin
+  multiply(multiply_i + 1, 0, 0, multiply_a, multiply_b, multiply_result_, multiply_n, multiply_m);
   exit();
 end;
-  if k >= Length(b) then begin
-  multiply(i, j + 1, 0, a, b, result_, n, m);
+  if multiply_k >= Length(multiply_b) then begin
+  multiply(multiply_i, multiply_j + 1, 0, multiply_a, multiply_b, multiply_result_, multiply_n, multiply_m);
   exit();
 end;
-  result_[i][j] := result_[i][j] + (a[i][k] * b[k][j]);
-  multiply(i, j, k + 1, a, b, result_, n, m);
+  multiply_result_[multiply_i][multiply_j] := multiply_result_[multiply_i][multiply_j] + (multiply_a[multiply_i][multiply_k] * multiply_b[multiply_k][multiply_j]);
+  multiply(multiply_i, multiply_j, multiply_k + 1, multiply_a, multiply_b, multiply_result_, multiply_n, multiply_m);
 end;
-function matrix_multiply_recursive(a: IntArrayArray; b: IntArrayArray): IntArrayArray;
+function matrix_multiply_recursive(matrix_multiply_recursive_a: IntArrayArray; matrix_multiply_recursive_b: IntArrayArray): IntArrayArray;
 var
   matrix_multiply_recursive_n: integer;
   matrix_multiply_recursive_m: integer;
@@ -177,14 +168,14 @@ var
   matrix_multiply_recursive_row: array of integer;
   matrix_multiply_recursive_j: integer;
 begin
-  if (Length(a) = 0) or (Length(b) = 0) then begin
+  if (Length(matrix_multiply_recursive_a) = 0) or (Length(matrix_multiply_recursive_b) = 0) then begin
   exit([]);
 end;
-  if ((Length(a) <> Length(b)) or not is_square(a)) or not is_square(b) then begin
+  if ((Length(matrix_multiply_recursive_a) <> Length(matrix_multiply_recursive_b)) or not is_square(matrix_multiply_recursive_a)) or not is_square(matrix_multiply_recursive_b) then begin
   panic('Invalid matrix dimensions');
 end;
-  matrix_multiply_recursive_n := Length(a);
-  matrix_multiply_recursive_m := Length(b[0]);
+  matrix_multiply_recursive_n := Length(matrix_multiply_recursive_a);
+  matrix_multiply_recursive_m := Length(matrix_multiply_recursive_b[0]);
   matrix_multiply_recursive_result_ := [];
   matrix_multiply_recursive_i := 0;
   while matrix_multiply_recursive_i < matrix_multiply_recursive_n do begin
@@ -197,7 +188,7 @@ end;
   matrix_multiply_recursive_result_ := concat(matrix_multiply_recursive_result_, [matrix_multiply_recursive_row]);
   matrix_multiply_recursive_i := matrix_multiply_recursive_i + 1;
 end;
-  multiply(0, 0, 0, a, b, matrix_multiply_recursive_result_, matrix_multiply_recursive_n, matrix_multiply_recursive_m);
+  multiply(0, 0, 0, matrix_multiply_recursive_a, matrix_multiply_recursive_b, matrix_multiply_recursive_result_, matrix_multiply_recursive_n, matrix_multiply_recursive_m);
   exit(matrix_multiply_recursive_result_);
 end;
 begin

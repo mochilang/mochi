@@ -80,53 +80,30 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   seed: integer;
-  rounds: integer;
-  yhat: RealArray;
-  a: RealArrayArray;
-  v: RealArray;
-  c: integer;
-  b: RealArrayArray;
-  ydata: RealArrayArray;
-  back_units: integer;
-  layers: LayerArray;
-  xdata: RealArrayArray;
-  z: real;
-  r: integer;
-  y: RealArray;
-  acc: real;
-  out_: RealArray;
-  x: RealArray;
-  units: integer;
-  n: integer;
-  vec: RealArray;
-  lr: real;
-  mat: RealArrayArray;
-  s: real;
-  grad: RealArray;
 function makeData(x: RealArrayArray; y: RealArrayArray): Data; forward;
 function makeLayer(units: integer; weight: RealArrayArray; bias: RealArray; output: RealArray; xdata: RealArray; learn_rate: real): Layer; forward;
 function rand(): integer; forward;
 function random(): real; forward;
-function expApprox(x: real): real; forward;
-function sigmoid(z: real): real; forward;
-function sigmoid_vec(v: RealArray): RealArray; forward;
+function expApprox(expApprox_x: real): real; forward;
+function sigmoid(sigmoid_z: real): real; forward;
+function sigmoid_vec(sigmoid_vec_v: RealArray): RealArray; forward;
 function sigmoid_derivative(sigmoid_derivative_out_: RealArray): RealArray; forward;
-function random_vector(n: integer): RealArray; forward;
-function random_matrix(r: integer; c: integer): RealArrayArray; forward;
-function matvec(mat: RealArrayArray; vec: RealArray): RealArray; forward;
-function matTvec(mat: RealArrayArray; vec: RealArray): RealArray; forward;
-function vec_sub(a: RealArray; b: RealArray): RealArray; forward;
-function vec_mul(a: RealArray; b: RealArray): RealArray; forward;
-function vec_scalar_mul(v: RealArray; s: real): RealArray; forward;
-function outer(a: RealArray; b: RealArray): RealArrayArray; forward;
-function mat_scalar_mul(mat: RealArrayArray; s: real): RealArrayArray; forward;
-function mat_sub(a: RealArrayArray; b: RealArrayArray): RealArrayArray; forward;
-function init_layer(units: integer; back_units: integer; lr: real): Layer; forward;
-function forward(layers: LayerArray; x: RealArray): LayerArray; forward;
-function backward(layers: LayerArray; grad: RealArray): LayerArray; forward;
-function calc_loss(y: RealArray; yhat: RealArray): real; forward;
-function calc_gradient(y: RealArray; yhat: RealArray): RealArray; forward;
-function train(layers: LayerArray; xdata: RealArrayArray; ydata: RealArrayArray; rounds: integer; acc: real): real; forward;
+function random_vector(random_vector_n: integer): RealArray; forward;
+function random_matrix(random_matrix_r: integer; random_matrix_c: integer): RealArrayArray; forward;
+function matvec(matvec_mat: RealArrayArray; matvec_vec: RealArray): RealArray; forward;
+function matTvec(matTvec_mat: RealArrayArray; matTvec_vec: RealArray): RealArray; forward;
+function vec_sub(vec_sub_a: RealArray; vec_sub_b: RealArray): RealArray; forward;
+function vec_mul(vec_mul_a: RealArray; vec_mul_b: RealArray): RealArray; forward;
+function vec_scalar_mul(vec_scalar_mul_v: RealArray; vec_scalar_mul_s: real): RealArray; forward;
+function outer(outer_a: RealArray; outer_b: RealArray): RealArrayArray; forward;
+function mat_scalar_mul(mat_scalar_mul_mat: RealArrayArray; mat_scalar_mul_s: real): RealArrayArray; forward;
+function mat_sub(mat_sub_a: RealArrayArray; mat_sub_b: RealArrayArray): RealArrayArray; forward;
+function init_layer(init_layer_units: integer; init_layer_back_units: integer; init_layer_lr: real): Layer; forward;
+function forward(forward_layers: LayerArray; forward_x: RealArray): LayerArray; forward;
+function backward(backward_layers: LayerArray; backward_grad: RealArray): LayerArray; forward;
+function calc_loss(calc_loss_y: RealArray; calc_loss_yhat: RealArray): real; forward;
+function calc_gradient(calc_gradient_y: RealArray; calc_gradient_yhat: RealArray): RealArray; forward;
+function train(train_layers: LayerArray; train_xdata: RealArrayArray; train_ydata: RealArrayArray; train_rounds: integer; train_acc: real): real; forward;
 function create_data(): Data; forward;
 procedure main(); forward;
 function makeData(x: RealArrayArray; y: RealArrayArray): Data;
@@ -152,7 +129,7 @@ function random(): real;
 begin
   exit((1 * rand()) / 2.147483648e+09);
 end;
-function expApprox(x: real): real;
+function expApprox(expApprox_x: real): real;
 var
   expApprox_y: real;
   expApprox_is_neg: boolean;
@@ -160,11 +137,11 @@ var
   expApprox_sum: real;
   expApprox_n: integer;
 begin
-  expApprox_y := x;
+  expApprox_y := expApprox_x;
   expApprox_is_neg := false;
-  if x < 0 then begin
+  if expApprox_x < 0 then begin
   expApprox_is_neg := true;
-  expApprox_y := -x;
+  expApprox_y := -expApprox_x;
 end;
   expApprox_term := 1;
   expApprox_sum := 1;
@@ -179,19 +156,19 @@ end;
 end;
   exit(expApprox_sum);
 end;
-function sigmoid(z: real): real;
+function sigmoid(sigmoid_z: real): real;
 begin
-  exit(1 / (1 + expApprox(-z)));
+  exit(1 / (1 + expApprox(-sigmoid_z)));
 end;
-function sigmoid_vec(v: RealArray): RealArray;
+function sigmoid_vec(sigmoid_vec_v: RealArray): RealArray;
 var
   sigmoid_vec_res: array of real;
   sigmoid_vec_i: integer;
 begin
   sigmoid_vec_res := [];
   sigmoid_vec_i := 0;
-  while sigmoid_vec_i < Length(v) do begin
-  sigmoid_vec_res := concat(sigmoid_vec_res, [sigmoid(v[sigmoid_vec_i])]);
+  while sigmoid_vec_i < Length(sigmoid_vec_v) do begin
+  sigmoid_vec_res := concat(sigmoid_vec_res, [sigmoid(sigmoid_vec_v[sigmoid_vec_i])]);
   sigmoid_vec_i := sigmoid_vec_i + 1;
 end;
   exit(sigmoid_vec_res);
@@ -204,40 +181,40 @@ var
 begin
   sigmoid_derivative_res := [];
   sigmoid_derivative_i := 0;
-  while sigmoid_derivative_i < Length(out_) do begin
-  sigmoid_derivative_val := out_[sigmoid_derivative_i];
+  while sigmoid_derivative_i < Length(sigmoid_derivative_out_) do begin
+  sigmoid_derivative_val := sigmoid_derivative_out_[sigmoid_derivative_i];
   sigmoid_derivative_res := concat(sigmoid_derivative_res, [sigmoid_derivative_val * (1 - sigmoid_derivative_val)]);
   sigmoid_derivative_i := sigmoid_derivative_i + 1;
 end;
   exit(sigmoid_derivative_res);
 end;
-function random_vector(n: integer): RealArray;
+function random_vector(random_vector_n: integer): RealArray;
 var
   random_vector_v: array of real;
   random_vector_i: integer;
 begin
   random_vector_v := [];
   random_vector_i := 0;
-  while random_vector_i < n do begin
+  while random_vector_i < random_vector_n do begin
   random_vector_v := concat(random_vector_v, [random() - 0.5]);
   random_vector_i := random_vector_i + 1;
 end;
   exit(random_vector_v);
 end;
-function random_matrix(r: integer; c: integer): RealArrayArray;
+function random_matrix(random_matrix_r: integer; random_matrix_c: integer): RealArrayArray;
 var
   random_matrix_m: array of RealArray;
   random_matrix_i: integer;
 begin
   random_matrix_m := [];
   random_matrix_i := 0;
-  while random_matrix_i < r do begin
-  random_matrix_m := concat(random_matrix_m, [random_vector(c)]);
+  while random_matrix_i < random_matrix_r do begin
+  random_matrix_m := concat(random_matrix_m, [random_vector(random_matrix_c)]);
   random_matrix_i := random_matrix_i + 1;
 end;
   exit(random_matrix_m);
 end;
-function matvec(mat: RealArrayArray; vec: RealArray): RealArray;
+function matvec(matvec_mat: RealArrayArray; matvec_vec: RealArray): RealArray;
 var
   matvec_res: array of real;
   matvec_i: integer;
@@ -246,11 +223,11 @@ var
 begin
   matvec_res := [];
   matvec_i := 0;
-  while matvec_i < Length(mat) do begin
+  while matvec_i < Length(matvec_mat) do begin
   matvec_s := 0;
   matvec_j := 0;
-  while matvec_j < Length(vec) do begin
-  matvec_s := matvec_s + (mat[matvec_i][matvec_j] * vec[matvec_j]);
+  while matvec_j < Length(matvec_vec) do begin
+  matvec_s := matvec_s + (matvec_mat[matvec_i][matvec_j] * matvec_vec[matvec_j]);
   matvec_j := matvec_j + 1;
 end;
   matvec_res := concat(matvec_res, [matvec_s]);
@@ -258,7 +235,7 @@ end;
 end;
   exit(matvec_res);
 end;
-function matTvec(mat: RealArrayArray; vec: RealArray): RealArray;
+function matTvec(matTvec_mat: RealArrayArray; matTvec_vec: RealArray): RealArray;
 var
   matTvec_cols: integer;
   matTvec_res: array of real;
@@ -266,14 +243,14 @@ var
   matTvec_s: real;
   matTvec_i: integer;
 begin
-  matTvec_cols := Length(mat[0]);
+  matTvec_cols := Length(matTvec_mat[0]);
   matTvec_res := [];
   matTvec_j := 0;
   while matTvec_j < matTvec_cols do begin
   matTvec_s := 0;
   matTvec_i := 0;
-  while matTvec_i < Length(mat) do begin
-  matTvec_s := matTvec_s + (mat[matTvec_i][matTvec_j] * vec[matTvec_i]);
+  while matTvec_i < Length(matTvec_mat) do begin
+  matTvec_s := matTvec_s + (matTvec_mat[matTvec_i][matTvec_j] * matTvec_vec[matTvec_i]);
   matTvec_i := matTvec_i + 1;
 end;
   matTvec_res := concat(matTvec_res, [matTvec_s]);
@@ -281,46 +258,46 @@ end;
 end;
   exit(matTvec_res);
 end;
-function vec_sub(a: RealArray; b: RealArray): RealArray;
+function vec_sub(vec_sub_a: RealArray; vec_sub_b: RealArray): RealArray;
 var
   vec_sub_res: array of real;
   vec_sub_i: integer;
 begin
   vec_sub_res := [];
   vec_sub_i := 0;
-  while vec_sub_i < Length(a) do begin
-  vec_sub_res := concat(vec_sub_res, [a[vec_sub_i] - b[vec_sub_i]]);
+  while vec_sub_i < Length(vec_sub_a) do begin
+  vec_sub_res := concat(vec_sub_res, [vec_sub_a[vec_sub_i] - vec_sub_b[vec_sub_i]]);
   vec_sub_i := vec_sub_i + 1;
 end;
   exit(vec_sub_res);
 end;
-function vec_mul(a: RealArray; b: RealArray): RealArray;
+function vec_mul(vec_mul_a: RealArray; vec_mul_b: RealArray): RealArray;
 var
   vec_mul_res: array of real;
   vec_mul_i: integer;
 begin
   vec_mul_res := [];
   vec_mul_i := 0;
-  while vec_mul_i < Length(a) do begin
-  vec_mul_res := concat(vec_mul_res, [a[vec_mul_i] * b[vec_mul_i]]);
+  while vec_mul_i < Length(vec_mul_a) do begin
+  vec_mul_res := concat(vec_mul_res, [vec_mul_a[vec_mul_i] * vec_mul_b[vec_mul_i]]);
   vec_mul_i := vec_mul_i + 1;
 end;
   exit(vec_mul_res);
 end;
-function vec_scalar_mul(v: RealArray; s: real): RealArray;
+function vec_scalar_mul(vec_scalar_mul_v: RealArray; vec_scalar_mul_s: real): RealArray;
 var
   vec_scalar_mul_res: array of real;
   vec_scalar_mul_i: integer;
 begin
   vec_scalar_mul_res := [];
   vec_scalar_mul_i := 0;
-  while vec_scalar_mul_i < Length(v) do begin
-  vec_scalar_mul_res := concat(vec_scalar_mul_res, [v[vec_scalar_mul_i] * s]);
+  while vec_scalar_mul_i < Length(vec_scalar_mul_v) do begin
+  vec_scalar_mul_res := concat(vec_scalar_mul_res, [vec_scalar_mul_v[vec_scalar_mul_i] * vec_scalar_mul_s]);
   vec_scalar_mul_i := vec_scalar_mul_i + 1;
 end;
   exit(vec_scalar_mul_res);
 end;
-function outer(a: RealArray; b: RealArray): RealArrayArray;
+function outer(outer_a: RealArray; outer_b: RealArray): RealArrayArray;
 var
   outer_res: array of RealArray;
   outer_i: integer;
@@ -329,11 +306,11 @@ var
 begin
   outer_res := [];
   outer_i := 0;
-  while outer_i < Length(a) do begin
+  while outer_i < Length(outer_a) do begin
   outer_row := [];
   outer_j := 0;
-  while outer_j < Length(b) do begin
-  outer_row := concat(outer_row, [a[outer_i] * b[outer_j]]);
+  while outer_j < Length(outer_b) do begin
+  outer_row := concat(outer_row, [outer_a[outer_i] * outer_b[outer_j]]);
   outer_j := outer_j + 1;
 end;
   outer_res := concat(outer_res, [outer_row]);
@@ -341,7 +318,7 @@ end;
 end;
   exit(outer_res);
 end;
-function mat_scalar_mul(mat: RealArrayArray; s: real): RealArrayArray;
+function mat_scalar_mul(mat_scalar_mul_mat: RealArrayArray; mat_scalar_mul_s: real): RealArrayArray;
 var
   mat_scalar_mul_res: array of RealArray;
   mat_scalar_mul_i: integer;
@@ -350,11 +327,11 @@ var
 begin
   mat_scalar_mul_res := [];
   mat_scalar_mul_i := 0;
-  while mat_scalar_mul_i < Length(mat) do begin
+  while mat_scalar_mul_i < Length(mat_scalar_mul_mat) do begin
   mat_scalar_mul_row := [];
   mat_scalar_mul_j := 0;
-  while mat_scalar_mul_j < Length(mat[mat_scalar_mul_i]) do begin
-  mat_scalar_mul_row := concat(mat_scalar_mul_row, [mat[mat_scalar_mul_i][mat_scalar_mul_j] * s]);
+  while mat_scalar_mul_j < Length(mat_scalar_mul_mat[mat_scalar_mul_i]) do begin
+  mat_scalar_mul_row := concat(mat_scalar_mul_row, [mat_scalar_mul_mat[mat_scalar_mul_i][mat_scalar_mul_j] * mat_scalar_mul_s]);
   mat_scalar_mul_j := mat_scalar_mul_j + 1;
 end;
   mat_scalar_mul_res := concat(mat_scalar_mul_res, [mat_scalar_mul_row]);
@@ -362,7 +339,7 @@ end;
 end;
   exit(mat_scalar_mul_res);
 end;
-function mat_sub(a: RealArrayArray; b: RealArrayArray): RealArrayArray;
+function mat_sub(mat_sub_a: RealArrayArray; mat_sub_b: RealArrayArray): RealArrayArray;
 var
   mat_sub_res: array of RealArray;
   mat_sub_i: integer;
@@ -371,11 +348,11 @@ var
 begin
   mat_sub_res := [];
   mat_sub_i := 0;
-  while mat_sub_i < Length(a) do begin
+  while mat_sub_i < Length(mat_sub_a) do begin
   mat_sub_row := [];
   mat_sub_j := 0;
-  while mat_sub_j < Length(a[mat_sub_i]) do begin
-  mat_sub_row := concat(mat_sub_row, [a[mat_sub_i][mat_sub_j] - b[mat_sub_i][mat_sub_j]]);
+  while mat_sub_j < Length(mat_sub_a[mat_sub_i]) do begin
+  mat_sub_row := concat(mat_sub_row, [mat_sub_a[mat_sub_i][mat_sub_j] - mat_sub_b[mat_sub_i][mat_sub_j]]);
   mat_sub_j := mat_sub_j + 1;
 end;
   mat_sub_res := concat(mat_sub_res, [mat_sub_row]);
@@ -383,21 +360,21 @@ end;
 end;
   exit(mat_sub_res);
 end;
-function init_layer(units: integer; back_units: integer; lr: real): Layer;
+function init_layer(init_layer_units: integer; init_layer_back_units: integer; init_layer_lr: real): Layer;
 begin
-  exit(makeLayer(units, random_matrix(units, back_units), random_vector(units), [], [], lr));
+  exit(makeLayer(init_layer_units, random_matrix(init_layer_units, init_layer_back_units), random_vector(init_layer_units), [], [], init_layer_lr));
 end;
-function forward(layers: LayerArray; x: RealArray): LayerArray;
+function forward(forward_layers: LayerArray; forward_x: RealArray): LayerArray;
 var
   forward_data: array of real;
   forward_i: integer;
   forward_layer_var: Layer;
   forward_z: RealArray;
 begin
-  forward_data := x;
+  forward_data := forward_x;
   forward_i := 0;
-  while forward_i < Length(layers) do begin
-  forward_layer_var := layers[forward_i];
+  while forward_i < Length(forward_layers) do begin
+  forward_layer_var := forward_layers[forward_i];
   forward_layer_var.xdata := forward_data;
   if forward_i = 0 then begin
   forward_layer_var.output := forward_data;
@@ -406,12 +383,12 @@ end else begin
   forward_layer_var.output := sigmoid_vec(forward_z);
   forward_data := forward_layer_var.output;
 end;
-  layers[forward_i] := forward_layer_var;
+  forward_layers[forward_i] := forward_layer_var;
   forward_i := forward_i + 1;
 end;
-  exit(layers);
+  exit(forward_layers);
 end;
-function backward(layers: LayerArray; grad: RealArray): LayerArray;
+function backward(backward_layers: LayerArray; backward_grad: RealArray): LayerArray;
 var
   backward_g: array of real;
   backward_i: integer;
@@ -420,22 +397,22 @@ var
   backward_delta: RealArray;
   backward_grad_w: RealArrayArray;
 begin
-  backward_g := grad;
-  backward_i := Length(layers) - 1;
+  backward_g := backward_grad;
+  backward_i := Length(backward_layers) - 1;
   while backward_i > 0 do begin
-  backward_layer_var := layers[backward_i];
+  backward_layer_var := backward_layers[backward_i];
   backward_deriv := sigmoid_derivative(backward_layer_var.output);
   backward_delta := vec_mul(backward_g, backward_deriv);
   backward_grad_w := outer(backward_delta, backward_layer_var.xdata);
   backward_layer_var.weight := mat_sub(backward_layer_var.weight, mat_scalar_mul(backward_grad_w, backward_layer_var.learn_rate));
   backward_layer_var.bias := vec_sub(backward_layer_var.bias, vec_scalar_mul(backward_delta, backward_layer_var.learn_rate));
   backward_g := matTvec(backward_layer_var.weight, backward_delta);
-  layers[backward_i] := backward_layer_var;
+  backward_layers[backward_i] := backward_layer_var;
   backward_i := backward_i - 1;
 end;
-  exit(layers);
+  exit(backward_layers);
 end;
-function calc_loss(y: RealArray; yhat: RealArray): real;
+function calc_loss(calc_loss_y: RealArray; calc_loss_yhat: RealArray): real;
 var
   calc_loss_s: real;
   calc_loss_i: integer;
@@ -443,27 +420,27 @@ var
 begin
   calc_loss_s := 0;
   calc_loss_i := 0;
-  while calc_loss_i < Length(y) do begin
-  calc_loss_d := y[calc_loss_i] - yhat[calc_loss_i];
+  while calc_loss_i < Length(calc_loss_y) do begin
+  calc_loss_d := calc_loss_y[calc_loss_i] - calc_loss_yhat[calc_loss_i];
   calc_loss_s := calc_loss_s + (calc_loss_d * calc_loss_d);
   calc_loss_i := calc_loss_i + 1;
 end;
   exit(calc_loss_s);
 end;
-function calc_gradient(y: RealArray; yhat: RealArray): RealArray;
+function calc_gradient(calc_gradient_y: RealArray; calc_gradient_yhat: RealArray): RealArray;
 var
   calc_gradient_g: array of real;
   calc_gradient_i: integer;
 begin
   calc_gradient_g := [];
   calc_gradient_i := 0;
-  while calc_gradient_i < Length(y) do begin
-  calc_gradient_g := concat(calc_gradient_g, [2 * (yhat[calc_gradient_i] - y[calc_gradient_i])]);
+  while calc_gradient_i < Length(calc_gradient_y) do begin
+  calc_gradient_g := concat(calc_gradient_g, [2 * (calc_gradient_yhat[calc_gradient_i] - calc_gradient_y[calc_gradient_i])]);
   calc_gradient_i := calc_gradient_i + 1;
 end;
   exit(calc_gradient_g);
 end;
-function train(layers: LayerArray; xdata: RealArrayArray; ydata: RealArrayArray; rounds: integer; acc: real): real;
+function train(train_layers: LayerArray; train_xdata: RealArrayArray; train_ydata: RealArrayArray; train_rounds: integer; train_acc: real): real;
 var
   train_r: integer;
   train_i: integer;
@@ -471,13 +448,13 @@ var
   train_grad: RealArray;
 begin
   train_r := 0;
-  while train_r < rounds do begin
+  while train_r < train_rounds do begin
   train_i := 0;
-  while train_i < Length(xdata) do begin
-  layers := forward(layers, xdata[train_i]);
-  train_out_ := layers[Length(layers) - 1].output;
-  train_grad := calc_gradient(ydata[train_i], train_out_);
-  layers := backward(layers, train_grad);
+  while train_i < Length(train_xdata) do begin
+  train_layers := forward(train_layers, train_xdata[train_i]);
+  train_out_ := train_layers[Length(train_layers) - 1].output;
+  train_grad := calc_gradient(train_ydata[train_i], train_out_);
+  train_layers := backward(train_layers, train_grad);
   train_i := train_i + 1;
 end;
   train_r := train_r + 1;

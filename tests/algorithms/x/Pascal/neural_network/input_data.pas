@@ -103,23 +103,13 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  batch_size: integer;
-  test_labels_raw: IntArray;
-  num_classes: integer;
-  labels: IntArrayArray;
-  images: IntArrayArray;
-  validation_size: integer;
-  ds: DataSet;
-  train_labels_raw: IntArray;
-  train_images: IntArrayArray;
-  test_images: IntArrayArray;
 function makeBatchResult(dataset_var: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult; forward;
 function makeDatasets(train: DataSet; validation: DataSet; test_ds: DataSet): Datasets; forward;
 function makeDataSet(images: IntArrayArray; labels: IntArrayArray; num_examples: integer; index_in_epoch: integer; epochs_completed: integer): DataSet; forward;
-function dense_to_one_hot(labels: IntArray; num_classes: integer): IntArrayArray; forward;
-function new_dataset(images: IntArrayArray; labels: IntArrayArray): DataSet; forward;
-function next_batch(ds: DataSet; batch_size: integer): BatchResult; forward;
-function read_data_sets(train_images: IntArrayArray; train_labels_raw: IntArray; test_images: IntArrayArray; test_labels_raw: IntArray; validation_size: integer; num_classes: integer): Datasets; forward;
+function dense_to_one_hot(dense_to_one_hot_labels: IntArray; dense_to_one_hot_num_classes: integer): IntArrayArray; forward;
+function new_dataset(new_dataset_images: IntArrayArray; new_dataset_labels: IntArrayArray): DataSet; forward;
+function next_batch(next_batch_ds: DataSet; next_batch_batch_size: integer): BatchResult; forward;
+function read_data_sets(read_data_sets_train_images: IntArrayArray; read_data_sets_train_labels_raw: IntArray; read_data_sets_test_images: IntArrayArray; read_data_sets_test_labels_raw: IntArray; read_data_sets_validation_size: integer; read_data_sets_num_classes: integer): Datasets; forward;
 procedure main(); forward;
 function makeBatchResult(dataset_var: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult;
 begin
@@ -141,7 +131,7 @@ begin
   Result.index_in_epoch := index_in_epoch;
   Result.epochs_completed := epochs_completed;
 end;
-function dense_to_one_hot(labels: IntArray; num_classes: integer): IntArrayArray;
+function dense_to_one_hot(dense_to_one_hot_labels: IntArray; dense_to_one_hot_num_classes: integer): IntArrayArray;
 var
   dense_to_one_hot_result_: array of IntArray;
   dense_to_one_hot_i: integer;
@@ -150,11 +140,11 @@ var
 begin
   dense_to_one_hot_result_ := [];
   dense_to_one_hot_i := 0;
-  while dense_to_one_hot_i < Length(labels) do begin
+  while dense_to_one_hot_i < Length(dense_to_one_hot_labels) do begin
   dense_to_one_hot_row := [];
   dense_to_one_hot_j := 0;
-  while dense_to_one_hot_j < num_classes do begin
-  if list_int_to_str(dense_to_one_hot_j) = list_int_to_str(labels[dense_to_one_hot_i]) then begin
+  while dense_to_one_hot_j < dense_to_one_hot_num_classes do begin
+  if dense_to_one_hot_j = dense_to_one_hot_labels[dense_to_one_hot_i] then begin
   dense_to_one_hot_row := concat(dense_to_one_hot_row, IntArray([1]));
 end else begin
   dense_to_one_hot_row := concat(dense_to_one_hot_row, IntArray([0]));
@@ -166,65 +156,68 @@ end;
 end;
   exit(dense_to_one_hot_result_);
 end;
-function new_dataset(images: IntArrayArray; labels: IntArrayArray): DataSet;
+function new_dataset(new_dataset_images: IntArrayArray; new_dataset_labels: IntArrayArray): DataSet;
 begin
-  exit(makeDataSet(images, labels, Length(images), 0, 0));
+  exit(makeDataSet(new_dataset_images, new_dataset_labels, Length(new_dataset_images), 0, 0));
 end;
-function next_batch(ds: DataSet; batch_size: integer): BatchResult;
+function next_batch(next_batch_ds: DataSet; next_batch_batch_size: integer): BatchResult;
 var
   next_batch_start: integer;
   next_batch_rest: integer;
-  next_batch_images_rest: array of integer;
-  next_batch_labels_rest: array of integer;
+  next_batch_images_rest: array of IntArray;
+  next_batch_labels_rest: array of IntArray;
   next_batch_new_index: integer;
-  next_batch_images_new: array of integer;
-  next_batch_labels_new: array of integer;
-  next_batch_batch_images: array of integer;
-  next_batch_batch_labels: array of integer;
+  next_batch_images_new: array of IntArray;
+  next_batch_labels_new: array of IntArray;
+  next_batch_batch_images: array of IntArray;
+  next_batch_batch_labels: array of IntArray;
   next_batch_new_ds: DataSet;
   next_batch_end_: integer;
+  next_batch_batch_images_19: array of IntArray;
+  next_batch_batch_labels_20: array of IntArray;
+  next_batch_new_ds_21: DataSet;
 begin
-  next_batch_start := ds.index_in_epoch;
-  if (next_batch_start + batch_size) > ds.num_examples then begin
-  next_batch_rest := ds.num_examples - next_batch_start;
-  next_batch_images_rest := copy(ds.images, next_batch_start, (ds.num_examples - (next_batch_start)));
-  next_batch_labels_rest := copy(ds.labels, next_batch_start, (ds.num_examples - (next_batch_start)));
-  next_batch_new_index := batch_size - next_batch_rest;
-  next_batch_images_new := copy(ds.images, 0, (next_batch_new_index - (0)));
-  next_batch_labels_new := copy(ds.labels, 0, (next_batch_new_index - (0)));
+  next_batch_start := next_batch_ds.index_in_epoch;
+  if (next_batch_start + next_batch_batch_size) > next_batch_ds.num_examples then begin
+  next_batch_rest := next_batch_ds.num_examples - next_batch_start;
+  next_batch_images_rest := copy(next_batch_ds.images, next_batch_start, (next_batch_ds.num_examples - (next_batch_start)));
+  next_batch_labels_rest := copy(next_batch_ds.labels, next_batch_start, (next_batch_ds.num_examples - (next_batch_start)));
+  next_batch_new_index := next_batch_batch_size - next_batch_rest;
+  next_batch_images_new := copy(next_batch_ds.images, 0, (next_batch_new_index - (0)));
+  next_batch_labels_new := copy(next_batch_ds.labels, 0, (next_batch_new_index - (0)));
   next_batch_batch_images := concat(next_batch_images_rest, next_batch_images_new);
   next_batch_batch_labels := concat(next_batch_labels_rest, next_batch_labels_new);
-  next_batch_new_ds := makeDataSet(ds.images, ds.labels, ds.num_examples, next_batch_new_index, ds.epochs_completed + 1);
+  next_batch_new_ds := makeDataSet(next_batch_ds.images, next_batch_ds.labels, next_batch_ds.num_examples, next_batch_new_index, next_batch_ds.epochs_completed + 1);
   exit(makeBatchResult(next_batch_new_ds, next_batch_batch_images, next_batch_batch_labels));
 end else begin
-  next_batch_end_ := next_batch_start + batch_size;
-  next_batch_batch_images := copy(ds.images, next_batch_start, (next_batch_end_ - (next_batch_start)));
-  next_batch_batch_labels := copy(ds.labels, next_batch_start, (next_batch_end_ - (next_batch_start)));
-  next_batch_new_ds := makeDataSet(ds.images, ds.labels, ds.num_examples, next_batch_end_, ds.epochs_completed);
-  exit(makeBatchResult(next_batch_new_ds, next_batch_batch_images, next_batch_batch_labels));
+  next_batch_end_ := next_batch_start + next_batch_batch_size;
+  next_batch_batch_images_19 := copy(next_batch_ds.images, next_batch_start, (next_batch_end_ - (next_batch_start)));
+  next_batch_batch_labels_20 := copy(next_batch_ds.labels, next_batch_start, (next_batch_end_ - (next_batch_start)));
+  next_batch_new_ds_21 := makeDataSet(next_batch_ds.images, next_batch_ds.labels, next_batch_ds.num_examples, next_batch_end_, next_batch_ds.epochs_completed);
+  exit(makeBatchResult(next_batch_new_ds_21, next_batch_batch_images_19, next_batch_batch_labels_20));
 end;
 end;
-function read_data_sets(train_images: IntArrayArray; train_labels_raw: IntArray; test_images: IntArrayArray; test_labels_raw: IntArray; validation_size: integer; num_classes: integer): Datasets;
+function read_data_sets(read_data_sets_train_images: IntArrayArray; read_data_sets_train_labels_raw: IntArray; read_data_sets_test_images: IntArrayArray; read_data_sets_test_labels_raw: IntArray; read_data_sets_validation_size: integer; read_data_sets_num_classes: integer): Datasets;
 var
   read_data_sets_train_labels: IntArrayArray;
   read_data_sets_test_labels: IntArrayArray;
-  read_data_sets_validation_images: array of integer;
-  read_data_sets_validation_labels: array of integer;
-  read_data_sets_train_images_rest: array of integer;
-  read_data_sets_train_labels_rest: array of integer;
+  read_data_sets_validation_images: array of IntArray;
+  read_data_sets_validation_labels: array of IntArray;
+  read_data_sets_train_images_rest: array of IntArray;
+  read_data_sets_train_labels_rest: array of IntArray;
   read_data_sets_train: DataSet;
   read_data_sets_validation: DataSet;
   read_data_sets_testset: DataSet;
 begin
-  read_data_sets_train_labels := dense_to_one_hot(train_labels_raw, num_classes);
-  read_data_sets_test_labels := dense_to_one_hot(test_labels_raw, num_classes);
-  read_data_sets_validation_images := copy(train_images, 0, (validation_size - (0)));
-  read_data_sets_validation_labels := copy(read_data_sets_train_labels, 0, (validation_size - (0)));
-  read_data_sets_train_images_rest := copy(train_images, validation_size, (Length(train_images) - (validation_size)));
-  read_data_sets_train_labels_rest := copy(read_data_sets_train_labels, validation_size, (Length(read_data_sets_train_labels) - (validation_size)));
+  read_data_sets_train_labels := dense_to_one_hot(read_data_sets_train_labels_raw, read_data_sets_num_classes);
+  read_data_sets_test_labels := dense_to_one_hot(read_data_sets_test_labels_raw, read_data_sets_num_classes);
+  read_data_sets_validation_images := copy(read_data_sets_train_images, 0, (read_data_sets_validation_size - (0)));
+  read_data_sets_validation_labels := copy(read_data_sets_train_labels, 0, (read_data_sets_validation_size - (0)));
+  read_data_sets_train_images_rest := copy(read_data_sets_train_images, read_data_sets_validation_size, (Length(read_data_sets_train_images) - (read_data_sets_validation_size)));
+  read_data_sets_train_labels_rest := copy(read_data_sets_train_labels, read_data_sets_validation_size, (Length(read_data_sets_train_labels) - (read_data_sets_validation_size)));
   read_data_sets_train := new_dataset(read_data_sets_train_images_rest, read_data_sets_train_labels_rest);
   read_data_sets_validation := new_dataset(read_data_sets_validation_images, read_data_sets_validation_labels);
-  read_data_sets_testset := new_dataset(test_images, read_data_sets_test_labels);
+  read_data_sets_testset := new_dataset(read_data_sets_test_images, read_data_sets_test_labels);
   exit(makeDatasets(read_data_sets_train, read_data_sets_validation, read_data_sets_testset));
 end;
 procedure main();

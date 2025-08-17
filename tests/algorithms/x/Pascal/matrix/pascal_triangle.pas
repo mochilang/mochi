@@ -86,18 +86,12 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  triangle: IntArrayArray;
-  row_idx: integer;
-  current_row_idx: integer;
-  num_rows: integer;
-  row: IntArray;
-  total_rows: integer;
-function populate_current_row(triangle: IntArrayArray; current_row_idx: integer): IntArray; forward;
-function generate_pascal_triangle(num_rows: integer): IntArrayArray; forward;
-function row_to_string(row: IntArray; total_rows: integer; row_idx: integer): string; forward;
-procedure print_pascal_triangle(num_rows: integer); forward;
+function populate_current_row(populate_current_row_triangle: IntArrayArray; populate_current_row_current_row_idx: integer): IntArray; forward;
+function generate_pascal_triangle(generate_pascal_triangle_num_rows: integer): IntArrayArray; forward;
+function row_to_string(row_to_string_row: IntArray; row_to_string_total_rows: integer; row_to_string_row_idx: integer): string; forward;
+procedure print_pascal_triangle(print_pascal_triangle_num_rows: integer); forward;
 procedure main(); forward;
-function populate_current_row(triangle: IntArrayArray; current_row_idx: integer): IntArray;
+function populate_current_row(populate_current_row_triangle: IntArrayArray; populate_current_row_current_row_idx: integer): IntArray;
 var
   populate_current_row_row: array of integer;
   populate_current_row_i: integer;
@@ -106,37 +100,37 @@ var
 begin
   populate_current_row_row := [];
   populate_current_row_i := 0;
-  while populate_current_row_i <= current_row_idx do begin
-  if (populate_current_row_i = 0) or (populate_current_row_i = current_row_idx) then begin
+  while populate_current_row_i <= populate_current_row_current_row_idx do begin
+  if (populate_current_row_i = 0) or (populate_current_row_i = populate_current_row_current_row_idx) then begin
   populate_current_row_row := concat(populate_current_row_row, IntArray([1]));
 end else begin
-  populate_current_row_left := triangle[current_row_idx - 1][populate_current_row_i - 1];
-  populate_current_row_right := triangle[current_row_idx - 1][populate_current_row_i];
+  populate_current_row_left := populate_current_row_triangle[populate_current_row_current_row_idx - 1][populate_current_row_i - 1];
+  populate_current_row_right := populate_current_row_triangle[populate_current_row_current_row_idx - 1][populate_current_row_i];
   populate_current_row_row := concat(populate_current_row_row, IntArray([populate_current_row_left + populate_current_row_right]));
 end;
   populate_current_row_i := populate_current_row_i + 1;
 end;
   exit(populate_current_row_row);
 end;
-function generate_pascal_triangle(num_rows: integer): IntArrayArray;
+function generate_pascal_triangle(generate_pascal_triangle_num_rows: integer): IntArrayArray;
 var
   generate_pascal_triangle_triangle: array of IntArray;
   generate_pascal_triangle_row_idx: integer;
   generate_pascal_triangle_row: IntArray;
 begin
-  if num_rows <= 0 then begin
+  if generate_pascal_triangle_num_rows <= 0 then begin
   exit([]);
 end;
   generate_pascal_triangle_triangle := [];
   generate_pascal_triangle_row_idx := 0;
-  while generate_pascal_triangle_row_idx < num_rows do begin
+  while generate_pascal_triangle_row_idx < generate_pascal_triangle_num_rows do begin
   generate_pascal_triangle_row := populate_current_row(generate_pascal_triangle_triangle, generate_pascal_triangle_row_idx);
   generate_pascal_triangle_triangle := concat(generate_pascal_triangle_triangle, [generate_pascal_triangle_row]);
   generate_pascal_triangle_row_idx := generate_pascal_triangle_row_idx + 1;
 end;
   exit(generate_pascal_triangle_triangle);
 end;
-function row_to_string(row: IntArray; total_rows: integer; row_idx: integer): string;
+function row_to_string(row_to_string_row: IntArray; row_to_string_total_rows: integer; row_to_string_row_idx: integer): string;
 var
   row_to_string_line: string;
   row_to_string_spaces: integer;
@@ -144,32 +138,32 @@ var
   row_to_string_c: integer;
 begin
   row_to_string_line := '';
-  row_to_string_spaces := (total_rows - row_idx) - 1;
+  row_to_string_spaces := (row_to_string_total_rows - row_to_string_row_idx) - 1;
   row_to_string_s := 0;
   while row_to_string_s < row_to_string_spaces do begin
   row_to_string_line := row_to_string_line + ' ';
   row_to_string_s := row_to_string_s + 1;
 end;
   row_to_string_c := 0;
-  while row_to_string_c <= row_idx do begin
-  row_to_string_line := row_to_string_line + IntToStr(row[row_to_string_c]);
-  if row_to_string_c <> row_idx then begin
+  while row_to_string_c <= row_to_string_row_idx do begin
+  row_to_string_line := row_to_string_line + IntToStr(row_to_string_row[row_to_string_c]);
+  if row_to_string_c <> row_to_string_row_idx then begin
   row_to_string_line := row_to_string_line + ' ';
 end;
   row_to_string_c := row_to_string_c + 1;
 end;
   exit(row_to_string_line);
 end;
-procedure print_pascal_triangle(num_rows: integer);
+procedure print_pascal_triangle(print_pascal_triangle_num_rows: integer);
 var
   print_pascal_triangle_triangle: IntArrayArray;
   print_pascal_triangle_r: integer;
   print_pascal_triangle_line: string;
 begin
-  print_pascal_triangle_triangle := generate_pascal_triangle(num_rows);
+  print_pascal_triangle_triangle := generate_pascal_triangle(print_pascal_triangle_num_rows);
   print_pascal_triangle_r := 0;
-  while print_pascal_triangle_r < num_rows do begin
-  print_pascal_triangle_line := row_to_string(print_pascal_triangle_triangle[print_pascal_triangle_r], num_rows, print_pascal_triangle_r);
+  while print_pascal_triangle_r < print_pascal_triangle_num_rows do begin
+  print_pascal_triangle_line := row_to_string(print_pascal_triangle_triangle[print_pascal_triangle_r], print_pascal_triangle_num_rows, print_pascal_triangle_r);
   writeln(print_pascal_triangle_line);
   print_pascal_triangle_r := print_pascal_triangle_r + 1;
 end;

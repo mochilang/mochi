@@ -70,18 +70,24 @@ begin
   end;
   write(']');
 end;
+function list_real_to_str(xs: array of real): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + FloatToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  vector: RealArray;
-  lambda_: real;
-  x: real;
-  alpha: real;
-function exp_(x: real): real; forward;
-function scaled_exponential_linear_unit(vector: RealArray; alpha: real; lambda_: real): RealArray; forward;
-function exp_(x: real): real;
+function exp_(exp__x: real): real; forward;
+function scaled_exponential_linear_unit(scaled_exponential_linear_unit_vector: RealArray; scaled_exponential_linear_unit_alpha: real; scaled_exponential_linear_unit_lambda_: real): RealArray; forward;
+function exp_(exp__x: real): real;
 var
   exp__term: real;
   exp__sum: real;
@@ -91,13 +97,13 @@ begin
   exp__sum := 1;
   exp__n := 1;
   while exp__n < 20 do begin
-  exp__term := (exp__term * x) / Double(exp__n);
+  exp__term := (exp__term * exp__x) / Double(exp__n);
   exp__sum := exp__sum + exp__term;
   exp__n := exp__n + 1;
 end;
   exit(exp__sum);
 end;
-function scaled_exponential_linear_unit(vector: RealArray; alpha: real; lambda_: real): RealArray;
+function scaled_exponential_linear_unit(scaled_exponential_linear_unit_vector: RealArray; scaled_exponential_linear_unit_alpha: real; scaled_exponential_linear_unit_lambda_: real): RealArray;
 var
   scaled_exponential_linear_unit_result_: array of real;
   scaled_exponential_linear_unit_i: integer;
@@ -106,12 +112,12 @@ var
 begin
   scaled_exponential_linear_unit_result_ := [];
   scaled_exponential_linear_unit_i := 0;
-  while scaled_exponential_linear_unit_i < Length(vector) do begin
-  scaled_exponential_linear_unit_x := vector[scaled_exponential_linear_unit_i];
+  while scaled_exponential_linear_unit_i < Length(scaled_exponential_linear_unit_vector) do begin
+  scaled_exponential_linear_unit_x := scaled_exponential_linear_unit_vector[scaled_exponential_linear_unit_i];
   if scaled_exponential_linear_unit_x > 0 then begin
-  scaled_exponential_linear_unit_y := lambda_ * scaled_exponential_linear_unit_x;
+  scaled_exponential_linear_unit_y := scaled_exponential_linear_unit_lambda_ * scaled_exponential_linear_unit_x;
 end else begin
-  scaled_exponential_linear_unit_y := (lambda_ * alpha) * (exp(scaled_exponential_linear_unit_x) - 1);
+  scaled_exponential_linear_unit_y := (scaled_exponential_linear_unit_lambda_ * scaled_exponential_linear_unit_alpha) * (exp(scaled_exponential_linear_unit_x) - 1);
 end;
   scaled_exponential_linear_unit_result_ := concat(scaled_exponential_linear_unit_result_, [scaled_exponential_linear_unit_y]);
   scaled_exponential_linear_unit_i := scaled_exponential_linear_unit_i + 1;

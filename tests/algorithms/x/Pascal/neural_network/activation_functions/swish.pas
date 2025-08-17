@@ -75,21 +75,15 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  eps: real;
-  beta: real;
-  b: RealArray;
-  a: RealArray;
-  x: real;
-  vector: RealArray;
-function exp_approx(x: real): real; forward;
-function sigmoid(vector: RealArray): RealArray; forward;
-function swish(vector: RealArray; beta: real): RealArray; forward;
-function sigmoid_linear_unit(vector: RealArray): RealArray; forward;
-function approx_equal(a: real; b: real; eps: real): boolean; forward;
-function approx_equal_list(a: RealArray; b: RealArray; eps: real): boolean; forward;
+function exp_approx(exp_approx_x: real): real; forward;
+function sigmoid(sigmoid_vector: RealArray): RealArray; forward;
+function swish(swish_vector: RealArray; swish_beta: real): RealArray; forward;
+function sigmoid_linear_unit(sigmoid_linear_unit_vector: RealArray): RealArray; forward;
+function approx_equal(approx_equal_a: real; approx_equal_b: real; approx_equal_eps: real): boolean; forward;
+function approx_equal_list(approx_equal_list_a: RealArray; approx_equal_list_b: RealArray; approx_equal_list_eps: real): boolean; forward;
 procedure test_swish(); forward;
 procedure main(); forward;
-function exp_approx(x: real): real;
+function exp_approx(exp_approx_x: real): real;
 var
   exp_approx_sum: real;
   exp_approx_term: real;
@@ -99,13 +93,13 @@ begin
   exp_approx_term := 1;
   exp_approx_i := 1;
   while exp_approx_i <= 20 do begin
-  exp_approx_term := (exp_approx_term * x) / Double(exp_approx_i);
+  exp_approx_term := (exp_approx_term * exp_approx_x) / Double(exp_approx_i);
   exp_approx_sum := exp_approx_sum + exp_approx_term;
   exp_approx_i := exp_approx_i + 1;
 end;
   exit(exp_approx_sum);
 end;
-function sigmoid(vector: RealArray): RealArray;
+function sigmoid(sigmoid_vector: RealArray): RealArray;
 var
   sigmoid_result_: array of real;
   sigmoid_i: integer;
@@ -114,15 +108,15 @@ var
 begin
   sigmoid_result_ := [];
   sigmoid_i := 0;
-  while sigmoid_i < Length(vector) do begin
-  sigmoid_v := vector[sigmoid_i];
+  while sigmoid_i < Length(sigmoid_vector) do begin
+  sigmoid_v := sigmoid_vector[sigmoid_i];
   sigmoid_s := 1 / (1 + exp_approx(-sigmoid_v));
   sigmoid_result_ := concat(sigmoid_result_, [sigmoid_s]);
   sigmoid_i := sigmoid_i + 1;
 end;
   exit(sigmoid_result_);
 end;
-function swish(vector: RealArray; beta: real): RealArray;
+function swish(swish_vector: RealArray; swish_beta: real): RealArray;
 var
   swish_result_: array of real;
   swish_i: integer;
@@ -131,39 +125,39 @@ var
 begin
   swish_result_ := [];
   swish_i := 0;
-  while swish_i < Length(vector) do begin
-  swish_v := vector[swish_i];
-  swish_s := 1 / (1 + exp_approx(-beta * swish_v));
+  while swish_i < Length(swish_vector) do begin
+  swish_v := swish_vector[swish_i];
+  swish_s := 1 / (1 + exp_approx(-swish_beta * swish_v));
   swish_result_ := concat(swish_result_, [swish_v * swish_s]);
   swish_i := swish_i + 1;
 end;
   exit(swish_result_);
 end;
-function sigmoid_linear_unit(vector: RealArray): RealArray;
+function sigmoid_linear_unit(sigmoid_linear_unit_vector: RealArray): RealArray;
 begin
-  exit(swish(vector, 1));
+  exit(swish(sigmoid_linear_unit_vector, 1));
 end;
-function approx_equal(a: real; b: real; eps: real): boolean;
+function approx_equal(approx_equal_a: real; approx_equal_b: real; approx_equal_eps: real): boolean;
 var
   approx_equal_diff: real;
 begin
-  if a > b then begin
-  approx_equal_diff := a - b;
+  if approx_equal_a > approx_equal_b then begin
+  approx_equal_diff := approx_equal_a - approx_equal_b;
 end else begin
-  approx_equal_diff := b - a;
+  approx_equal_diff := approx_equal_b - approx_equal_a;
 end;
-  exit(approx_equal_diff < eps);
+  exit(approx_equal_diff < approx_equal_eps);
 end;
-function approx_equal_list(a: RealArray; b: RealArray; eps: real): boolean;
+function approx_equal_list(approx_equal_list_a: RealArray; approx_equal_list_b: RealArray; approx_equal_list_eps: real): boolean;
 var
   approx_equal_list_i: integer;
 begin
-  if Length(a) <> Length(b) then begin
+  if Length(approx_equal_list_a) <> Length(approx_equal_list_b) then begin
   exit(false);
 end;
   approx_equal_list_i := 0;
-  while approx_equal_list_i < Length(a) do begin
-  if not approx_equal(a[approx_equal_list_i], b[approx_equal_list_i], eps) then begin
+  while approx_equal_list_i < Length(approx_equal_list_a) do begin
+  if not approx_equal(approx_equal_list_a[approx_equal_list_i], approx_equal_list_b[approx_equal_list_i], approx_equal_list_eps) then begin
   exit(false);
 end;
   approx_equal_list_i := approx_equal_list_i + 1;

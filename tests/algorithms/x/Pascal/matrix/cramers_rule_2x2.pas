@@ -38,6 +38,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure show_list_real(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(' ');
+  end;
+  write(']');
+end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
@@ -53,12 +85,10 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  eq2: RealArray;
-  eq1: RealArray;
-function cramers_rule_2x2(eq1: RealArray; eq2: RealArray): RealArray; forward;
+function cramers_rule_2x2(cramers_rule_2x2_eq1: RealArray; cramers_rule_2x2_eq2: RealArray): RealArray; forward;
 procedure test_cramers_rule_2x2(); forward;
 procedure main(); forward;
-function cramers_rule_2x2(eq1: RealArray; eq2: RealArray): RealArray;
+function cramers_rule_2x2(cramers_rule_2x2_eq1: RealArray; cramers_rule_2x2_eq2: RealArray): RealArray;
 var
   cramers_rule_2x2_a1: real;
   cramers_rule_2x2_b1: real;
@@ -72,18 +102,18 @@ var
   cramers_rule_2x2_x: real;
   cramers_rule_2x2_y: real;
 begin
-  if (Length(eq1) <> 3) or (Length(eq2) <> 3) then begin
+  if (Length(cramers_rule_2x2_eq1) <> 3) or (Length(cramers_rule_2x2_eq2) <> 3) then begin
   panic('Please enter a valid equation.');
 end;
-  if (((eq1[0] = 0) and (eq1[1] = 0)) and (eq2[0] = 0)) and (eq2[1] = 0) then begin
+  if (((cramers_rule_2x2_eq1[0] = 0) and (cramers_rule_2x2_eq1[1] = 0)) and (cramers_rule_2x2_eq2[0] = 0)) and (cramers_rule_2x2_eq2[1] = 0) then begin
   panic('Both a & b of two equations can''t be zero.');
 end;
-  cramers_rule_2x2_a1 := eq1[0];
-  cramers_rule_2x2_b1 := eq1[1];
-  cramers_rule_2x2_c1 := eq1[2];
-  cramers_rule_2x2_a2 := eq2[0];
-  cramers_rule_2x2_b2 := eq2[1];
-  cramers_rule_2x2_c2 := eq2[2];
+  cramers_rule_2x2_a1 := cramers_rule_2x2_eq1[0];
+  cramers_rule_2x2_b1 := cramers_rule_2x2_eq1[1];
+  cramers_rule_2x2_c1 := cramers_rule_2x2_eq1[2];
+  cramers_rule_2x2_a2 := cramers_rule_2x2_eq2[0];
+  cramers_rule_2x2_b2 := cramers_rule_2x2_eq2[1];
+  cramers_rule_2x2_c2 := cramers_rule_2x2_eq2[2];
   cramers_rule_2x2_determinant := (cramers_rule_2x2_a1 * cramers_rule_2x2_b2) - (cramers_rule_2x2_a2 * cramers_rule_2x2_b1);
   cramers_rule_2x2_determinant_x := (cramers_rule_2x2_c1 * cramers_rule_2x2_b2) - (cramers_rule_2x2_c2 * cramers_rule_2x2_b1);
   cramers_rule_2x2_determinant_y := (cramers_rule_2x2_a1 * cramers_rule_2x2_c2) - (cramers_rule_2x2_a2 * cramers_rule_2x2_c1);
@@ -117,7 +147,7 @@ end;
 procedure main();
 begin
   test_cramers_rule_2x2();
-  writeln(list_real_to_str(cramers_rule_2x2([11, 2, 30], [1, 0, 4])));
+  show_list_real(cramers_rule_2x2([11, 2, 30], [1, 0, 4]));
 end;
 begin
   init_now();

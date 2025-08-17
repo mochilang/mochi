@@ -1,8 +1,0 @@
-run: exit status 217
-Before training: An unhandled exception occurred at $0000000000402BED:
-EAccessViolation: Access violation
-  $0000000000402BED
-  $0000000000404FA1
-  $00000000004067C8
-  $0000000000406AC6
-

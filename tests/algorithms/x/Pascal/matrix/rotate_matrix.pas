@@ -70,27 +70,24 @@ var
   r90: IntArrayArray;
   r180: IntArrayArray;
   r270: IntArrayArray;
-  row: IntArray;
-  row_size: integer;
-  n: integer;
-function abs_int(n: integer): integer; forward;
-function make_matrix(row_size: integer): IntArrayArray; forward;
-function transpose(mat: IntArrayArray): IntArrayArray; forward;
-function reverse_row(mat: IntArrayArray): IntArrayArray; forward;
-function reverse_column(mat: IntArrayArray): IntArrayArray; forward;
-function rotate_90(mat: IntArrayArray): IntArrayArray; forward;
-function rotate_180(mat: IntArrayArray): IntArrayArray; forward;
-function rotate_270(mat: IntArrayArray): IntArrayArray; forward;
-function row_to_string(row: IntArray): string; forward;
-procedure print_matrix(mat: IntArrayArray); forward;
-function abs_int(n: integer): integer;
+function abs_int(abs_int_n: integer): integer; forward;
+function make_matrix(make_matrix_row_size: integer): IntArrayArray; forward;
+function transpose(transpose_mat: IntArrayArray): IntArrayArray; forward;
+function reverse_row(reverse_row_mat: IntArrayArray): IntArrayArray; forward;
+function reverse_column(reverse_column_mat: IntArrayArray): IntArrayArray; forward;
+function rotate_90(rotate_90_mat: IntArrayArray): IntArrayArray; forward;
+function rotate_180(rotate_180_mat: IntArrayArray): IntArrayArray; forward;
+function rotate_270(rotate_270_mat: IntArrayArray): IntArrayArray; forward;
+function row_to_string(row_to_string_row: IntArray): string; forward;
+procedure print_matrix(print_matrix_mat: IntArrayArray); forward;
+function abs_int(abs_int_n: integer): integer;
 begin
-  if n < 0 then begin
-  exit(-n);
+  if abs_int_n < 0 then begin
+  exit(-abs_int_n);
 end;
-  exit(n);
+  exit(abs_int_n);
 end;
-function make_matrix(row_size: integer): IntArrayArray;
+function make_matrix(make_matrix_row_size: integer): IntArrayArray;
 var
   make_matrix_size: integer;
   make_matrix_mat: array of IntArray;
@@ -98,7 +95,7 @@ var
   make_matrix_row: array of integer;
   make_matrix_x: integer;
 begin
-  make_matrix_size := abs_int(row_size);
+  make_matrix_size := abs_int(make_matrix_row_size);
   if make_matrix_size = 0 then begin
   make_matrix_size := 4;
 end;
@@ -116,7 +113,7 @@ end;
 end;
   exit(make_matrix_mat);
 end;
-function transpose(mat: IntArrayArray): IntArrayArray;
+function transpose(transpose_mat: IntArrayArray): IntArrayArray;
 var
   transpose_n: integer;
   transpose_result_: array of IntArray;
@@ -124,14 +121,14 @@ var
   transpose_row: array of integer;
   transpose_j: integer;
 begin
-  transpose_n := Length(mat);
+  transpose_n := Length(transpose_mat);
   transpose_result_ := [];
   transpose_i := 0;
   while transpose_i < transpose_n do begin
   transpose_row := [];
   transpose_j := 0;
   while transpose_j < transpose_n do begin
-  transpose_row := concat(transpose_row, IntArray([mat[transpose_j][transpose_i]]));
+  transpose_row := concat(transpose_row, IntArray([transpose_mat[transpose_j][transpose_i]]));
   transpose_j := transpose_j + 1;
 end;
   transpose_result_ := concat(transpose_result_, [transpose_row]);
@@ -139,20 +136,20 @@ end;
 end;
   exit(transpose_result_);
 end;
-function reverse_row(mat: IntArrayArray): IntArrayArray;
+function reverse_row(reverse_row_mat: IntArrayArray): IntArrayArray;
 var
   reverse_row_result_: array of IntArray;
   reverse_row_i: integer;
 begin
   reverse_row_result_ := [];
-  reverse_row_i := Length(mat) - 1;
+  reverse_row_i := Length(reverse_row_mat) - 1;
   while reverse_row_i >= 0 do begin
-  reverse_row_result_ := concat(reverse_row_result_, [mat[reverse_row_i]]);
+  reverse_row_result_ := concat(reverse_row_result_, [reverse_row_mat[reverse_row_i]]);
   reverse_row_i := reverse_row_i - 1;
 end;
   exit(reverse_row_result_);
 end;
-function reverse_column(mat: IntArrayArray): IntArrayArray;
+function reverse_column(reverse_column_mat: IntArrayArray): IntArrayArray;
 var
   reverse_column_result_: array of IntArray;
   reverse_column_i: integer;
@@ -161,11 +158,11 @@ var
 begin
   reverse_column_result_ := [];
   reverse_column_i := 0;
-  while reverse_column_i < Length(mat) do begin
+  while reverse_column_i < Length(reverse_column_mat) do begin
   reverse_column_row := [];
-  reverse_column_j := Length(mat[reverse_column_i]) - 1;
+  reverse_column_j := Length(reverse_column_mat[reverse_column_i]) - 1;
   while reverse_column_j >= 0 do begin
-  reverse_column_row := concat(reverse_column_row, IntArray([mat[reverse_column_i][reverse_column_j]]));
+  reverse_column_row := concat(reverse_column_row, IntArray([reverse_column_mat[reverse_column_i][reverse_column_j]]));
   reverse_column_j := reverse_column_j - 1;
 end;
   reverse_column_result_ := concat(reverse_column_result_, [reverse_column_row]);
@@ -173,57 +170,57 @@ end;
 end;
   exit(reverse_column_result_);
 end;
-function rotate_90(mat: IntArrayArray): IntArrayArray;
+function rotate_90(rotate_90_mat: IntArrayArray): IntArrayArray;
 var
   rotate_90_t: array of IntArray;
   rotate_90_rr: array of IntArray;
 begin
-  rotate_90_t := transpose(mat);
+  rotate_90_t := transpose(rotate_90_mat);
   rotate_90_rr := reverse_row(rotate_90_t);
   exit(rotate_90_rr);
 end;
-function rotate_180(mat: IntArrayArray): IntArrayArray;
+function rotate_180(rotate_180_mat: IntArrayArray): IntArrayArray;
 var
   rotate_180_rc: array of IntArray;
   rotate_180_rr: array of IntArray;
 begin
-  rotate_180_rc := reverse_column(mat);
+  rotate_180_rc := reverse_column(rotate_180_mat);
   rotate_180_rr := reverse_row(rotate_180_rc);
   exit(rotate_180_rr);
 end;
-function rotate_270(mat: IntArrayArray): IntArrayArray;
+function rotate_270(rotate_270_mat: IntArrayArray): IntArrayArray;
 var
   rotate_270_t: array of IntArray;
   rotate_270_rc: array of IntArray;
 begin
-  rotate_270_t := transpose(mat);
+  rotate_270_t := transpose(rotate_270_mat);
   rotate_270_rc := reverse_column(rotate_270_t);
   exit(rotate_270_rc);
 end;
-function row_to_string(row: IntArray): string;
+function row_to_string(row_to_string_row: IntArray): string;
 var
   row_to_string_line: string;
   row_to_string_i: integer;
 begin
   row_to_string_line := '';
   row_to_string_i := 0;
-  while row_to_string_i < Length(row) do begin
+  while row_to_string_i < Length(row_to_string_row) do begin
   if row_to_string_i = 0 then begin
-  row_to_string_line := IntToStr(row[row_to_string_i]);
+  row_to_string_line := IntToStr(row_to_string_row[row_to_string_i]);
 end else begin
-  row_to_string_line := (row_to_string_line + ' ') + IntToStr(row[row_to_string_i]);
+  row_to_string_line := (row_to_string_line + ' ') + IntToStr(row_to_string_row[row_to_string_i]);
 end;
   row_to_string_i := row_to_string_i + 1;
 end;
   exit(row_to_string_line);
 end;
-procedure print_matrix(mat: IntArrayArray);
+procedure print_matrix(print_matrix_mat: IntArrayArray);
 var
   print_matrix_i: integer;
 begin
   print_matrix_i := 0;
-  while print_matrix_i < Length(mat) do begin
-  writeln(row_to_string(mat[print_matrix_i]));
+  while print_matrix_i < Length(print_matrix_mat) do begin
+  writeln(row_to_string(print_matrix_mat[print_matrix_i]));
   print_matrix_i := print_matrix_i + 1;
 end;
 end;

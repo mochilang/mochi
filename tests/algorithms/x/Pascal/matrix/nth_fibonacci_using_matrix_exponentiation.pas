@@ -66,17 +66,13 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-  s: string;
-  matrix_b: IntArrayArray;
-  matrix_a: IntArrayArray;
-function multiply(matrix_a: IntArrayArray; matrix_b: IntArrayArray): IntArrayArray; forward;
-function identity(n: integer): IntArrayArray; forward;
-function nth_fibonacci_matrix(n: integer): integer; forward;
-function nth_fibonacci_bruteforce(n: integer): integer; forward;
-function parse_number(s: string): integer; forward;
+function multiply(multiply_matrix_a: IntArrayArray; multiply_matrix_b: IntArrayArray): IntArrayArray; forward;
+function identity(identity_n: integer): IntArrayArray; forward;
+function nth_fibonacci_matrix(nth_fibonacci_matrix_n: integer): integer; forward;
+function nth_fibonacci_bruteforce(nth_fibonacci_bruteforce_n: integer): integer; forward;
+function parse_number(parse_number_s: string): integer; forward;
 procedure main(); forward;
-function multiply(matrix_a: IntArrayArray; matrix_b: IntArrayArray): IntArrayArray;
+function multiply(multiply_matrix_a: IntArrayArray; multiply_matrix_b: IntArrayArray): IntArrayArray;
 var
   multiply_n: integer;
   multiply_matrix_c: array of IntArray;
@@ -86,7 +82,7 @@ var
   multiply_val: integer;
   multiply_k: integer;
 begin
-  multiply_n := Length(matrix_a);
+  multiply_n := Length(multiply_matrix_a);
   multiply_matrix_c := [];
   multiply_i := 0;
   while multiply_i < multiply_n do begin
@@ -96,7 +92,7 @@ begin
   multiply_val := 0;
   multiply_k := 0;
   while multiply_k < multiply_n do begin
-  multiply_val := multiply_val + (matrix_a[multiply_i][multiply_k] * matrix_b[multiply_k][multiply_j]);
+  multiply_val := multiply_val + (multiply_matrix_a[multiply_i][multiply_k] * multiply_matrix_b[multiply_k][multiply_j]);
   multiply_k := multiply_k + 1;
 end;
   multiply_row := concat(multiply_row, IntArray([multiply_val]));
@@ -107,7 +103,7 @@ end;
 end;
   exit(multiply_matrix_c);
 end;
-function identity(n: integer): IntArrayArray;
+function identity(identity_n: integer): IntArrayArray;
 var
   identity_res: array of IntArray;
   identity_i: integer;
@@ -116,10 +112,10 @@ var
 begin
   identity_res := [];
   identity_i := 0;
-  while identity_i < n do begin
+  while identity_i < identity_n do begin
   identity_row := [];
   identity_j := 0;
-  while identity_j < n do begin
+  while identity_j < identity_n do begin
   if identity_i = identity_j then begin
   identity_row := concat(identity_row, IntArray([1]));
 end else begin
@@ -132,18 +128,18 @@ end;
 end;
   exit(identity_res);
 end;
-function nth_fibonacci_matrix(n: integer): integer;
+function nth_fibonacci_matrix(nth_fibonacci_matrix_n: integer): integer;
 var
   nth_fibonacci_matrix_res_matrix: IntArrayArray;
   nth_fibonacci_matrix_fib_matrix: array of array of integer;
   nth_fibonacci_matrix_m: integer;
 begin
-  if n <= 1 then begin
-  exit(n);
+  if nth_fibonacci_matrix_n <= 1 then begin
+  exit(nth_fibonacci_matrix_n);
 end;
   nth_fibonacci_matrix_res_matrix := identity(2);
   nth_fibonacci_matrix_fib_matrix := [[1, 1], [1, 0]];
-  nth_fibonacci_matrix_m := n - 1;
+  nth_fibonacci_matrix_m := nth_fibonacci_matrix_n - 1;
   while nth_fibonacci_matrix_m > 0 do begin
   if (nth_fibonacci_matrix_m mod 2) = 1 then begin
   nth_fibonacci_matrix_res_matrix := multiply(nth_fibonacci_matrix_res_matrix, nth_fibonacci_matrix_fib_matrix);
@@ -153,20 +149,20 @@ end;
 end;
   exit(nth_fibonacci_matrix_res_matrix[0][0]);
 end;
-function nth_fibonacci_bruteforce(n: integer): integer;
+function nth_fibonacci_bruteforce(nth_fibonacci_bruteforce_n: integer): integer;
 var
   nth_fibonacci_bruteforce_fib0: integer;
   nth_fibonacci_bruteforce_fib1: integer;
   nth_fibonacci_bruteforce_i: integer;
   nth_fibonacci_bruteforce_next: integer;
 begin
-  if n <= 1 then begin
-  exit(n);
+  if nth_fibonacci_bruteforce_n <= 1 then begin
+  exit(nth_fibonacci_bruteforce_n);
 end;
   nth_fibonacci_bruteforce_fib0 := 0;
   nth_fibonacci_bruteforce_fib1 := 1;
   nth_fibonacci_bruteforce_i := 2;
-  while nth_fibonacci_bruteforce_i <= n do begin
+  while nth_fibonacci_bruteforce_i <= nth_fibonacci_bruteforce_n do begin
   nth_fibonacci_bruteforce_next := nth_fibonacci_bruteforce_fib0 + nth_fibonacci_bruteforce_fib1;
   nth_fibonacci_bruteforce_fib0 := nth_fibonacci_bruteforce_fib1;
   nth_fibonacci_bruteforce_fib1 := nth_fibonacci_bruteforce_next;
@@ -174,7 +170,7 @@ end;
 end;
   exit(nth_fibonacci_bruteforce_fib1);
 end;
-function parse_number(s: string): integer;
+function parse_number(parse_number_s: string): integer;
 var
   parse_number_result_: integer;
   parse_number_i: integer;
@@ -182,8 +178,8 @@ var
 begin
   parse_number_result_ := 0;
   parse_number_i := 0;
-  while parse_number_i < Length(s) do begin
-  parse_number_ch := copy(s, parse_number_i+1, (parse_number_i + 1 - (parse_number_i)));
+  while parse_number_i < Length(parse_number_s) do begin
+  parse_number_ch := copy(parse_number_s, parse_number_i+1, (parse_number_i + 1 - (parse_number_i)));
   if (parse_number_ch >= '0') and (parse_number_ch <= '9') then begin
   parse_number_result_ := (parse_number_result_ * 10) + StrToInt(parse_number_ch);
 end;

@@ -75,9 +75,8 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  vector: RealArray;
-function relu(vector: RealArray): RealArray; forward;
-function relu(vector: RealArray): RealArray;
+function relu(relu_vector: RealArray): RealArray; forward;
+function relu(relu_vector: RealArray): RealArray;
 var
   relu_result_: array of real;
   relu_i: integer;
@@ -85,8 +84,8 @@ var
 begin
   relu_result_ := [];
   relu_i := 0;
-  while relu_i < Length(vector) do begin
-  relu_v := vector[relu_i];
+  while relu_i < Length(relu_vector) do begin
+  relu_v := relu_vector[relu_i];
   if relu_v > 0 then begin
   relu_result_ := concat(relu_result_, [relu_v]);
 end else begin

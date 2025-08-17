@@ -70,18 +70,26 @@ begin
   end;
   write(']');
 end;
+function list_real_to_str(xs: array of real): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + FloatToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  vector: RealArray;
-  x: real;
-function ln_(x: real): real; forward;
-function exp_(x: real): real; forward;
-function softplus(vector: RealArray): RealArray; forward;
+function ln_(ln__x: real): real; forward;
+function exp_(exp__x: real): real; forward;
+function softplus(softplus_vector: RealArray): RealArray; forward;
 procedure main(); forward;
-function ln_(x: real): real;
+function ln_(ln__x: real): real;
 var
   ln__y: real;
   ln__y2: real;
@@ -90,10 +98,10 @@ var
   ln__k: integer;
   ln__denom: real;
 begin
-  if x <= 0 then begin
+  if ln__x <= 0 then begin
   panic('ln domain error');
 end;
-  ln__y := (x - 1) / (x + 1);
+  ln__y := (ln__x - 1) / (ln__x + 1);
   ln__y2 := ln__y * ln__y;
   ln__term := ln__y;
   ln__sum := 0;
@@ -106,7 +114,7 @@ end;
 end;
   exit(2 * ln__sum);
 end;
-function exp_(x: real): real;
+function exp_(exp__x: real): real;
 var
   exp__term: real;
   exp__sum: real;
@@ -116,13 +124,13 @@ begin
   exp__sum := 1;
   exp__n := 1;
   while exp__n < 20 do begin
-  exp__term := (exp__term * x) / Double(exp__n);
+  exp__term := (exp__term * exp__x) / Double(exp__n);
   exp__sum := exp__sum + exp__term;
   exp__n := exp__n + 1;
 end;
   exit(exp__sum);
 end;
-function softplus(vector: RealArray): RealArray;
+function softplus(softplus_vector: RealArray): RealArray;
 var
   softplus_result_: array of real;
   softplus_i: integer;
@@ -131,8 +139,8 @@ var
 begin
   softplus_result_ := [];
   softplus_i := 0;
-  while softplus_i < Length(vector) do begin
-  softplus_x := vector[softplus_i];
+  while softplus_i < Length(softplus_vector) do begin
+  softplus_x := softplus_vector[softplus_i];
   softplus_value := ln(1 + exp(softplus_x));
   softplus_result_ := concat(softplus_result_, [softplus_value]);
   softplus_i := softplus_i + 1;

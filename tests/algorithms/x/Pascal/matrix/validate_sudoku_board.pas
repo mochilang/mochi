@@ -90,9 +90,8 @@ var
   EMPTY_CELL: string;
   valid_board: array of StrArray;
   invalid_board: array of StrArray;
-  board: StrArrayArray;
-function is_valid_sudoku_board(board: StrArrayArray): boolean; forward;
-function is_valid_sudoku_board(board: StrArrayArray): boolean;
+function is_valid_sudoku_board(is_valid_sudoku_board_board: StrArrayArray): boolean; forward;
+function is_valid_sudoku_board(is_valid_sudoku_board_board: StrArrayArray): boolean;
 var
   is_valid_sudoku_board_i: integer;
   is_valid_sudoku_board_rows: array of StrArray;
@@ -103,12 +102,12 @@ var
   is_valid_sudoku_board_value: string;
   is_valid_sudoku_board_box: integer;
 begin
-  if Length(board) <> NUM_SQUARES then begin
+  if Length(is_valid_sudoku_board_board) <> NUM_SQUARES then begin
   exit(false);
 end;
   is_valid_sudoku_board_i := 0;
   while is_valid_sudoku_board_i < NUM_SQUARES do begin
-  if Length(board[is_valid_sudoku_board_i]) <> NUM_SQUARES then begin
+  if Length(is_valid_sudoku_board_board[is_valid_sudoku_board_i]) <> NUM_SQUARES then begin
   exit(false);
 end;
   is_valid_sudoku_board_i := is_valid_sudoku_board_i + 1;
@@ -125,7 +124,7 @@ end;
 end;
   for is_valid_sudoku_board_r := 0 to (NUM_SQUARES - 1) do begin
   for is_valid_sudoku_board_c := 0 to (NUM_SQUARES - 1) do begin
-  is_valid_sudoku_board_value := board[is_valid_sudoku_board_r][is_valid_sudoku_board_c];
+  is_valid_sudoku_board_value := is_valid_sudoku_board_board[is_valid_sudoku_board_r][is_valid_sudoku_board_c];
   if is_valid_sudoku_board_value = EMPTY_CELL then begin
   continue;
 end;
