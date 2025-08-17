@@ -5430,6 +5430,14 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		if p.Call.Func == "int" && len(p.Call.Args) == 1 {
 			useToInt = true
 		}
+		if p.Call.Func == "to_float" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			useToFloat = true
+			return &CallExpr{Func: "mochi_to_float", Args: []Expr{arg}}, nil
+		}
 		name := p.Call.Func
 		nameLower := strings.ToLower(name)
 		var varCall bool
