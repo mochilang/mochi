@@ -4097,26 +4097,30 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 	}
 
 	var pre bytes.Buffer
-	tmpName := ""
-	if len(c.Args) > 0 {
-		if ce, ok := c.Args[0].(*CallExpr); ok {
-			for _, arg := range c.Args[1:] {
-				if vr, ok2 := arg.(*VarRef); ok2 && vr.Name == ce.Func+"_len" {
-					ret := inferExprType(currentEnv, ce)
-					decl := ret
-					if strings.HasSuffix(ret, "[]") {
-						decl = listPtrType(ret)
-					}
-					if decl == "" || decl == "int" {
-						decl = "long long"
-					}
-					tmpName = fmt.Sprintf("__tmp%d", tempCounter)
-					tempCounter++
-					pre.WriteString(fmt.Sprintf("%s %s = ", decl, tmpName))
-					ce.emitExpr(&pre)
-					pre.WriteString("; ")
-					break
+	args := make([]Expr, len(c.Args))
+	for i, a := range c.Args {
+		args[i] = a
+		var paramType string
+		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
+			paramType = types[i]
+		}
+		if strings.HasSuffix(paramType, "[]") {
+			if ce, ok := a.(*CallExpr); ok {
+				ret := inferExprType(currentEnv, ce)
+				decl := ret
+				if strings.HasSuffix(ret, "[]") {
+					decl = listPtrType(ret)
 				}
+				if decl == "" || decl == "int" {
+					decl = "long long"
+				}
+				tmp := fmt.Sprintf("__tmp%d", tempCounter)
+				tempCounter++
+				pre.WriteString(fmt.Sprintf("%s %s = ", decl, tmp))
+				ce.emitExpr(&pre)
+				pre.WriteString(fmt.Sprintf("; size_t %s_len = %s_len; ", tmp, ce.Func))
+				varTypes[tmp] = ret
+				args[i] = &VarRef{Name: tmp}
 			}
 		}
 	}
@@ -4129,7 +4133,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 	io.WriteString(w, fn)
 	io.WriteString(w, "(")
 	first := true
-	for i, a := range c.Args {
+	for i, a := range args {
 		if a == nil {
 			continue
 		}
@@ -4139,11 +4143,6 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		var paramType string
 		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
 			paramType = types[i]
-		}
-		if i == 0 && tmpName != "" {
-			io.WriteString(w, tmpName)
-			first = false
-			continue
 		}
 		if strings.HasSuffix(paramType, "*") {
 			base := strings.TrimSuffix(paramType, "*")
