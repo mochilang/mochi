@@ -1079,10 +1079,14 @@ end)(`)
         return table.concat(parts)
       end
     elseif type(x) == "number" then
-      if (math.type and math.type(x) == "integer") or x % 1 == 0 then
+      if math.type and math.type(x) == "integer" then
         return string.format("%d", x)
       else
-        return tostring(x)
+        local s = string.format("%g", x)
+        if not string.find(s, "[%.eE]") then
+          s = s .. ".0"
+        end
+        return s
       end
     elseif type(x) == "string" then
       return '"' .. x .. '"'
