@@ -1,177 +1,171 @@
 public class Main {
-    static double PI;
-    static double SQRT5;
+    static double PI = (double)(3.141592653589793);
+    static double SQRT5 = (double)(2.23606797749979);
 
     static double minf(double a, double b) {
-        if (a < b) {
+        if ((double)(a) < (double)(b)) {
             return a;
         }
         return b;
     }
 
     static double maxf(double a, double b) {
-        if (a > b) {
+        if ((double)(a) > (double)(b)) {
             return a;
         }
         return b;
     }
 
     static double vol_cube(double side_length) {
-        if (side_length < 0.0) {
+        if ((double)(side_length) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_cube() only accepts non-negative values"));
         }
-        return side_length * side_length * side_length;
+        return (double)((double)(side_length) * (double)(side_length)) * (double)(side_length);
     }
 
     static double vol_spherical_cap(double height, double radius) {
-        if (height < 0.0 || radius < 0.0) {
+        if ((double)(height) < (double)(0.0) || (double)(radius) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_spherical_cap() only accepts non-negative values"));
         }
-        return (1.0 / 3.0) * PI * height * height * (3.0 * radius - height);
+        return (double)((double)((double)((double)(((double)(1.0) / (double)(3.0))) * (double)(PI)) * (double)(height)) * (double)(height)) * (double)(((double)((double)(3.0) * (double)(radius)) - (double)(height)));
     }
 
     static double vol_sphere(double radius) {
-        if (radius < 0.0) {
+        if ((double)(radius) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_sphere() only accepts non-negative values"));
         }
-        return (4.0 / 3.0) * PI * radius * radius * radius;
+        return (double)((double)((double)((double)(((double)(4.0) / (double)(3.0))) * (double)(PI)) * (double)(radius)) * (double)(radius)) * (double)(radius);
     }
 
     static double vol_spheres_intersect(double radius_1, double radius_2, double centers_distance) {
-        if (radius_1 < 0.0 || radius_2 < 0.0 || centers_distance < 0.0) {
+        if ((double)(radius_1) < (double)(0.0) || (double)(radius_2) < (double)(0.0) || (double)(centers_distance) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_spheres_intersect() only accepts non-negative values"));
         }
-        if (centers_distance == 0.0) {
-            return vol_sphere(minf(radius_1, radius_2));
+        if ((double)(centers_distance) == (double)(0.0)) {
+            return vol_sphere((double)(minf((double)(radius_1), (double)(radius_2))));
         }
-        double h1 = (radius_1 - radius_2 + centers_distance) * (radius_1 + radius_2 - centers_distance) / (2.0 * centers_distance);
-        double h2 = (radius_2 - radius_1 + centers_distance) * (radius_2 + radius_1 - centers_distance) / (2.0 * centers_distance);
-        return vol_spherical_cap(h1, radius_2) + vol_spherical_cap(h2, radius_1);
+        double h1_1 = (double)((double)((double)(((double)((double)(radius_1) - (double)(radius_2)) + (double)(centers_distance))) * (double)(((double)((double)(radius_1) + (double)(radius_2)) - (double)(centers_distance)))) / (double)(((double)(2.0) * (double)(centers_distance))));
+        double h2_1 = (double)((double)((double)(((double)((double)(radius_2) - (double)(radius_1)) + (double)(centers_distance))) * (double)(((double)((double)(radius_2) + (double)(radius_1)) - (double)(centers_distance)))) / (double)(((double)(2.0) * (double)(centers_distance))));
+        return (double)(vol_spherical_cap((double)(h1_1), (double)(radius_2))) + (double)(vol_spherical_cap((double)(h2_1), (double)(radius_1)));
     }
 
     static double vol_spheres_union(double radius_1, double radius_2, double centers_distance) {
-        if (radius_1 <= 0.0 || radius_2 <= 0.0 || centers_distance < 0.0) {
+        if ((double)(radius_1) <= (double)(0.0) || (double)(radius_2) <= (double)(0.0) || (double)(centers_distance) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_spheres_union() only accepts non-negative values, non-zero radius"));
         }
-        if (centers_distance == 0.0) {
-            return vol_sphere(maxf(radius_1, radius_2));
+        if ((double)(centers_distance) == (double)(0.0)) {
+            return vol_sphere((double)(maxf((double)(radius_1), (double)(radius_2))));
         }
-        return vol_sphere(radius_1) + vol_sphere(radius_2) - vol_spheres_intersect(radius_1, radius_2, centers_distance);
+        return (double)((double)(vol_sphere((double)(radius_1))) + (double)(vol_sphere((double)(radius_2)))) - (double)(vol_spheres_intersect((double)(radius_1), (double)(radius_2), (double)(centers_distance)));
     }
 
     static double vol_cuboid(double width, double height, double length) {
-        if (width < 0.0 || height < 0.0 || length < 0.0) {
+        if ((double)(width) < (double)(0.0) || (double)(height) < (double)(0.0) || (double)(length) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_cuboid() only accepts non-negative values"));
         }
-        return width * height * length;
+        return (double)((double)(width) * (double)(height)) * (double)(length);
     }
 
     static double vol_cone(double area_of_base, double height) {
-        if (height < 0.0 || area_of_base < 0.0) {
+        if ((double)(height) < (double)(0.0) || (double)(area_of_base) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_cone() only accepts non-negative values"));
         }
-        return area_of_base * height / 3.0;
+        return (double)((double)(area_of_base) * (double)(height)) / (double)(3.0);
     }
 
     static double vol_right_circ_cone(double radius, double height) {
-        if (height < 0.0 || radius < 0.0) {
+        if ((double)(height) < (double)(0.0) || (double)(radius) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_right_circ_cone() only accepts non-negative values"));
         }
-        return PI * radius * radius * height / 3.0;
+        return (double)((double)((double)((double)(PI) * (double)(radius)) * (double)(radius)) * (double)(height)) / (double)(3.0);
     }
 
     static double vol_prism(double area_of_base, double height) {
-        if (height < 0.0 || area_of_base < 0.0) {
+        if ((double)(height) < (double)(0.0) || (double)(area_of_base) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_prism() only accepts non-negative values"));
         }
-        return area_of_base * height;
+        return (double)(area_of_base) * (double)(height);
     }
 
     static double vol_pyramid(double area_of_base, double height) {
-        if (height < 0.0 || area_of_base < 0.0) {
+        if ((double)(height) < (double)(0.0) || (double)(area_of_base) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_pyramid() only accepts non-negative values"));
         }
-        return area_of_base * height / 3.0;
+        return (double)((double)(area_of_base) * (double)(height)) / (double)(3.0);
     }
 
     static double vol_hemisphere(double radius) {
-        if (radius < 0.0) {
+        if ((double)(radius) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_hemisphere() only accepts non-negative values"));
         }
-        return radius * radius * radius * PI * 2.0 / 3.0;
+        return (double)((double)((double)((double)((double)(radius) * (double)(radius)) * (double)(radius)) * (double)(PI)) * (double)(2.0)) / (double)(3.0);
     }
 
     static double vol_circular_cylinder(double radius, double height) {
-        if (height < 0.0 || radius < 0.0) {
+        if ((double)(height) < (double)(0.0) || (double)(radius) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_circular_cylinder() only accepts non-negative values"));
         }
-        return radius * radius * height * PI;
+        return (double)((double)((double)(radius) * (double)(radius)) * (double)(height)) * (double)(PI);
     }
 
     static double vol_hollow_circular_cylinder(double inner_radius, double outer_radius, double height) {
-        if (inner_radius < 0.0 || outer_radius < 0.0 || height < 0.0) {
+        if ((double)(inner_radius) < (double)(0.0) || (double)(outer_radius) < (double)(0.0) || (double)(height) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_hollow_circular_cylinder() only accepts non-negative values"));
         }
-        if (outer_radius <= inner_radius) {
+        if ((double)(outer_radius) <= (double)(inner_radius)) {
             throw new RuntimeException(String.valueOf("outer_radius must be greater than inner_radius"));
         }
-        return PI * (outer_radius * outer_radius - inner_radius * inner_radius) * height;
+        return (double)((double)(PI) * (double)(((double)((double)(outer_radius) * (double)(outer_radius)) - (double)((double)(inner_radius) * (double)(inner_radius))))) * (double)(height);
     }
 
     static double vol_conical_frustum(double height, double radius_1, double radius_2) {
-        if (radius_1 < 0.0 || radius_2 < 0.0 || height < 0.0) {
+        if ((double)(radius_1) < (double)(0.0) || (double)(radius_2) < (double)(0.0) || (double)(height) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_conical_frustum() only accepts non-negative values"));
         }
-        return (1.0 / 3.0) * PI * height * (radius_1 * radius_1 + radius_2 * radius_2 + radius_1 * radius_2);
+        return (double)((double)((double)(((double)(1.0) / (double)(3.0))) * (double)(PI)) * (double)(height)) * (double)(((double)((double)((double)(radius_1) * (double)(radius_1)) + (double)((double)(radius_2) * (double)(radius_2))) + (double)((double)(radius_1) * (double)(radius_2))));
     }
 
     static double vol_torus(double torus_radius, double tube_radius) {
-        if (torus_radius < 0.0 || tube_radius < 0.0) {
+        if ((double)(torus_radius) < (double)(0.0) || (double)(tube_radius) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_torus() only accepts non-negative values"));
         }
-        return 2.0 * PI * PI * torus_radius * tube_radius * tube_radius;
+        return (double)((double)((double)((double)((double)(2.0) * (double)(PI)) * (double)(PI)) * (double)(torus_radius)) * (double)(tube_radius)) * (double)(tube_radius);
     }
 
     static double vol_icosahedron(double tri_side) {
-        if (tri_side < 0.0) {
+        if ((double)(tri_side) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("vol_icosahedron() only accepts non-negative values"));
         }
-        return tri_side * tri_side * tri_side * (3.0 + SQRT5) * 5.0 / 12.0;
+        return (double)((double)((double)((double)((double)(tri_side) * (double)(tri_side)) * (double)(tri_side)) * (double)(((double)(3.0) + (double)(SQRT5)))) * (double)(5.0)) / (double)(12.0);
     }
 
     static void main() {
         System.out.println("Volumes:");
-        System.out.println("Cube: " + _p(vol_cube(2.0)));
-        System.out.println("Cuboid: " + _p(vol_cuboid(2.0, 2.0, 2.0)));
-        System.out.println("Cone: " + _p(vol_cone(2.0, 2.0)));
-        System.out.println("Right Circular Cone: " + _p(vol_right_circ_cone(2.0, 2.0)));
-        System.out.println("Prism: " + _p(vol_prism(2.0, 2.0)));
-        System.out.println("Pyramid: " + _p(vol_pyramid(2.0, 2.0)));
-        System.out.println("Sphere: " + _p(vol_sphere(2.0)));
-        System.out.println("Hemisphere: " + _p(vol_hemisphere(2.0)));
-        System.out.println("Circular Cylinder: " + _p(vol_circular_cylinder(2.0, 2.0)));
-        System.out.println("Torus: " + _p(vol_torus(2.0, 2.0)));
-        System.out.println("Conical Frustum: " + _p(vol_conical_frustum(2.0, 2.0, 4.0)));
-        System.out.println("Spherical cap: " + _p(vol_spherical_cap(1.0, 2.0)));
-        System.out.println("Spheres intersection: " + _p(vol_spheres_intersect(2.0, 2.0, 1.0)));
-        System.out.println("Spheres union: " + _p(vol_spheres_union(2.0, 2.0, 1.0)));
-        System.out.println("Hollow Circular Cylinder: " + _p(vol_hollow_circular_cylinder(1.0, 2.0, 3.0)));
-        System.out.println("Icosahedron: " + _p(vol_icosahedron(2.5)));
+        System.out.println("Cube: " + _p(vol_cube((double)(2.0))));
+        System.out.println("Cuboid: " + _p(vol_cuboid((double)(2.0), (double)(2.0), (double)(2.0))));
+        System.out.println("Cone: " + _p(vol_cone((double)(2.0), (double)(2.0))));
+        System.out.println("Right Circular Cone: " + _p(vol_right_circ_cone((double)(2.0), (double)(2.0))));
+        System.out.println("Prism: " + _p(vol_prism((double)(2.0), (double)(2.0))));
+        System.out.println("Pyramid: " + _p(vol_pyramid((double)(2.0), (double)(2.0))));
+        System.out.println("Sphere: " + _p(vol_sphere((double)(2.0))));
+        System.out.println("Hemisphere: " + _p(vol_hemisphere((double)(2.0))));
+        System.out.println("Circular Cylinder: " + _p(vol_circular_cylinder((double)(2.0), (double)(2.0))));
+        System.out.println("Torus: " + _p(vol_torus((double)(2.0), (double)(2.0))));
+        System.out.println("Conical Frustum: " + _p(vol_conical_frustum((double)(2.0), (double)(2.0), (double)(4.0))));
+        System.out.println("Spherical cap: " + _p(vol_spherical_cap((double)(1.0), (double)(2.0))));
+        System.out.println("Spheres intersection: " + _p(vol_spheres_intersect((double)(2.0), (double)(2.0), (double)(1.0))));
+        System.out.println("Spheres union: " + _p(vol_spheres_union((double)(2.0), (double)(2.0), (double)(1.0))));
+        System.out.println("Hollow Circular Cylinder: " + _p(vol_hollow_circular_cylinder((double)(1.0), (double)(2.0), (double)(3.0))));
+        System.out.println("Icosahedron: " + _p(vol_icosahedron((double)(2.5))));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            PI = 3.141592653589793;
-            SQRT5 = 2.23606797749979;
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -210,6 +204,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

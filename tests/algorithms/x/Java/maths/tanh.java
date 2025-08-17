@@ -2,42 +2,42 @@ public class Main {
 
     static double expApprox(double x) {
         boolean neg = false;
-        double y = x;
-        if (x < 0.0) {
+        double y_1 = (double)(x);
+        if ((double)(x) < (double)(0.0)) {
             neg = true;
-            y = -x;
+            y_1 = (double)(-x);
         }
-        double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 30) {
-            term = term * y / (((Number)(n)).doubleValue());
-            sum = sum + term;
-            n = n + 1;
+        double term_1 = (double)(1.0);
+        double sum_1 = (double)(1.0);
+        long n_1 = 1L;
+        while ((long)(n_1) < 30L) {
+            term_1 = (double)((double)((double)(term_1) * (double)(y_1)) / (double)((((Number)(n_1)).doubleValue())));
+            sum_1 = (double)((double)(sum_1) + (double)(term_1));
+            n_1 = (long)((long)(n_1) + 1L);
         }
         if (neg) {
-            return 1.0 / sum;
+            return (double)(1.0) / (double)(sum_1);
         }
-        return sum;
+        return sum_1;
     }
 
     static double[] tangent_hyperbolic(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < vector.length) {
-            double x = vector[i];
-            double t = (2.0 / (1.0 + expApprox(-2.0 * x))) - 1.0;
-            result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(t)).toArray()));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vector.length)) {
+            double x_1 = (double)(vector[(int)((long)(i_1))]);
+            double t_1 = (double)((double)(((double)(2.0) / (double)(((double)(1.0) + (double)(expApprox((double)((double)(-2.0) * (double)(x_1)))))))) - (double)(1.0));
+            result = ((double[])(appendDouble(result, (double)(t_1))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
     static void main() {
         double[] v1 = ((double[])(new double[]{1.0, 5.0, 6.0, -0.67}));
-        double[] v2 = ((double[])(new double[]{8.0, 10.0, 2.0, -0.98, 13.0}));
+        double[] v2_1 = ((double[])(new double[]{8.0, 10.0, 2.0, -0.98, 13.0}));
         System.out.println(_p(tangent_hyperbolic(((double[])(v1)))));
-        System.out.println(_p(tangent_hyperbolic(((double[])(v2)))));
+        System.out.println(_p(tangent_hyperbolic(((double[])(v2_1)))));
     }
     public static void main(String[] args) {
         {
@@ -46,11 +46,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -77,6 +73,12 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -89,6 +91,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,24 +1,24 @@
 public class Main {
 
-    static boolean is_prime(int number) {
-        if (number < 0) {
+    static boolean is_prime(long number) {
+        if ((long)(number) < 0L) {
             throw new RuntimeException(String.valueOf("is_prime() only accepts positive integers"));
         }
-        if (number < 2) {
+        if ((long)(number) < 2L) {
             return false;
         }
-        if (number < 4) {
+        if ((long)(number) < 4L) {
             return true;
         }
-        if (Math.floorMod(number, 2) == 0 || Math.floorMod(number, 3) == 0) {
+        if (Math.floorMod(number, 2) == 0L || Math.floorMod(number, 3) == 0L) {
             return false;
         }
-        int i = 5;
-        while (i * i <= number) {
-            if (Math.floorMod(number, i) == 0 || Math.floorMod(number, (i + 2)) == 0) {
+        long i_1 = 5L;
+        while ((long)((long)(i_1) * (long)(i_1)) <= (long)(number)) {
+            if (Math.floorMod(number, i_1) == 0L || Math.floorMod(number, ((long)(i_1) + 2L)) == 0L) {
                 return false;
             }
-            i = i + 6;
+            i_1 = (long)((long)(i_1) + 6L);
         }
         return true;
     }
@@ -26,30 +26,26 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(is_prime(2)));
-            System.out.println(_p(is_prime(3)));
-            System.out.println(_p(is_prime(5)));
-            System.out.println(_p(is_prime(7)));
-            System.out.println(_p(is_prime(11)));
-            System.out.println(_p(is_prime(13)));
-            System.out.println(_p(is_prime(17)));
-            System.out.println(_p(is_prime(19)));
-            System.out.println(_p(is_prime(23)));
-            System.out.println(_p(is_prime(29)));
-            System.out.println(_p(is_prime(0)));
-            System.out.println(_p(is_prime(1)));
-            System.out.println(_p(is_prime(4)));
-            System.out.println(_p(is_prime(6)));
-            System.out.println(_p(is_prime(9)));
-            System.out.println(_p(is_prime(15)));
-            System.out.println(_p(is_prime(105)));
+            System.out.println(_p(is_prime(2L)));
+            System.out.println(_p(is_prime(3L)));
+            System.out.println(_p(is_prime(5L)));
+            System.out.println(_p(is_prime(7L)));
+            System.out.println(_p(is_prime(11L)));
+            System.out.println(_p(is_prime(13L)));
+            System.out.println(_p(is_prime(17L)));
+            System.out.println(_p(is_prime(19L)));
+            System.out.println(_p(is_prime(23L)));
+            System.out.println(_p(is_prime(29L)));
+            System.out.println(_p(is_prime(0L)));
+            System.out.println(_p(is_prime(1L)));
+            System.out.println(_p(is_prime(4L)));
+            System.out.println(_p(is_prime(6L)));
+            System.out.println(_p(is_prime(9L)));
+            System.out.println(_p(is_prime(15L)));
+            System.out.println(_p(is_prime(105L)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -88,6 +84,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

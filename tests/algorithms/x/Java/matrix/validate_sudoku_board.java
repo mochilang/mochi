@@ -31,7 +31,7 @@ public class Main {
                 if ((value_1.equals(EMPTY_CELL))) {
                     continue;
                 }
-                long box_1 = (long)((long)((long)(((Number)((long)(r) / 3L)).intValue()) * 3L) + (long)(((Number)((long)(c) / 3L)).intValue()));
+                long box_1 = (long)((long)((long)(((Number)(Math.floorDiv(r, 3))).intValue()) * 3L) + (long)(((Number)(Math.floorDiv(c, 3))).intValue()));
                 if (java.util.Arrays.asList(rows_1[(int)((long)(r))]).contains(value_1) || java.util.Arrays.asList(cols_1[(int)((long)(c))]).contains(value_1) || java.util.Arrays.asList(boxes_1[(int)((long)(box_1))]).contains(value_1)) {
                     return false;
                 }
@@ -50,11 +50,7 @@ boxes_1[(int)((long)(box_1))] = ((String[])(java.util.stream.Stream.concat(java.
             System.out.println(is_valid_sudoku_board(((String[][])(invalid_board))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

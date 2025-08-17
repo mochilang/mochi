@@ -141,7 +141,7 @@ public class Main {
     }
 
     static double[] vec_mul_mat(double[] v, double[][] m) {
-        long cols = (long)(m[(int)((long)(0))].length);
+        long cols = (long)(m[(int)(0L)].length);
         double[] res_1 = ((double[])(new double[]{}));
         long j_7 = 0L;
         while ((long)(j_7) < (long)(cols)) {
@@ -347,11 +347,7 @@ b_hidden_3[(int)((long)(j_15))] = (double)((double)(b_hidden_3[(int)((long)(j_15
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

@@ -15,7 +15,7 @@ public class Main {
                 j_1 = (long)((long)(j_1) + 1L);
             }
             if (!found_1) {
-                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(v_1))).toArray()));
+                res = ((long[])(appendLong(res, (long)(v_1))));
             }
             i_1 = (long)((long)(i_1) + 1L);
         }
@@ -59,11 +59,7 @@ public class Main {
             System.out.println(_p(array_equalization(((long[])(new long[]{1, 2, 3})), 2147483647L)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -88,6 +84,12 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {

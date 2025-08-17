@@ -20,7 +20,7 @@ public class Main {
         if ((long)(r) == 0L) {
             return new Matrix(new double[][]{}, 0, 0);
         }
-        long c_1 = (long)(values[(int)((long)(0))].length);
+        long c_1 = (long)(values[(int)(0L)].length);
         long i_1 = 0L;
         while ((long)(i_1) < (long)(r)) {
             if ((long)(values[(int)((long)(i_1))].length) != (long)(c_1)) {
@@ -133,15 +133,15 @@ public class Main {
             return 0.0;
         }
         if ((long)(m.rows) == 1L) {
-            return m.data[(int)((long)(0))][(int)((long)(0))];
+            return m.data[(int)(0L)][(int)(0L)];
         }
         if ((long)(m.rows) == 2L) {
-            return (double)((double)(m.data[(int)((long)(0))][(int)((long)(0))]) * (double)(m.data[(int)((long)(1))][(int)((long)(1))])) - (double)((double)(m.data[(int)((long)(0))][(int)((long)(1))]) * (double)(m.data[(int)((long)(1))][(int)((long)(0))]));
+            return (double)((double)(m.data[(int)(0L)][(int)(0L)]) * (double)(m.data[(int)(1L)][(int)(1L)])) - (double)((double)(m.data[(int)(0L)][(int)(1L)]) * (double)(m.data[(int)(1L)][(int)(0L)]));
         }
         double sum_1 = (double)(0.0);
         long j_11 = 0L;
         while ((long)(j_11) < (long)(m.cols)) {
-            sum_1 = (double)((double)(sum_1) + (double)((double)(m.data[(int)((long)(0))][(int)((long)(j_11))]) * (double)(matrix_cofactor(m, 0L, (long)(j_11)))));
+            sum_1 = (double)((double)(sum_1) + (double)((double)(m.data[(int)(0L)][(int)((long)(j_11))]) * (double)(matrix_cofactor(m, 0L, (long)(j_11)))));
             j_11 = (long)((long)(j_11) + 1L);
         }
         return sum_1;
@@ -354,11 +354,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

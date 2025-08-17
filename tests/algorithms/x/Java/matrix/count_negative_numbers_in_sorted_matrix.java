@@ -1,100 +1,100 @@
 public class Main {
-    static int[][] grid;
-    static int[][][] test_grids;
-    static int[] results_bin = new int[0];
-    static int i_4 = 0;
-    static int[] results_brute = new int[0];
-    static int[] results_break = new int[0];
+    static long[][] grid;
+    static long[][][] test_grids;
+    static long[] results_bin = ((long[])(new long[]{}));
+    static long i_8 = 0L;
+    static long[] results_brute = ((long[])(new long[]{}));
+    static long[] results_break = ((long[])(new long[]{}));
 
-    static int[][] generate_large_matrix() {
-        int[][] result = ((int[][])(new int[][]{}));
-        int i = 0;
-        while (i < 1000) {
-            int[] row = ((int[])(new int[]{}));
-            int j = 1000 - i;
-            while (j > (-1000 - i)) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(j)).toArray()));
-                j = j - 1;
+    static long[][] generate_large_matrix() {
+        long[][] result = ((long[][])(new long[][]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < 1000L) {
+            long[] row_1 = ((long[])(new long[]{}));
+            long j_1 = (long)(1000L - (long)(i_1));
+            while ((long)(j_1) > (long)(((long)(-1000) - (long)(i_1)))) {
+                row_1 = ((long[])(appendLong(row_1, (long)(j_1))));
+                j_1 = (long)((long)(j_1) - 1L);
             }
-            result = ((int[][])(appendObj(result, row)));
-            i = i + 1;
+            result = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
-    static int find_negative_index(int[] arr) {
-        int left = 0;
-        int right = arr.length - 1;
-        if (arr.length == 0) {
+    static long find_negative_index(long[] arr) {
+        long left = 0L;
+        long right_1 = (long)((long)(arr.length) - 1L);
+        if ((long)(arr.length) == 0L) {
             return 0;
         }
-        if (arr[0] < 0) {
+        if ((long)(arr[(int)(0L)]) < 0L) {
             return 0;
         }
-        while (left <= right) {
-            int mid = Math.floorDiv((left + right), 2);
-            int num = arr[mid];
-            if (num < 0) {
-                if (mid == 0) {
+        while ((long)(left) <= (long)(right_1)) {
+            long mid_1 = Math.floorDiv(((long)(left) + (long)(right_1)), 2);
+            long num_1 = (long)(arr[(int)((long)(mid_1))]);
+            if ((long)(num_1) < 0L) {
+                if ((long)(mid_1) == 0L) {
                     return 0;
                 }
-                if (arr[mid - 1] >= 0) {
-                    return mid;
+                if ((long)(arr[(int)((long)((long)(mid_1) - 1L))]) >= 0L) {
+                    return mid_1;
                 }
-                right = mid - 1;
+                right_1 = (long)((long)(mid_1) - 1L);
             } else {
-                left = mid + 1;
+                left = (long)((long)(mid_1) + 1L);
             }
         }
         return arr.length;
     }
 
-    static int count_negatives_binary_search(int[][] grid) {
-        int total = 0;
-        int bound = grid[0].length;
-        int i_1 = 0;
-        while (i_1 < grid.length) {
-            int[] row_1 = ((int[])(grid[i_1]));
-            int idx = find_negative_index(((int[])(java.util.Arrays.copyOfRange(row_1, 0, bound))));
-            bound = idx;
-            total = total + idx;
-            i_1 = i_1 + 1;
+    static long count_negatives_binary_search(long[][] grid) {
+        long total = 0L;
+        long bound_1 = (long)(grid[(int)(0L)].length);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(grid.length)) {
+            long[] row_3 = ((long[])(grid[(int)((long)(i_3))]));
+            long idx_1 = (long)(find_negative_index(((long[])(java.util.Arrays.copyOfRange(row_3, (int)(0L), (int)((long)(bound_1)))))));
+            bound_1 = (long)(idx_1);
+            total = (long)((long)(total) + (long)(idx_1));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return (grid.length * grid[0].length) - total;
+        return (long)(((long)(grid.length) * (long)(grid[(int)(0L)].length))) - (long)(total);
     }
 
-    static int count_negatives_brute_force(int[][] grid) {
-        int count = 0;
-        int i_2 = 0;
-        while (i_2 < grid.length) {
-            int[] row_2 = ((int[])(grid[i_2]));
-            int j_1 = 0;
-            while (j_1 < row_2.length) {
-                if (row_2[j_1] < 0) {
-                    count = count + 1;
+    static long count_negatives_brute_force(long[][] grid) {
+        long count = 0L;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(grid.length)) {
+            long[] row_5 = ((long[])(grid[(int)((long)(i_5))]));
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(row_5.length)) {
+                if ((long)(row_5[(int)((long)(j_3))]) < 0L) {
+                    count = (long)((long)(count) + 1L);
                 }
-                j_1 = j_1 + 1;
+                j_3 = (long)((long)(j_3) + 1L);
             }
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
         return count;
     }
 
-    static int count_negatives_brute_force_with_break(int[][] grid) {
-        int total_1 = 0;
-        int i_3 = 0;
-        while (i_3 < grid.length) {
-            int[] row_3 = ((int[])(grid[i_3]));
-            int j_2 = 0;
-            while (j_2 < row_3.length) {
-                int number = row_3[j_2];
-                if (number < 0) {
-                    total_1 = total_1 + (row_3.length - j_2);
+    static long count_negatives_brute_force_with_break(long[][] grid) {
+        long total_1 = 0L;
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(grid.length)) {
+            long[] row_7 = ((long[])(grid[(int)((long)(i_7))]));
+            long j_5 = 0L;
+            while ((long)(j_5) < (long)(row_7.length)) {
+                long number_1 = (long)(row_7[(int)((long)(j_5))]);
+                if ((long)(number_1) < 0L) {
+                    total_1 = (long)((long)(total_1) + (long)(((long)(row_7.length) - (long)(j_5))));
                     break;
                 }
-                j_2 = j_2 + 1;
+                j_5 = (long)((long)(j_5) + 1L);
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + 1L);
         }
         return total_1;
     }
@@ -102,36 +102,28 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            grid = ((int[][])(generate_large_matrix()));
-            test_grids = ((int[][][])(new int[][][]{new int[][]{new int[]{4, 3, 2, -1}, new int[]{3, 2, 1, -1}, new int[]{1, 1, -1, -2}, new int[]{-1, -1, -2, -3}}, new int[][]{new int[]{3, 2}, new int[]{1, 0}}, new int[][]{new int[]{7, 7, 6}}, new int[][]{new int[]{7, 7, 6}, new int[]{-1, -2, -3}}, grid}));
-            results_bin = ((int[])(new int[]{}));
-            i_4 = 0;
-            while (i_4 < test_grids.length) {
-                results_bin = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(results_bin), java.util.stream.IntStream.of(count_negatives_binary_search(((int[][])(test_grids[i_4]))))).toArray()));
-                i_4 = i_4 + 1;
+            grid = ((long[][])(generate_large_matrix()));
+            test_grids = ((long[][][])(new long[][][]{new long[][]{new long[]{4, 3, 2, -1}, new long[]{3, 2, 1, -1}, new long[]{1, 1, -1, -2}, new long[]{-1, -1, -2, -3}}, new long[][]{new long[]{3, 2}, new long[]{1, 0}}, new long[][]{new long[]{7, 7, 6}}, new long[][]{new long[]{7, 7, 6}, new long[]{-1, -2, -3}}, grid}));
+            while ((long)(i_8) < (long)(test_grids.length)) {
+                results_bin = ((long[])(appendLong(results_bin, (long)(count_negatives_binary_search(((long[][])(test_grids[(int)((long)(i_8))])))))));
+                i_8 = (long)((long)(i_8) + 1L);
             }
             System.out.println(_p(results_bin));
-            results_brute = ((int[])(new int[]{}));
-            i_4 = 0;
-            while (i_4 < test_grids.length) {
-                results_brute = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(results_brute), java.util.stream.IntStream.of(count_negatives_brute_force(((int[][])(test_grids[i_4]))))).toArray()));
-                i_4 = i_4 + 1;
+            i_8 = 0L;
+            while ((long)(i_8) < (long)(test_grids.length)) {
+                results_brute = ((long[])(appendLong(results_brute, (long)(count_negatives_brute_force(((long[][])(test_grids[(int)((long)(i_8))])))))));
+                i_8 = (long)((long)(i_8) + 1L);
             }
             System.out.println(_p(results_brute));
-            results_break = ((int[])(new int[]{}));
-            i_4 = 0;
-            while (i_4 < test_grids.length) {
-                results_break = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(results_break), java.util.stream.IntStream.of(count_negatives_brute_force_with_break(((int[][])(test_grids[i_4]))))).toArray()));
-                i_4 = i_4 + 1;
+            i_8 = 0L;
+            while ((long)(i_8) < (long)(test_grids.length)) {
+                results_break = ((long[])(appendLong(results_break, (long)(count_negatives_brute_force_with_break(((long[][])(test_grids[(int)((long)(i_8))])))))));
+                i_8 = (long)((long)(i_8) + 1L);
             }
             System.out.println(_p(results_break));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -158,8 +150,8 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -176,6 +168,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

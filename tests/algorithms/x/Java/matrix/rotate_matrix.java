@@ -22,7 +22,7 @@ public class Main {
             long[] row_1 = ((long[])(new long[]{}));
             long x_1 = 0L;
             while ((long)(x_1) < (long)(size)) {
-                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of((long)((long)(1L + (long)(x_1)) + (long)((long)(y_1) * (long)(size))))).toArray()));
+                row_1 = ((long[])(appendLong(row_1, (long)((long)(1L + (long)(x_1)) + (long)((long)(y_1) * (long)(size))))));
                 x_1 = (long)((long)(x_1) + 1L);
             }
             mat_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(mat_1), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
@@ -39,7 +39,7 @@ public class Main {
             long[] row_3 = ((long[])(new long[]{}));
             long j_1 = 0L;
             while ((long)(j_1) < (long)(n)) {
-                row_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_3), java.util.stream.LongStream.of((long)(mat[(int)((long)(j_1))][(int)((long)(i_1))]))).toArray()));
+                row_3 = ((long[])(appendLong(row_3, (long)(mat[(int)((long)(j_1))][(int)((long)(i_1))]))));
                 j_1 = (long)((long)(j_1) + 1L);
             }
             result_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(new long[][]{row_3})).toArray(long[][]::new)));
@@ -65,7 +65,7 @@ public class Main {
             long[] row_5 = ((long[])(new long[]{}));
             long j_3 = (long)((long)(mat[(int)((long)(i_5))].length) - 1L);
             while ((long)(j_3) >= 0L) {
-                row_5 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_5), java.util.stream.LongStream.of((long)(mat[(int)((long)(i_5))][(int)((long)(j_3))]))).toArray()));
+                row_5 = ((long[])(appendLong(row_5, (long)(mat[(int)((long)(i_5))][(int)((long)(j_3))]))));
                 j_3 = (long)((long)(j_3) - 1L);
             }
             result_3 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_3), java.util.stream.Stream.of(new long[][]{row_5})).toArray(long[][]::new)));
@@ -137,11 +137,7 @@ public class Main {
             print_matrix(((long[][])(r270)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -166,6 +162,12 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {

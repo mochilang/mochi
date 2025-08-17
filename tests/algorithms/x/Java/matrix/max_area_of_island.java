@@ -15,7 +15,7 @@ public class Main {
 
     static long depth_first_search(long row, long col, java.util.Map<String,Boolean> seen, long[][] mat) {
         long rows = (long)(mat.length);
-        long cols_1 = (long)(mat[(int)((long)(0))].length);
+        long cols_1 = (long)(mat[(int)(0L)].length);
         String key_1 = String.valueOf(encode((long)(row), (long)(col)));
         if (is_safe((long)(row), (long)(col), (long)(rows), (long)(cols_1)) && (!(Boolean)has(seen, key_1)) && (long)(mat[(int)((long)(row))][(int)((long)(col))]) == 1L) {
 seen.put(key_1, true);
@@ -57,11 +57,7 @@ seen.put(key_1, true);
             System.out.println(find_max_area(((long[][])(matrix))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

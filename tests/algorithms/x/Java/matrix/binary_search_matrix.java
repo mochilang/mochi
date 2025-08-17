@@ -1,41 +1,41 @@
 public class Main {
 
-    static int binary_search(int[] arr, int lower_bound, int upper_bound, int value) {
-        int r = Math.floorDiv((lower_bound + upper_bound), 2);
-        if (arr[r] == value) {
+    static long binary_search(long[] arr, long lower_bound, long upper_bound, long value) {
+        long r = Math.floorDiv(((long)(((long)(lower_bound) + (long)(upper_bound)))), ((long)(2)));
+        if ((long)(arr[(int)((long)(r))]) == (long)(value)) {
             return r;
         }
-        if (lower_bound >= upper_bound) {
+        if ((long)(lower_bound) >= (long)(upper_bound)) {
             return -1;
         }
-        if (arr[r] < value) {
-            return binary_search(((int[])(arr)), r + 1, upper_bound, value);
+        if ((long)(arr[(int)((long)(r))]) < (long)(value)) {
+            return binary_search(((long[])(arr)), (long)((long)(r) + 1L), (long)(upper_bound), (long)(value));
         }
-        return binary_search(((int[])(arr)), lower_bound, r - 1, value);
+        return binary_search(((long[])(arr)), (long)(lower_bound), (long)((long)(r) - 1L), (long)(value));
     }
 
-    static int[] mat_bin_search(int value, int[][] matrix) {
-        int index = 0;
-        if (matrix[index][0] == value) {
-            return new int[]{index, 0};
+    static long[] mat_bin_search(long value, long[][] matrix) {
+        long index = 0L;
+        if ((long)(matrix[(int)((long)(index))][(int)(0L)]) == (long)(value)) {
+            return new long[]{index, 0};
         }
-        while (index < matrix.length && matrix[index][0] < value) {
-            int r_1 = binary_search(((int[])(matrix[index])), 0, matrix[index].length - 1, value);
-            if (r_1 != (-1)) {
-                return new int[]{index, r_1};
+        while ((long)(index) < (long)(matrix.length) && (long)(matrix[(int)((long)(index))][(int)(0L)]) < (long)(value)) {
+            long r_2 = (long)(binary_search(((long[])(matrix[(int)((long)(index))])), 0L, (long)((long)(matrix[(int)((long)(index))].length) - 1L), (long)(value)));
+            if ((long)(r_2) != (long)((-1))) {
+                return new long[]{index, r_2};
             }
-            index = index + 1;
+            index = (long)((long)(index) + 1L);
         }
-        return new int[]{-1, -1};
+        return new long[]{-1, -1};
     }
 
     static void main() {
-        int[] row = ((int[])(new int[]{1, 4, 7, 11, 15}));
-        System.out.println(_p(binary_search(((int[])(row)), 0, row.length - 1, 1)));
-        System.out.println(_p(binary_search(((int[])(row)), 0, row.length - 1, 23)));
-        int[][] matrix = ((int[][])(new int[][]{new int[]{1, 4, 7, 11, 15}, new int[]{2, 5, 8, 12, 19}, new int[]{3, 6, 9, 16, 22}, new int[]{10, 13, 14, 17, 24}, new int[]{18, 21, 23, 26, 30}}));
-        System.out.println(_p(mat_bin_search(1, ((int[][])(matrix)))));
-        System.out.println(_p(mat_bin_search(34, ((int[][])(matrix)))));
+        long[] row = ((long[])(new long[]{1, 4, 7, 11, 15}));
+        System.out.println(_p(binary_search(((long[])(row)), 0L, (long)((long)(row.length) - 1L), 1L)));
+        System.out.println(_p(binary_search(((long[])(row)), 0L, (long)((long)(row.length) - 1L), 23L)));
+        long[][] matrix_1 = ((long[][])(new long[][]{new long[]{1, 4, 7, 11, 15}, new long[]{2, 5, 8, 12, 19}, new long[]{3, 6, 9, 16, 22}, new long[]{10, 13, 14, 17, 24}, new long[]{18, 21, 23, 26, 30}}));
+        System.out.println(_p(mat_bin_search(1L, ((long[][])(matrix_1)))));
+        System.out.println(_p(mat_bin_search(34L, ((long[][])(matrix_1)))));
     }
     public static void main(String[] args) {
         {
@@ -44,11 +44,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -87,6 +83,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

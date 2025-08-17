@@ -351,11 +351,13 @@ func javaType(t string) string {
 // canonicalType normalizes type names used during inference so that
 // synonymous types (e.g. float and double) can be compared reliably.
 func canonicalType(t string) string {
-	switch t {
-	case "float", "float64":
+	switch {
+	case t == "float" || t == "float64":
 		return "double"
-	case "String":
+	case t == "String":
 		return "string"
+	case strings.HasPrefix(t, "int"):
+		return "long" + t[3:]
 	default:
 		return t
 	}
@@ -1215,6 +1217,20 @@ func emitBlock(w io.Writer, indent string, body []Stmt) {
 			}
 		}
 		body[i].emit(w, indent)
+	}
+}
+
+func stmtReturns(s Stmt) bool {
+	switch st := s.(type) {
+	case *ReturnStmt:
+		return true
+	case *IfStmt:
+		if len(st.Then) == 0 || len(st.Else) == 0 {
+			return false
+		}
+		return stmtReturns(st.Then[len(st.Then)-1]) && stmtReturns(st.Else[len(st.Else)-1])
+	default:
+		return false
 	}
 }
 
@@ -3783,7 +3799,7 @@ func (sli *SliceExpr) emit(w io.Writer) {
 		emitIndex(w, sli.Start)
 		fmt.Fprint(w, ", ")
 		emitIndex(w, sli.End)
-		fmt.Fprint(w, "))")
+		fmt.Fprint(w, ")")
 	case isArrayExpr(sli.Value):
 		fmt.Fprint(w, "java.util.Arrays.copyOfRange(")
 		sli.Value.emit(w)
@@ -7139,15 +7155,20 @@ func Emit(prog *Program) []byte {
 				zeroValueExpr(ret).emit(&buf)
 				buf.WriteString(";\n")
 			} else {
-				switch fn.Body[len(fn.Body)-1].(type) {
+				last := fn.Body[len(fn.Body)-1]
+				switch ls := last.(type) {
 				case *ReturnStmt:
 				case *ExprStmt:
-					if es, ok := fn.Body[len(fn.Body)-1].(*ExprStmt); ok {
-						if ce, ok2 := es.Expr.(*CallExpr); ok2 && (ce.Func == "panic" || ce.Func == "error") {
-							buf.WriteString("        return ")
-							zeroValueExpr(ret).emit(&buf)
-							buf.WriteString(";\n")
-						}
+					if ce, ok2 := ls.Expr.(*CallExpr); ok2 && (ce.Func == "panic" || ce.Func == "error") {
+						buf.WriteString("        return ")
+						zeroValueExpr(ret).emit(&buf)
+						buf.WriteString(";\n")
+					}
+				case *IfStmt:
+					if !stmtReturns(ls) {
+						buf.WriteString("        return ")
+						zeroValueExpr(ret).emit(&buf)
+						buf.WriteString(";\n")
 					}
 				default:
 					buf.WriteString("        return ")
