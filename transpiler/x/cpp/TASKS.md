@@ -1,3 +1,258 @@
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 00:45 +0700)
+- swift: drop hung base_neg2_conversion
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-16 13:47 +0700)
 - cpp transpiler: fix param passing and float precision
 - Generated C++ for 103/105 programs
