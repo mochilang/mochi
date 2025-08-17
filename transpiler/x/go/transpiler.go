@@ -7687,22 +7687,17 @@ func Emit(prog *Program, bench bool) []byte {
 	}
 
 	if prog.UseTime {
-		buf.WriteString("var seededNow bool\n")
-		buf.WriteString("var nowSeed int64\n")
+		buf.WriteString("var nowSeed int64 = 1\n")
 		buf.WriteString("func init() {\n")
 		buf.WriteString("    if s := os.Getenv(\"MOCHI_NOW_SEED\"); s != \"\" {\n")
 		buf.WriteString("        if v, err := strconv.ParseInt(s, 10, 64); err == nil {\n")
 		buf.WriteString("            nowSeed = v\n")
-		buf.WriteString("            seededNow = true\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("}\n")
 		buf.WriteString("func _now() int {\n")
-		buf.WriteString("    if seededNow {\n")
-		buf.WriteString("        nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647\n")
-		buf.WriteString("        return int(nowSeed)\n")
-		buf.WriteString("    }\n")
-		buf.WriteString("    return int(time.Now().UnixNano())\n")
+		buf.WriteString("    nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647\n")
+		buf.WriteString("    return int(nowSeed)\n")
 		buf.WriteString("}\n\n")
 	}
 
