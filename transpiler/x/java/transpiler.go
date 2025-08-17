@@ -3701,12 +3701,30 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		return
 	}
 	if isStringExpr(ix.Target) {
-		ix.Target.emit(w)
-		fmt.Fprint(w, ".substring(")
-		emitIndex(w, ix.Index)
-		fmt.Fprint(w, ", ")
-		emitIndex(w, ix.Index)
-		fmt.Fprint(w, "+1)")
+		if ix.ResultType == "int" {
+			fmt.Fprint(w, "Integer.parseInt(")
+			ix.Target.emit(w)
+			fmt.Fprint(w, ".substring(")
+			emitIndex(w, ix.Index)
+			fmt.Fprint(w, ", ")
+			emitIndex(w, ix.Index)
+			fmt.Fprint(w, "+1))")
+		} else if ix.ResultType == "long" {
+			fmt.Fprint(w, "Long.parseLong(")
+			ix.Target.emit(w)
+			fmt.Fprint(w, ".substring(")
+			emitIndex(w, ix.Index)
+			fmt.Fprint(w, ", ")
+			emitIndex(w, ix.Index)
+			fmt.Fprint(w, "+1))")
+		} else {
+			ix.Target.emit(w)
+			fmt.Fprint(w, ".substring(")
+			emitIndex(w, ix.Index)
+			fmt.Fprint(w, ", ")
+			emitIndex(w, ix.Index)
+			fmt.Fprint(w, "+1)")
+		}
 	} else if isArrayExpr(ix.Target) {
 		needCast := ix.ResultType != "" && ix.ResultType != arrayElemType(ix.Target)
 		if needCast {

@@ -1,83 +1,83 @@
 public class Main {
 
     static long abs_int(long n) {
-        if (n < 0) {
+        if ((long)(n) < 0L) {
             return -n;
         }
         return n;
     }
 
     static long sum_of_digits(long n) {
-        long m = abs_int(n);
-        long res = 0;
-        while (m > 0) {
-            res = res + (Math.floorMod(m, 10));
+        long m = (long)(abs_int((long)(n)));
+        long res_1 = 0L;
+        while ((long)(m) > 0L) {
+            res_1 = (long)((long)(res_1) + (long)((Math.floorMod(m, 10))));
             m = Math.floorDiv(m, 10);
-        }
-        return res;
-    }
-
-    static long sum_of_digits_recursion(long n) {
-        long m_1 = abs_int(n);
-        if (m_1 < 10) {
-            return m_1;
-        }
-        return (Math.floorMod(m_1, 10)) + sum_of_digits_recursion(Math.floorDiv(m_1, 10));
-    }
-
-    static long sum_of_digits_compact(long n) {
-        String s = _p(abs_int(n));
-        long res_1 = 0;
-        long i = 0;
-        while (i < _runeLen(s)) {
-            res_1 = res_1 + (s.substring(i, i+1));
-            i = i + 1;
         }
         return res_1;
     }
 
+    static long sum_of_digits_recursion(long n) {
+        long m_1 = (long)(abs_int((long)(n)));
+        if ((long)(m_1) < 10L) {
+            return m_1;
+        }
+        return (long)((Math.floorMod(m_1, 10))) + (long)(sum_of_digits_recursion(Math.floorDiv(((long)(m_1)), ((long)(10)))));
+    }
+
+    static long sum_of_digits_compact(long n) {
+        String s = _p(abs_int((long)(n)));
+        long res_3 = 0L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(_runeLen(s))) {
+            res_3 = (long)((long)(res_3) + (long)((Long.parseLong(s.substring((int)((long)(i_1)), (int)((long)(i_1))+1)))));
+            i_1 = (long)((long)(i_1) + 1L);
+        }
+        return res_3;
+    }
+
     static void test_sum_of_digits() {
-        if (sum_of_digits(12345) != 15) {
+        if ((long)(sum_of_digits(12345L)) != 15L) {
             throw new RuntimeException(String.valueOf("sum_of_digits 12345 failed"));
         }
-        if (sum_of_digits(123) != 6) {
+        if ((long)(sum_of_digits(123L)) != 6L) {
             throw new RuntimeException(String.valueOf("sum_of_digits 123 failed"));
         }
-        if (sum_of_digits(-123) != 6) {
+        if ((long)(sum_of_digits((long)(-123))) != 6L) {
             throw new RuntimeException(String.valueOf("sum_of_digits -123 failed"));
         }
-        if (sum_of_digits(0) != 0) {
+        if ((long)(sum_of_digits(0L)) != 0L) {
             throw new RuntimeException(String.valueOf("sum_of_digits 0 failed"));
         }
-        if (sum_of_digits_recursion(12345) != 15) {
+        if ((long)(sum_of_digits_recursion(12345L)) != 15L) {
             throw new RuntimeException(String.valueOf("recursion 12345 failed"));
         }
-        if (sum_of_digits_recursion(123) != 6) {
+        if ((long)(sum_of_digits_recursion(123L)) != 6L) {
             throw new RuntimeException(String.valueOf("recursion 123 failed"));
         }
-        if (sum_of_digits_recursion(-123) != 6) {
+        if ((long)(sum_of_digits_recursion((long)(-123))) != 6L) {
             throw new RuntimeException(String.valueOf("recursion -123 failed"));
         }
-        if (sum_of_digits_recursion(0) != 0) {
+        if ((long)(sum_of_digits_recursion(0L)) != 0L) {
             throw new RuntimeException(String.valueOf("recursion 0 failed"));
         }
-        if (sum_of_digits_compact(12345) != 15) {
+        if ((long)(sum_of_digits_compact(12345L)) != 15L) {
             throw new RuntimeException(String.valueOf("compact 12345 failed"));
         }
-        if (sum_of_digits_compact(123) != 6) {
+        if ((long)(sum_of_digits_compact(123L)) != 6L) {
             throw new RuntimeException(String.valueOf("compact 123 failed"));
         }
-        if (sum_of_digits_compact(-123) != 6) {
+        if ((long)(sum_of_digits_compact((long)(-123))) != 6L) {
             throw new RuntimeException(String.valueOf("compact -123 failed"));
         }
-        if (sum_of_digits_compact(0) != 0) {
+        if ((long)(sum_of_digits_compact(0L)) != 0L) {
             throw new RuntimeException(String.valueOf("compact 0 failed"));
         }
     }
 
     static void main() {
         test_sum_of_digits();
-        System.out.println(_p(sum_of_digits(12345)));
+        System.out.println(_p(sum_of_digits(12345L)));
     }
     public static void main(String[] args) {
         {
@@ -86,29 +86,25 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
 
     static boolean _nowSeeded = false;
-    static long _nowSeed;
-    static long _now() {
+    static int _nowSeed;
+    static int _now() {
         if (!_nowSeeded) {
             String s = System.getenv("MOCHI_NOW_SEED");
             if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Long.parseLong(s); _nowSeeded = true; } catch (Exception e) {}
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
             }
         }
         if (_nowSeeded) {
-            _nowSeed = (_nowSeed * 1664525L + 1013904223) % 2147483647L;
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
             return _nowSeed;
         }
-        return System.nanoTime() / 1000;
+        return (int)(System.nanoTime() / 1000);
     }
 
     static long _mem() {
@@ -133,6 +129,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
