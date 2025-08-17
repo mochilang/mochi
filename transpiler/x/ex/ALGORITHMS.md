@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-17 12:36 GMT+7
+Last updated: 2025-08-17 13:33 GMT+7
 
-## Algorithms Golden Test Checklist (848/1077)
+## Algorithms Golden Test Checklist (850/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -650,56 +650,56 @@ Last updated: 2025-08-17 12:36 GMT+7
 | 641 | maths/qr_decomposition | ✓ | 3.70ms | 26.7 MB |
 | 642 | maths/quadratic_equations_complex_numbers | ✓ | 1.88ms | 17.3 MB |
 | 643 | maths/radians | ✓ | 4.67ms | 25.0 MB |
-| 644 | maths/radix2_fft | error | 6.87ms | 17.3 MB |
-| 645 | maths/remove_digit | ✓ | 4.86ms | 12.5 MB |
-| 646 | maths/segmented_sieve | ✓ | 8.04ms | 25.0 MB |
-| 647 | maths/series/arithmetic | ✓ | 7.22ms | 32.8 MB |
-| 648 | maths/series/geometric | ✓ | 4.68ms | 32.7 MB |
-| 649 | maths/series/geometric_series | ✓ | 5.69ms | 32.7 MB |
-| 650 | maths/series/harmonic | ✓ | 7.14ms | 32.7 MB |
-| 651 | maths/series/harmonic_series | ✓ | 5.73ms | 32.7 MB |
-| 652 | maths/series/hexagonal_numbers | ✓ | 6.30ms | 17.3 MB |
-| 653 | maths/series/p_series | ✓ | 7.18ms | 17.3 MB |
-| 654 | maths/sieve_of_eratosthenes | ✓ | 12.62ms | 25.0 MB |
-| 655 | maths/sigmoid | ✓ | 6.06ms | 33.0 MB |
-| 656 | maths/signum | ✓ | 4.12ms | 12.5 MB |
-| 657 | maths/simultaneous_linear_equation_solver | ✓ | 7.48ms | 25.0 MB |
-| 658 | maths/sin | ✓ | 1.41ms | 15.4 MB |
-| 659 | maths/sock_merchant | error | 6.05ms | 17.3 MB |
-| 660 | maths/softmax | ✓ | 6.01ms | 32.7 MB |
-| 661 | maths/solovay_strassen_primality_test | ✓ | 4.58ms | 32.9 MB |
-| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 4.21ms | 7.7 MB |
-| 663 | maths/special_numbers/armstrong_numbers | ✓ | 4.43ms | 17.3 MB |
-| 664 | maths/special_numbers/automorphic_number | ✓ | 4.53ms | 25.0 MB |
-| 665 | maths/special_numbers/bell_numbers | ✓ | 6.02ms | 25.0 MB |
-| 666 | maths/special_numbers/carmichael_number | ✓ | 9.77ms | 12.5 MB |
-| 667 | maths/special_numbers/catalan_number | ✓ | 4.92ms | 25.0 MB |
-| 668 | maths/special_numbers/hamming_numbers | ✓ | 5.77ms | 25.0 MB |
-| 669 | maths/special_numbers/happy_number | ✓ | 6.74ms | 25.0 MB |
-| 670 | maths/special_numbers/harshad_numbers | ✓ | 9.97ms | 20.4 MB |
-| 671 | maths/special_numbers/hexagonal_number | ✓ | 5.54ms | 25.0 MB |
-| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 5.62ms | 17.3 MB |
-| 673 | maths/special_numbers/perfect_number | ✓ | 4.65ms | 32.7 MB |
-| 674 | maths/special_numbers/polygonal_numbers | ✓ | 2.66ms | 25.0 MB |
-| 675 | maths/special_numbers/pronic_number | ✓ | 4.50ms | 17.3 MB |
-| 676 | maths/special_numbers/proth_number | ✓ | 835us | 17.3 MB |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 4.90ms | 25.0 MB |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 5.55ms | 17.3 MB |
-| 679 | maths/special_numbers/weird_number | ✓ | 442us | 25.0 MB |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 4.30ms | 25.0 MB |
-| 681 | maths/sum_of_digits | ✓ | 5.33ms | 17.8 MB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 5.14ms | 25.0 MB |
-| 683 | maths/sum_of_harmonic_series | ✓ | 4.55ms | 17.3 MB |
-| 684 | maths/sumset | ✓ | 5.95ms | 17.3 MB |
-| 685 | maths/sylvester_sequence | ✓ | 4.35ms | 17.3 MB |
-| 686 | maths/tanh | ✓ | 6.09ms | 17.3 MB |
-| 687 | maths/test_factorial | ✓ | 4.80ms | 17.3 MB |
-| 688 | maths/test_prime_check | ✓ | 6.20ms | 25.0 MB |
-| 689 | maths/three_sum | ✓ | 5.76ms | 32.7 MB |
-| 690 | maths/trapezoidal_rule | ✓ | 1.36ms | 25.0 MB |
-| 691 | maths/triplet_sum | ✓ | 244us | 12.5 MB |
-| 692 | maths/twin_prime | ✓ | 4.71ms | 12.5 MB |
-| 693 | maths/two_pointer | ✓ | 6.93ms | 17.3 MB |
+| 644 | maths/radix2_fft | ✓ | 7.32ms | 17.3 MB |
+| 645 | maths/remove_digit | ✓ | 6.13ms | 12.5 MB |
+| 646 | maths/segmented_sieve | ✓ | 7.65ms | 25.0 MB |
+| 647 | maths/series/arithmetic | ✓ | 5.29ms | 32.8 MB |
+| 648 | maths/series/geometric | ✓ | 4.61ms | 32.7 MB |
+| 649 | maths/series/geometric_series | ✓ | 5.46ms | 32.7 MB |
+| 650 | maths/series/harmonic | ✓ | 6.89ms | 32.7 MB |
+| 651 | maths/series/harmonic_series | ✓ | 6.56ms | 32.7 MB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 6.12ms | 17.3 MB |
+| 653 | maths/series/p_series | ✓ | 6.68ms | 17.3 MB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 6.86ms | 25.0 MB |
+| 655 | maths/sigmoid | ✓ | 5.63ms | 33.0 MB |
+| 656 | maths/signum | ✓ | 4.08ms | 12.5 MB |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 6.20ms | 25.0 MB |
+| 658 | maths/sin | ✓ | 1.64ms | 15.4 MB |
+| 659 | maths/sock_merchant | ✓ | 5.10ms | 17.3 MB |
+| 660 | maths/softmax | ✓ | 6.19ms | 32.7 MB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 5.04ms | 32.9 MB |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 5.01ms | 7.7 MB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 6.34ms | 17.3 MB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 5.27ms | 25.0 MB |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 7.98ms | 25.0 MB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 9.24ms | 12.5 MB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 4.07ms | 25.0 MB |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 10.41ms | 25.0 MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 10.85ms | 25.0 MB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 17.93ms | 20.4 MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 4.07ms | 25.0 MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 4.54ms | 17.3 MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 6.58ms | 32.7 MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 3.19ms | 25.0 MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 4.67ms | 17.3 MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 407us | 17.3 MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 5.05ms | 25.0 MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 5.32ms | 17.3 MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 711us | 25.0 MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 4.65ms | 25.0 MB |
+| 681 | maths/sum_of_digits | ✓ | 4.66ms | 17.8 MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 4.90ms | 25.0 MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 4.78ms | 17.3 MB |
+| 684 | maths/sumset | ✓ | 5.49ms | 17.3 MB |
+| 685 | maths/sylvester_sequence | ✓ | 5.17ms | 17.3 MB |
+| 686 | maths/tanh | ✓ | 6.62ms | 17.3 MB |
+| 687 | maths/test_factorial | ✓ | 5.10ms | 17.3 MB |
+| 688 | maths/test_prime_check | ✓ | 5.09ms | 25.0 MB |
+| 689 | maths/three_sum | ✓ | 5.94ms | 32.7 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 1.84ms | 25.0 MB |
+| 691 | maths/triplet_sum | ✓ | 535us | 12.5 MB |
+| 692 | maths/twin_prime | ✓ | 5.59ms | 12.5 MB |
+| 693 | maths/two_pointer | ✓ | 5.39ms | 17.3 MB |
 | 694 | maths/two_sum | ✓ | 6.43ms | 25.0 MB |
 | 695 | maths/volume | ✓ | 7.05ms | 33.4 MB |
 | 696 | maths/zellers_congruence | ✓ | 6.14ms | 25.0 MB |
