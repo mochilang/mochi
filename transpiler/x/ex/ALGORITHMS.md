@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-17 09:16 GMT+7
+Last updated: 2025-08-17 12:20 GMT+7
 
-## Algorithms Golden Test Checklist (849/1077)
+## Algorithms Golden Test Checklist (850/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -635,7 +635,7 @@ Last updated: 2025-08-17 09:16 GMT+7
 | 626 | maths/persistence | ✓ | 4.43ms | 25.0 MB |
 | 627 | maths/pi_generator | ✓ | 7.42ms | 17.3 MB |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 9.23ms | 17.3 MB |
-| 629 | maths/points_are_collinear_3d | ✓ | 5.03ms | 33.0 MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 11.55ms | 33.0 MB |
 | 630 | maths/pollard_rho | ✓ | 213us | 25.0 MB |
 | 631 | maths/polynomial_evaluation | ✓ | 4.55ms | 32.7 MB |
 | 632 | maths/polynomials/single_indeterminate_operations | ✓ |  |  |
@@ -724,7 +724,7 @@ Last updated: 2025-08-17 09:16 GMT+7
 | 715 | matrix/sherman_morrison | ✓ | 8.22ms | 25.0 MB |
 | 716 | matrix/spiral_print | ✓ | 8.73ms | 17.3 MB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 11.92ms | 25.0 MB |
-| 718 | matrix/validate_sudoku_board | error |  |  |
+| 718 | matrix/validate_sudoku_board | ✓ | 10.94ms | 25.0 MB |
 | 719 | networking_flow/ford_fulkerson | ✓ |  |  |
 | 720 | networking_flow/minimum_cut | ✓ |  |  |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 5.03ms | 12.5 MB |
