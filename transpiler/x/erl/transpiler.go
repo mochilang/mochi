@@ -2914,7 +2914,8 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 func (da *DoubleListAssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "%s = lists:sublist(%s, ", da.Name, da.Old)
 	da.Index1.emit(w)
-	io.WriteString(w, ") ++ [lists:sublist(lists:nth(")
+	io.WriteString(w, ") ++ [(")
+	io.WriteString(w, "lists:sublist(lists:nth(")
 	da.Index1.emit(w)
 	io.WriteString(w, " + 1, ")
 	io.WriteString(w, da.Old)
@@ -2928,7 +2929,7 @@ func (da *DoubleListAssignStmt) emit(w io.Writer) {
 	da.Index1.emit(w)
 	io.WriteString(w, " + 1, ")
 	io.WriteString(w, da.Old)
-	io.WriteString(w, "))] ++ lists:nthtail(")
+	io.WriteString(w, ")))] ++ lists:nthtail(")
 	da.Index1.emit(w)
 	io.WriteString(w, " + 1, ")
 	io.WriteString(w, da.Old)

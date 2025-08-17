@@ -1,5 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/matrix/spiral_print.erl:185:2: Warning: variable 'Bottom_3' exported from 'case' (line 152, column 13)
-%  185| {Bottom_3, Cols_2, I_9, Left, Matrix_2, Result_6, Right_2, Rows, Top_2} = Fun_6(Bottom_3, Cols_2, I_8, Left, Matrix_2, Result_5, Right_2, Rows, Top_2),
+/workspace/mochi/tests/algorithms/x/Erlang/matrix/spiral_print.erl:181:2: Warning: variable 'Bottom_3' exported from 'case' (line 148, column 25)
+%  181| {Bottom_3, Cols_2, I_9, Left, Matrix_2, Result_6, Right_2, Rows, Top_2} = Fun_6(Bottom_3, Cols_2, I_8, Left, Matrix_2, Result_5, Right_2, Rows, Top_2),
 %     |  ^
 
 1
