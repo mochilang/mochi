@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
 Completed programs: 935/1077
-Last updated: 2025-08-17 12:10 +0700
+Last updated: 2025-08-17 13:29 +0700
 
 Checklist:
 
@@ -685,7 +685,7 @@ Checklist:
 | 676 | maths/special_numbers/proth_number | ✓ | 183.317ms | 8.7 MB |
 | 677 | maths/special_numbers/triangular_numbers | ✓ | 183.317ms | 8.7 MB |
 | 678 | maths/special_numbers/ugly_numbers | ✓ | 183.317ms | 8.7 MB |
-| 679 | maths/special_numbers/weird_number | ✓ | 12µs | 8.7 MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 183.317ms | 8.7 MB |
 | 680 | maths/sum_of_arithmetic_series | ✓ | 5µs | 8.7 MB |
 | 681 | maths/sum_of_digits | ✓ | 10µs | 8.7 MB |
 | 682 | maths/sum_of_geometric_progression | ✓ | 10µs | 8.7 MB |

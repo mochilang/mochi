@@ -1211,32 +1211,24 @@ type AppendExpr struct {
 func (a *AppendExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
 	a.List.emit(w)
-	fmt.Fprint(w, " :+ ")
-	if ie, ok := a.Elem.(*IfExpr); ok {
+	fmt.Fprint(w, " :+ (")
+	elem := a.Elem
+	if ie, ok := elem.(*IfExpr); ok {
 		t1 := inferTypeWithEnv(ie.Then, nil)
 		t2 := inferTypeWithEnv(ie.Else, nil)
 		if t1 == "BigInt" || t2 == "BigInt" {
 			needsBigInt = true
-			fmt.Fprint(w, "BigInt(")
-			a.Elem.emit(w)
-			fmt.Fprint(w, ")")
-			fmt.Fprint(w, ")")
-			return
+			elem = &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{elem}}
 		}
 	}
-	if be, ok := a.Elem.(*BinaryExpr); ok {
+	if be, ok := elem.(*BinaryExpr); ok {
 		if il, ok2 := be.Left.(*IntLit); ok2 && il.Value == 0 && be.Op == "-" {
 			if _, ok3 := be.Right.(*IntLit); ok3 {
 				needsBigInt = true
-				fmt.Fprint(w, "BigInt(")
-				be.emit(w)
-				fmt.Fprint(w, ")")
-				fmt.Fprint(w, ")")
-				return
+				elem = &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{elem}}
 			}
 		}
 	}
-	elem := a.Elem
 	if ce, ok := elem.(*CastExpr); ok && ce.Type == "Any" {
 		if lt := inferTypeWithEnv(a.List, nil); strings.HasPrefix(lt, "ArrayBuffer[") {
 			et := strings.TrimSuffix(strings.TrimPrefix(lt, "ArrayBuffer["), "]")
@@ -1250,7 +1242,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 		}
 	}
 	elem.emit(w)
-	fmt.Fprint(w, ")")
+	fmt.Fprint(w, "))")
 }
 
 // SpreadExpr represents `seq: _*` used for varargs.
