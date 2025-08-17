@@ -2,6 +2,14 @@
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
+mod math {
+    pub const pi: f64 = std::f64::consts::PI;
+    pub const e: f64 = std::f64::consts::E;
+    pub fn sqrt(x: f64) -> f64 { x.sqrt() }
+    pub fn pow(x: f64, y: f64) -> f64 { x.powf(y) }
+    pub fn sin(x: f64) -> f64 { x.sin() }
+    pub fn log(x: f64) -> f64 { x.ln() }
+}
 static NOW_SEEDED: AtomicBool = AtomicBool::new(false);
 static NOW_SEED: AtomicI64 = AtomicI64::new(0);
 fn _now() -> i64 {
@@ -60,7 +68,7 @@ fn main() {
     }
     return true
 };
-    let mut geometric_mean = |series: Vec<f64>| -> f64 {
+    fn geometric_mean(mut series: Vec<f64>) -> f64 {
     if ((series.len() as i64) == 0) {
         panic!("Input list must be a non empty list");
     }
@@ -71,7 +79,7 @@ fn main() {
         i = (i + 1);
     }
     let n: i64 = (series.len() as i64);
-    return nth_root(product, n)
+    return math::pow(product, (1.0 / (n as f64)))
 };
     fn pow_float(mut base: f64, mut exp: i64) -> f64 {
     let mut result: f64 = 1.0;

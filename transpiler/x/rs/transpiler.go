@@ -4655,7 +4655,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	// (e.g. maths/fibonacci using `fib_recursive_cached_term`). By also
 	// considering `topLevelNonConstLet`, we ensure such functions become
 	// closures and can access surrounding state safely.
-	useClosure := nested || topLevelNonConstLet || len(caps) > 0
+	useClosure := nested || len(caps) > 0
 	// However, top-level recursive functions that do not capture
 	// any external state can be emitted as normal `fn` items. Rust
 	// closures cannot call themselves recursively, so treat such
@@ -5136,6 +5136,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &CallExpr{Func: "floor", Args: []Expr{args[0]}}, nil
 			}
+		}
+		if name == "nth_root" && len(args) == 2 {
+			useMath = true
+			if inferType(args[0]) != "f64" {
+				args[0] = &FloatCastExpr{Expr: args[0]}
+			}
+			r := args[1]
+			if inferType(r) != "f64" {
+				r = &FloatCastExpr{Expr: r}
+			}
+			exp := &BinaryExpr{Left: &NumberLit{Value: "1.0"}, Op: "/", Right: r}
+			return &CallExpr{Func: "math::pow", Args: []Expr{args[0], exp}}, nil
 		}
 		if name == "sha256" && len(args) == 1 {
 			useSHA256 = true

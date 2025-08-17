@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-17 09:02 GMT+7
+Last updated: 2025-08-17 12:25 GMT+7
 
-## Algorithms Golden Test Checklist (812/1077)
+## Algorithms Golden Test Checklist (813/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -644,17 +644,17 @@ Last updated: 2025-08-17 09:02 GMT+7
 | 635 | maths/prime_factors | ✓ | 157µs | 2.1 MB |
 | 636 | maths/prime_numbers | ✓ | 101µs | 2.1 MB |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 77µs | 1.9 MB |
-| 638 | maths/primelib | error |  |  |
+| 638 | maths/primelib | ✓ | 103µs | 1.8 MB |
 | 639 | maths/print_multiplication_table | ✓ | 119µs | 2.2 MB |
 | 640 | maths/pythagoras | ✓ | 51µs | 2.1 MB |
 | 641 | maths/qr_decomposition | ✓ | 123µs | 2.1 MB |
 | 642 | maths/quadratic_equations_complex_numbers | ✓ | 78µs | 2.0 MB |
 | 643 | maths/radians | ✓ | 38µs | 2.0 MB |
-| 644 | maths/radix2_fft | error |  |  |
+| 644 | maths/radix2_fft | ✓ | 90µs | 2.2 MB |
 | 645 | maths/remove_digit | ✓ | 31µs | 2.1 MB |
 | 646 | maths/segmented_sieve | ✓ | 143µs | 2.0 MB |
 | 647 | maths/series/arithmetic | ✓ | 50µs | 2.0 MB |
-| 648 | maths/series/geometric | error |  |  |
+| 648 | maths/series/geometric | ✓ | 43µs | 2.0 MB |
 | 649 | maths/series/geometric_series | ✓ | 56µs | 2.3 MB |
 | 650 | maths/series/harmonic | ✓ | 56µs | 1.9 MB |
 | 651 | maths/series/harmonic_series | ✓ | 104µs | 2.0 MB |
@@ -671,12 +671,12 @@ Last updated: 2025-08-17 09:02 GMT+7
 | 662 | maths/spearman_rank_correlation_coefficient | ✓ | 157µs | 1.9 MB |
 | 663 | maths/special_numbers/armstrong_numbers | ✓ | 137µs | 2.1 MB |
 | 664 | maths/special_numbers/automorphic_number | ✓ | 52µs | 2.1 MB |
-| 665 | maths/special_numbers/bell_numbers | ✓ | 408µs | 2.1 MB |
+| 665 | maths/special_numbers/bell_numbers | error | 408µs | 2.1 MB |
 | 666 | maths/special_numbers/carmichael_number | ✓ | 896µs | 1.9 MB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 50µs | 2.0 MB |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 141µs | 2.0 MB |
 | 669 | maths/special_numbers/happy_number | ✓ | 80µs | 2.0 MB |
-| 670 | maths/special_numbers/harshad_numbers | ✓ | 448µs | 2.0 MB |
+| 670 | maths/special_numbers/harshad_numbers | error | 448µs | 2.0 MB |
 | 671 | maths/special_numbers/hexagonal_number | ✓ | 31µs | 1.8 MB |
 | 672 | maths/special_numbers/krishnamurthy_number | ✓ | 38µs | 1.8 MB |
 | 673 | maths/special_numbers/perfect_number | ✓ | 125µs | 2.1 MB |

@@ -302,7 +302,7 @@ fn main() {
     println!("{}", kg_v(8, 10).to_string());
     println!("{}", format!("{:?}", goldbach(28)));
     println!("{}", get_prime(8).to_string());
-    println!("{}", format!("{:?}", get_primes_between(3, 20)));
+    println!("{}", format!("{:?}", get_primes_between(3, 23)));
     println!("{}", format!("{:?}", get_divisors(28)));
     println!("{}", is_perfect_number(28).to_string());
     println!("{}", format!("{:?}", simplify_fraction(10, 20)));

@@ -1,0 +1,272 @@
+error[E0434]: can't capture dynamic environment in a fn item
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:80:36
+   |
+80 |     println!("{}", format!("{:?}", bell_numbers(5)));
+   |                                    ^^^^^^^^^^^^
+   |
+   = help: use the `|| { ... }` closure form instead
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:56:2
+   |
+56 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:81:2
+   |
+81 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:41:8
+   |
+41 |     if ((elements_to_choose == 0) || (elements_to_choose == total_elements)) {
+   |        ^                                                                   ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+41 -     if ((elements_to_choose == 0) || (elements_to_choose == total_elements)) {
+41 +     if (elements_to_choose == 0) || (elements_to_choose == total_elements) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:45:8
+   |
+45 |     if (k > (total_elements - k)) {
+   |        ^                        ^
+   |
+help: remove these parentheses
+   |
+45 -     if (k > (total_elements - k)) {
+45 +     if k > (total_elements - k) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:46:13
+   |
+46 |         k = (total_elements - k);
+   |             ^                  ^
+   |
+help: remove these parentheses
+   |
+46 -         k = (total_elements - k);
+46 +         k = total_elements - k;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:50:11
+   |
+50 |     while (i < k) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+50 -     while (i < k) {
+50 +     while i < k {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:51:23
+   |
+51 |         coefficient = (coefficient * (total_elements - i));
+   |                       ^                                  ^
+   |
+help: remove these parentheses
+   |
+51 -         coefficient = (coefficient * (total_elements - i));
+51 +         coefficient = coefficient * (total_elements - i);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:52:23
+   |
+52 |         coefficient = (coefficient / (i + 1));
+   |                       ^                     ^
+   |
+help: remove these parentheses
+   |
+52 -         coefficient = (coefficient / (i + 1));
+52 +         coefficient = coefficient / (i + 1);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:53:13
+   |
+53 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+53 -         i = (i + 1);
+53 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:58:8
+   |
+58 |     if (max_set_length < 0) {
+   |        ^                  ^
+   |
+help: remove these parentheses
+   |
+58 -     if (max_set_length < 0) {
+58 +     if max_set_length < 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:63:11
+   |
+63 |     while (i <= max_set_length) {
+   |           ^                   ^
+   |
+help: remove these parentheses
+   |
+63 -     while (i <= max_set_length) {
+63 +     while i <= max_set_length {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:65:13
+   |
+65 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+65 -         i = (i + 1);
+65 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:69:11
+   |
+69 |     while (i <= max_set_length) {
+   |           ^                   ^
+   |
+help: remove these parentheses
+   |
+69 -     while (i <= max_set_length) {
+69 +     while i <= max_set_length {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:71:15
+   |
+71 |         while (j < i) {
+   |               ^     ^
+   |
+help: remove these parentheses
+   |
+71 -         while (j < i) {
+71 +         while j < i {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:72:32
+   |
+72 |             bell[i as usize] = (bell[i as usize] + (binomial_coefficient((i - 1), j) * bell[j as usize]));
+   |                                ^                                                                        ^
+   |
+help: remove these parentheses
+   |
+72 -             bell[i as usize] = (bell[i as usize] + (binomial_coefficient((i - 1), j) * bell[j as usize]));
+72 +             bell[i as usize] = bell[i as usize] + (binomial_coefficient((i - 1), j) * bell[j as usize]);
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:72:74
+   |
+72 |             bell[i as usize] = (bell[i as usize] + (binomial_coefficient((i - 1), j) * bell[j as usize]));
+   |                                                                          ^     ^
+   |
+help: remove these parentheses
+   |
+72 -             bell[i as usize] = (bell[i as usize] + (binomial_coefficient((i - 1), j) * bell[j as usize]));
+72 +             bell[i as usize] = (bell[i as usize] + (binomial_coefficient(i - 1, j) * bell[j as usize]));
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:73:17
+   |
+73 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+73 -             j = (j + 1);
+73 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:75:13
+   |
+75 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+75 -         i = (i + 1);
+75 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:84:28
+   |
+84 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+84 -     let duration_us: i64 = ((_end - _start) / 1000);
+84 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unused variable: `bell_numbers`
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:57:13
+   |
+57 |     let mut bell_numbers = |max_set_length: i64| -> Vec<i64> {
+   |             ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_bell_numbers`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:57:9
+   |
+57 |     let mut bell_numbers = |max_set_length: i64| -> Vec<i64> {
+   |         ----^^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:40:29
+   |
+40 |     fn binomial_coefficient(mut total_elements: i64, mut elements_to_choose: i64) -> i64 {
+   |                             ----^^^^^^^^^^^^^^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/maths/special_numbers/bell_numbers.rs:40:54
+   |
+40 |     fn binomial_coefficient(mut total_elements: i64, mut elements_to_choose: i64) -> i64 {
+   |                                                      ----^^^^^^^^^^^^^^^^^^
+   |                                                      |
+   |                                                      help: remove this `mut`
+
+error: aborting due to 1 previous error; 24 warnings emitted
+
+For more information about this error, try `rustc --explain E0434`.
