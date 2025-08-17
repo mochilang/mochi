@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-16 12:54 UTC
+Last updated: 2025-08-17 01:56 UTC
 
 ## Algorithms Golden Test Checklist (887/1077)
 | Index | Name | Status | Duration | Memory |
@@ -512,7 +512,7 @@ Last updated: 2025-08-16 12:54 UTC
 | 503 | machine_learning/forecasting/run | ✓ | 229µs | 223.9 KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 41µs | 14.1 KB |
-| 506 | machine_learning/gradient_descent | ✓ | 256.152ms |  |
+| 506 | machine_learning/gradient_descent | ✓ | 275.577ms | 5.6 MB |
 | 507 | machine_learning/k_means_clust | ✓ | 56µs | 9.5 KB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 79µs | 100.4 KB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 940µs | 2.3 MB |
@@ -520,7 +520,7 @@ Last updated: 2025-08-16 12:54 UTC
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 72µs | 17.2 KB |
 | 512 | machine_learning/logistic_regression | ✓ | 45µs | 3.5 KB |
 | 513 | machine_learning/loss_functions | ✓ | 391µs | 805.7 KB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 82µs | 14.6 KB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 28µs | 1.8 KB |
 | 515 | machine_learning/mfcc | ✓ | 38µs | 101.5 KB |
 | 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 136.799ms |  |
 | 517 | machine_learning/polynomial_regression | ✓ | 40µs | 22.4 KB |
