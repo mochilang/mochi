@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-17 08:58 GMT+7
+Last updated: 2025-08-17 09:16 GMT+7
 
-## Algorithms Golden Test Checklist (1047/1077)
+## Algorithms Golden Test Checklist (1048/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -644,7 +644,7 @@ Last updated: 2025-08-17 08:58 GMT+7
 | 635 | maths/prime_factors | ✓ | 152µs | 1.1 KB |
 | 636 | maths/prime_numbers | ✓ | 164µs | 888 B |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 214µs | 1.1 KB |
-| 638 | maths/primelib | error |  |  |
+| 638 | maths/primelib | ✓ | 570µs | 1.6 KB |
 | 639 | maths/print_multiplication_table | ✓ | 152µs | 744 B |
 | 640 | maths/pythagoras | ✓ | 83µs | 1.1 KB |
 | 641 | maths/qr_decomposition | ✓ | 290µs | 2.6 KB |
