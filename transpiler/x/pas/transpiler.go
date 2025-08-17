@@ -73,59 +73,59 @@ func sanitize(name string) string {
 }
 
 func declareName(name string) string {
-        if v, ok := currentScope()[name]; ok {
-                return v
-        }
-        newName := name
-        switch strings.ToLower(name) {
-        case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
-                "array", "real", "integer", "string", "boolean", "char",
-                // Additional common Pascal keywords
-                "begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out",
-                // Control flow keywords
-                "case", "do", "downto", "else", "for", "if", "of", "then", "to", "until", "while", "with", "goto",
-                // Math functions that should map to Pascal's built-ins
-                "ln", "exp":
-                // Avoid Pascal reserved keywords and built-in types (case-insensitive)
-                newName = name + "_"
-        }
-        if currentFunc != "" {
-                newName = currentFunc + "_" + newName
-        }
-        // Avoid clashes with existing function names (original and prefixed)
-        if _, ok := funcNames[strings.ToLower(name)]; ok {
-                newName = newName + "_var"
-        } else if _, ok := funcNames[strings.ToLower(newName)]; ok {
-                newName = newName + "_var"
-        }
+	if v, ok := currentScope()[name]; ok {
+		return v
+	}
+	newName := name
+	switch strings.ToLower(name) {
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
+		"array", "real", "integer", "string", "boolean", "char",
+		// Additional common Pascal keywords
+		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out",
+		// Control flow keywords
+		"case", "do", "downto", "else", "for", "if", "of", "then", "to", "until", "while", "with", "goto",
+		// Math functions that should map to Pascal's built-ins
+		"ln", "exp":
+		// Avoid Pascal reserved keywords and built-in types (case-insensitive)
+		newName = name + "_"
+	}
+	if currentFunc != "" {
+		newName = currentFunc + "_" + newName
+	}
+	// Avoid clashes with existing function names (original and prefixed)
+	if _, ok := funcNames[strings.ToLower(name)]; ok {
+		newName = newName + "_var"
+	} else if _, ok := funcNames[strings.ToLower(newName)]; ok {
+		newName = newName + "_var"
+	}
 
-        // Ensure uniqueness ignoring case with existing variables
-        for {
-                conflict := false
-                for _, v := range currentScope() {
-                        if strings.EqualFold(v, newName) {
-                                conflict = true
-                                break
-                        }
-                }
-                if !conflict && !hasVar(newName) {
-                        break
-                }
-                newName = fmt.Sprintf("%s_%d", newName, len(currProg.Vars))
-        }
+	// Ensure uniqueness ignoring case with existing variables
+	for {
+		conflict := false
+		for _, v := range currentScope() {
+			if strings.EqualFold(v, newName) {
+				conflict = true
+				break
+			}
+		}
+		if !conflict && !hasVar(newName) {
+			break
+		}
+		newName = fmt.Sprintf("%s_%d", newName, len(currProg.Vars))
+	}
 
-        for _, r := range currProg.Records {
-                if strings.EqualFold(name, r.Name) {
-                        newName = newName + "_var"
-                        break
-                }
-        }
+	for _, r := range currProg.Records {
+		if strings.EqualFold(name, r.Name) {
+			newName = newName + "_var"
+			break
+		}
+	}
 
-        currentScope()[name] = newName
-        if currentFunc != "" {
-                varOwners[newName] = currentFunc
-        }
-        return newName
+	currentScope()[name] = newName
+	if currentFunc != "" {
+		varOwners[newName] = currentFunc
+	}
+	return newName
 }
 
 func sanitizeField(name string) string {
@@ -2316,10 +2316,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						elem := strings.TrimPrefix(typ, "array of ")
 						typ = currProg.addArrayAlias(elem)
 					}
-					prev := currentFunc
-					currentFunc = ""
 					name := declareName(p.Name)
-					currentFunc = prev
 					paramNames[p.Name] = name
 					local[name] = typ
 				}
@@ -2960,6 +2957,10 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			for k, v := range varTypes {
 				local[k] = v
 			}
+			pushScope()
+			prevFunc := currentFunc
+			currentFunc = fn.Name
+			paramNames := map[string]string{}
 			for _, p := range fn.Params {
 				typ := "int64"
 				if p.Type != nil {
@@ -2969,15 +2970,9 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					elem := strings.TrimPrefix(typ, "array of ")
 					typ = currProg.addArrayAlias(elem)
 				}
-				name := sanitize(p.Name)
+				name := declareName(p.Name)
+				paramNames[p.Name] = name
 				local[name] = typ
-			}
-			pushScope()
-			prevFunc := currentFunc
-			currentFunc = fn.Name
-			for _, p := range fn.Params {
-				name := sanitize(p.Name)
-				currentScope()[p.Name] = name
 			}
 			fnBody, err := convertBody(env, fn.Body, local)
 			if err != nil {
@@ -2997,8 +2992,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					elem := strings.TrimPrefix(typ, "array of ")
 					typ = currProg.addArrayAlias(elem)
 				}
-				name := sanitize(p.Name)
-				params = append(params, formatParam(name, typ))
+				name := paramNames[p.Name]
+				params = append(params, fmt.Sprintf("%s: %s", name, pasType(typ)))
 			}
 			rt := ""
 			if fn.Return != nil {
@@ -4882,11 +4877,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
-        case p.Call != nil:
-                name := p.Call.Func
-                if s, ok := lookupName(name); ok {
-                        name = s
-                }
+	case p.Call != nil:
+		name := p.Call.Func
+		if s, ok := lookupName(name); ok {
+			name = s
+		}
 		if name == "sum" && len(p.Call.Args) == 1 {
 			if q := queryFromExpr(p.Call.Args[0]); q != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
 				src, err := convertExpr(env, q.Source)
@@ -5540,52 +5535,52 @@ func inferType(e Expr) string {
 			return lt
 		}
 		return rt
-        case *CallExpr:
-                name := strings.ToLower(v.Name)
-                switch name {
-                case "length", "pos":
-                        return "integer"
-                case "inttostr":
-                        return "string"
-                case "uppercase", "lowercase":
-                        return "string"
-                case "avg":
-                        return "real"
-                case "min", "max":
-                        return "integer"
-                case "num", "denom":
-                        return "integer"
-               case "sqrt", "sin", "ln":
-                       return "real"
-               case "power":
-                       if rt, ok := funcReturns[v.Name]; ok {
-                               return rt
-                       }
-                       if len(v.Args) >= 3 {
-                               a0 := inferType(v.Args[0])
-                               a1 := inferType(v.Args[1])
-                               a2 := inferType(v.Args[2])
-                               if a0 == "integer" && a1 == "integer" && a2 == "integer" {
-                                       return "integer"
-                               }
-                       }
-                       return "real"
-                case "double":
-                        return "real"
-                case "copy":
-                        if len(v.Args) > 0 {
-                                return inferType(v.Args[0])
-                        }
-                        return ""
-                case "concat":
-                        if len(v.Args) > 0 {
-                                t := inferType(v.Args[0])
-                                if strings.HasPrefix(t, "array of ") {
-                                        return t
-                                }
-                        }
-                        return ""
-                default:
+	case *CallExpr:
+		name := strings.ToLower(v.Name)
+		switch name {
+		case "length", "pos":
+			return "integer"
+		case "inttostr":
+			return "string"
+		case "uppercase", "lowercase":
+			return "string"
+		case "avg":
+			return "real"
+		case "min", "max":
+			return "integer"
+		case "num", "denom":
+			return "integer"
+		case "sqrt", "sin", "ln":
+			return "real"
+		case "power":
+			if rt, ok := funcReturns[v.Name]; ok {
+				return rt
+			}
+			if len(v.Args) >= 3 {
+				a0 := inferType(v.Args[0])
+				a1 := inferType(v.Args[1])
+				a2 := inferType(v.Args[2])
+				if a0 == "integer" && a1 == "integer" && a2 == "integer" {
+					return "integer"
+				}
+			}
+			return "real"
+		case "double":
+			return "real"
+		case "copy":
+			if len(v.Args) > 0 {
+				return inferType(v.Args[0])
+			}
+			return ""
+		case "concat":
+			if len(v.Args) > 0 {
+				t := inferType(v.Args[0])
+				if strings.HasPrefix(t, "array of ") {
+					return t
+				}
+			}
+			return ""
+		default:
 			if rt, ok := funcReturns[v.Name]; ok {
 				return rt
 			}
