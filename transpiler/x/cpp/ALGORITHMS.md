@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 1018/1077
-Last updated: 2025-08-17 12:25 +0700
+Completed programs: 1017/1077
+Last updated: 2025-08-17 13:41 +0700
 
 Checklist:
 
@@ -644,7 +644,7 @@ Checklist:
 | 635 | maths/prime_factors | ✓ | 244.0µs | 3.61MB |
 | 636 | maths/prime_numbers | ✓ | 211.0µs | 3.80MB |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 314.0µs | 3.61MB |
-| 638 | maths/primelib | ✓ | 546.0µs | 3.63MB |
+| 638 | maths/primelib |   |  |  |
 | 639 | maths/print_multiplication_table | ✓ | 243.0µs | 3.61MB |
 | 640 | maths/pythagoras | ✓ | 359.0µs | 3.71MB |
 | 641 | maths/qr_decomposition | ✓ | 512.0µs | 3.69MB |
@@ -659,7 +659,7 @@ Checklist:
 | 650 | maths/series/harmonic | ✓ | 476.0µs | 3.74MB |
 | 651 | maths/series/harmonic_series | ✓ | 232.0µs | 3.61MB |
 | 652 | maths/series/hexagonal_numbers | ✓ | 258.0µs | 3.60MB |
-| 653 | maths/series/p_series | ✓ | 440.0µs | 3.73MB |
+| 653 | maths/series/p_series | ✓ | 804.0µs | 3.73MB |
 | 654 | maths/sieve_of_eratosthenes | ✓ | 558.0µs | 3.61MB |
 | 655 | maths/sigmoid | ✓ | 591.0µs | 3.74MB |
 | 656 | maths/signum | ✓ | 253.0µs | 3.57MB |
@@ -675,56 +675,56 @@ Checklist:
 | 666 | maths/special_numbers/carmichael_number | ✓ | 996.0µs | 3.68MB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 361.0µs | 3.55MB |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 321.0µs | 3.54MB |
-| 669 | maths/special_numbers/happy_number | ✓ | 256.0µs | 3.69MB |
-| 670 | maths/special_numbers/harshad_numbers | ✓ | 644.0µs | 3.47MB |
-| 671 | maths/special_numbers/hexagonal_number | ✓ | 198.0µs | 3.64MB |
-| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 288.0µs | 3.53MB |
-| 673 | maths/special_numbers/perfect_number | ✓ | 410.0µs | 3.69MB |
-| 674 | maths/special_numbers/polygonal_numbers | ✓ | 263.0µs | 3.59MB |
-| 675 | maths/special_numbers/pronic_number | ✓ | 392.0µs | 3.62MB |
-| 676 | maths/special_numbers/proth_number | ✓ | 492.0µs | 3.75MB |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 222.0µs | 3.51MB |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 611.0µs | 3.74MB |
-| 679 | maths/special_numbers/weird_number | ✓ | 769.0µs | 3.58MB |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 196.0µs | 3.52MB |
-| 681 | maths/sum_of_digits | ✓ | 363.0µs | 3.74MB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 697.0µs | 3.77MB |
-| 683 | maths/sum_of_harmonic_series | ✓ | 591.0µs | 3.75MB |
-| 684 | maths/sumset | ✓ | 340.0µs | 3.61MB |
-| 685 | maths/sylvester_sequence | ✓ | 330.0µs | 3.53MB |
-| 686 | maths/tanh | ✓ | 568.0µs | 3.70MB |
-| 687 | maths/test_factorial | ✓ | 256.0µs | 3.62MB |
-| 688 | maths/test_prime_check | ✓ | 269.0µs | 3.70MB |
-| 689 | maths/three_sum | ✓ | 387.0µs | 3.61MB |
-| 690 | maths/trapezoidal_rule | ✓ | 575.0µs | 3.71MB |
-| 691 | maths/triplet_sum | ✓ | 444.0µs | 3.48MB |
-| 692 | maths/twin_prime | ✓ | 211.0µs | 3.53MB |
-| 693 | maths/two_pointer | ✓ | 251.0µs | 3.44MB |
-| 694 | maths/two_sum | ✓ | 360.0µs | 3.71MB |
-| 695 | maths/volume | ✓ | 787.0µs | 3.82MB |
-| 696 | maths/zellers_congruence | ✓ | 352.0µs | 3.71MB |
-| 697 | matrix/binary_search_matrix | ✓ | 1.0ms | 3.68MB |
-| 698 | matrix/count_islands_in_matrix | ✓ | 353.0µs | 3.67MB |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 3.85s | 49.85MB |
-| 700 | matrix/count_paths | ✓ | 586.0µs | 3.71MB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 502.0µs | 3.60MB |
-| 702 | matrix/inverse_of_matrix | ✓ | 534.0µs | 3.80MB |
-| 703 | matrix/largest_square_area_in_matrix | ✓ | 369.0µs | 3.65MB |
-| 704 | matrix/matrix_based_game | ✓ | 574.0µs | 3.91MB |
-| 705 | matrix/matrix_class | ✓ | 1.0ms | 3.84MB |
-| 706 | matrix/matrix_equalization | ✓ | 322.0µs | 3.73MB |
-| 707 | matrix/matrix_multiplication_recursion | ✓ | 423.0µs | 3.74MB |
-| 708 | matrix/matrix_operation | ✓ | 721.0µs | 3.80MB |
-| 709 | matrix/max_area_of_island | ✓ | 448.0µs | 3.77MB |
-| 710 | matrix/median_matrix | ✓ | 283.0µs | 3.55MB |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 622.0µs | 3.55MB |
-| 712 | matrix/pascal_triangle | ✓ | 421.0µs | 3.70MB |
-| 713 | matrix/rotate_matrix | ✓ | 437.0µs | 3.50MB |
-| 714 | matrix/searching_in_sorted_matrix | ✓ | 524.0µs | 3.72MB |
-| 715 | matrix/sherman_morrison | ✓ | 596.0µs | 3.83MB |
-| 716 | matrix/spiral_print | ✓ | 270.0µs | 3.60MB |
-| 717 | matrix/tests/test_matrix_operation | ✓ | 564.0µs | 3.73MB |
-| 718 | matrix/validate_sudoku_board | ✓ | 540.0µs | 3.60MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 212.0µs | 3.49MB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 575.0µs | 3.65MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 215.0µs | 3.69MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 252.0µs | 3.69MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 349.0µs | 3.61MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 231.0µs | 3.58MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 366.0µs | 3.46MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 508.0µs | 3.75MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 174.0µs | 3.43MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 650.0µs | 3.62MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 765.0µs | 3.63MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 255.0µs | 3.62MB |
+| 681 | maths/sum_of_digits | ✓ | 266.0µs | 3.61MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 535.0µs | 3.78MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 555.0µs | 3.73MB |
+| 684 | maths/sumset | ✓ | 327.0µs | 3.75MB |
+| 685 | maths/sylvester_sequence | ✓ | 265.0µs | 3.72MB |
+| 686 | maths/tanh | ✓ | 652.0µs | 3.84MB |
+| 687 | maths/test_factorial | ✓ | 215.0µs | 3.43MB |
+| 688 | maths/test_prime_check | ✓ | 388.0µs | 3.60MB |
+| 689 | maths/three_sum | ✓ | 355.0µs | 3.63MB |
+| 690 | maths/trapezoidal_rule | ✓ | 678.0µs | 3.73MB |
+| 691 | maths/triplet_sum | ✓ | 293.0µs | 3.66MB |
+| 692 | maths/twin_prime | ✓ | 190.0µs | 3.51MB |
+| 693 | maths/two_pointer | ✓ | 367.0µs | 3.41MB |
+| 694 | maths/two_sum | ✓ | 321.0µs | 3.58MB |
+| 695 | maths/volume | ✓ | 741.0µs | 3.67MB |
+| 696 | maths/zellers_congruence | ✓ | 454.0µs | 3.59MB |
+| 697 | matrix/binary_search_matrix | ✓ | 311.0µs | 3.69MB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 373.0µs | 3.52MB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 2.86s | 49.52MB |
+| 700 | matrix/count_paths | ✓ | 535.0µs | 3.75MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 459.0µs | 3.68MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 535.0µs | 3.80MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 252.0µs | 3.50MB |
+| 704 | matrix/matrix_based_game | ✓ | 715.0µs | 3.70MB |
+| 705 | matrix/matrix_class | ✓ | 1.0ms | 3.79MB |
+| 706 | matrix/matrix_equalization | ✓ | 343.0µs | 3.68MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 374.0µs | 3.61MB |
+| 708 | matrix/matrix_operation | ✓ | 994.0µs | 3.79MB |
+| 709 | matrix/max_area_of_island | ✓ | 630.0µs | 3.62MB |
+| 710 | matrix/median_matrix | ✓ | 287.0µs | 3.57MB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 761.0µs | 3.72MB |
+| 712 | matrix/pascal_triangle | ✓ | 460.0µs | 3.64MB |
+| 713 | matrix/rotate_matrix | ✓ | 691.0µs | 3.55MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 636.0µs | 3.74MB |
+| 715 | matrix/sherman_morrison | ✓ | 712.0µs | 3.85MB |
+| 716 | matrix/spiral_print | ✓ | 364.0µs | 3.55MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 742.0µs | 3.75MB |
+| 718 | matrix/validate_sudoku_board | ✓ | 655.0µs | 3.46MB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 239.0µs | 3.62MB |
 | 720 | networking_flow/minimum_cut | ✓ | 352.0µs | 3.66MB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 255.0µs | 3.46MB |
