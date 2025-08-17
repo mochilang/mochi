@@ -158,7 +158,7 @@ func init() {
 		"expect":   `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
 		"panic":    `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
 		"input":    `fun input(): String = readLine() ?: ""`,
-		"_listSet": `fun <T> _listSet(lst: MutableList<T>, idx: Long, v: T) { while (lst.size <= idx.toInt()) lst.add(v); lst[idx.toInt()] = v }`,
+		"_listSet": `fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }`,
 		"_sliceStr": `fun _sliceStr(s: String, start: Int, end: Int): String {
     val st = if (start < 0) 0 else start
     val en = if (end > s.length) s.length else end
@@ -392,7 +392,8 @@ func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
 			io.WriteString(w, "_listSet(")
 			ix.Target.emit(w)
 			io.WriteString(w, ", ")
-			if guessType(ix.Index) == "BigInteger" {
+			t := guessType(ix.Index)
+			if t == "BigInteger" || t == "Long" {
 				io.WriteString(w, "(")
 				ix.Index.emit(w)
 				io.WriteString(w, ").toInt()")
@@ -3182,11 +3183,6 @@ func guessType(e Expr) string {
 			return "Int"
 		}
 		if v.Op == "*" {
-			if lvr, ok := v.Left.(*VarRef); ok {
-				if rvr, ok := v.Right.(*VarRef); ok && lvr.Name == rvr.Name {
-					return "Long"
-				}
-			}
 			lt := guessType(v.Left)
 			rt := guessType(v.Right)
 			if lt == "BigInteger" || rt == "BigInteger" {

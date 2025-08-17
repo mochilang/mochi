@@ -1,0 +1,6 @@
+Exception in thread "main" java.lang.RuntimeException: 2147441940 should be pronic
+	at Pronic_numberKt.panic(pronic_number.kt:1)
+	at Pronic_numberKt.test_is_pronic(pronic_number.kt:74)
+	at Pronic_numberKt.user_main(pronic_number.kt:79)
+	at Pronic_numberKt.main(pronic_number.kt:88)
+	at Pronic_numberKt.main(pronic_number.kt)
