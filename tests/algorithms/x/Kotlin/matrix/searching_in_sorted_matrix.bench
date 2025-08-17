@@ -1,5 +1,5 @@
-Key 5.0 found at row- 1 column- 2
-Key 21.0 not found
+Key 5 found at row- 1 column- 2
+Key 21 not found
 Key 2.1 found at row- 1 column- 1
 Key 2.2 not found
-{"duration_us":40754, "memory_bytes":107536, "name":"main"}
+{"duration_us":15300, "memory_bytes":116784, "name":"main"}

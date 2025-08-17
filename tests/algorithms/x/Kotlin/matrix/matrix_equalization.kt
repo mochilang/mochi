@@ -1,3 +1,9 @@
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -78,11 +84,11 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(array_equalization(mutableListOf(1, 1, 6, 2, 4, 6, 5, 1, 7, 2, 2, 1, 7, 2, 2), 4).toString())
-        println(array_equalization(mutableListOf(22, 81, 88, 71, 22, 81, 632, 81, 81, 22, 92), 2).toString())
-        println(array_equalization(mutableListOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 5).toString())
-        println(array_equalization(mutableListOf(22, 22, 22, 33, 33, 33), 2).toString())
-        println(array_equalization(mutableListOf(1, 2, 3), 2147483647).toString())
+        println(_numToStr(array_equalization(mutableListOf(1, 1, 6, 2, 4, 6, 5, 1, 7, 2, 2, 1, 7, 2, 2), 4)))
+        println(_numToStr(array_equalization(mutableListOf(22, 81, 88, 71, 22, 81, 632, 81, 81, 22, 92), 2)))
+        println(_numToStr(array_equalization(mutableListOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 5)))
+        println(_numToStr(array_equalization(mutableListOf(22, 22, 22, 33, 33, 33), 2)))
+        println(_numToStr(array_equalization(mutableListOf(1, 2, 3), 2147483647)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

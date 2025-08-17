@@ -5,4 +5,4 @@
 10th fibonacci number using matrix exponentiation is 55 and using bruteforce is 55
 100th fibonacci number using matrix exponentiation is -980107325 and using bruteforce is -980107325
 1000th fibonacci number using matrix exponentiation is 1556111435 and using bruteforce is 1556111435
-{"duration_us":40010, "memory_bytes":32216, "name":"main"}
+{"duration_us":18841, "memory_bytes":116520, "name":"main"}

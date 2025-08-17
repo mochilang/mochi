@@ -57,7 +57,7 @@ fun matrix_multiply(a: MutableList<MutableList<Int>>, b: MutableList<MutableList
             var sum: Int = (0).toInt()
             var k: Int = (0).toInt()
             while (k < inner) {
-                sum = sum + ((((a[i]!!) as MutableList<Int>))[k]!! * (((b[k]!!) as MutableList<Int>))[j]!!)
+                sum = sum + (((a[i]!!) as MutableList<Int>)[k]!! * ((b[k]!!) as MutableList<Int>)[j]!!)
                 k = k + 1
             }
             row = run { val _tmp = row.toMutableList(); _tmp.add(sum); _tmp }
@@ -81,7 +81,7 @@ fun multiply(i: Int, j: Int, k: Int, a: MutableList<MutableList<Int>>, b: Mutabl
         multiply(i, j + 1, 0, a, b, result, n, m)
         return
     }
-    _listSet(result[i]!!, j, (((result[i]!!) as MutableList<Int>))[j]!! + ((((a[i]!!) as MutableList<Int>))[k]!! * (((b[k]!!) as MutableList<Int>))[j]!!))
+    _listSet(result[i]!!, j, ((result[i]!!) as MutableList<Int>)[j]!! + (((a[i]!!) as MutableList<Int>)[k]!! * ((b[k]!!) as MutableList<Int>)[j]!!))
     multiply(i, j, k + 1, a, b, result, n, m)
 }
 

@@ -1,3 +1,9 @@
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -26,11 +32,11 @@ fun toJson(v: Any?): String = when (v) {
 
 var matrix: MutableList<MutableList<Int>> = mutableListOf(mutableListOf(0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0), mutableListOf(0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0), mutableListOf(0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0), mutableListOf(0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0), mutableListOf(0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0), mutableListOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0), mutableListOf(0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0), mutableListOf(0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0))
 fun encode(row: Int, col: Int): String {
-    return (row.toString() + ",") + col.toString()
+    return (_numToStr(row) + ",") + _numToStr(col)
 }
 
 fun is_safe(row: Int, col: Int, rows: Int, cols: Int): Boolean {
-    return (((((((row >= 0) && (row < rows) as Boolean)) && (col >= 0) as Boolean)) && (col < cols)) as Boolean)
+    return ((((((row >= 0) && (row < rows) as Boolean)) && (col >= 0) as Boolean)) && (col < cols)) as Boolean
 }
 
 fun has(seen: MutableMap<String, Boolean>, key: String): Boolean {
@@ -41,7 +47,7 @@ fun depth_first_search(row: Int, col: Int, seen: MutableMap<String, Boolean>, ma
     var rows: Int = (mat.size).toInt()
     var cols: Int = ((mat[0]!!).size).toInt()
     var key: String = encode(row, col)
-    if (((is_safe(row, col, rows, cols) && (!has(seen, key) as Boolean) as Boolean)) && ((((mat[row]!!) as MutableList<Int>))[col]!! == 1)) {
+    if (((is_safe(row, col, rows, cols) && (!has(seen, key) as Boolean) as Boolean)) && (((mat[row]!!) as MutableList<Int>)[col]!! == 1)) {
         (seen)[key] = true
         return (((1 + depth_first_search(row + 1, col, seen, mat)) + depth_first_search(row - 1, col, seen, mat)) + depth_first_search(row, col + 1, seen, mat)) + depth_first_search(row, col - 1, seen, mat)
     } else {

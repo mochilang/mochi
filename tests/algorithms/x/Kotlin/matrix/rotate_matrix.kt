@@ -1,5 +1,11 @@
 import java.math.BigInteger
 
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -62,7 +68,7 @@ fun transpose(mat: MutableList<MutableList<Int>>): MutableList<MutableList<Int>>
         var row: MutableList<Int> = mutableListOf<Int>()
         var j: Int = (0).toInt()
         while (j < n) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((mat[j]!!) as MutableList<Int>))[i]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((mat[j]!!) as MutableList<Int>)[i]!!); _tmp }
             j = j + 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
@@ -73,10 +79,10 @@ fun transpose(mat: MutableList<MutableList<Int>>): MutableList<MutableList<Int>>
 
 fun reverse_row(mat: MutableList<MutableList<Int>>): MutableList<MutableList<Int>> {
     var result: MutableList<MutableList<Int>> = mutableListOf<MutableList<Int>>()
-    var i: BigInteger = ((mat.size - 1).toBigInteger())
-    while (i.compareTo((0).toBigInteger()) >= 0) {
-        result = run { val _tmp = result.toMutableList(); _tmp.add(mat[(i).toInt()]!!); _tmp }
-        i = i.subtract((1).toBigInteger())
+    var i: Int = (mat.size - 1).toInt()
+    while (i >= 0) {
+        result = run { val _tmp = result.toMutableList(); _tmp.add(mat[i]!!); _tmp }
+        i = i - 1
     }
     return result
 }
@@ -86,10 +92,10 @@ fun reverse_column(mat: MutableList<MutableList<Int>>): MutableList<MutableList<
     var i: Int = (0).toInt()
     while (i < mat.size) {
         var row: MutableList<Int> = mutableListOf<Int>()
-        var j: BigInteger = (((mat[i]!!).size - 1).toBigInteger())
-        while (j.compareTo((0).toBigInteger()) >= 0) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((mat[i]!!) as MutableList<Int>))[(j).toInt()]!!); _tmp }
-            j = j.subtract((1).toBigInteger())
+        var j: Int = ((mat[i]!!).size - 1).toInt()
+        while (j >= 0) {
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((mat[i]!!) as MutableList<Int>)[j]!!); _tmp }
+            j = j - 1
         }
         result = run { val _tmp = result.toMutableList(); _tmp.add(row); _tmp }
         i = i + 1
@@ -120,9 +126,9 @@ fun row_to_string(row: MutableList<Int>): String {
     var i: Int = (0).toInt()
     while (i < row.size) {
         if (i == 0) {
-            line = (row[i]!!).toString()
+            line = _numToStr(row[i]!!)
         } else {
-            line = (line + " ") + (row[i]!!).toString()
+            line = (line + " ") + _numToStr(row[i]!!)
         }
         i = i + 1
     }

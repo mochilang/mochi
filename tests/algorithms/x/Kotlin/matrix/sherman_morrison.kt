@@ -1,3 +1,9 @@
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -54,7 +60,7 @@ fun matrix_to_string(m: Matrix): String {
         s = s + "["
         var j: Int = (0).toInt()
         while (j < m.cols) {
-            s = s + (((((m.data)[i]!!) as MutableList<Double>))[j]!!).toString()
+            s = s + _numToStr((((m.data)[i]!!) as MutableList<Double>)[j]!!)
             if (j < (m.cols - 1)) {
                 s = s + ", "
             }
@@ -79,7 +85,7 @@ fun matrix_add(a: Matrix, b: Matrix): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < a.cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((((a.data)[i]!!) as MutableList<Double>))[j]!! + ((((b.data)[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((a.data)[i]!!) as MutableList<Double>)[j]!! + (((b.data)[i]!!) as MutableList<Double>)[j]!!); _tmp }
             j = j + 1
         }
         res = run { val _tmp = res.toMutableList(); _tmp.add(row); _tmp }
@@ -98,7 +104,7 @@ fun matrix_sub(a: Matrix, b: Matrix): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < a.cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((((a.data)[i]!!) as MutableList<Double>))[j]!! - ((((b.data)[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((a.data)[i]!!) as MutableList<Double>)[j]!! - (((b.data)[i]!!) as MutableList<Double>)[j]!!); _tmp }
             j = j + 1
         }
         res = run { val _tmp = res.toMutableList(); _tmp.add(row); _tmp }
@@ -114,7 +120,7 @@ fun matrix_mul_scalar(m: Matrix, k: Double): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < m.cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((((m.data)[i]!!) as MutableList<Double>))[j]!! * k); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((m.data)[i]!!) as MutableList<Double>)[j]!! * k); _tmp }
             j = j + 1
         }
         res = run { val _tmp = res.toMutableList(); _tmp.add(row); _tmp }
@@ -136,7 +142,7 @@ fun matrix_mul(a: Matrix, b: Matrix): Matrix {
             var sum: Double = 0.0
             var k: Int = (0).toInt()
             while (k < a.cols) {
-                sum = sum + (((((a.data)[i]!!) as MutableList<Double>))[k]!! * ((((b.data)[k]!!) as MutableList<Double>))[j]!!)
+                sum = sum + ((((a.data)[i]!!) as MutableList<Double>)[k]!! * (((b.data)[k]!!) as MutableList<Double>)[j]!!)
                 k = k + 1
             }
             row = run { val _tmp = row.toMutableList(); _tmp.add(sum); _tmp }
@@ -155,7 +161,7 @@ fun matrix_transpose(m: Matrix): Matrix {
         var row: MutableList<Double> = mutableListOf<Double>()
         var r: Int = (0).toInt()
         while (r < m.rows) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((((m.data)[r]!!) as MutableList<Double>))[c]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((m.data)[r]!!) as MutableList<Double>)[c]!!); _tmp }
             r = r + 1
         }
         res = run { val _tmp = res.toMutableList(); _tmp.add(row); _tmp }
@@ -167,7 +173,7 @@ fun matrix_transpose(m: Matrix): Matrix {
 fun sherman_morrison(ainv: Matrix, u: Matrix, v: Matrix): Matrix {
     var vt: Matrix = matrix_transpose(v)
     var vu: Matrix = matrix_mul(matrix_mul(vt, ainv), u)
-    var factor: Double = ((((vu.data)[0]!!) as MutableList<Double>))[0]!! + 1.0
+    var factor: Double = (((vu.data)[0]!!) as MutableList<Double>)[0]!! + 1.0
     if (factor == 0.0) {
         return Matrix(data = mutableListOf<MutableList<Double>>(), rows = 0, cols = 0)
     }

@@ -29,7 +29,7 @@ fun exp(x: Double): Double {
     var sum: Double = 1.0
     var n: Int = (1).toInt()
     while (n < 20) {
-        term = (term * x) / ((n.toDouble()))
+        term = (term * x) / (n.toDouble())
         sum = sum + term
         n = n + 1
     }
@@ -41,7 +41,7 @@ fun scaled_exponential_linear_unit(vector: MutableList<Double>, alpha: Double, l
     var i: Int = (0).toInt()
     while (i < vector.size) {
         var x: Double = vector[i]!!
-        var y: Double = (if (x > 0.0) lambda_ * x else (lambda_ * alpha) * (exp(x) - 1.0).toDouble())
+        var y: Double = if (x > 0.0) lambda_ * x else (lambda_ * alpha) * (exp(x) - 1.0).toDouble()
         result = run { val _tmp = result.toMutableList(); _tmp.add(y); _tmp }
         i = i + 1
     }

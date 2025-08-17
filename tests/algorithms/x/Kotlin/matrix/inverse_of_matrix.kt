@@ -29,35 +29,35 @@ fun toJson(v: Any?): String = when (v) {
 var m2: MutableList<MutableList<Double>> = mutableListOf(mutableListOf(2.0, 5.0), mutableListOf(2.0, 0.0))
 fun inverse_of_matrix(matrix: MutableList<MutableList<Double>>): MutableList<MutableList<Double>> {
     if ((((matrix.size == 2) && ((matrix[0]!!).size == 2) as Boolean)) && ((matrix[1]!!).size == 2)) {
-        var det: Double = ((((matrix[0]!!) as MutableList<Double>))[0]!! * (((matrix[1]!!) as MutableList<Double>))[1]!!) - ((((matrix[1]!!) as MutableList<Double>))[0]!! * (((matrix[0]!!) as MutableList<Double>))[1]!!)
+        var det: Double = (((matrix[0]!!) as MutableList<Double>)[0]!! * ((matrix[1]!!) as MutableList<Double>)[1]!!) - (((matrix[1]!!) as MutableList<Double>)[0]!! * ((matrix[0]!!) as MutableList<Double>)[1]!!)
         if (det == 0.0) {
             println("This matrix has no inverse.")
             return mutableListOf<MutableList<Double>>()
         }
-        return mutableListOf(mutableListOf((((matrix[1]!!) as MutableList<Double>))[1]!! / det, (0.0 - (((matrix[0]!!) as MutableList<Double>))[1]!!) / det), mutableListOf((0.0 - (((matrix[1]!!) as MutableList<Double>))[0]!!) / det, (((matrix[0]!!) as MutableList<Double>))[0]!! / det))
+        return mutableListOf(mutableListOf(((matrix[1]!!) as MutableList<Double>)[1]!! / det, (0.0 - ((matrix[0]!!) as MutableList<Double>)[1]!!) / det), mutableListOf((0.0 - ((matrix[1]!!) as MutableList<Double>)[0]!!) / det, ((matrix[0]!!) as MutableList<Double>)[0]!! / det))
     } else {
         if ((((((matrix.size == 3) && ((matrix[0]!!).size == 3) as Boolean)) && ((matrix[1]!!).size == 3) as Boolean)) && ((matrix[2]!!).size == 3)) {
-            var det: Double = (((((((matrix[0]!!) as MutableList<Double>))[0]!! * (((matrix[1]!!) as MutableList<Double>))[1]!!) * (((matrix[2]!!) as MutableList<Double>))[2]!!) + (((((matrix[0]!!) as MutableList<Double>))[1]!! * (((matrix[1]!!) as MutableList<Double>))[2]!!) * (((matrix[2]!!) as MutableList<Double>))[0]!!)) + (((((matrix[0]!!) as MutableList<Double>))[2]!! * (((matrix[1]!!) as MutableList<Double>))[0]!!) * (((matrix[2]!!) as MutableList<Double>))[1]!!)) - (((((((matrix[0]!!) as MutableList<Double>))[2]!! * (((matrix[1]!!) as MutableList<Double>))[1]!!) * (((matrix[2]!!) as MutableList<Double>))[0]!!) + (((((matrix[0]!!) as MutableList<Double>))[1]!! * (((matrix[1]!!) as MutableList<Double>))[0]!!) * (((matrix[2]!!) as MutableList<Double>))[2]!!)) + (((((matrix[0]!!) as MutableList<Double>))[0]!! * (((matrix[1]!!) as MutableList<Double>))[2]!!) * (((matrix[2]!!) as MutableList<Double>))[1]!!))
+            var det: Double = ((((((matrix[0]!!) as MutableList<Double>)[0]!! * ((matrix[1]!!) as MutableList<Double>)[1]!!) * ((matrix[2]!!) as MutableList<Double>)[2]!!) + ((((matrix[0]!!) as MutableList<Double>)[1]!! * ((matrix[1]!!) as MutableList<Double>)[2]!!) * ((matrix[2]!!) as MutableList<Double>)[0]!!)) + ((((matrix[0]!!) as MutableList<Double>)[2]!! * ((matrix[1]!!) as MutableList<Double>)[0]!!) * ((matrix[2]!!) as MutableList<Double>)[1]!!)) - ((((((matrix[0]!!) as MutableList<Double>)[2]!! * ((matrix[1]!!) as MutableList<Double>)[1]!!) * ((matrix[2]!!) as MutableList<Double>)[0]!!) + ((((matrix[0]!!) as MutableList<Double>)[1]!! * ((matrix[1]!!) as MutableList<Double>)[0]!!) * ((matrix[2]!!) as MutableList<Double>)[2]!!)) + ((((matrix[0]!!) as MutableList<Double>)[0]!! * ((matrix[1]!!) as MutableList<Double>)[2]!!) * ((matrix[2]!!) as MutableList<Double>)[1]!!))
             if (det == 0.0) {
                 println("This matrix has no inverse.")
                 return mutableListOf<MutableList<Double>>()
             }
             var cof: MutableList<MutableList<Double>> = mutableListOf(mutableListOf(0.0, 0.0, 0.0), mutableListOf(0.0, 0.0, 0.0), mutableListOf(0.0, 0.0, 0.0))
-            _listSet(cof[0]!!, 0, ((((matrix[1]!!) as MutableList<Double>))[1]!! * (((matrix[2]!!) as MutableList<Double>))[2]!!) - ((((matrix[1]!!) as MutableList<Double>))[2]!! * (((matrix[2]!!) as MutableList<Double>))[1]!!))
-            _listSet(cof[0]!!, 1, 0.0 - (((((matrix[1]!!) as MutableList<Double>))[0]!! * (((matrix[2]!!) as MutableList<Double>))[2]!!) - ((((matrix[1]!!) as MutableList<Double>))[2]!! * (((matrix[2]!!) as MutableList<Double>))[0]!!)))
-            _listSet(cof[0]!!, 2, ((((matrix[1]!!) as MutableList<Double>))[0]!! * (((matrix[2]!!) as MutableList<Double>))[1]!!) - ((((matrix[1]!!) as MutableList<Double>))[1]!! * (((matrix[2]!!) as MutableList<Double>))[0]!!))
-            _listSet(cof[1]!!, 0, 0.0 - (((((matrix[0]!!) as MutableList<Double>))[1]!! * (((matrix[2]!!) as MutableList<Double>))[2]!!) - ((((matrix[0]!!) as MutableList<Double>))[2]!! * (((matrix[2]!!) as MutableList<Double>))[1]!!)))
-            _listSet(cof[1]!!, 1, ((((matrix[0]!!) as MutableList<Double>))[0]!! * (((matrix[2]!!) as MutableList<Double>))[2]!!) - ((((matrix[0]!!) as MutableList<Double>))[2]!! * (((matrix[2]!!) as MutableList<Double>))[0]!!))
-            _listSet(cof[1]!!, 2, 0.0 - (((((matrix[0]!!) as MutableList<Double>))[0]!! * (((matrix[2]!!) as MutableList<Double>))[1]!!) - ((((matrix[0]!!) as MutableList<Double>))[1]!! * (((matrix[2]!!) as MutableList<Double>))[0]!!)))
-            _listSet(cof[2]!!, 0, ((((matrix[0]!!) as MutableList<Double>))[1]!! * (((matrix[1]!!) as MutableList<Double>))[2]!!) - ((((matrix[0]!!) as MutableList<Double>))[2]!! * (((matrix[1]!!) as MutableList<Double>))[1]!!))
-            _listSet(cof[2]!!, 1, 0.0 - (((((matrix[0]!!) as MutableList<Double>))[0]!! * (((matrix[1]!!) as MutableList<Double>))[2]!!) - ((((matrix[0]!!) as MutableList<Double>))[2]!! * (((matrix[1]!!) as MutableList<Double>))[0]!!)))
-            _listSet(cof[2]!!, 2, ((((matrix[0]!!) as MutableList<Double>))[0]!! * (((matrix[1]!!) as MutableList<Double>))[1]!!) - ((((matrix[0]!!) as MutableList<Double>))[1]!! * (((matrix[1]!!) as MutableList<Double>))[0]!!))
+            _listSet(cof[0]!!, 0, (((matrix[1]!!) as MutableList<Double>)[1]!! * ((matrix[2]!!) as MutableList<Double>)[2]!!) - (((matrix[1]!!) as MutableList<Double>)[2]!! * ((matrix[2]!!) as MutableList<Double>)[1]!!))
+            _listSet(cof[0]!!, 1, 0.0 - ((((matrix[1]!!) as MutableList<Double>)[0]!! * ((matrix[2]!!) as MutableList<Double>)[2]!!) - (((matrix[1]!!) as MutableList<Double>)[2]!! * ((matrix[2]!!) as MutableList<Double>)[0]!!)))
+            _listSet(cof[0]!!, 2, (((matrix[1]!!) as MutableList<Double>)[0]!! * ((matrix[2]!!) as MutableList<Double>)[1]!!) - (((matrix[1]!!) as MutableList<Double>)[1]!! * ((matrix[2]!!) as MutableList<Double>)[0]!!))
+            _listSet(cof[1]!!, 0, 0.0 - ((((matrix[0]!!) as MutableList<Double>)[1]!! * ((matrix[2]!!) as MutableList<Double>)[2]!!) - (((matrix[0]!!) as MutableList<Double>)[2]!! * ((matrix[2]!!) as MutableList<Double>)[1]!!)))
+            _listSet(cof[1]!!, 1, (((matrix[0]!!) as MutableList<Double>)[0]!! * ((matrix[2]!!) as MutableList<Double>)[2]!!) - (((matrix[0]!!) as MutableList<Double>)[2]!! * ((matrix[2]!!) as MutableList<Double>)[0]!!))
+            _listSet(cof[1]!!, 2, 0.0 - ((((matrix[0]!!) as MutableList<Double>)[0]!! * ((matrix[2]!!) as MutableList<Double>)[1]!!) - (((matrix[0]!!) as MutableList<Double>)[1]!! * ((matrix[2]!!) as MutableList<Double>)[0]!!)))
+            _listSet(cof[2]!!, 0, (((matrix[0]!!) as MutableList<Double>)[1]!! * ((matrix[1]!!) as MutableList<Double>)[2]!!) - (((matrix[0]!!) as MutableList<Double>)[2]!! * ((matrix[1]!!) as MutableList<Double>)[1]!!))
+            _listSet(cof[2]!!, 1, 0.0 - ((((matrix[0]!!) as MutableList<Double>)[0]!! * ((matrix[1]!!) as MutableList<Double>)[2]!!) - (((matrix[0]!!) as MutableList<Double>)[2]!! * ((matrix[1]!!) as MutableList<Double>)[0]!!)))
+            _listSet(cof[2]!!, 2, (((matrix[0]!!) as MutableList<Double>)[0]!! * ((matrix[1]!!) as MutableList<Double>)[1]!!) - (((matrix[0]!!) as MutableList<Double>)[1]!! * ((matrix[1]!!) as MutableList<Double>)[0]!!))
             var inv: MutableList<MutableList<Double>> = mutableListOf(mutableListOf(0.0, 0.0, 0.0), mutableListOf(0.0, 0.0, 0.0), mutableListOf(0.0, 0.0, 0.0))
             var i: Int = (0).toInt()
             while (i < 3) {
                 var j: Int = (0).toInt()
                 while (j < 3) {
-                    _listSet(inv[i]!!, j, (((cof[j]!!) as MutableList<Double>))[i]!! / det)
+                    _listSet(inv[i]!!, j, ((cof[j]!!) as MutableList<Double>)[i]!! / det)
                     j = j + 1
                 }
                 i = i + 1

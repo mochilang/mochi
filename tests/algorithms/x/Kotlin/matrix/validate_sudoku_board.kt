@@ -53,11 +53,11 @@ fun is_valid_sudoku_board(board: MutableList<MutableList<String>>): Boolean {
     }
     for (r in 0 until NUM_SQUARES) {
         for (c in 0 until NUM_SQUARES) {
-            var value: String = (((board[r]!!) as MutableList<String>))[c]!!
+            var value: String = ((board[r]!!) as MutableList<String>)[c]!!
             if (value == EMPTY_CELL) {
                 continue
             }
-            var box: Int = (((((r / 3).toInt())) * 3) + (((c / 3).toInt()))).toInt()
+            var box: Int = ((((r / 3).toInt()) * 3) + ((c / 3).toInt())).toInt()
             if ((((value in rows[r]!!) || (value in cols[c]!!) as Boolean)) || (value in boxes[box]!!)) {
                 return false
             }
