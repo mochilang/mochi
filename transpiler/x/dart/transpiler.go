@@ -3026,6 +3026,16 @@ func (c *CastExpr) emit(w io.Writer) error {
 
 	if cType == "int" {
 		if call, ok := c.Value.(*CallExpr); ok {
+			if sel, ok := call.Func.(*SelectorExpr); ok && sel.Field == "substring" {
+				if _, err := io.WriteString(w, "int.parse("); err != nil {
+					return err
+				}
+				if err := c.Value.emit(w); err != nil {
+					return err
+				}
+				_, err := io.WriteString(w, ")")
+				return err
+			}
 			if name, ok := call.Func.(*Name); ok && name.Name == "_substr" {
 				if _, err := io.WriteString(w, "int.parse("); err != nil {
 					return err
