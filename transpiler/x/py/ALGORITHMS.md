@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-16 21:32 GMT+7
+Last updated: 2025-08-17 08:58 GMT+7
 
 ## Algorithms Golden Test Checklist (970/1077)
 | Index | Name | Status | Duration | Memory |
@@ -512,7 +512,7 @@ Last updated: 2025-08-16 21:32 GMT+7
 | 503 | machine_learning/forecasting/run | ✓ | 130.0µs | 14.46MB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.0ms | 14.25MB |
-| 506 | machine_learning/gradient_descent | ✓ | 62.0ms | 13.94MB |
+| 506 | machine_learning/gradient_descent | ✓ | 174.0ms | 14.07MB |
 | 507 | machine_learning/k_means_clust | ✓ | 942.0µs | 14.24MB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 1.0ms | 14.12MB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 505.0µs | 14.35MB |
