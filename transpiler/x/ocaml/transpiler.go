@@ -45,6 +45,13 @@ var currentRetTyp string
 // GetStructFields returns the collected struct field type information.
 func GetStructFields() map[string]map[string]string { return structFields }
 
+// UsesBigInt reports whether the current program requires the Zarith
+// big-number library. This covers both big integers and rationals.
+func UsesBigInt() bool { return usesBigInt || usesBigRat }
+
+// UsesSHA reports whether the current program uses SHA hashing utilities.
+func UsesSHA() bool { return usesSHA }
+
 // GetVarType reports the string type for a variable in the provided env.
 func GetVarType(env *types.Env, name string) string {
 	if t, err := env.GetVar(name); err == nil {

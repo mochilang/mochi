@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 865/1077
-Last updated: 2025-08-16 21:23 +0700
+Completed programs: 868/1077
+Last updated: 2025-08-17 08:49 +0700
 
 Checklist:
 
@@ -512,8 +512,8 @@ Checklist:
 | 503 | machine_learning/forecasting/run |   |  |  |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 148.0µs | 736B |
-| 506 | machine_learning/gradient_descent | ✓ | 152.0ms | 65.84MB |
-| 507 | machine_learning/k_means_clust | ✓ | 197.0µs | 1.91KB |
+| 506 | machine_learning/gradient_descent | ✓ | 214.0ms | 65.84MB |
+| 507 | machine_learning/k_means_clust | ✓ | 215.0µs | 1.91KB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 96.0µs | 17.46KB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.0ms | 309.52KB |
 | 510 | machine_learning/linear_regression | ✓ | 39.0µs | 2.36KB |
@@ -581,7 +581,7 @@ Checklist:
 | 572 | maths/gamma | ✓ | 225.0ms | 311.28MB |
 | 573 | maths/gaussian | ✓ | 231.0µs | 3.71KB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 166.0µs | 912B |
-| 575 | maths/geometric_mean |   |  |  |
+| 575 | maths/geometric_mean | ✓ | 494.0µs | 61.16KB |
 | 576 | maths/germain_primes | ✓ | 35.0µs | 208B |
 | 577 | maths/greatest_common_divisor | ✓ | 146.0µs | 448B |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 212.0µs | 3.53KB |
@@ -607,7 +607,7 @@ Checklist:
 | 598 | maths/matrix_exponentiation | ✓ | 356.0µs | 18.29KB |
 | 599 | maths/max_sum_sliding_window | ✓ | 156.0µs | 1.20KB |
 | 600 | maths/minkowski_distance | ✓ | 197.0µs | 7.81KB |
-| 601 | maths/mobius_function |   |  |  |
+| 601 | maths/mobius_function | ✓ | 113.0µs | 816B |
 | 602 | maths/modular_division | ✓ | 141.0µs | 4.20KB |
 | 603 | maths/monte_carlo | ✓ | 6.0ms | 1.36MB |
 | 604 | maths/monte_carlo_dice | ✓ | 15.0ms | 4.43MB |
@@ -635,7 +635,7 @@ Checklist:
 | 626 | maths/persistence | ✓ | 170.0µs | 240B |
 | 627 | maths/pi_generator | ✓ | 54.0µs | 392B |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 17.0ms | 1.99MB |
-| 629 | maths/points_are_collinear_3d |   |  |  |
+| 629 | maths/points_are_collinear_3d | ✓ | 89.0µs | 7.61KB |
 | 630 | maths/pollard_rho | ✓ | 280.0µs | 1.06KB |
 | 631 | maths/polynomial_evaluation | ✓ | 299.0µs | 1.77KB |
 | 632 | maths/polynomials/single_indeterminate_operations | ✓ | 295.0µs | 10.59KB |
