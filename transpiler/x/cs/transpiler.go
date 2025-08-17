@@ -1144,12 +1144,6 @@ func (c *CallExpr) emit(w io.Writer) {
 		return
 	}
 	name := c.Func
-	if name == "pow10" && len(c.Args) == 1 {
-		fmt.Fprint(w, "(long)Math.Pow(10.0, ")
-		c.Args[0].emit(w)
-		fmt.Fprint(w, ")")
-		return
-	}
 	if userFuncs != nil && userFuncs[name] {
 		name = "Program." + name
 	}
