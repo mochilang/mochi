@@ -1,6 +1,0 @@
-run: exit status 1
-Assertion error
-  context...:
-   /workspace/mochi/tests/algorithms/x/Racket/other/least_recently_used.rkt:196:0
-   body of "/workspace/mochi/tests/algorithms/x/Racket/other/least_recently_used.rkt"
-LRUCache(4) => []
