@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (StackOverflowError) at java.math.BigInteger/shiftLeftImplWorker (BigInteger.java:3501).
+null
+
+Full report at:
+/tmp/clojure-8897517522865417309.edn

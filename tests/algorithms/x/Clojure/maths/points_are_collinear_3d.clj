@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare create_vector get_3d_vectors_cross pow10 round_float is_zero_vector are_collinear test_are_collinear main)
@@ -79,7 +82,7 @@
   (binding [pow10_i nil pow10_result nil] (try (do (set! pow10_result 1.0) (set! pow10_i 0) (while (< pow10_i pow10_exp) (do (set! pow10_result (* pow10_result 10.0)) (set! pow10_i (+ pow10_i 1)))) (throw (ex-info "return" {:v pow10_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn round_float [round_float_x round_float_digits]
-  (binding [round_float_factor nil round_float_t nil round_float_v nil] (try (do (set! round_float_factor (pow10 round_float_digits)) (set! round_float_v (* round_float_x round_float_factor)) (if (>= round_float_v 0.0) (set! round_float_v (+ round_float_v 0.5)) (set! round_float_v (- round_float_v 0.5))) (set! round_float_t (long round_float_v)) (throw (ex-info "return" {:v (quot (double round_float_t) round_float_factor)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [round_float_factor nil round_float_t nil round_float_v nil] (try (do (set! round_float_factor (pow10 round_float_digits)) (set! round_float_v (* round_float_x round_float_factor)) (if (>= round_float_v 0.0) (set! round_float_v (+ round_float_v 0.5)) (set! round_float_v (- round_float_v 0.5))) (set! round_float_t (long round_float_v)) (throw (ex-info "return" {:v (/ (double round_float_t) round_float_factor)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn is_zero_vector [is_zero_vector_v is_zero_vector_accuracy]
   (try (throw (ex-info "return" {:v (and (and (= (round_float (:x is_zero_vector_v) is_zero_vector_accuracy) 0.0) (= (round_float (:y is_zero_vector_v) is_zero_vector_accuracy) 0.0)) (= (round_float (:z is_zero_vector_v) is_zero_vector_accuracy) 0.0))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare polygonal_num main)
@@ -32,7 +35,7 @@
 (def ^:dynamic polygonal_num_term2 nil)
 
 (defn polygonal_num [polygonal_num_n polygonal_num_sides]
-  (binding [polygonal_num_term1 nil polygonal_num_term2 nil] (try (do (when (or (< polygonal_num_n 0) (< polygonal_num_sides 3)) (throw (Exception. "Invalid input: num must be >= 0 and sides must be >= 3."))) (set! polygonal_num_term1 (* (* (- polygonal_num_sides 2) polygonal_num_n) polygonal_num_n)) (set! polygonal_num_term2 (* (- polygonal_num_sides 4) polygonal_num_n)) (throw (ex-info "return" {:v (quot (- polygonal_num_term1 polygonal_num_term2) 2)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [polygonal_num_term1 nil polygonal_num_term2 nil] (try (do (when (or (< polygonal_num_n 0) (< polygonal_num_sides 3)) (throw (Exception. "Invalid input: num must be >= 0 and sides must be >= 3."))) (set! polygonal_num_term1 (* (* (- polygonal_num_sides 2) polygonal_num_n) polygonal_num_n)) (set! polygonal_num_term2 (* (- polygonal_num_sides 4) polygonal_num_n)) (throw (ex-info "return" {:v (/ (- polygonal_num_term1 polygonal_num_term2) 2)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (binding [main_n nil main_result nil main_sides nil] (do (set! main_n 5) (set! main_sides 4) (set! main_result (polygonal_num main_n main_sides)) (println (str main_result)))))

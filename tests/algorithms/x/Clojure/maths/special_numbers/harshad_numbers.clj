@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare panic char_to_value int_to_base base_to_int sum_of_digits harshad_numbers_in_base is_harshad_number_in_base main)
@@ -70,7 +73,7 @@
   (binding [char_to_value_digits nil char_to_value_i nil] (try (do (set! char_to_value_digits "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ") (set! char_to_value_i 0) (while (< char_to_value_i (count char_to_value_digits)) (do (when (= (subs char_to_value_digits char_to_value_i (+ char_to_value_i 1)) char_to_value_c) (throw (ex-info "return" {:v char_to_value_i}))) (set! char_to_value_i (+ char_to_value_i 1)))) (panic "invalid digit")) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn int_to_base [int_to_base_number int_to_base_base]
-  (binding [int_to_base_digits nil int_to_base_n nil int_to_base_remainder nil int_to_base_result nil] (try (do (when (or (< int_to_base_base 2) (> int_to_base_base 36)) (panic "'base' must be between 2 and 36 inclusive")) (when (< int_to_base_number 0) (panic "number must be a positive integer")) (set! int_to_base_digits "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ") (set! int_to_base_n int_to_base_number) (set! int_to_base_result "") (while (> int_to_base_n 0) (do (set! int_to_base_remainder (mod int_to_base_n int_to_base_base)) (set! int_to_base_result (str (subs int_to_base_digits int_to_base_remainder (+ int_to_base_remainder 1)) int_to_base_result)) (set! int_to_base_n (quot int_to_base_n int_to_base_base)))) (when (= int_to_base_result "") (set! int_to_base_result "0")) (throw (ex-info "return" {:v int_to_base_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [int_to_base_digits nil int_to_base_n nil int_to_base_remainder nil int_to_base_result nil] (try (do (when (or (< int_to_base_base 2) (> int_to_base_base 36)) (panic "'base' must be between 2 and 36 inclusive")) (when (< int_to_base_number 0) (panic "number must be a positive integer")) (set! int_to_base_digits "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ") (set! int_to_base_n int_to_base_number) (set! int_to_base_result "") (while (> int_to_base_n 0) (do (set! int_to_base_remainder (mod int_to_base_n int_to_base_base)) (set! int_to_base_result (str (subs int_to_base_digits int_to_base_remainder (+ int_to_base_remainder 1)) int_to_base_result)) (set! int_to_base_n (/ int_to_base_n int_to_base_base)))) (when (= int_to_base_result "") (set! int_to_base_result "0")) (throw (ex-info "return" {:v int_to_base_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn base_to_int [base_to_int_num_str base_to_int_base]
   (binding [base_to_int_c nil base_to_int_i nil base_to_int_value nil] (try (do (set! base_to_int_value 0) (set! base_to_int_i 0) (while (< base_to_int_i (count base_to_int_num_str)) (do (set! base_to_int_c (subs base_to_int_num_str base_to_int_i (+ base_to_int_i 1))) (set! base_to_int_value (+ (* base_to_int_value base_to_int_base) (char_to_value base_to_int_c))) (set! base_to_int_i (+ base_to_int_i 1)))) (throw (ex-info "return" {:v base_to_int_value}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

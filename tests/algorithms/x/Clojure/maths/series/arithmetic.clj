@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare is_arithmetic_series arithmetic_mean)
@@ -33,7 +36,7 @@
   (binding [is_arithmetic_series_diff nil is_arithmetic_series_i nil] (try (do (when (= (count is_arithmetic_series_xs) 0) (throw (Exception. "Input list must be a non empty list"))) (when (= (count is_arithmetic_series_xs) 1) (throw (ex-info "return" {:v true}))) (set! is_arithmetic_series_diff (- (nth is_arithmetic_series_xs 1) (nth is_arithmetic_series_xs 0))) (set! is_arithmetic_series_i 0) (while (< is_arithmetic_series_i (- (count is_arithmetic_series_xs) 1)) (do (when (not= (- (nth is_arithmetic_series_xs (+ is_arithmetic_series_i 1)) (nth is_arithmetic_series_xs is_arithmetic_series_i)) is_arithmetic_series_diff) (throw (ex-info "return" {:v false}))) (set! is_arithmetic_series_i (+ is_arithmetic_series_i 1)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn arithmetic_mean [arithmetic_mean_xs]
-  (binding [arithmetic_mean_i nil arithmetic_mean_total nil] (try (do (when (= (count arithmetic_mean_xs) 0) (throw (Exception. "Input list must be a non empty list"))) (set! arithmetic_mean_total 0.0) (set! arithmetic_mean_i 0) (while (< arithmetic_mean_i (count arithmetic_mean_xs)) (do (set! arithmetic_mean_total (+ arithmetic_mean_total (nth arithmetic_mean_xs arithmetic_mean_i))) (set! arithmetic_mean_i (+ arithmetic_mean_i 1)))) (throw (ex-info "return" {:v (quot arithmetic_mean_total (double (count arithmetic_mean_xs)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [arithmetic_mean_i nil arithmetic_mean_total nil] (try (do (when (= (count arithmetic_mean_xs) 0) (throw (Exception. "Input list must be a non empty list"))) (set! arithmetic_mean_total 0.0) (set! arithmetic_mean_i 0) (while (< arithmetic_mean_i (count arithmetic_mean_xs)) (do (set! arithmetic_mean_total (+ arithmetic_mean_total (nth arithmetic_mean_xs arithmetic_mean_i))) (set! arithmetic_mean_i (+ arithmetic_mean_i 1)))) (throw (ex-info "return" {:v (/ arithmetic_mean_total (double (count arithmetic_mean_xs)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

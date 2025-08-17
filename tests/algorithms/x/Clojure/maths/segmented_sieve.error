@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/test-sieve (segmented_sieve.clj:82).
+sieve(8) failed
+
+Full report at:
+/tmp/clojure-2479739746972249123.edn

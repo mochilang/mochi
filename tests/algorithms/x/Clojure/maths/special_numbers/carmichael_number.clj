@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare abs_int gcd power is_carmichael_number)
@@ -32,7 +35,7 @@
   (try (if (= gcd_a 0) (abs_int gcd_b) (gcd (mod gcd_b gcd_a) gcd_a)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn power [power_x power_y power_m]
-  (binding [power_temp nil] (try (do (when (= power_y 0) (throw (ex-info "return" {:v (mod 1 power_m)}))) (set! power_temp (mod (power power_x (quot power_y 2) power_m) power_m)) (set! power_temp (mod (* power_temp power_temp) power_m)) (when (= (mod power_y 2) 1) (set! power_temp (mod (* power_temp power_x) power_m))) (throw (ex-info "return" {:v power_temp}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [power_temp nil] (try (do (when (= power_y 0) (throw (ex-info "return" {:v (mod 1 power_m)}))) (set! power_temp (mod (power power_x (/ power_y 2) power_m) power_m)) (set! power_temp (mod (* power_temp power_temp) power_m)) (when (= (mod power_y 2) 1) (set! power_temp (mod (* power_temp power_x) power_m))) (throw (ex-info "return" {:v power_temp}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn is_carmichael_number [is_carmichael_number_n]
   (binding [is_carmichael_number_b nil] (try (do (when (<= is_carmichael_number_n 0) (throw (Exception. "Number must be positive"))) (set! is_carmichael_number_b 2) (while (< is_carmichael_number_b is_carmichael_number_n) (do (when (= (gcd is_carmichael_number_b is_carmichael_number_n) 1) (when (not= (power is_carmichael_number_b (- is_carmichael_number_n 1) is_carmichael_number_n) 1) (throw (ex-info "return" {:v false})))) (set! is_carmichael_number_b (+ is_carmichael_number_b 1)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

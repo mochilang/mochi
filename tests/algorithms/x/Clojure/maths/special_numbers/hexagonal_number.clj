@@ -17,20 +17,26 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare hexagonal)
 
+(def ^:dynamic main_s nil)
+
 (defn hexagonal [hexagonal_n]
   (try (do (when (< hexagonal_n 1) (throw (Exception. "Input must be a positive integer"))) (throw (ex-info "return" {:v (* hexagonal_n (- (* 2 hexagonal_n) 1))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def ^:dynamic main_samples [4 11 22])
+(def ^:dynamic main_samples nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (doseq [s main_samples] (println (hexagonal s)))
+      (alter-var-root (var main_samples) (constantly [4 11 22]))
+      (doseq [main_s main_samples] (println (hexagonal main_s)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

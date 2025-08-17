@@ -1,1 +1,5 @@
-[2 3 5 7 11 13 17 19 23 29]
+Execution error at main/test-sieve (segmented_sieve.clj:82).
+sieve(8) failed
+
+Full report at:
+/tmp/clojure-2479739746972249123.edn

@@ -2881,6 +2881,15 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 				return nil, err
 			}
 			return &List{Elems: []Node{Symbol("Math/floor"), arg}}, nil
+		case "ceil":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("ceil expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("Math/ceil"), arg}}, nil
 		case "append":
 			elems = append(elems, Symbol("conj"))
 		case "slice":

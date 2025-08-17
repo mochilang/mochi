@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare bubble_sort factors sum_list abundant semi_perfect weird run_tests main)
@@ -63,7 +66,7 @@
   (binding [bubble_sort_arr nil bubble_sort_i nil bubble_sort_j nil bubble_sort_n nil bubble_sort_tmp nil] (try (do (set! bubble_sort_arr bubble_sort_xs) (set! bubble_sort_n (count bubble_sort_arr)) (set! bubble_sort_i 0) (while (< bubble_sort_i bubble_sort_n) (do (set! bubble_sort_j 0) (while (< bubble_sort_j (- (- bubble_sort_n bubble_sort_i) 1)) (do (when (> (nth bubble_sort_arr bubble_sort_j) (nth bubble_sort_arr (+ bubble_sort_j 1))) (do (set! bubble_sort_tmp (nth bubble_sort_arr bubble_sort_j)) (set! bubble_sort_arr (assoc bubble_sort_arr bubble_sort_j (nth bubble_sort_arr (+ bubble_sort_j 1)))) (set! bubble_sort_arr (assoc bubble_sort_arr (+ bubble_sort_j 1) bubble_sort_tmp)))) (set! bubble_sort_j (+ bubble_sort_j 1)))) (set! bubble_sort_i (+ bubble_sort_i 1)))) (throw (ex-info "return" {:v bubble_sort_arr}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn factors [factors_num]
-  (binding [factors_d nil factors_i nil factors_values nil] (try (do (set! factors_values [1]) (set! factors_i 2) (while (<= (* factors_i factors_i) factors_num) (do (when (= (mod factors_num factors_i) 0) (do (set! factors_values (conj factors_values factors_i)) (set! factors_d (quot factors_num factors_i)) (when (not= factors_d factors_i) (set! factors_values (conj factors_values factors_d))))) (set! factors_i (+ factors_i 1)))) (throw (ex-info "return" {:v (bubble_sort factors_values)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [factors_d nil factors_i nil factors_values nil] (try (do (set! factors_values [1]) (set! factors_i 2) (while (<= (* factors_i factors_i) factors_num) (do (when (= (mod factors_num factors_i) 0) (do (set! factors_values (conj factors_values factors_i)) (set! factors_d (/ factors_num factors_i)) (when (not= factors_d factors_i) (set! factors_values (conj factors_values factors_d))))) (set! factors_i (+ factors_i 1)))) (throw (ex-info "return" {:v (bubble_sort factors_values)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn sum_list [sum_list_xs]
   (binding [sum_list_i nil sum_list_total nil] (try (do (set! sum_list_total 0) (set! sum_list_i 0) (while (< sum_list_i (count sum_list_xs)) (do (set! sum_list_total (+ sum_list_total (nth sum_list_xs sum_list_i))) (set! sum_list_i (+ sum_list_i 1)))) (throw (ex-info "return" {:v sum_list_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

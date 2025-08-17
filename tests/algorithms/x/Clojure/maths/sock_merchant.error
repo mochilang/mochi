@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/test-sock-merchant (sock_merchant.clj:57).
+example1 failed
+
+Full report at:
+/tmp/clojure-16482765603337742011.edn
