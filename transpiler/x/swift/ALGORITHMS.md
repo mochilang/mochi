@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 974/1077
-Last updated: 2025-08-17 09:08 +0700
+Completed programs: 975/1077
+Last updated: 2025-08-17 12:10 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -635,56 +635,56 @@ Last updated: 2025-08-17 09:08 +0700
 | 626 | maths/persistence | ✓ | 264µs | 3.1 MB |
 | 627 | maths/pi_generator | ✓ | 253µs | 2.9 MB |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 5.543ms | 3.3 MB |
-| 629 | maths/points_are_collinear_3d | ✓ | 322µs | 2.9 MB |
-| 630 | maths/pollard_rho | ✓ | 320µs | 3.2 MB |
-| 631 | maths/polynomial_evaluation | ✓ | 257µs | 3.4 MB |
-| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 508µs | 3.4 MB |
-| 633 | maths/power_using_recursion | ✓ | 278µs | 3.2 MB |
-| 634 | maths/prime_check | ✓ | 270µs | 3.3 MB |
-| 635 | maths/prime_factors | ✓ | 683µs | 3.3 MB |
-| 636 | maths/prime_numbers | ✓ | 735µs | 3.2 MB |
-| 637 | maths/prime_sieve_eratosthenes | ✓ | 740µs | 3.5 MB |
-| 638 | maths/primelib |   |  |  |
-| 639 | maths/print_multiplication_table | ✓ | 372µs | 3.2 MB |
-| 640 | maths/pythagoras | ✓ | 252µs | 3.3 MB |
-| 641 | maths/qr_decomposition | ✓ | 487µs | 3.2 MB |
-| 642 | maths/quadratic_equations_complex_numbers | ✓ | 323µs | 3.4 MB |
-| 643 | maths/radians | ✓ | 265µs | 3.3 MB |
-| 644 | maths/radix2_fft | ✓ | 488µs | 3.5 MB |
-| 645 | maths/remove_digit | ✓ | 303µs | 3.2 MB |
-| 646 | maths/segmented_sieve | ✓ | 1.071ms | 3.2 MB |
-| 647 | maths/series/arithmetic | ✓ | 595µs | 3.2 MB |
-| 648 | maths/series/geometric | ✓ | 415µs | 3.2 MB |
-| 649 | maths/series/geometric_series | ✓ | 429µs | 3.1 MB |
-| 650 | maths/series/harmonic | ✓ | 531µs | 3.4 MB |
-| 651 | maths/series/harmonic_series | ✓ | 1.094ms | 3.5 MB |
-| 652 | maths/series/hexagonal_numbers | ✓ | 1.022ms | 3.3 MB |
-| 653 | maths/series/p_series | ✓ | 1.141ms | 3.5 MB |
-| 654 | maths/sieve_of_eratosthenes | ✓ | 1.331ms | 3.6 MB |
-| 655 | maths/sigmoid | ✓ | 968µs | 3.4 MB |
-| 656 | maths/signum | ✓ | 407µs | 3.1 MB |
-| 657 | maths/simultaneous_linear_equation_solver | ✓ | 1.473ms | 3.7 MB |
-| 658 | maths/sin | ✓ | 897µs | 3.2 MB |
-| 659 | maths/sock_merchant | ✓ | 465µs | 2.9 MB |
-| 660 | maths/softmax | ✓ | 1.145ms | 3.5 MB |
-| 661 | maths/solovay_strassen_primality_test | ✓ | 492µs | 3.2 MB |
-| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 685µs | 3.4 MB |
-| 663 | maths/special_numbers/armstrong_numbers | ✓ | 595µs | 3.2 MB |
-| 664 | maths/special_numbers/automorphic_number | ✓ | 383µs | 3.2 MB |
-| 665 | maths/special_numbers/bell_numbers | ✓ | 887µs | 3.5 MB |
-| 666 | maths/special_numbers/carmichael_number | ✓ | 7.023ms | 3.1 MB |
-| 667 | maths/special_numbers/catalan_number | ✓ | 415µs | 3.2 MB |
-| 668 | maths/special_numbers/hamming_numbers | ✓ | 704µs | 3.3 MB |
-| 669 | maths/special_numbers/happy_number | ✓ | 494µs | 3.2 MB |
-| 670 | maths/special_numbers/harshad_numbers | ✓ | 2.478ms | 3.5 MB |
-| 671 | maths/special_numbers/hexagonal_number | ✓ | 505µs | 3.2 MB |
-| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 378µs | 3.2 MB |
-| 673 | maths/special_numbers/perfect_number | ✓ | 1.029ms | 3.2 MB |
-| 674 | maths/special_numbers/polygonal_numbers | ✓ | 434µs | 3.2 MB |
-| 675 | maths/special_numbers/pronic_number | ✓ | 13.931ms | 3.2 MB |
-| 676 | maths/special_numbers/proth_number | ✓ | 749µs | 3.2 MB |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 406µs | 3.0 MB |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 975µs | 3.2 MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 419µs | 3.2 MB |
+| 630 | maths/pollard_rho | ✓ | 475µs | 2.9 MB |
+| 631 | maths/polynomial_evaluation | ✓ | 463µs | 3.2 MB |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 691µs | 3.4 MB |
+| 633 | maths/power_using_recursion | ✓ | 392µs | 3.0 MB |
+| 634 | maths/prime_check | ✓ | 397µs | 3.0 MB |
+| 635 | maths/prime_factors | ✓ | 1.066ms | 3.5 MB |
+| 636 | maths/prime_numbers | ✓ | 1.077ms | 3.2 MB |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 1.293ms | 3.3 MB |
+| 638 | maths/primelib | ✓ | 1.322ms | 3.3 MB |
+| 639 | maths/print_multiplication_table | ✓ | 438µs | 3.2 MB |
+| 640 | maths/pythagoras | ✓ | 426µs | 3.4 MB |
+| 641 | maths/qr_decomposition | ✓ | 855µs | 3.2 MB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 534µs | 3.4 MB |
+| 643 | maths/radians | ✓ | 399µs | 3.2 MB |
+| 644 | maths/radix2_fft | ✓ | 789µs | 3.6 MB |
+| 645 | maths/remove_digit | ✓ | 434µs | 3.3 MB |
+| 646 | maths/segmented_sieve | ✓ | 1.146ms | 3.5 MB |
+| 647 | maths/series/arithmetic | ✓ | 584µs | 3.5 MB |
+| 648 | maths/series/geometric | ✓ | 408µs | 3.2 MB |
+| 649 | maths/series/geometric_series | ✓ | 441µs | 3.4 MB |
+| 650 | maths/series/harmonic | ✓ | 541µs | 3.2 MB |
+| 651 | maths/series/harmonic_series | ✓ | 974µs | 3.5 MB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 958µs | 3.5 MB |
+| 653 | maths/series/p_series | ✓ | 1.214ms | 3.6 MB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 1.214ms | 3.6 MB |
+| 655 | maths/sigmoid | ✓ | 994µs | 3.5 MB |
+| 656 | maths/signum | ✓ | 355µs | 3.2 MB |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 1.419ms | 3.6 MB |
+| 658 | maths/sin | ✓ | 1.141ms | 2.9 MB |
+| 659 | maths/sock_merchant | ✓ | 465µs | 3.2 MB |
+| 660 | maths/softmax | ✓ | 1.047ms | 3.3 MB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 463µs | 3.2 MB |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 700µs | 3.4 MB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 378µs | 3.2 MB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 353µs | 3.1 MB |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 1.007ms | 3.5 MB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 6.736ms | 3.2 MB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 451µs | 3.1 MB |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 560µs | 2.9 MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 364µs | 2.7 MB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 2.147ms | 3.5 MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 476µs | 3.3 MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 396µs | 3.2 MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 908µs | 3.2 MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 394µs | 3.3 MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 14.635ms | 3.2 MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 638µs | 3.4 MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 454µs | 3.2 MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 895µs | 3.1 MB |
 | 679 | maths/special_numbers/weird_number | ✓ | 919µs | 3.1 MB |
 | 680 | maths/sum_of_arithmetic_series | ✓ | 396µs | 2.9 MB |
 | 681 | maths/sum_of_digits | ✓ | 394µs | 3.2 MB |

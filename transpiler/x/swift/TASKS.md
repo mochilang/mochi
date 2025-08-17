@@ -1,5 +1,5 @@
-## Progress (2025-08-14 16:13 +0700)
-- py: make append functional and optimize slices
+## Progress (2025-08-17 12:10 +0700)
+- swift transpiler: support complex float math
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
