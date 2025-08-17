@@ -214,11 +214,12 @@ mochi_not(X) ->
     end.
 `
 
-const helperSafeArith = `
--compile({nowarn_unused_function, [mochi_safe_mul/2, mochi_safe_div/2]}).
+const helperSafeMul = `
 mochi_safe_mul(A, B) ->
     try A * B catch _:_ -> 1.0e308 end.
+`
 
+const helperSafeDiv = `
 mochi_safe_div(A, B) ->
     try
         case erlang:is_integer(A) andalso erlang:is_integer(B) of
@@ -338,7 +339,8 @@ var useStr bool
 var useFetch bool
 var useReadFile bool
 var useNot bool
-var useSafeArith bool
+var useSafeMul bool
+var useSafeDiv bool
 var useSafeFmod bool
 var useIDiv bool
 var useMod bool
@@ -377,7 +379,8 @@ type Program struct {
 	UseFetch        bool
 	UseReadFile     bool
 	UseNot          bool
-	UseSafeArith    bool
+	UseSafeMul      bool
+	UseSafeDiv      bool
 	UseSafeFmod     bool
 	UseIDiv         bool
 	UseMod          bool
@@ -3455,7 +3458,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useFetch = false
 	useReadFile = false
 	useNot = false
-	useSafeArith = false
+	useSafeMul = false
+	useSafeDiv = false
 	useSafeFmod = false
 	useIDiv = false
 	useMod = false
@@ -3511,7 +3515,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseFetch = useFetch
 	p.UseReadFile = useReadFile
 	p.UseNot = useNot
-	p.UseSafeArith = useSafeArith
+	p.UseSafeMul = useSafeMul
+	p.UseSafeDiv = useSafeDiv
 	p.UseSafeFmod = useSafeFmod
 	p.UseIDiv = useIDiv
 	p.UseMod = useMod
@@ -4609,7 +4614,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 				op := ops[i]
 				if op == "*" {
 					if isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) {
-						useSafeArith = true
+						useSafeMul = true
 						exprs[i] = &CallExpr{Func: "mochi_safe_mul", Args: []Expr{l, r}}
 						exprs = append(exprs[:i+1], exprs[i+2:]...)
 						typesList = append(typesList[:i+1], typesList[i+2:]...)
@@ -4620,7 +4625,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 					lt := exprType(l, env, ctx)
 					rt := exprType(r, env, ctx)
 					if isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) || isFloatType(lt) || isFloatType(rt) {
-						useSafeArith = true
+						useSafeDiv = true
 						exprs[i] = &CallExpr{Func: "mochi_safe_div", Args: []Expr{l, r}}
 						exprs = append(exprs[:i+1], exprs[i+2:]...)
 						typesList = append(typesList[:i+1], typesList[i+2:]...)
@@ -4635,7 +4640,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 						ops = append(ops[:i], ops[i+1:]...)
 						continue
 					} else {
-						useSafeArith = true
+						useSafeDiv = true
 						exprs[i] = &CallExpr{Func: "mochi_safe_div", Args: []Expr{l, r}}
 						exprs = append(exprs[:i+1], exprs[i+2:]...)
 						typesList = append(typesList[:i+1], typesList[i+2:]...)
@@ -6721,8 +6726,12 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperNot)
 		buf.WriteString("\n")
 	}
-	if p.UseSafeArith {
-		buf.WriteString(helperSafeArith)
+	if p.UseSafeMul {
+		buf.WriteString(helperSafeMul)
+		buf.WriteString("\n")
+	}
+	if p.UseSafeDiv {
+		buf.WriteString(helperSafeDiv)
 		buf.WriteString("\n")
 	}
 	if p.UseSafeFmod {
