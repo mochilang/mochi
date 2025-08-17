@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:09 +0700
+// Generated 2025-08-17 12:28 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -45,13 +33,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -67,7 +57,7 @@ let rec abs_int (x: int) =
         __ret
     with
         | Return -> __ret
-let rec gcd_iter (a: int) (b: int) =
+and gcd_iter (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable b = b
@@ -83,7 +73,7 @@ let rec gcd_iter (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-let rec is_prime (n: int) =
+and is_prime (n: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable n = n
     try
@@ -91,7 +81,7 @@ let rec is_prime (n: int) =
             __ret <- false
             raise Return
         let mutable d: int = 2
-        while ((int64 d) * (int64 d)) <= (int64 n) do
+        while (d * d) <= n do
             if (((n % d + d) % d)) = 0 then
                 __ret <- false
                 raise Return
@@ -101,7 +91,7 @@ let rec is_prime (n: int) =
         __ret
     with
         | Return -> __ret
-let rec sieve_er (n: int) =
+and sieve_er (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
     try
@@ -114,15 +104,15 @@ let rec sieve_er (n: int) =
         while idx < (Seq.length (nums)) do
             let mutable j: int = idx + 1
             while j < (Seq.length (nums)) do
-                if (_idx nums (idx)) <> 0 then
-                    if ((((_idx nums (j)) % (_idx nums (idx)) + (_idx nums (idx))) % (_idx nums (idx)))) = 0 then
+                if (_idx nums (int idx)) <> 0 then
+                    if ((((_idx nums (int j)) % (_idx nums (int idx)) + (_idx nums (int idx))) % (_idx nums (int idx)))) = 0 then
                         nums.[j] <- 0
                 j <- j + 1
             idx <- idx + 1
         let mutable res: int array = Array.empty<int>
         let mutable k: int = 0
         while k < (Seq.length (nums)) do
-            let v: int = _idx nums (k)
+            let v: int = _idx nums (int k)
             if v <> 0 then
                 res <- Array.append res [|v|]
             k <- k + 1
@@ -131,7 +121,7 @@ let rec sieve_er (n: int) =
         __ret
     with
         | Return -> __ret
-let rec get_prime_numbers (n: int) =
+and get_prime_numbers (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
     try
@@ -146,7 +136,7 @@ let rec get_prime_numbers (n: int) =
         __ret
     with
         | Return -> __ret
-let rec prime_factorization (number: int) =
+and prime_factorization (number: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable number = number
     try
@@ -166,7 +156,7 @@ let rec prime_factorization (number: int) =
         while quotient <> 1 do
             if (is_prime (factor)) && ((((quotient % factor + factor) % factor)) = 0) then
                 ans <- Array.append ans [|factor|]
-                quotient <- _floordiv quotient factor
+                quotient <- _floordiv (int quotient) (int factor)
             else
                 factor <- factor + 1
         __ret <- ans
@@ -174,52 +164,52 @@ let rec prime_factorization (number: int) =
         __ret
     with
         | Return -> __ret
-let rec greatest_prime_factor (number: int) =
+and greatest_prime_factor (number: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable number = number
     try
         let factors: int array = prime_factorization (number)
-        let mutable m: int = _idx factors (0)
+        let mutable m: int = _idx factors (int 0)
         let mutable i: int = 1
         while i < (Seq.length (factors)) do
-            if (_idx factors (i)) > m then
-                m <- _idx factors (i)
+            if (_idx factors (int i)) > m then
+                m <- _idx factors (int i)
             i <- i + 1
         __ret <- m
         raise Return
         __ret
     with
         | Return -> __ret
-let rec smallest_prime_factor (number: int) =
+and smallest_prime_factor (number: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable number = number
     try
         let factors: int array = prime_factorization (number)
-        let mutable m: int = _idx factors (0)
+        let mutable m: int = _idx factors (int 0)
         let mutable i: int = 1
         while i < (Seq.length (factors)) do
-            if (_idx factors (i)) < m then
-                m <- _idx factors (i)
+            if (_idx factors (int i)) < m then
+                m <- _idx factors (int i)
             i <- i + 1
         __ret <- m
         raise Return
         __ret
     with
         | Return -> __ret
-let rec kg_v (number1: int) (number2: int) =
+and kg_v (number1: int) (number2: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable number1 = number1
     let mutable number2 = number2
     try
         if (number1 < 1) || (number2 < 1) then
-            failwith ("numbers must be positive")
+            ignore (failwith ("numbers must be positive"))
         let g: int = gcd_iter (number1) (number2)
-        __ret <- int ((int64 (_floordiv number1 g)) * (int64 number2))
+        __ret <- (_floordiv (int number1) (int g)) * number2
         raise Return
         __ret
     with
         | Return -> __ret
-let rec is_even (number: int) =
+and is_even (number: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable number = number
     try
@@ -228,7 +218,7 @@ let rec is_even (number: int) =
         __ret
     with
         | Return -> __ret
-let rec is_odd (number: int) =
+and is_odd (number: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable number = number
     try
@@ -237,19 +227,19 @@ let rec is_odd (number: int) =
         __ret
     with
         | Return -> __ret
-let rec goldbach (number: int) =
+and goldbach (number: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable number = number
     try
         if (not (is_even (number))) || (number <= 2) then
-            failwith ("number must be even and > 2")
+            ignore (failwith ("number must be even and > 2"))
         let primes: int array = get_prime_numbers (number)
         let mutable i: int = 0
         while i < (Seq.length (primes)) do
             let mutable j: int = i + 1
             while j < (Seq.length (primes)) do
-                if ((_idx primes (i)) + (_idx primes (j))) = number then
-                    __ret <- unbox<int array> [|_idx primes (i); _idx primes (j)|]
+                if ((_idx primes (int i)) + (_idx primes (int j))) = number then
+                    __ret <- unbox<int array> [|_idx primes (int i); _idx primes (int j)|]
                     raise Return
                 j <- j + 1
             i <- i + 1
@@ -258,12 +248,12 @@ let rec goldbach (number: int) =
         __ret
     with
         | Return -> __ret
-let rec get_prime (n: int) =
+and get_prime (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n must be non-negative")
+            ignore (failwith ("n must be non-negative"))
         let mutable index: int = 0
         let mutable ans: int = 2
         while index < n do
@@ -276,7 +266,7 @@ let rec get_prime (n: int) =
         __ret
     with
         | Return -> __ret
-let rec get_primes_between (p1: int) (p2: int) =
+and get_primes_between (p1: int) (p2: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable p1 = p1
     let mutable p2 = p2
@@ -284,7 +274,7 @@ let rec get_primes_between (p1: int) (p2: int) =
         let bad1: bool = not (is_prime (p1))
         let bad2: bool = not (is_prime (p2))
         if (bad1 || bad2) || (p1 >= p2) then
-            failwith ("arguments must be prime and p1 < p2")
+            ignore (failwith ("arguments must be prime and p1 < p2"))
         let mutable num: int = p1 + 1
         try
             while num < p2 do
@@ -327,12 +317,12 @@ let rec get_primes_between (p1: int) (p2: int) =
         __ret
     with
         | Return -> __ret
-let rec get_divisors (n: int) =
+and get_divisors (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
     try
         if n < 1 then
-            failwith ("n must be >= 1")
+            ignore (failwith ("n must be >= 1"))
         let mutable ans: int array = Array.empty<int>
         let mutable d: int = 1
         while d <= n do
@@ -344,58 +334,58 @@ let rec get_divisors (n: int) =
         __ret
     with
         | Return -> __ret
-let rec is_perfect_number (number: int) =
+and is_perfect_number (number: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable number = number
     try
         if number <= 1 then
-            failwith ("number must be > 1")
+            ignore (failwith ("number must be > 1"))
         let divisors: int array = get_divisors (number)
         let mutable sum: int = 0
         let mutable i: int = 0
         while i < ((Seq.length (divisors)) - 1) do
-            sum <- sum + (_idx divisors (i))
+            sum <- sum + (_idx divisors (int i))
             i <- i + 1
         __ret <- sum = number
         raise Return
         __ret
     with
         | Return -> __ret
-let rec simplify_fraction (numerator: int) (denominator: int) =
+and simplify_fraction (numerator: int) (denominator: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable numerator = numerator
     let mutable denominator = denominator
     try
         if denominator = 0 then
-            failwith ("denominator cannot be zero")
+            ignore (failwith ("denominator cannot be zero"))
         let g: int = gcd_iter (abs_int (numerator)) (abs_int (denominator))
-        __ret <- unbox<int array> [|_floordiv numerator g; _floordiv denominator g|]
+        __ret <- unbox<int array> [|_floordiv (int numerator) (int g); _floordiv (int denominator) (int g)|]
         raise Return
         __ret
     with
         | Return -> __ret
-let rec factorial (n: int) =
+and factorial (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n must be >= 0")
+            ignore (failwith ("n must be >= 0"))
         let mutable ans: int = 1
         let mutable i: int = 1
         while i <= n do
-            ans <- int ((int64 ans) * (int64 i))
+            ans <- ans * i
             i <- i + 1
         __ret <- ans
         raise Return
         __ret
     with
         | Return -> __ret
-let rec fib (n: int) =
+and fib (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     try
         if n < 0 then
-            failwith ("n must be >= 0")
+            ignore (failwith ("n must be >= 0"))
         if n <= 1 then
             __ret <- 1
             raise Return
@@ -413,21 +403,21 @@ let rec fib (n: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (is_prime (97)))
-printfn "%s" (_str (sieve_er (20)))
-printfn "%s" (_str (get_prime_numbers (20)))
-printfn "%s" (_str (prime_factorization (287)))
-printfn "%s" (_str (greatest_prime_factor (287)))
-printfn "%s" (_str (smallest_prime_factor (287)))
-printfn "%s" (_str (kg_v (8) (10)))
-printfn "%s" (_str (goldbach (28)))
-printfn "%s" (_str (get_prime (8)))
-printfn "%s" (_str (get_primes_between (3) (20)))
-printfn "%s" (_str (get_divisors (28)))
-printfn "%s" (_str (is_perfect_number (28)))
-printfn "%s" (_str (simplify_fraction (10) (20)))
-printfn "%s" (_str (factorial (5)))
-printfn "%s" (_str (fib (10)))
+ignore (printfn "%s" (_str (is_prime (97))))
+ignore (printfn "%s" (_str (sieve_er (20))))
+ignore (printfn "%s" (_str (get_prime_numbers (20))))
+ignore (printfn "%s" (_str (prime_factorization (287))))
+ignore (printfn "%s" (_str (greatest_prime_factor (287))))
+ignore (printfn "%s" (_str (smallest_prime_factor (287))))
+ignore (printfn "%s" (_str (kg_v (8) (10))))
+ignore (printfn "%s" (_str (goldbach (28))))
+ignore (printfn "%s" (_str (get_prime (8))))
+ignore (printfn "%s" (_str (get_primes_between (3) (23))))
+ignore (printfn "%s" (_str (get_divisors (28))))
+ignore (printfn "%s" (_str (is_perfect_number (28))))
+ignore (printfn "%s" (_str (simplify_fraction (10) (20))))
+ignore (printfn "%s" (_str (factorial (5))))
+ignore (printfn "%s" (_str (fib (10))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

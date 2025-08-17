@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 12:28 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -42,13 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec isqrt (n: int) =
@@ -56,19 +46,19 @@ let rec isqrt (n: int) =
     let mutable n = n
     try
         let mutable r: int = 0
-        while ((int64 (r + 1)) * (int64 (r + 1))) <= (int64 n) do
+        while ((r + 1) * (r + 1)) <= n do
             r <- r + 1
         __ret <- r
         raise Return
         __ret
     with
         | Return -> __ret
-let rec prime_sieve (num: int) =
+and prime_sieve (num: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable num = num
     try
         if num <= 0 then
-            failwith ("Invalid input, please enter a positive integer.")
+            ignore (failwith ("Invalid input, please enter a positive integer."))
         let mutable sieve: bool array = Array.empty<bool>
         let mutable i: int = 0
         while i <= num do
@@ -80,11 +70,11 @@ let rec prime_sieve (num: int) =
         while start <= ``end`` do
             if _idx sieve (int start) then
                 prime <- Array.append prime [|start|]
-                let mutable j: int64 = (int64 start) * (int64 start)
-                while j <= (int64 num) do
+                let mutable j: int = start * start
+                while j <= num do
                     if _idx sieve (int j) then
-                        sieve.[int j] <- false
-                    j <- j + (int64 start)
+                        sieve.[j] <- false
+                    j <- j + start
             start <- start + 1
         let mutable k: int = ``end`` + 1
         while k <= num do
@@ -96,12 +86,12 @@ let rec prime_sieve (num: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (prime_sieve (50)))
-printfn "%s" (_str (prime_sieve (25)))
-printfn "%s" (_str (prime_sieve (10)))
-printfn "%s" (_str (prime_sieve (9)))
-printfn "%s" (_str (prime_sieve (2)))
-printfn "%s" (_str (prime_sieve (1)))
+ignore (printfn "%s" (_str (prime_sieve (50))))
+ignore (printfn "%s" (_str (prime_sieve (25))))
+ignore (printfn "%s" (_str (prime_sieve (10))))
+ignore (printfn "%s" (_str (prime_sieve (9))))
+ignore (printfn "%s" (_str (prime_sieve (2))))
+ignore (printfn "%s" (_str (prime_sieve (1))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

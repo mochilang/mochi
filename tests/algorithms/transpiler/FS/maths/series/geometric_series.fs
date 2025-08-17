@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:09 +0700
+// Generated 2025-08-17 12:28 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _repr v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -60,12 +48,12 @@ let rec geometric_series (nth_term: float) (start_term_a: float) (common_ratio_r
         __ret
     with
         | Return -> __ret
-printfn "%s" (_repr (geometric_series (4.0) (2.0) (2.0)))
-printfn "%s" (_repr (geometric_series (4.0) (2.0) (-2.0)))
-printfn "%s" (_repr (geometric_series (4.0) (-2.0) (2.0)))
-printfn "%s" (_repr (geometric_series (-4.0) (2.0) (2.0)))
-printfn "%s" (_repr (geometric_series (0.0) (100.0) (500.0)))
-printfn "%s" (_repr (geometric_series (1.0) (1.0) (1.0)))
+ignore (printfn "%s" (_repr (geometric_series (4.0) (2.0) (2.0))))
+ignore (printfn "%s" (_repr (geometric_series (4.0) (2.0) (-2.0))))
+ignore (printfn "%s" (_repr (geometric_series (4.0) (-2.0) (2.0))))
+ignore (printfn "%s" (_repr (geometric_series (-4.0) (2.0) (2.0))))
+ignore (printfn "%s" (_repr (geometric_series (0.0) (100.0) (500.0))))
+ignore (printfn "%s" (_repr (geometric_series (1.0) (1.0) (1.0))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

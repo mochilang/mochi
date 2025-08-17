@@ -1,3 +1,7 @@
+## Progress (2025-08-17 12:28 +0700)
+- feat(fs): add points_are_collinear_3d
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-17 08:49 +0700)
 - cs: fix geometric mean algorithm
 - Generated F# for 103/105 programs (103 passing)
