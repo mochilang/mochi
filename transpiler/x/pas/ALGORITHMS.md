@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-17 12:34 GMT+7
+Last updated: 2025-08-17 13:36 GMT+7
 
-## Algorithms Golden Test Checklist (520/1077)
+## Algorithms Golden Test Checklist (521/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -688,7 +688,7 @@ Last updated: 2025-08-17 12:34 GMT+7
 | 679 | maths/special_numbers/weird_number | ✓ | 0ns | 0B |
 | 680 | maths/sum_of_arithmetic_series | ✓ | 0ns | 0B |
 | 681 | maths/sum_of_digits | ✓ | 1.0µs | 0B |
-| 682 | maths/sum_of_geometric_progression |   |  |  |
+| 682 | maths/sum_of_geometric_progression | ✓ | 0ns | 0B |
 | 683 | maths/sum_of_harmonic_series | ✓ | 0ns | 0B |
 | 684 | maths/sumset | ✓ | 0ns | 0B |
 | 685 | maths/sylvester_sequence | ✓ | 0ns | 64B |
