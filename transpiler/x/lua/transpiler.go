@@ -706,18 +706,18 @@ func (c *CallExpr) emit(w io.Writer) {
 			io.WriteString(w, "nil")
 		}
 		io.WriteString(w, "))")
-       case "int":
-               io.WriteString(w, "(function(v) if v >= 0 then return math.floor(v) else return math.ceil(v) end end)((tonumber(")
-               if len(c.Args) > 0 {
-                       c.Args[0].emit(w)
-               }
-               io.WriteString(w, ") or 0))")
-       case "toi":
-               io.WriteString(w, "(function(v) if v >= 0 then return math.floor(v) else return math.ceil(v) end end)((tonumber(")
-               if len(c.Args) > 0 {
-                       c.Args[0].emit(w)
-               }
-               io.WriteString(w, ") or 0))")
+	case "int":
+		io.WriteString(w, "(function(v) if v >= 0 then return math.floor(v) else return math.ceil(v) end end)((tonumber(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ") or 0))")
+	case "toi":
+		io.WriteString(w, "(function(v) if v >= 0 then return math.floor(v) else return math.ceil(v) end end)((tonumber(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ") or 0))")
 	case "float":
 		io.WriteString(w, "tonumber(")
 		if len(c.Args) > 0 {
@@ -1866,6 +1866,9 @@ func isMapExpr(e Expr) bool {
 		if ex.Kind == "map" {
 			if s, ok2 := ex.Index.(*StringLit); ok2 && s.Value == "items" {
 				return false
+			}
+			if _, ok := exprType(ex.Target).(types.MapType); ok {
+				return true
 			}
 			if _, ok := exprType(e).(types.MapType); ok {
 				return true
