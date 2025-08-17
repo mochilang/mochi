@@ -1,97 +1,69 @@
 public class Main {
 
-    static int[] prime_factors(int n) {
-        if (n < 2) {
-            return new int[]{};
+    static long[] prime_factors(long n) {
+        if ((long)(n) < 2L) {
+            return new long[]{};
         }
-        int num = n;
-        int i = 2;
-        int[] factors = ((int[])(new int[]{}));
-        while (i * i <= num) {
-            if (Math.floorMod(num, i) == 0) {
-                factors = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(factors), java.util.stream.IntStream.of(i)).toArray()));
-                num = num / i;
+        long num_1 = (long)(n);
+        long i_1 = 2L;
+        long[] factors_1 = ((long[])(new long[]{}));
+        while ((long)((long)(i_1) * (long)(i_1)) <= (long)(num_1)) {
+            if (Math.floorMod(num_1, i_1) == 0L) {
+                factors_1 = ((long[])(appendLong(factors_1, (long)(i_1))));
+                num_1 = Math.floorDiv(num_1, i_1);
             } else {
-                i = i + 1;
+                i_1 = (long)((long)(i_1) + 1L);
             }
         }
-        if (num > 1) {
-            factors = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(factors), java.util.stream.IntStream.of(num)).toArray()));
+        if ((long)(num_1) > 1L) {
+            factors_1 = ((long[])(appendLong(factors_1, (long)(num_1))));
         }
-        return factors;
+        return factors_1;
     }
 
-    static boolean list_eq(int[] a, int[] b) {
-        if (a.length != b.length) {
+    static boolean list_eq(long[] a, long[] b) {
+        if ((long)(a.length) != (long)(b.length)) {
             return false;
         }
-        int i_1 = 0;
-        while (i_1 < a.length) {
-            if (a[i_1] != b[i_1]) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(a.length)) {
+            if ((long)(a[(int)((long)(i_3))]) != (long)(b[(int)((long)(i_3))])) {
                 return false;
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return true;
     }
 
     static void test_prime_factors() {
-        if (!(Boolean)list_eq(((int[])(prime_factors(0))), ((int[])(new int[]{})))) {
+        if (!(Boolean)list_eq(((long[])(prime_factors(0L))), ((long[])(new long[]{})))) {
             throw new RuntimeException(String.valueOf("prime_factors(0) failed"));
         }
-        if (!(Boolean)list_eq(((int[])(prime_factors(100))), ((int[])(new int[]{2, 2, 5, 5})))) {
+        if (!(Boolean)list_eq(((long[])(prime_factors(100L))), ((long[])(new long[]{2, 2, 5, 5})))) {
             throw new RuntimeException(String.valueOf("prime_factors(100) failed"));
         }
-        if (!(Boolean)list_eq(((int[])(prime_factors(2560))), ((int[])(new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, 5})))) {
+        if (!(Boolean)list_eq(((long[])(prime_factors(2560L))), ((long[])(new long[]{2, 2, 2, 2, 2, 2, 2, 2, 2, 5})))) {
             throw new RuntimeException(String.valueOf("prime_factors(2560) failed"));
         }
-        if (!(Boolean)list_eq(((int[])(prime_factors(97))), ((int[])(new int[]{97})))) {
+        if (!(Boolean)list_eq(((long[])(prime_factors(97L))), ((long[])(new long[]{97})))) {
             throw new RuntimeException(String.valueOf("prime_factors(97) failed"));
         }
     }
 
     static void main() {
         test_prime_factors();
-        System.out.println(_p(prime_factors(100)));
-        System.out.println(_p(prime_factors(2560)));
-        System.out.println(_p(prime_factors(97)));
+        System.out.println(_p(prime_factors(100L)));
+        System.out.println(_p(prime_factors(2560L)));
+        System.out.println(_p(prime_factors(97L)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -106,6 +78,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

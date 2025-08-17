@@ -1,67 +1,33 @@
 public class Main {
 
-    static boolean is_prime(int number) {
-        if (number < 0) {
+    static boolean is_prime(long number) {
+        if ((long)(number) < 0L) {
             throw new RuntimeException(String.valueOf("is_prime() only accepts positive integers"));
         }
-        if ((1 < number) && (number < 4)) {
+        if ((1L < (long)(number)) && ((long)(number) < 4L)) {
             return true;
-        } else         if ((number < 2) || (Math.floorMod(number, 2) == 0) || (Math.floorMod(number, 3) == 0)) {
+        } else         if (((long)(number) < 2L) || (Math.floorMod(number, 2) == 0L) || (Math.floorMod(number, 3) == 0L)) {
             return false;
         }
-        int i = 5;
-        while (i * i <= number) {
-            if ((Math.floorMod(number, i) == 0) || (Math.floorMod(number, (i + 2)) == 0)) {
+        long i_1 = 5L;
+        while ((long)((long)(i_1) * (long)(i_1)) <= (long)(number)) {
+            if ((Math.floorMod(number, i_1) == 0L) || (Math.floorMod(number, ((long)(i_1) + 2L)) == 0L)) {
                 return false;
             }
-            i = i + 6;
+            i_1 = (long)((long)(i_1) + 6L);
         }
         return true;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(is_prime(0)));
-            System.out.println(_p(is_prime(1)));
-            System.out.println(_p(is_prime(2)));
-            System.out.println(_p(is_prime(3)));
-            System.out.println(_p(is_prime(27)));
-            System.out.println(_p(is_prime(87)));
-            System.out.println(_p(is_prime(563)));
-            System.out.println(_p(is_prime(2999)));
-            System.out.println(_p(is_prime(67483)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(is_prime(0L)));
+        System.out.println(_p(is_prime(1L)));
+        System.out.println(_p(is_prime(2L)));
+        System.out.println(_p(is_prime(3L)));
+        System.out.println(_p(is_prime(27L)));
+        System.out.println(_p(is_prime(87L)));
+        System.out.println(_p(is_prime(563L)));
+        System.out.println(_p(is_prime(2999L)));
+        System.out.println(_p(is_prime(67483L)));
     }
 
     static String _p(Object v) {
@@ -76,6 +42,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

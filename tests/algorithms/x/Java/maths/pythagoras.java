@@ -16,30 +16,30 @@ public class Main {
 
 
     static double absf(double x) {
-        if (x < 0.0) {
+        if ((double)(x) < (double)(0.0)) {
             return -x;
         }
         return x;
     }
 
     static double sqrt_approx(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = (double)((double)(x) / (double)(2.0));
+        long i_1 = 0L;
+        while ((long)(i_1) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return guess;
+        return guess_1;
     }
 
     static double distance(Point a, Point b) {
-        double dx = b.x - a.x;
-        double dy = b.y - a.y;
-        double dz = b.z - a.z;
-        return sqrt_approx(absf(dx * dx + dy * dy + dz * dz));
+        double dx = (double)((double)(b.x) - (double)(a.x));
+        double dy_1 = (double)((double)(b.y) - (double)(a.y));
+        double dz_1 = (double)((double)(b.z) - (double)(a.z));
+        return sqrt_approx((double)(absf((double)((double)((double)((double)(dx) * (double)(dx)) + (double)((double)(dy_1) * (double)(dy_1))) + (double)((double)(dz_1) * (double)(dz_1))))));
     }
 
     static String point_to_string(Point p) {
@@ -48,53 +48,19 @@ public class Main {
 
     static void test_distance() {
         Point p1 = new Point(2.0, -1.0, 7.0);
-        Point p2 = new Point(1.0, -3.0, 5.0);
-        double d = distance(p1, p2);
-        if (absf(d - 3.0) > 0.0001) {
+        Point p2_1 = new Point(1.0, -3.0, 5.0);
+        double d_1 = (double)(distance(p1, p2_1));
+        if ((double)(absf((double)((double)(d_1) - (double)(3.0)))) > (double)(0.0001)) {
             throw new RuntimeException(String.valueOf("distance test failed"));
         }
-        System.out.println("Distance from " + String.valueOf(point_to_string(p1)) + " to " + String.valueOf(point_to_string(p2)) + " is " + _p(d));
+        System.out.println("Distance from " + String.valueOf(point_to_string(p1)) + " to " + String.valueOf(point_to_string(p2_1)) + " is " + _p(d_1));
     }
 
     static void main() {
         test_distance();
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -109,6 +75,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

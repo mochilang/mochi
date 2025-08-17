@@ -3,150 +3,117 @@ public class Main {
     static void panic(String msg) {
     }
 
-    static int char_to_value(String c) {
+    static long char_to_value(String c) {
         String digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        int i = 0;
-        while (i < _runeLen(digits)) {
-            if ((digits.substring(i, i+1).equals(c))) {
-                return i;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(_runeLen(digits))) {
+            if ((digits.substring((int)((long)(i_1)), (int)((long)(i_1))+1).equals(c))) {
+                return i_1;
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        throw new RuntimeException(String.valueOf("invalid digit"));
+        panic("invalid digit");
+        return 0;
     }
 
-    static String int_to_base(int number, int base) {
-        if (base < 2 || base > 36) {
-            throw new RuntimeException(String.valueOf("'base' must be between 2 and 36 inclusive"));
+    static String int_to_base(long number, long base) {
+        if ((long)(base) < 2L || (long)(base) > 36L) {
+            panic("'base' must be between 2 and 36 inclusive");
         }
-        if (number < 0) {
-            throw new RuntimeException(String.valueOf("number must be a positive integer"));
+        if ((long)(number) < 0L) {
+            panic("number must be a positive integer");
         }
-        String digits_1 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        int n = number;
-        String result = "";
-        while (n > 0) {
-            int remainder = Math.floorMod(n, base);
-            result = digits_1.substring(remainder, remainder+1) + result;
-            n = Math.floorDiv(n, base);
+        String digits_2 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        long n_1 = (long)(number);
+        String result_1 = "";
+        while ((long)(n_1) > 0L) {
+            long remainder_1 = Math.floorMod(n_1, base);
+            result_1 = digits_2.substring((int)((long)(remainder_1)), (int)((long)(remainder_1))+1) + result_1;
+            n_1 = Math.floorDiv(((long)(n_1)), ((long)(base)));
         }
-        if ((result.equals(""))) {
-            result = "0";
+        if ((result_1.equals(""))) {
+            result_1 = "0";
         }
-        return result;
+        return result_1;
     }
 
-    static int base_to_int(String num_str, int base) {
-        int value = 0;
-        int i_1 = 0;
-        while (i_1 < _runeLen(num_str)) {
-            String c = num_str.substring(i_1, i_1+1);
-            value = value * base + char_to_value(c);
-            i_1 = i_1 + 1;
+    static long base_to_int(String num_str, long base) {
+        long value = 0L;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(_runeLen(num_str))) {
+            String c_1 = num_str.substring((int)((long)(i_3)), (int)((long)(i_3))+1);
+            value = (long)((long)((long)(value) * (long)(base)) + (long)(char_to_value(c_1)));
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return value;
     }
 
-    static String sum_of_digits(int num, int base) {
-        if (base < 2 || base > 36) {
-            throw new RuntimeException(String.valueOf("'base' must be between 2 and 36 inclusive"));
+    static String sum_of_digits(long num, long base) {
+        if ((long)(base) < 2L || (long)(base) > 36L) {
+            panic("'base' must be between 2 and 36 inclusive");
         }
-        String num_str = String.valueOf(int_to_base(num, base));
-        int total = 0;
-        int i_2 = 0;
-        while (i_2 < _runeLen(num_str)) {
-            String c_1 = num_str.substring(i_2, i_2+1);
-            total = total + char_to_value(c_1);
-            i_2 = i_2 + 1;
+        String num_str_1 = String.valueOf(int_to_base((long)(num), (long)(base)));
+        long total_1 = 0L;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(_runeLen(num_str_1))) {
+            String c_3 = num_str_1.substring((int)((long)(i_5)), (int)((long)(i_5))+1);
+            total_1 = (long)((long)(total_1) + (long)(char_to_value(c_3)));
+            i_5 = (long)((long)(i_5) + 1L);
         }
-        return int_to_base(total, base);
+        return int_to_base((long)(total_1), (long)(base));
     }
 
-    static String[] harshad_numbers_in_base(int limit, int base) {
-        if (base < 2 || base > 36) {
-            throw new RuntimeException(String.valueOf("'base' must be between 2 and 36 inclusive"));
+    static String[] harshad_numbers_in_base(long limit, long base) {
+        if ((long)(base) < 2L || (long)(base) > 36L) {
+            panic("'base' must be between 2 and 36 inclusive");
         }
-        if (limit < 0) {
+        if ((long)(limit) < 0L) {
             return new String[]{};
         }
-        String[] numbers = ((String[])(new String[]{}));
-        int i_3 = 1;
-        while (i_3 < limit) {
-            String s = String.valueOf(sum_of_digits(i_3, base));
-            int divisor = base_to_int(s, base);
-            if (Math.floorMod(i_3, divisor) == 0) {
-                numbers = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(numbers), java.util.stream.Stream.of(int_to_base(i_3, base))).toArray(String[]::new)));
+        String[] numbers_1 = ((String[])(new String[]{}));
+        long i_7 = 1L;
+        while ((long)(i_7) < (long)(limit)) {
+            String s_1 = String.valueOf(sum_of_digits((long)(i_7), (long)(base)));
+            long divisor_1 = (long)(base_to_int(s_1, (long)(base)));
+            if (Math.floorMod(i_7, divisor_1) == 0L) {
+                numbers_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(numbers_1), java.util.stream.Stream.of(int_to_base((long)(i_7), (long)(base)))).toArray(String[]::new)));
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + 1L);
         }
-        return numbers;
+        return numbers_1;
     }
 
-    static boolean is_harshad_number_in_base(int num, int base) {
-        if (base < 2 || base > 36) {
-            throw new RuntimeException(String.valueOf("'base' must be between 2 and 36 inclusive"));
+    static boolean is_harshad_number_in_base(long num, long base) {
+        if ((long)(base) < 2L || (long)(base) > 36L) {
+            panic("'base' must be between 2 and 36 inclusive");
         }
-        if (num < 0) {
+        if ((long)(num) < 0L) {
             return false;
         }
-        String n_1 = String.valueOf(int_to_base(num, base));
-        String d = String.valueOf(sum_of_digits(num, base));
-        int n_val = base_to_int(n_1, base);
-        int d_val = base_to_int(d, base);
-        return Math.floorMod(n_val, d_val) == 0;
+        String n_3 = String.valueOf(int_to_base((long)(num), (long)(base)));
+        String d_1 = String.valueOf(sum_of_digits((long)(num), (long)(base)));
+        long n_val_1 = (long)(base_to_int(n_3, (long)(base)));
+        long d_val_1 = (long)(base_to_int(d_1, (long)(base)));
+        return Math.floorMod(n_val_1, d_val_1) == 0L;
     }
 
     static void main() {
-        System.out.println(int_to_base(0, 21));
-        System.out.println(int_to_base(23, 2));
-        System.out.println(int_to_base(58, 5));
-        System.out.println(int_to_base(167, 16));
-        System.out.println(sum_of_digits(103, 12));
-        System.out.println(sum_of_digits(1275, 4));
-        System.out.println(sum_of_digits(6645, 2));
-        System.out.println(harshad_numbers_in_base(15, 2));
-        System.out.println(harshad_numbers_in_base(12, 34));
-        System.out.println(harshad_numbers_in_base(12, 4));
-        System.out.println(is_harshad_number_in_base(18, 10));
-        System.out.println(is_harshad_number_in_base(21, 10));
-        System.out.println(is_harshad_number_in_base(-21, 5));
+        System.out.println(int_to_base(0L, 21L));
+        System.out.println(int_to_base(23L, 2L));
+        System.out.println(int_to_base(58L, 5L));
+        System.out.println(int_to_base(167L, 16L));
+        System.out.println(sum_of_digits(103L, 12L));
+        System.out.println(sum_of_digits(1275L, 4L));
+        System.out.println(sum_of_digits(6645L, 2L));
+        System.out.println(harshad_numbers_in_base(15L, 2L));
+        System.out.println(harshad_numbers_in_base(12L, 34L));
+        System.out.println(harshad_numbers_in_base(12L, 4L));
+        System.out.println(is_harshad_number_in_base(18L, 10L));
+        System.out.println(is_harshad_number_in_base(21L, 10L));
+        System.out.println(is_harshad_number_in_base((long)(-21), 5L));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static int _runeLen(String s) {

@@ -1,70 +1,36 @@
 public class Main {
 
-    static boolean perfect(int n) {
-        if (n <= 0) {
+    static boolean perfect(long n) {
+        if ((long)(n) <= 0L) {
             return false;
         }
-        int limit = Math.floorDiv(n, 2);
-        int sum = 0;
-        int i = 1;
-        while (i <= limit) {
-            if (Math.floorMod(n, i) == 0) {
-                sum = sum + i;
+        long limit_1 = Math.floorDiv(((long)(n)), ((long)(2)));
+        long sum_1 = 0L;
+        long i_1 = 1L;
+        while ((long)(i_1) <= (long)(limit_1)) {
+            if (Math.floorMod(n, i_1) == 0L) {
+                sum_1 = (long)((long)(sum_1) + (long)(i_1));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return sum == n;
+        return (long)(sum_1) == (long)(n);
     }
 
     static void main() {
-        int[] numbers = ((int[])(new int[]{6, 28, 29, 12, 496, 8128, 0, -1}));
-        int idx = 0;
-        while (idx < numbers.length) {
-            int num = numbers[idx];
-            if (((Boolean)(perfect(num)))) {
-                System.out.println(_p(num) + " is a Perfect Number.");
+        long[] numbers = ((long[])(new long[]{6, 28, 29, 12, 496, 8128, 0, -1}));
+        long idx_1 = 0L;
+        while ((long)(idx_1) < (long)(numbers.length)) {
+            long num_1 = (long)(numbers[(int)((long)(idx_1))]);
+            if (perfect((long)(num_1))) {
+                System.out.println(_p(num_1) + " is a Perfect Number.");
             } else {
-                System.out.println(_p(num) + " is not a Perfect Number.");
+                System.out.println(_p(num_1) + " is not a Perfect Number.");
             }
-            idx = idx + 1;
+            idx_1 = (long)((long)(idx_1) + 1L);
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -79,6 +45,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

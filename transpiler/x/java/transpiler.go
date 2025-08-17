@@ -36,6 +36,8 @@ var needInput bool
 var needNow bool
 var needAppendBool bool
 var needAppendDouble bool
+var needAppendInt bool
+var needAppendLong bool
 var needAppendObj bool
 var needConcat bool
 var needConcatBool bool
@@ -3088,19 +3090,21 @@ func (a *AppendExpr) emit(w io.Writer) {
 		return
 	}
 	if jt == "long" {
-		fmt.Fprint(w, "java.util.stream.LongStream.concat(java.util.Arrays.stream(")
+		needAppendLong = true
+		fmt.Fprint(w, "appendLong(")
 		a.List.emit(w)
-		fmt.Fprint(w, "), java.util.stream.LongStream.of(")
+		fmt.Fprint(w, ", ")
 		emitCastExpr(w, a.Value, "long")
-		fmt.Fprint(w, ")).toArray()")
+		fmt.Fprint(w, ")")
 		return
 	}
 	if jt == "int" {
-		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		needAppendInt = true
+		fmt.Fprint(w, "appendInt(")
 		a.List.emit(w)
-		fmt.Fprint(w, "), java.util.stream.IntStream.of(")
+		fmt.Fprint(w, ", ")
 		emitCastExpr(w, a.Value, "int")
-		fmt.Fprint(w, ")).toArray()")
+		fmt.Fprint(w, ")")
 		return
 	}
 	if strings.Contains(jt, "<") {
@@ -7111,6 +7115,29 @@ func Emit(prog *Program) []byte {
 		for _, s := range fn.Body {
 			s.emit(&buf, "        ")
 		}
+		if ret != "void" {
+			if len(fn.Body) == 0 {
+				buf.WriteString("        return ")
+				zeroValueExpr(ret).emit(&buf)
+				buf.WriteString(";\n")
+			} else {
+				switch fn.Body[len(fn.Body)-1].(type) {
+				case *ReturnStmt:
+				case *ExprStmt:
+					if es, ok := fn.Body[len(fn.Body)-1].(*ExprStmt); ok {
+						if ce, ok2 := es.Expr.(*CallExpr); ok2 && (ce.Func == "panic" || ce.Func == "error") {
+							buf.WriteString("        return ")
+							zeroValueExpr(ret).emit(&buf)
+							buf.WriteString(";\n")
+						}
+					}
+				default:
+					buf.WriteString("        return ")
+					zeroValueExpr(ret).emit(&buf)
+					buf.WriteString(";\n")
+				}
+			}
+		}
 		popScope(savedDecls)
 		varTypes = savedVT
 		buf.WriteString("    }")
@@ -7342,6 +7369,20 @@ func Emit(prog *Program) []byte {
 	if needAppendDouble {
 		buf.WriteString("\n    static double[] appendDouble(double[] arr, double v) {\n")
 		buf.WriteString("        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
+		buf.WriteString("        out[arr.length] = v;\n")
+		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
+	if needAppendInt {
+		buf.WriteString("\n    static int[] appendInt(int[] arr, int v) {\n")
+		buf.WriteString("        int[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
+		buf.WriteString("        out[arr.length] = v;\n")
+		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
+	if needAppendLong {
+		buf.WriteString("\n    static long[] appendLong(long[] arr, long v) {\n")
+		buf.WriteString("        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
 		buf.WriteString("        out[arr.length] = v;\n")
 		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")

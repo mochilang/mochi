@@ -1,87 +1,53 @@
 public class Main {
 
-    static int abs_int(int x) {
-        if (x < 0) {
+    static long abs_int(long x) {
+        if ((long)(x) < 0L) {
             return -x;
         }
         return x;
     }
 
-    static int gcd(int a, int b) {
-        if (a == 0) {
-            return abs_int(b);
+    static long gcd(long a, long b) {
+        if ((long)(a) == 0L) {
+            return abs_int((long)(b));
         }
-        return gcd(Math.floorMod(b, a), a);
+        return gcd(Math.floorMod(b, a), (long)(a));
     }
 
-    static int power(int x, int y, int m) {
-        if (y == 0) {
+    static long power(long x, long y, long m) {
+        if ((long)(y) == 0L) {
             return Math.floorMod(1, m);
         }
-        int temp = Math.floorMod(power(x, Math.floorDiv(y, 2), m), m);
-        temp = Math.floorMod((temp * temp), m);
-        if (Math.floorMod(y, 2) == 1) {
-            temp = Math.floorMod((temp * x), m);
+        long temp_1 = Math.floorMod(power((long)(x), Math.floorDiv(((long)(y)), ((long)(2))), (long)(m)), m);
+        temp_1 = Math.floorMod(((long)(temp_1) * (long)(temp_1)), m);
+        if (Math.floorMod(y, 2) == 1L) {
+            temp_1 = Math.floorMod(((long)(temp_1) * (long)(x)), m);
         }
-        return temp;
+        return temp_1;
     }
 
-    static boolean is_carmichael_number(int n) {
-        if (n <= 0) {
+    static boolean is_carmichael_number(long n) {
+        if ((long)(n) <= 0L) {
             throw new RuntimeException(String.valueOf("Number must be positive"));
         }
-        int b = 2;
-        while (b < n) {
-            if (gcd(b, n) == 1) {
-                if (power(b, n - 1, n) != 1) {
+        long b_1 = 2L;
+        while ((long)(b_1) < (long)(n)) {
+            if ((long)(gcd((long)(b_1), (long)(n))) == 1L) {
+                if ((long)(power((long)(b_1), (long)((long)(n) - 1L), (long)(n))) != 1L) {
                     return false;
                 }
             }
-            b = b + 1;
+            b_1 = (long)((long)(b_1) + 1L);
         }
         return true;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(power(2, 15, 3)));
-            System.out.println(_p(power(5, 1, 30)));
-            System.out.println(_p(is_carmichael_number(4)));
-            System.out.println(_p(is_carmichael_number(561)));
-            System.out.println(_p(is_carmichael_number(562)));
-            System.out.println(_p(is_carmichael_number(1105)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(power(2L, 15L, 3L)));
+        System.out.println(_p(power(5L, 1L, 30L)));
+        System.out.println(_p(is_carmichael_number(4L)));
+        System.out.println(_p(is_carmichael_number(561L)));
+        System.out.println(_p(is_carmichael_number(562L)));
+        System.out.println(_p(is_carmichael_number(1105L)));
     }
 
     static String _p(Object v) {
@@ -96,6 +62,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

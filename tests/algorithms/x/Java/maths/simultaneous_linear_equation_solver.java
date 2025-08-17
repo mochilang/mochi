@@ -1,160 +1,126 @@
 public class Main {
 
     static double floor(double x) {
-        int i = ((Number)(x)).intValue();
-        if ((((Number)(i)).doubleValue()) > x) {
-            i = i - 1;
+        long i = (long)(((Number)(x)).intValue());
+        if ((double)((((Number)(i)).doubleValue())) > (double)(x)) {
+            i = (long)((long)(i) - 1L);
         }
         return ((Number)(i)).doubleValue();
     }
 
-    static double pow10(int n) {
-        double p = 1.0;
-        int i_1 = 0;
-        while (i_1 < n) {
-            p = p * 10.0;
-            i_1 = i_1 + 1;
+    static double pow10(long n) {
+        double p = (double)(1.0);
+        long i_2 = 0L;
+        while ((long)(i_2) < (long)(n)) {
+            p = (double)((double)(p) * (double)(10.0));
+            i_2 = (long)((long)(i_2) + 1L);
         }
         return p;
     }
 
-    static double round(double x, int n) {
-        double m = pow10(n);
-        return floor(x * m + 0.5) / m;
+    static double round(double x, long n) {
+        double m = (double)(pow10((long)(n)));
+        return Math.floor((double)((double)(x) * (double)(m)) + (double)(0.5)) / (double)(m);
     }
 
     static double[][] clone_matrix(double[][] mat) {
         double[][] new_mat = ((double[][])(new double[][]{}));
-        int i_2 = 0;
-        while (i_2 < mat.length) {
-            double[] row = ((double[])(new double[]{}));
-            int j = 0;
-            while (j < mat[i_2].length) {
-                row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(mat[i_2][j])).toArray()));
-                j = j + 1;
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)(mat.length)) {
+            double[] row_1 = ((double[])(new double[]{}));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(mat[(int)((long)(i_4))].length)) {
+                row_1 = ((double[])(appendDouble(row_1, (double)(mat[(int)((long)(i_4))][(int)((long)(j_1))]))));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            new_mat = ((double[][])(appendObj(new_mat, row)));
-            i_2 = i_2 + 1;
+            new_mat = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_mat), java.util.stream.Stream.of(new double[][]{row_1})).toArray(double[][]::new)));
+            i_4 = (long)((long)(i_4) + 1L);
         }
         return new_mat;
     }
 
     static double[] solve_simultaneous(double[][] equations) {
-        int n = equations.length;
-        if (n == 0) {
+        long n = (long)(equations.length);
+        if ((long)(n) == 0L) {
             throw new RuntimeException(String.valueOf("solve_simultaneous() requires n lists of length n+1"));
         }
-        int m_1 = n + 1;
-        int i_3 = 0;
-        while (i_3 < n) {
-            if (equations[i_3].length != m_1) {
+        long m_2 = (long)((long)(n) + 1L);
+        long i_6 = 0L;
+        while ((long)(i_6) < (long)(n)) {
+            if ((long)(equations[(int)((long)(i_6))].length) != (long)(m_2)) {
                 throw new RuntimeException(String.valueOf("solve_simultaneous() requires n lists of length n+1"));
             }
-            i_3 = i_3 + 1;
+            i_6 = (long)((long)(i_6) + 1L);
         }
-        double[][] a = ((double[][])(clone_matrix(((double[][])(equations)))));
-        int row_1 = 0;
-        while (row_1 < n) {
-            int pivot = row_1;
-            while (pivot < n && a[pivot][row_1] == 0.0) {
-                pivot = pivot + 1;
+        double[][] a_1 = ((double[][])(clone_matrix(((double[][])(equations)))));
+        long row_3 = 0L;
+        while ((long)(row_3) < (long)(n)) {
+            long pivot_1 = (long)(row_3);
+            while ((long)(pivot_1) < (long)(n) && (double)(a_1[(int)((long)(pivot_1))][(int)((long)(row_3))]) == (double)(0.0)) {
+                pivot_1 = (long)((long)(pivot_1) + 1L);
             }
-            if (pivot == n) {
+            if ((long)(pivot_1) == (long)(n)) {
                 throw new RuntimeException(String.valueOf("solve_simultaneous() requires at least 1 full equation"));
             }
-            if (pivot != row_1) {
-                double[] temp = ((double[])(a[row_1]));
-a[row_1] = ((double[])(a[pivot]));
-a[pivot] = ((double[])(temp));
+            if ((long)(pivot_1) != (long)(row_3)) {
+                double[] temp_1 = ((double[])(a_1[(int)((long)(row_3))]));
+a_1[(int)((long)(row_3))] = ((double[])(a_1[(int)((long)(pivot_1))]));
+a_1[(int)((long)(pivot_1))] = ((double[])(temp_1));
             }
-            double pivot_val = a[row_1][row_1];
-            int col = 0;
-            while (col < m_1) {
-a[row_1][col] = a[row_1][col] / pivot_val;
-                col = col + 1;
+            double pivot_val_1 = (double)(a_1[(int)((long)(row_3))][(int)((long)(row_3))]);
+            long col_1 = 0L;
+            while ((long)(col_1) < (long)(m_2)) {
+a_1[(int)((long)(row_3))][(int)((long)(col_1))] = (double)((double)(a_1[(int)((long)(row_3))][(int)((long)(col_1))]) / (double)(pivot_val_1));
+                col_1 = (long)((long)(col_1) + 1L);
             }
-            int r = 0;
-            while (r < n) {
-                if (r != row_1) {
-                    double factor = a[r][row_1];
-                    int c = 0;
-                    while (c < m_1) {
-a[r][c] = a[r][c] - factor * a[row_1][c];
-                        c = c + 1;
+            long r_1 = 0L;
+            while ((long)(r_1) < (long)(n)) {
+                if ((long)(r_1) != (long)(row_3)) {
+                    double factor_1 = (double)(a_1[(int)((long)(r_1))][(int)((long)(row_3))]);
+                    long c_1 = 0L;
+                    while ((long)(c_1) < (long)(m_2)) {
+a_1[(int)((long)(r_1))][(int)((long)(c_1))] = (double)((double)(a_1[(int)((long)(r_1))][(int)((long)(c_1))]) - (double)((double)(factor_1) * (double)(a_1[(int)((long)(row_3))][(int)((long)(c_1))])));
+                        c_1 = (long)((long)(c_1) + 1L);
                     }
                 }
-                r = r + 1;
+                r_1 = (long)((long)(r_1) + 1L);
             }
-            row_1 = row_1 + 1;
+            row_3 = (long)((long)(row_3) + 1L);
         }
-        double[] res = ((double[])(new double[]{}));
-        int k = 0;
-        while (k < n) {
-            res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.stream.DoubleStream.of(round(a[k][m_1 - 1], 5))).toArray()));
-            k = k + 1;
+        double[] res_1 = ((double[])(new double[]{}));
+        long k_1 = 0L;
+        while ((long)(k_1) < (long)(n)) {
+            res_1 = ((double[])(appendDouble(res_1, (double)(round((double)(a_1[(int)((long)(k_1))][(int)((long)((long)(m_2) - 1L))]), 5L)))));
+            k_1 = (long)((long)(k_1) + 1L);
         }
-        return res;
+        return res_1;
     }
 
     static void test_solver() {
-        double[][] a_1 = ((double[][])(new double[][]{new double[]{1.0, 2.0, 3.0}, new double[]{4.0, 5.0, 6.0}}));
-        double[] r1 = ((double[])(solve_simultaneous(((double[][])(a_1)))));
-        if (!(r1.length == 2 && r1[0] == (0.0 - 1.0) && r1[1] == 2.0)) {
+        double[][] a_2 = ((double[][])(new double[][]{new double[]{1.0, 2.0, 3.0}, new double[]{4.0, 5.0, 6.0}}));
+        double[] r1_1 = ((double[])(solve_simultaneous(((double[][])(a_2)))));
+        if (!((long)(r1_1.length) == 2L && (double)(r1_1[(int)(0L)]) == (double)(((double)(0.0) - (double)(1.0))) && (double)(r1_1[(int)(1L)]) == (double)(2.0))) {
             throw new RuntimeException(String.valueOf("test1 failed"));
         }
-        double[][] b = ((double[][])(new double[][]{new double[]{0.0, (0.0 - 3.0), 1.0, 7.0}, new double[]{3.0, 2.0, (0.0 - 1.0), 11.0}, new double[]{5.0, 1.0, (0.0 - 2.0), 12.0}}));
-        double[] r2 = ((double[])(solve_simultaneous(((double[][])(b)))));
-        if (!(r2.length == 3 && r2[0] == 6.4 && r2[1] == 1.2 && r2[2] == 10.6)) {
+        double[][] b_1 = ((double[][])(new double[][]{new double[]{0.0, ((double)(0.0) - (double)(3.0)), 1.0, 7.0}, new double[]{3.0, 2.0, ((double)(0.0) - (double)(1.0)), 11.0}, new double[]{5.0, 1.0, ((double)(0.0) - (double)(2.0)), 12.0}}));
+        double[] r2_1 = ((double[])(solve_simultaneous(((double[][])(b_1)))));
+        if (!((long)(r2_1.length) == 3L && (double)(r2_1[(int)(0L)]) == (double)(6.4) && (double)(r2_1[(int)(1L)]) == (double)(1.2) && (double)(r2_1[(int)(2L)]) == (double)(10.6))) {
             throw new RuntimeException(String.valueOf("test2 failed"));
         }
     }
 
     static void main() {
         test_solver();
-        double[][] eq = ((double[][])(new double[][]{new double[]{2.0, 1.0, 1.0, 1.0, 1.0, 4.0}, new double[]{1.0, 2.0, 1.0, 1.0, 1.0, 5.0}, new double[]{1.0, 1.0, 2.0, 1.0, 1.0, 6.0}, new double[]{1.0, 1.0, 1.0, 2.0, 1.0, 7.0}, new double[]{1.0, 1.0, 1.0, 1.0, 2.0, 8.0}}));
-        System.out.println(_p(solve_simultaneous(((double[][])(eq)))));
+        double[][] eq_1 = ((double[][])(new double[][]{new double[]{2.0, 1.0, 1.0, 1.0, 1.0, 4.0}, new double[]{1.0, 2.0, 1.0, 1.0, 1.0, 5.0}, new double[]{1.0, 1.0, 2.0, 1.0, 1.0, 6.0}, new double[]{1.0, 1.0, 1.0, 2.0, 1.0, 7.0}, new double[]{1.0, 1.0, 1.0, 1.0, 2.0, 8.0}}));
+        System.out.println(_p(solve_simultaneous(((double[][])(eq_1)))));
         System.out.println(_p(solve_simultaneous(((double[][])(new double[][]{new double[]{4.0, 2.0}})))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -171,6 +137,10 @@ a[r][c] = a[r][c] - factor * a[row_1][c];
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

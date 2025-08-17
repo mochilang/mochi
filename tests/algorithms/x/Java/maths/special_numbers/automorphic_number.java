@@ -1,28 +1,28 @@
 public class Main {
 
-    static boolean is_automorphic_number(int number) {
-        if (number < 0) {
+    static boolean is_automorphic_number(long number) {
+        if ((long)(number) < 0L) {
             return false;
         }
-        int n = number;
-        int sq = number * number;
-        while (n > 0) {
-            if (Math.floorMod(n, 10) != Math.floorMod(sq, 10)) {
+        long n_1 = (long)(number);
+        long sq_1 = (long)((long)(number) * (long)(number));
+        while ((long)(n_1) > 0L) {
+            if (Math.floorMod(n_1, 10) != Math.floorMod(sq_1, 10)) {
                 return false;
             }
-            n = Math.floorDiv(n, 10);
-            sq = Math.floorDiv(sq, 10);
+            n_1 = Math.floorDiv(n_1, 10);
+            sq_1 = Math.floorDiv(sq_1, 10);
         }
         return true;
     }
     public static void main(String[] args) {
-        System.out.println(_p(is_automorphic_number(0)));
-        System.out.println(_p(is_automorphic_number(1)));
-        System.out.println(_p(is_automorphic_number(5)));
-        System.out.println(_p(is_automorphic_number(6)));
-        System.out.println(_p(is_automorphic_number(7)));
-        System.out.println(_p(is_automorphic_number(25)));
-        System.out.println(_p(is_automorphic_number(376)));
+        System.out.println(_p(is_automorphic_number(0L)));
+        System.out.println(_p(is_automorphic_number(1L)));
+        System.out.println(_p(is_automorphic_number(5L)));
+        System.out.println(_p(is_automorphic_number(6L)));
+        System.out.println(_p(is_automorphic_number(7L)));
+        System.out.println(_p(is_automorphic_number(25L)));
+        System.out.println(_p(is_automorphic_number(376L)));
     }
 
     static String _p(Object v) {
@@ -37,6 +37,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

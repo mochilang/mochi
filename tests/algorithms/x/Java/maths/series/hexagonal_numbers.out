@@ -1,3 +1,2 @@
-Exception in thread "main" java.lang.RuntimeException: hexagonal_numbers(5) failed
-	at Main.test_hexagonal_numbers(Main.java:20)
-	at Main.main(Main.java:29)
+[0, 1, 6, 15, 28]
+[0, 1, 6, 15, 28, 45, 66, 91, 120, 153]

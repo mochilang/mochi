@@ -1,74 +1,40 @@
 public class Main {
 
     static boolean is_arithmetic_series(double[] xs) {
-        if (xs.length == 0) {
+        if ((long)(xs.length) == 0L) {
             throw new RuntimeException(String.valueOf("Input list must be a non empty list"));
         }
-        if (xs.length == 1) {
+        if ((long)(xs.length) == 1L) {
             return true;
         }
-        double diff = xs[1] - xs[0];
-        int i = 0;
-        while (i < xs.length - 1) {
-            if (xs[i + 1] - xs[i] != diff) {
+        double diff_1 = (double)((double)(xs[(int)(1L)]) - (double)(xs[(int)(0L)]));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)((long)(xs.length) - 1L)) {
+            if ((double)((double)(xs[(int)((long)((long)(i_1) + 1L))]) - (double)(xs[(int)((long)(i_1))])) != (double)(diff_1)) {
                 return false;
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return true;
     }
 
     static double arithmetic_mean(double[] xs) {
-        if (xs.length == 0) {
+        if ((long)(xs.length) == 0L) {
             throw new RuntimeException(String.valueOf("Input list must be a non empty list"));
         }
-        double total = 0.0;
-        int i_1 = 0;
-        while (i_1 < xs.length) {
-            total = total + xs[i_1];
-            i_1 = i_1 + 1;
+        double total_1 = (double)(0.0);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(xs.length)) {
+            total_1 = (double)((double)(total_1) + (double)(xs[(int)((long)(i_3))]));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return total / (((Number)(xs.length)).doubleValue());
+        return (double)(total_1) / (double)((((Number)(xs.length)).doubleValue()));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(is_arithmetic_series(((double[])(new double[]{2.0, 4.0, 6.0})))));
-            System.out.println(_p(is_arithmetic_series(((double[])(new double[]{3.0, 6.0, 12.0, 24.0})))));
-            System.out.println(_p(arithmetic_mean(((double[])(new double[]{2.0, 4.0, 6.0})))));
-            System.out.println(_p(arithmetic_mean(((double[])(new double[]{3.0, 6.0, 9.0, 12.0})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(is_arithmetic_series(((double[])(new double[]{2.0, 4.0, 6.0})))));
+        System.out.println(_p(is_arithmetic_series(((double[])(new double[]{3.0, 6.0, 12.0, 24.0})))));
+        System.out.println(_p(arithmetic_mean(((double[])(new double[]{2.0, 4.0, 6.0})))));
+        System.out.println(_p(arithmetic_mean(((double[])(new double[]{3.0, 6.0, 9.0, 12.0})))));
     }
 
     static String _p(Object v) {
@@ -83,6 +49,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

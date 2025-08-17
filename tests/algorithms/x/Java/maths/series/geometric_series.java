@@ -1,60 +1,32 @@
 public class Main {
 
     static double[] geometric_series(double nth_term, double start_term_a, double common_ratio_r) {
-        int n = ((Number)(nth_term)).intValue();
-        if (n <= 0 || start_term_a == 0.0 || common_ratio_r == 0.0) {
+        long n = (long)(((Number)(nth_term)).intValue());
+        if ((long)(n) <= 0L || (double)(start_term_a) == (double)(0.0) || (double)(common_ratio_r) == (double)(0.0)) {
             return new double[]{};
         }
-        double[] series = ((double[])(new double[]{}));
-        double current = start_term_a;
-        int i = 0;
-        while (i < n) {
-            series = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(series), java.util.stream.DoubleStream.of(current)).toArray()));
-            current = current * common_ratio_r;
-            i = i + 1;
+        double[] series_1 = ((double[])(new double[]{}));
+        double current_1 = (double)(start_term_a);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            series_1 = ((double[])(appendDouble(series_1, (double)(current_1))));
+            current_1 = (double)((double)(current_1) * (double)(common_ratio_r));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return series;
+        return series_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(geometric_series(4.0, 2.0, 2.0));
-            System.out.println(geometric_series(4.0, 2.0, -2.0));
-            System.out.println(geometric_series(4.0, -2.0, 2.0));
-            System.out.println(geometric_series(-4.0, 2.0, 2.0));
-            System.out.println(geometric_series(0.0, 100.0, 500.0));
-            System.out.println(geometric_series(1.0, 1.0, 1.0));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(geometric_series((double)(4.0), (double)(2.0), (double)(2.0)));
+        System.out.println(geometric_series((double)(4.0), (double)(2.0), (double)(-2.0)));
+        System.out.println(geometric_series((double)(4.0), (double)(-2.0), (double)(2.0)));
+        System.out.println(geometric_series((double)(-4.0), (double)(2.0), (double)(2.0)));
+        System.out.println(geometric_series((double)(0.0), (double)(100.0), (double)(500.0)));
+        System.out.println(geometric_series((double)(1.0), (double)(1.0), (double)(1.0)));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

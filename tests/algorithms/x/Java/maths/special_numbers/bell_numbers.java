@@ -1,85 +1,57 @@
 public class Main {
 
-    static int binomial_coefficient(int total_elements, int elements_to_choose) {
-        if (elements_to_choose == 0 || elements_to_choose == total_elements) {
+    static long binomial_coefficient(long total_elements, long elements_to_choose) {
+        if ((long)(elements_to_choose) == 0L || (long)(elements_to_choose) == (long)(total_elements)) {
             return 1;
         }
-        int k = elements_to_choose;
-        if (k > total_elements - k) {
-            k = total_elements - k;
+        long k_1 = (long)(elements_to_choose);
+        if ((long)(k_1) > (long)((long)(total_elements) - (long)(k_1))) {
+            k_1 = (long)((long)(total_elements) - (long)(k_1));
         }
-        int coefficient = 1;
-        int i = 0;
-        while (i < k) {
-            coefficient = coefficient * (total_elements - i);
-            coefficient = Math.floorDiv(coefficient, (i + 1));
-            i = i + 1;
+        long coefficient_1 = 1L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(k_1)) {
+            coefficient_1 = (long)((long)(coefficient_1) * (long)(((long)(total_elements) - (long)(i_1))));
+            coefficient_1 = Math.floorDiv(coefficient_1, ((long)(i_1) + 1L));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return coefficient;
+        return coefficient_1;
     }
 
-    static int[] bell_numbers(int max_set_length) {
-        if (max_set_length < 0) {
+    static long[] bell_numbers(long max_set_length) {
+        if ((long)(max_set_length) < 0L) {
             throw new RuntimeException(String.valueOf("max_set_length must be non-negative"));
         }
-        int[] bell = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 <= max_set_length) {
-            bell = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(bell), java.util.stream.IntStream.of(0)).toArray()));
-            i_1 = i_1 + 1;
+        long[] bell_1 = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) <= (long)(max_set_length)) {
+            bell_1 = ((long[])(appendLong(bell_1, 0L)));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-bell[0] = 1;
-        i_1 = 1;
-        while (i_1 <= max_set_length) {
-            int j = 0;
-            while (j < i_1) {
-bell[i_1] = bell[i_1] + binomial_coefficient(i_1 - 1, j) * bell[j];
-                j = j + 1;
+bell_1[(int)(0L)] = 1L;
+        i_3 = 1L;
+        while ((long)(i_3) <= (long)(max_set_length)) {
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(i_3)) {
+bell_1[(int)((long)(i_3))] = (long)((long)(bell_1[(int)((long)(i_3))]) + (long)((long)(binomial_coefficient((long)((long)(i_3) - 1L), (long)(j_1))) * (long)(bell_1[(int)((long)(j_1))])));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return bell;
+        return bell_1;
     }
 
     static void main() {
-        System.out.println(_p(bell_numbers(5)));
+        System.out.println(_p(bell_numbers(5L)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -94,6 +66,10 @@ bell[i_1] = bell[i_1] + binomial_coefficient(i_1 - 1, j) * bell[j];
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

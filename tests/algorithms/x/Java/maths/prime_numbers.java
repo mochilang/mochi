@@ -1,108 +1,80 @@
 public class Main {
 
-    static int[] slow_primes(int max_n) {
-        int[] result = ((int[])(new int[]{}));
-        int i = 2;
-        while (i <= max_n) {
-            int j = 2;
-            boolean is_prime = true;
-            while (j < i) {
-                if (Math.floorMod(i, j) == 0) {
-                    is_prime = false;
+    static long[] slow_primes(long max_n) {
+        long[] result = ((long[])(new long[]{}));
+        long i_1 = 2L;
+        while ((long)(i_1) <= (long)(max_n)) {
+            long j_1 = 2L;
+            boolean is_prime_1 = true;
+            while ((long)(j_1) < (long)(i_1)) {
+                if (Math.floorMod(i_1, j_1) == 0L) {
+                    is_prime_1 = false;
                     break;
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            if (((Boolean)(is_prime))) {
-                result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(i)).toArray()));
+            if (is_prime_1) {
+                result = ((long[])(appendLong(result, (long)(i_1))));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
-    static int[] primes(int max_n) {
-        int[] result_1 = ((int[])(new int[]{}));
-        int i_1 = 2;
-        while (i_1 <= max_n) {
-            int j_1 = 2;
-            boolean is_prime_1 = true;
-            while (j_1 * j_1 <= i_1) {
-                if (Math.floorMod(i_1, j_1) == 0) {
-                    is_prime_1 = false;
+    static long[] primes(long max_n) {
+        long[] result_1 = ((long[])(new long[]{}));
+        long i_3 = 2L;
+        while ((long)(i_3) <= (long)(max_n)) {
+            long j_3 = 2L;
+            boolean is_prime_3 = true;
+            while ((long)((long)(j_3) * (long)(j_3)) <= (long)(i_3)) {
+                if (Math.floorMod(i_3, j_3) == 0L) {
+                    is_prime_3 = false;
                     break;
                 }
-                j_1 = j_1 + 1;
+                j_3 = (long)((long)(j_3) + 1L);
             }
-            if (((Boolean)(is_prime_1))) {
-                result_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result_1), java.util.stream.IntStream.of(i_1)).toArray()));
+            if (is_prime_3) {
+                result_1 = ((long[])(appendLong(result_1, (long)(i_3))));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return result_1;
     }
 
-    static int[] fast_primes(int max_n) {
-        int[] result_2 = ((int[])(new int[]{}));
-        if (max_n >= 2) {
-            result_2 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result_2), java.util.stream.IntStream.of(2)).toArray()));
+    static long[] fast_primes(long max_n) {
+        long[] result_2 = ((long[])(new long[]{}));
+        if ((long)(max_n) >= 2L) {
+            result_2 = ((long[])(appendLong(result_2, 2L)));
         }
-        int i_2 = 3;
-        while (i_2 <= max_n) {
-            int j_2 = 3;
-            boolean is_prime_2 = true;
-            while (j_2 * j_2 <= i_2) {
-                if (Math.floorMod(i_2, j_2) == 0) {
-                    is_prime_2 = false;
+        long i_5 = 3L;
+        while ((long)(i_5) <= (long)(max_n)) {
+            long j_5 = 3L;
+            boolean is_prime_5 = true;
+            while ((long)((long)(j_5) * (long)(j_5)) <= (long)(i_5)) {
+                if (Math.floorMod(i_5, j_5) == 0L) {
+                    is_prime_5 = false;
                     break;
                 }
-                j_2 = j_2 + 2;
+                j_5 = (long)((long)(j_5) + 2L);
             }
-            if (((Boolean)(is_prime_2))) {
-                result_2 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result_2), java.util.stream.IntStream.of(i_2)).toArray()));
+            if (is_prime_5) {
+                result_2 = ((long[])(appendLong(result_2, (long)(i_5))));
             }
-            i_2 = i_2 + 2;
+            i_5 = (long)((long)(i_5) + 2L);
         }
         return result_2;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(slow_primes(25)));
-            System.out.println(_p(primes(25)));
-            System.out.println(_p(fast_primes(25)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(_p(slow_primes(25L)));
+        System.out.println(_p(primes(25L)));
+        System.out.println(_p(fast_primes(25L)));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -117,6 +89,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

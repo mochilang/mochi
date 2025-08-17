@@ -1,3 +1,1 @@
-Exception in thread "main" java.lang.RuntimeException: hexagonal_numbers(5) failed
-	at Main.test_hexagonal_numbers(Main.java:20)
-	at Main.main(Main.java:32)
+{"duration_us": 26068, "memory_bytes": 656, "name": "main"}

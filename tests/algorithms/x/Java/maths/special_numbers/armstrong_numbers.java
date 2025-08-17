@@ -1,123 +1,95 @@
 public class Main {
 
-    static int pow_int(int base, int exp) {
-        int result = 1;
-        int i = 0;
-        while (i < exp) {
-            result = result * base;
-            i = i + 1;
+    static long pow_int(long base, long exp) {
+        long result = 1L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(exp)) {
+            result = (long)((long)(result) * (long)(base));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
-    static boolean armstrong_number(int n) {
-        if (n < 1) {
+    static boolean armstrong_number(long n) {
+        if ((long)(n) < 1L) {
             return false;
         }
-        int digits = 0;
-        int temp = n;
-        while (temp > 0) {
-            temp = temp / 10;
-            digits = digits + 1;
+        long digits_1 = 0L;
+        long temp_1 = (long)(n);
+        while ((long)(temp_1) > 0L) {
+            temp_1 = Math.floorDiv(temp_1, 10);
+            digits_1 = (long)((long)(digits_1) + 1L);
         }
-        int total = 0;
-        temp = n;
-        while (temp > 0) {
-            int rem = Math.floorMod(temp, 10);
-            total = total + pow_int(rem, digits);
-            temp = temp / 10;
+        long total_1 = 0L;
+        temp_1 = (long)(n);
+        while ((long)(temp_1) > 0L) {
+            long rem_1 = Math.floorMod(temp_1, 10);
+            total_1 = (long)((long)(total_1) + (long)(pow_int((long)(rem_1), (long)(digits_1))));
+            temp_1 = Math.floorDiv(temp_1, 10);
         }
-        return total == n;
+        return (long)(total_1) == (long)(n);
     }
 
-    static boolean pluperfect_number(int n) {
-        if (n < 1) {
+    static boolean pluperfect_number(long n) {
+        if ((long)(n) < 1L) {
             return false;
         }
-        int[] digit_histogram = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < 10) {
-            digit_histogram = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(digit_histogram), java.util.stream.IntStream.of(0)).toArray()));
-            i_1 = i_1 + 1;
+        long[] digit_histogram_1 = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < 10L) {
+            digit_histogram_1 = ((long[])(appendLong(digit_histogram_1, 0L)));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        int digit_total = 0;
-        int temp_1 = n;
-        while (temp_1 > 0) {
-            int rem_1 = Math.floorMod(temp_1, 10);
-digit_histogram[rem_1] = digit_histogram[rem_1] + 1;
-            digit_total = digit_total + 1;
-            temp_1 = temp_1 / 10;
+        long digit_total_1 = 0L;
+        long temp_3 = (long)(n);
+        while ((long)(temp_3) > 0L) {
+            long rem_3 = Math.floorMod(temp_3, 10);
+digit_histogram_1[(int)((long)(rem_3))] = (long)((long)(digit_histogram_1[(int)((long)(rem_3))]) + 1L);
+            digit_total_1 = (long)((long)(digit_total_1) + 1L);
+            temp_3 = Math.floorDiv(temp_3, 10);
         }
-        int total_1 = 0;
-        i_1 = 0;
-        while (i_1 < 10) {
-            if (digit_histogram[i_1] > 0) {
-                total_1 = total_1 + digit_histogram[i_1] * pow_int(i_1, digit_total);
+        long total_3 = 0L;
+        i_3 = 0L;
+        while ((long)(i_3) < 10L) {
+            if ((long)(digit_histogram_1[(int)((long)(i_3))]) > 0L) {
+                total_3 = (long)((long)(total_3) + (long)((long)(digit_histogram_1[(int)((long)(i_3))]) * (long)(pow_int((long)(i_3), (long)(digit_total_1)))));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return total_1 == n;
+        return (long)(total_3) == (long)(n);
     }
 
-    static boolean narcissistic_number(int n) {
-        if (n < 1) {
+    static boolean narcissistic_number(long n) {
+        if ((long)(n) < 1L) {
             return false;
         }
-        int digits_1 = 0;
-        int temp_2 = n;
-        while (temp_2 > 0) {
-            temp_2 = temp_2 / 10;
-            digits_1 = digits_1 + 1;
+        long digits_3 = 0L;
+        long temp_5 = (long)(n);
+        while ((long)(temp_5) > 0L) {
+            temp_5 = Math.floorDiv(temp_5, 10);
+            digits_3 = (long)((long)(digits_3) + 1L);
         }
-        temp_2 = n;
-        int total_2 = 0;
-        while (temp_2 > 0) {
-            int rem_2 = Math.floorMod(temp_2, 10);
-            total_2 = total_2 + pow_int(rem_2, digits_1);
-            temp_2 = temp_2 / 10;
+        temp_5 = (long)(n);
+        long total_5 = 0L;
+        while ((long)(temp_5) > 0L) {
+            long rem_5 = Math.floorMod(temp_5, 10);
+            total_5 = (long)((long)(total_5) + (long)(pow_int((long)(rem_5), (long)(digits_3))));
+            temp_5 = Math.floorDiv(temp_5, 10);
         }
-        return total_2 == n;
+        return (long)(total_5) == (long)(n);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(armstrong_number(371));
-            System.out.println(armstrong_number(200));
-            System.out.println(pluperfect_number(371));
-            System.out.println(pluperfect_number(200));
-            System.out.println(narcissistic_number(371));
-            System.out.println(narcissistic_number(200));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(armstrong_number(371L));
+        System.out.println(armstrong_number(200L));
+        System.out.println(pluperfect_number(371L));
+        System.out.println(pluperfect_number(200L));
+        System.out.println(narcissistic_number(371L));
+        System.out.println(narcissistic_number(200L));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

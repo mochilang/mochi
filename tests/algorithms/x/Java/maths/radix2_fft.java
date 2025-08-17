@@ -12,224 +12,193 @@ public class Main {
         }
     }
 
-    static double PI;
-    static double[] A;
-    static double[] B;
+    static double PI = (double)(3.141592653589793);
+    static double[] A = ((double[])(new double[]{0.0, 1.0, 0.0, 2.0}));
+    static double[] B = ((double[])(new double[]{2.0, 3.0, 4.0, 0.0}));
     static double[] product;
 
     static Complex c_add(Complex a, Complex b) {
-        return new Complex(a.re + b.re, a.im + b.im);
+        return new Complex((double)(a.re) + (double)(b.re), (double)(a.im) + (double)(b.im));
     }
 
     static Complex c_sub(Complex a, Complex b) {
-        return new Complex(a.re - b.re, a.im - b.im);
+        return new Complex((double)(a.re) - (double)(b.re), (double)(a.im) - (double)(b.im));
     }
 
     static Complex c_mul(Complex a, Complex b) {
-        return new Complex(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+        return new Complex((double)((double)(a.re) * (double)(b.re)) - (double)((double)(a.im) * (double)(b.im)), (double)((double)(a.re) * (double)(b.im)) + (double)((double)(a.im) * (double)(b.re)));
     }
 
     static Complex c_mul_scalar(Complex a, double s) {
-        return new Complex(a.re * s, a.im * s);
+        return new Complex((double)(a.re) * (double)(s), (double)(a.im) * (double)(s));
     }
 
     static Complex c_div_scalar(Complex a, double s) {
-        return new Complex(a.re / s, a.im / s);
+        return new Complex((double)(a.re) / (double)(s), (double)(a.im) / (double)(s));
     }
 
     static double sin_taylor(double x) {
-        double term = x;
-        double sum = x;
-        int i = 1;
-        while (i < 10) {
-            double k1 = 2.0 * (((Number)(i)).doubleValue());
-            double k2 = k1 + 1.0;
-            term = -term * x * x / (k1 * k2);
-            sum = sum + term;
-            i = i + 1;
-        }
-        return sum;
-    }
-
-    static double cos_taylor(double x) {
-        double term_1 = 1.0;
-        double sum_1 = 1.0;
-        int i_1 = 1;
-        while (i_1 < 10) {
-            double k1_1 = 2.0 * (((Number)(i_1)).doubleValue()) - 1.0;
-            double k2_1 = 2.0 * (((Number)(i_1)).doubleValue());
-            term_1 = -term_1 * x * x / (k1_1 * k2_1);
-            sum_1 = sum_1 + term_1;
-            i_1 = i_1 + 1;
+        double term = (double)(x);
+        double sum_1 = (double)(x);
+        long i_1 = 1L;
+        while ((long)(i_1) < 10L) {
+            double k1_1 = (double)((double)(2.0) * (double)((((Number)(i_1)).doubleValue())));
+            double k2_1 = (double)((double)(k1_1) + (double)(1.0));
+            term = (double)((double)((double)((double)(-term) * (double)(x)) * (double)(x)) / (double)(((double)(k1_1) * (double)(k2_1))));
+            sum_1 = (double)((double)(sum_1) + (double)(term));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return sum_1;
     }
 
-    static Complex exp_i(double theta) {
-        return new Complex(cos_taylor(theta), sin_taylor(theta));
+    static double cos_taylor(double x) {
+        double term_1 = (double)(1.0);
+        double sum_3 = (double)(1.0);
+        long i_3 = 1L;
+        while ((long)(i_3) < 10L) {
+            double k1_3 = (double)((double)((double)(2.0) * (double)((((Number)(i_3)).doubleValue()))) - (double)(1.0));
+            double k2_3 = (double)((double)(2.0) * (double)((((Number)(i_3)).doubleValue())));
+            term_1 = (double)((double)((double)((double)(-term_1) * (double)(x)) * (double)(x)) / (double)(((double)(k1_3) * (double)(k2_3))));
+            sum_3 = (double)((double)(sum_3) + (double)(term_1));
+            i_3 = (long)((long)(i_3) + 1L);
+        }
+        return sum_3;
     }
 
-    static Complex[] make_complex_list(int n, Complex value) {
+    static Complex exp_i(double theta) {
+        return new Complex(cos_taylor((double)(theta)), sin_taylor((double)(theta)));
+    }
+
+    static Complex[] make_complex_list(long n, Complex value) {
         Complex[] arr = ((Complex[])(new Complex[]{}));
-        int i_2 = 0;
-        while (i_2 < n) {
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(n)) {
             arr = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(value)).toArray(Complex[]::new)));
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + 1L);
         }
         return arr;
     }
 
     static Complex[] fft(Complex[] a, boolean invert) {
-        int n = a.length;
-        if (n == 1) {
-            return new Complex[]{a[0]};
+        long n = (long)(a.length);
+        if ((long)(n) == 1L) {
+            return new Complex[]{a[(int)(0L)]};
         }
-        Complex[] a0 = ((Complex[])(new Complex[]{}));
-        Complex[] a1 = ((Complex[])(new Complex[]{}));
-        int i_3 = 0;
-        while (i_3 < n / 2) {
-            a0 = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(a0), java.util.stream.Stream.of(a[2 * i_3])).toArray(Complex[]::new)));
-            a1 = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(a1), java.util.stream.Stream.of(a[2 * i_3 + 1])).toArray(Complex[]::new)));
-            i_3 = i_3 + 1;
+        Complex[] a0_1 = ((Complex[])(new Complex[]{}));
+        Complex[] a1_1 = ((Complex[])(new Complex[]{}));
+        long i_7 = 0L;
+        while ((long)(i_7) < Math.floorDiv(n, 2)) {
+            a0_1 = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(a0_1), java.util.stream.Stream.of(a[(int)((long)(2L * (long)(i_7)))])).toArray(Complex[]::new)));
+            a1_1 = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(a1_1), java.util.stream.Stream.of(a[(int)((long)((long)(2L * (long)(i_7)) + 1L))])).toArray(Complex[]::new)));
+            i_7 = (long)((long)(i_7) + 1L);
         }
-        Complex[] y0 = ((Complex[])(fft(((Complex[])(a0)), invert)));
-        Complex[] y1 = ((Complex[])(fft(((Complex[])(a1)), invert)));
-        double angle = 2.0 * PI / (((Number)(n)).doubleValue()) * (invert ? -1.0 : 1.0);
-        Complex w = new Complex(1.0, 0.0);
-        Complex wn = exp_i(angle);
-        Complex[] y = ((Complex[])(make_complex_list(n, new Complex(0.0, 0.0))));
-        i_3 = 0;
-        while (i_3 < n / 2) {
-            Complex t = c_mul(w, y1[i_3]);
-            Complex u = y0[i_3];
-            Complex even = c_add(u, t);
-            Complex odd = c_sub(u, t);
-            if (((Boolean)(invert))) {
-                even = c_div_scalar(even, 2.0);
-                odd = c_div_scalar(odd, 2.0);
+        Complex[] y0_1 = ((Complex[])(fft(((Complex[])(a0_1)), invert)));
+        Complex[] y1_1 = ((Complex[])(fft(((Complex[])(a1_1)), invert)));
+        double angle_1 = (double)((double)((double)((double)(2.0) * (double)(PI)) / (double)((((Number)(n)).doubleValue()))) * (double)((invert ? -1.0 : 1.0)));
+        Complex w_1 = new Complex(1.0, 0.0);
+        Complex wn_1 = exp_i((double)(angle_1));
+        Complex[] y_1 = ((Complex[])(make_complex_list((long)(n), new Complex(0.0, 0.0))));
+        i_7 = 0L;
+        while ((long)(i_7) < Math.floorDiv(n, 2)) {
+            Complex t_1 = c_mul(w_1, y1_1[(int)((long)(i_7))]);
+            Complex u_1 = y0_1[(int)((long)(i_7))];
+            Complex even_1 = c_add(u_1, t_1);
+            Complex odd_1 = c_sub(u_1, t_1);
+            if (invert) {
+                even_1 = c_div_scalar(even_1, (double)(2.0));
+                odd_1 = c_div_scalar(odd_1, (double)(2.0));
             }
-y[i_3] = even;
-y[i_3 + n / 2] = odd;
-            w = c_mul(w, wn);
-            i_3 = i_3 + 1;
+y_1[(int)((long)(i_7))] = even_1;
+y_1[(int)((long)((long)(i_7) + Math.floorDiv(n, 2)))] = odd_1;
+            w_1 = c_mul(w_1, wn_1);
+            i_7 = (long)((long)(i_7) + 1L);
         }
-        return y;
+        return y_1;
     }
 
     static double floor(double x) {
-        int i_4 = ((Number)(x)).intValue();
-        if ((((Number)(i_4)).doubleValue()) > x) {
-            i_4 = i_4 - 1;
+        long i_8 = (long)(((Number)(x)).intValue());
+        if ((double)((((Number)(i_8)).doubleValue())) > (double)(x)) {
+            i_8 = (long)((long)(i_8) - 1L);
         }
-        return ((Number)(i_4)).doubleValue();
+        return ((Number)(i_8)).doubleValue();
     }
 
-    static double pow10(int n) {
-        double p = 1.0;
-        int i_5 = 0;
-        while (i_5 < n) {
-            p = p * 10.0;
-            i_5 = i_5 + 1;
+    static double pow10(long n) {
+        double p = (double)(1.0);
+        long i_10 = 0L;
+        while ((long)(i_10) < (long)(n)) {
+            p = (double)((double)(p) * (double)(10.0));
+            i_10 = (long)((long)(i_10) + 1L);
         }
         return p;
     }
 
-    static double round_to(double x, int ndigits) {
-        double m = pow10(ndigits);
-        return floor(x * m + 0.5) / m;
+    static double round_to(double x, long ndigits) {
+        double m = (double)(pow10((long)(ndigits)));
+        return Math.floor((double)((double)(x) * (double)(m)) + (double)(0.5)) / (double)(m);
     }
 
     static String list_to_string(double[] l) {
         String s = "[";
-        int i_6 = 0;
-        while (i_6 < l.length) {
-            s = s + _p(_geto(l, i_6));
-            if (i_6 + 1 < l.length) {
+        long i_12 = 0L;
+        while ((long)(i_12) < (long)(l.length)) {
+            s = s + _p(_getd(l, ((Number)(i_12)).intValue()));
+            if ((long)((long)(i_12) + 1L) < (long)(l.length)) {
                 s = s + ", ";
             }
-            i_6 = i_6 + 1;
+            i_12 = (long)((long)(i_12) + 1L);
         }
         s = s + "]";
         return s;
     }
 
     static double[] multiply_poly(double[] a, double[] b) {
-        int n_1 = 1;
-        while (n_1 < a.length + b.length - 1) {
-            n_1 = n_1 * 2;
+        long n_1 = 1L;
+        while ((long)(n_1) < (long)((long)((long)(a.length) + (long)(b.length)) - 1L)) {
+            n_1 = (long)((long)(n_1) * 2L);
         }
-        Complex[] fa = ((Complex[])(make_complex_list(n_1, new Complex(0.0, 0.0))));
-        Complex[] fb = ((Complex[])(make_complex_list(n_1, new Complex(0.0, 0.0))));
-        int i_7 = 0;
-        while (i_7 < a.length) {
-fa[i_7] = new Complex(a[i_7], 0.0);
-            i_7 = i_7 + 1;
+        Complex[] fa_1 = ((Complex[])(make_complex_list((long)(n_1), new Complex(0.0, 0.0))));
+        Complex[] fb_1 = ((Complex[])(make_complex_list((long)(n_1), new Complex(0.0, 0.0))));
+        long i_14 = 0L;
+        while ((long)(i_14) < (long)(a.length)) {
+fa_1[(int)((long)(i_14))] = new Complex(a[(int)((long)(i_14))], 0.0);
+            i_14 = (long)((long)(i_14) + 1L);
         }
-        i_7 = 0;
-        while (i_7 < b.length) {
-fb[i_7] = new Complex(b[i_7], 0.0);
-            i_7 = i_7 + 1;
+        i_14 = 0L;
+        while ((long)(i_14) < (long)(b.length)) {
+fb_1[(int)((long)(i_14))] = new Complex(b[(int)((long)(i_14))], 0.0);
+            i_14 = (long)((long)(i_14) + 1L);
         }
-        fa = ((Complex[])(fft(((Complex[])(fa)), false)));
-        fb = ((Complex[])(fft(((Complex[])(fb)), false)));
-        i_7 = 0;
-        while (i_7 < n_1) {
-fa[i_7] = c_mul(fa[i_7], fb[i_7]);
-            i_7 = i_7 + 1;
+        fa_1 = ((Complex[])(fft(((Complex[])(fa_1)), false)));
+        fb_1 = ((Complex[])(fft(((Complex[])(fb_1)), false)));
+        i_14 = 0L;
+        while ((long)(i_14) < (long)(n_1)) {
+fa_1[(int)((long)(i_14))] = c_mul(fa_1[(int)((long)(i_14))], fb_1[(int)((long)(i_14))]);
+            i_14 = (long)((long)(i_14) + 1L);
         }
-        fa = ((Complex[])(fft(((Complex[])(fa)), true)));
-        double[] res = ((double[])(new double[]{}));
-        i_7 = 0;
-        while (i_7 < a.length + b.length - 1) {
-            Complex val = fa[i_7];
-            res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.stream.DoubleStream.of(round_to(val.re, 8))).toArray()));
-            i_7 = i_7 + 1;
+        fa_1 = ((Complex[])(fft(((Complex[])(fa_1)), true)));
+        double[] res_1 = ((double[])(new double[]{}));
+        i_14 = 0L;
+        while ((long)(i_14) < (long)((long)((long)(a.length) + (long)(b.length)) - 1L)) {
+            Complex val_1 = fa_1[(int)((long)(i_14))];
+            res_1 = ((double[])(appendDouble(res_1, (double)(round_to((double)(val_1.re), 8L)))));
+            i_14 = (long)((long)(i_14) + 1L);
         }
-        while (res.length > 0 && res[res.length - 1] == 0.0) {
-            res = ((double[])(java.util.Arrays.copyOfRange(res, 0, res.length - 1)));
+        while ((long)(res_1.length) > 0L && (double)(res_1[(int)((long)((long)(res_1.length) - 1L))]) == (double)(0.0)) {
+            res_1 = ((double[])(java.util.Arrays.copyOfRange(res_1, (int)(0L), (int)((long)((long)(res_1.length) - 1L)))));
         }
-        return res;
+        return res_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            PI = 3.141592653589793;
-            A = ((double[])(new double[]{0.0, 1.0, 0.0, 2.0}));
-            B = ((double[])(new double[]{2.0, 3.0, 4.0, 0.0}));
-            product = ((double[])(multiply_poly(((double[])(A)), ((double[])(B)))));
-            System.out.println(list_to_string(((double[])(product))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        product = ((double[])(multiply_poly(((double[])(A)), ((double[])(B)))));
+        System.out.println(list_to_string(((double[])(product))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -245,10 +214,14 @@ fa[i_7] = c_mul(fa[i_7], fb[i_7]);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
