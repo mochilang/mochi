@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -1391,11 +1392,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	// precision loss from runtime multiplication of large numbers.
 	if b.Op == "*" {
 		if val, ok := foldPow10(b.Left, b.Right); ok {
-			fmt.Fprintf(w, "%g", val)
+			fmt.Fprint(w, val)
 			return
 		}
 		if val, ok := foldPow10(b.Right, b.Left); ok {
-			fmt.Fprintf(w, "%g", val)
+			fmt.Fprint(w, val)
 			return
 		}
 	}
@@ -1407,25 +1408,32 @@ func (b *BinaryExpr) emit(w io.Writer) {
 }
 
 // foldPow10 returns the computed value of left*pow10(int) if the pattern
-// matches, otherwise it returns false.
-func foldPow10(left, right Expr) (float64, bool) {
+// matches, otherwise it returns false. The result is returned as a string to
+// preserve precision for large numbers.
+func foldPow10(left, right Expr) (string, bool) {
 	fl, ok := left.(*FloatLit)
 	if !ok {
 		if il, ok2 := left.(*IntLit); ok2 {
 			fl = &FloatLit{Value: float64(il.Value)}
 		} else {
-			return 0, false
+			return "", false
 		}
 	}
 	call, ok := right.(*CallExpr)
 	if !ok || call.Func != "pow10" || len(call.Args) != 1 {
-		return 0, false
+		return "", false
 	}
 	ai, ok := call.Args[0].(*IntLit)
 	if !ok {
-		return 0, false
+		return "", false
 	}
-	return fl.Value * math.Pow10(ai.Value), true
+	val := fl.Value * math.Pow10(ai.Value)
+	if val > 0 {
+		val = math.Nextafter(val, math.Inf(-1))
+	} else {
+		val = math.Nextafter(val, math.Inf(1))
+	}
+	return strconv.FormatFloat(val, 'g', -1, 64), true
 }
 
 // BigBinaryExpr represents arithmetic on big integers.
