@@ -73,45 +73,59 @@ func sanitize(name string) string {
 }
 
 func declareName(name string) string {
-	if v, ok := currentScope()[name]; ok {
-		return v
-	}
-	newName := name
-	switch strings.ToLower(name) {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
-		"array", "real", "integer", "string", "boolean", "char",
-		// Additional common Pascal keywords
-		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out",
-		// Control flow keywords
-		"case", "do", "downto", "else", "for", "if", "of", "then", "to", "until", "while", "with", "goto",
-		// Math functions that should map to Pascal's built-ins
-		"ln", "exp":
-		// Avoid Pascal reserved keywords and built-in types (case-insensitive)
-		newName = name + "_"
-	}
-	if currentFunc != "" {
-		newName = currentFunc + "_" + newName
-	}
-	// Avoid clashes with existing function names (original and prefixed)
-	if _, ok := funcNames[strings.ToLower(name)]; ok {
-		newName = newName + "_var"
-	} else if _, ok := funcNames[strings.ToLower(newName)]; ok {
-		newName = newName + "_var"
-	} else if hasVar(newName) {
-		newName = fmt.Sprintf("%s_%d", newName, len(currProg.Vars))
-	} else {
-		for _, r := range currProg.Records {
-			if strings.EqualFold(name, r.Name) {
-				newName = newName + "_var"
-				break
-			}
-		}
-	}
-	currentScope()[name] = newName
-	if currentFunc != "" {
-		varOwners[newName] = currentFunc
-	}
-	return newName
+        if v, ok := currentScope()[name]; ok {
+                return v
+        }
+        newName := name
+        switch strings.ToLower(name) {
+        case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
+                "array", "real", "integer", "string", "boolean", "char",
+                // Additional common Pascal keywords
+                "begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out",
+                // Control flow keywords
+                "case", "do", "downto", "else", "for", "if", "of", "then", "to", "until", "while", "with", "goto",
+                // Math functions that should map to Pascal's built-ins
+                "ln", "exp":
+                // Avoid Pascal reserved keywords and built-in types (case-insensitive)
+                newName = name + "_"
+        }
+        if currentFunc != "" {
+                newName = currentFunc + "_" + newName
+        }
+        // Avoid clashes with existing function names (original and prefixed)
+        if _, ok := funcNames[strings.ToLower(name)]; ok {
+                newName = newName + "_var"
+        } else if _, ok := funcNames[strings.ToLower(newName)]; ok {
+                newName = newName + "_var"
+        }
+
+        // Ensure uniqueness ignoring case with existing variables
+        for {
+                conflict := false
+                for _, v := range currentScope() {
+                        if strings.EqualFold(v, newName) {
+                                conflict = true
+                                break
+                        }
+                }
+                if !conflict && !hasVar(newName) {
+                        break
+                }
+                newName = fmt.Sprintf("%s_%d", newName, len(currProg.Vars))
+        }
+
+        for _, r := range currProg.Records {
+                if strings.EqualFold(name, r.Name) {
+                        newName = newName + "_var"
+                        break
+                }
+        }
+
+        currentScope()[name] = newName
+        if currentFunc != "" {
+                varOwners[newName] = currentFunc
+        }
+        return newName
 }
 
 func sanitizeField(name string) string {
@@ -5541,8 +5555,21 @@ func inferType(e Expr) string {
                         return "integer"
                 case "num", "denom":
                         return "integer"
-                case "sqrt", "sin", "ln", "power":
-                        return "real"
+               case "sqrt", "sin", "ln":
+                       return "real"
+               case "power":
+                       if rt, ok := funcReturns[v.Name]; ok {
+                               return rt
+                       }
+                       if len(v.Args) >= 3 {
+                               a0 := inferType(v.Args[0])
+                               a1 := inferType(v.Args[1])
+                               a2 := inferType(v.Args[2])
+                               if a0 == "integer" && a1 == "integer" && a2 == "integer" {
+                                       return "integer"
+                               }
+                       }
+                       return "real"
                 case "double":
                         return "real"
                 case "copy":
