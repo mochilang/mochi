@@ -1,4 +1,4 @@
-// Generated 2025-08-14 17:48 +0700
+// Generated 2025-08-17 08:49 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,7 +23,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%g" f
+    | :? float as f -> sprintf "%.15g" f
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")
