@@ -3462,10 +3462,10 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useSafeDiv = false
 	useSafeFmod = false
 	useIDiv = false
-	useMod = false
-	// mochi_nth is used for safe list indexing; include helper by default
-	useNth = true
-	useFirst = false
+        useMod = false
+        // mochi_nth is used for safe list indexing; include helper when needed
+        useNth = false
+        useFirst = false
 	mutatedFuncs = map[string]int{
 		"topple":       0,
 		"fill":         0,
