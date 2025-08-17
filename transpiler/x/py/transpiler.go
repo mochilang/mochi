@@ -1603,6 +1603,14 @@ func pyTypeName(name string) string {
 			return fmt.Sprintf("Callable[[%s], %s]", strings.Join(ps, ", "), ret)
 		}
 	}
+	if strings.HasPrefix(name, "[") && strings.HasSuffix(name, "]") {
+		inner := pyTypeName(strings.TrimSpace(name[1 : len(name)-1]))
+		return fmt.Sprintf("List[%s]", inner)
+	}
+	if strings.HasPrefix(name, "list<") && strings.HasSuffix(name, ">") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(name, "list<"), ">")
+		return fmt.Sprintf("List[%s]", pyTypeName(inner))
+	}
 	switch name {
 	case "string":
 		return "str"
@@ -1618,6 +1626,18 @@ func pyTypeName(name string) string {
 }
 
 func pyTypeToType(name string, env *types.Env) types.Type {
+	if strings.HasPrefix(name, "[") && strings.HasSuffix(name, "]") {
+		inner := strings.TrimSpace(name[1 : len(name)-1])
+		return types.ListType{Elem: pyTypeToType(inner, env)}
+	}
+	if strings.HasPrefix(name, "List[") && strings.HasSuffix(name, "]") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(name, "List["), "]")
+		return types.ListType{Elem: pyTypeToType(inner, env)}
+	}
+	if strings.HasPrefix(name, "list<") && strings.HasSuffix(name, ">") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(name, "list<"), ">")
+		return types.ListType{Elem: pyTypeToType(inner, env)}
+	}
 	switch name {
 	case "int":
 		return types.IntType{}
