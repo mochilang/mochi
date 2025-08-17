@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 973/1077
-Last updated: 2025-08-16 21:23 +0700
+Completed programs: 974/1077
+Last updated: 2025-08-17 08:49 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -512,7 +512,7 @@ Last updated: 2025-08-16 21:23 +0700
 | 503 | machine_learning/forecasting/run | ✓ | 840µs | 3.3 MB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 588µs | 3.4 MB |
-| 506 | machine_learning/gradient_descent | ✓ | 167.01ms | 3.2 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 164.732ms | 3.3 MB |
 | 507 | machine_learning/k_means_clust | ✓ | 1.509ms | 3.6 MB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 378µs | 3.4 MB |
 | 509 | machine_learning/linear_discriminant_analysis | ✓ | 1.138ms | 3.4 MB |
@@ -617,8 +617,8 @@ Last updated: 2025-08-16 21:23 +0700
 | 608 | maths/numerical_analysis/bisection_2 | ✓ | 225µs | 3.2 MB |
 | 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 399µs | 3.3 MB |
 | 610 | maths/numerical_analysis/intersection | ✓ | 276µs | 3.2 MB |
-| 611 | maths/numerical_analysis/nevilles_method |   | 387µs | 3.1 MB |
-| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 302µs | 3.2 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 327µs | 3.4 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 283µs | 3.3 MB |
 | 613 | maths/numerical_analysis/newton_raphson | ✓ | 237µs | 3.2 MB |
 | 614 | maths/numerical_analysis/numerical_integration | ✓ | 11.343ms | 3.5 MB |
 | 615 | maths/numerical_analysis/proper_fractions | ✓ | 698µs | 3.3 MB |
