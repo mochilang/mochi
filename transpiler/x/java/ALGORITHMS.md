@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-17 08:58 GMT+7
+Last updated: 2025-08-17 09:13 GMT+7
 
 ## Algorithms Golden Test Checklist (954/1077)
 | Index | Name | Status | Duration | Memory |
@@ -584,7 +584,7 @@ Last updated: 2025-08-17 08:58 GMT+7
 | 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 19.0ms | 664B |
 | 577 | maths/greatest_common_divisor | ✓ | 19.0ms | 1.05KB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 27.0ms | 47.76KB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 30.0ms | 47.76KB |
 | 579 | maths/integer_square_root | ✓ | 18.0ms | 968B |
 | 580 | maths/interquartile_range | ✓ | 18.0ms | 1.16KB |
 | 581 | maths/is_int_palindrome | ✓ | 18.0ms | 552B |
