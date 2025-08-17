@@ -2,181 +2,147 @@ public class Main {
 
     static long[] bubble_sort(long[] xs) {
         long[] arr = ((long[])(xs));
-        long n = arr.length;
-        long i = 0;
-        while (i < n) {
-            long j = 0;
-            while (j < n - i - 1) {
-                if (arr[j] > arr[j + 1]) {
-                    long tmp = arr[j];
-arr[j] = arr[j + 1];
-arr[j + 1] = tmp;
+        long n_1 = (long)(arr.length);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n_1)) {
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)((long)((long)(n_1) - (long)(i_1)) - 1L)) {
+                if ((long)(arr[(int)((long)(j_1))]) > (long)(arr[(int)((long)((long)(j_1) + 1L))])) {
+                    long tmp_1 = (long)(arr[(int)((long)(j_1))]);
+arr[(int)((long)(j_1))] = (long)(arr[(int)((long)((long)(j_1) + 1L))]);
+arr[(int)((long)((long)(j_1) + 1L))] = (long)(tmp_1);
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return arr;
     }
 
     static long[] factors(long num) {
         long[] values = ((long[])(new long[]{1}));
-        long i_1 = 2;
-        while (i_1 * i_1 <= num) {
-            if (Math.floorMod(num, i_1) == 0) {
-                values = ((long[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(values), java.util.stream.IntStream.of(i_1)).toArray()));
-                Object d = Math.floorDiv(num, i_1);
-                if (((Number)(d)).intValue() != i_1) {
-                    values = ((long[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(values), java.util.stream.IntStream.of(((Number)(d)).intValue())).toArray()));
+        long i_3 = 2L;
+        while ((long)((long)(i_3) * (long)(i_3)) <= (long)(num)) {
+            if (Math.floorMod(num, i_3) == 0L) {
+                values = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(values), java.util.stream.LongStream.of((long)(i_3))).toArray()));
+                Object d_1 = Math.floorDiv(((long)(num)), ((long)(i_3)));
+                if (((Number)(d_1)).intValue() != (long)(i_3)) {
+                    values = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(values), java.util.stream.LongStream.of(((Number)(d_1)).longValue())).toArray()));
                 }
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
         return bubble_sort(((long[])(values)));
     }
 
     static long sum_list(long[] xs) {
-        long total = 0;
-        long i_2 = 0;
-        while (i_2 < xs.length) {
-            total = total + xs[i_2];
-            i_2 = i_2 + 1;
+        long total = 0L;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(xs.length)) {
+            total = (long)((long)(total) + (long)(xs[(int)((long)(i_5))]));
+            i_5 = (long)((long)(i_5) + 1L);
         }
         return total;
     }
 
     static boolean abundant(long n) {
-        return sum_list(((long[])(factors(n)))) > n;
+        return (long)(sum_list(((long[])(factors((long)(n)))))) > (long)(n);
     }
 
     static boolean semi_perfect(long number) {
-        if (number <= 0) {
+        if ((long)(number) <= 0L) {
             return true;
         }
-        long[] values_1 = ((long[])(factors(number)));
-        boolean[] possible = ((boolean[])(new boolean[]{}));
-        long j_1 = 0;
-        while (j_1 <= number) {
-            possible = ((boolean[])(appendBool(possible, j_1 == 0)));
-            j_1 = j_1 + 1;
+        long[] values_2 = ((long[])(factors((long)(number))));
+        boolean[] possible_1 = ((boolean[])(new boolean[]{}));
+        long j_3 = 0L;
+        while ((long)(j_3) <= (long)(number)) {
+            possible_1 = ((boolean[])(appendBool(possible_1, (long)(j_3) == 0L)));
+            j_3 = (long)((long)(j_3) + 1L);
         }
-        long idx = 0;
-        while (idx < values_1.length) {
-            long v = values_1[idx];
-            long s = number;
-            while (s >= v) {
-                if (((Boolean)(possible[s - v]))) {
-possible[s] = true;
+        long idx_1 = 0L;
+        while ((long)(idx_1) < (long)(values_2.length)) {
+            long v_1 = (long)(values_2[(int)((long)(idx_1))]);
+            long s_1 = (long)(number);
+            while ((long)(s_1) >= (long)(v_1)) {
+                if (possible_1[(int)((long)((long)(s_1) - (long)(v_1)))]) {
+possible_1[(int)((long)(s_1))] = true;
                 }
-                s = s - 1;
+                s_1 = (long)((long)(s_1) - 1L);
             }
-            idx = idx + 1;
+            idx_1 = (long)((long)(idx_1) + 1L);
         }
-        return possible[number];
+        return possible_1[(int)((long)(number))];
     }
 
     static boolean weird(long number) {
-        return ((Boolean)(abundant(number))) && semi_perfect(number) == false;
+        return abundant((long)(number)) && (semi_perfect((long)(number)) == false);
     }
 
     static void run_tests() {
-        if (factors(12) != new long[]{1, 2, 3, 4, 6}) {
+        if (!java.util.Arrays.equals(factors(12L), new long[]{1, 2, 3, 4, 6})) {
             throw new RuntimeException(String.valueOf("factors 12 failed"));
         }
-        if (factors(1) != new long[]{1}) {
+        if (!java.util.Arrays.equals(factors(1L), new long[]{1})) {
             throw new RuntimeException(String.valueOf("factors 1 failed"));
         }
-        if (factors(100) != new long[]{1, 2, 4, 5, 10, 20, 25, 50}) {
+        if (!java.util.Arrays.equals(factors(100L), new long[]{1, 2, 4, 5, 10, 20, 25, 50})) {
             throw new RuntimeException(String.valueOf("factors 100 failed"));
         }
-        if (abundant(0) != true) {
+        if ((abundant(0L) != true)) {
             throw new RuntimeException(String.valueOf("abundant 0 failed"));
         }
-        if (abundant(1) != false) {
+        if ((abundant(1L) != false)) {
             throw new RuntimeException(String.valueOf("abundant 1 failed"));
         }
-        if (abundant(12) != true) {
+        if ((abundant(12L) != true)) {
             throw new RuntimeException(String.valueOf("abundant 12 failed"));
         }
-        if (abundant(13) != false) {
+        if ((abundant(13L) != false)) {
             throw new RuntimeException(String.valueOf("abundant 13 failed"));
         }
-        if (abundant(20) != true) {
+        if ((abundant(20L) != true)) {
             throw new RuntimeException(String.valueOf("abundant 20 failed"));
         }
-        if (semi_perfect(0) != true) {
+        if ((semi_perfect(0L) != true)) {
             throw new RuntimeException(String.valueOf("semi_perfect 0 failed"));
         }
-        if (semi_perfect(1) != true) {
+        if ((semi_perfect(1L) != true)) {
             throw new RuntimeException(String.valueOf("semi_perfect 1 failed"));
         }
-        if (semi_perfect(12) != true) {
+        if ((semi_perfect(12L) != true)) {
             throw new RuntimeException(String.valueOf("semi_perfect 12 failed"));
         }
-        if (semi_perfect(13) != false) {
+        if ((semi_perfect(13L) != false)) {
             throw new RuntimeException(String.valueOf("semi_perfect 13 failed"));
         }
-        if (weird(0) != false) {
+        if ((weird(0L) != false)) {
             throw new RuntimeException(String.valueOf("weird 0 failed"));
         }
-        if (weird(70) != true) {
+        if ((weird(70L) != true)) {
             throw new RuntimeException(String.valueOf("weird 70 failed"));
         }
-        if (weird(77) != false) {
+        if ((weird(77L) != false)) {
             throw new RuntimeException(String.valueOf("weird 77 failed"));
         }
     }
 
     static void main() {
         run_tests();
-        long[] nums = ((long[])(new long[]{69, 70, 71}));
-        long i_3 = 0;
-        while (i_3 < nums.length) {
-            long n_1 = nums[i_3];
-            if (((Boolean)(weird(n_1)))) {
-                System.out.println(_p(n_1) + " is weird.");
+        long[] nums_1 = ((long[])(new long[]{69, 70, 71}));
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(nums_1.length)) {
+            long n_3 = (long)(nums_1[(int)((long)(i_7))]);
+            if (weird((long)(n_3))) {
+                System.out.println(_p(n_3) + " is weird.");
             } else {
-                System.out.println(_p(n_1) + " is not weird.");
+                System.out.println(_p(n_3) + " is not weird.");
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + 1L);
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static long _nowSeed;
-    static long _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Long.parseLong(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (_nowSeed * 1664525L + 1013904223) % 2147483647L;
-            return _nowSeed;
-        }
-        return System.nanoTime() / 1000;
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
@@ -197,6 +163,10 @@ possible[s] = true;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -14,106 +14,72 @@ public class Main {
 
 
     static Complex add(Complex a, Complex b) {
-        return new Complex(a.re + b.re, a.im + b.im);
+        return new Complex((double)(a.re) + (double)(b.re), (double)(a.im) + (double)(b.im));
     }
 
     static Complex sub(Complex a, Complex b) {
-        return new Complex(a.re - b.re, a.im - b.im);
+        return new Complex((double)(a.re) - (double)(b.re), (double)(a.im) - (double)(b.im));
     }
 
     static Complex div_real(Complex a, double r) {
-        return new Complex(a.re / r, a.im / r);
+        return new Complex((double)(a.re) / (double)(r), (double)(a.im) / (double)(r));
     }
 
     static double sqrt_newton(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= (double)(0.0)) {
             return 0.0;
         }
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = (double)((double)(x) / (double)(2.0));
+        long i_1 = 0L;
+        while ((long)(i_1) < 20L) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return guess;
+        return guess_1;
     }
 
     static Complex sqrt_to_complex(double d) {
-        if (d >= 0.0) {
-            return new Complex(sqrt_newton(d), 0.0);
+        if ((double)(d) >= (double)(0.0)) {
+            return new Complex(sqrt_newton((double)(d)), 0.0);
         }
-        return new Complex(0.0, sqrt_newton(-d));
+        return new Complex(0.0, sqrt_newton((double)(-d)));
     }
 
     static Complex[] quadratic_roots(double a, double b, double c) {
-        if (a == 0.0) {
+        if ((double)(a) == (double)(0.0)) {
             System.out.println("ValueError: coefficient 'a' must not be zero");
             return new Complex[]{};
         }
-        double delta = b * b - 4.0 * a * c;
-        Complex sqrt_d = sqrt_to_complex(delta);
-        Complex minus_b = new Complex(-b, 0.0);
-        double two_a = 2.0 * a;
-        Complex root1 = div_real(add(minus_b, sqrt_d), two_a);
-        Complex root2 = div_real(sub(minus_b, sqrt_d), two_a);
-        return new Complex[]{root1, root2};
+        double delta_1 = (double)((double)((double)(b) * (double)(b)) - (double)((double)((double)(4.0) * (double)(a)) * (double)(c)));
+        Complex sqrt_d_1 = sqrt_to_complex((double)(delta_1));
+        Complex minus_b_1 = new Complex(-b, 0.0);
+        double two_a_1 = (double)((double)(2.0) * (double)(a));
+        Complex root1_1 = div_real(add(minus_b_1, sqrt_d_1), (double)(two_a_1));
+        Complex root2_1 = div_real(sub(minus_b_1, sqrt_d_1), (double)(two_a_1));
+        return new Complex[]{root1_1, root2_1};
     }
 
     static String root_str(Complex r) {
-        if (r.im == 0.0) {
+        if ((double)(r.im) == (double)(0.0)) {
             return _p(r.re);
         }
-        String s = _p(r.re);
-        if (r.im >= 0.0) {
-            s = s + "+" + _p(r.im) + "i";
+        String s_1 = _p(r.re);
+        if ((double)(r.im) >= (double)(0.0)) {
+            s_1 = s_1 + "+" + _p(r.im) + "i";
         } else {
-            s = s + _p(r.im) + "i";
+            s_1 = s_1 + _p(r.im) + "i";
         }
-        return s;
+        return s_1;
     }
 
     static void main() {
-        Complex[] roots = ((Complex[])(quadratic_roots(5.0, 6.0, 1.0)));
-        if (roots.length == 2) {
-            System.out.println("The solutions are: " + String.valueOf(root_str(roots[0])) + " and " + String.valueOf(root_str(roots[1])));
+        Complex[] roots = ((Complex[])(quadratic_roots((double)(5.0), (double)(6.0), (double)(1.0))));
+        if ((long)(roots.length) == 2L) {
+            System.out.println("The solutions are: " + String.valueOf(root_str(roots[(int)(0L)])) + " and " + String.valueOf(root_str(roots[(int)(1L)])));
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -128,6 +94,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,94 +1,66 @@
 public class Main {
 
-    static int pow2(int exp) {
-        int result = 1;
-        int i = 0;
-        while (i < exp) {
-            result = result * 2;
-            i = i + 1;
+    static long pow2(long exp) {
+        long result = 1L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(exp)) {
+            result = (long)((long)(result) * 2L);
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return result;
     }
 
-    static int proth(int number) {
-        if (number < 1) {
+    static long proth(long number) {
+        if ((long)(number) < 1L) {
             throw new RuntimeException(String.valueOf("Input value must be > 0"));
         }
-        if (number == 1) {
+        if ((long)(number) == 1L) {
             return 3;
         }
-        if (number == 2) {
+        if ((long)(number) == 2L) {
             return 5;
         }
-        int temp = ((Number)((Math.floorDiv(number, 3)))).intValue();
-        int pow = 1;
-        int block_index = 1;
-        while (pow <= temp) {
-            pow = pow * 2;
-            block_index = block_index + 1;
+        long temp_1 = (long)(((Number)((Math.floorDiv(((long)(number)), ((long)(3)))))).intValue());
+        long pow_1 = 1L;
+        long block_index_1 = 1L;
+        while ((long)(pow_1) <= (long)(temp_1)) {
+            pow_1 = (long)((long)(pow_1) * 2L);
+            block_index_1 = (long)((long)(block_index_1) + 1L);
         }
-        int[] proth_list = ((int[])(new int[]{3, 5}));
-        int proth_index = 2;
-        int increment = 3;
-        int block = 1;
-        while (block < block_index) {
-            int i_1 = 0;
-            while (i_1 < increment) {
-                int next_val = pow2(block + 1) + proth_list[proth_index - 1];
-                proth_list = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(proth_list), java.util.stream.IntStream.of(next_val)).toArray()));
-                proth_index = proth_index + 1;
-                i_1 = i_1 + 1;
+        long[] proth_list_1 = ((long[])(new long[]{3, 5}));
+        long proth_index_1 = 2L;
+        long increment_1 = 3L;
+        long block_1 = 1L;
+        while ((long)(block_1) < (long)(block_index_1)) {
+            long i_3 = 0L;
+            while ((long)(i_3) < (long)(increment_1)) {
+                long next_val_1 = (long)((long)(pow2((long)((long)(block_1) + 1L))) + (long)(proth_list_1[(int)((long)((long)(proth_index_1) - 1L))]));
+                proth_list_1 = ((long[])(appendLong(proth_list_1, (long)(next_val_1))));
+                proth_index_1 = (long)((long)(proth_index_1) + 1L);
+                i_3 = (long)((long)(i_3) + 1L);
             }
-            increment = increment * 2;
-            block = block + 1;
+            increment_1 = (long)((long)(increment_1) * 2L);
+            block_1 = (long)((long)(block_1) + 1L);
         }
-        return proth_list[number - 1];
+        return proth_list_1[(int)((long)((long)(number) - 1L))];
     }
 
     static void main() {
-        int n = 1;
-        while (n <= 10) {
-            int value = proth(n);
-            System.out.println("The " + _p(n) + "th Proth number: " + _p(value));
-            n = n + 1;
+        long n = 1L;
+        while ((long)(n) <= 10L) {
+            long value_1 = (long)(proth((long)(n)));
+            System.out.println("The " + _p(n) + "th Proth number: " + _p(value_1));
+            n = (long)((long)(n) + 1L);
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -103,6 +75,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

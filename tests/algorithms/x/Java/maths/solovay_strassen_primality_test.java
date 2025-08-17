@@ -1,124 +1,89 @@
 public class Main {
-    static int seed = 0;
+    static long seed = 1L;
 
-    static void set_seed(int s) {
-        seed = s;
+    static void set_seed(long s) {
+        seed = (long)(s);
     }
 
-    static int randint(int a, int b) {
-        seed = ((int)(Math.floorMod(((long)((seed * 1103515245 + 12345))), 2147483648L)));
-        return (Math.floorMod(seed, (b - a + 1))) + a;
+    static long randint(long a, long b) {
+        seed = (long)(((long)(Math.floorMod(((long)(((long)((long)(seed) * 1103515245L) + 12345L))), 2147483648L))));
+        return (long)((Math.floorMod(seed, ((long)((long)(b) - (long)(a)) + 1L)))) + (long)(a);
     }
 
-    static int jacobi_symbol(int random_a, int number) {
-        if (random_a == 0 || random_a == 1) {
+    static long jacobi_symbol(long random_a, long number) {
+        if ((long)(random_a) == 0L || (long)(random_a) == 1L) {
             return random_a;
         }
         random_a = Math.floorMod(random_a, number);
-        int t = 1;
-        while (random_a != 0) {
-            while (Math.floorMod(random_a, 2) == 0) {
-                random_a = random_a / 2;
-                int r = Math.floorMod(number, 8);
-                if (r == 3 || r == 5) {
-                    t = -t;
+        long t_1 = 1L;
+        while ((long)(random_a) != 0L) {
+            while (Math.floorMod(random_a, 2) == 0L) {
+                random_a = Math.floorDiv(((long)(random_a)), ((long)(2)));
+                long r_1 = Math.floorMod(number, 8);
+                if ((long)(r_1) == 3L || (long)(r_1) == 5L) {
+                    t_1 = (long)(-t_1);
                 }
             }
-            int temp = random_a;
-            random_a = number;
-            number = temp;
-            if (Math.floorMod(random_a, 4) == 3 && Math.floorMod(number, 4) == 3) {
-                t = -t;
+            long temp_1 = (long)(random_a);
+            random_a = (long)(number);
+            number = (long)(temp_1);
+            if (Math.floorMod(random_a, 4) == 3L && Math.floorMod(number, 4) == 3L) {
+                t_1 = (long)(-t_1);
             }
             random_a = Math.floorMod(random_a, number);
         }
-        if (number == 1) {
-            return t;
+        if ((long)(number) == 1L) {
+            return t_1;
         }
         return 0;
     }
 
-    static int pow_mod(int base, int exp, int mod) {
-        int result = 1;
-        int b = Math.floorMod(base, mod);
-        int e = exp;
-        while (e > 0) {
-            if (Math.floorMod(e, 2) == 1) {
-                result = Math.floorMod((result * b), mod);
+    static long pow_mod(long base, long exp, long mod) {
+        long result = 1L;
+        long b_1 = Math.floorMod(base, mod);
+        long e_1 = (long)(exp);
+        while ((long)(e_1) > 0L) {
+            if (Math.floorMod(e_1, 2) == 1L) {
+                result = Math.floorMod(((long)(result) * (long)(b_1)), mod);
             }
-            b = Math.floorMod((b * b), mod);
-            e = e / 2;
+            b_1 = Math.floorMod(((long)(b_1) * (long)(b_1)), mod);
+            e_1 = Math.floorDiv(e_1, 2);
         }
         return result;
     }
 
-    static boolean solovay_strassen(int number, int iterations) {
-        if (number <= 1) {
+    static boolean solovay_strassen(long number, long iterations) {
+        if ((long)(number) <= 1L) {
             return false;
         }
-        if (number <= 3) {
+        if ((long)(number) <= 3L) {
             return true;
         }
-        int i = 0;
-        while (i < iterations) {
-            int a = randint(2, number - 2);
-            int x = jacobi_symbol(a, number);
-            int y = pow_mod(a, (number - 1) / 2, number);
-            int mod_x = Math.floorMod(x, number);
-            if (mod_x < 0) {
-                mod_x = mod_x + number;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(iterations)) {
+            long a_1 = (long)(randint(2L, (long)((long)(number) - 2L)));
+            long x_1 = (long)(jacobi_symbol((long)(a_1), (long)(number)));
+            long y_1 = (long)(pow_mod((long)(a_1), Math.floorDiv(((long)(((long)(number) - 1L))), ((long)(2))), (long)(number)));
+            long mod_x_1 = Math.floorMod(x_1, number);
+            if ((long)(mod_x_1) < 0L) {
+                mod_x_1 = (long)((long)(mod_x_1) + (long)(number));
             }
-            if (x == 0 || y != mod_x) {
+            if ((long)(x_1) == 0L || (long)(y_1) != (long)(mod_x_1)) {
                 return false;
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return true;
     }
 
     static void main() {
-        set_seed(10);
-        System.out.println(_p(solovay_strassen(13, 5)));
-        System.out.println(_p(solovay_strassen(9, 10)));
-        System.out.println(_p(solovay_strassen(17, 15)));
+        set_seed(10L);
+        System.out.println(_p(solovay_strassen(13L, 5L)));
+        System.out.println(_p(solovay_strassen(9L, 10L)));
+        System.out.println(_p(solovay_strassen(17L, 15L)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            seed = 1;
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -133,6 +98,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

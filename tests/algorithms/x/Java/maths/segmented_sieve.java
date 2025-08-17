@@ -1,152 +1,124 @@
 public class Main {
 
-    static int min_int(int a, int b) {
-        if (a < b) {
+    static long min_int(long a, long b) {
+        if ((long)(a) < (long)(b)) {
             return a;
         }
         return b;
     }
 
-    static int int_sqrt(int n) {
-        int r = 0;
-        while ((r + 1) * (r + 1) <= n) {
-            r = r + 1;
+    static long int_sqrt(long n) {
+        long r = 0L;
+        while ((long)((long)(((long)(r) + 1L)) * (long)(((long)(r) + 1L))) <= (long)(n)) {
+            r = (long)((long)(r) + 1L);
         }
         return r;
     }
 
-    static int[] sieve(int n) {
-        if (n <= 0) {
+    static long[] sieve(long n) {
+        if ((long)(n) <= 0L) {
             throw new RuntimeException(String.valueOf("Number must instead be a positive integer"));
         }
-        int[] in_prime = ((int[])(new int[]{}));
-        int start = 2;
-        int end = int_sqrt(n);
-        int[] temp = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < end + 1) {
-            temp = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(temp), java.util.stream.IntStream.of(1)).toArray()));
-            i = i + 1;
+        long[] in_prime_1 = ((long[])(new long[]{}));
+        long start_1 = 2L;
+        long end_1 = (long)(int_sqrt((long)(n)));
+        long[] temp_1 = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)((long)(end_1) + 1L)) {
+            temp_1 = ((long[])(appendLong(temp_1, 1L)));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int[] prime = ((int[])(new int[]{}));
-        while (start <= end) {
-            if (temp[start] == 1) {
-                in_prime = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(in_prime), java.util.stream.IntStream.of(start)).toArray()));
-                int j = start * start;
-                while (j <= end) {
-temp[j] = 0;
-                    j = j + start;
+        long[] prime_1 = ((long[])(new long[]{}));
+        while ((long)(start_1) <= (long)(end_1)) {
+            if ((long)(temp_1[(int)((long)(start_1))]) == 1L) {
+                in_prime_1 = ((long[])(appendLong(in_prime_1, (long)(start_1))));
+                long j_1 = (long)((long)(start_1) * (long)(start_1));
+                while ((long)(j_1) <= (long)(end_1)) {
+temp_1[(int)((long)(j_1))] = 0L;
+                    j_1 = (long)((long)(j_1) + (long)(start_1));
                 }
             }
-            start = start + 1;
+            start_1 = (long)((long)(start_1) + 1L);
         }
-        i = 0;
-        while (i < in_prime.length) {
-            prime = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(prime), java.util.stream.IntStream.of(in_prime[i])).toArray()));
-            i = i + 1;
+        i_1 = 0L;
+        while ((long)(i_1) < (long)(in_prime_1.length)) {
+            prime_1 = ((long[])(appendLong(prime_1, (long)(in_prime_1[(int)((long)(i_1))]))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int low = end + 1;
-        int high = min_int(2 * end, n);
-        while (low <= n) {
-            int[] tempSeg = ((int[])(new int[]{}));
-            int size = high - low + 1;
-            int k = 0;
-            while (k < size) {
-                tempSeg = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(tempSeg), java.util.stream.IntStream.of(1)).toArray()));
-                k = k + 1;
+        long low_1 = (long)((long)(end_1) + 1L);
+        long high_1 = (long)(min_int((long)(2L * (long)(end_1)), (long)(n)));
+        while ((long)(low_1) <= (long)(n)) {
+            long[] tempSeg_1 = ((long[])(new long[]{}));
+            long size_1 = (long)((long)((long)(high_1) - (long)(low_1)) + 1L);
+            long k_1 = 0L;
+            while ((long)(k_1) < (long)(size_1)) {
+                tempSeg_1 = ((long[])(appendLong(tempSeg_1, 1L)));
+                k_1 = (long)((long)(k_1) + 1L);
             }
-            int idx = 0;
-            while (idx < in_prime.length) {
-                int each = in_prime[idx];
-                int t = (low / each) * each;
-                if (t < low) {
-                    t = t + each;
+            long idx_1 = 0L;
+            while ((long)(idx_1) < (long)(in_prime_1.length)) {
+                long each_1 = (long)(in_prime_1[(int)((long)(idx_1))]);
+                long t_1 = (long)(((Number)((Math.floorDiv(((long)(low_1)), ((long)(each_1)))))).intValue() * (long)(each_1));
+                if ((long)(t_1) < (long)(low_1)) {
+                    t_1 = (long)((long)(t_1) + (long)(each_1));
                 }
-                int j2 = t;
-                while (j2 <= high) {
-tempSeg[j2 - low] = 0;
-                    j2 = j2 + each;
+                long j2_1 = (long)(t_1);
+                while ((long)(j2_1) <= (long)(high_1)) {
+tempSeg_1[(int)((long)((long)(j2_1) - (long)(low_1)))] = 0L;
+                    j2_1 = (long)((long)(j2_1) + (long)(each_1));
                 }
-                idx = idx + 1;
+                idx_1 = (long)((long)(idx_1) + 1L);
             }
-            int j3 = 0;
-            while (j3 < tempSeg.length) {
-                if (tempSeg[j3] == 1) {
-                    prime = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(prime), java.util.stream.IntStream.of(j3 + low)).toArray()));
+            long j3_1 = 0L;
+            while ((long)(j3_1) < (long)(tempSeg_1.length)) {
+                if ((long)(tempSeg_1[(int)((long)(j3_1))]) == 1L) {
+                    prime_1 = ((long[])(appendLong(prime_1, (long)((long)(j3_1) + (long)(low_1)))));
                 }
-                j3 = j3 + 1;
+                j3_1 = (long)((long)(j3_1) + 1L);
             }
-            low = high + 1;
-            high = min_int(high + end, n);
+            low_1 = (long)((long)(high_1) + 1L);
+            high_1 = (long)(min_int((long)((long)(high_1) + (long)(end_1)), (long)(n)));
         }
-        return prime;
+        return prime_1;
     }
 
-    static boolean lists_equal(int[] a, int[] b) {
-        if (a.length != b.length) {
+    static boolean lists_equal(long[] a, long[] b) {
+        if ((long)(a.length) != (long)(b.length)) {
             return false;
         }
-        int m = 0;
-        while (m < a.length) {
-            if (a[m] != b[m]) {
+        long m_1 = 0L;
+        while ((long)(m_1) < (long)(a.length)) {
+            if ((long)(a[(int)((long)(m_1))]) != (long)(b[(int)((long)(m_1))])) {
                 return false;
             }
-            m = m + 1;
+            m_1 = (long)((long)(m_1) + 1L);
         }
         return true;
     }
 
     static void test_sieve() {
-        int[] e1 = ((int[])(sieve(8)));
-        if (!(Boolean)lists_equal(((int[])(e1)), ((int[])(new int[]{2, 3, 5, 7})))) {
+        long[] e1 = ((long[])(sieve(8L)));
+        if (!(Boolean)lists_equal(((long[])(e1)), ((long[])(new long[]{2, 3, 5, 7})))) {
             throw new RuntimeException(String.valueOf("sieve(8) failed"));
         }
-        int[] e2 = ((int[])(sieve(27)));
-        if (!(Boolean)lists_equal(((int[])(e2)), ((int[])(new int[]{2, 3, 5, 7, 11, 13, 17, 19, 23})))) {
+        long[] e2_1 = ((long[])(sieve(27L)));
+        if (!(Boolean)lists_equal(((long[])(e2_1)), ((long[])(new long[]{2, 3, 5, 7, 11, 13, 17, 19, 23})))) {
             throw new RuntimeException(String.valueOf("sieve(27) failed"));
         }
     }
 
     static void main() {
         test_sieve();
-        System.out.println(_p(sieve(30)));
+        System.out.println(_p(sieve(30L)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -161,6 +133,10 @@ tempSeg[j2 - low] = 0;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,58 +1,24 @@
 public class Main {
 
     static String[] harmonic_series(double n_term) {
-        if (n_term <= 0.0) {
+        if ((double)(n_term) <= (double)(0.0)) {
             return new String[]{};
         }
-        int limit = ((Number)(n_term)).intValue();
-        String[] series = ((String[])(new String[]{}));
-        int i = 0;
-        while (i < limit) {
-            if (i == 0) {
-                series = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(series), java.util.stream.Stream.of("1")).toArray(String[]::new)));
+        long limit_1 = (long)(((Number)(n_term)).intValue());
+        String[] series_1 = ((String[])(new String[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(limit_1)) {
+            if ((long)(i_1) == 0L) {
+                series_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(series_1), java.util.stream.Stream.of("1")).toArray(String[]::new)));
             } else {
-                series = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(series), java.util.stream.Stream.of("1/" + _p(i + 1))).toArray(String[]::new)));
+                series_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(series_1), java.util.stream.Stream.of("1/" + _p((long)(i_1) + 1L))).toArray(String[]::new)));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return series;
+        return series_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(harmonic_series(5.0)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(harmonic_series((double)(5.0))));
     }
 
     static String _p(Object v) {
@@ -67,6 +33,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

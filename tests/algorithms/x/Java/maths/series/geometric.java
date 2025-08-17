@@ -1,75 +1,75 @@
 public class Main {
 
     static boolean is_geometric_series(double[] series) {
-        if (series.length == 0) {
+        if ((long)(series.length) == 0L) {
             throw new RuntimeException(String.valueOf("Input list must be a non empty list"));
         }
-        if (series.length == 1) {
+        if ((long)(series.length) == 1L) {
             return true;
         }
-        if (series[0] == 0.0) {
+        if ((double)(series[(int)(0L)]) == (double)(0.0)) {
             return false;
         }
-        double ratio = series[1] / series[0];
-        int i = 0;
-        while (i < series.length - 1) {
-            if (series[i] == 0.0) {
+        double ratio_1 = (double)((double)(series[(int)(1L)]) / (double)(series[(int)(0L)]));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)((long)(series.length) - 1L)) {
+            if ((double)(series[(int)((long)(i_1))]) == (double)(0.0)) {
                 return false;
             }
-            if (series[i + 1] / series[i] != ratio) {
+            if ((double)((double)(series[(int)((long)((long)(i_1) + 1L))]) / (double)(series[(int)((long)(i_1))])) != (double)(ratio_1)) {
                 return false;
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return true;
     }
 
     static double geometric_mean(double[] series) {
-        if (series.length == 0) {
+        if ((long)(series.length) == 0L) {
             throw new RuntimeException(String.valueOf("Input list must be a non empty list"));
         }
-        double product = 1.0;
-        int i_1 = 0;
-        while (i_1 < series.length) {
-            product = product * series[i_1];
-            i_1 = i_1 + 1;
+        double product_1 = (double)(1.0);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(series.length)) {
+            product_1 = (double)((double)(product_1) * (double)(series[(int)((long)(i_3))]));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        int n = series.length;
-        return nth_root(product, n);
+        long n_1 = (long)(series.length);
+        return nth_root((double)(product_1), (long)(n_1));
     }
 
-    static double pow_float(double base, int exp) {
-        double result = 1.0;
-        int i_2 = 0;
-        while (i_2 < exp) {
-            result = result * base;
-            i_2 = i_2 + 1;
+    static double pow_float(double base, long exp) {
+        double result = (double)(1.0);
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(exp)) {
+            result = (double)((double)(result) * (double)(base));
+            i_5 = (long)((long)(i_5) + 1L);
         }
         return result;
     }
 
-    static double nth_root(double value, int n) {
-        if (value == 0.0) {
+    static double nth_root(double value, long n) {
+        if ((double)(value) == (double)(0.0)) {
             return 0.0;
         }
-        double low = 0.0;
-        double high = value;
-        if (value < 1.0) {
-            high = 1.0;
+        double low_1 = (double)(0.0);
+        double high_1 = (double)(value);
+        if ((double)(value) < (double)(1.0)) {
+            high_1 = (double)(1.0);
         }
-        double mid = (low + high) / 2.0;
-        int i_3 = 0;
-        while (i_3 < 40) {
-            double mp = pow_float(mid, n);
-            if (mp > value) {
-                high = mid;
+        double mid_1 = (double)((double)(((double)(low_1) + (double)(high_1))) / (double)(2.0));
+        long i_7 = 0L;
+        while ((long)(i_7) < 40L) {
+            double mp_1 = (double)(pow_float((double)(mid_1), (long)(n)));
+            if ((double)(mp_1) > (double)(value)) {
+                high_1 = (double)(mid_1);
             } else {
-                low = mid;
+                low_1 = (double)(mid_1);
             }
-            mid = (low + high) / 2.0;
-            i_3 = i_3 + 1;
+            mid_1 = (double)((double)(((double)(low_1) + (double)(high_1))) / (double)(2.0));
+            i_7 = (long)((long)(i_7) + 1L);
         }
-        return mid;
+        return mid_1;
     }
 
     static void test_geometric() {
@@ -77,8 +77,8 @@ public class Main {
         if (!(Boolean)is_geometric_series(((double[])(a)))) {
             throw new RuntimeException(String.valueOf("expected geometric series"));
         }
-        double[] b = ((double[])(new double[]{1.0, 2.0, 3.0}));
-        if (((Boolean)(is_geometric_series(((double[])(b)))))) {
+        double[] b_1 = ((double[])(new double[]{1.0, 2.0, 3.0}));
+        if (is_geometric_series(((double[])(b_1)))) {
             throw new RuntimeException(String.valueOf("expected non geometric series"));
         }
     }
@@ -88,40 +88,6 @@ public class Main {
         System.out.println(geometric_mean(((double[])(new double[]{2.0, 4.0, 8.0}))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 }

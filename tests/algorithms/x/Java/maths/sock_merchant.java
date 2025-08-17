@@ -1,96 +1,68 @@
 public class Main {
 
-    static int sock_merchant(int[] colors) {
-        int[] arr = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < colors.length) {
-            arr = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(arr), java.util.stream.IntStream.of(colors[i])).toArray()));
-            i = i + 1;
+    static long sock_merchant(long[] colors) {
+        long[] arr = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(colors.length)) {
+            arr = ((long[])(appendLong(arr, (long)(colors[(int)((long)(i_1))]))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int n = arr.length;
-        int a = 0;
-        while (a < n) {
-            int min_idx = a;
-            int b = a + 1;
-            while (b < n) {
-                if (arr[b] < arr[min_idx]) {
-                    min_idx = b;
+        long n_1 = (long)(arr.length);
+        long a_1 = 0L;
+        while ((long)(a_1) < (long)(n_1)) {
+            long min_idx_1 = (long)(a_1);
+            long b_1 = (long)((long)(a_1) + 1L);
+            while ((long)(b_1) < (long)(n_1)) {
+                if ((long)(arr[(int)((long)(b_1))]) < (long)(arr[(int)((long)(min_idx_1))])) {
+                    min_idx_1 = (long)(b_1);
                 }
-                b = b + 1;
+                b_1 = (long)((long)(b_1) + 1L);
             }
-            int temp = arr[a];
-arr[a] = arr[min_idx];
-arr[min_idx] = temp;
-            a = a + 1;
+            long temp_1 = (long)(arr[(int)((long)(a_1))]);
+arr[(int)((long)(a_1))] = (long)(arr[(int)((long)(min_idx_1))]);
+arr[(int)((long)(min_idx_1))] = (long)(temp_1);
+            a_1 = (long)((long)(a_1) + 1L);
         }
-        int pairs = 0;
-        i = 0;
-        while (i < n) {
-            int count = 1;
-            while (i + 1 < n && arr[i] == arr[i + 1]) {
-                count = count + 1;
-                i = i + 1;
+        long pairs_1 = 0L;
+        i_1 = 0L;
+        while ((long)(i_1) < (long)(n_1)) {
+            long count_1 = 1L;
+            while ((long)((long)(i_1) + 1L) < (long)(n_1) && (long)(arr[(int)((long)(i_1))]) == (long)(arr[(int)((long)((long)(i_1) + 1L))])) {
+                count_1 = (long)((long)(count_1) + 1L);
+                i_1 = (long)((long)(i_1) + 1L);
             }
-            pairs = pairs + count / 2;
-            i = i + 1;
+            pairs_1 = (long)((long)(pairs_1) + Math.floorDiv(count_1, 2));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return pairs;
+        return pairs_1;
     }
 
     static void test_sock_merchant() {
-        int[] example1 = ((int[])(new int[]{10, 20, 20, 10, 10, 30, 50, 10, 20}));
-        if (sock_merchant(((int[])(example1))) != 3) {
+        long[] example1 = ((long[])(new long[]{10, 20, 20, 10, 10, 30, 50, 10, 20}));
+        if ((long)(sock_merchant(((long[])(example1)))) != 3L) {
             throw new RuntimeException(String.valueOf("example1 failed"));
         }
-        int[] example2 = ((int[])(new int[]{1, 1, 3, 3}));
-        if (sock_merchant(((int[])(example2))) != 2) {
+        long[] example2_1 = ((long[])(new long[]{1, 1, 3, 3}));
+        if ((long)(sock_merchant(((long[])(example2_1)))) != 2L) {
             throw new RuntimeException(String.valueOf("example2 failed"));
         }
     }
 
     static void main() {
         test_sock_merchant();
-        int[] example1_1 = ((int[])(new int[]{10, 20, 20, 10, 10, 30, 50, 10, 20}));
-        System.out.println(_p(sock_merchant(((int[])(example1_1)))));
-        int[] example2_1 = ((int[])(new int[]{1, 1, 3, 3}));
-        System.out.println(_p(sock_merchant(((int[])(example2_1)))));
+        long[] example1_2 = ((long[])(new long[]{10, 20, 20, 10, 10, 30, 50, 10, 20}));
+        System.out.println(_p(sock_merchant(((long[])(example1_2)))));
+        long[] example2_3 = ((long[])(new long[]{1, 1, 3, 3}));
+        System.out.println(_p(sock_merchant(((long[])(example2_3)))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -105,6 +77,10 @@ arr[min_idx] = temp;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

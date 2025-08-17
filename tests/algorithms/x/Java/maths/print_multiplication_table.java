@@ -1,53 +1,19 @@
 public class Main {
 
-    static String multiplication_table(int number, int number_of_terms) {
-        int i = 1;
-        String result = "";
-        while (i <= number_of_terms) {
-            result = result + _p(number) + " * " + _p(i) + " = " + _p(number * i);
-            if (i < number_of_terms) {
-                result = result + "\n";
+    static String multiplication_table(long number, long number_of_terms) {
+        long i = 1L;
+        String result_1 = "";
+        while ((long)(i) <= (long)(number_of_terms)) {
+            result_1 = result_1 + _p(number) + " * " + _p(i) + " = " + _p((long)(number) * (long)(i));
+            if ((long)(i) < (long)(number_of_terms)) {
+                result_1 = result_1 + "\n";
             }
-            i = i + 1;
+            i = (long)((long)(i) + 1L);
         }
-        return result;
+        return result_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(multiplication_table(5, 10));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(multiplication_table(5L, 10L));
     }
 
     static String _p(Object v) {
@@ -62,6 +28,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

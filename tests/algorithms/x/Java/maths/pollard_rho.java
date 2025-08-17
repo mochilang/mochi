@@ -1,8 +1,8 @@
 public class Main {
     static class PollardResult {
-        int factor;
+        long factor;
         boolean ok;
-        PollardResult(int factor, boolean ok) {
+        PollardResult(long factor, boolean ok) {
             this.factor = factor;
             this.ok = ok;
         }
@@ -13,136 +13,102 @@ public class Main {
     }
 
 
-    static int gcd(int a, int b) {
-        int x = a < 0 ? -a : a;
-        int y = b < 0 ? -b : b;
-        while (y != 0) {
-            int t = Math.floorMod(x, y);
-            x = y;
-            y = t;
+    static long gcd(long a, long b) {
+        long x = (long)((long)(a) < 0L ? -a : a);
+        long y_1 = (long)((long)(b) < 0L ? -b : b);
+        while ((long)(y_1) != 0L) {
+            long t_1 = Math.floorMod(x, y_1);
+            x = (long)(y_1);
+            y_1 = (long)(t_1);
         }
         return x;
     }
 
-    static int rand_fn(int value, int step, int modulus) {
-        return Math.floorMod((value * value + step), modulus);
+    static long rand_fn(long value, long step, long modulus) {
+        return Math.floorMod(((long)((long)(value) * (long)(value)) + (long)(step)), modulus);
     }
 
-    static PollardResult pollard_rho(int num, int seed, int step, int attempts) {
-        if (num < 2) {
+    static PollardResult pollard_rho(long num, long seed, long step, long attempts) {
+        if ((long)(num) < 2L) {
             throw new RuntimeException(String.valueOf("The input value cannot be less than 2"));
         }
-        if (num > 2 && Math.floorMod(num, 2) == 0) {
+        if ((long)(num) > 2L && Math.floorMod(num, 2) == 0L) {
             return new PollardResult(2, true);
         }
-        int s = seed;
-        int st = step;
-        int i = 0;
-        while (i < attempts) {
-            int tortoise = s;
-            int hare = s;
+        long s_1 = (long)(seed);
+        long st_1 = (long)(step);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(attempts)) {
+            long tortoise_1 = (long)(s_1);
+            long hare_1 = (long)(s_1);
             while (true) {
-                tortoise = rand_fn(tortoise, st, num);
-                hare = rand_fn(hare, st, num);
-                hare = rand_fn(hare, st, num);
-                int divisor = gcd(hare - tortoise, num);
-                if (divisor == 1) {
+                tortoise_1 = (long)(rand_fn((long)(tortoise_1), (long)(st_1), (long)(num)));
+                hare_1 = (long)(rand_fn((long)(hare_1), (long)(st_1), (long)(num)));
+                hare_1 = (long)(rand_fn((long)(hare_1), (long)(st_1), (long)(num)));
+                long divisor_1 = (long)(gcd((long)((long)(hare_1) - (long)(tortoise_1)), (long)(num)));
+                if ((long)(divisor_1) == 1L) {
                     continue;
-                } else                 if (divisor == num) {
+                } else                 if ((long)(divisor_1) == (long)(num)) {
                     break;
                 } else {
-                    return new PollardResult(divisor, true);
+                    return new PollardResult(divisor_1, true);
                 }
             }
-            s = hare;
-            st = st + 1;
-            i = i + 1;
+            s_1 = (long)(hare_1);
+            st_1 = (long)((long)(st_1) + 1L);
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return new PollardResult(0, false);
     }
 
     static void test_pollard_rho() {
-        PollardResult r1 = pollard_rho(8051, 2, 1, 5);
-        if (!r1.ok || (r1.factor != 83 && r1.factor != 97)) {
+        PollardResult r1 = pollard_rho(8051L, 2L, 1L, 5L);
+        if (!r1.ok || ((long)(r1.factor) != 83L && (long)(r1.factor) != 97L)) {
             throw new RuntimeException(String.valueOf("test1 failed"));
         }
-        PollardResult r2 = pollard_rho(10403, 2, 1, 5);
-        if (!r2.ok || (r2.factor != 101 && r2.factor != 103)) {
+        PollardResult r2_1 = pollard_rho(10403L, 2L, 1L, 5L);
+        if (!r2_1.ok || ((long)(r2_1.factor) != 101L && (long)(r2_1.factor) != 103L)) {
             throw new RuntimeException(String.valueOf("test2 failed"));
         }
-        PollardResult r3 = pollard_rho(100, 2, 1, 3);
-        if (!r3.ok || r3.factor != 2) {
+        PollardResult r3_1 = pollard_rho(100L, 2L, 1L, 3L);
+        if (!r3_1.ok || (long)(r3_1.factor) != 2L) {
             throw new RuntimeException(String.valueOf("test3 failed"));
         }
-        PollardResult r4 = pollard_rho(17, 2, 1, 3);
-        if (r4.ok) {
+        PollardResult r4_1 = pollard_rho(17L, 2L, 1L, 3L);
+        if (r4_1.ok) {
             throw new RuntimeException(String.valueOf("test4 failed"));
         }
-        PollardResult r5 = pollard_rho(17 * 17 * 17, 2, 1, 3);
-        if (!r5.ok || r5.factor != 17) {
+        PollardResult r5_1 = pollard_rho((long)((long)(17L * 17L) * 17L), 2L, 1L, 3L);
+        if (!r5_1.ok || (long)(r5_1.factor) != 17L) {
             throw new RuntimeException(String.valueOf("test5 failed"));
         }
-        PollardResult r6 = pollard_rho(17 * 17 * 17, 2, 1, 1);
-        if (r6.ok) {
+        PollardResult r6_1 = pollard_rho((long)((long)(17L * 17L) * 17L), 2L, 1L, 1L);
+        if (r6_1.ok) {
             throw new RuntimeException(String.valueOf("test6 failed"));
         }
-        PollardResult r7 = pollard_rho(3 * 5 * 7, 2, 1, 3);
-        if (!r7.ok || r7.factor != 21) {
+        PollardResult r7_1 = pollard_rho((long)((long)(3L * 5L) * 7L), 2L, 1L, 3L);
+        if (!r7_1.ok || (long)(r7_1.factor) != 21L) {
             throw new RuntimeException(String.valueOf("test7 failed"));
         }
     }
 
     static void main() {
         test_pollard_rho();
-        PollardResult a = pollard_rho(100, 2, 1, 3);
-        if (a.ok) {
-            System.out.println(_p(a.factor));
+        PollardResult a_1 = pollard_rho(100L, 2L, 1L, 3L);
+        if (a_1.ok) {
+            System.out.println(_p(a_1.factor));
         } else {
             System.out.println("None");
         }
-        PollardResult b = pollard_rho(17, 2, 1, 3);
-        if (b.ok) {
-            System.out.println(_p(b.factor));
+        PollardResult b_1 = pollard_rho(17L, 2L, 1L, 3L);
+        if (b_1.ok) {
+            System.out.println(_p(b_1.factor));
         } else {
             System.out.println("None");
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -157,6 +123,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

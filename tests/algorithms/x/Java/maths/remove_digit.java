@@ -1,78 +1,44 @@
 public class Main {
 
-    static int remove_digit(int num) {
-        int n = num;
-        if (n < 0) {
-            n = -n;
+    static long remove_digit(long num) {
+        long n = (long)(num);
+        if ((long)(n) < 0L) {
+            n = (long)(-n);
         }
-        int max_val = 0;
-        int divisor = 1;
-        while (divisor <= n) {
-            int higher = n / (divisor * 10);
-            int lower = Math.floorMod(n, divisor);
-            int candidate = higher * divisor + lower;
-            if (candidate > max_val) {
-                max_val = candidate;
+        long max_val_1 = 0L;
+        long divisor_1 = 1L;
+        while ((long)(divisor_1) <= (long)(n)) {
+            long higher_1 = Math.floorDiv(n, ((long)(divisor_1) * 10L));
+            long lower_1 = Math.floorMod(n, divisor_1);
+            long candidate_1 = (long)((long)((long)(higher_1) * (long)(divisor_1)) + (long)(lower_1));
+            if ((long)(candidate_1) > (long)(max_val_1)) {
+                max_val_1 = (long)(candidate_1);
             }
-            divisor = divisor * 10;
+            divisor_1 = (long)((long)(divisor_1) * 10L);
         }
-        return max_val;
+        return max_val_1;
     }
 
     static void test_remove_digit() {
-        if (remove_digit(152) != 52) {
+        if ((long)(remove_digit(152L)) != 52L) {
             throw new RuntimeException(String.valueOf("remove_digit(152) failed"));
         }
-        if (remove_digit(6385) != 685) {
+        if ((long)(remove_digit(6385L)) != 685L) {
             throw new RuntimeException(String.valueOf("remove_digit(6385) failed"));
         }
-        if (remove_digit(-11) != 1) {
+        if ((long)(remove_digit((long)(-11))) != 1L) {
             throw new RuntimeException(String.valueOf("remove_digit(-11) failed"));
         }
-        if (remove_digit(2222222) != 222222) {
+        if ((long)(remove_digit(2222222L)) != 222222L) {
             throw new RuntimeException(String.valueOf("remove_digit(2222222) failed"));
         }
     }
 
     static void main() {
         test_remove_digit();
-        System.out.println(remove_digit(152));
+        System.out.println(remove_digit(152L));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 }

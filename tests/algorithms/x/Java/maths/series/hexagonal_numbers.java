@@ -1,68 +1,40 @@
 public class Main {
 
-    static int[] hexagonal_numbers(int length) {
-        if (length <= 0) {
+    static long[] hexagonal_numbers(long length) {
+        if ((long)(length) <= 0L) {
             throw new RuntimeException(String.valueOf("Length must be a positive integer."));
         }
-        int[] res = ((int[])(new int[]{}));
-        int n = 0;
-        while (n < length) {
-            res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(n * (2 * n - 1))).toArray()));
-            n = n + 1;
+        long[] res_1 = ((long[])(new long[]{}));
+        long n_1 = 0L;
+        while ((long)(n_1) < (long)(length)) {
+            res_1 = ((long[])(appendLong(res_1, (long)((long)(n_1) * (long)(((long)(2L * (long)(n_1)) - 1L))))));
+            n_1 = (long)((long)(n_1) + 1L);
         }
-        return res;
+        return res_1;
     }
 
     static void test_hexagonal_numbers() {
-        int[] expected5 = ((int[])(new int[]{0, 1, 6, 15, 28}));
-        int[] result5 = ((int[])(hexagonal_numbers(5)));
-        if (result5 != expected5) {
+        long[] expected5 = ((long[])(new long[]{0, 1, 6, 15, 28}));
+        long[] result5_1 = ((long[])(hexagonal_numbers(5L)));
+        if (!java.util.Arrays.equals(result5_1, expected5)) {
             throw new RuntimeException(String.valueOf("hexagonal_numbers(5) failed"));
         }
-        int[] expected10 = ((int[])(new int[]{0, 1, 6, 15, 28, 45, 66, 91, 120, 153}));
-        int[] result10 = ((int[])(hexagonal_numbers(10)));
-        if (result10 != expected10) {
+        long[] expected10_1 = ((long[])(new long[]{0, 1, 6, 15, 28, 45, 66, 91, 120, 153}));
+        long[] result10_1 = ((long[])(hexagonal_numbers(10L)));
+        if (!java.util.Arrays.equals(result10_1, expected10_1)) {
             throw new RuntimeException(String.valueOf("hexagonal_numbers(10) failed"));
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            test_hexagonal_numbers();
-            System.out.println(_p(hexagonal_numbers(5)));
-            System.out.println(_p(hexagonal_numbers(10)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        test_hexagonal_numbers();
+        System.out.println(_p(hexagonal_numbers(5L)));
+        System.out.println(_p(hexagonal_numbers(10L)));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -77,6 +49,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

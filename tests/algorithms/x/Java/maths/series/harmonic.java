@@ -1,86 +1,58 @@
 public class Main {
 
     static boolean is_harmonic_series(double[] series) {
-        if (series.length == 0) {
+        if ((long)(series.length) == 0L) {
             throw new RuntimeException(String.valueOf("Input list must be a non empty list"));
         }
-        if (series.length == 1) {
-            if (series[0] == 0.0) {
+        if ((long)(series.length) == 1L) {
+            if ((double)(series[(int)(0L)]) == (double)(0.0)) {
                 throw new RuntimeException(String.valueOf("Input series cannot have 0 as an element"));
             }
             return true;
         }
-        double[] rec_series = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < series.length) {
-            double val = series[i];
-            if (val == 0.0) {
+        double[] rec_series_1 = ((double[])(new double[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(series.length)) {
+            double val_1 = (double)(series[(int)((long)(i_1))]);
+            if ((double)(val_1) == (double)(0.0)) {
                 throw new RuntimeException(String.valueOf("Input series cannot have 0 as an element"));
             }
-            rec_series = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(rec_series), java.util.stream.DoubleStream.of(1.0 / val)).toArray()));
-            i = i + 1;
+            rec_series_1 = ((double[])(appendDouble(rec_series_1, (double)((double)(1.0) / (double)(val_1)))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        double common_diff = rec_series[1] - rec_series[0];
-        int idx = 2;
-        while (idx < rec_series.length) {
-            if (rec_series[idx] - rec_series[idx - 1] != common_diff) {
+        double common_diff_1 = (double)((double)(rec_series_1[(int)(1L)]) - (double)(rec_series_1[(int)(0L)]));
+        long idx_1 = 2L;
+        while ((long)(idx_1) < (long)(rec_series_1.length)) {
+            if ((double)((double)(rec_series_1[(int)((long)(idx_1))]) - (double)(rec_series_1[(int)((long)((long)(idx_1) - 1L))])) != (double)(common_diff_1)) {
                 return false;
             }
-            idx = idx + 1;
+            idx_1 = (long)((long)(idx_1) + 1L);
         }
         return true;
     }
 
     static double harmonic_mean(double[] series) {
-        if (series.length == 0) {
+        if ((long)(series.length) == 0L) {
             throw new RuntimeException(String.valueOf("Input list must be a non empty list"));
         }
-        double total = 0.0;
-        int i_1 = 0;
-        while (i_1 < series.length) {
-            total = total + 1.0 / series[i_1];
-            i_1 = i_1 + 1;
+        double total_1 = (double)(0.0);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(series.length)) {
+            total_1 = (double)((double)(total_1) + (double)((double)(1.0) / (double)(series[(int)((long)(i_3))])));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return (((Number)(series.length)).doubleValue()) / total;
+        return (double)((((Number)(series.length)).doubleValue())) / (double)(total_1);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(is_harmonic_series(((double[])(new double[]{1.0, 2.0 / 3.0, 1.0 / 2.0, 2.0 / 5.0, 1.0 / 3.0}))));
-            System.out.println(is_harmonic_series(((double[])(new double[]{1.0, 2.0 / 3.0, 2.0 / 5.0, 1.0 / 3.0}))));
-            System.out.println(harmonic_mean(((double[])(new double[]{1.0, 4.0, 4.0}))));
-            System.out.println(harmonic_mean(((double[])(new double[]{3.0, 6.0, 9.0, 12.0}))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(is_harmonic_series(((double[])(new double[]{1.0, (double)(2.0) / (double)(3.0), (double)(1.0) / (double)(2.0), (double)(2.0) / (double)(5.0), (double)(1.0) / (double)(3.0)}))));
+        System.out.println(is_harmonic_series(((double[])(new double[]{1.0, (double)(2.0) / (double)(3.0), (double)(2.0) / (double)(5.0), (double)(1.0) / (double)(3.0)}))));
+        System.out.println(harmonic_mean(((double[])(new double[]{1.0, 4.0, 4.0}))));
+        System.out.println(harmonic_mean(((double[])(new double[]{3.0, 6.0, 9.0, 12.0}))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

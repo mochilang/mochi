@@ -1,60 +1,26 @@
 public class Main {
 
-    static int factorial(int digit) {
-        if (digit == 0 || digit == 1) {
+    static long factorial(long digit) {
+        if ((long)(digit) == 0L || (long)(digit) == 1L) {
             return 1;
         }
-        return digit * factorial(digit - 1);
+        return (long)(digit) * (long)(factorial((long)((long)(digit) - 1L)));
     }
 
-    static boolean is_krishnamurthy(int n) {
-        int duplicate = n;
-        int fact_sum = 0;
-        while (duplicate > 0) {
-            int digit = Math.floorMod(duplicate, 10);
-            fact_sum = fact_sum + factorial(digit);
+    static boolean is_krishnamurthy(long n) {
+        long duplicate = (long)(n);
+        long fact_sum_1 = 0L;
+        while ((long)(duplicate) > 0L) {
+            long digit_1 = Math.floorMod(duplicate, 10);
+            fact_sum_1 = (long)((long)(fact_sum_1) + (long)(factorial((long)(digit_1))));
             duplicate = Math.floorDiv(duplicate, 10);
         }
-        return fact_sum == n;
+        return (long)(fact_sum_1) == (long)(n);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(is_krishnamurthy(145)));
-            System.out.println(_p(is_krishnamurthy(240)));
-            System.out.println(_p(is_krishnamurthy(1)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(is_krishnamurthy(145L)));
+        System.out.println(_p(is_krishnamurthy(240L)));
+        System.out.println(_p(is_krishnamurthy(1L)));
     }
 
     static String _p(Object v) {
@@ -69,6 +35,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
