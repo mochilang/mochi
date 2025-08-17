@@ -1,5 +1,25 @@
 # 📦 CHANGELOG.md
 
+## [0.10.68] – 2025-08-17T08:35:51+00:00
+
+### Added
+
+* `points_are_collinear_3d` and gradient descent implementations across languages.
+* Algorithm outputs expanded for Kotlin, Ruby, F#, Pascal and Erlang through index 737.
+* Refreshed Hardy–Ramanujan, weird number and other math benchmarks.
+
+### Changed
+
+* PHP, Kotlin and Go transpilers improve numeric helpers and precision.
+* Float formatting and string indexing refined for C, C++, Lua, TypeScript and others.
+* Benchmarks updated, including Project Euler problem 71 and Go primelib.
+
+### Fixed
+
+* String index and digit cast issues in Dart, Java, C and PHP transpilers.
+* OCaml and Erlang reset state and loop handling, reducing warnings.
+* Removed stale error files and improved Python memory reporting.
+
 ## [0.10.67] – 2025-08-16T10:44:34+00:00
 
 ### Added
