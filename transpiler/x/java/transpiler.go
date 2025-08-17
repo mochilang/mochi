@@ -2194,11 +2194,7 @@ func (b *BenchStmt) emit(w io.Writer, indent string) {
 	emitBlock(w, indent+"    ", b.Body)
 	fmt.Fprint(w, indent+"    long _benchDuration = _now() - _benchStart;\n")
 	fmt.Fprint(w, indent+"    long _benchMemory = _mem() - _benchMem;\n")
-	fmt.Fprint(w, indent+"    System.out.println(\"{\");\n")
-	fmt.Fprint(w, indent+"    System.out.println(\"  \\\"duration_us\\\": \" + _benchDuration + \",\");\n")
-	fmt.Fprint(w, indent+"    System.out.println(\"  \\\"memory_bytes\\\": \" + _benchMemory + \",\");\n")
-	fmt.Fprintf(w, indent+"    System.out.println(\"  \\\"name\\\": \\\"%s\\\"\");\n", b.Name)
-	fmt.Fprint(w, indent+"    System.out.println(\"}\");\n")
+	fmt.Fprintf(w, indent+"    System.out.println(\"{\\\"duration_us\\\": \" + _benchDuration + \", \\\"memory_bytes\\\": \" + _benchMemory + \", \\\"name\\\": \\\"%s\\\"}\");\n", b.Name)
 	fmt.Fprint(w, indent+"    return;\n")
 	fmt.Fprint(w, indent+"}\n")
 }
