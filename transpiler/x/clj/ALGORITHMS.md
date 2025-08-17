@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-17 12:16 GMT+7
+Last updated: 2025-08-17 12:33 GMT+7
 
-## Algorithms Golden Test Checklist (786/1077)
+## Algorithms Golden Test Checklist (787/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -638,7 +638,7 @@ Last updated: 2025-08-17 12:16 GMT+7
 | 629 | maths/points_are_collinear_3d | ✓ | 57.03ms | 22.66MB |
 | 630 | maths/pollard_rho | error |  |  |
 | 631 | maths/polynomial_evaluation | ✓ | 48.301ms | 20.63MB |
-| 632 | maths/polynomials/single_indeterminate_operations | error |  |  |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 37.93ms | 26.98MB |
 | 633 | maths/power_using_recursion | ✓ | 45.847ms | 19.32MB |
 | 634 | maths/prime_check | ✓ | 57.469ms | 19.86MB |
 | 635 | maths/prime_factors | ✓ | 63.919ms | 20.41MB |
