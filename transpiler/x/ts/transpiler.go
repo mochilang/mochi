@@ -3440,8 +3440,11 @@ func isVarIntExpr(e Expr) bool {
 				return isIntType(t)
 			}
 		}
-		// default to int when type info is missing
-		return true
+		// default to non-int when type info is missing to avoid
+		// accidentally treating floating point variables as ints
+		// during arithmetic operations (which would trigger
+		// integer semantics like truncating division).
+		return false
 	}
 	return false
 }
