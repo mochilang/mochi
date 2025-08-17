@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-17 13:42 GMT+7
+Last updated: 2025-08-17 14:34 GMT+7
 
 ## Algorithms Golden Test Checklist (896/1077)
 | Index | Name | Status | Duration | Memory |
@@ -661,55 +661,55 @@ Last updated: 2025-08-17 13:42 GMT+7
 | 652 | maths/series/hexagonal_numbers | ✓ | 0s | 12.8 MB |
 | 653 | maths/series/p_series | ✓ | 1ms | 12.9 MB |
 | 654 | maths/sieve_of_eratosthenes | ✓ | 1ms | 12.9 MB |
-| 655 | maths/sigmoid | ✓ | 0s | 12.6 MB |
-| 656 | maths/signum | ✓ | 3ms | 12.4 MB |
-| 657 | maths/simultaneous_linear_equation_solver | ✓ | 1ms | 13.6 MB |
+| 655 | maths/sigmoid | ✓ | 0s | 12.7 MB |
+| 656 | maths/signum | ✓ | 0s | 12.1 MB |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 2ms | 14.2 MB |
 | 658 | maths/sin | ✓ | 1ms | 13.0 MB |
-| 659 | maths/sock_merchant | ✓ | 2ms | 12.8 MB |
-| 660 | maths/softmax | ✓ | 1ms | 12.8 MB |
-| 661 | maths/solovay_strassen_primality_test | ✓ | 6ms | 13.4 MB |
-| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 2ms | 13.3 MB |
-| 663 | maths/special_numbers/armstrong_numbers | ✓ | 1ms | 13.3 MB |
-| 664 | maths/special_numbers/automorphic_number | ✓ | 0s | 12.3 MB |
-| 665 | maths/special_numbers/bell_numbers | ✓ | 1ms | 12.4 MB |
-| 666 | maths/special_numbers/carmichael_number | ✓ | 404ms | 12.7 MB |
-| 667 | maths/special_numbers/catalan_number | ✓ | 1ms | 12.8 MB |
-| 668 | maths/special_numbers/hamming_numbers | ✓ | 2ms | 12.2 MB |
-| 669 | maths/special_numbers/happy_number | ✓ | 1ms | 12.4 MB |
-| 670 | maths/special_numbers/harshad_numbers | ✓ | 15ms | 13.6 MB |
-| 671 | maths/special_numbers/hexagonal_number | ✓ | 1ms | 12.1 MB |
-| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 1ms | 12.4 MB |
-| 673 | maths/special_numbers/perfect_number | ✓ | 12ms | 12.4 MB |
-| 674 | maths/special_numbers/polygonal_numbers | ✓ | 0s | 12.3 MB |
-| 675 | maths/special_numbers/pronic_number | ✓ | 3ms | 12.7 MB |
-| 676 | maths/special_numbers/proth_number | ✓ | 2ms | 12.9 MB |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 3ms | 12.2 MB |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 14ms | 12.7 MB |
-| 679 | maths/special_numbers/weird_number | ✓ | 5ms | 14.0 MB |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 0s | 12.3 MB |
-| 681 | maths/sum_of_digits | ✓ | 1ms | 12.9 MB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 0s | 12.4 MB |
-| 683 | maths/sum_of_harmonic_series | ✓ | 0s | 12.4 MB |
-| 684 | maths/sumset | ✓ | 2ms | 12.7 MB |
-| 685 | maths/sylvester_sequence | ✓ | 3ms | 12.4 MB |
-| 686 | maths/tanh | ✓ | 1ms | 13.0 MB |
-| 687 | maths/test_factorial | ✓ | 0s | 12.4 MB |
-| 688 | maths/test_prime_check | ✓ | 0s | 12.6 MB |
-| 689 | maths/three_sum | ✓ | 1ms | 12.8 MB |
-| 690 | maths/trapezoidal_rule | ✓ | 0s | 12.8 MB |
-| 691 | maths/triplet_sum | ✓ | 2ms | 14.4 MB |
-| 692 | maths/twin_prime | ✓ | 0s | 12.8 MB |
-| 693 | maths/two_pointer | ✓ | 0s | 12.7 MB |
-| 694 | maths/two_sum | ✓ | 0s | 12.3 MB |
-| 695 | maths/volume | ✓ | 2ms | 13.8 MB |
-| 696 | maths/zellers_congruence | ✓ | 1ms | 14.0 MB |
-| 697 | matrix/binary_search_matrix | ✓ | 0s | 12.5 MB |
-| 698 | matrix/count_islands_in_matrix | ✓ | 2ms | 13.3 MB |
+| 659 | maths/sock_merchant | ✓ | 1ms | 12.6 MB |
+| 660 | maths/softmax | ✓ | 0s | 12.6 MB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 1ms | 13.3 MB |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 1ms | 13.6 MB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 1ms | 12.9 MB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 0s | 12.9 MB |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 0s | 13.2 MB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 182ms | 12.3 MB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 0s | 12.5 MB |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 0s | 12.4 MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 0s | 12.2 MB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 11ms | 13.4 MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 0s | 12.7 MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 0s | 12.2 MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 3ms | 12.1 MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 0s | 12.9 MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 4ms | 12.6 MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 1ms | 12.4 MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 0s | 12.3 MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 11ms | 12.2 MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 3ms | 13.3 MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 0s | 12.6 MB |
+| 681 | maths/sum_of_digits | ✓ | 0s | 12.9 MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 0s | 12.8 MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 1ms | 13.1 MB |
+| 684 | maths/sumset | ✓ | 1ms | 12.7 MB |
+| 685 | maths/sylvester_sequence | ✓ | 0s | 12.2 MB |
+| 686 | maths/tanh | ✓ | 1ms | 12.2 MB |
+| 687 | maths/test_factorial | ✓ | 0s | 12.7 MB |
+| 688 | maths/test_prime_check | ✓ | 0s | 12.8 MB |
+| 689 | maths/three_sum | ✓ | 0s | 12.7 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 1ms | 12.4 MB |
+| 691 | maths/triplet_sum | ✓ | 1ms | 14.4 MB |
+| 692 | maths/twin_prime | ✓ | 0s | 12.3 MB |
+| 693 | maths/two_pointer | ✓ | 0s | 13.0 MB |
+| 694 | maths/two_sum | ✓ | 0s | 12.2 MB |
+| 695 | maths/volume | ✓ | 0s | 14.1 MB |
+| 696 | maths/zellers_congruence | ✓ | 1ms | 13.4 MB |
+| 697 | matrix/binary_search_matrix | ✓ | 0s | 12.6 MB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 1ms | 13.1 MB |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ |  |  |
-| 700 | matrix/count_paths | ✓ | 3ms | 13.4 MB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 0s | 12.8 MB |
-| 702 | matrix/inverse_of_matrix | ✓ | 1ms | 13.8 MB |
-| 703 | matrix/largest_square_area_in_matrix | ✓ | 1ms | 13.8 MB |
+| 700 | matrix/count_paths | ✓ | 2ms | 13.1 MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 0s | 12.5 MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 1ms | 13.9 MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 1ms | 14.0 MB |
 | 704 | matrix/matrix_based_game |   |  |  |
 | 705 | matrix/matrix_class | ✓ | 10ms | 16.5 MB |
 | 706 | matrix/matrix_equalization | ✓ | 2ms | 12.8 MB |

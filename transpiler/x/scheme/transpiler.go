@@ -62,6 +62,15 @@ func SetBenchMain(v bool) { benchMain = v }
 // without mutating it.
 func BenchMainEnabled() bool { return benchMain }
 
+// SwapBenchMain sets benchmarking mode to v and returns the previous state.
+// It allows callers to toggle the benchmark wrapper and later restore the
+// original configuration manually.
+func SwapBenchMain(v bool) bool {
+	prev := benchMain
+	benchMain = v
+	return prev
+}
+
 // ResetBenchMain disables benchmark output. It is equivalent to
 // calling SetBenchMain(false) and provided for readability when tests
 // or tools need to temporarily ensure benchmarking is off.
