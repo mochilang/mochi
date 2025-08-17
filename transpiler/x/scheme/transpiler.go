@@ -72,6 +72,11 @@ func ResetBenchMain() { benchMain = false }
 // that need to toggle benchmarking without manually resetting the global flag.
 func WithBenchMain(f func()) { WithBenchMainEnabled(true, f) }
 
+// WithBenchMainDisabled runs f with benchmark output disabled and restores the
+// previous configuration afterwards. It complements WithBenchMain and provides
+// a convenient shorthand for temporarily turning benchmarking off.
+func WithBenchMainDisabled(f func()) { WithBenchMainEnabled(false, f) }
+
 // WithBenchMainEnabled toggles the benchmark wrapper according to v while
 // running f and then restores the previous state. It is useful when callers
 // need to explicitly enable or disable benchmarking in a scoped manner.

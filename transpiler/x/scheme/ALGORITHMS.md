@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-17 09:00 GMT+7
+Last updated: 2025-08-17 12:20 GMT+7
 
-## Algorithms Golden Test Checklist (894/1077)
+## Algorithms Golden Test Checklist (896/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -635,7 +635,7 @@ Last updated: 2025-08-17 09:00 GMT+7
 | 626 | maths/persistence | ✓ | 0s | 12.5 MB |
 | 627 | maths/pi_generator | ✓ | 0s | 12.4 MB |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 193ms | 12.7 MB |
-| 629 | maths/points_are_collinear_3d | ✓ | 0s | 13.8 MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 0s | 13.6 MB |
 | 630 | maths/pollard_rho | ✓ | 2ms | 13.8 MB |
 | 631 | maths/polynomial_evaluation | ✓ | 0s | 12.7 MB |
 | 632 | maths/polynomials/single_indeterminate_operations | ✓ | 1ms | 14.8 MB |
@@ -644,13 +644,13 @@ Last updated: 2025-08-17 09:00 GMT+7
 | 635 | maths/prime_factors | ✓ | 1ms | 12.9 MB |
 | 636 | maths/prime_numbers | ✓ | 2ms | 12.3 MB |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 1ms | 13.0 MB |
-| 638 | maths/primelib |   |  |  |
+| 638 | maths/primelib | ✓ | 4ms | 14.1 MB |
 | 639 | maths/print_multiplication_table | ✓ | 1ms | 12.3 MB |
 | 640 | maths/pythagoras | ✓ | 0s | 13.0 MB |
 | 641 | maths/qr_decomposition | ✓ | 1ms | 13.9 MB |
 | 642 | maths/quadratic_equations_complex_numbers | ✓ | 1ms | 13.0 MB |
 | 643 | maths/radians | ✓ | 0s | 12.5 MB |
-| 644 | maths/radix2_fft |   |  |  |
+| 644 | maths/radix2_fft | ✓ | 2ms | 14.1 MB |
 | 645 | maths/remove_digit | ✓ | 0s | 12.7 MB |
 | 646 | maths/segmented_sieve | ✓ | 2ms | 14.3 MB |
 | 647 | maths/series/arithmetic | ✓ | 0s | 12.5 MB |
