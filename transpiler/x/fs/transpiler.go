@@ -230,7 +230,7 @@ const helperJSON = `let json (arr:obj) =
 
 const helperStr = `let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%.15g" f
+    | :? float as f -> sprintf "%.10g" f
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")
@@ -2193,6 +2193,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	castIf := func(expr Expr, targetType string) Expr {
 		return &CastExpr{Expr: expr, Type: targetType}
 	}
+	if resT == "int64" && b.Op == "*" && lt == "int" && rt == "int" {
+		left = castIf(left, "int64")
+		right = castIf(right, "int64")
+		lt, rt = "int64", "int64"
+	}
 	if (lt == "obj" || lt == "") && (rt == "int" || rt == "float" || rt == "string" || rt == "bool") {
 		left = castIf(left, rt)
 		lt = rt
@@ -2530,6 +2535,9 @@ func inferType(e Expr) string {
 			rt := inferType(v.Right)
 			if lt == "obj" && rt == "obj" {
 				return "float"
+			}
+			if lt == "int" && rt == "int" && v.Op == "*" {
+				return "int64"
 			}
 			if lt == rt {
 				return lt
@@ -4598,8 +4606,14 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 			exprs = exprs[:len(exprs)-1]
 			o := ops[len(ops)-1]
 			ops = ops[:len(ops)-1]
-			if o == "/" && inferType(l) == "int" && inferType(r) == "int" {
-				usesFloorDiv = true
+			if o == "/" {
+				lt := inferType(l)
+				rt := inferType(r)
+				if lt == "int" && rt == "int" {
+					usesFloorDiv = true
+				} else if lt == "int64" || rt == "int64" {
+					usesFloorDiv64 = true
+				}
 			}
 			exprs = append(exprs, &BinaryExpr{Left: l, Op: o, Right: r})
 		}
@@ -4613,8 +4627,14 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 		exprs = exprs[:len(exprs)-1]
 		o := ops[len(ops)-1]
 		ops = ops[:len(ops)-1]
-		if o == "/" && inferType(l) == "int" && inferType(r) == "int" {
-			usesFloorDiv = true
+		if o == "/" {
+			lt := inferType(l)
+			rt := inferType(r)
+			if lt == "int" && rt == "int" {
+				usesFloorDiv = true
+			} else if lt == "int64" || rt == "int64" {
+				usesFloorDiv64 = true
+			}
 		}
 		exprs = append(exprs, &BinaryExpr{Left: l, Op: o, Right: r})
 	}

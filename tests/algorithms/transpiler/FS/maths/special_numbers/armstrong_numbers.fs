@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 12:28 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -55,14 +43,14 @@ let rec pow_int (``base``: int) (exp: int) =
         let mutable result: int = 1
         let mutable i: int = 0
         while i < exp do
-            result <- int ((int64 result) * (int64 ``base``))
+            result <- result * ``base``
             i <- i + 1
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-let rec armstrong_number (n: int) =
+and armstrong_number (n: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable n = n
     try
@@ -72,20 +60,20 @@ let rec armstrong_number (n: int) =
         let mutable digits: int = 0
         let mutable temp: int = n
         while temp > 0 do
-            temp <- _floordiv temp 10
+            temp <- _floordiv (int temp) (int 10)
             digits <- digits + 1
         let mutable total: int = 0
         temp <- n
         while temp > 0 do
             let rem: int = ((temp % 10 + 10) % 10)
             total <- total + (pow_int (rem) (digits))
-            temp <- _floordiv temp 10
+            temp <- _floordiv (int temp) (int 10)
         __ret <- total = n
         raise Return
         __ret
     with
         | Return -> __ret
-let rec pluperfect_number (n: int) =
+and pluperfect_number (n: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable n = n
     try
@@ -101,21 +89,21 @@ let rec pluperfect_number (n: int) =
         let mutable temp: int = n
         while temp > 0 do
             let rem: int = ((temp % 10 + 10) % 10)
-            digit_histogram.[int rem] <- (_idx digit_histogram (int rem)) + 1
+            digit_histogram.[rem] <- (_idx digit_histogram (int rem)) + 1
             digit_total <- digit_total + 1
-            temp <- _floordiv temp 10
+            temp <- _floordiv (int temp) (int 10)
         let mutable total: int = 0
         i <- 0
         while i < 10 do
             if (_idx digit_histogram (int i)) > 0 then
-                total <- int ((int64 total) + ((int64 (_idx digit_histogram (int i))) * (int64 (pow_int (i) (digit_total)))))
+                total <- total + ((_idx digit_histogram (int i)) * (pow_int (i) (digit_total)))
             i <- i + 1
         __ret <- total = n
         raise Return
         __ret
     with
         | Return -> __ret
-let rec narcissistic_number (n: int) =
+and narcissistic_number (n: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable n = n
     try
@@ -125,25 +113,25 @@ let rec narcissistic_number (n: int) =
         let mutable digits: int = 0
         let mutable temp: int = n
         while temp > 0 do
-            temp <- _floordiv temp 10
+            temp <- _floordiv (int temp) (int 10)
             digits <- digits + 1
         temp <- n
         let mutable total: int = 0
         while temp > 0 do
             let rem: int = ((temp % 10 + 10) % 10)
             total <- total + (pow_int (rem) (digits))
-            temp <- _floordiv temp 10
+            temp <- _floordiv (int temp) (int 10)
         __ret <- total = n
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%b" (armstrong_number (371))
-printfn "%b" (armstrong_number (200))
-printfn "%b" (pluperfect_number (371))
-printfn "%b" (pluperfect_number (200))
-printfn "%b" (narcissistic_number (371))
-printfn "%b" (narcissistic_number (200))
+ignore (printfn "%b" (armstrong_number (371)))
+ignore (printfn "%b" (armstrong_number (200)))
+ignore (printfn "%b" (pluperfect_number (371)))
+ignore (printfn "%b" (pluperfect_number (200)))
+ignore (printfn "%b" (narcissistic_number (371)))
+ignore (printfn "%b" (narcissistic_number (200)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

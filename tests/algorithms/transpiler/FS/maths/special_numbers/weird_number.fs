@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 12:28 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -42,13 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -65,8 +55,8 @@ let rec bubble_sort (xs: int array) =
             while j < ((n - i) - 1) do
                 if (_idx arr (int j)) > (_idx arr (int (j + 1))) then
                     let tmp: int = _idx arr (int j)
-                    arr.[int j] <- _idx arr (int (j + 1))
-                    arr.[int (j + 1)] <- tmp
+                    arr.[j] <- _idx arr (int (j + 1))
+                    arr.[(j + 1)] <- tmp
                 j <- j + 1
             i <- i + 1
         __ret <- arr
@@ -83,7 +73,7 @@ and factors (num: int) =
         while ((int64 i) * (int64 i)) <= (int64 num) do
             if (((num % i + i) % i)) = 0 then
                 values <- Array.append values [|i|]
-                let d: int = _floordiv num i
+                let d: int = _floordiv (int num) (int i)
                 if d <> i then
                     values <- Array.append values [|d|]
             i <- i + 1
@@ -134,7 +124,7 @@ and semi_perfect (number: int) =
             let mutable s: int = number
             while s >= v do
                 if _idx possible (int (s - v)) then
-                    possible.[int s] <- true
+                    possible.[s] <- true
                 s <- s - 1
             idx <- idx + 1
         __ret <- _idx possible (int number)
@@ -152,55 +142,55 @@ and weird (number: int) =
     with
         | Return -> __ret
 and run_tests () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         if (factors (12)) <> [|1; 2; 3; 4; 6|] then
-            failwith ("factors 12 failed")
+            ignore (failwith ("factors 12 failed"))
         if (factors (1)) <> [|1|] then
-            failwith ("factors 1 failed")
+            ignore (failwith ("factors 1 failed"))
         if (factors (100)) <> [|1; 2; 4; 5; 10; 20; 25; 50|] then
-            failwith ("factors 100 failed")
+            ignore (failwith ("factors 100 failed"))
         if (abundant (0)) <> true then
-            failwith ("abundant 0 failed")
+            ignore (failwith ("abundant 0 failed"))
         if (abundant (1)) <> false then
-            failwith ("abundant 1 failed")
+            ignore (failwith ("abundant 1 failed"))
         if (abundant (12)) <> true then
-            failwith ("abundant 12 failed")
+            ignore (failwith ("abundant 12 failed"))
         if (abundant (13)) <> false then
-            failwith ("abundant 13 failed")
+            ignore (failwith ("abundant 13 failed"))
         if (abundant (20)) <> true then
-            failwith ("abundant 20 failed")
+            ignore (failwith ("abundant 20 failed"))
         if (semi_perfect (0)) <> true then
-            failwith ("semi_perfect 0 failed")
+            ignore (failwith ("semi_perfect 0 failed"))
         if (semi_perfect (1)) <> true then
-            failwith ("semi_perfect 1 failed")
+            ignore (failwith ("semi_perfect 1 failed"))
         if (semi_perfect (12)) <> true then
-            failwith ("semi_perfect 12 failed")
+            ignore (failwith ("semi_perfect 12 failed"))
         if (semi_perfect (13)) <> false then
-            failwith ("semi_perfect 13 failed")
+            ignore (failwith ("semi_perfect 13 failed"))
         if (weird (0)) <> false then
-            failwith ("weird 0 failed")
+            ignore (failwith ("weird 0 failed"))
         if (weird (70)) <> true then
-            failwith ("weird 70 failed")
+            ignore (failwith ("weird 70 failed"))
         if (weird (77)) <> false then
-            failwith ("weird 77 failed")
+            ignore (failwith ("weird 77 failed"))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        run_tests()
+        ignore (run_tests())
         let nums: int array = unbox<int array> [|69; 70; 71|]
         let mutable i: int = 0
         while i < (Seq.length (nums)) do
             let n: int = _idx nums (int i)
             if weird (n) then
-                printfn "%s" ((_str (n)) + " is weird.")
+                ignore (printfn "%s" ((_str (n)) + " is weird."))
             else
-                printfn "%s" ((_str (n)) + " is not weird.")
+                ignore (printfn "%s" ((_str (n)) + " is not weird."))
             i <- i + 1
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
@@ -209,4 +199,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 12:28 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,26 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -54,7 +44,7 @@ let rec abs_int (x: int) =
         __ret
     with
         | Return -> __ret
-let rec gcd (a: int) (b: int) =
+and gcd (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable b = b
@@ -64,7 +54,7 @@ let rec gcd (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-let rec power (x: int) (y: int) (m: int) =
+and power (x: int) (y: int) (m: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable x = x
     let mutable y = y
@@ -73,21 +63,21 @@ let rec power (x: int) (y: int) (m: int) =
         if y = 0 then
             __ret <- ((1 % m + m) % m)
             raise Return
-        let mutable temp: int = (((power (x) (_floordiv y 2) (m)) % m + m) % m)
-        temp <- int (((((int64 temp) * (int64 temp)) % (int64 m) + (int64 m)) % (int64 m)))
+        let mutable temp: int = (((power (x) (_floordiv (int y) (int 2)) (m)) % m + m) % m)
+        temp <- (((temp * temp) % m + m) % m)
         if (((y % 2 + 2) % 2)) = 1 then
-            temp <- int (((((int64 temp) * (int64 x)) % (int64 m) + (int64 m)) % (int64 m)))
+            temp <- (((temp * x) % m + m) % m)
         __ret <- temp
         raise Return
         __ret
     with
         | Return -> __ret
-let rec is_carmichael_number (n: int) =
+and is_carmichael_number (n: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable n = n
     try
         if n <= 0 then
-            failwith ("Number must be positive")
+            ignore (failwith ("Number must be positive"))
         let mutable b: int = 2
         while b < n do
             if (gcd (b) (n)) = 1 then
@@ -100,12 +90,12 @@ let rec is_carmichael_number (n: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (power (2) (15) (3)))
-printfn "%s" (_str (power (5) (1) (30)))
-printfn "%s" (_str (is_carmichael_number (4)))
-printfn "%s" (_str (is_carmichael_number (561)))
-printfn "%s" (_str (is_carmichael_number (562)))
-printfn "%s" (_str (is_carmichael_number (1105)))
+ignore (printfn "%s" (_str (power (2) (15) (3))))
+ignore (printfn "%s" (_str (power (5) (1) (30))))
+ignore (printfn "%s" (_str (is_carmichael_number (4))))
+ignore (printfn "%s" (_str (is_carmichael_number (561))))
+ignore (printfn "%s" (_str (is_carmichael_number (562))))
+ignore (printfn "%s" (_str (is_carmichael_number (1105))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

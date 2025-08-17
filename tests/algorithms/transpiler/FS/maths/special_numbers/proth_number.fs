@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 12:28 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,28 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -64,14 +54,14 @@ and proth (number: int) =
     let mutable number = number
     try
         if number < 1 then
-            failwith ("Input value must be > 0")
+            ignore (failwith ("Input value must be > 0"))
         if number = 1 then
             __ret <- 3
             raise Return
         if number = 2 then
             __ret <- 5
             raise Return
-        let temp: int = int (_floordiv number 3)
+        let temp: int = int (_floordiv (int number) (int 3))
         let mutable pow: int = 1
         let mutable block_index: int = 1
         while pow <= temp do
@@ -96,14 +86,14 @@ and proth (number: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let mutable n: int = 1
         while n <= 10 do
             let value: int = proth (n)
-            printfn "%s" ((("The " + (_str (n))) + "th Proth number: ") + (_str (value)))
+            ignore (printfn "%s" ((("The " + (_str (n))) + "th Proth number: ") + (_str (value))))
             n <- n + 1
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
@@ -112,4 +102,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())
