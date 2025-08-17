@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-17 08:49 +0700
+Last updated: 2025-08-17 12:10 +0700
 
-## Program Checklist (408/1077)
+## Program Checklist (409/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -635,7 +635,7 @@ Last updated: 2025-08-17 08:49 +0700
 | 626 | maths/persistence |   |  |  |
 | 627 | maths/pi_generator |   |  |  |
 | 628 | maths/pi_monte_carlo_estimation |   |  |  |
-| 629 | maths/points_are_collinear_3d |   |  |  |
+| 629 | maths/points_are_collinear_3d | ✓ | 395µs | 128.0 KB |
 | 630 | maths/pollard_rho |   |  |  |
 | 631 | maths/polynomial_evaluation |   |  |  |
 | 632 | maths/polynomials/single_indeterminate_operations |   |  |  |
