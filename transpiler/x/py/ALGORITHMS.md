@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-17 13:32 GMT+7
+Last updated: 2025-08-17 14:24 GMT+7
 
-## Algorithms Golden Test Checklist (970/1077)
+## Algorithms Golden Test Checklist (971/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -696,31 +696,31 @@ Last updated: 2025-08-17 13:32 GMT+7
 | 687 | maths/test_factorial | ✓ | 24.0µs | 12.24MB |
 | 688 | maths/test_prime_check | ✓ | 37.0µs | 12.18MB |
 | 689 | maths/three_sum | ✓ | 42.0µs | 12.96MB |
-| 690 | maths/trapezoidal_rule | ✓ | 50.0µs | 12.80MB |
+| 690 | maths/trapezoidal_rule | ✓ | 27.0µs | 0B |
 | 691 | maths/triplet_sum | ✓ | 76.0µs | 14.21MB |
 | 692 | maths/twin_prime | ✓ | 28.0µs | 12.67MB |
 | 693 | maths/two_pointer | ✓ | 30.0µs | 13.04MB |
 | 694 | maths/two_sum | ✓ | 25.0µs | 12.48MB |
-| 695 | maths/volume | ✓ | 65.0µs | 13.76MB |
+| 695 | maths/volume | ✓ | 54.0µs | 0B |
 | 696 | maths/zellers_congruence | ✓ | 140.0µs | 13.75MB |
 | 697 | matrix/binary_search_matrix | ✓ | 34.0µs | 12.53MB |
-| 698 | matrix/count_islands_in_matrix | error |  |  |
+| 698 | matrix/count_islands_in_matrix | ✓ | 49.0µs | 0B |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 5.74s | 79.83MB |
 | 700 | matrix/count_paths | ✓ | 69.0µs | 12.99MB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 33.0µs | 12.92MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 52.0µs | 14.34MB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 57.0µs | 14.04MB |
 | 704 | matrix/matrix_based_game | ✓ | 289.0µs | 14.05MB |
-| 705 | matrix/matrix_class | ✓ | 394.0µs | 14.57MB |
+| 705 | matrix/matrix_class | ✓ | 350.0µs | 0B |
 | 706 | matrix/matrix_equalization | ✓ | 79.0µs | 13.31MB |
 | 707 | matrix/matrix_multiplication_recursion | ✓ | 171.0µs | 14.23MB |
-| 708 | matrix/matrix_operation | ✓ | 362.0µs | 14.40MB |
+| 708 | matrix/matrix_operation | ✓ | 200.0µs | 0B |
 | 709 | matrix/max_area_of_island | ✓ | 193.0µs | 13.96MB |
 | 710 | matrix/median_matrix | ✓ | 38.0µs | 12.54MB |
 | 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 384.0µs | 13.54MB |
 | 712 | matrix/pascal_triangle | ✓ | 61.0µs | 12.96MB |
 | 713 | matrix/rotate_matrix | ✓ | 177.0µs | 14.05MB |
-| 714 | matrix/searching_in_sorted_matrix | ✓ | 45.0µs | 12.61MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 38.0µs | 0B |
 | 715 | matrix/sherman_morrison | ✓ | 99.0µs | 13.96MB |
 | 716 | matrix/spiral_print | ✓ | 72.0µs | 13.05MB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 107.0µs | 14.00MB |
