@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-16 19:52 GMT+7
+Last updated: 2025-08-17 01:00 GMT+7
 
-## Algorithms Golden Test Checklist (1026/1077)
+## Algorithms Golden Test Checklist (1027/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -581,7 +581,7 @@ Last updated: 2025-08-16 19:52 GMT+7
 | 572 | maths/gamma | ✓ | 1.0µs | 13.86KB |
 | 573 | maths/gaussian | ✓ | 1.0µs | 13.57KB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 1.0µs | 16.88KB |
-| 575 | maths/geometric_mean | error |  |  |
+| 575 | maths/geometric_mean | ✓ | 1.0µs | 13.86KB |
 | 576 | maths/germain_primes | ✓ | 1.0µs | 12.92KB |
 | 577 | maths/greatest_common_divisor | ✓ | 1.0µs | 16.90KB |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 1.0µs | 17.24KB |

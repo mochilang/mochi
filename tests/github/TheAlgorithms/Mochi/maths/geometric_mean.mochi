@@ -29,7 +29,7 @@ fun nth_root(x: float, n: int): float {
   if x == 0.0 { return 0.0 }
   var guess = x
   var i = 0
-  while i < 10 {
+  while i < 100 {
     var denom = pow_int(guess, n - 1)
     guess = ((n - 1) as float * guess + x / denom) / (n as float)
     i = i + 1
