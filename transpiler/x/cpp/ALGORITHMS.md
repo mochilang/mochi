@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 1018/1077
-Last updated: 2025-08-17 12:03 +0700
+Last updated: 2025-08-17 12:25 +0700
 
 Checklist:
 
@@ -659,7 +659,7 @@ Checklist:
 | 650 | maths/series/harmonic | ✓ | 476.0µs | 3.74MB |
 | 651 | maths/series/harmonic_series | ✓ | 232.0µs | 3.61MB |
 | 652 | maths/series/hexagonal_numbers | ✓ | 258.0µs | 3.60MB |
-| 653 | maths/series/p_series | ✓ | 804.0µs | 3.73MB |
+| 653 | maths/series/p_series | ✓ | 440.0µs | 3.73MB |
 | 654 | maths/sieve_of_eratosthenes | ✓ | 558.0µs | 3.61MB |
 | 655 | maths/sigmoid | ✓ | 591.0µs | 3.74MB |
 | 656 | maths/signum | ✓ | 253.0µs | 3.57MB |

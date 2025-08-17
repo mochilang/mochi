@@ -1043,7 +1043,10 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w, "template<typename T> std::string _to_string(const T& v) {")
 	fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, double>) {")
 	fmt.Fprintln(w, "        std::ostringstream ss;")
-	fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(15) << v;")
+	// match Mochi's default string conversion for floating point numbers
+	// which uses a precision of 6 significant digits. This keeps outputs
+	// consistent with other transpiler targets and existing golden files.
+	fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(6) << v;")
 	fmt.Fprintln(w, "        auto s = ss.str();")
 	fmt.Fprintln(w, "        auto epos = s.find('e');")
 	fmt.Fprintln(w, "        if(epos == std::string::npos) epos = s.find('E');")
