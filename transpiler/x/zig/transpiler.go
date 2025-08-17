@@ -2063,9 +2063,15 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 					}
 					if allConst {
 						if kw == "var" {
-							fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", elem)
-							ll.emit(w)
-							io.WriteString(w, ") catch unreachable")
+							if funDepth == 0 && blockDepth == 0 {
+								io.WriteString(w, "@constCast(")
+								ll.emit(w)
+								io.WriteString(w, ")")
+							} else {
+								fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", elem)
+								ll.emit(w)
+								io.WriteString(w, ") catch unreachable")
+							}
 						} else {
 							io.WriteString(w, "@constCast(")
 							ll.emit(w)
@@ -5840,7 +5846,21 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		return &AssignStmt{Name: alias, Value: expr}, nil
 	case s.Assign != nil && len(s.Assign.Field) > 0:
 		alias := resolveAlias(s.Assign.Name)
-		var target Expr = &VarRef{Name: alias}
+		target := Expr(&VarRef{Name: alias, Map: mapVars[s.Assign.Name]})
+		imap := mapVars[s.Assign.Name]
+		for _, idx := range s.Assign.Index {
+			ix, err := compileExpr(idx.Start)
+			if err != nil {
+				return nil, err
+			}
+			target = &IndexExpr{Target: target, Index: ix, Map: imap}
+			ttype := zigTypeFromExpr(target)
+			if strings.HasPrefix(ttype, "std.StringHashMap(") || strings.HasPrefix(ttype, "std.AutoHashMap(") {
+				imap = true
+			} else {
+				imap = false
+			}
+		}
 		for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
 			target = &FieldExpr{Target: target, Name: f.Name}
 		}
