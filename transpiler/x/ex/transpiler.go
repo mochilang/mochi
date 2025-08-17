@@ -144,7 +144,7 @@ func uniqueWhileName() string {
 // counter that is typically not used after the loop ends.
 func isLoopCounter(name string) bool {
 	switch name {
-	case "i", "j", "k", "l", "idx":
+	case "i", "j", "l", "m", "n", "idx", "term":
 		return true
 	default:
 		return false
@@ -1376,16 +1376,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return false
 	}
 	if b.Op == "/" {
-		if b.IntDiv {
+		if b.FloatOp {
+			b.Left.emit(w)
+			io.WriteString(w, " / ")
+			b.Right.emit(w)
+		} else {
 			io.WriteString(w, "div(")
 			b.Left.emit(w)
 			io.WriteString(w, ", ")
 			b.Right.emit(w)
 			io.WriteString(w, ")")
-		} else {
-			b.Left.emit(w)
-			io.WriteString(w, " / ")
-			b.Right.emit(w)
 		}
 		return
 	}
