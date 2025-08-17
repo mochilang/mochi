@@ -573,7 +573,9 @@ func header() []byte {
 (define (_len x)
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
-        (else (length x))))`
+        ((list? x) (length x))
+        ((vector? x) (vector-length x))
+        (else 0)))`
 	// list-ref-safe previously returned the empty list on out-of-range access,
 	// which caused "expected Number" runtime errors when its result fed into
 	// arithmetic.  It now yields 0 as a numeric sentinel and accepts any
