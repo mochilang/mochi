@@ -1,0 +1,7 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/maths/numerical_analysis/runge_kutta_fehlberg_45.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/maths/numerical_analysis/runge_kutta_fehlberg_45.c:93:42: error: ‘f2’ undeclared (first use in this function); did you mean ‘y2’?
+   93 |     double *y2 = runge_kutta_fehlberg_45(f2, -1.0, 0.0, 0.2, 0.0);
+      |                                          ^~
+      |                                          y2
+/workspace/mochi/tests/algorithms/x/C/maths/numerical_analysis/runge_kutta_fehlberg_45.c:93:42: note: each undeclared identifier is reported only once for each function it appears in
