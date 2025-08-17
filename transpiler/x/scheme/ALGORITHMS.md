@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-17 12:20 GMT+7
+Last updated: 2025-08-17 13:42 GMT+7
 
 ## Algorithms Golden Test Checklist (896/1077)
 | Index | Name | Status | Duration | Memory |
@@ -656,7 +656,7 @@ Last updated: 2025-08-17 12:20 GMT+7
 | 647 | maths/series/arithmetic | ✓ | 0s | 12.5 MB |
 | 648 | maths/series/geometric | ✓ | 1ms | 13.4 MB |
 | 649 | maths/series/geometric_series | ✓ | 0s | 12.4 MB |
-| 650 | maths/series/harmonic | ✓ | 1ms | 12.7 MB |
+| 650 | maths/series/harmonic | ✓ | 1ms | 12.4 MB |
 | 651 | maths/series/harmonic_series | ✓ | 0s | 12.5 MB |
 | 652 | maths/series/hexagonal_numbers | ✓ | 0s | 12.8 MB |
 | 653 | maths/series/p_series | ✓ | 1ms | 12.9 MB |
