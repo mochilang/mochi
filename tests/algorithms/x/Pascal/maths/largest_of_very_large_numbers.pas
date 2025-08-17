@@ -37,40 +37,62 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  y: integer;
   x: integer;
   x1: integer;
-  y1: integer;
   x2: integer;
+  y: integer;
+  y1: integer;
   y2: integer;
-function ln(x: real): real; forward;
+function ln_(x: real): real; forward;
 function log10(x: real): real; forward;
 function absf(x: real): real; forward;
 function res(x: integer; y: integer): real; forward;
 procedure test_res(); forward;
 function compare(x1: integer; y1: integer; x2: integer; y2: integer): string; forward;
-function ln(x: real): real;
+function ln_(x: real): real;
 var
-  ln_t: real;
-  ln_term: real;
-  ln_sum: real;
-  ln_k: integer;
+  ln__t: real;
+  ln__term: real;
+  ln__sum: real;
+  ln__k: integer;
 begin
-  ln_t := (x - 1) / (x + 1);
-  ln_term := ln_t;
-  ln_sum := 0;
-  ln_k := 1;
-  while ln_k <= 99 do begin
-  ln_sum := ln_sum + (ln_term / Double(ln_k));
-  ln_term := (ln_term * ln_t) * ln_t;
-  ln_k := ln_k + 2;
+  ln__t := (x - 1) / (x + 1);
+  ln__term := ln__t;
+  ln__sum := 0;
+  ln__k := 1;
+  while ln__k <= 99 do begin
+  ln__sum := ln__sum + (ln__term / Double(ln__k));
+  ln__term := (ln__term * ln__t) * ln__t;
+  ln__k := ln__k + 2;
 end;
-  exit(2 * ln_sum);
+  exit(2 * ln__sum);
 end;
 function log10(x: real): real;
 begin

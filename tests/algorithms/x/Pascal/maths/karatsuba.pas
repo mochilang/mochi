@@ -37,26 +37,48 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  base: integer;
   a: integer;
   b: integer;
-  exp: integer;
-function int_pow(base: integer; exp: integer): integer; forward;
+  base: integer;
+  exp_: integer;
+function int_pow(base: integer; int_pow_exp_: integer): integer; forward;
 function karatsuba(a: integer; b: integer): integer; forward;
 procedure main(); forward;
-function int_pow(base: integer; exp: integer): integer;
+function int_pow(base: integer; int_pow_exp_: integer): integer;
 var
   int_pow_result_: integer;
   int_pow_i: integer;
 begin
   int_pow_result_ := 1;
   int_pow_i := 0;
-  while int_pow_i < exp do begin
+  while int_pow_i < exp_ do begin
   int_pow_result_ := int_pow_result_ * base;
   int_pow_i := int_pow_i + 1;
 end;

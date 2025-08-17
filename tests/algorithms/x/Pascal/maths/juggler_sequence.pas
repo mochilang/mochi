@@ -39,6 +39,24 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 function list_int_to_str(xs: array of integer): string;
 var i: integer;
 begin
@@ -64,8 +82,8 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  x: real;
   n: integer;
+  x: real;
 function to_float(x: integer): real; forward;
 function sqrt(x: real): real; forward;
 function floor(x: real): integer; forward;
