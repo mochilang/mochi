@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-17 09:22 GMT+7
+Last updated: 2025-08-17 12:34 GMT+7
 
-## Algorithms Golden Test Checklist (469/1077)
+## Algorithms Golden Test Checklist (520/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -635,63 +635,63 @@ Last updated: 2025-08-17 09:22 GMT+7
 | 626 | maths/persistence | ✓ | 0ns | 0B |
 | 627 | maths/pi_generator | ✓ | 0ns | 0B |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 1.0µs | 0B |
-| 629 | maths/points_are_collinear_3d |   |  |  |
-| 630 | maths/pollard_rho |   |  |  |
-| 631 | maths/polynomial_evaluation |   |  |  |
+| 629 | maths/points_are_collinear_3d | ✓ | 0ns | 64B |
+| 630 | maths/pollard_rho | ✓ | 0ns | 0B |
+| 631 | maths/polynomial_evaluation | ✓ | 0ns | 0B |
 | 632 | maths/polynomials/single_indeterminate_operations |   |  |  |
-| 633 | maths/power_using_recursion |   |  |  |
-| 634 | maths/prime_check |   |  |  |
-| 635 | maths/prime_factors |   |  |  |
-| 636 | maths/prime_numbers |   |  |  |
-| 637 | maths/prime_sieve_eratosthenes |   |  |  |
-| 638 | maths/primelib |   |  |  |
-| 639 | maths/print_multiplication_table |   |  |  |
-| 640 | maths/pythagoras |   |  |  |
-| 641 | maths/qr_decomposition |   |  |  |
-| 642 | maths/quadratic_equations_complex_numbers |   |  |  |
-| 643 | maths/radians |   |  |  |
-| 644 | maths/radix2_fft |   |  |  |
-| 645 | maths/remove_digit |   |  |  |
-| 646 | maths/segmented_sieve |   |  |  |
-| 647 | maths/series/arithmetic |   |  |  |
-| 648 | maths/series/geometric |   |  |  |
-| 649 | maths/series/geometric_series |   |  |  |
-| 650 | maths/series/harmonic |   |  |  |
-| 651 | maths/series/harmonic_series |   |  |  |
+| 633 | maths/power_using_recursion | ✓ | 0ns | 0B |
+| 634 | maths/prime_check | ✓ | 0ns | 128B |
+| 635 | maths/prime_factors | ✓ | 0ns | 0B |
+| 636 | maths/prime_numbers | ✓ | 0ns | 192B |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 0ns | 0B |
+| 638 | maths/primelib | ✓ | 1.0µs | 480B |
+| 639 | maths/print_multiplication_table | ✓ | 1.0µs | 0B |
+| 640 | maths/pythagoras | ✓ | 0ns | 0B |
+| 641 | maths/qr_decomposition | ✓ | 0ns | 768B |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 1.0µs | 0B |
+| 643 | maths/radians | ✓ | 0ns | 0B |
+| 644 | maths/radix2_fft | ✓ | 1.0µs | 224B |
+| 645 | maths/remove_digit | ✓ | 0ns | 0B |
+| 646 | maths/segmented_sieve | ✓ | 0ns | 0B |
+| 647 | maths/series/arithmetic | ✓ | 0ns | 192B |
+| 648 | maths/series/geometric | ✓ | 0ns | 0B |
+| 649 | maths/series/geometric_series | ✓ | 0ns | 224B |
+| 650 | maths/series/harmonic | ✓ | 0ns | 64B |
+| 651 | maths/series/harmonic_series | ✓ | 0ns | 1.31KB |
 | 652 | maths/series/hexagonal_numbers |   |  |  |
-| 653 | maths/series/p_series |   |  |  |
-| 654 | maths/sieve_of_eratosthenes |   |  |  |
-| 655 | maths/sigmoid |   |  |  |
-| 656 | maths/signum |   |  |  |
+| 653 | maths/series/p_series | ✓ | 0ns | 2.91KB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 0ns | 320B |
+| 655 | maths/sigmoid | ✓ | 0ns | 128B |
+| 656 | maths/signum | ✓ | 0ns | 0B |
 | 657 | maths/simultaneous_linear_equation_solver |   |  |  |
-| 658 | maths/sin |   |  |  |
-| 659 | maths/sock_merchant |   |  |  |
-| 660 | maths/softmax |   |  |  |
+| 658 | maths/sin | ✓ | 0ns | 0B |
+| 659 | maths/sock_merchant | ✓ | 0ns | 0B |
+| 660 | maths/softmax | ✓ | 1.0µs | 0B |
 | 661 | maths/solovay_strassen_primality_test |   |  |  |
 | 662 | maths/spearman_rank_correlation_coefficient |   |  |  |
-| 663 | maths/special_numbers/armstrong_numbers |   |  |  |
-| 664 | maths/special_numbers/automorphic_number |   |  |  |
-| 665 | maths/special_numbers/bell_numbers |   |  |  |
-| 666 | maths/special_numbers/carmichael_number |   |  |  |
-| 667 | maths/special_numbers/catalan_number |   |  |  |
-| 668 | maths/special_numbers/hamming_numbers |   |  |  |
-| 669 | maths/special_numbers/happy_number |   |  |  |
-| 670 | maths/special_numbers/harshad_numbers |   |  |  |
-| 671 | maths/special_numbers/hexagonal_number |   |  |  |
-| 672 | maths/special_numbers/krishnamurthy_number |   |  |  |
-| 673 | maths/special_numbers/perfect_number |   |  |  |
-| 674 | maths/special_numbers/polygonal_numbers |   |  |  |
-| 675 | maths/special_numbers/pronic_number |   |  |  |
-| 676 | maths/special_numbers/proth_number |   |  |  |
-| 677 | maths/special_numbers/triangular_numbers |   |  |  |
-| 678 | maths/special_numbers/ugly_numbers |   |  |  |
-| 679 | maths/special_numbers/weird_number |   |  |  |
-| 680 | maths/sum_of_arithmetic_series |   |  |  |
-| 681 | maths/sum_of_digits |   |  |  |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 0ns | 0B |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 0ns | 128B |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 0ns | 0B |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 1.0µs | 128B |
+| 667 | maths/special_numbers/catalan_number | ✓ | 0ns | 0B |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 0ns | 224B |
+| 669 | maths/special_numbers/happy_number | ✓ | 0ns | 0B |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 1.0µs | 0B |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 0ns | 64B |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 0ns | 128B |
+| 673 | maths/special_numbers/perfect_number | ✓ | 0ns | 0B |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 0ns | 0B |
+| 675 | maths/special_numbers/pronic_number | ✓ | 1.0µs | 0B |
+| 676 | maths/special_numbers/proth_number | ✓ | 0ns | 0B |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 1.0µs | 0B |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 1.0µs | 64B |
+| 679 | maths/special_numbers/weird_number | ✓ | 0ns | 0B |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 0ns | 0B |
+| 681 | maths/sum_of_digits | ✓ | 1.0µs | 0B |
 | 682 | maths/sum_of_geometric_progression |   |  |  |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
-| 685 | maths/sylvester_sequence |   |  |  |
+| 683 | maths/sum_of_harmonic_series | ✓ | 0ns | 0B |
+| 684 | maths/sumset | ✓ | 0ns | 0B |
+| 685 | maths/sylvester_sequence | ✓ | 0ns | 64B |
 | 686 | maths/tanh |   |  |  |
 | 687 | maths/test_factorial |   |  |  |
 | 688 | maths/test_prime_check |   |  |  |
