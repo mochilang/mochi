@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:09 +0700
+// Generated 2025-08-17 12:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,25 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.15g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Point3d = {
     mutable x: float
     mutable y: float
@@ -131,33 +122,33 @@ and are_collinear (a: Point3d) (b: Point3d) (c: Point3d) (accuracy: int) =
     with
         | Return -> __ret
 and test_are_collinear () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let p1: Point3d = { x = 0.0; y = 0.0; z = 0.0 }
         let p2: Point3d = { x = 1.0; y = 1.0; z = 1.0 }
         let p3: Point3d = { x = 2.0; y = 2.0; z = 2.0 }
         if not (are_collinear (p1) (p2) (p3) (10)) then
-            failwith ("collinear test failed")
+            ignore (failwith ("collinear test failed"))
         let q3: Point3d = { x = 1.0; y = 2.0; z = 3.0 }
         if are_collinear (p1) (p2) (q3) (10) then
-            failwith ("non-collinear test failed")
+            ignore (failwith ("non-collinear test failed"))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_are_collinear()
+        ignore (test_are_collinear())
         let a: Point3d = { x = 4.802293498137402; y = 3.536233125455244; z = 0.0 }
         let b: Point3d = { x = -2.186788107953106; y = -9.24561398001649; z = 7.141509524846482 }
         let c: Point3d = { x = 1.530169574640268; y = -2.447927606600034; z = 3.343487096469054 }
-        printfn "%s" (_str (are_collinear (a) (b) (c) (10)))
+        ignore (printfn "%s" (_str (are_collinear (a) (b) (c) (10))))
         let d: Point3d = { x = 2.399001826862445; y = -2.452009976680793; z = 4.464656666157666 }
         let e: Point3d = { x = -3.682816335934376; y = 5.753788986533145; z = 9.490993909044244 }
         let f: Point3d = { x = 1.962903518985307; y = 3.741415730125627; z = 7.0 }
-        printfn "%s" (_str (are_collinear (d) (e) (f) (10)))
+        ignore (printfn "%s" (_str (are_collinear (d) (e) (f) (10))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -165,4 +156,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())
