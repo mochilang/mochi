@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-17 12:17 GMT+7
+Last updated: 2025-08-17 13:32 GMT+7
 
-## Algorithms Golden Test Checklist (990/1077)
+## Algorithms Golden Test Checklist (991/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -630,7 +630,7 @@ Last updated: 2025-08-17 12:17 GMT+7
 | 621 | maths/numerical_analysis/square_root | ✓ | 88µs | 38.9 KB |
 | 622 | maths/odd_sieve | ✓ | 179µs | 37.0 KB |
 | 623 | maths/perfect_cube | ✓ | 89µs | 35.8 KB |
-| 624 | maths/perfect_number | ✓ |  |  |
+| 624 | maths/perfect_number | ✓ | 11.172315s | 37.0 KB |
 | 625 | maths/perfect_square | ✓ | 185µs | 35.9 KB |
 | 626 | maths/persistence | ✓ | 54µs | 37.0 KB |
 | 627 | maths/pi_generator | ✓ | 161µs | 35.7 KB |
@@ -644,7 +644,7 @@ Last updated: 2025-08-17 12:17 GMT+7
 | 635 | maths/prime_factors | ✓ | 185µs | 37.7 KB |
 | 636 | maths/prime_numbers | ✓ | 228µs | 39.0 KB |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 180µs | 36.8 KB |
-| 638 | maths/primelib | error |  |  |
+| 638 | maths/primelib | ✓ | 359µs | 72.7 KB |
 | 639 | maths/print_multiplication_table | ✓ | 59µs | 35.9 KB |
 | 640 | maths/pythagoras | ✓ | 98µs | 36.4 KB |
 | 641 | maths/qr_decomposition | ✓ | 207µs | 73.1 KB |
