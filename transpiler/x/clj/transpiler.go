@@ -959,6 +959,25 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	}}
 	pr.Forms = append(pr.Forms, toiFn)
 
+	mochiStrFn := &Defn{Name: "mochi_str", Params: []Node{Symbol("v")}, Body: []Node{
+		&List{Elems: []Node{
+			Symbol("cond"),
+			&List{Elems: []Node{Symbol("float?"), Symbol("v")}},
+			&List{Elems: []Node{
+				Symbol("let"),
+				&Vector{Elems: []Node{Symbol("s"), &List{Elems: []Node{Symbol("str"), Symbol("v")}}}},
+				&List{Elems: []Node{
+					Symbol("if"),
+					&List{Elems: []Node{Symbol("clojure.string/ends-with?"), Symbol("s"), StringLit(".0")}},
+					&List{Elems: []Node{Symbol("subs"), Symbol("s"), IntLit(0), &List{Elems: []Node{Symbol("-"), &List{Elems: []Node{Symbol("count"), Symbol("s")}}, IntLit(2)}}}},
+					Symbol("s"),
+				}},
+			}},
+			Keyword("else"), &List{Elems: []Node{Symbol("str"), Symbol("v")}},
+		}},
+	}}
+	pr.Forms = append(pr.Forms, mochiStrFn)
+
 	fetchFn := &Defn{Name: "_fetch", Params: []Node{Symbol("url")}, Body: []Node{
 		&Map{Pairs: [][2]Node{
 			{Keyword("data"), &Vector{Elems: []Node{
@@ -2729,6 +2748,23 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			elems = append(elems, Symbol("println"))
 		case "len":
 			elems = append(elems, Symbol("count"))
+		case "str":
+			if len(c.Args) != 1 {
+				parts := make([]Node, 0, len(c.Args))
+				for _, a := range c.Args {
+					ae, err := transpileExpr(a)
+					if err != nil {
+						return nil, err
+					}
+					parts = append(parts, &List{Elems: []Node{Symbol("mochi_str"), ae}})
+				}
+				return &List{Elems: append([]Node{Symbol("str")}, parts...)}, nil
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("mochi_str"), arg}}, nil
 		case "now":
 			if len(c.Args) != 0 {
 				return nil, fmt.Errorf("now expects no args")
@@ -2881,15 +2917,6 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 				return nil, err
 			}
 			return &List{Elems: []Node{Symbol("Math/floor"), arg}}, nil
-		case "ceil":
-			if len(c.Args) != 1 {
-				return nil, fmt.Errorf("ceil expects 1 arg")
-			}
-			arg, err := transpileExpr(c.Args[0])
-			if err != nil {
-				return nil, err
-			}
-			return &List{Elems: []Node{Symbol("Math/ceil"), arg}}, nil
 		case "append":
 			elems = append(elems, Symbol("conj"))
 		case "slice":
