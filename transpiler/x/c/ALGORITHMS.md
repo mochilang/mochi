@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (633/1077) - Last updated 2025-08-17 14:42 +0700:
+Checklist of programs that currently transpile and run (635/1077) - Last updated 2025-08-17 20:26 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -683,7 +683,7 @@ Checklist of programs that currently transpile and run (633/1077) - Last updated
 | 676 | maths/special_numbers/proth_number |  |  |  |
 | 677 | maths/special_numbers/triangular_numbers |  |  |  |
 | 678 | maths/special_numbers/ugly_numbers |  |  |  |
-| 679 | maths/special_numbers/weird_number |  |  |  |
+| 679 | maths/special_numbers/weird_number | ✓ | 250us | 1.6 MB |
 | 680 | maths/sum_of_arithmetic_series |  |  |  |
 | 681 | maths/sum_of_digits | ✓ | 430us | 1.4 MB |
 | 682 | maths/sum_of_geometric_progression |  |  |  |
@@ -700,7 +700,7 @@ Checklist of programs that currently transpile and run (633/1077) - Last updated
 | 693 | maths/two_pointer |  |  |  |
 | 694 | maths/two_sum |  |  |  |
 | 695 | maths/volume |  |  |  |
-| 696 | maths/zellers_congruence |  |  |  |
+| 696 | maths/zellers_congruence | ✓ | 197us | 1.6 MB |
 | 697 | matrix/binary_search_matrix |  |  |  |
 | 698 | matrix/count_islands_in_matrix |  |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |  |  |  |
