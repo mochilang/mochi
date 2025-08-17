@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-16 15:05 GMT+7
+Last updated: 2025-08-17 08:58 GMT+7
 
-## Algorithms Golden Test Checklist (1044/1077)
+## Algorithms Golden Test Checklist (1047/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -581,7 +581,7 @@ Last updated: 2025-08-16 15:05 GMT+7
 | 572 | maths/gamma | ✓ | 170.594ms | 1.4 KB |
 | 573 | maths/gaussian | ✓ | 85µs | 272 B |
 | 574 | maths/gcd_of_n_numbers | ✓ | 89µs | 888 B |
-| 575 | maths/geometric_mean | error |  |  |
+| 575 | maths/geometric_mean | ✓ | 108µs | 1.2 KB |
 | 576 | maths/germain_primes | ✓ | 38µs | 496 B |
 | 577 | maths/greatest_common_divisor | ✓ | 144µs | 816 B |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 85µs | 1.0 KB |
@@ -658,7 +658,7 @@ Last updated: 2025-08-16 15:05 GMT+7
 | 649 | maths/series/geometric_series | ✓ | 112µs | 808 B |
 | 650 | maths/series/harmonic | ✓ | 184µs | 904 B |
 | 651 | maths/series/harmonic_series | ✓ | 92µs | 808 B |
-| 652 | maths/series/hexagonal_numbers | error |  |  |
+| 652 | maths/series/hexagonal_numbers | ✓ | 164µs | 976 B |
 | 653 | maths/series/p_series | ✓ | 166µs | 848 B |
 | 654 | maths/sieve_of_eratosthenes | ✓ | 559µs | 888 B |
 | 655 | maths/sigmoid | ✓ | 155µs | 840 B |
@@ -704,7 +704,7 @@ Last updated: 2025-08-16 15:05 GMT+7
 | 695 | maths/volume | ✓ | 134µs | 1.6 KB |
 | 696 | maths/zellers_congruence | ✓ | 70µs | 1.2 KB |
 | 697 | matrix/binary_search_matrix | ✓ | 108µs | 1000 B |
-| 698 | matrix/count_islands_in_matrix | error |  |  |
+| 698 | matrix/count_islands_in_matrix | ✓ | 128µs | 3.3 KB |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 999.697ms | 31.3 MB |
 | 700 | matrix/count_paths | ✓ | 297µs | 2.9 KB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 94µs | 1.0 KB |

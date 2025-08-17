@@ -76,6 +76,26 @@ local function _padStart(s, len, ch)
 end
 `
 
+const helperLen = `
+local function _len(v)
+  if type(v) == 'table' and v.items ~= nil then
+    return #v.items
+  elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then
+    local c = 0
+    for _ in pairs(v) do c = c + 1 end
+    return c
+  elseif type(v) == 'string' then
+    local l = utf8.len(v)
+    if l then return l end
+    return #v
+  elseif type(v) == 'table' then
+    return #v
+  else
+    return 0
+  end
+end
+`
+
 const helperBigRat = `
 local function _gcd(a, b)
   a = math.abs(a)
@@ -660,7 +680,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		return
 	case "len", "count":
-		io.WriteString(w, "(function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then\n    local c = 0\n    for _ in pairs(v) do c = c + 1 end\n    return c\n  elseif type(v) == 'string' then\n    local l = utf8.len(v)\n    if l then return l end\n    return #v\n  elseif type(v) == 'table' then\n    return #v\n  else\n    return 0\n  end\nend)(")
+		io.WriteString(w, "_len(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -2853,6 +2873,8 @@ func collectHelpers(p *Program) map[string]bool {
 			switch ex.Func {
 			case "now":
 				used["now"] = true
+			case "len", "count":
+				used["len"] = true
 			case "_bigrat", "_add", "_sub", "_mul", "_div", "num", "denom":
 				used["bigrat"] = true
 			case "padStart":
@@ -3068,6 +3090,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["padStart"] {
 		b.WriteString(helperPadStart)
+	}
+	if used["len"] {
+		b.WriteString(helperLen)
 	}
 	if used["bigrat"] {
 		b.WriteString(helperBigRat)
