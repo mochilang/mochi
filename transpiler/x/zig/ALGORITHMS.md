@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-16 19:42 +0700
+Last updated: 2025-08-17 09:08 +0700
 
-## Program Checklist (398/1077)
+## Program Checklist (399/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -584,7 +584,7 @@ Last updated: 2025-08-16 19:42 +0700
 | 575 | maths/geometric_mean |   |  |  |
 | 576 | maths/germain_primes |   |  |  |
 | 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 372µs | 384.0 KB |
 | 579 | maths/integer_square_root |   |  |  |
 | 580 | maths/interquartile_range |   |  |  |
 | 581 | maths/is_int_palindrome |   |  |  |
