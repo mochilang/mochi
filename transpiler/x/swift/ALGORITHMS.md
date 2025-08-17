@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 974/1077
-Last updated: 2025-08-17 08:49 +0700
+Last updated: 2025-08-17 09:08 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -606,7 +606,7 @@ Last updated: 2025-08-17 08:49 +0700
 | 597 | maths/manhattan_distance | ✓ | 330µs | 3.2 MB |
 | 598 | maths/matrix_exponentiation | ✓ | 427µs | 3.2 MB |
 | 599 | maths/max_sum_sliding_window | ✓ | 293µs | 3.2 MB |
-| 600 | maths/minkowski_distance | ✓ | 263µs | 3.2 MB |
+| 600 | maths/minkowski_distance | ✓ | 331µs | 3.2 MB |
 | 601 | maths/mobius_function | ✓ | 342µs | 3.2 MB |
 | 602 | maths/modular_division | ✓ | 308µs | 3.1 MB |
 | 603 | maths/monte_carlo | ✓ | 2.817ms | 3.5 MB |
