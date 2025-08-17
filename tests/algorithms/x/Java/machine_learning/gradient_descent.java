@@ -104,11 +104,41 @@ public class Main {
         }
     }
     public static void main(String[] args) {
-        train_data = ((DataPoint[])(new DataPoint[]{new DataPoint(new double[]{5.0, 2.0, 3.0}, 15.0), new DataPoint(new double[]{6.0, 5.0, 9.0}, 25.0), new DataPoint(new double[]{11.0, 12.0, 13.0}, 41.0), new DataPoint(new double[]{1.0, 1.0, 1.0}, 8.0), new DataPoint(new double[]{11.0, 12.0, 13.0}, 41.0)}));
-        test_data = ((DataPoint[])(new DataPoint[]{new DataPoint(new double[]{515.0, 22.0, 13.0}, 555.0), new DataPoint(new double[]{61.0, 35.0, 49.0}, 150.0)}));
-        parameter_vector = ((double[])(run_gradient_descent(((DataPoint[])(train_data)), ((double[])(parameter_vector)))));
-        System.out.println("\nTesting gradient descent for a linear hypothesis function.\n");
-        test_gradient_descent(((DataPoint[])(test_data)), ((double[])(parameter_vector)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            train_data = ((DataPoint[])(new DataPoint[]{new DataPoint(new double[]{5.0, 2.0, 3.0}, 15.0), new DataPoint(new double[]{6.0, 5.0, 9.0}, 25.0), new DataPoint(new double[]{11.0, 12.0, 13.0}, 41.0), new DataPoint(new double[]{1.0, 1.0, 1.0}, 8.0), new DataPoint(new double[]{11.0, 12.0, 13.0}, 41.0)}));
+            test_data = ((DataPoint[])(new DataPoint[]{new DataPoint(new double[]{515.0, 22.0, 13.0}, 555.0), new DataPoint(new double[]{61.0, 35.0, 49.0}, 150.0)}));
+            parameter_vector = ((double[])(run_gradient_descent(((DataPoint[])(train_data)), ((double[])(parameter_vector)))));
+            System.out.println("\nTesting gradient descent for a linear hypothesis function.\n");
+            test_gradient_descent(((DataPoint[])(test_data)), ((double[])(parameter_vector)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static double[] appendDouble(double[] arr, double v) {
