@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-16 19:57 GMT+7
+Last updated: 2025-08-17 09:02 GMT+7
 
-## Algorithms Golden Test Checklist (813/1077)
+## Algorithms Golden Test Checklist (812/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -512,14 +512,14 @@ Last updated: 2025-08-16 19:57 GMT+7
 | 503 | machine_learning/forecasting/run | ✓ | 103µs | 2.2 MB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
 | 505 | machine_learning/gradient_boosting_classifier | ✓ | 101µs | 2.2 MB |
-| 506 | machine_learning/gradient_descent | ✓ | 16.655ms | 2.3 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 24.479ms | 2.1 MB |
 | 507 | machine_learning/k_means_clust | ✓ | 91µs | 2.2 MB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 45µs | 2.0 MB |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 355µs | 2.1 MB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 576µs | 2.7 MB |
 | 510 | machine_learning/linear_regression | ✓ | 78µs | 2.2 MB |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 86µs | 2.0 MB |
 | 512 | machine_learning/logistic_regression | ✓ | 1.455ms | 2.0 MB |
-| 513 | machine_learning/loss_functions | ✓ | 94µs | 2.2 MB |
+| 513 | machine_learning/loss_functions | error | 94µs | 2.2 MB |
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 3.219ms | 2.2 MB |
 | 515 | machine_learning/mfcc | ✓ | 149µs | 2.1 MB |
 | 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 6.637ms | 2.1 MB |
