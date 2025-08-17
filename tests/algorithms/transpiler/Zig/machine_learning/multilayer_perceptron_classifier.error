@@ -1,0 +1,3 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/machine_learning/multilayer_perceptron_classifier.zig:12:29: error: expected ',' after field
+/workspace/mochi/tests/algorithms/transpiler/Zig/machine_learning/multilayer_perceptron_classifier.zig:12:1: note: use 'var' or 'const' to declare variable
