@@ -306,6 +306,17 @@ func emitLensExpr(w io.Writer, e Expr) {
 		io.WriteString(w, "."+v.Name+"_lens")
 	case *CallExpr:
 		io.WriteString(w, v.Func+"_lens")
+	case *IndexExpr:
+		if vr, ok := v.Target.(*VarRef); ok {
+			if typ, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(typ, "[][]") {
+				io.WriteString(w, vr.Name+"_lens_lens[(int)(")
+				v.Index.emitExpr(w)
+				io.WriteString(w, ")]")
+				return
+			}
+		}
+		io.WriteString(w, "NULL")
+		return
 	case *ListLit:
 		if len(v.Elems) == 0 {
 			io.WriteString(w, "NULL")
@@ -4349,26 +4360,39 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 	rt := inferExprType(currentEnv, b.Right)
 	if (b.Op == "==" || b.Op == "!=") && lt == rt && strings.HasSuffix(lt, "[]") {
 		base := strings.TrimSuffix(lt, "[]")
+		var eqFunc string
 		switch base {
 		case "long long":
 			needListEqInt = true
-			io.WriteString(w, "list_eq_int(")
+			eqFunc = "list_eq_int"
 		case "double":
 			needListEqDouble = true
-			io.WriteString(w, "list_eq_double(")
+			eqFunc = "list_eq_double"
 		case "const char*":
 			needListEqStr = true
-			io.WriteString(w, "list_eq_str(")
+			eqFunc = "list_eq_str"
 		}
 		if base == "long long" || base == "double" || base == "const char*" {
+			tmpL := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			tmpLLen := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			tmpR := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			tmpRLen := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			io.WriteString(w, "({")
+			fmt.Fprintf(w, "%s* %s = ", base, tmpL)
 			b.Left.emitExpr(w)
-			io.WriteString(w, ", ")
+			fmt.Fprintf(w, "; size_t %s = ", tmpLLen)
 			emitLenExpr(w, b.Left)
-			io.WriteString(w, ", ")
+			fmt.Fprintf(w, "; %s* %s = ", base, tmpR)
 			b.Right.emitExpr(w)
-			io.WriteString(w, ", ")
+			fmt.Fprintf(w, "; size_t %s = ", tmpRLen)
 			emitLenExpr(w, b.Right)
-			io.WriteString(w, ")")
+			io.WriteString(w, "; ")
+			fmt.Fprintf(w, "%s(%s, %s, %s, %s)", eqFunc, tmpL, tmpLLen, tmpR, tmpRLen)
+			io.WriteString(w, ";})")
 			if b.Op == "!=" {
 				io.WriteString(w, " == 0")
 			} else {
@@ -9039,6 +9063,12 @@ func convertUnary(u *parser.Unary) Expr {
 				if n, err := strconv.Atoi(*lit.Str); err == nil {
 					return &IntLit{Value: n}
 				}
+			}
+			t := inferExprType(currentEnv, base)
+			if t == "const char*" {
+				needAtoi = true
+				funcReturnTypes["_atoi"] = "long long"
+				return &CallExpr{Func: "_atoi", Args: []Expr{base}}
 			}
 			return &UnaryExpr{Op: "(int)", Expr: base}
 		}
