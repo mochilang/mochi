@@ -1421,23 +1421,33 @@ var (
 	usesSplit       bool
 	usesFetch       bool
 	usesMem         bool
-       benchMain       bool
-       loopDepth       int
-       tmpVarCounter   int
+	benchMain       bool
+	loopDepth       int
+	tmpVarCounter   int
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, the program will output a
-// JSON object with duration and memory statistics on completion.
-func SetBenchMain(v bool) { benchMain = v }
+// JSON object with duration and memory statistics on completion. The helper
+// also mirrors the behaviour of tests that toggle the MOCHI_BENCHMARK
+// environment variable so that emitted programs produce benchmark data even
+// when run outside the test harness.
+func SetBenchMain(v bool) {
+	benchMain = v
+	if v {
+		_ = os.Setenv("MOCHI_BENCHMARK", "1")
+	} else {
+		_ = os.Unsetenv("MOCHI_BENCHMARK")
+	}
+}
 
 // init enables benchmark mode automatically when the MOCHI_BENCHMARK
 // environment variable is set. This mirrors behavior in tests where the
 // variable is used to request benchmark data from generated programs.
 func init() {
-        if v := os.Getenv("MOCHI_BENCHMARK"); v != "" && v != "0" && strings.ToLower(v) != "false" {
-                benchMain = true
-        }
+	if v := os.Getenv("MOCHI_BENCHMARK"); v != "" && v != "0" && strings.ToLower(v) != "false" {
+		benchMain = true
+	}
 }
 
 func tmpVar() string {
