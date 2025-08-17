@@ -5904,30 +5904,44 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 }
 
 func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
-	switch {
-	case p.Call != nil:
-		if localFuncs[p.Call.Func] {
-			args := make([]Expr, len(p.Call.Args))
-			var paramTypes []types.Type
-			if t, err := env.GetVar(p.Call.Func); err == nil {
-				if ft, ok := t.(types.FuncType); ok {
-					paramTypes = ft.Params
-				}
-			}
-			for i, a := range p.Call.Args {
-				ex, err := convertExpr(env, a)
-				if err != nil {
-					return nil, err
-				}
-				if ll, ok := ex.(*ListLit); ok && len(ll.Elems) == 0 && i < len(paramTypes) {
-					pt := kotlinTypeFromType(paramTypes[i])
-					if strings.HasPrefix(pt, "MutableList<") {
-						elem := strings.TrimSuffix(strings.TrimPrefix(pt, "MutableList<"), ">")
-						ex = &TypedListLit{ElemType: elem, Elems: nil}
-					} else if strings.HasPrefix(pt, "MutableMap<") {
-						part := strings.TrimSuffix(strings.TrimPrefix(pt, "MutableMap<"), ">")
-						if idx := strings.Index(part, ","); idx >= 0 {
-							k := strings.TrimSpace(part[:idx])
+        switch {
+        case p.Call != nil:
+               if p.Call.Func == "ln" || p.Call.Func == "exp" {
+                       args := make([]Expr, len(p.Call.Args))
+                       for i, a := range p.Call.Args {
+                               ex, err := convertExpr(env, a)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               args[i] = ex
+                       }
+                       if p.Call.Func == "ln" {
+                               return &CallExpr{Func: "kotlin.math.ln", Args: args}, nil
+                       }
+                       return &CallExpr{Func: "kotlin.math.exp", Args: args}, nil
+               }
+               if localFuncs[p.Call.Func] {
+                       args := make([]Expr, len(p.Call.Args))
+                       var paramTypes []types.Type
+                       if t, err := env.GetVar(p.Call.Func); err == nil {
+                               if ft, ok := t.(types.FuncType); ok {
+                                       paramTypes = ft.Params
+                               }
+                       }
+                       for i, a := range p.Call.Args {
+                               ex, err := convertExpr(env, a)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               if ll, ok := ex.(*ListLit); ok && len(ll.Elems) == 0 && i < len(paramTypes) {
+                                       pt := kotlinTypeFromType(paramTypes[i])
+                                       if strings.HasPrefix(pt, "MutableList<") {
+                                               elem := strings.TrimSuffix(strings.TrimPrefix(pt, "MutableList<"), ">")
+                                               ex = &TypedListLit{ElemType: elem, Elems: nil}
+                                       } else if strings.HasPrefix(pt, "MutableMap<") {
+                                               part := strings.TrimSuffix(strings.TrimPrefix(pt, "MutableMap<"), ">")
+                                               if idx := strings.Index(part, ","); idx >= 0 {
+                                                       k := strings.TrimSpace(part[:idx])
 							v := strings.TrimSpace(part[idx+1:])
 							ex = &CastExpr{Value: &MapLit{Items: nil}, Type: "MutableMap<" + k + ", " + v + ">"}
 						}
