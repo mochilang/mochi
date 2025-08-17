@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 1017/1077
-Last updated: 2025-08-17 09:08 +0700
+Completed programs: 1018/1077
+Last updated: 2025-08-17 12:03 +0700
 
 Checklist:
 
@@ -635,7 +635,7 @@ Checklist:
 | 626 | maths/persistence | ✓ | 202.0µs | 3.58MB |
 | 627 | maths/pi_generator | ✓ | 152.0µs | 3.70MB |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 990.0µs | 3.73MB |
-| 629 | maths/points_are_collinear_3d | ✓ | 201.0µs | 3.53MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 315.0µs | 3.74MB |
 | 630 | maths/pollard_rho | ✓ | 214.0µs | 3.58MB |
 | 631 | maths/polynomial_evaluation | ✓ | 499.0µs | 3.73MB |
 | 632 | maths/polynomials/single_indeterminate_operations | ✓ | 386.0µs | 3.77MB |
@@ -644,7 +644,7 @@ Checklist:
 | 635 | maths/prime_factors | ✓ | 244.0µs | 3.61MB |
 | 636 | maths/prime_numbers | ✓ | 211.0µs | 3.80MB |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 314.0µs | 3.61MB |
-| 638 | maths/primelib |   |  |  |
+| 638 | maths/primelib | ✓ | 546.0µs | 3.63MB |
 | 639 | maths/print_multiplication_table | ✓ | 243.0µs | 3.61MB |
 | 640 | maths/pythagoras | ✓ | 359.0µs | 3.71MB |
 | 641 | maths/qr_decomposition | ✓ | 512.0µs | 3.69MB |
