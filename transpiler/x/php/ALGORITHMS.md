@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-16 20:02 GMT+7
+Last updated: 2025-08-17 09:12 GMT+7
 
 ## Algorithms Golden Test Checklist (990/1077)
 | Index | Name | Status | Duration | Memory |
@@ -584,7 +584,7 @@ Last updated: 2025-08-16 20:02 GMT+7
 | 575 | maths/geometric_mean | error |  |  |
 | 576 | maths/germain_primes | ✓ | 92µs | 37.7 KB |
 | 577 | maths/greatest_common_divisor | ✓ | 167µs | 37.5 KB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 106µs | 37.0 KB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 84µs | 37.1 KB |
 | 579 | maths/integer_square_root | ✓ | 144µs | 36.9 KB |
 | 580 | maths/interquartile_range | ✓ | 186µs | 37.8 KB |
 | 581 | maths/is_int_palindrome | ✓ | 79µs | 40.1 KB |
