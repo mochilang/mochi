@@ -560,6 +560,14 @@ func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "/" && isIntExpr(b.Left) && isIntExpr(b.Right) {
+		io.WriteString(w, "Math.trunc(")
+		b.Left.emit(w)
+		io.WriteString(w, " / ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	io.WriteString(w, "(")
 	b.Left.emit(w)
 	io.WriteString(w, " ")
@@ -2358,8 +2366,8 @@ function sha256(bs: number[]): number[] {
 	if useLen {
 		prelude = append(prelude, &RawStmt{Code: `function _len(x: any): number { return Array.isArray(x) || typeof x === 'string' ? x.length : Object.keys(x ?? {}).length; }`})
 	}
-        if useStr {
-                prelude = append(prelude, &RawStmt{Code: `function _str(x: any): string {
+	if useStr {
+		prelude = append(prelude, &RawStmt{Code: `function _str(x: any): string {
   if (typeof x === 'number') {
     if (Object.is(x, -0)) return '0';
     if (x === Infinity) return '+Inf';
@@ -2367,14 +2375,14 @@ function sha256(bs: number[]): number[] {
     if (Number.isNaN(x)) return 'NaN';
   }
   if (Array.isArray(x)) {
-    return '[' + x.map(_str).join(', ') + ']';
+    return x.map(_str).join(',');
   }
   if (x && typeof x === 'object') {
     try { return JSON.stringify(x); } catch { return String(x); }
   }
   return String(x);
 }`})
-        }
+	}
 	if useEqual {
 		prelude = append(prelude, &RawStmt{Code: helperEqual})
 	}
@@ -3426,10 +3434,38 @@ func isFloatLitExpr(e Expr) bool {
 }
 
 func isVarIntExpr(e Expr) bool {
-	if nr, ok := e.(*NameRef); ok && transpileEnv != nil {
-		if t, err := transpileEnv.GetVar(nr.Name); err == nil {
-			return isIntType(t)
+	if nr, ok := e.(*NameRef); ok {
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(nr.Name); err == nil {
+				return isIntType(t)
+			}
 		}
+		// default to int when type info is missing
+		return true
+	}
+	return false
+}
+
+// isIntExpr heuristically determines whether an expression evaluates to an int.
+// It falls back to recursive inspection of literals, variables and arithmetic
+// operations when static type info is unavailable.
+func isIntExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *NumberLit:
+		return isIntLitExpr(v)
+	case *UnaryExpr:
+		if v.Op == "-" {
+			return isIntExpr(v.Expr)
+		}
+	case *NameRef:
+		return isVarIntExpr(v)
+	case *BinaryExpr:
+		switch v.Op {
+		case "+", "-", "*", "%":
+			return isIntExpr(v.Left) && isIntExpr(v.Right)
+		}
+	case *IntDivExpr:
+		return true
 	}
 	return false
 }
@@ -3650,7 +3686,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				expr := &BinaryExpr{Left: operands[i], Op: "%", Right: operands[i+1]}
 				operands[i] = &CallExpr{Func: "Number", Args: []Expr{expr}}
 				typesArr[i] = types.IntType{}
-			} else if ops[i] == "/" && ((isIntType(typesArr[i]) && isIntType(typesArr[i+1])) || isIntLitExpr(operands[i+1]) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
+			} else if ops[i] == "/" && ((isIntType(typesArr[i]) && isIntType(typesArr[i+1])) || (isIntExpr(operands[i]) && isIntExpr(operands[i+1])) || isIntLitExpr(operands[i+1]) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
 				if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
 					operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1], Big: true}
 					typesArr[i] = types.BigIntType{}

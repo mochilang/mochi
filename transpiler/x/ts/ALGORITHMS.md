@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-17 02:17 UTC
+Last updated: 2025-08-17 05:24 UTC
 
 ## Algorithms Golden Test Checklist (1058/1077)
 | Index | Name | Status | Duration | Memory |
@@ -635,56 +635,56 @@ Last updated: 2025-08-17 02:17 UTC
 | 626 | maths/persistence | ✓ | 571.223ms | 18.5 KB |
 | 627 | maths/pi_generator | ✓ | 571.223ms | 15.2 KB |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 7.261ms | 117.8 KB |
-| 629 | maths/points_are_collinear_3d | ✓ | 675µs | 24.8 KB |
-| 630 | maths/pollard_rho | ✓ | 1.088ms | 28.2 KB |
-| 631 | maths/polynomial_evaluation | ✓ | 604µs | 20.2 KB |
-| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 926µs | 33.2 KB |
-| 633 | maths/power_using_recursion | ✓ | 437µs | 15.1 KB |
-| 634 | maths/prime_check | ✓ | 643µs | 37.6 KB |
-| 635 | maths/prime_factors | ✓ | 716µs | 31.3 KB |
-| 636 | maths/prime_numbers | ✓ | 614µs | 21.8 KB |
-| 637 | maths/prime_sieve_eratosthenes | ✓ | 1.093ms | 276.0 KB |
-| 638 | maths/primelib | ✓ |  |  |
-| 639 | maths/print_multiplication_table | ✓ | 475µs | 17.4 KB |
-| 640 | maths/pythagoras | ✓ | 531µs | 18.4 KB |
-| 641 | maths/qr_decomposition | ✓ | 2.136ms | 339.1 KB |
-| 642 | maths/quadratic_equations_complex_numbers | ✓ | 605µs | 19.8 KB |
-| 643 | maths/radians | ✓ | 503µs | 24.2 KB |
-| 644 | maths/radix2_fft | ✓ | 2.017ms | 129.9 KB |
-| 645 | maths/remove_digit | ✓ |  |  |
-| 646 | maths/segmented_sieve | ✓ | 1.139ms | 535.8 KB |
-| 647 | maths/series/arithmetic | ✓ | 583µs | 23.3 KB |
-| 648 | maths/series/geometric | ✓ | 631µs | 20.0 KB |
-| 649 | maths/series/geometric_series | ✓ | 591µs | 29.4 KB |
-| 650 | maths/series/harmonic | ✓ | 640µs | 25.2 KB |
-| 651 | maths/series/harmonic_series | ✓ | 484µs | 14.9 KB |
-| 652 | maths/series/hexagonal_numbers | ✓ |  |  |
-| 653 | maths/series/p_series | ✓ | 1.963ms | 283.7 KB |
-| 654 | maths/sieve_of_eratosthenes | ✓ | 1.066ms | 40.9 KB |
-| 655 | maths/sigmoid | ✓ | 548µs | 20.4 KB |
-| 656 | maths/signum | ✓ | 508µs | 20.8 KB |
-| 657 | maths/simultaneous_linear_equation_solver | ✓ | 2.841ms | 314.6 KB |
-| 658 | maths/sin | ✓ | 1.505ms | 69.9 KB |
-| 659 | maths/sock_merchant | ✓ | 1.047ms | 532.8 KB |
-| 660 | maths/softmax | ✓ | 1.173ms | 285.6 KB |
-| 661 | maths/solovay_strassen_primality_test | ✓ | 1.568ms | 540.7 KB |
-| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 948µs | 537.8 KB |
-| 663 | maths/special_numbers/armstrong_numbers | ✓ | 1.193ms | 29.8 KB |
-| 664 | maths/special_numbers/automorphic_number | ✓ | 532µs | 30.8 KB |
-| 665 | maths/special_numbers/bell_numbers | ✓ | 674µs | 272.1 KB |
-| 666 | maths/special_numbers/carmichael_number | ✓ | 2.448ms | 1.1 MB |
-| 667 | maths/special_numbers/catalan_number | ✓ | 425µs | 14.9 KB |
-| 668 | maths/special_numbers/hamming_numbers | ✓ | 1.122ms | 23.2 KB |
-| 669 | maths/special_numbers/happy_number | ✓ |  |  |
-| 670 | maths/special_numbers/harshad_numbers | ✓ | 1.668ms | 76.1 KB |
-| 671 | maths/special_numbers/hexagonal_number | ✓ | 430µs | 19.8 KB |
-| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 517µs | 20.0 KB |
-| 673 | maths/special_numbers/perfect_number | ✓ | 1.307ms | 596.2 KB |
-| 674 | maths/special_numbers/polygonal_numbers | ✓ | 428µs | 14.7 KB |
-| 675 | maths/special_numbers/pronic_number | ✓ | 1.986ms | 28.5 KB |
-| 676 | maths/special_numbers/proth_number | ✓ | 783µs | 45.6 KB |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 422µs | 15.0 KB |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 770µs | 41.0 KB |
+| 629 | maths/points_are_collinear_3d | ✓ | 571.223ms | 24.4 KB |
+| 630 | maths/pollard_rho | ✓ | 571.223ms | 532.6 KB |
+| 631 | maths/polynomial_evaluation | ✓ | 571.223ms | 21.9 KB |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 571.223ms | 548.1 KB |
+| 633 | maths/power_using_recursion | ✓ | 571.223ms | 14.7 KB |
+| 634 | maths/prime_check | ✓ | 571.223ms | 37.4 KB |
+| 635 | maths/prime_factors | ✓ | 571.223ms | 36.0 KB |
+| 636 | maths/prime_numbers | ✓ | 571.223ms | 30.2 KB |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 571.223ms | 38.0 KB |
+| 638 | maths/primelib | ✓ | 571.223ms | 124.1 KB |
+| 639 | maths/print_multiplication_table | ✓ | 571.223ms | 529.8 KB |
+| 640 | maths/pythagoras | ✓ | 571.223ms | 274.2 KB |
+| 641 | maths/qr_decomposition | ✓ | 571.223ms | 402.4 KB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 571.223ms | 19.5 KB |
+| 643 | maths/radians | ✓ | 571.223ms | 23.8 KB |
+| 644 | maths/radix2_fft | ✓ | 571.223ms | 156.5 KB |
+| 645 | maths/remove_digit | ✓ | 571.223ms | 15.3 KB |
+| 646 | maths/segmented_sieve | ✓ | 571.223ms | 54.6 KB |
+| 647 | maths/series/arithmetic | ✓ | 571.223ms | 26.0 KB |
+| 648 | maths/series/geometric | ✓ | 571.223ms | 23.4 KB |
+| 649 | maths/series/geometric_series | ✓ | 571.223ms | 29.4 KB |
+| 650 | maths/series/harmonic | ✓ | 571.223ms | 29.2 KB |
+| 651 | maths/series/harmonic_series | ✓ | 571.223ms | 15.0 KB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 571.223ms | 21.5 KB |
+| 653 | maths/series/p_series | ✓ | 571.223ms | 540.2 KB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 571.223ms | 53.3 KB |
+| 655 | maths/sigmoid | ✓ | 571.223ms | 276.6 KB |
+| 656 | maths/signum | ✓ | 571.223ms | 20.4 KB |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 571.223ms | 415.8 KB |
+| 658 | maths/sin | ✓ | 571.223ms | 69.4 KB |
+| 659 | maths/sock_merchant | ✓ | 571.223ms | 44.6 KB |
+| 660 | maths/softmax | ✓ | 571.223ms | 291.2 KB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 571.223ms | 31.5 KB |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 571.223ms | 96.3 KB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 571.223ms | 33.7 KB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 571.223ms | 30.3 KB |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 571.223ms | 29.7 KB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 571.223ms | 1.1 MB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 571.223ms | 14.5 KB |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 571.223ms | 43.6 KB |
+| 669 | maths/special_numbers/happy_number | ✓ | 571.223ms | 534.1 KB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 571.223ms | 151.5 KB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 571.223ms | 19.4 KB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 571.223ms | 19.6 KB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 571.223ms | 549.5 KB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 571.223ms | 14.4 KB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 571.223ms | 28.8 KB |
+| 676 | maths/special_numbers/proth_number | ✓ | 571.223ms | 50.0 KB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 571.223ms | 14.7 KB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 571.223ms | 79.6 KB |
 | 679 | maths/special_numbers/weird_number | ✓ |  |  |
 | 680 | maths/sum_of_arithmetic_series | ✓ | 643µs | 15.0 KB |
 | 681 | maths/sum_of_digits | ✓ |  |  |
