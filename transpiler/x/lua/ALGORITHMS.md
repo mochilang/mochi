@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-17 09:16 GMT+7
+Last updated: 2025-08-17 12:25 GMT+7
 
 ## Algorithms Golden Test Checklist (1048/1077)
 | Index | Name | Status | Duration | Memory |
@@ -635,7 +635,7 @@ Last updated: 2025-08-17 09:16 GMT+7
 | 626 | maths/persistence | ✓ | 85µs | 336 B |
 | 627 | maths/pi_generator | ✓ | 41µs | 1.1 KB |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 4.106ms | 1.2 KB |
-| 629 | maths/points_are_collinear_3d | ✓ | 60µs | 1.2 KB |
+| 629 | maths/points_are_collinear_3d | ✓ | 48µs | 1.3 KB |
 | 630 | maths/pollard_rho | ✓ | 82µs | 1.0 KB |
 | 631 | maths/polynomial_evaluation | ✓ | 70µs | 1.1 KB |
 | 632 | maths/polynomials/single_indeterminate_operations | ✓ | 199µs | 1.6 KB |
