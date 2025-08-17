@@ -6624,7 +6624,7 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			return &CallExpr{Func: "math.Exp", Args: []Expr{args[0]}}, nil
 		case "floor":
-			if _, err := env.GetVar(name); err == nil {
+			if _, ok := env.GetFunc(name); ok {
 				return &CallExpr{Func: name, Args: args}, nil
 			}
 			if imports != nil {
