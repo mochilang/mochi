@@ -361,9 +361,9 @@ type IfStmt struct {
 }
 
 func (i *IfStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "if ")
+	fmt.Fprint(w, "if (")
 	i.Cond.emit(w)
-	fmt.Fprint(w, " {\n")
+	fmt.Fprint(w, ") {\n")
 	for _, s := range i.Then {
 		s.emit(w)
 	}
@@ -1409,13 +1409,10 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 		if t == "Double" {
-			if _, ok := c.Expr.(*BinaryExpr); ok {
-				c.Expr.emit(w)
-				return
-			}
-			fmt.Fprint(w, "Double(")
+			fmt.Fprint(w, "_num(")
 			c.Expr.emit(w)
 			fmt.Fprint(w, ")")
+			usesNum = true
 		} else if t == "BigInt" {
 			fmt.Fprint(w, "BigInt(")
 			c.Expr.emit(w)
@@ -2538,7 +2535,7 @@ func (p *Program) Emit() []byte {
 func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, error) {
 	usesNow = false
 	usesLookupHost = false
-	usesNum = false
+	usesNum = true
 	// Always enable the generic `_int` helper to handle Int conversions
 	// from various source types safely (e.g. from `String`). This avoids
 	// optional unwrapping errors when using Swift's `Int()` initializer.
