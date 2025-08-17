@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -49,7 +49,7 @@ let mutable _seed: int = 1
 let rec random () =
     let mutable __ret : float = Unchecked.defaultof<float>
     try
-        _seed <- ((((_seed * 13) + 7) % 100 + 100) % 100)
+        _seed <- int ((((((int64 _seed) * (int64 13)) + (int64 7)) % (int64 100) + (int64 100)) % (int64 100)))
         __ret <- (float _seed) / 100.0
         raise Return
         __ret
@@ -133,7 +133,7 @@ and average_pool (map: float array array) (size: int) =
                         sum <- sum + (_idx (_idx map (int (i + a))) (int (j + b)))
                         b <- b + 1
                     a <- a + 1
-                row <- Array.append row [|(sum / (float (size * size)))|]
+                row <- Array.append row [|(sum / (float ((int64 size) * (int64 size))))|]
                 j <- j + size
             out <- Array.append out [|row|]
             i <- i + size

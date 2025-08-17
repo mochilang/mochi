@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,28 +19,18 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -52,7 +42,7 @@ let rec binary_search (arr: int array) (lower_bound: int) (upper_bound: int) (va
     let mutable upper_bound = upper_bound
     let mutable value = value
     try
-        let r: int = _floordiv (lower_bound + upper_bound) 2
+        let r: int = _floordiv (int (lower_bound + upper_bound)) (int 2)
         if (_idx arr (int r)) = value then
             __ret <- r
             raise Return
@@ -88,16 +78,16 @@ and mat_bin_search (value: int) (matrix: int array array) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let row: int array = unbox<int array> [|1; 4; 7; 11; 15|]
-        printfn "%s" (_str (binary_search (row) (0) ((Seq.length (row)) - 1) (1)))
-        printfn "%s" (_str (binary_search (row) (0) ((Seq.length (row)) - 1) (23)))
+        ignore (printfn "%s" (_str (binary_search (row) (0) ((Seq.length (row)) - 1) (1))))
+        ignore (printfn "%s" (_str (binary_search (row) (0) ((Seq.length (row)) - 1) (23))))
         let matrix: int array array = [|[|1; 4; 7; 11; 15|]; [|2; 5; 8; 12; 19|]; [|3; 6; 9; 16; 22|]; [|10; 13; 14; 17; 24|]; [|18; 21; 23; 26; 30|]|]
-        printfn "%s" (_str (mat_bin_search (1) (matrix)))
-        printfn "%s" (_str (mat_bin_search (34) (matrix)))
+        ignore (printfn "%s" (_str (mat_bin_search (1) (matrix))))
+        ignore (printfn "%s" (_str (mat_bin_search (34) (matrix))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -105,4 +95,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

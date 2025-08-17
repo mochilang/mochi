@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -59,7 +59,7 @@ let rec cramers_rule_2x2 (eq1: float array) (eq2: float array) =
     with
         | Return -> __ret
 and test_cramers_rule_2x2 () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let r1: float array = cramers_rule_2x2 (unbox<float array> [|2.0; 3.0; 0.0|]) (unbox<float array> [|5.0; 1.0; 0.0|])
         if ((_idx r1 (int 0)) <> 0.0) || ((_idx r1 (int 1)) <> 0.0) then
@@ -71,11 +71,11 @@ and test_cramers_rule_2x2 () =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_cramers_rule_2x2()
+        ignore (test_cramers_rule_2x2())
         ignore (printfn "%s" (_repr (cramers_rule_2x2 (unbox<float array> [|11.0; 2.0; 30.0|]) (unbox<float array> [|1.0; 0.0; 4.0|]))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
@@ -84,4 +84,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

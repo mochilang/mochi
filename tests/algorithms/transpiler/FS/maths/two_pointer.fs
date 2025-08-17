@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:58 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _repr v =
@@ -60,34 +48,34 @@ let rec two_pointer (nums: int array) (target: int) =
     with
         | Return -> __ret
 and test_two_pointer () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         if (two_pointer (unbox<int array> [|2; 7; 11; 15|]) (9)) <> [|0; 1|] then
-            failwith ("case1")
+            ignore (failwith ("case1"))
         if (two_pointer (unbox<int array> [|2; 7; 11; 15|]) (17)) <> [|0; 3|] then
-            failwith ("case2")
+            ignore (failwith ("case2"))
         if (two_pointer (unbox<int array> [|2; 7; 11; 15|]) (18)) <> [|1; 2|] then
-            failwith ("case3")
+            ignore (failwith ("case3"))
         if (two_pointer (unbox<int array> [|2; 7; 11; 15|]) (26)) <> [|2; 3|] then
-            failwith ("case4")
+            ignore (failwith ("case4"))
         if (two_pointer (unbox<int array> [|1; 3; 3|]) (6)) <> [|1; 2|] then
-            failwith ("case5")
+            ignore (failwith ("case5"))
         if (Seq.length (two_pointer (unbox<int array> [|2; 7; 11; 15|]) (8))) <> 0 then
-            failwith ("case6")
+            ignore (failwith ("case6"))
         if (Seq.length (two_pointer (unbox<int array> [|0; 3; 6; 9; 12; 15; 18; 21; 24; 27|]) (19))) <> 0 then
-            failwith ("case7")
+            ignore (failwith ("case7"))
         if (Seq.length (two_pointer (unbox<int array> [|1; 2; 3|]) (6))) <> 0 then
-            failwith ("case8")
+            ignore (failwith ("case8"))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_two_pointer()
-        printfn "%s" (_repr (two_pointer (unbox<int array> [|2; 7; 11; 15|]) (9)))
+        ignore (test_two_pointer())
+        ignore (printfn "%s" (_repr (two_pointer (unbox<int array> [|2; 7; 11; 15|]) (9))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -95,4 +83,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

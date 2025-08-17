@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -32,13 +32,15 @@ let _substring (s:string) (start:int) (finish:int) =
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -58,7 +60,7 @@ let rec multiply (matrix_a: int array array) (matrix_b: int array array) =
                 let mutable ``val``: int = 0
                 let mutable k: int = 0
                 while k < n do
-                    ``val`` <- ``val`` + ((_idx (_idx matrix_a (int i)) (int k)) * (_idx (_idx matrix_b (int k)) (int j)))
+                    ``val`` <- int ((int64 ``val``) + ((int64 (_idx (_idx matrix_a (int i)) (int k))) * (int64 (_idx (_idx matrix_b (int k)) (int j)))))
                     k <- k + 1
                 row <- Array.append row [|``val``|]
                 j <- j + 1
@@ -105,7 +107,7 @@ and nth_fibonacci_matrix (n: int) =
             if (((m % 2 + 2) % 2)) = 1 then
                 res_matrix <- multiply (res_matrix) (fib_matrix)
             fib_matrix <- multiply (fib_matrix) (fib_matrix)
-            m <- _floordiv m 2
+            m <- _floordiv (int m) (int 2)
         __ret <- _idx (_idx res_matrix (int 0)) (int 0)
         raise Return
         __ret
@@ -140,7 +142,7 @@ and parse_number (s: string) =
         while i < (String.length (s)) do
             let ch: string = _substring s i (i + 1)
             if (ch >= "0") && (ch <= "9") then
-                result <- (result * 10) + (int ch)
+                result <- int (((int64 result) * (int64 10)) + (int64 (int ch)))
             i <- i + 1
         __ret <- result
         raise Return
@@ -148,7 +150,7 @@ and parse_number (s: string) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -167,4 +169,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

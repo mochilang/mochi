@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-17 13:19 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -30,13 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -78,7 +80,7 @@ and median (matrix: int array array) =
                 j <- j + 1
             i <- i + 1
         let sorted: int array = bubble_sort (linear)
-        let mid: int = _floordiv ((Seq.length (sorted)) - 1) 2
+        let mid: int = _floordiv (int ((Seq.length (sorted)) - 1)) (int 2)
         __ret <- _idx sorted (int mid)
         raise Return
         __ret
