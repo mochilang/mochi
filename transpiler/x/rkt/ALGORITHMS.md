@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-17 01:56 UTC
+Last updated: 2025-08-17 02:16 UTC
 
 ## Algorithms Golden Test Checklist (887/1077)
 | Index | Name | Status | Duration | Memory |
@@ -584,7 +584,7 @@ Last updated: 2025-08-17 01:56 UTC
 | 575 | maths/geometric_mean |   |  |  |
 | 576 | maths/germain_primes | ✓ | 35µs | 29.7 KB |
 | 577 | maths/greatest_common_divisor | ✓ | 52µs | 60.0 KB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 170µs | 373.4 KB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 318µs | 387.5 KB |
 | 579 | maths/integer_square_root | ✓ | 53µs | 55.8 KB |
 | 580 | maths/interquartile_range | ✓ | 106µs | 109.8 KB |
 | 581 | maths/is_int_palindrome | ✓ | 34µs | 11.0 KB |

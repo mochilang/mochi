@@ -1517,7 +1517,7 @@ func header() string {
 	hdr += "(define (to-string x)\n"
 	hdr += "  (cond\n"
 	hdr += "    [(number? x)\n"
-	hdr += "     (let ([s (~r x #:precision 15 #:notation 'positional)])\n"
+	hdr += "     (let ([s (~r x #:precision 17 #:notation 'positional)])\n"
 	hdr += "       (if (and (inexact? x) (not (string-contains? s \".\")))\n"
 	hdr += "           (string-append s \".0\")\n"
 	hdr += "           s))]\n"
