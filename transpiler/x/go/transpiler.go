@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go/format"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -1386,11 +1387,45 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	// constant fold patterns like <float>*pow10(<int>) to avoid
+	// precision loss from runtime multiplication of large numbers.
+	if b.Op == "*" {
+		if val, ok := foldPow10(b.Left, b.Right); ok {
+			fmt.Fprintf(w, "%g", val)
+			return
+		}
+		if val, ok := foldPow10(b.Right, b.Left); ok {
+			fmt.Fprintf(w, "%g", val)
+			return
+		}
+	}
 	fmt.Fprint(w, "(")
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
 	b.Right.emit(w)
 	fmt.Fprint(w, ")")
+}
+
+// foldPow10 returns the computed value of left*pow10(int) if the pattern
+// matches, otherwise it returns false.
+func foldPow10(left, right Expr) (float64, bool) {
+	fl, ok := left.(*FloatLit)
+	if !ok {
+		if il, ok2 := left.(*IntLit); ok2 {
+			fl = &FloatLit{Value: float64(il.Value)}
+		} else {
+			return 0, false
+		}
+	}
+	call, ok := right.(*CallExpr)
+	if !ok || call.Func != "pow10" || len(call.Args) != 1 {
+		return 0, false
+	}
+	ai, ok := call.Args[0].(*IntLit)
+	if !ok {
+		return 0, false
+	}
+	return fl.Value * math.Pow10(ai.Value), true
 }
 
 // BigBinaryExpr represents arithmetic on big integers.
