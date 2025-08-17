@@ -19,11 +19,11 @@ public class Main {
 
     static void main() {
         double[][] mat = ((double[][])(new double[][]{new double[]{2.0, 5.0, 7.0}, new double[]{4.0, 8.0, 13.0}, new double[]{9.0, 11.0, 15.0}, new double[]{12.0, 17.0, 20.0}}));
-        search_in_sorted_matrix(((double[][])(mat)), (long)(mat.length), (long)(mat[(int)((long)(0))].length), (double)(5.0));
-        search_in_sorted_matrix(((double[][])(mat)), (long)(mat.length), (long)(mat[(int)((long)(0))].length), (double)(21.0));
+        search_in_sorted_matrix(((double[][])(mat)), (long)(mat.length), (long)(mat[(int)(0L)].length), (double)(5.0));
+        search_in_sorted_matrix(((double[][])(mat)), (long)(mat.length), (long)(mat[(int)(0L)].length), (double)(21.0));
         double[][] mat2_1 = ((double[][])(new double[][]{new double[]{2.1, 5.0, 7.0}, new double[]{4.0, 8.0, 13.0}, new double[]{9.0, 11.0, 15.0}, new double[]{12.0, 17.0, 20.0}}));
-        search_in_sorted_matrix(((double[][])(mat2_1)), (long)(mat2_1.length), (long)(mat2_1[(int)((long)(0))].length), (double)(2.1));
-        search_in_sorted_matrix(((double[][])(mat2_1)), (long)(mat2_1.length), (long)(mat2_1[(int)((long)(0))].length), (double)(2.2));
+        search_in_sorted_matrix(((double[][])(mat2_1)), (long)(mat2_1.length), (long)(mat2_1[(int)(0L)].length), (double)(2.1));
+        search_in_sorted_matrix(((double[][])(mat2_1)), (long)(mat2_1.length), (long)(mat2_1[(int)(0L)].length), (double)(2.2));
     }
     public static void main(String[] args) {
         {
@@ -32,11 +32,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

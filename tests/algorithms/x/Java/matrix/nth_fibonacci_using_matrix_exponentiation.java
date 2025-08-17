@@ -14,7 +14,7 @@ public class Main {
                     val_1 = (long)((long)(val_1) + (long)((long)(matrix_a[(int)((long)(i_1))][(int)((long)(k_1))]) * (long)(matrix_b[(int)((long)(k_1))][(int)((long)(j_1))])));
                     k_1 = (long)((long)(k_1) + 1L);
                 }
-                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of((long)(val_1))).toArray()));
+                row_1 = ((long[])(appendLong(row_1, (long)(val_1))));
                 j_1 = (long)((long)(j_1) + 1L);
             }
             matrix_c_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(matrix_c_1), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
@@ -31,9 +31,9 @@ public class Main {
             long j_3 = 0L;
             while ((long)(j_3) < (long)(n)) {
                 if ((long)(i_3) == (long)(j_3)) {
-                    row_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_3), java.util.stream.LongStream.of(1L)).toArray()));
+                    row_3 = ((long[])(appendLong(row_3, 1L)));
                 } else {
-                    row_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_3), java.util.stream.LongStream.of(0L)).toArray()));
+                    row_3 = ((long[])(appendLong(row_3, 0L)));
                 }
                 j_3 = (long)((long)(j_3) + 1L);
             }
@@ -55,9 +55,9 @@ public class Main {
                 res_matrix_1 = ((long[][])(multiply(((long[][])(res_matrix_1)), ((long[][])(fib_matrix_1)))));
             }
             fib_matrix_1 = ((long[][])(multiply(((long[][])(fib_matrix_1)), ((long[][])(fib_matrix_1)))));
-            m_1 = (long)((long)(m_1) / 2L);
+            m_1 = Math.floorDiv(m_1, 2);
         }
-        return res_matrix_1[(int)((long)(0))][(int)((long)(0))];
+        return res_matrix_1[(int)(0L)][(int)(0L)];
     }
 
     static long nth_fibonacci_bruteforce(long n) {
@@ -107,11 +107,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -136,6 +132,12 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static int _runeLen(String s) {

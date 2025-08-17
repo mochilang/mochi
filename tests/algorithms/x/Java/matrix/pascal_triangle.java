@@ -5,11 +5,11 @@ public class Main {
         long i_1 = 0L;
         while ((long)(i_1) <= (long)(current_row_idx)) {
             if ((long)(i_1) == 0L || (long)(i_1) == (long)(current_row_idx)) {
-                row = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row), java.util.stream.LongStream.of(1L)).toArray()));
+                row = ((long[])(appendLong(row, 1L)));
             } else {
                 long left_1 = (long)(triangle[(int)((long)((long)(current_row_idx) - 1L))][(int)((long)((long)(i_1) - 1L))]);
                 long right_1 = (long)(triangle[(int)((long)((long)(current_row_idx) - 1L))][(int)((long)(i_1))]);
-                row = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row), java.util.stream.LongStream.of((long)((long)(left_1) + (long)(right_1)))).toArray()));
+                row = ((long[])(appendLong(row, (long)((long)(left_1) + (long)(right_1)))));
             }
             i_1 = (long)((long)(i_1) + 1L);
         }
@@ -70,11 +70,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -99,6 +95,12 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {

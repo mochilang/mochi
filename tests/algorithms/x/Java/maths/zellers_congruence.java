@@ -1,63 +1,63 @@
 public class Main {
 
-    static int parse_decimal(String s) {
-        int value = 0;
-        int i = 0;
-        while (i < _runeLen(s)) {
-            String c = s.substring(i, i+1);
-            if ((c.compareTo("0") < 0) || (c.compareTo("9") > 0)) {
+    static long parse_decimal(String s) {
+        long value = 0L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(_runeLen(s))) {
+            String c_1 = s.substring((int)((long)(i_1)), (int)((long)(i_1))+1);
+            if ((c_1.compareTo("0") < 0) || (c_1.compareTo("9") > 0)) {
                 throw new RuntimeException(String.valueOf("invalid literal"));
             }
-            value = value * 10 + (Integer.parseInt(c));
-            i = i + 1;
+            value = (long)((long)((long)(value) * 10L) + (long)((Integer.parseInt(c_1))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return value;
     }
 
     static String zeller_day(String date_input) {
-        java.util.Map<Integer,String> days = ((java.util.Map<Integer,String>)(new java.util.LinkedHashMap<Integer, String>(java.util.Map.ofEntries(java.util.Map.entry(0, "Sunday"), java.util.Map.entry(1, "Monday"), java.util.Map.entry(2, "Tuesday"), java.util.Map.entry(3, "Wednesday"), java.util.Map.entry(4, "Thursday"), java.util.Map.entry(5, "Friday"), java.util.Map.entry(6, "Saturday")))));
-        if (_runeLen(date_input) != 10) {
+        java.util.Map<Long,String> days = ((java.util.Map<Long,String>)(new java.util.LinkedHashMap<Long, String>(java.util.Map.ofEntries(java.util.Map.entry(0L, "Sunday"), java.util.Map.entry(1L, "Monday"), java.util.Map.entry(2L, "Tuesday"), java.util.Map.entry(3L, "Wednesday"), java.util.Map.entry(4L, "Thursday"), java.util.Map.entry(5L, "Friday"), java.util.Map.entry(6L, "Saturday")))));
+        if ((long)(_runeLen(date_input)) != 10L) {
             throw new RuntimeException(String.valueOf("Must be 10 characters long"));
         }
-        int m = parse_decimal(date_input.substring(0, 2));
-        if (m <= 0 || m >= 13) {
+        long m_1 = (long)(parse_decimal(_substr(date_input, (int)(0L), (int)(2L))));
+        if ((long)(m_1) <= 0L || (long)(m_1) >= 13L) {
             throw new RuntimeException(String.valueOf("Month must be between 1 - 12"));
         }
-        String sep1 = date_input.substring(2, 2+1);
-        if (!(sep1.equals("-")) && !(sep1.equals("/"))) {
+        String sep1_1 = date_input.substring((int)(2L), (int)(2L)+1);
+        if (!(sep1_1.equals("-")) && !(sep1_1.equals("/"))) {
             throw new RuntimeException(String.valueOf("Date separator must be '-' or '/'"));
         }
-        int d = parse_decimal(date_input.substring(3, 5));
-        if (d <= 0 || d >= 32) {
+        long d_1 = (long)(parse_decimal(_substr(date_input, (int)(3L), (int)(5L))));
+        if ((long)(d_1) <= 0L || (long)(d_1) >= 32L) {
             throw new RuntimeException(String.valueOf("Date must be between 1 - 31"));
         }
-        String sep2 = date_input.substring(5, 5+1);
-        if (!(sep2.equals("-")) && !(sep2.equals("/"))) {
+        String sep2_1 = date_input.substring((int)(5L), (int)(5L)+1);
+        if (!(sep2_1.equals("-")) && !(sep2_1.equals("/"))) {
             throw new RuntimeException(String.valueOf("Date separator must be '-' or '/'"));
         }
-        int y = parse_decimal(date_input.substring(6, 10));
-        if (y <= 45 || y >= 8500) {
+        long y_1 = (long)(parse_decimal(_substr(date_input, (int)(6L), (int)(10L))));
+        if ((long)(y_1) <= 45L || (long)(y_1) >= 8500L) {
             throw new RuntimeException(String.valueOf("Year out of range. There has to be some sort of limit...right?"));
         }
-        int year = y;
-        int month = m;
-        if (month <= 2) {
-            year = year - 1;
-            month = month + 12;
+        long year_1 = (long)(y_1);
+        long month_1 = (long)(m_1);
+        if ((long)(month_1) <= 2L) {
+            year_1 = (long)((long)(year_1) - 1L);
+            month_1 = (long)((long)(month_1) + 12L);
         }
-        int c_1 = Math.floorDiv(year, 100);
-        int k = Math.floorMod(year, 100);
-        int t = ((Number)(2.6 * (((Number)(month)).doubleValue()) - 5.39)).intValue();
-        Object u = Math.floorDiv(c_1, 4);
-        int v = Math.floorDiv(k, 4);
-        int x = d + k;
-        int z = t + ((Number)(u)).intValue() + v + x;
-        int w = z - (2 * c_1);
-        int f = Math.floorMod(w, 7);
-        if (f < 0) {
-            f = f + 7;
+        long c_3 = Math.floorDiv(year_1, 100);
+        long k_1 = Math.floorMod(year_1, 100);
+        long t_1 = (long)(((Number)((double)((double)(2.6) * (double)((((Number)(month_1)).doubleValue()))) - (double)(5.39))).intValue());
+        Object u_1 = Math.floorDiv(c_3, 4);
+        long v_1 = Math.floorDiv(k_1, 4);
+        long x_1 = (long)((long)(d_1) + (long)(k_1));
+        long z_1 = (long)((long)((long)((long)(t_1) + ((Number)(u_1)).intValue()) + (long)(v_1)) + (long)(x_1));
+        long w_1 = (long)((long)(z_1) - (long)((2L * (long)(c_3))));
+        long f_1 = Math.floorMod(w_1, 7);
+        if ((long)(f_1) < 0L) {
+            f_1 = (long)((long)(f_1) + 7L);
         }
-        return ((String)(days).get(f));
+        return ((String)(days).get(f_1));
     }
 
     static String zeller(String date_input) {
@@ -67,14 +67,14 @@ public class Main {
 
     static void test_zeller() {
         String[] inputs = ((String[])(new String[]{"01-31-2010", "02-01-2010", "11-26-2024", "07-04-1776"}));
-        String[] expected = ((String[])(new String[]{"Sunday", "Monday", "Tuesday", "Thursday"}));
-        int i_1 = 0;
-        while (i_1 < inputs.length) {
-            String res = String.valueOf(zeller_day(inputs[i_1]));
-            if (!(res.equals(expected[i_1]))) {
+        String[] expected_1 = ((String[])(new String[]{"Sunday", "Monday", "Tuesday", "Thursday"}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(inputs.length)) {
+            String res_1 = String.valueOf(zeller_day(inputs[(int)((long)(i_3))]));
+            if (!(res_1.equals(expected_1[(int)((long)(i_3))]))) {
                 throw new RuntimeException(String.valueOf("zeller test failed"));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
     }
 
@@ -89,11 +89,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -122,5 +118,15 @@ public class Main {
 
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

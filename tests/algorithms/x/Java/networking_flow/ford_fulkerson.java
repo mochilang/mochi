@@ -10,7 +10,7 @@ public class Main {
             i_1 = (long)((long)(i_1) + 1L);
         }
         long[] queue_1 = ((long[])(new long[]{}));
-        queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(source))).toArray()));
+        queue_1 = ((long[])(appendLong(queue_1, (long)(source))));
 visited[(int)((long)(source))] = true;
         long head_1 = 0L;
         while ((long)(head_1) < (long)(queue_1.length)) {
@@ -21,7 +21,7 @@ visited[(int)((long)(source))] = true;
             while ((long)(ind_1) < (long)(row_1.length)) {
                 long capacity_1 = (long)(row_1[(int)((long)(ind_1))]);
                 if ((visited[(int)((long)(ind_1))] == false) && (long)(capacity_1) > 0L) {
-                    queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(ind_1))).toArray()));
+                    queue_1 = ((long[])(appendLong(queue_1, (long)(ind_1))));
 visited[(int)((long)(ind_1))] = true;
 parent[(int)((long)(ind_1))] = (long)(u_1);
                 }
@@ -35,7 +35,7 @@ parent[(int)((long)(ind_1))] = (long)(u_1);
         long[] parent = ((long[])(new long[]{}));
         long i_3 = 0L;
         while ((long)(i_3) < (long)(graph.length)) {
-            parent = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(parent), java.util.stream.LongStream.of((long)(-1))).toArray()));
+            parent = ((long[])(appendLong(parent, (long)(-1))));
             i_3 = (long)((long)(i_3) + 1L);
         }
         long max_flow_1 = 0L;
@@ -73,11 +73,7 @@ parent[(int)((long)(j_1))] = (long)(-1);
             System.out.println(_p(ford_fulkerson(((long[][])(graph)), 0L, 5L)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -106,6 +102,12 @@ parent[(int)((long)(j_1))] = (long)(-1);
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
         boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }

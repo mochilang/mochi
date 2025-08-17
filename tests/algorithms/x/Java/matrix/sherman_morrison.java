@@ -33,7 +33,7 @@ public class Main {
 
     static Matrix matrix_from_lists(double[][] vals) {
         long r_2 = (long)(vals.length);
-        long c_3 = (long)((long)(r_2) == 0L ? 0 : vals[(int)((long)(0))].length);
+        long c_3 = (long)((long)(r_2) == 0L ? 0 : vals[(int)(0L)].length);
         return new Matrix(vals, r_2, c_3);
     }
 
@@ -157,7 +157,7 @@ public class Main {
     static Matrix sherman_morrison(Matrix ainv, Matrix u, Matrix v) {
         Matrix vt = matrix_transpose(v);
         Matrix vu_1 = matrix_mul(matrix_mul(vt, ainv), u);
-        double factor_1 = (double)((double)(vu_1.data[(int)((long)(0))][(int)((long)(0))]) + (double)(1.0));
+        double factor_1 = (double)((double)(vu_1.data[(int)(0L)][(int)(0L)]) + (double)(1.0));
         if ((double)(factor_1) == (double)(0.0)) {
             return new Matrix(new double[][]{}, 0, 0);
         }
@@ -182,11 +182,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

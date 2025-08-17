@@ -1,40 +1,40 @@
 public class Main {
-    static double[][] m2 = new double[0][];
-    static double[][] m3 = new double[0][];
+    static double[][] m2 = ((double[][])(new double[][]{new double[]{2.0, 5.0}, new double[]{2.0, 0.0}}));
+    static double[][] m3 = ((double[][])(new double[][]{new double[]{2.0, 5.0, 7.0}, new double[]{2.0, 0.0, 1.0}, new double[]{1.0, 2.0, 3.0}}));
 
     static double[][] inverse_of_matrix(double[][] matrix) {
-        if (matrix.length == 2 && matrix[0].length == 2 && matrix[1].length == 2) {
-            double det = matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
-            if (det == 0.0) {
+        if ((long)(matrix.length) == 2L && (long)(matrix[(int)(0L)].length) == 2L && (long)(matrix[(int)(1L)].length) == 2L) {
+            double det = (double)((double)((double)(matrix[(int)(0L)][(int)(0L)]) * (double)(matrix[(int)(1L)][(int)(1L)])) - (double)((double)(matrix[(int)(1L)][(int)(0L)]) * (double)(matrix[(int)(0L)][(int)(1L)])));
+            if ((double)(det) == (double)(0.0)) {
                 System.out.println("This matrix has no inverse.");
                 return new double[][]{};
             }
-            return new double[][]{new double[]{matrix[1][1] / det, -matrix[0][1] / det}, new double[]{-matrix[1][0] / det, matrix[0][0] / det}};
-        } else         if (matrix.length == 3 && matrix[0].length == 3 && matrix[1].length == 3 && matrix[2].length == 3) {
-            double det_1 = matrix[0][0] * matrix[1][1] * matrix[2][2] + matrix[0][1] * matrix[1][2] * matrix[2][0] + matrix[0][2] * matrix[1][0] * matrix[2][1] - (matrix[0][2] * matrix[1][1] * matrix[2][0] + matrix[0][1] * matrix[1][0] * matrix[2][2] + matrix[0][0] * matrix[1][2] * matrix[2][1]);
-            if (det_1 == 0.0) {
+            return new double[][]{new double[]{(double)(matrix[(int)(1L)][(int)(1L)]) / (double)(det), (double)(-matrix[(int)(0L)][(int)(1L)]) / (double)(det)}, new double[]{(double)(-matrix[(int)(1L)][(int)(0L)]) / (double)(det), (double)(matrix[(int)(0L)][(int)(0L)]) / (double)(det)}};
+        } else         if ((long)(matrix.length) == 3L && (long)(matrix[(int)(0L)].length) == 3L && (long)(matrix[(int)(1L)].length) == 3L && (long)(matrix[(int)(2L)].length) == 3L) {
+            double det_1 = (double)((double)((double)((double)((double)((double)(matrix[(int)(0L)][(int)(0L)]) * (double)(matrix[(int)(1L)][(int)(1L)])) * (double)(matrix[(int)(2L)][(int)(2L)])) + (double)((double)((double)(matrix[(int)(0L)][(int)(1L)]) * (double)(matrix[(int)(1L)][(int)(2L)])) * (double)(matrix[(int)(2L)][(int)(0L)]))) + (double)((double)((double)(matrix[(int)(0L)][(int)(2L)]) * (double)(matrix[(int)(1L)][(int)(0L)])) * (double)(matrix[(int)(2L)][(int)(1L)]))) - (double)(((double)((double)((double)((double)(matrix[(int)(0L)][(int)(2L)]) * (double)(matrix[(int)(1L)][(int)(1L)])) * (double)(matrix[(int)(2L)][(int)(0L)])) + (double)((double)((double)(matrix[(int)(0L)][(int)(1L)]) * (double)(matrix[(int)(1L)][(int)(0L)])) * (double)(matrix[(int)(2L)][(int)(2L)]))) + (double)((double)((double)(matrix[(int)(0L)][(int)(0L)]) * (double)(matrix[(int)(1L)][(int)(2L)])) * (double)(matrix[(int)(2L)][(int)(1L)])))));
+            if ((double)(det_1) == (double)(0.0)) {
                 System.out.println("This matrix has no inverse.");
                 return new double[][]{};
             }
             double[][] cof = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0}}));
-cof[0][0] = matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1];
-cof[0][1] = -(matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]);
-cof[0][2] = matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0];
-cof[1][0] = -(matrix[0][1] * matrix[2][2] - matrix[0][2] * matrix[2][1]);
-cof[1][1] = matrix[0][0] * matrix[2][2] - matrix[0][2] * matrix[2][0];
-cof[1][2] = -(matrix[0][0] * matrix[2][1] - matrix[0][1] * matrix[2][0]);
-cof[2][0] = matrix[0][1] * matrix[1][2] - matrix[0][2] * matrix[1][1];
-cof[2][1] = -(matrix[0][0] * matrix[1][2] - matrix[0][2] * matrix[1][0]);
-cof[2][2] = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+cof[(int)(0L)][(int)(0L)] = (double)((double)((double)(matrix[(int)(1L)][(int)(1L)]) * (double)(matrix[(int)(2L)][(int)(2L)])) - (double)((double)(matrix[(int)(1L)][(int)(2L)]) * (double)(matrix[(int)(2L)][(int)(1L)])));
+cof[(int)(0L)][(int)(1L)] = (double)(-((double)((double)(matrix[(int)(1L)][(int)(0L)]) * (double)(matrix[(int)(2L)][(int)(2L)])) - (double)((double)(matrix[(int)(1L)][(int)(2L)]) * (double)(matrix[(int)(2L)][(int)(0L)]))));
+cof[(int)(0L)][(int)(2L)] = (double)((double)((double)(matrix[(int)(1L)][(int)(0L)]) * (double)(matrix[(int)(2L)][(int)(1L)])) - (double)((double)(matrix[(int)(1L)][(int)(1L)]) * (double)(matrix[(int)(2L)][(int)(0L)])));
+cof[(int)(1L)][(int)(0L)] = (double)(-((double)((double)(matrix[(int)(0L)][(int)(1L)]) * (double)(matrix[(int)(2L)][(int)(2L)])) - (double)((double)(matrix[(int)(0L)][(int)(2L)]) * (double)(matrix[(int)(2L)][(int)(1L)]))));
+cof[(int)(1L)][(int)(1L)] = (double)((double)((double)(matrix[(int)(0L)][(int)(0L)]) * (double)(matrix[(int)(2L)][(int)(2L)])) - (double)((double)(matrix[(int)(0L)][(int)(2L)]) * (double)(matrix[(int)(2L)][(int)(0L)])));
+cof[(int)(1L)][(int)(2L)] = (double)(-((double)((double)(matrix[(int)(0L)][(int)(0L)]) * (double)(matrix[(int)(2L)][(int)(1L)])) - (double)((double)(matrix[(int)(0L)][(int)(1L)]) * (double)(matrix[(int)(2L)][(int)(0L)]))));
+cof[(int)(2L)][(int)(0L)] = (double)((double)((double)(matrix[(int)(0L)][(int)(1L)]) * (double)(matrix[(int)(1L)][(int)(2L)])) - (double)((double)(matrix[(int)(0L)][(int)(2L)]) * (double)(matrix[(int)(1L)][(int)(1L)])));
+cof[(int)(2L)][(int)(1L)] = (double)(-((double)((double)(matrix[(int)(0L)][(int)(0L)]) * (double)(matrix[(int)(1L)][(int)(2L)])) - (double)((double)(matrix[(int)(0L)][(int)(2L)]) * (double)(matrix[(int)(1L)][(int)(0L)]))));
+cof[(int)(2L)][(int)(2L)] = (double)((double)((double)(matrix[(int)(0L)][(int)(0L)]) * (double)(matrix[(int)(1L)][(int)(1L)])) - (double)((double)(matrix[(int)(0L)][(int)(1L)]) * (double)(matrix[(int)(1L)][(int)(0L)])));
             double[][] inv = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0}}));
-            int i = 0;
-            while (i < 3) {
-                int j = 0;
-                while (j < 3) {
-inv[i][j] = cof[j][i] / det_1;
-                    j = j + 1;
+            long i = 0L;
+            while ((long)(i) < 3L) {
+                long j = 0L;
+                while ((long)(j) < 3L) {
+inv[(int)((long)(i))][(int)((long)(j))] = (double)((double)(cof[(int)((long)(j))][(int)((long)(i))]) / (double)(det_1));
+                    j = (long)((long)(j) + 1L);
                 }
-                i = i + 1;
+                i = (long)((long)(i) + 1L);
             }
             return inv;
         }
@@ -45,17 +45,11 @@ inv[i][j] = cof[j][i] / det_1;
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            m2 = ((double[][])(new double[][]{new double[]{2.0, 5.0}, new double[]{2.0, 0.0}}));
             System.out.println(inverse_of_matrix(((double[][])(m2))));
-            m3 = ((double[][])(new double[][]{new double[]{2.0, 5.0, 7.0}, new double[]{2.0, 0.0, 1.0}, new double[]{1.0, 2.0, 3.0}}));
             System.out.println(inverse_of_matrix(((double[][])(m3))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

@@ -1,63 +1,63 @@
 public class Main {
 
-    static int factorial(int n) {
-        if (n < 0) {
+    static long factorial(long n) {
+        if ((long)(n) < 0L) {
             throw new RuntimeException(String.valueOf("factorial() not defined for negative values"));
         }
-        int value = 1;
-        int i = 1;
-        while (i <= n) {
-            value = value * i;
-            i = i + 1;
+        long value_1 = 1L;
+        long i_1 = 1L;
+        while ((long)(i_1) <= (long)(n)) {
+            value_1 = (long)((long)(value_1) * (long)(i_1));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        return value;
+        return value_1;
     }
 
-    static int factorial_recursive(int n) {
-        if (n < 0) {
+    static long factorial_recursive(long n) {
+        if ((long)(n) < 0L) {
             throw new RuntimeException(String.valueOf("factorial() not defined for negative values"));
         }
-        if (n <= 1) {
+        if ((long)(n) <= 1L) {
             return 1;
         }
-        return n * factorial_recursive(n - 1);
+        return (long)(n) * (long)(factorial_recursive((long)((long)(n) - 1L)));
     }
 
     static void test_zero() {
-        if (factorial(0) != 1) {
+        if ((long)(factorial(0L)) != 1L) {
             throw new RuntimeException(String.valueOf("factorial(0) failed"));
         }
-        if (factorial_recursive(0) != 1) {
+        if ((long)(factorial_recursive(0L)) != 1L) {
             throw new RuntimeException(String.valueOf("factorial_recursive(0) failed"));
         }
     }
 
     static void test_positive_integers() {
-        if (factorial(1) != 1) {
+        if ((long)(factorial(1L)) != 1L) {
             throw new RuntimeException(String.valueOf("factorial(1) failed"));
         }
-        if (factorial_recursive(1) != 1) {
+        if ((long)(factorial_recursive(1L)) != 1L) {
             throw new RuntimeException(String.valueOf("factorial_recursive(1) failed"));
         }
-        if (factorial(5) != 120) {
+        if ((long)(factorial(5L)) != 120L) {
             throw new RuntimeException(String.valueOf("factorial(5) failed"));
         }
-        if (factorial_recursive(5) != 120) {
+        if ((long)(factorial_recursive(5L)) != 120L) {
             throw new RuntimeException(String.valueOf("factorial_recursive(5) failed"));
         }
-        if (factorial(7) != 5040) {
+        if ((long)(factorial(7L)) != 5040L) {
             throw new RuntimeException(String.valueOf("factorial(7) failed"));
         }
-        if (factorial_recursive(7) != 5040) {
+        if ((long)(factorial_recursive(7L)) != 5040L) {
             throw new RuntimeException(String.valueOf("factorial_recursive(7) failed"));
         }
     }
 
     static void test_large_number() {
-        if (factorial(10) != 3628800) {
+        if ((long)(factorial(10L)) != 3628800L) {
             throw new RuntimeException(String.valueOf("factorial(10) failed"));
         }
-        if (factorial_recursive(10) != 3628800) {
+        if ((long)(factorial_recursive(10L)) != 3628800L) {
             throw new RuntimeException(String.valueOf("factorial_recursive(10) failed"));
         }
     }
@@ -70,7 +70,7 @@ public class Main {
 
     static void main() {
         run_tests();
-        System.out.println(factorial(6));
+        System.out.println(factorial(6L));
     }
     public static void main(String[] args) {
         {
@@ -79,11 +79,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

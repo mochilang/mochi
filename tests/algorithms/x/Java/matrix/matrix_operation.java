@@ -1,8 +1,8 @@
 public class Main {
 
     static double[][] add(double[][][] matrices) {
-        long rows = (long)(matrices[(int)((long)(0))].length);
-        long cols_1 = (long)(matrices[(int)((long)(0))][(int)((long)(0))].length);
+        long rows = (long)(matrices[(int)(0L)].length);
+        long cols_1 = (long)(matrices[(int)(0L)][(int)(0L)].length);
         long r_1 = 0L;
         double[][] result_1 = ((double[][])(new double[][]{}));
         while ((long)(r_1) < (long)(rows)) {
@@ -26,7 +26,7 @@ public class Main {
 
     static double[][] subtract(double[][] a, double[][] b) {
         long rows_1 = (long)(a.length);
-        long cols_3 = (long)(a[(int)((long)(0))].length);
+        long cols_3 = (long)(a[(int)(0L)].length);
         long r_3 = 0L;
         double[][] result_3 = ((double[][])(new double[][]{}));
         while ((long)(r_3) < (long)(rows_1)) {
@@ -60,9 +60,9 @@ public class Main {
 
     static double[][] multiply(double[][] a, double[][] b) {
         long rowsA = (long)(a.length);
-        long colsA_1 = (long)(a[(int)((long)(0))].length);
+        long colsA_1 = (long)(a[(int)(0L)].length);
         long rowsB_1 = (long)(b.length);
-        long colsB_1 = (long)(b[(int)((long)(0))].length);
+        long colsB_1 = (long)(b[(int)(0L)].length);
         double[][] result_6 = ((double[][])(new double[][]{}));
         long i_3 = 0L;
         while ((long)(i_3) < (long)(rowsA)) {
@@ -106,7 +106,7 @@ public class Main {
 
     static double[][] transpose(double[][] matrix) {
         long rows_2 = (long)(matrix.length);
-        long cols_5 = (long)(matrix[(int)((long)(0))].length);
+        long cols_5 = (long)(matrix[(int)(0L)].length);
         double[][] result_9 = ((double[][])(new double[][]{}));
         long c_5 = 0L;
         while ((long)(c_5) < (long)(cols_5)) {
@@ -144,14 +144,14 @@ public class Main {
 
     static double determinant(double[][] matrix) {
         if ((long)(matrix.length) == 1L) {
-            return matrix[(int)((long)(0))][(int)((long)(0))];
+            return matrix[(int)(0L)][(int)(0L)];
         }
         double det_1 = (double)(0.0);
         long c_7 = 0L;
-        while ((long)(c_7) < (long)(matrix[(int)((long)(0))].length)) {
+        while ((long)(c_7) < (long)(matrix[(int)(0L)].length)) {
             double[][] sub_1 = ((double[][])(minor(((double[][])(matrix)), 0L, (long)(c_7))));
             double sign_1 = (double)(Math.floorMod(c_7, 2) == 0L ? 1.0 : -1.0);
-            det_1 = (double)((double)(det_1) + (double)((double)((double)(matrix[(int)((long)(0))][(int)((long)(c_7))]) * (double)(determinant(((double[][])(sub_1))))) * (double)(sign_1)));
+            det_1 = (double)((double)(det_1) + (double)((double)((double)(matrix[(int)(0L)][(int)((long)(c_7))]) * (double)(determinant(((double[][])(sub_1))))) * (double)(sign_1)));
             c_7 = (long)((long)(c_7) + 1L);
         }
         return det_1;
@@ -212,11 +212,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

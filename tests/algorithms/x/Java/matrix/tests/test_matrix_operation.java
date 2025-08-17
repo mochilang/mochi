@@ -1,7 +1,7 @@
 public class Main {
 
     static void check_matrix(double[][] mat) {
-        if ((long)(mat.length) < 2L || (long)(mat[(int)((long)(0))].length) < 2L) {
+        if ((long)(mat.length) < 2L || (long)(mat[(int)(0L)].length) < 2L) {
             throw new RuntimeException(String.valueOf("Expected a matrix with at least 2x2 dimensions"));
         }
     }
@@ -9,11 +9,11 @@ public class Main {
     static double[][] add(double[][] a, double[][] b) {
         check_matrix(((double[][])(a)));
         check_matrix(((double[][])(b)));
-        if ((long)(a.length) != (long)(b.length) || (long)(a[(int)((long)(0))].length) != (long)(b[(int)((long)(0))].length)) {
+        if ((long)(a.length) != (long)(b.length) || (long)(a[(int)(0L)].length) != (long)(b[(int)(0L)].length)) {
             throw new RuntimeException(String.valueOf("Matrices must have the same dimensions"));
         }
         long rows_1 = (long)(a.length);
-        long cols_1 = (long)(a[(int)((long)(0))].length);
+        long cols_1 = (long)(a[(int)(0L)].length);
         double[][] result_1 = ((double[][])(new double[][]{}));
         long i_1 = 0L;
         while ((long)(i_1) < (long)(rows_1)) {
@@ -32,11 +32,11 @@ public class Main {
     static double[][] subtract(double[][] a, double[][] b) {
         check_matrix(((double[][])(a)));
         check_matrix(((double[][])(b)));
-        if ((long)(a.length) != (long)(b.length) || (long)(a[(int)((long)(0))].length) != (long)(b[(int)((long)(0))].length)) {
+        if ((long)(a.length) != (long)(b.length) || (long)(a[(int)(0L)].length) != (long)(b[(int)(0L)].length)) {
             throw new RuntimeException(String.valueOf("Matrices must have the same dimensions"));
         }
         long rows_3 = (long)(a.length);
-        long cols_3 = (long)(a[(int)((long)(0))].length);
+        long cols_3 = (long)(a[(int)(0L)].length);
         double[][] result_3 = ((double[][])(new double[][]{}));
         long i_3 = 0L;
         while ((long)(i_3) < (long)(rows_3)) {
@@ -55,7 +55,7 @@ public class Main {
     static double[][] scalar_multiply(double[][] a, double s) {
         check_matrix(((double[][])(a)));
         long rows_5 = (long)(a.length);
-        long cols_5 = (long)(a[(int)((long)(0))].length);
+        long cols_5 = (long)(a[(int)(0L)].length);
         double[][] result_5 = ((double[][])(new double[][]{}));
         long i_5 = 0L;
         while ((long)(i_5) < (long)(rows_5)) {
@@ -74,11 +74,11 @@ public class Main {
     static double[][] multiply(double[][] a, double[][] b) {
         check_matrix(((double[][])(a)));
         check_matrix(((double[][])(b)));
-        if ((long)(a[(int)((long)(0))].length) != (long)(b.length)) {
+        if ((long)(a[(int)(0L)].length) != (long)(b.length)) {
             throw new RuntimeException(String.valueOf("Invalid dimensions for matrix multiplication"));
         }
         long rows_7 = (long)(a.length);
-        long cols_7 = (long)(b[(int)((long)(0))].length);
+        long cols_7 = (long)(b[(int)(0L)].length);
         double[][] result_7 = ((double[][])(new double[][]{}));
         long i_7 = 0L;
         while ((long)(i_7) < (long)(rows_7)) {
@@ -123,7 +123,7 @@ public class Main {
     static double[][] transpose(double[][] a) {
         check_matrix(((double[][])(a)));
         long rows_9 = (long)(a.length);
-        long cols_9 = (long)(a[(int)((long)(0))].length);
+        long cols_9 = (long)(a[(int)(0L)].length);
         double[][] result_10 = ((double[][])(new double[][]{}));
         long j_11 = 0L;
         while ((long)(j_11) < (long)(cols_9)) {
@@ -157,11 +157,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

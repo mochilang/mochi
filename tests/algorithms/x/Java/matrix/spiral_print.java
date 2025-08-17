@@ -4,7 +4,7 @@ public class Main {
         if ((long)(matrix.length) == 0L) {
             return false;
         }
-        long cols_1 = (long)(matrix[(int)((long)(0))].length);
+        long cols_1 = (long)(matrix[(int)(0L)].length);
         for (long[] row : matrix) {
             if ((long)(row.length) != (long)(cols_1)) {
                 return false;
@@ -18,7 +18,7 @@ public class Main {
             return new long[]{};
         }
         long rows_1 = (long)(matrix.length);
-        long cols_3 = (long)(matrix[(int)((long)(0))].length);
+        long cols_3 = (long)(matrix[(int)(0L)].length);
         long top_1 = 0L;
         long bottom_1 = (long)((long)(rows_1) - 1L);
         long left_1 = 0L;
@@ -27,20 +27,20 @@ public class Main {
         while ((long)(left_1) <= (long)(right_1) && (long)(top_1) <= (long)(bottom_1)) {
             long i_1 = (long)(left_1);
             while ((long)(i_1) <= (long)(right_1)) {
-                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(matrix[(int)((long)(top_1))][(int)((long)(i_1))]))).toArray()));
+                result_1 = ((long[])(appendLong(result_1, (long)(matrix[(int)((long)(top_1))][(int)((long)(i_1))]))));
                 i_1 = (long)((long)(i_1) + 1L);
             }
             top_1 = (long)((long)(top_1) + 1L);
             i_1 = (long)(top_1);
             while ((long)(i_1) <= (long)(bottom_1)) {
-                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(matrix[(int)((long)(i_1))][(int)((long)(right_1))]))).toArray()));
+                result_1 = ((long[])(appendLong(result_1, (long)(matrix[(int)((long)(i_1))][(int)((long)(right_1))]))));
                 i_1 = (long)((long)(i_1) + 1L);
             }
             right_1 = (long)((long)(right_1) - 1L);
             if ((long)(top_1) <= (long)(bottom_1)) {
                 i_1 = (long)(right_1);
                 while ((long)(i_1) >= (long)(left_1)) {
-                    result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(matrix[(int)((long)(bottom_1))][(int)((long)(i_1))]))).toArray()));
+                    result_1 = ((long[])(appendLong(result_1, (long)(matrix[(int)((long)(bottom_1))][(int)((long)(i_1))]))));
                     i_1 = (long)((long)(i_1) - 1L);
                 }
                 bottom_1 = (long)((long)(bottom_1) - 1L);
@@ -48,7 +48,7 @@ public class Main {
             if ((long)(left_1) <= (long)(right_1)) {
                 i_1 = (long)(bottom_1);
                 while ((long)(i_1) >= (long)(top_1)) {
-                    result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(matrix[(int)((long)(i_1))][(int)((long)(left_1))]))).toArray()));
+                    result_1 = ((long[])(appendLong(result_1, (long)(matrix[(int)((long)(i_1))][(int)((long)(left_1))]))));
                     i_1 = (long)((long)(i_1) - 1L);
                 }
                 left_1 = (long)((long)(left_1) + 1L);
@@ -75,11 +75,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -104,6 +100,12 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {

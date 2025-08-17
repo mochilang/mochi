@@ -1,55 +1,47 @@
 public class Main {
-    static double a_1;
-    static double b_1;
-    static double steps;
-    static double[] boundary;
-    static double y_1;
+    static double a_2 = (double)(0.0);
+    static double b_2 = (double)(1.0);
+    static double steps = (double)(10.0);
+    static double[] boundary = ((double[])(new double[]{a_2, b_2}));
+    static double y_2;
 
     static double f(double x) {
-        return x * x;
+        return (double)(x) * (double)(x);
     }
 
     static double[] make_points(double a, double b, double h) {
         double[] xs = ((double[])(new double[]{}));
-        double x = a + h;
-        while (x <= (b - h)) {
-            xs = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(xs), java.util.stream.DoubleStream.of(x)).toArray()));
-            x = x + h;
+        double x_1 = (double)((double)(a) + (double)(h));
+        while ((double)(x_1) <= (double)(((double)(b) - (double)(h)))) {
+            xs = ((double[])(appendDouble(xs, (double)(x_1))));
+            x_1 = (double)((double)(x_1) + (double)(h));
         }
         return xs;
     }
 
     static double trapezoidal_rule(double[] boundary, double steps) {
-        double h = (boundary[1] - boundary[0]) / steps;
-        double a = boundary[0];
-        double b = boundary[1];
-        double[] xs_1 = ((double[])(make_points(a, b, h)));
-        double y = (h / 2.0) * f(a);
-        int i = 0;
-        while (i < xs_1.length) {
-            y = y + h * f(xs_1[i]);
-            i = i + 1;
+        double h = (double)((double)(((double)(boundary[(int)(1L)]) - (double)(boundary[(int)(0L)]))) / (double)(steps));
+        double a_1 = (double)(boundary[(int)(0L)]);
+        double b_1 = (double)(boundary[(int)(1L)]);
+        double[] xs_2 = ((double[])(make_points((double)(a_1), (double)(b_1), (double)(h))));
+        double y_1 = (double)((double)(((double)(h) / (double)(2.0))) * (double)(f((double)(a_1))));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(xs_2.length)) {
+            y_1 = (double)((double)(y_1) + (double)((double)(h) * (double)(f((double)(xs_2[(int)((long)(i_1))])))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        y = y + (h / 2.0) * f(b);
-        return y;
+        y_1 = (double)((double)(y_1) + (double)((double)(((double)(h) / (double)(2.0))) * (double)(f((double)(b_1)))));
+        return y_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            a_1 = 0.0;
-            b_1 = 1.0;
-            steps = 10.0;
-            boundary = ((double[])(new double[]{a_1, b_1}));
-            y_1 = trapezoidal_rule(((double[])(boundary)), steps);
-            System.out.println("y = " + _p(y_1));
+            y_2 = (double)(trapezoidal_rule(((double[])(boundary)), (double)(steps)));
+            System.out.println("y = " + _p(y_2));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -76,6 +68,12 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -88,6 +86,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

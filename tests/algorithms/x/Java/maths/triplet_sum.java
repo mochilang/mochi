@@ -1,138 +1,138 @@
 public class Main {
 
-    static int[] bubble_sort(int[] nums) {
-        int[] arr = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < nums.length) {
-            arr = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(arr), java.util.stream.IntStream.of(nums[i])).toArray()));
-            i = i + 1;
+    static long[] bubble_sort(long[] nums) {
+        long[] arr = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(nums.length)) {
+            arr = ((long[])(appendLong(arr, (long)(nums[(int)((long)(i_1))]))));
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        int n = arr.length;
-        int a = 0;
-        while (a < n) {
-            int b = 0;
-            while (b < n - a - 1) {
-                if (arr[b] > arr[b + 1]) {
-                    int tmp = arr[b];
-arr[b] = arr[b + 1];
-arr[b + 1] = tmp;
+        long n_1 = (long)(arr.length);
+        long a_1 = 0L;
+        while ((long)(a_1) < (long)(n_1)) {
+            long b_1 = 0L;
+            while ((long)(b_1) < (long)((long)((long)(n_1) - (long)(a_1)) - 1L)) {
+                if ((long)(arr[(int)((long)(b_1))]) > (long)(arr[(int)((long)((long)(b_1) + 1L))])) {
+                    long tmp_1 = (long)(arr[(int)((long)(b_1))]);
+arr[(int)((long)(b_1))] = (long)(arr[(int)((long)((long)(b_1) + 1L))]);
+arr[(int)((long)((long)(b_1) + 1L))] = (long)(tmp_1);
                 }
-                b = b + 1;
+                b_1 = (long)((long)(b_1) + 1L);
             }
-            a = a + 1;
+            a_1 = (long)((long)(a_1) + 1L);
         }
         return arr;
     }
 
-    static int[] sort3(int[] xs) {
-        int[] arr_1 = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < xs.length) {
-            arr_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(arr_1), java.util.stream.IntStream.of(xs[i_1])).toArray()));
-            i_1 = i_1 + 1;
+    static long[] sort3(long[] xs) {
+        long[] arr_1 = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(xs.length)) {
+            arr_1 = ((long[])(appendLong(arr_1, (long)(xs[(int)((long)(i_3))]))));
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        int n_1 = arr_1.length;
-        int a_1 = 0;
-        while (a_1 < n_1) {
-            int b_1 = 0;
-            while (b_1 < n_1 - a_1 - 1) {
-                if (arr_1[b_1] > arr_1[b_1 + 1]) {
-                    int tmp_1 = arr_1[b_1];
-arr_1[b_1] = arr_1[b_1 + 1];
-arr_1[b_1 + 1] = tmp_1;
+        long n_3 = (long)(arr_1.length);
+        long a_3 = 0L;
+        while ((long)(a_3) < (long)(n_3)) {
+            long b_3 = 0L;
+            while ((long)(b_3) < (long)((long)((long)(n_3) - (long)(a_3)) - 1L)) {
+                if ((long)(arr_1[(int)((long)(b_3))]) > (long)(arr_1[(int)((long)((long)(b_3) + 1L))])) {
+                    long tmp_3 = (long)(arr_1[(int)((long)(b_3))]);
+arr_1[(int)((long)(b_3))] = (long)(arr_1[(int)((long)((long)(b_3) + 1L))]);
+arr_1[(int)((long)((long)(b_3) + 1L))] = (long)(tmp_3);
                 }
-                b_1 = b_1 + 1;
+                b_3 = (long)((long)(b_3) + 1L);
             }
-            a_1 = a_1 + 1;
+            a_3 = (long)((long)(a_3) + 1L);
         }
         return arr_1;
     }
 
-    static int[] triplet_sum1(int[] arr, int target) {
-        int i_2 = 0;
-        while (i_2 < arr.length - 2) {
-            int j = i_2 + 1;
-            while (j < arr.length - 1) {
-                int k = j + 1;
-                while (k < arr.length) {
-                    if (arr[i_2] + arr[j] + arr[k] == target) {
-                        return sort3(((int[])(new int[]{arr[i_2], arr[j], arr[k]})));
+    static long[] triplet_sum1(long[] arr, long target) {
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)((long)(arr.length) - 2L)) {
+            long j_1 = (long)((long)(i_4) + 1L);
+            while ((long)(j_1) < (long)((long)(arr.length) - 1L)) {
+                long k_1 = (long)((long)(j_1) + 1L);
+                while ((long)(k_1) < (long)(arr.length)) {
+                    if ((long)((long)((long)(arr[(int)((long)(i_4))]) + (long)(arr[(int)((long)(j_1))])) + (long)(arr[(int)((long)(k_1))])) == (long)(target)) {
+                        return sort3(((long[])(new long[]{arr[(int)((long)(i_4))], arr[(int)((long)(j_1))], arr[(int)((long)(k_1))]})));
                     }
-                    k = k + 1;
+                    k_1 = (long)((long)(k_1) + 1L);
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            i_2 = i_2 + 1;
+            i_4 = (long)((long)(i_4) + 1L);
         }
-        return new int[]{0, 0, 0};
+        return new long[]{0, 0, 0};
     }
 
-    static int[] triplet_sum2(int[] arr, int target) {
-        int[] sorted = ((int[])(bubble_sort(((int[])(arr)))));
-        int n_2 = sorted.length;
-        int i_3 = 0;
-        while (i_3 < n_2 - 2) {
-            int left = i_3 + 1;
-            int right = n_2 - 1;
-            while (left < right) {
-                int s = sorted[i_3] + sorted[left] + sorted[right];
-                if (s == target) {
-                    return new int[]{sorted[i_3], sorted[left], sorted[right]};
+    static long[] triplet_sum2(long[] arr, long target) {
+        long[] sorted = ((long[])(bubble_sort(((long[])(arr)))));
+        long n_5 = (long)(sorted.length);
+        long i_6 = 0L;
+        while ((long)(i_6) < (long)((long)(n_5) - 2L)) {
+            long left_1 = (long)((long)(i_6) + 1L);
+            long right_1 = (long)((long)(n_5) - 1L);
+            while ((long)(left_1) < (long)(right_1)) {
+                long s_1 = (long)((long)((long)(sorted[(int)((long)(i_6))]) + (long)(sorted[(int)((long)(left_1))])) + (long)(sorted[(int)((long)(right_1))]));
+                if ((long)(s_1) == (long)(target)) {
+                    return new long[]{sorted[(int)((long)(i_6))], sorted[(int)((long)(left_1))], sorted[(int)((long)(right_1))]};
                 }
-                if (s < target) {
-                    left = left + 1;
+                if ((long)(s_1) < (long)(target)) {
+                    left_1 = (long)((long)(left_1) + 1L);
                 } else {
-                    right = right - 1;
+                    right_1 = (long)((long)(right_1) - 1L);
                 }
             }
-            i_3 = i_3 + 1;
+            i_6 = (long)((long)(i_6) + 1L);
         }
-        return new int[]{0, 0, 0};
+        return new long[]{0, 0, 0};
     }
 
-    static boolean list_equal(int[] a, int[] b) {
-        if (a.length != b.length) {
+    static boolean list_equal(long[] a, long[] b) {
+        if ((long)(a.length) != (long)(b.length)) {
             return false;
         }
-        int i_4 = 0;
-        while (i_4 < a.length) {
-            if (a[i_4] != b[i_4]) {
+        long i_8 = 0L;
+        while ((long)(i_8) < (long)(a.length)) {
+            if ((long)(a[(int)((long)(i_8))]) != (long)(b[(int)((long)(i_8))])) {
                 return false;
             }
-            i_4 = i_4 + 1;
+            i_8 = (long)((long)(i_8) + 1L);
         }
         return true;
     }
 
     static void test_triplet_sum() {
-        int[] arr1 = ((int[])(new int[]{13, 29, 7, 23, 5}));
-        if (!(Boolean)list_equal(((int[])(triplet_sum1(((int[])(arr1)), 35))), ((int[])(new int[]{5, 7, 23})))) {
+        long[] arr1 = ((long[])(new long[]{13, 29, 7, 23, 5}));
+        if (!(Boolean)list_equal(((long[])(triplet_sum1(((long[])(arr1)), 35L))), ((long[])(new long[]{5, 7, 23})))) {
             throw new RuntimeException(String.valueOf("ts1 case1 failed"));
         }
-        if (!(Boolean)list_equal(((int[])(triplet_sum2(((int[])(arr1)), 35))), ((int[])(new int[]{5, 7, 23})))) {
+        if (!(Boolean)list_equal(((long[])(triplet_sum2(((long[])(arr1)), 35L))), ((long[])(new long[]{5, 7, 23})))) {
             throw new RuntimeException(String.valueOf("ts2 case1 failed"));
         }
-        int[] arr2 = ((int[])(new int[]{37, 9, 19, 50, 44}));
-        if (!(Boolean)list_equal(((int[])(triplet_sum1(((int[])(arr2)), 65))), ((int[])(new int[]{9, 19, 37})))) {
+        long[] arr2_1 = ((long[])(new long[]{37, 9, 19, 50, 44}));
+        if (!(Boolean)list_equal(((long[])(triplet_sum1(((long[])(arr2_1)), 65L))), ((long[])(new long[]{9, 19, 37})))) {
             throw new RuntimeException(String.valueOf("ts1 case2 failed"));
         }
-        if (!(Boolean)list_equal(((int[])(triplet_sum2(((int[])(arr2)), 65))), ((int[])(new int[]{9, 19, 37})))) {
+        if (!(Boolean)list_equal(((long[])(triplet_sum2(((long[])(arr2_1)), 65L))), ((long[])(new long[]{9, 19, 37})))) {
             throw new RuntimeException(String.valueOf("ts2 case2 failed"));
         }
-        int[] arr3 = ((int[])(new int[]{6, 47, 27, 1, 15}));
-        if (!(Boolean)list_equal(((int[])(triplet_sum1(((int[])(arr3)), 11))), ((int[])(new int[]{0, 0, 0})))) {
+        long[] arr3_1 = ((long[])(new long[]{6, 47, 27, 1, 15}));
+        if (!(Boolean)list_equal(((long[])(triplet_sum1(((long[])(arr3_1)), 11L))), ((long[])(new long[]{0, 0, 0})))) {
             throw new RuntimeException(String.valueOf("ts1 case3 failed"));
         }
-        if (!(Boolean)list_equal(((int[])(triplet_sum2(((int[])(arr3)), 11))), ((int[])(new int[]{0, 0, 0})))) {
+        if (!(Boolean)list_equal(((long[])(triplet_sum2(((long[])(arr3_1)), 11L))), ((long[])(new long[]{0, 0, 0})))) {
             throw new RuntimeException(String.valueOf("ts2 case3 failed"));
         }
     }
 
     static void main() {
         test_triplet_sum();
-        int[] sample = ((int[])(new int[]{13, 29, 7, 23, 5}));
-        int[] res = ((int[])(triplet_sum2(((int[])(sample)), 35)));
-        System.out.println(_p(_geti(res, 0)) + " " + _p(_geti(res, 1)) + " " + _p(_geti(res, 2)));
+        long[] sample_1 = ((long[])(new long[]{13, 29, 7, 23, 5}));
+        long[] res_1 = ((long[])(triplet_sum2(((long[])(sample_1)), 35L)));
+        System.out.println(_p(_geti(res_1, ((Number)(0)).intValue())) + " " + _p(_geti(res_1, ((Number)(1)).intValue())) + " " + _p(_geti(res_1, ((Number)(2)).intValue())));
     }
     public static void main(String[] args) {
         {
@@ -141,11 +141,7 @@ arr_1[b_1 + 1] = tmp_1;
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -172,6 +168,12 @@ arr_1[b_1 + 1] = tmp_1;
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -185,10 +187,14 @@ arr_1[b_1 + 1] = tmp_1;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

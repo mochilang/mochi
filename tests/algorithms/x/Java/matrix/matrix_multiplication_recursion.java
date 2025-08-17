@@ -18,7 +18,7 @@ public class Main {
 
     static long[][] matrix_multiply(long[][] a, long[][] b) {
         long rows = (long)(a.length);
-        long cols_1 = (long)(b[(int)((long)(0))].length);
+        long cols_1 = (long)(b[(int)(0L)].length);
         long inner_1 = (long)(b.length);
         long[][] result_1 = ((long[][])(new long[][]{}));
         long i_3 = 0L;
@@ -32,7 +32,7 @@ public class Main {
                     sum_1 = (long)((long)(sum_1) + (long)((long)(a[(int)((long)(i_3))][(int)((long)(k_1))]) * (long)(b[(int)((long)(k_1))][(int)((long)(j_1))])));
                     k_1 = (long)((long)(k_1) + 1L);
                 }
-                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of((long)(sum_1))).toArray()));
+                row_1 = ((long[])(appendLong(row_1, (long)(sum_1))));
                 j_1 = (long)((long)(j_1) + 1L);
             }
             result_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
@@ -65,14 +65,14 @@ result[(int)((long)(i))][(int)((long)(j))] = (long)((long)(result[(int)((long)(i
             throw new RuntimeException(String.valueOf("Invalid matrix dimensions"));
         }
         long n_2 = (long)(a.length);
-        long m_1 = (long)(b[(int)((long)(0))].length);
+        long m_1 = (long)(b[(int)(0L)].length);
         long[][] result_3 = ((long[][])(new long[][]{}));
         long i_5 = 0L;
         while ((long)(i_5) < (long)(n_2)) {
             long[] row_3 = ((long[])(new long[]{}));
             long j_3 = 0L;
             while ((long)(j_3) < (long)(m_1)) {
-                row_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_3), java.util.stream.LongStream.of(0L)).toArray()));
+                row_3 = ((long[])(appendLong(row_3, 0L)));
                 j_3 = (long)((long)(j_3) + 1L);
             }
             result_3 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_3), java.util.stream.Stream.of(new long[][]{row_3})).toArray(long[][]::new)));
@@ -89,11 +89,7 @@ result[(int)((long)(i))][(int)((long)(j))] = (long)((long)(result[(int)((long)(i
             System.out.println(matrix_multiply_recursive(((long[][])(matrix_count_up)), ((long[][])(matrix_unordered))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -118,5 +114,11 @@ result[(int)((long)(i))][(int)((long)(j))] = (long)((long)(result[(int)((long)(i
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

@@ -28,13 +28,13 @@ arr[(int)((long)((long)(j_1) + 1L))] = (long)(temp_1);
             long[] row_1 = ((long[])(matrix[(int)((long)(i_3))]));
             long j_3 = 0L;
             while ((long)(j_3) < (long)(row_1.length)) {
-                linear = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(linear), java.util.stream.LongStream.of((long)(row_1[(int)((long)(j_3))]))).toArray()));
+                linear = ((long[])(appendLong(linear, (long)(row_1[(int)((long)(j_3))]))));
                 j_3 = (long)((long)(j_3) + 1L);
             }
             i_3 = (long)((long)(i_3) + 1L);
         }
         long[] sorted_1 = ((long[])(bubble_sort(((long[])(linear)))));
-        long mid_1 = (long)((long)(((long)(sorted_1.length) - 1L)) / 2L);
+        long mid_1 = Math.floorDiv(((long)(sorted_1.length) - 1L), 2);
         return sorted_1[(int)((long)(mid_1))];
     }
     public static void main(String[] args) {
@@ -45,11 +45,7 @@ arr[(int)((long)((long)(j_1) + 1L))] = (long)(temp_1);
             System.out.println(_p(median(((long[][])(matrix2)))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -74,6 +70,12 @@ arr[(int)((long)((long)(j_1) + 1L))] = (long)(temp_1);
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {

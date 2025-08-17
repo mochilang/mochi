@@ -1,50 +1,50 @@
 public class Main {
 
-    static boolean is_prime(int n) {
-        if (n < 2) {
+    static boolean is_prime(long n) {
+        if ((long)(n) < 2L) {
             return false;
         }
-        if (Math.floorMod(n, 2) == 0) {
-            return n == 2;
+        if (Math.floorMod(n, 2) == 0L) {
+            return (long)(n) == 2L;
         }
-        int i = 3;
-        while (i * i <= n) {
-            if (Math.floorMod(n, i) == 0) {
+        long i_1 = 3L;
+        while ((long)((long)(i_1) * (long)(i_1)) <= (long)(n)) {
+            if (Math.floorMod(n, i_1) == 0L) {
                 return false;
             }
-            i = i + 2;
+            i_1 = (long)((long)(i_1) + 2L);
         }
         return true;
     }
 
-    static int twin_prime(int number) {
-        if (((Boolean)(is_prime(number))) && ((Boolean)(is_prime(number + 2)))) {
-            return number + 2;
+    static long twin_prime(long number) {
+        if (is_prime((long)(number)) && is_prime((long)((long)(number) + 2L))) {
+            return (long)(number) + 2L;
         }
         return -1;
     }
 
     static void test_twin_prime() {
-        if (twin_prime(3) != 5) {
+        if ((long)(twin_prime(3L)) != 5L) {
             throw new RuntimeException(String.valueOf("twin_prime(3) failed"));
         }
-        if (twin_prime(4) != (-1)) {
+        if ((long)(twin_prime(4L)) != (long)((-1))) {
             throw new RuntimeException(String.valueOf("twin_prime(4) failed"));
         }
-        if (twin_prime(5) != 7) {
+        if ((long)(twin_prime(5L)) != 7L) {
             throw new RuntimeException(String.valueOf("twin_prime(5) failed"));
         }
-        if (twin_prime(17) != 19) {
+        if ((long)(twin_prime(17L)) != 19L) {
             throw new RuntimeException(String.valueOf("twin_prime(17) failed"));
         }
-        if (twin_prime(0) != (-1)) {
+        if ((long)(twin_prime(0L)) != (long)((-1))) {
             throw new RuntimeException(String.valueOf("twin_prime(0) failed"));
         }
     }
 
     static void main() {
         test_twin_prime();
-        System.out.println(twin_prime(3));
+        System.out.println(twin_prime(3L));
     }
     public static void main(String[] args) {
         {
@@ -53,11 +53,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

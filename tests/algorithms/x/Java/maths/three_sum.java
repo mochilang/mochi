@@ -1,71 +1,67 @@
 public class Main {
 
-    static int[] bubble_sort(int[] nums) {
-        int[] arr = ((int[])(nums));
-        int n = arr.length;
-        int i = 0;
-        while (i < n) {
-            int j = 0;
-            while (j < n - 1) {
-                if (arr[j] > arr[j + 1]) {
-                    int temp = arr[j];
-arr[j] = arr[j + 1];
-arr[j + 1] = temp;
+    static long[] bubble_sort(long[] nums) {
+        long[] arr = ((long[])(nums));
+        long n_1 = (long)(arr.length);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n_1)) {
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)((long)(n_1) - 1L)) {
+                if ((long)(arr[(int)((long)(j_1))]) > (long)(arr[(int)((long)((long)(j_1) + 1L))])) {
+                    long temp_1 = (long)(arr[(int)((long)(j_1))]);
+arr[(int)((long)(j_1))] = (long)(arr[(int)((long)((long)(j_1) + 1L))]);
+arr[(int)((long)((long)(j_1) + 1L))] = (long)(temp_1);
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return arr;
     }
 
-    static int[][] three_sum(int[] nums) {
-        int[] sorted = ((int[])(bubble_sort(((int[])(nums)))));
-        int[][] res = ((int[][])(new int[][]{}));
-        int n_1 = sorted.length;
-        int i_1 = 0;
-        while (i_1 < n_1 - 2) {
-            if (i_1 == 0 || sorted[i_1] != sorted[i_1 - 1]) {
-                int low = i_1 + 1;
-                int high = n_1 - 1;
-                int c = 0 - sorted[i_1];
-                while (low < high) {
-                    int s = sorted[low] + sorted[high];
-                    if (s == c) {
-                        int[] triple = ((int[])(new int[]{sorted[i_1], sorted[low], sorted[high]}));
-                        res = ((int[][])(appendObj(res, triple)));
-                        while (low < high && sorted[low] == sorted[low + 1]) {
-                            low = low + 1;
+    static long[][] three_sum(long[] nums) {
+        long[] sorted = ((long[])(bubble_sort(((long[])(nums)))));
+        long[][] res_1 = ((long[][])(new long[][]{}));
+        long n_3 = (long)(sorted.length);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)((long)(n_3) - 2L)) {
+            if ((long)(i_3) == 0L || (long)(sorted[(int)((long)(i_3))]) != (long)(sorted[(int)((long)((long)(i_3) - 1L))])) {
+                long low_1 = (long)((long)(i_3) + 1L);
+                long high_1 = (long)((long)(n_3) - 1L);
+                long c_1 = (long)(0L - (long)(sorted[(int)((long)(i_3))]));
+                while ((long)(low_1) < (long)(high_1)) {
+                    long s_1 = (long)((long)(sorted[(int)((long)(low_1))]) + (long)(sorted[(int)((long)(high_1))]));
+                    if ((long)(s_1) == (long)(c_1)) {
+                        long[] triple_1 = ((long[])(new long[]{sorted[(int)((long)(i_3))], sorted[(int)((long)(low_1))], sorted[(int)((long)(high_1))]}));
+                        res_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new long[][]{triple_1})).toArray(long[][]::new)));
+                        while ((long)(low_1) < (long)(high_1) && (long)(sorted[(int)((long)(low_1))]) == (long)(sorted[(int)((long)((long)(low_1) + 1L))])) {
+                            low_1 = (long)((long)(low_1) + 1L);
                         }
-                        while (low < high && sorted[high] == sorted[high - 1]) {
-                            high = high - 1;
+                        while ((long)(low_1) < (long)(high_1) && (long)(sorted[(int)((long)(high_1))]) == (long)(sorted[(int)((long)((long)(high_1) - 1L))])) {
+                            high_1 = (long)((long)(high_1) - 1L);
                         }
-                        low = low + 1;
-                        high = high - 1;
-                    } else                     if (s < c) {
-                        low = low + 1;
+                        low_1 = (long)((long)(low_1) + 1L);
+                        high_1 = (long)((long)(high_1) - 1L);
+                    } else                     if ((long)(s_1) < (long)(c_1)) {
+                        low_1 = (long)((long)(low_1) + 1L);
                     } else {
-                        high = high - 1;
+                        high_1 = (long)((long)(high_1) - 1L);
                     }
                 }
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + 1L);
         }
-        return res;
+        return res_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(three_sum(((int[])(new int[]{-1, 0, 1, 2, -1, -4})))));
-            System.out.println(_p(three_sum(((int[])(new int[]{1, 2, 3, 4})))));
+            System.out.println(_p(three_sum(((long[])(new long[]{-1, 0, 1, 2, -1, -4})))));
+            System.out.println(_p(three_sum(((long[])(new long[]{1, 2, 3, 4})))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -92,12 +88,6 @@ arr[j + 1] = temp;
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -110,6 +100,10 @@ arr[j + 1] = temp;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

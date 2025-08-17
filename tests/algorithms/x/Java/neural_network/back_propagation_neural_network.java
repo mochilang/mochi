@@ -127,7 +127,7 @@ public class Main {
     }
 
     static double[] matTvec(double[][] mat, double[] vec) {
-        long cols = (long)(mat[(int)((long)(0))].length);
+        long cols = (long)(mat[(int)(0L)].length);
         double[] res_4 = ((double[])(new double[]{}));
         long j_3 = 0L;
         while ((long)(j_3) < (long)(cols)) {
@@ -328,11 +328,7 @@ layers[(int)((long)(i_27))] = layer_3;
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }

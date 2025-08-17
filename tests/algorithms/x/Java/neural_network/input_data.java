@@ -57,9 +57,9 @@ public class Main {
             long j_1 = 0L;
             while ((long)(j_1) < (long)(num_classes)) {
                 if ((long)(j_1) == (long)(labels[(int)((long)(i_1))])) {
-                    row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(1L)).toArray()));
+                    row_1 = ((long[])(appendLong(row_1, 1L)));
                 } else {
-                    row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(0L)).toArray()));
+                    row_1 = ((long[])(appendLong(row_1, 0L)));
                 }
                 j_1 = (long)((long)(j_1) + 1L);
             }
@@ -80,8 +80,8 @@ public class Main {
             long[][] images_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)((long)(start)), (int)((long)(ds.num_examples)))));
             long[][] labels_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)((long)(start)), (int)((long)(ds.num_examples)))));
             long new_index_1 = (long)((long)(batch_size) - (long)(rest_1));
-            long[][] images_new_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)((long)(0)), (int)((long)(new_index_1)))));
-            long[][] labels_new_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)((long)(0)), (int)((long)(new_index_1)))));
+            long[][] images_new_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)(0L), (int)((long)(new_index_1)))));
+            long[][] labels_new_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)(0L), (int)((long)(new_index_1)))));
             long[][] batch_images_2 = ((long[][])(concat(images_rest_1, images_new_1)));
             long[][] batch_labels_2 = ((long[][])(concat(labels_rest_1, labels_new_1)));
             DataSet new_ds_2 = new DataSet(ds.images, ds.labels, ds.num_examples, new_index_1, (long)(ds.epochs_completed) + 1L);
@@ -98,8 +98,8 @@ public class Main {
     static Datasets read_data_sets(long[][] train_images, long[] train_labels_raw, long[][] test_images, long[] test_labels_raw, long validation_size, long num_classes) {
         long[][] train_labels = ((long[][])(dense_to_one_hot(((long[])(train_labels_raw)), (long)(num_classes))));
         long[][] test_labels_1 = ((long[][])(dense_to_one_hot(((long[])(test_labels_raw)), (long)(num_classes))));
-        long[][] validation_images_1 = ((long[][])(java.util.Arrays.copyOfRange(train_images, (int)((long)(0)), (int)((long)(validation_size)))));
-        long[][] validation_labels_1 = ((long[][])(java.util.Arrays.copyOfRange(train_labels, (int)((long)(0)), (int)((long)(validation_size)))));
+        long[][] validation_images_1 = ((long[][])(java.util.Arrays.copyOfRange(train_images, (int)(0L), (int)((long)(validation_size)))));
+        long[][] validation_labels_1 = ((long[][])(java.util.Arrays.copyOfRange(train_labels, (int)(0L), (int)((long)(validation_size)))));
         long[][] train_images_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(train_images, (int)((long)(validation_size)), (int)((long)(train_images.length)))));
         long[][] train_labels_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(train_labels, (int)((long)(validation_size)), (int)((long)(train_labels.length)))));
         DataSet train_1 = new_dataset(((long[][])(train_images_rest_1)), ((long[][])(train_labels_rest_1)));
@@ -135,11 +135,7 @@ public class Main {
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -166,9 +162,18 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
+    static Object concat(Object a, Object b) {
+        int len1 = java.lang.reflect.Array.getLength(a);
+        int len2 = java.lang.reflect.Array.getLength(b);
+        Object out = java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), len1 + len2);
+        System.arraycopy(a, 0, out, 0, len1);
+        System.arraycopy(b, 0, out, len1, len2);
         return out;
     }
 
