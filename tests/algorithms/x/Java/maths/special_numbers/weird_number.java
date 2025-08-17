@@ -24,10 +24,10 @@ arr[(int)((long)((long)(j_1) + 1L))] = (long)(tmp_1);
         long i_3 = 2L;
         while ((long)((long)(i_3) * (long)(i_3)) <= (long)(num)) {
             if (Math.floorMod(num, i_3) == 0L) {
-                values = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(values), java.util.stream.LongStream.of((long)(i_3))).toArray()));
+                values = ((long[])(appendLong(values, (long)(i_3))));
                 Object d_1 = Math.floorDiv(((long)(num)), ((long)(i_3)));
                 if (((Number)(d_1)).intValue() != (long)(i_3)) {
-                    values = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(values), java.util.stream.LongStream.of(((Number)(d_1)).longValue())).toArray()));
+                    values = ((long[])(appendLong(values, ((Number)(d_1)).longValue())));
                 }
             }
             i_3 = (long)((long)(i_3) + 1L);
@@ -147,6 +147,12 @@ possible_1[(int)((long)(s_1))] = true;
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
         boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }

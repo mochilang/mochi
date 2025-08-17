@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-17 13:29 GMT+7
+Last updated: 2025-08-17 14:12 GMT+7
 
 ## Algorithms Golden Test Checklist (960/1077)
 | Index | Name | Status | Duration | Memory |
@@ -685,8 +685,8 @@ Last updated: 2025-08-17 13:29 GMT+7
 | 676 | maths/special_numbers/proth_number | ✓ | 52.0ms | 77.91KB |
 | 677 | maths/special_numbers/triangular_numbers | ✓ | 21.0ms | 552B |
 | 678 | maths/special_numbers/ugly_numbers | ✓ | 22.0ms | 968B |
-| 679 | maths/special_numbers/weird_number | ✓ |  |  |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 14.0ms | 552B |
+| 679 | maths/special_numbers/weird_number | ✓ | 37.0ms | 38.26KB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 32.0ms | 552B |
 | 681 | maths/sum_of_digits | ✓ | 14.0ms | 968B |
 | 682 | maths/sum_of_geometric_progression | ✓ | 32.0ms | 10.25KB |
 | 683 | maths/sum_of_harmonic_series | ✓ | 51.0ms | 56.72KB |
