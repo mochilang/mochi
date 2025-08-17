@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-17 13:48 GMT+7
+Last updated: 2025-08-17 14:44 GMT+7
 
 ## Algorithms Golden Test Checklist (1029/1077)
 | Index | Name | Status | Duration | Memory |
@@ -700,7 +700,7 @@ Last updated: 2025-08-17 13:48 GMT+7
 | 691 | maths/triplet_sum | ✓ | 2.0ms | 24.23KB |
 | 692 | maths/twin_prime | ✓ | 1.0ms | 16.34KB |
 | 693 | maths/two_pointer | ✓ | 2.0ms | 18.21KB |
-| 694 | maths/two_sum | ✓ | 2.0ms | 17.05KB |
+| 694 | maths/two_sum | ✓ | 1.0µs | 17.18KB |
 | 695 | maths/volume | ✓ | 2.0ms | 16.21KB |
 | 696 | maths/zellers_congruence | ✓ | 2.0ms | 18.36KB |
 | 697 | matrix/binary_search_matrix | ✓ | 2.0ms | 18.70KB |
