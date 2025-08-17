@@ -143,12 +143,14 @@ func uniqueWhileName() string {
 // isLoopCounter reports whether the given variable name is a common loop
 // counter that is typically not used after the loop ends.
 func isLoopCounter(name string) bool {
-	switch name {
-	case "j", "l", "m", "idx", "term":
-		return true
-	default:
-		return false
-	}
+        switch name {
+        case "j", "l", "m", "idx", "term", "chk_map":
+                // treat common loop variables and temporary maps as throwaway
+                // values to avoid unused variable warnings
+                return true
+        default:
+                return false
+        }
 }
 
 func isBigRat(t types.Type) bool {

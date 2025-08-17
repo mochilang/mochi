@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-17 13:33 GMT+7
+Last updated: 2025-08-17 13:57 GMT+7
 
 ## Algorithms Golden Test Checklist (850/1077)
 | Index | Name | Status | Duration | Memory |
@@ -700,7 +700,7 @@ Last updated: 2025-08-17 13:33 GMT+7
 | 691 | maths/triplet_sum | ✓ | 535us | 12.5 MB |
 | 692 | maths/twin_prime | ✓ | 5.59ms | 12.5 MB |
 | 693 | maths/two_pointer | ✓ | 5.39ms | 17.3 MB |
-| 694 | maths/two_sum | ✓ | 6.43ms | 25.0 MB |
+| 694 | maths/two_sum | ✓ | 7.57ms | 25.0 MB |
 | 695 | maths/volume | ✓ | 7.05ms | 33.4 MB |
 | 696 | maths/zellers_congruence | ✓ | 6.14ms | 25.0 MB |
 | 697 | matrix/binary_search_matrix | ✓ | 5.75ms | 25.0 MB |
