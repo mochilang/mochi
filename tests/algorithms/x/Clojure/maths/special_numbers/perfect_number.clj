@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare perfect main)
@@ -34,7 +37,7 @@
 (def ^:dynamic perfect_sum nil)
 
 (defn perfect [perfect_n]
-  (binding [perfect_i nil perfect_limit nil perfect_sum nil] (try (do (when (<= perfect_n 0) (throw (ex-info "return" {:v false}))) (set! perfect_limit (quot perfect_n 2)) (set! perfect_sum 0) (set! perfect_i 1) (while (<= perfect_i perfect_limit) (do (when (= (mod perfect_n perfect_i) 0) (set! perfect_sum (+ perfect_sum perfect_i))) (set! perfect_i (+ perfect_i 1)))) (throw (ex-info "return" {:v (= perfect_sum perfect_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [perfect_i nil perfect_limit nil perfect_sum nil] (try (do (when (<= perfect_n 0) (throw (ex-info "return" {:v false}))) (set! perfect_limit (/ perfect_n 2)) (set! perfect_sum 0) (set! perfect_i 1) (while (<= perfect_i perfect_limit) (do (when (= (mod perfect_n perfect_i) 0) (set! perfect_sum (+ perfect_sum perfect_i))) (set! perfect_i (+ perfect_i 1)))) (throw (ex-info "return" {:v (= perfect_sum perfect_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (binding [main_idx nil main_num nil main_numbers nil] (do (set! main_numbers [6 28 29 12 496 8128 0 (- 1)]) (set! main_idx 0) (while (< main_idx (count main_numbers)) (do (set! main_num (nth main_numbers main_idx)) (if (perfect main_num) (println (str (str main_num) " is a Perfect Number.")) (println (str (str main_num) " is not a Perfect Number."))) (set! main_idx (+ main_idx 1)))))))

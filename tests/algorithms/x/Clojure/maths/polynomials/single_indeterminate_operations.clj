@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare copy_list polynomial_new add neg sub mul power evaluate poly_to_string derivative integral equals not_equals test_polynomial main)
@@ -108,7 +111,7 @@
   (binding [derivative_coeffs nil derivative_i nil] (try (do (when (= (:degree derivative_p) 0) (throw (ex-info "return" {:v {:coefficients [0.0] :degree 0}}))) (set! derivative_coeffs []) (set! derivative_i 0) (while (< derivative_i (:degree derivative_p)) (do (set! derivative_coeffs (conj derivative_coeffs (* (get (:coefficients derivative_p) (+ derivative_i 1)) (float (+ derivative_i 1))))) (set! derivative_i (+ derivative_i 1)))) (throw (ex-info "return" {:v {:coefficients derivative_coeffs :degree (- (:degree derivative_p) 1)}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn integral [integral_p integral_constant]
-  (binding [integral_coeffs nil integral_i nil] (try (do (set! integral_coeffs [integral_constant]) (set! integral_i 0) (while (<= integral_i (:degree integral_p)) (do (set! integral_coeffs (conj integral_coeffs (quot (get (:coefficients integral_p) integral_i) (float (+ integral_i 1))))) (set! integral_i (+ integral_i 1)))) (throw (ex-info "return" {:v {:coefficients integral_coeffs :degree (+ (:degree integral_p) 1)}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [integral_coeffs nil integral_i nil] (try (do (set! integral_coeffs [integral_constant]) (set! integral_i 0) (while (<= integral_i (:degree integral_p)) (do (set! integral_coeffs (conj integral_coeffs (/ (get (:coefficients integral_p) integral_i) (float (+ integral_i 1))))) (set! integral_i (+ integral_i 1)))) (throw (ex-info "return" {:v {:coefficients integral_coeffs :degree (+ (:degree integral_p) 1)}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn equals [equals_p equals_q]
   (binding [equals_i nil] (try (do (when (not= (:degree equals_p) (:degree equals_q)) (throw (ex-info "return" {:v false}))) (set! equals_i 0) (while (<= equals_i (:degree equals_p)) (do (when (not= (get (:coefficients equals_p) equals_i) (get (:coefficients equals_q) equals_i)) (throw (ex-info "return" {:v false}))) (set! equals_i (+ equals_i 1)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

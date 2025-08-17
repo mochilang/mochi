@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare sum_of_series test_sum_of_series main)
@@ -24,7 +27,7 @@
 (def ^:dynamic sum_of_series_total nil)
 
 (defn sum_of_series [sum_of_series_first_term sum_of_series_common_diff sum_of_series_num_of_terms]
-  (binding [sum_of_series_total nil] (try (do (set! sum_of_series_total (quot (* sum_of_series_num_of_terms (+ (* 2 sum_of_series_first_term) (* (- sum_of_series_num_of_terms 1) sum_of_series_common_diff))) 2)) (throw (ex-info "return" {:v sum_of_series_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sum_of_series_total nil] (try (do (set! sum_of_series_total (/ (* sum_of_series_num_of_terms (+ (* 2 sum_of_series_first_term) (* (- sum_of_series_num_of_terms 1) sum_of_series_common_diff))) 2)) (throw (ex-info "return" {:v sum_of_series_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn test_sum_of_series []
   (do (when (not= (sum_of_series 1 1 10) 55) (throw (Exception. "sum_of_series(1, 1, 10) failed"))) (when (not= (sum_of_series 1 10 100) 49600) (throw (Exception. "sum_of_series(1, 10, 100) failed")))))

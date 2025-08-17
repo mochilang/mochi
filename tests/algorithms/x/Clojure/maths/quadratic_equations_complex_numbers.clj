@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare add sub div_real sqrt_newton sqrt_to_complex quadratic_roots root_str main)
@@ -48,10 +51,10 @@
   (try (throw (ex-info "return" {:v {:im (- (:im sub_a) (:im sub_b)) :re (- (:re sub_a) (:re sub_b))}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn div_real [div_real_a div_real_r]
-  (try (throw (ex-info "return" {:v {:im (quot (:im div_real_a) div_real_r) :re (quot (:re div_real_a) div_real_r)}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v {:im (/ (:im div_real_a) div_real_r) :re (/ (:re div_real_a) div_real_r)}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sqrt_newton [sqrt_newton_x]
-  (binding [sqrt_newton_guess nil sqrt_newton_i nil] (try (do (when (<= sqrt_newton_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_newton_guess (/ sqrt_newton_x 2.0)) (set! sqrt_newton_i 0) (while (< sqrt_newton_i 20) (do (set! sqrt_newton_guess (/ (+ sqrt_newton_guess (quot sqrt_newton_x sqrt_newton_guess)) 2.0)) (set! sqrt_newton_i (+ sqrt_newton_i 1)))) (throw (ex-info "return" {:v sqrt_newton_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrt_newton_guess nil sqrt_newton_i nil] (try (do (when (<= sqrt_newton_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_newton_guess (/ sqrt_newton_x 2.0)) (set! sqrt_newton_i 0) (while (< sqrt_newton_i 20) (do (set! sqrt_newton_guess (/ (+ sqrt_newton_guess (/ sqrt_newton_x sqrt_newton_guess)) 2.0)) (set! sqrt_newton_i (+ sqrt_newton_i 1)))) (throw (ex-info "return" {:v sqrt_newton_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn sqrt_to_complex [sqrt_to_complex_d]
   (try (if (>= sqrt_to_complex_d 0.0) {:im 0.0 :re (sqrt_newton sqrt_to_complex_d)} {:im (sqrt_newton (- sqrt_to_complex_d)) :re 0.0}) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

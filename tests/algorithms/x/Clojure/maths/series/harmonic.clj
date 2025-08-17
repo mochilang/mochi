@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare is_harmonic_series harmonic_mean)
@@ -39,7 +42,7 @@
   (binding [is_harmonic_series_common_diff nil is_harmonic_series_i nil is_harmonic_series_idx nil is_harmonic_series_rec_series nil is_harmonic_series_val nil] (try (do (when (= (count is_harmonic_series_series) 0) (throw (Exception. "Input list must be a non empty list"))) (when (= (count is_harmonic_series_series) 1) (do (when (= (nth is_harmonic_series_series 0) 0.0) (throw (Exception. "Input series cannot have 0 as an element"))) (throw (ex-info "return" {:v true})))) (set! is_harmonic_series_rec_series []) (set! is_harmonic_series_i 0) (while (< is_harmonic_series_i (count is_harmonic_series_series)) (do (set! is_harmonic_series_val (nth is_harmonic_series_series is_harmonic_series_i)) (when (= is_harmonic_series_val 0.0) (throw (Exception. "Input series cannot have 0 as an element"))) (set! is_harmonic_series_rec_series (conj is_harmonic_series_rec_series (/ 1.0 is_harmonic_series_val))) (set! is_harmonic_series_i (+ is_harmonic_series_i 1)))) (set! is_harmonic_series_common_diff (- (nth is_harmonic_series_rec_series 1) (nth is_harmonic_series_rec_series 0))) (set! is_harmonic_series_idx 2) (while (< is_harmonic_series_idx (count is_harmonic_series_rec_series)) (do (when (not= (- (nth is_harmonic_series_rec_series is_harmonic_series_idx) (nth is_harmonic_series_rec_series (- is_harmonic_series_idx 1))) is_harmonic_series_common_diff) (throw (ex-info "return" {:v false}))) (set! is_harmonic_series_idx (+ is_harmonic_series_idx 1)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn harmonic_mean [harmonic_mean_series]
-  (binding [harmonic_mean_i nil harmonic_mean_total nil] (try (do (when (= (count harmonic_mean_series) 0) (throw (Exception. "Input list must be a non empty list"))) (set! harmonic_mean_total 0.0) (set! harmonic_mean_i 0) (while (< harmonic_mean_i (count harmonic_mean_series)) (do (set! harmonic_mean_total (+ harmonic_mean_total (/ 1.0 (nth harmonic_mean_series harmonic_mean_i)))) (set! harmonic_mean_i (+ harmonic_mean_i 1)))) (throw (ex-info "return" {:v (quot (double (count harmonic_mean_series)) harmonic_mean_total)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [harmonic_mean_i nil harmonic_mean_total nil] (try (do (when (= (count harmonic_mean_series) 0) (throw (Exception. "Input list must be a non empty list"))) (set! harmonic_mean_total 0.0) (set! harmonic_mean_i 0) (while (< harmonic_mean_i (count harmonic_mean_series)) (do (set! harmonic_mean_total (+ harmonic_mean_total (/ 1.0 (nth harmonic_mean_series harmonic_mean_i)))) (set! harmonic_mean_i (+ harmonic_mean_i 1)))) (throw (ex-info "return" {:v (/ (double (count harmonic_mean_series)) harmonic_mean_total)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare exp_approx sigmoid)
@@ -36,7 +39,7 @@
 (def ^:dynamic sigmoid_v nil)
 
 (defn exp_approx [exp_approx_x]
-  (binding [exp_approx_i nil exp_approx_sum nil exp_approx_term nil] (try (do (set! exp_approx_sum 1.0) (set! exp_approx_term 1.0) (set! exp_approx_i 1) (while (<= exp_approx_i 10) (do (set! exp_approx_term (quot (* exp_approx_term exp_approx_x) (double exp_approx_i))) (set! exp_approx_sum (+ exp_approx_sum exp_approx_term)) (set! exp_approx_i (+ exp_approx_i 1)))) (throw (ex-info "return" {:v exp_approx_sum}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [exp_approx_i nil exp_approx_sum nil exp_approx_term nil] (try (do (set! exp_approx_sum 1.0) (set! exp_approx_term 1.0) (set! exp_approx_i 1) (while (<= exp_approx_i 10) (do (set! exp_approx_term (/ (* exp_approx_term exp_approx_x) (double exp_approx_i))) (set! exp_approx_sum (+ exp_approx_sum exp_approx_term)) (set! exp_approx_i (+ exp_approx_i 1)))) (throw (ex-info "return" {:v exp_approx_sum}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn sigmoid [sigmoid_vector]
   (binding [sigmoid_i nil sigmoid_result nil sigmoid_s nil sigmoid_v nil] (try (do (set! sigmoid_result []) (set! sigmoid_i 0) (while (< sigmoid_i (count sigmoid_vector)) (do (set! sigmoid_v (nth sigmoid_vector sigmoid_i)) (set! sigmoid_s (/ 1.0 (+ 1.0 (exp_approx (- sigmoid_v))))) (set! sigmoid_result (conj sigmoid_result sigmoid_s)) (set! sigmoid_i (+ sigmoid_i 1)))) (throw (ex-info "return" {:v sigmoid_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

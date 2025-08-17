@@ -1,5 +1,2 @@
-Execution error at main/test-solver (simultaneous_linear_equation_solver.clj:94).
-test2 failed
-
-Full report at:
-/tmp/clojure-11861312310590017103.edn
+[-1.0 0.0 1.0 2.0 3.0]
+[0.5]

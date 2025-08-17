@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare is_geometric_series geometric_mean pow_float nth_root test_geometric main)
@@ -50,7 +53,7 @@
 (def ^:dynamic test_geometric_b nil)
 
 (defn is_geometric_series [is_geometric_series_series]
-  (binding [is_geometric_series_i nil is_geometric_series_ratio nil] (try (do (when (= (count is_geometric_series_series) 0) (throw (Exception. "Input list must be a non empty list"))) (when (= (count is_geometric_series_series) 1) (throw (ex-info "return" {:v true}))) (when (= (nth is_geometric_series_series 0) 0.0) (throw (ex-info "return" {:v false}))) (set! is_geometric_series_ratio (quot (nth is_geometric_series_series 1) (nth is_geometric_series_series 0))) (set! is_geometric_series_i 0) (while (< is_geometric_series_i (- (count is_geometric_series_series) 1)) (do (when (= (nth is_geometric_series_series is_geometric_series_i) 0.0) (throw (ex-info "return" {:v false}))) (when (not= (quot (nth is_geometric_series_series (+ is_geometric_series_i 1)) (nth is_geometric_series_series is_geometric_series_i)) is_geometric_series_ratio) (throw (ex-info "return" {:v false}))) (set! is_geometric_series_i (+ is_geometric_series_i 1)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [is_geometric_series_i nil is_geometric_series_ratio nil] (try (do (when (= (count is_geometric_series_series) 0) (throw (Exception. "Input list must be a non empty list"))) (when (= (count is_geometric_series_series) 1) (throw (ex-info "return" {:v true}))) (when (= (nth is_geometric_series_series 0) 0.0) (throw (ex-info "return" {:v false}))) (set! is_geometric_series_ratio (/ (nth is_geometric_series_series 1) (nth is_geometric_series_series 0))) (set! is_geometric_series_i 0) (while (< is_geometric_series_i (- (count is_geometric_series_series) 1)) (do (when (= (nth is_geometric_series_series is_geometric_series_i) 0.0) (throw (ex-info "return" {:v false}))) (when (not= (/ (nth is_geometric_series_series (+ is_geometric_series_i 1)) (nth is_geometric_series_series is_geometric_series_i)) is_geometric_series_ratio) (throw (ex-info "return" {:v false}))) (set! is_geometric_series_i (+ is_geometric_series_i 1)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn geometric_mean [geometric_mean_series]
   (binding [geometric_mean_i nil geometric_mean_n nil geometric_mean_product nil] (try (do (when (= (count geometric_mean_series) 0) (throw (Exception. "Input list must be a non empty list"))) (set! geometric_mean_product 1.0) (set! geometric_mean_i 0) (while (< geometric_mean_i (count geometric_mean_series)) (do (set! geometric_mean_product (* geometric_mean_product (nth geometric_mean_series geometric_mean_i))) (set! geometric_mean_i (+ geometric_mean_i 1)))) (set! geometric_mean_n (count geometric_mean_series)) (throw (ex-info "return" {:v (nth_root geometric_mean_product geometric_mean_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

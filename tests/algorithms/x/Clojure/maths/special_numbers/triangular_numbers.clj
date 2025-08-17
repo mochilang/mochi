@@ -17,12 +17,15 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare triangular_number test_triangular_number main)
 
 (defn triangular_number [triangular_number_position]
-  (try (do (when (< triangular_number_position 0) (throw (Exception. "position must be non-negative"))) (throw (ex-info "return" {:v (quot (* triangular_number_position (+ triangular_number_position 1)) 2)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (when (< triangular_number_position 0) (throw (Exception. "position must be non-negative"))) (throw (ex-info "return" {:v (/ (* triangular_number_position (+ triangular_number_position 1)) 2)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn test_triangular_number []
   (do (when (not= (triangular_number 1) 1) (throw (Exception. "triangular_number(1) failed"))) (when (not= (triangular_number 3) 6) (throw (Exception. "triangular_number(3) failed")))))

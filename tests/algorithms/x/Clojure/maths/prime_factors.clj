@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare prime_factors list_eq test_prime_factors main)
@@ -30,7 +33,7 @@
 (def ^:dynamic prime_factors_num nil)
 
 (defn prime_factors [prime_factors_n]
-  (binding [prime_factors_factors nil prime_factors_i nil prime_factors_num nil] (try (do (when (< prime_factors_n 2) (throw (ex-info "return" {:v []}))) (set! prime_factors_num prime_factors_n) (set! prime_factors_i 2) (set! prime_factors_factors []) (while (<= (* prime_factors_i prime_factors_i) prime_factors_num) (if (= (mod prime_factors_num prime_factors_i) 0) (do (set! prime_factors_factors (conj prime_factors_factors prime_factors_i)) (set! prime_factors_num (quot prime_factors_num prime_factors_i))) (set! prime_factors_i (+ prime_factors_i 1)))) (when (> prime_factors_num 1) (set! prime_factors_factors (conj prime_factors_factors prime_factors_num))) (throw (ex-info "return" {:v prime_factors_factors}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [prime_factors_factors nil prime_factors_i nil prime_factors_num nil] (try (do (when (< prime_factors_n 2) (throw (ex-info "return" {:v []}))) (set! prime_factors_num prime_factors_n) (set! prime_factors_i 2) (set! prime_factors_factors []) (while (<= (* prime_factors_i prime_factors_i) prime_factors_num) (if (= (mod prime_factors_num prime_factors_i) 0) (do (set! prime_factors_factors (conj prime_factors_factors prime_factors_i)) (set! prime_factors_num (/ prime_factors_num prime_factors_i))) (set! prime_factors_i (+ prime_factors_i 1)))) (when (> prime_factors_num 1) (set! prime_factors_factors (conj prime_factors_factors prime_factors_num))) (throw (ex-info "return" {:v prime_factors_factors}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn list_eq [list_eq_a list_eq_b]
   (binding [list_eq_i nil] (try (do (when (not= (count list_eq_a) (count list_eq_b)) (throw (ex-info "return" {:v false}))) (set! list_eq_i 0) (while (< list_eq_i (count list_eq_a)) (do (when (not= (nth list_eq_a list_eq_i) (nth list_eq_b list_eq_i)) (throw (ex-info "return" {:v false}))) (set! list_eq_i (+ list_eq_i 1)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

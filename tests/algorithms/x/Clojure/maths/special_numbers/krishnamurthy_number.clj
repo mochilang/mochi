@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare factorial is_krishnamurthy)
@@ -31,7 +34,7 @@
   (try (if (or (= factorial_digit 0) (= factorial_digit 1)) 1 (* factorial_digit (factorial (- factorial_digit 1)))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn is_krishnamurthy [is_krishnamurthy_n]
-  (binding [is_krishnamurthy_digit nil is_krishnamurthy_duplicate nil is_krishnamurthy_fact_sum nil] (try (do (set! is_krishnamurthy_duplicate is_krishnamurthy_n) (set! is_krishnamurthy_fact_sum 0) (while (> is_krishnamurthy_duplicate 0) (do (set! is_krishnamurthy_digit (mod is_krishnamurthy_duplicate 10)) (set! is_krishnamurthy_fact_sum (+ is_krishnamurthy_fact_sum (factorial is_krishnamurthy_digit))) (set! is_krishnamurthy_duplicate (quot is_krishnamurthy_duplicate 10)))) (throw (ex-info "return" {:v (= is_krishnamurthy_fact_sum is_krishnamurthy_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [is_krishnamurthy_digit nil is_krishnamurthy_duplicate nil is_krishnamurthy_fact_sum nil] (try (do (set! is_krishnamurthy_duplicate is_krishnamurthy_n) (set! is_krishnamurthy_fact_sum 0) (while (> is_krishnamurthy_duplicate 0) (do (set! is_krishnamurthy_digit (mod is_krishnamurthy_duplicate 10)) (set! is_krishnamurthy_fact_sum (+ is_krishnamurthy_fact_sum (factorial is_krishnamurthy_digit))) (set! is_krishnamurthy_duplicate (/ is_krishnamurthy_duplicate 10)))) (throw (ex-info "return" {:v (= is_krishnamurthy_fact_sum is_krishnamurthy_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

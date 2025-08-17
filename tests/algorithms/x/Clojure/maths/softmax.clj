@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare exp_approx softmax abs_val approx_equal test_softmax main)
@@ -46,10 +49,10 @@
 (def ^:dynamic test_softmax_sum1 nil)
 
 (defn exp_approx [exp_approx_x]
-  (binding [exp_approx_i nil exp_approx_sum nil exp_approx_term nil] (try (do (set! exp_approx_term 1.0) (set! exp_approx_sum 1.0) (set! exp_approx_i 1) (while (< exp_approx_i 20) (do (set! exp_approx_term (quot (* exp_approx_term exp_approx_x) (double exp_approx_i))) (set! exp_approx_sum (+ exp_approx_sum exp_approx_term)) (set! exp_approx_i (+ exp_approx_i 1)))) (throw (ex-info "return" {:v exp_approx_sum}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [exp_approx_i nil exp_approx_sum nil exp_approx_term nil] (try (do (set! exp_approx_term 1.0) (set! exp_approx_sum 1.0) (set! exp_approx_i 1) (while (< exp_approx_i 20) (do (set! exp_approx_term (/ (* exp_approx_term exp_approx_x) (double exp_approx_i))) (set! exp_approx_sum (+ exp_approx_sum exp_approx_term)) (set! exp_approx_i (+ exp_approx_i 1)))) (throw (ex-info "return" {:v exp_approx_sum}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn softmax [softmax_vec]
-  (binding [softmax_exps nil softmax_i nil softmax_result nil softmax_total nil] (try (do (set! softmax_exps []) (set! softmax_i 0) (while (< softmax_i (count softmax_vec)) (do (set! softmax_exps (conj softmax_exps (exp_approx (nth softmax_vec softmax_i)))) (set! softmax_i (+ softmax_i 1)))) (set! softmax_total 0.0) (set! softmax_i 0) (while (< softmax_i (count softmax_exps)) (do (set! softmax_total (+ softmax_total (nth softmax_exps softmax_i))) (set! softmax_i (+ softmax_i 1)))) (set! softmax_result []) (set! softmax_i 0) (while (< softmax_i (count softmax_exps)) (do (set! softmax_result (conj softmax_result (quot (nth softmax_exps softmax_i) softmax_total))) (set! softmax_i (+ softmax_i 1)))) (throw (ex-info "return" {:v softmax_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [softmax_exps nil softmax_i nil softmax_result nil softmax_total nil] (try (do (set! softmax_exps []) (set! softmax_i 0) (while (< softmax_i (count softmax_vec)) (do (set! softmax_exps (conj softmax_exps (exp_approx (nth softmax_vec softmax_i)))) (set! softmax_i (+ softmax_i 1)))) (set! softmax_total 0.0) (set! softmax_i 0) (while (< softmax_i (count softmax_exps)) (do (set! softmax_total (+ softmax_total (nth softmax_exps softmax_i))) (set! softmax_i (+ softmax_i 1)))) (set! softmax_result []) (set! softmax_i 0) (while (< softmax_i (count softmax_exps)) (do (set! softmax_result (conj softmax_result (/ (nth softmax_exps softmax_i) softmax_total))) (set! softmax_i (+ softmax_i 1)))) (throw (ex-info "return" {:v softmax_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn abs_val [abs_val_x]
   (try (if (< abs_val_x 0.0) (- abs_val_x) abs_val_x) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

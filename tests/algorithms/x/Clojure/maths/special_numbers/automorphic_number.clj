@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare is_automorphic_number)
@@ -26,7 +29,7 @@
 (def ^:dynamic is_automorphic_number_sq nil)
 
 (defn is_automorphic_number [is_automorphic_number_number]
-  (binding [is_automorphic_number_n nil is_automorphic_number_sq nil] (try (do (when (< is_automorphic_number_number 0) (throw (ex-info "return" {:v false}))) (set! is_automorphic_number_n is_automorphic_number_number) (set! is_automorphic_number_sq (* is_automorphic_number_number is_automorphic_number_number)) (while (> is_automorphic_number_n 0) (do (when (not= (mod is_automorphic_number_n 10) (mod is_automorphic_number_sq 10)) (throw (ex-info "return" {:v false}))) (set! is_automorphic_number_n (quot is_automorphic_number_n 10)) (set! is_automorphic_number_sq (quot is_automorphic_number_sq 10)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [is_automorphic_number_n nil is_automorphic_number_sq nil] (try (do (when (< is_automorphic_number_number 0) (throw (ex-info "return" {:v false}))) (set! is_automorphic_number_n is_automorphic_number_number) (set! is_automorphic_number_sq (* is_automorphic_number_number is_automorphic_number_number)) (while (> is_automorphic_number_n 0) (do (when (not= (mod is_automorphic_number_n 10) (mod is_automorphic_number_sq 10)) (throw (ex-info "return" {:v false}))) (set! is_automorphic_number_n (/ is_automorphic_number_n 10)) (set! is_automorphic_number_sq (/ is_automorphic_number_sq 10)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

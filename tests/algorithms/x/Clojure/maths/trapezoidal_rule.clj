@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare f make_points trapezoidal_rule)
@@ -46,20 +49,25 @@
 (defn trapezoidal_rule [trapezoidal_rule_boundary trapezoidal_rule_steps]
   (binding [trapezoidal_rule_a nil trapezoidal_rule_b nil trapezoidal_rule_h nil trapezoidal_rule_i nil trapezoidal_rule_xs nil trapezoidal_rule_y nil] (try (do (set! trapezoidal_rule_h (/ (- (nth trapezoidal_rule_boundary 1) (nth trapezoidal_rule_boundary 0)) trapezoidal_rule_steps)) (set! trapezoidal_rule_a (nth trapezoidal_rule_boundary 0)) (set! trapezoidal_rule_b (nth trapezoidal_rule_boundary 1)) (set! trapezoidal_rule_xs (make_points trapezoidal_rule_a trapezoidal_rule_b trapezoidal_rule_h)) (set! trapezoidal_rule_y (* (/ trapezoidal_rule_h 2.0) (f trapezoidal_rule_a))) (set! trapezoidal_rule_i 0) (while (< trapezoidal_rule_i (count trapezoidal_rule_xs)) (do (set! trapezoidal_rule_y (+ trapezoidal_rule_y (* trapezoidal_rule_h (f (nth trapezoidal_rule_xs trapezoidal_rule_i))))) (set! trapezoidal_rule_i (+ trapezoidal_rule_i 1)))) (set! trapezoidal_rule_y (+ trapezoidal_rule_y (* (/ trapezoidal_rule_h 2.0) (f trapezoidal_rule_b)))) (throw (ex-info "return" {:v trapezoidal_rule_y}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_a 0.0)
+(def ^:dynamic main_a nil)
 
-(def ^:dynamic main_b 1.0)
+(def ^:dynamic main_b nil)
 
-(def ^:dynamic main_steps 10.0)
+(def ^:dynamic main_steps nil)
 
-(def ^:dynamic main_boundary [main_a main_b])
+(def ^:dynamic main_boundary nil)
 
-(def ^:dynamic main_y (trapezoidal_rule main_boundary main_steps))
+(def ^:dynamic main_y nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_a) (constantly 0.0))
+      (alter-var-root (var main_b) (constantly 1.0))
+      (alter-var-root (var main_steps) (constantly 10.0))
+      (alter-var-root (var main_boundary) (constantly [main_a main_b]))
+      (alter-var-root (var main_y) (constantly (trapezoidal_rule main_boundary main_steps)))
       (println (str "y = " (str main_y)))
       (System/gc)
       (let [end (System/nanoTime)

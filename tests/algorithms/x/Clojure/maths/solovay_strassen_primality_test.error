@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error (IllegalArgumentException) compiling fn* at (/workspace/mochi/tests/algorithms/x/Clojure/maths/solovay_strassen_primality_test.clj:67:1).
+Cannot assign to non-mutable: solovay_strassen_number
+
+Full report at:
+/tmp/clojure-14263264576995917889.edn

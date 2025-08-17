@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare catalan main)
@@ -26,7 +29,7 @@
 (def ^:dynamic catalan_i nil)
 
 (defn catalan [catalan_n]
-  (binding [catalan_current nil catalan_i nil] (try (do (when (< catalan_n 1) (throw (Exception. (str (str "Input value of [number=" (str catalan_n)) "] must be > 0")))) (set! catalan_current 1) (set! catalan_i 1) (while (< catalan_i catalan_n) (do (set! catalan_current (* catalan_current (- (* 4 catalan_i) 2))) (set! catalan_current (long (quot catalan_current (+ catalan_i 1)))) (set! catalan_i (+ catalan_i 1)))) (throw (ex-info "return" {:v catalan_current}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [catalan_current nil catalan_i nil] (try (do (when (< catalan_n 1) (throw (Exception. (str (str "Input value of [number=" (str catalan_n)) "] must be > 0")))) (set! catalan_current 1) (set! catalan_i 1) (while (< catalan_i catalan_n) (do (set! catalan_current (* catalan_current (- (* 4 catalan_i) 2))) (set! catalan_current (long (/ catalan_current (+ catalan_i 1)))) (set! catalan_i (+ catalan_i 1)))) (throw (ex-info "return" {:v catalan_current}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (do (when (not= (catalan 1) 1) (throw (Exception. "catalan(1) should be 1"))) (when (not= (catalan 5) 14) (throw (Exception. "catalan(5) should be 14"))) (println (str (catalan 5)))))

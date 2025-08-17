@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare harmonic_series)
@@ -28,7 +31,7 @@
 (def ^:dynamic harmonic_series_series nil)
 
 (defn harmonic_series [harmonic_series_n_term]
-  (binding [harmonic_series_i nil harmonic_series_limit nil harmonic_series_series nil] (try (do (when (<= harmonic_series_n_term 0.0) (throw (ex-info "return" {:v []}))) (set! harmonic_series_limit (int harmonic_series_n_term)) (set! harmonic_series_series []) (set! harmonic_series_i 0) (while (< harmonic_series_i harmonic_series_limit) (do (if (= harmonic_series_i 0) (set! harmonic_series_series (conj harmonic_series_series "1")) (set! harmonic_series_series (conj harmonic_series_series (str "1/" (str (+ harmonic_series_i 1)))))) (set! harmonic_series_i (+ harmonic_series_i 1)))) (throw (ex-info "return" {:v harmonic_series_series}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [harmonic_series_i nil harmonic_series_limit nil harmonic_series_series nil] (try (do (when (<= harmonic_series_n_term 0.0) (throw (ex-info "return" {:v []}))) (set! harmonic_series_limit (toi harmonic_series_n_term)) (set! harmonic_series_series []) (set! harmonic_series_i 0) (while (< harmonic_series_i harmonic_series_limit) (do (if (= harmonic_series_i 0) (set! harmonic_series_series (conj harmonic_series_series "1")) (set! harmonic_series_series (conj harmonic_series_series (str "1/" (str (+ harmonic_series_i 1)))))) (set! harmonic_series_i (+ harmonic_series_i 1)))) (throw (ex-info "return" {:v harmonic_series_series}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

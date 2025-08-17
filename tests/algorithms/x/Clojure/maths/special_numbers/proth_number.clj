@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare pow2 proth main)
@@ -51,7 +54,7 @@
   (binding [pow2_i nil pow2_result nil] (try (do (set! pow2_result 1) (set! pow2_i 0) (while (< pow2_i pow2_exp) (do (set! pow2_result (* pow2_result 2)) (set! pow2_i (+ pow2_i 1)))) (throw (ex-info "return" {:v pow2_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn proth [proth_number]
-  (binding [proth_block nil proth_block_index nil proth_i nil proth_increment nil proth_next_val nil proth_pow nil proth_proth_index nil proth_proth_list nil proth_temp nil] (try (do (when (< proth_number 1) (throw (Exception. "Input value must be > 0"))) (when (= proth_number 1) (throw (ex-info "return" {:v 3}))) (when (= proth_number 2) (throw (ex-info "return" {:v 5}))) (set! proth_temp (long (quot proth_number 3))) (set! proth_pow 1) (set! proth_block_index 1) (while (<= proth_pow proth_temp) (do (set! proth_pow (* proth_pow 2)) (set! proth_block_index (+ proth_block_index 1)))) (set! proth_proth_list [3 5]) (set! proth_proth_index 2) (set! proth_increment 3) (set! proth_block 1) (while (< proth_block proth_block_index) (do (set! proth_i 0) (while (< proth_i proth_increment) (do (set! proth_next_val (+ (pow2 (+ proth_block 1)) (nth proth_proth_list (- proth_proth_index 1)))) (set! proth_proth_list (conj proth_proth_list proth_next_val)) (set! proth_proth_index (+ proth_proth_index 1)) (set! proth_i (+ proth_i 1)))) (set! proth_increment (* proth_increment 2)) (set! proth_block (+ proth_block 1)))) (throw (ex-info "return" {:v (nth proth_proth_list (- proth_number 1))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [proth_block nil proth_block_index nil proth_i nil proth_increment nil proth_next_val nil proth_pow nil proth_proth_index nil proth_proth_list nil proth_temp nil] (try (do (when (< proth_number 1) (throw (Exception. "Input value must be > 0"))) (when (= proth_number 1) (throw (ex-info "return" {:v 3}))) (when (= proth_number 2) (throw (ex-info "return" {:v 5}))) (set! proth_temp (long (/ proth_number 3))) (set! proth_pow 1) (set! proth_block_index 1) (while (<= proth_pow proth_temp) (do (set! proth_pow (* proth_pow 2)) (set! proth_block_index (+ proth_block_index 1)))) (set! proth_proth_list [3 5]) (set! proth_proth_index 2) (set! proth_increment 3) (set! proth_block 1) (while (< proth_block proth_block_index) (do (set! proth_i 0) (while (< proth_i proth_increment) (do (set! proth_next_val (+ (pow2 (+ proth_block 1)) (nth proth_proth_list (- proth_proth_index 1)))) (set! proth_proth_list (conj proth_proth_list proth_next_val)) (set! proth_proth_index (+ proth_proth_index 1)) (set! proth_i (+ proth_i 1)))) (set! proth_increment (* proth_increment 2)) (set! proth_block (+ proth_block 1)))) (throw (ex-info "return" {:v (nth proth_proth_list (- proth_number 1))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (binding [main_n nil main_value nil] (do (set! main_n 1) (while (<= main_n 10) (do (set! main_value (proth main_n)) (println (str (str (str "The " (str main_n)) "th Proth number: ") (str main_value))) (set! main_n (+ main_n 1)))))))
