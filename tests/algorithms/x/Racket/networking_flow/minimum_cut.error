@@ -1,6 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/algorithms/x/Racket/networking_flow/minimum_cut.rkt:180:12: set!: unbound identifier
-  at: j
-  in: (set! j 0)
-  location...:
-   /workspace/mochi/tests/algorithms/x/Racket/networking_flow/minimum_cut.rkt:180:12
