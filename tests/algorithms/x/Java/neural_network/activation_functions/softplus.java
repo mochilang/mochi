@@ -35,7 +35,7 @@ public class Main {
         long i_1 = 0L;
         while ((long)(i_1) < (long)(vector.length)) {
             double x_1 = (double)(vector[(int)((long)(i_1))]);
-            double value_1 = (double)(ln((double)((double)(1.0) + (double)(exp((double)(x_1))))));
+            double value_1 = (double)(Math.log((double)(1.0) + (double)(Math.exp(x_1))));
             result = ((double[])(appendDouble(result, (double)(value_1))));
             i_1 = (long)((long)(i_1) + 1L);
         }
