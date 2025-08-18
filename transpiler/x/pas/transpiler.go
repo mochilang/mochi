@@ -4683,6 +4683,15 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				} else if name == "ln" && len(args) == 1 {
 					currProg.UseMath = true
 					expr = &CallExpr{Name: "Ln", Args: args}
+				} else if name == "tanh" && len(args) == 1 {
+					currProg.UseMath = true
+					expr = &CallExpr{Name: "TanH", Args: args}
+				} else if name == "sinh" && len(args) == 1 {
+					currProg.UseMath = true
+					expr = &CallExpr{Name: "SinH", Args: args}
+				} else if name == "cosh" && len(args) == 1 {
+					currProg.UseMath = true
+					expr = &CallExpr{Name: "CosH", Args: args}
 				} else if name == "floor" && len(args) == 1 {
 					currProg.UseMath = true
 					expr = &CallExpr{Name: "Floor", Args: args}
@@ -4695,7 +4704,7 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					switch t.Root {
 					case "math":
 						currProg.UseMath = true
-						mapped := map[string]string{"sqrt": "Sqrt", "pow": "Power", "sin": "Sin", "log": "Ln"}
+						mapped := map[string]string{"sqrt": "Sqrt", "pow": "Power", "sin": "Sin", "log": "Ln", "tanh": "TanH", "sinh": "SinH", "cosh": "CosH"}
 						if fn, ok := mapped[name]; ok {
 							var args []Expr
 							for _, a := range op.Call.Args {
@@ -5661,18 +5670,18 @@ func inferType(e Expr) string {
 			}
 		}
 		return "integer"
-       case *SliceExpr:
-               if v.String {
-                       return "string"
-               }
-               // Preserve the element type of the sliced expression so nested
-               // lists keep their alias information (e.g. IntArrayArray).
-               return inferType(v.Target)
-       case *SelectorExpr:
-               root := v.Root
-               if s, ok := lookupName(root); ok {
-                       root = s
-               }
+	case *SliceExpr:
+		if v.String {
+			return "string"
+		}
+		// Preserve the element type of the sliced expression so nested
+		// lists keep their alias information (e.g. IntArrayArray).
+		return inferType(v.Target)
+	case *SelectorExpr:
+		root := v.Root
+		if s, ok := lookupName(root); ok {
+			root = s
+		}
 		t, ok := currentVarTypes[root]
 		if !ok {
 			return ""
