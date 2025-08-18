@@ -6657,11 +6657,17 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			exp := &BinaryExpr{Left: &FloatLit{Value: 1}, Op: "/", Right: a1}
 			return &CallExpr{Func: "math.Pow", Args: []Expr{a0, exp}}, nil
 		case "ln":
+			if _, ok := env.GetFunc(name); ok {
+				return &CallExpr{Func: name, Args: args}, nil
+			}
 			if imports != nil {
 				imports["math"] = "math"
 			}
 			return &CallExpr{Func: "math.Log", Args: []Expr{args[0]}}, nil
 		case "exp":
+			if _, ok := env.GetFunc(name); ok {
+				return &CallExpr{Func: name, Args: args}, nil
+			}
 			if imports != nil {
 				imports["math"] = "math"
 			}
