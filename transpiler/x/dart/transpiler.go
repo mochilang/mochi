@@ -141,6 +141,14 @@ bool _listEq(List a, List b) {
 }
 `
 
+const helperCharCode = `
+int _charCode(dynamic v) {
+  var s = v.toString();
+  var parsed = int.tryParse(s);
+  return parsed ?? s.codeUnitAt(0);
+}
+`
+
 // --- Struct tracking for generated classes ---
 type StructField struct {
 	Name string
@@ -177,6 +185,7 @@ var (
 	useRepeat         bool
 	useStr            bool
 	useParseIntStr    bool
+	useCharCode       bool
 	useFloor          bool
 	useListEq         bool
 	useMath           bool
@@ -1461,17 +1470,17 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		}
 		typ := strings.TrimSpace(buf.String())
 
-               // Numeric casts should use toInt()/toDouble() instead of `as`.
-               if typ == "double" || typ == "num" {
-                       if _, err := io.WriteString(w, "("); err != nil {
-                               return err
-                       }
-                       if err := b.Left.emit(w); err != nil {
-                               return err
-                       }
-                       _, err := io.WriteString(w, ").toDouble()")
-                       return err
-               }
+		// Numeric casts should use toInt()/toDouble() instead of `as`.
+		if typ == "double" || typ == "num" {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := b.Left.emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ").toDouble()")
+			return err
+		}
 		if typ == "int" {
 			lt := inferType(b.Left)
 			if lt != "int" && lt != "num" && lt != "double" && lt != "BigInt" {
@@ -1480,7 +1489,8 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 					return err
 				}
 				expr := strings.TrimSpace(lbuf.String())
-				_, err := io.WriteString(w, "(int.tryParse("+expr+".toString()) ?? "+expr+".toString().codeUnitAt(0))")
+				useCharCode = true
+				_, err := io.WriteString(w, "_charCode("+expr+")")
 				return err
 			}
 			if _, err := io.WriteString(w, "("); err != nil {
@@ -2966,14 +2976,14 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) error {
 	valType := inferType(c.Value)
-       cType := strings.TrimSpace(c.Type)
-       if cType == "double" || cType == "num" {
-               if valType == "double" {
-                       return c.Value.emit(w)
-               }
-               if _, err := io.WriteString(w, "("); err != nil {
-                       return err
-               }
+	cType := strings.TrimSpace(c.Type)
+	if cType == "double" || cType == "num" {
+		if valType == "double" {
+			return c.Value.emit(w)
+		}
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
 		if err := c.Value.emit(w); err != nil {
 			return err
 		}
@@ -3030,7 +3040,8 @@ func (c *CastExpr) emit(w io.Writer) error {
 				return err
 			}
 			expr := strings.TrimSpace(vbuf.String())
-			_, err := io.WriteString(w, "(int.tryParse("+expr+".toString()) ?? "+expr+".toString().codeUnitAt(0))")
+			useCharCode = true
+			_, err := io.WriteString(w, "_charCode("+expr+")")
 			return err
 		}
 		if _, err := io.WriteString(w, "("); err != nil {
@@ -4723,6 +4734,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useCharCode {
+		if _, err := io.WriteString(w, helperCharCode+"\n"); err != nil {
+			return err
+		}
+	}
 	if useStr {
 		if _, err := io.WriteString(w, "String _str(dynamic v) => v.toString();\n\n"); err != nil {
 			return err
@@ -4972,6 +4988,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useRepeat = false
 	useStr = false
 	useParseIntStr = false
+	useCharCode = false
 	useFloor = false
 	useListEq = false
 	useMath = false
