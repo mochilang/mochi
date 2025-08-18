@@ -5872,7 +5872,17 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			} else if v, ok := expr.(*VarExpr); ok {
-				if v.Name == "int" && len(args) == 1 {
+				if (v.Name == "exp" || v.Name == "math.exp") && len(args) == 1 {
+					expr = &CallExpr{Func: "Math.exp", Args: args}
+					if funcRet != nil {
+						funcRet["Math.exp"] = "double"
+					}
+				} else if (v.Name == "ln" || v.Name == "log" || v.Name == "math.log") && len(args) == 1 {
+					expr = &CallExpr{Func: "Math.log", Args: args}
+					if funcRet != nil {
+						funcRet["Math.log"] = "double"
+					}
+				} else if v.Name == "int" && len(args) == 1 {
 					expr = &IntCastExpr{Value: args[0]}
 				} else if t, ok := varTypes[v.Name]; ok {
 					if strings.HasPrefix(t, "fn") || strings.HasPrefix(t, "java.util.function.Function") {
@@ -6081,6 +6091,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "abs" && len(args) == 1 {
 			return &CallExpr{Func: "Math.abs", Args: args}, nil
+		}
+		if name == "exp" && len(args) == 1 {
+			if funcRet != nil {
+				funcRet["Math.exp"] = "double"
+			}
+			return &CallExpr{Func: "Math.exp", Args: args}, nil
+		}
+		if (name == "ln" || name == "log") && len(args) == 1 {
+			if funcRet != nil {
+				funcRet["Math.log"] = "double"
+			}
+			return &CallExpr{Func: "Math.log", Args: args}, nil
 		}
 		if name == "floor" && len(args) == 1 {
 			return &CallExpr{Func: "Math.floor", Args: args}, nil

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-17 15:35 GMT+7
+Last updated: 2025-08-17 20:47 GMT+7
 
-## Algorithms Golden Test Checklist (961/1077)
+## Algorithms Golden Test Checklist (962/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -735,7 +735,7 @@ Last updated: 2025-08-17 15:35 GMT+7
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 27.0ms | 10.45KB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 25.0ms | 600B |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 30.0ms | 10.57KB |
-| 729 | neural_network/activation_functions/softplus | error |  |  |
+| 729 | neural_network/activation_functions/softplus | ✓ | 21.0ms | 10.45KB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 27.0ms | 10.45KB |
 | 731 | neural_network/activation_functions/swish | ✓ | 27.0ms | 10.56KB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 764.0ms | 50.19KB |
