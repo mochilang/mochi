@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -124,7 +127,7 @@
   (binding [transpose_cols nil transpose_i nil transpose_j nil transpose_result nil transpose_row nil transpose_rows nil] (try (do (check_matrix transpose_a) (set! transpose_rows (count transpose_a)) (set! transpose_cols (count (nth transpose_a 0))) (set! transpose_result []) (set! transpose_j 0) (while (< transpose_j transpose_cols) (do (set! transpose_row []) (set! transpose_i 0) (while (< transpose_i transpose_rows) (do (set! transpose_row (conj transpose_row (nth (nth transpose_a transpose_i) transpose_j))) (set! transpose_i (+ transpose_i 1)))) (set! transpose_result (conj transpose_result transpose_row)) (set! transpose_j (+ transpose_j 1)))) (throw (ex-info "return" {:v transpose_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
-  (binding [main_mat_a nil main_mat_b nil main_mat_c nil] (do (set! main_mat_a [[12.0 10.0] [3.0 9.0]]) (set! main_mat_b [[3.0 4.0] [7.0 4.0]]) (set! main_mat_c [[3.0 0.0 2.0] [2.0 0.0 (- 2.0)] [0.0 1.0 1.0]]) (println (str (add main_mat_a main_mat_b))) (println (str (subtract main_mat_a main_mat_b))) (println (str (multiply main_mat_a main_mat_b))) (println (str (scalar_multiply main_mat_a 3.5))) (println (str (identity 5))) (println (str (transpose main_mat_c))))))
+  (binding [main_mat_a nil main_mat_b nil main_mat_c nil] (do (set! main_mat_a [[12.0 10.0] [3.0 9.0]]) (set! main_mat_b [[3.0 4.0] [7.0 4.0]]) (set! main_mat_c [[3.0 0.0 2.0] [2.0 0.0 (- 2.0)] [0.0 1.0 1.0]]) (println (mochi_str (add main_mat_a main_mat_b))) (println (mochi_str (subtract main_mat_a main_mat_b))) (println (mochi_str (multiply main_mat_a main_mat_b))) (println (mochi_str (scalar_multiply main_mat_a 3.5))) (println (mochi_str (identity 5))) (println (mochi_str (transpose main_mat_c))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

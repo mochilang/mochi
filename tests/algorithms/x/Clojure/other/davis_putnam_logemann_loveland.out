@@ -1,1 +1,5 @@
-The formula {{A4 , A3 , A5' , A1 , A3'} , {A4}} is satisfiable.
+Execution error (UnsupportedOperationException) at main/dpll-algorithm (davis_putnam_logemann_loveland.clj:112).
+nth not supported on this type: PersistentArrayMap
+
+Full report at:
+/tmp/clojure-1888638447293249720.edn

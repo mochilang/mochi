@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -101,18 +104,18 @@
   (binding [rotate_270_rc nil rotate_270_t nil] (try (do (set! rotate_270_t (transpose rotate_270_mat)) (set! rotate_270_rc (reverse_column rotate_270_t)) (throw (ex-info "return" {:v rotate_270_rc}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn row_to_string [row_to_string_row]
-  (binding [row_to_string_i nil row_to_string_line nil] (try (do (set! row_to_string_line "") (set! row_to_string_i 0) (while (< row_to_string_i (count row_to_string_row)) (do (if (= row_to_string_i 0) (set! row_to_string_line (str (nth row_to_string_row row_to_string_i))) (set! row_to_string_line (str (str row_to_string_line " ") (str (nth row_to_string_row row_to_string_i))))) (set! row_to_string_i (+ row_to_string_i 1)))) (throw (ex-info "return" {:v row_to_string_line}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [row_to_string_i nil row_to_string_line nil] (try (do (set! row_to_string_line "") (set! row_to_string_i 0) (while (< row_to_string_i (count row_to_string_row)) (do (if (= row_to_string_i 0) (set! row_to_string_line (mochi_str (nth row_to_string_row row_to_string_i))) (set! row_to_string_line (str (str row_to_string_line " ") (mochi_str (nth row_to_string_row row_to_string_i))))) (set! row_to_string_i (+ row_to_string_i 1)))) (throw (ex-info "return" {:v row_to_string_line}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn print_matrix [print_matrix_mat]
   (binding [print_matrix_i nil] (do (set! print_matrix_i 0) (while (< print_matrix_i (count print_matrix_mat)) (do (println (row_to_string (nth print_matrix_mat print_matrix_i))) (set! print_matrix_i (+ print_matrix_i 1)))) print_matrix_mat)))
 
 (def ^:dynamic main_mat (make_matrix 4))
 
-(def ^:dynamic main_r90 (rotate_90 main_mat))
+(def ^:dynamic main_r90 nil)
 
-(def ^:dynamic main_r180 (rotate_180 main_mat))
+(def ^:dynamic main_r180 nil)
 
-(def ^:dynamic main_r270 (rotate_270 main_mat))
+(def ^:dynamic main_r270 nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
@@ -121,16 +124,19 @@
       (println "\norigin:\n")
       (print_matrix main_mat)
       (println "\nrotate 90 counterclockwise:\n")
+      (alter-var-root (var main_r90) (constantly (rotate_90 main_mat)))
       (print_matrix main_r90)
-      (def main_mat (make_matrix 4))
+      (alter-var-root (var main_mat) (constantly (make_matrix 4)))
       (println "\norigin:\n")
       (print_matrix main_mat)
       (println "\nrotate 180:\n")
+      (alter-var-root (var main_r180) (constantly (rotate_180 main_mat)))
       (print_matrix main_r180)
-      (def main_mat (make_matrix 4))
+      (alter-var-root (var main_mat) (constantly (make_matrix 4)))
       (println "\norigin:\n")
       (print_matrix main_mat)
       (println "\nrotate 270 counterclockwise:\n")
+      (alter-var-root (var main_r270) (constantly (rotate_270 main_mat)))
       (print_matrix main_r270)
       (System/gc)
       (let [end (System/nanoTime)

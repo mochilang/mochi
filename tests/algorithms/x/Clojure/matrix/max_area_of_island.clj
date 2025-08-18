@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -51,7 +54,7 @@
 (def ^:dynamic find_max_area_seen nil)
 
 (defn encode [encode_row encode_col]
-  (try (throw (ex-info "return" {:v (str (str (str encode_row) ",") (str encode_col))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (mochi_str encode_row) ",") (mochi_str encode_col))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn is_safe [is_safe_row is_safe_col is_safe_rows is_safe_cols]
   (try (throw (ex-info "return" {:v (and (and (and (>= is_safe_row 0) (< is_safe_row is_safe_rows)) (>= is_safe_col 0)) (< is_safe_col is_safe_cols))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -60,17 +63,18 @@
   (try (throw (ex-info "return" {:v (in has_key has_seen)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn depth_first_search [depth_first_search_row depth_first_search_col depth_first_search_seen_p depth_first_search_mat]
-  (binding [depth_first_search_cols nil depth_first_search_key nil depth_first_search_rows nil depth_first_search_seen nil] (try (do (set! depth_first_search_seen depth_first_search_seen_p) (set! depth_first_search_rows (count depth_first_search_mat)) (set! depth_first_search_cols (count (nth depth_first_search_mat 0))) (set! depth_first_search_key (encode depth_first_search_row depth_first_search_col)) (if (and (and (is_safe depth_first_search_row depth_first_search_col depth_first_search_rows depth_first_search_cols) (not (has depth_first_search_seen depth_first_search_key))) (= (nth (nth depth_first_search_mat depth_first_search_row) depth_first_search_col) 1)) (do (set! depth_first_search_seen (assoc depth_first_search_seen depth_first_search_key true)) (throw (ex-info "return" {:v (+ (+ (+ (+ 1 (depth_first_search (+ depth_first_search_row 1) depth_first_search_col depth_first_search_seen depth_first_search_mat)) (depth_first_search (- depth_first_search_row 1) depth_first_search_col depth_first_search_seen depth_first_search_mat)) (depth_first_search depth_first_search_row (+ depth_first_search_col 1) depth_first_search_seen depth_first_search_mat)) (depth_first_search depth_first_search_row (- depth_first_search_col 1) depth_first_search_seen depth_first_search_mat))}))) (throw (ex-info "return" {:v 0})))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [depth_first_search_seen depth_first_search_seen_p depth_first_search_cols nil depth_first_search_key nil depth_first_search_rows nil] (try (do (set! depth_first_search_rows (count depth_first_search_mat)) (set! depth_first_search_cols (count (nth depth_first_search_mat 0))) (set! depth_first_search_key (encode depth_first_search_row depth_first_search_col)) (if (and (and (is_safe depth_first_search_row depth_first_search_col depth_first_search_rows depth_first_search_cols) (not (has depth_first_search_seen depth_first_search_key))) (= (nth (nth depth_first_search_mat depth_first_search_row) depth_first_search_col) 1)) (do (set! depth_first_search_seen (assoc depth_first_search_seen depth_first_search_key true)) (throw (ex-info "return" {:v (+ (+ (+ (+ 1 (let [__res (depth_first_search (+ depth_first_search_row 1) depth_first_search_col depth_first_search_seen depth_first_search_mat)] (do (set! depth_first_search_seen depth_first_search_seen) __res))) (let [__res (depth_first_search (- depth_first_search_row 1) depth_first_search_col depth_first_search_seen depth_first_search_mat)] (do (set! depth_first_search_seen depth_first_search_seen) __res))) (let [__res (depth_first_search depth_first_search_row (+ depth_first_search_col 1) depth_first_search_seen depth_first_search_mat)] (do (set! depth_first_search_seen depth_first_search_seen) __res))) (let [__res (depth_first_search depth_first_search_row (- depth_first_search_col 1) depth_first_search_seen depth_first_search_mat)] (do (set! depth_first_search_seen depth_first_search_seen) __res)))}))) (throw (ex-info "return" {:v 0})))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var depth_first_search_seen) (constantly depth_first_search_seen))))))
 
 (defn find_max_area [find_max_area_mat]
-  (binding [find_max_area_area nil find_max_area_c nil find_max_area_cols nil find_max_area_key nil find_max_area_line nil find_max_area_max_area nil find_max_area_r nil find_max_area_rows nil find_max_area_seen nil] (try (do (set! find_max_area_seen {}) (set! find_max_area_rows (count find_max_area_mat)) (set! find_max_area_max_area 0) (set! find_max_area_r 0) (while (< find_max_area_r find_max_area_rows) (do (set! find_max_area_line (nth find_max_area_mat find_max_area_r)) (set! find_max_area_cols (count find_max_area_line)) (set! find_max_area_c 0) (while (< find_max_area_c find_max_area_cols) (do (when (= (nth find_max_area_line find_max_area_c) 1) (do (set! find_max_area_key (encode find_max_area_r find_max_area_c)) (when (not (in find_max_area_key find_max_area_seen)) (do (set! find_max_area_area (depth_first_search find_max_area_r find_max_area_c find_max_area_seen find_max_area_mat)) (when (> find_max_area_area find_max_area_max_area) (set! find_max_area_max_area find_max_area_area)))))) (set! find_max_area_c (+ find_max_area_c 1)))) (set! find_max_area_r (+ find_max_area_r 1)))) (throw (ex-info "return" {:v find_max_area_max_area}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [find_max_area_area nil find_max_area_c nil find_max_area_cols nil find_max_area_key nil find_max_area_line nil find_max_area_max_area nil find_max_area_r nil find_max_area_rows nil find_max_area_seen nil] (try (do (set! find_max_area_seen {}) (set! find_max_area_rows (count find_max_area_mat)) (set! find_max_area_max_area 0) (set! find_max_area_r 0) (while (< find_max_area_r find_max_area_rows) (do (set! find_max_area_line (nth find_max_area_mat find_max_area_r)) (set! find_max_area_cols (count find_max_area_line)) (set! find_max_area_c 0) (while (< find_max_area_c find_max_area_cols) (do (when (= (nth find_max_area_line find_max_area_c) 1) (do (set! find_max_area_key (encode find_max_area_r find_max_area_c)) (when (not (in find_max_area_key find_max_area_seen)) (do (set! find_max_area_area (let [__res (depth_first_search find_max_area_r find_max_area_c find_max_area_seen find_max_area_mat)] (do (set! find_max_area_seen depth_first_search_seen) __res))) (when (> find_max_area_area find_max_area_max_area) (set! find_max_area_max_area find_max_area_area)))))) (set! find_max_area_c (+ find_max_area_c 1)))) (set! find_max_area_r (+ find_max_area_r 1)))) (throw (ex-info "return" {:v find_max_area_max_area}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_matrix [[0 0 1 0 0 0 0 1 0 0 0 0 0] [0 0 0 0 0 0 0 1 1 1 0 0 0] [0 1 1 0 1 0 0 0 0 0 0 0 0] [0 1 0 0 1 1 0 0 1 0 1 0 0] [0 1 0 0 1 1 0 0 1 1 1 0 0] [0 0 0 0 0 0 0 0 0 0 1 0 0] [0 0 0 0 0 0 0 1 1 1 0 0 0] [0 0 0 0 0 0 0 1 1 0 0 0 0]])
+(def ^:dynamic main_matrix nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_matrix) (constantly [[0 0 1 0 0 0 0 1 0 0 0 0 0] [0 0 0 0 0 0 0 1 1 1 0 0 0] [0 1 1 0 1 0 0 0 0 0 0 0 0] [0 1 0 0 1 1 0 0 1 0 1 0 0] [0 1 0 0 1 1 0 0 1 1 1 0 0] [0 0 0 0 0 0 0 0 0 0 1 0 0] [0 0 0 0 0 0 0 1 1 1 0 0 0] [0 0 0 0 0 0 0 1 1 0 0 0 0]]))
       (println (find_max_area main_matrix))
       (System/gc)
       (let [end (System/nanoTime)

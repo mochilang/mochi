@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -70,15 +73,17 @@
 (defn mincut [mincut_graph mincut_source mincut_sink]
   (binding [mincut_cap nil mincut_g nil mincut_i nil mincut_j nil mincut_p nil mincut_parent nil mincut_path_flow nil mincut_res nil mincut_row nil mincut_s nil mincut_temp nil mincut_u nil mincut_v nil] (try (do (set! mincut_g mincut_graph) (set! mincut_parent []) (set! mincut_i 0) (while (< mincut_i (count mincut_g)) (do (set! mincut_parent (conj mincut_parent (- 1))) (set! mincut_i (+ mincut_i 1)))) (set! mincut_temp []) (set! mincut_i 0) (while (< mincut_i (count mincut_g)) (do (set! mincut_row []) (set! mincut_j 0) (while (< mincut_j (count (nth mincut_g mincut_i))) (do (set! mincut_row (conj mincut_row (nth (nth mincut_g mincut_i) mincut_j))) (set! mincut_j (+ mincut_j 1)))) (set! mincut_temp (conj mincut_temp mincut_row)) (set! mincut_i (+ mincut_i 1)))) (while (let [__res (bfs mincut_g mincut_source mincut_sink mincut_parent)] (do (set! mincut_parent bfs_parent) __res)) (do (set! mincut_path_flow 1000000000) (set! mincut_s mincut_sink) (while (not= mincut_s mincut_source) (do (set! mincut_p (nth mincut_parent mincut_s)) (set! mincut_cap (nth (nth mincut_g mincut_p) mincut_s)) (when (< mincut_cap mincut_path_flow) (set! mincut_path_flow mincut_cap)) (set! mincut_s mincut_p))) (set! mincut_v mincut_sink) (while (not= mincut_v mincut_source) (do (set! mincut_u (nth mincut_parent mincut_v)) (set! mincut_g (assoc-in mincut_g [mincut_u mincut_v] (- (nth (nth mincut_g mincut_u) mincut_v) mincut_path_flow))) (set! mincut_g (assoc-in mincut_g [mincut_v mincut_u] (+ (nth (nth mincut_g mincut_v) mincut_u) mincut_path_flow))) (set! mincut_v mincut_u))))) (set! mincut_res []) (set! mincut_i 0) (while (< mincut_i (count mincut_g)) (do (set! mincut_j 0) (while (< mincut_j (count (nth mincut_g 0))) (do (when (and (= (nth (nth mincut_g mincut_i) mincut_j) 0) (> (nth (nth mincut_temp mincut_i) mincut_j) 0)) (set! mincut_res (conj mincut_res [mincut_i mincut_j]))) (set! mincut_j (+ mincut_j 1)))) (set! mincut_i (+ mincut_i 1)))) (throw (ex-info "return" {:v mincut_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_test_graph [[0 16 13 0 0 0] [0 0 10 12 0 0] [0 4 0 0 14 0] [0 0 9 0 0 20] [0 0 0 7 0 4] [0 0 0 0 0 0]])
+(def ^:dynamic main_test_graph nil)
 
-(def ^:dynamic main_result (mincut main_test_graph 0 5))
+(def ^:dynamic main_result nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str main_result))
+      (alter-var-root (var main_test_graph) (constantly [[0 16 13 0 0 0] [0 0 10 12 0 0] [0 4 0 0 14 0] [0 0 9 0 0 20] [0 0 0 7 0 4] [0 0 0 0 0 0]]))
+      (alter-var-root (var main_result) (constantly (mincut main_test_graph 0 5)))
+      (println (mochi_str main_result))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

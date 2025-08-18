@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (UnsupportedOperationException) at main/dpll-algorithm (davis_putnam_logemann_loveland.clj:112).
+nth not supported on this type: PersistentArrayMap
+
+Full report at:
+/tmp/clojure-1888638447293249720.edn

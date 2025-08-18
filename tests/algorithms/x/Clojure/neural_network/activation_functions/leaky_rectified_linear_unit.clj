@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -33,20 +36,24 @@
 (defn leaky_rectified_linear_unit [leaky_rectified_linear_unit_vector leaky_rectified_linear_unit_alpha]
   (binding [leaky_rectified_linear_unit_i nil leaky_rectified_linear_unit_result nil leaky_rectified_linear_unit_x nil] (try (do (set! leaky_rectified_linear_unit_result []) (set! leaky_rectified_linear_unit_i 0) (while (< leaky_rectified_linear_unit_i (count leaky_rectified_linear_unit_vector)) (do (set! leaky_rectified_linear_unit_x (nth leaky_rectified_linear_unit_vector leaky_rectified_linear_unit_i)) (if (> leaky_rectified_linear_unit_x 0.0) (set! leaky_rectified_linear_unit_result (conj leaky_rectified_linear_unit_result leaky_rectified_linear_unit_x)) (set! leaky_rectified_linear_unit_result (conj leaky_rectified_linear_unit_result (* leaky_rectified_linear_unit_alpha leaky_rectified_linear_unit_x)))) (set! leaky_rectified_linear_unit_i (+ leaky_rectified_linear_unit_i 1)))) (throw (ex-info "return" {:v leaky_rectified_linear_unit_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_vector1 [2.3 0.6 (- 2.0) (- 3.8)])
+(def ^:dynamic main_vector1 nil)
 
-(def ^:dynamic main_result1 (leaky_rectified_linear_unit main_vector1 0.3))
+(def ^:dynamic main_result1 nil)
 
-(def ^:dynamic main_vector2 [(- 9.2) (- 0.3) 0.45 (- 4.56)])
+(def ^:dynamic main_vector2 nil)
 
-(def ^:dynamic main_result2 (leaky_rectified_linear_unit main_vector2 0.067))
+(def ^:dynamic main_result2 nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str main_result1))
-      (println (str main_result2))
+      (alter-var-root (var main_vector1) (constantly [2.3 0.6 (- 2.0) (- 3.8)]))
+      (alter-var-root (var main_result1) (constantly (leaky_rectified_linear_unit main_vector1 0.3)))
+      (println (mochi_str main_result1))
+      (alter-var-root (var main_vector2) (constantly [(- 9.2) (- 0.3) 0.45 (- 4.56)]))
+      (alter-var-root (var main_result2) (constantly (leaky_rectified_linear_unit main_vector2 0.067)))
+      (println (mochi_str main_result2))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

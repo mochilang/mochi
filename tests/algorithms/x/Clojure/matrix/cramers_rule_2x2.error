@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/test-cramers-rule-2x2 (cramers_rule_2x2.clj:60).
+Test2 failed
+
+Full report at:
+/tmp/clojure-18321864091389434485.edn
