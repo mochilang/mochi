@@ -1,0 +1,1388 @@
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:119:51
+    |
+119 |         res = { let mut _v = res.clone(); _v.push(sigmoid(v[i as usize])); _v };
+    |                                                   ^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:138:48
+    |
+138 |         v = { let mut _v = v.clone(); _v.push((random() - 0.5)); _v };
+    |                                                ^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:88:2
+   |
+88 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:111:2
+    |
+111 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:123:2
+    |
+123 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:133:2
+    |
+133 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:142:2
+    |
+142 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:151:2
+    |
+151 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:166:2
+    |
+166 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:182:2
+    |
+182 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:191:2
+    |
+191 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:200:2
+    |
+200 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:209:2
+    |
+209 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:224:2
+    |
+224 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:239:2
+    |
+239 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:254:2
+    |
+254 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:301:2
+    |
+301 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:310:2
+    |
+310 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:335:2
+    |
+335 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:86:23
+   |
+86 |     unsafe { g_seed = (((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648) };
+   |                       ^                                                               ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+86 -     unsafe { g_seed = (((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648) };
+86 +     unsafe { g_seed = ((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648 };
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:90:12
+   |
+90 |     return ((1.0 * (rand() as f64)) / 2147483648.0)
+   |            ^                                      ^
+   |
+help: remove these parentheses
+   |
+90 -     return ((1.0 * (rand() as f64)) / 2147483648.0)
+90 +     return (1.0 * (rand() as f64)) / 2147483648.0
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:95:8
+   |
+95 |     if (x < 0.0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+95 -     if (x < 0.0) {
+95 +     if x < 0.0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:102:11
+    |
+102 |     while (n < 30) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+102 -     while (n < 30) {
+102 +     while n < 30 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:103:16
+    |
+103 |         term = ((term * y) / (n as f64));
+    |                ^                       ^
+    |
+help: remove these parentheses
+    |
+103 -         term = ((term * y) / (n as f64));
+103 +         term = (term * y) / (n as f64);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:104:15
+    |
+104 |         sum = (sum + term);
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+104 -         sum = (sum + term);
+104 +         sum = sum + term;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:105:13
+    |
+105 |         n = (n + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+105 -         n = (n + 1);
+105 +         n = n + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:108:16
+    |
+108 |         return (1.0 / sum)
+    |                ^         ^
+    |
+help: remove these parentheses
+    |
+108 -         return (1.0 / sum)
+108 +         return 1.0 / sum
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:113:12
+    |
+113 |     return (1.0 / (1.0 + expApprox(-z)))
+    |            ^                           ^
+    |
+help: remove these parentheses
+    |
+113 -     return (1.0 / (1.0 + expApprox(-z)))
+113 +     return 1.0 / (1.0 + expApprox(-z))
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:118:11
+    |
+118 |     while (i < (v.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+118 -     while (i < (v.len() as i64)) {
+118 +     while i < (v.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:120:13
+    |
+120 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+120 -         i = (i + 1);
+120 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:127:11
+    |
+127 |     while (i < (out.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+127 -     while (i < (out.len() as i64)) {
+127 +     while i < (out.len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:129:51
+    |
+129 |         res = { let mut _v = res.clone(); _v.push((val * (1.0 - val))); _v };
+    |                                                   ^                 ^
+    |
+help: remove these parentheses
+    |
+129 -         res = { let mut _v = res.clone(); _v.push((val * (1.0 - val))); _v };
+129 +         res = { let mut _v = res.clone(); _v.push(val * (1.0 - val)); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:130:13
+    |
+130 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+130 -         i = (i + 1);
+130 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:137:11
+    |
+137 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+137 -     while (i < n) {
+137 +     while i < n {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:138:47
+    |
+138 |         v = { let mut _v = v.clone(); _v.push((random() - 0.5)); _v };
+    |                                               ^              ^
+    |
+help: remove these parentheses
+    |
+138 -         v = { let mut _v = v.clone(); _v.push((random() - 0.5)); _v };
+138 +         v = { let mut _v = v.clone(); _v.push(random() - 0.5); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:139:13
+    |
+139 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+139 -         i = (i + 1);
+139 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:146:11
+    |
+146 |     while (i < r) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+146 -     while (i < r) {
+146 +     while i < r {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:148:13
+    |
+148 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+148 -         i = (i + 1);
+148 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:155:11
+    |
+155 |     while (i < (mat.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+155 -     while (i < (mat.len() as i64)) {
+155 +     while i < (mat.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:158:15
+    |
+158 |         while (j < (vec.len() as i64)) {
+    |               ^                      ^
+    |
+help: remove these parentheses
+    |
+158 -         while (j < (vec.len() as i64)) {
+158 +         while j < (vec.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:159:17
+    |
+159 |             s = (s + (mat[i as usize].clone()[j as usize] * vec[j as usize]));
+    |                 ^                                                           ^
+    |
+help: remove these parentheses
+    |
+159 -             s = (s + (mat[i as usize].clone()[j as usize] * vec[j as usize]));
+159 +             s = s + (mat[i as usize].clone()[j as usize] * vec[j as usize]);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:160:17
+    |
+160 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+160 -             j = (j + 1);
+160 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:163:13
+    |
+163 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+163 -         i = (i + 1);
+163 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:168:25
+    |
+168 |     let mut cols: i64 = (mat[0 as usize].clone().len() as i64);
+    |                         ^                                    ^
+    |
+help: remove these parentheses
+    |
+168 -     let mut cols: i64 = (mat[0 as usize].clone().len() as i64);
+168 +     let mut cols: i64 = mat[0 as usize].clone().len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:171:11
+    |
+171 |     while (j < cols) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+171 -     while (j < cols) {
+171 +     while j < cols {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:174:15
+    |
+174 |         while (i < (mat.len() as i64)) {
+    |               ^                      ^
+    |
+help: remove these parentheses
+    |
+174 -         while (i < (mat.len() as i64)) {
+174 +         while i < (mat.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:175:17
+    |
+175 |             s = (s + (mat[i as usize].clone()[j as usize] * vec[i as usize]));
+    |                 ^                                                           ^
+    |
+help: remove these parentheses
+    |
+175 -             s = (s + (mat[i as usize].clone()[j as usize] * vec[i as usize]));
+175 +             s = s + (mat[i as usize].clone()[j as usize] * vec[i as usize]);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:176:17
+    |
+176 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+176 -             i = (i + 1);
+176 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:179:13
+    |
+179 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+179 -         j = (j + 1);
+179 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:186:11
+    |
+186 |     while (i < (a.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+186 -     while (i < (a.len() as i64)) {
+186 +     while i < (a.len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:187:51
+    |
+187 |         res = { let mut _v = res.clone(); _v.push((a[i as usize] - b[i as usize])); _v };
+    |                                                   ^                             ^
+    |
+help: remove these parentheses
+    |
+187 -         res = { let mut _v = res.clone(); _v.push((a[i as usize] - b[i as usize])); _v };
+187 +         res = { let mut _v = res.clone(); _v.push(a[i as usize] - b[i as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:188:13
+    |
+188 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+188 -         i = (i + 1);
+188 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:195:11
+    |
+195 |     while (i < (a.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+195 -     while (i < (a.len() as i64)) {
+195 +     while i < (a.len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:196:51
+    |
+196 |         res = { let mut _v = res.clone(); _v.push((a[i as usize] * b[i as usize])); _v };
+    |                                                   ^                             ^
+    |
+help: remove these parentheses
+    |
+196 -         res = { let mut _v = res.clone(); _v.push((a[i as usize] * b[i as usize])); _v };
+196 +         res = { let mut _v = res.clone(); _v.push(a[i as usize] * b[i as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:197:13
+    |
+197 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+197 -         i = (i + 1);
+197 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:204:11
+    |
+204 |     while (i < (v.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+204 -     while (i < (v.len() as i64)) {
+204 +     while i < (v.len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:205:51
+    |
+205 |         res = { let mut _v = res.clone(); _v.push((v[i as usize] * s)); _v };
+    |                                                   ^                 ^
+    |
+help: remove these parentheses
+    |
+205 -         res = { let mut _v = res.clone(); _v.push((v[i as usize] * s)); _v };
+205 +         res = { let mut _v = res.clone(); _v.push(v[i as usize] * s); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:206:13
+    |
+206 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+206 -         i = (i + 1);
+206 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:213:11
+    |
+213 |     while (i < (a.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+213 -     while (i < (a.len() as i64)) {
+213 +     while i < (a.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:216:15
+    |
+216 |         while (j < (b.len() as i64)) {
+    |               ^                    ^
+    |
+help: remove these parentheses
+    |
+216 -         while (j < (b.len() as i64)) {
+216 +         while j < (b.len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:217:55
+    |
+217 |             row = { let mut _v = row.clone(); _v.push((a[i as usize] * b[j as usize])); _v };
+    |                                                       ^                             ^
+    |
+help: remove these parentheses
+    |
+217 -             row = { let mut _v = row.clone(); _v.push((a[i as usize] * b[j as usize])); _v };
+217 +             row = { let mut _v = row.clone(); _v.push(a[i as usize] * b[j as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:218:17
+    |
+218 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+218 -             j = (j + 1);
+218 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:221:13
+    |
+221 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+221 -         i = (i + 1);
+221 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:228:11
+    |
+228 |     while (i < (mat.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+228 -     while (i < (mat.len() as i64)) {
+228 +     while i < (mat.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:231:15
+    |
+231 |         while (j < (mat[i as usize].clone().len() as i64)) {
+    |               ^                                          ^
+    |
+help: remove these parentheses
+    |
+231 -         while (j < (mat[i as usize].clone().len() as i64)) {
+231 +         while j < (mat[i as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:232:55
+    |
+232 |             row = { let mut _v = row.clone(); _v.push((mat[i as usize].clone()[j as usize] * s)); _v };
+    |                                                       ^                                       ^
+    |
+help: remove these parentheses
+    |
+232 -             row = { let mut _v = row.clone(); _v.push((mat[i as usize].clone()[j as usize] * s)); _v };
+232 +             row = { let mut _v = row.clone(); _v.push(mat[i as usize].clone()[j as usize] * s); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:233:17
+    |
+233 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+233 -             j = (j + 1);
+233 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:236:13
+    |
+236 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+236 -         i = (i + 1);
+236 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:243:11
+    |
+243 |     while (i < (a.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+243 -     while (i < (a.len() as i64)) {
+243 +     while i < (a.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:246:15
+    |
+246 |         while (j < (a[i as usize].clone().len() as i64)) {
+    |               ^                                        ^
+    |
+help: remove these parentheses
+    |
+246 -         while (j < (a[i as usize].clone().len() as i64)) {
+246 +         while j < (a[i as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:247:55
+    |
+247 |             row = { let mut _v = row.clone(); _v.push((a[i as usize].clone()[j as usize] - b[i as usize].clone()[j as usize])); _v };
+    |                                                       ^                                                                     ^
+    |
+help: remove these parentheses
+    |
+247 -             row = { let mut _v = row.clone(); _v.push((a[i as usize].clone()[j as usize] - b[i as usize].clone()[j as usize])); _v };
+247 +             row = { let mut _v = row.clone(); _v.push(a[i as usize].clone()[j as usize] - b[i as usize].clone()[j as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:248:17
+    |
+248 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+248 -             j = (j + 1);
+248 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:251:13
+    |
+251 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+251 -         i = (i + 1);
+251 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:261:11
+    |
+261 |     while (i < (layers.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+261 -     while (i < (layers.len() as i64)) {
+261 +     while i < (layers.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:264:12
+    |
+264 |         if (i == 0) {
+    |            ^      ^
+    |
+help: remove these parentheses
+    |
+264 -         if (i == 0) {
+264 +         if i == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:272:13
+    |
+272 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+272 -         i = (i + 1);
+272 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:278:22
+    |
+278 |     let mut i: i64 = ((layers.len() as i64) - 1);
+    |                      ^                         ^
+    |
+help: remove these parentheses
+    |
+278 -     let mut i: i64 = ((layers.len() as i64) - 1);
+278 +     let mut i: i64 = (layers.len() as i64) - 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:279:11
+    |
+279 |     while (i > 0) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+279 -     while (i > 0) {
+279 +     while i > 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:288:13
+    |
+288 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+288 -         i = (i - 1);
+288 +         i = i - 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:295:11
+    |
+295 |     while (i < (y.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+295 -     while (i < (y.len() as i64)) {
+295 +     while i < (y.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:296:22
+    |
+296 |         let d: f64 = (y[i as usize] - yhat[i as usize]);
+    |                      ^                                ^
+    |
+help: remove these parentheses
+    |
+296 -         let d: f64 = (y[i as usize] - yhat[i as usize]);
+296 +         let d: f64 = y[i as usize] - yhat[i as usize];
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:297:13
+    |
+297 |         s = (s + (d * d));
+    |             ^           ^
+    |
+help: remove these parentheses
+    |
+297 -         s = (s + (d * d));
+297 +         s = s + (d * d);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:298:13
+    |
+298 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+298 -         i = (i + 1);
+298 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:305:11
+    |
+305 |     while (i < (y.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+305 -     while (i < (y.len() as i64)) {
+305 +     while i < (y.len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:306:47
+    |
+306 |         g = { let mut _v = g.clone(); _v.push((2.0 * (yhat[i as usize] - y[i as usize]))); _v };
+    |                                               ^                                        ^
+    |
+help: remove these parentheses
+    |
+306 -         g = { let mut _v = g.clone(); _v.push((2.0 * (yhat[i as usize] - y[i as usize]))); _v };
+306 +         g = { let mut _v = g.clone(); _v.push(2.0 * (yhat[i as usize] - y[i as usize])); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:307:13
+    |
+307 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+307 -         i = (i + 1);
+307 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:313:11
+    |
+313 |     while (r < rounds) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+313 -     while (r < rounds) {
+313 +     while r < rounds {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:315:15
+    |
+315 |         while (i < (xdata.len() as i64)) {
+    |               ^                        ^
+    |
+help: remove these parentheses
+    |
+315 -         while (i < (xdata.len() as i64)) {
+315 +         while i < (xdata.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:320:17
+    |
+320 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+320 -             i = (i + 1);
+320 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:322:13
+    |
+322 |         r = (r + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+322 -         r = (r + 1);
+322 +         r = r + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:329:11
+    |
+329 |     while (i < 10) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+329 -     while (i < 10) {
+329 +     while i < 10 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:331:13
+    |
+331 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+331 -         i = (i + 1);
+331 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:350:32
+    |
+350 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+350 -         let duration_us: i64 = ((_end - _start) / 1000);
+350 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unused variable: `random`
+  --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:89:17
+   |
+89 |         let mut random = || -> f64 {
+   |                 ^^^^^^ help: if this is intentional, prefix it with an underscore: `_random`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: unused variable: `sigmoid`
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:112:17
+    |
+112 |         let mut sigmoid = |mut z: f64| -> f64 {
+    |                 ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_sigmoid`
+
+warning: unused variable: `acc`
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:311:123
+    |
+311 |         let mut train = |mut layers: Vec<Layer>, mut xdata: Vec<Vec<f64>>, mut ydata: Vec<Vec<f64>>, mut rounds: i64, mut acc: f64| -> f64 {
+    |                                                                                                                           ^^^ help: if this is intentional, prefix it with an underscore: `_acc`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:112:28
+    |
+112 |         let mut sigmoid = |mut z: f64| -> f64 {
+    |                            ----^
+    |                            |
+    |                            help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:255:31
+    |
+255 |         let mut init_layer = |mut units: i64, mut back_units: i64, mut lr: f64| -> Layer {
+    |                               ----^^^^^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:255:47
+    |
+255 |         let mut init_layer = |mut units: i64, mut back_units: i64, mut lr: f64| -> Layer {
+    |                                               ----^^^^^^^^^^
+    |                                               |
+    |                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:255:68
+    |
+255 |         let mut init_layer = |mut units: i64, mut back_units: i64, mut lr: f64| -> Layer {
+    |                                                                    ----^^
+    |                                                                    |
+    |                                                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:258:52
+    |
+258 |         let mut forward = |mut layers: Vec<Layer>, mut x: Vec<f64>| -> Vec<Layer> {
+    |                                                    ----^
+    |                                                    |
+    |                                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:276:53
+    |
+276 |         let mut backward = |mut layers: Vec<Layer>, mut grad: Vec<f64>| -> Vec<Layer> {
+    |                                                     ----^^^^
+    |                                                     |
+    |                                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:311:50
+    |
+311 |         let mut train = |mut layers: Vec<Layer>, mut xdata: Vec<Vec<f64>>, mut ydata: Vec<Vec<f64>>, mut rounds: i64, mut acc: f64| -> f64 {
+    |                                                  ----^^^^^
+    |                                                  |
+    |                                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:311:76
+    |
+311 |         let mut train = |mut layers: Vec<Layer>, mut xdata: Vec<Vec<f64>>, mut ydata: Vec<Vec<f64>>, mut rounds: i64, mut acc: f64| -> f64 {
+    |                                                                            ----^^^^^
+    |                                                                            |
+    |                                                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:311:102
+    |
+311 |         let mut train = |mut layers: Vec<Layer>, mut xdata: Vec<Vec<f64>>, mut ydata: Vec<Vec<f64>>, mut rounds: i64, mut acc: f64| -> f64 {
+    |                                                                                                      ----^^^^^^
+    |                                                                                                      |
+    |                                                                                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:311:119
+    |
+311 |         let mut train = |mut layers: Vec<Layer>, mut xdata: Vec<Vec<f64>>, mut ydata: Vec<Vec<f64>>, mut rounds: i64, mut acc: f64| -> f64 {
+    |                                                                                                                       ----^^^
+    |                                                                                                                       |
+    |                                                                                                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:89:13
+   |
+89 |         let mut random = || -> f64 {
+   |             ----^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:112:13
+    |
+112 |         let mut sigmoid = |mut z: f64| -> f64 {
+    |             ----^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:255:13
+    |
+255 |         let mut init_layer = |mut units: i64, mut back_units: i64, mut lr: f64| -> Layer {
+    |             ----^^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:258:13
+    |
+258 |         let mut forward = |mut layers: Vec<Layer>, mut x: Vec<f64>| -> Vec<Layer> {
+    |             ----^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:276:13
+    |
+276 |         let mut backward = |mut layers: Vec<Layer>, mut grad: Vec<f64>| -> Vec<Layer> {
+    |             ----^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:311:13
+    |
+311 |         let mut train = |mut layers: Vec<Layer>, mut xdata: Vec<Vec<f64>>, mut ydata: Vec<Vec<f64>>, mut rounds: i64, mut acc: f64| -> f64 {
+    |             ----^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:336:13
+    |
+336 |         let mut mochi_main = || {
+    |             ----^^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:86:26
+   |
+86 |     unsafe { g_seed = (((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648) };
+   |     ------               ^^^^^^ unnecessary `unsafe` block
+   |     |
+   |     because it's nested under this `unsafe` block
+   |
+   = note: `#[warn(unused_unsafe)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:92:22
+   |
+92 |         fn expApprox(mut x: f64) -> f64 {
+   |                      ----^
+   |                      |
+   |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:124:31
+    |
+124 |         fn sigmoid_derivative(mut out: Vec<f64>) -> Vec<f64> {
+    |                               ----^^^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:143:26
+    |
+143 |         fn random_matrix(mut r: i64, mut c: i64) -> Vec<Vec<f64>> {
+    |                          ----^
+    |                          |
+    |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:143:38
+    |
+143 |         fn random_matrix(mut r: i64, mut c: i64) -> Vec<Vec<f64>> {
+    |                                      ----^
+    |                                      |
+    |                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:152:19
+    |
+152 |         fn matvec(mut mat: Vec<Vec<f64>>, mut vec: Vec<f64>) -> Vec<f64> {
+    |                   ----^^^
+    |                   |
+    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:152:43
+    |
+152 |         fn matvec(mut mat: Vec<Vec<f64>>, mut vec: Vec<f64>) -> Vec<f64> {
+    |                                           ----^^^
+    |                                           |
+    |                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:167:20
+    |
+167 |         fn matTvec(mut mat: Vec<Vec<f64>>, mut vec: Vec<f64>) -> Vec<f64> {
+    |                    ----^^^
+    |                    |
+    |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:167:44
+    |
+167 |         fn matTvec(mut mat: Vec<Vec<f64>>, mut vec: Vec<f64>) -> Vec<f64> {
+    |                                            ----^^^
+    |                                            |
+    |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:168:9
+    |
+168 |     let mut cols: i64 = (mat[0 as usize].clone().len() as i64);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:183:20
+    |
+183 |         fn vec_sub(mut a: Vec<f64>, mut b: Vec<f64>) -> Vec<f64> {
+    |                    ----^
+    |                    |
+    |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:183:37
+    |
+183 |         fn vec_sub(mut a: Vec<f64>, mut b: Vec<f64>) -> Vec<f64> {
+    |                                     ----^
+    |                                     |
+    |                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:192:20
+    |
+192 |         fn vec_mul(mut a: Vec<f64>, mut b: Vec<f64>) -> Vec<f64> {
+    |                    ----^
+    |                    |
+    |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:192:37
+    |
+192 |         fn vec_mul(mut a: Vec<f64>, mut b: Vec<f64>) -> Vec<f64> {
+    |                                     ----^
+    |                                     |
+    |                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:201:27
+    |
+201 |         fn vec_scalar_mul(mut v: Vec<f64>, mut s: f64) -> Vec<f64> {
+    |                           ----^
+    |                           |
+    |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:201:44
+    |
+201 |         fn vec_scalar_mul(mut v: Vec<f64>, mut s: f64) -> Vec<f64> {
+    |                                            ----^
+    |                                            |
+    |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:210:18
+    |
+210 |         fn outer(mut a: Vec<f64>, mut b: Vec<f64>) -> Vec<Vec<f64>> {
+    |                  ----^
+    |                  |
+    |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:210:35
+    |
+210 |         fn outer(mut a: Vec<f64>, mut b: Vec<f64>) -> Vec<Vec<f64>> {
+    |                                   ----^
+    |                                   |
+    |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:225:27
+    |
+225 |         fn mat_scalar_mul(mut mat: Vec<Vec<f64>>, mut s: f64) -> Vec<Vec<f64>> {
+    |                           ----^^^
+    |                           |
+    |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:225:51
+    |
+225 |         fn mat_scalar_mul(mut mat: Vec<Vec<f64>>, mut s: f64) -> Vec<Vec<f64>> {
+    |                                                   ----^
+    |                                                   |
+    |                                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:240:20
+    |
+240 |         fn mat_sub(mut a: Vec<Vec<f64>>, mut b: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    |                    ----^
+    |                    |
+    |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:240:42
+    |
+240 |         fn mat_sub(mut a: Vec<Vec<f64>>, mut b: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    |                                          ----^
+    |                                          |
+    |                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:292:22
+    |
+292 |         fn calc_loss(mut y: Vec<f64>, mut yhat: Vec<f64>) -> f64 {
+    |                      ----^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:292:39
+    |
+292 |         fn calc_loss(mut y: Vec<f64>, mut yhat: Vec<f64>) -> f64 {
+    |                                       ----^^^^
+    |                                       |
+    |                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:302:26
+    |
+302 |         fn calc_gradient(mut y: Vec<f64>, mut yhat: Vec<f64>) -> Vec<f64> {
+    |                          ----^
+    |                          |
+    |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/neural_network/back_propagation_neural_network.rs:302:43
+    |
+302 |         fn calc_gradient(mut y: Vec<f64>, mut yhat: Vec<f64>) -> Vec<f64> {
+    |                                           ----^^^^
+    |                                           |
+    |                                           help: remove this `mut`
+
+error: aborting due to 2 previous errors; 138 warnings emitted
+
+For more information about this error, try `rustc --explain E0434`.

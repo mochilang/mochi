@@ -1,0 +1,1285 @@
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:138:55
+    |
+138 |             row = { let mut _v = row.clone(); _v.push(matrix_minor(m.clone(), i, j)); _v };
+    |                                                       ^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:153:55
+    |
+153 |             row = { let mut _v = row.clone(); _v.push(matrix_cofactor(m.clone(), i, j)); _v };
+    |                                                       ^^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:72:2
+   |
+72 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:87:2
+   |
+87 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:103:2
+    |
+103 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:145:2
+    |
+145 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:160:2
+    |
+160 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:213:2
+    |
+213 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:222:2
+    |
+222 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:237:2
+    |
+237 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:258:2
+    |
+258 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:276:2
+    |
+276 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:285:2
+    |
+285 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:350:2
+    |
+350 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:59:18
+   |
+59 |     let r: i64 = (values.len() as i64);
+   |                  ^                   ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+59 -     let r: i64 = (values.len() as i64);
+59 +     let r: i64 = values.len() as i64;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:60:8
+   |
+60 |     if (r == 0) {
+   |        ^      ^
+   |
+help: remove these parentheses
+   |
+60 -     if (r == 0) {
+60 +     if r == 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:63:18
+   |
+63 |     let c: i64 = (values[0 as usize].clone().len() as i64);
+   |                  ^                                       ^
+   |
+help: remove these parentheses
+   |
+63 -     let c: i64 = (values[0 as usize].clone().len() as i64);
+63 +     let c: i64 = values[0 as usize].clone().len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:65:11
+   |
+65 |     while (i < r) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+65 -     while (i < r) {
+65 +     while i < r {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:66:12
+   |
+66 |         if ((values[i as usize].clone().len() as i64) != c) {
+   |            ^                                              ^
+   |
+help: remove these parentheses
+   |
+66 -         if ((values[i as usize].clone().len() as i64) != c) {
+66 +         if (values[i as usize].clone().len() as i64) != c {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:69:13
+   |
+69 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+69 -         i = (i + 1);
+69 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:76:11
+   |
+76 |     while (j < m.cols) {
+   |           ^          ^
+   |
+help: remove these parentheses
+   |
+76 -     while (j < m.cols) {
+76 +     while j < m.cols {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:79:15
+   |
+79 |         while (i < m.rows) {
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+79 -         while (i < m.rows) {
+79 +         while i < m.rows {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:81:17
+   |
+81 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+81 -             i = (i + 1);
+81 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:84:13
+   |
+84 |         j = (j + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+84 -         j = (j + 1);
+84 +         j = j + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:91:11
+   |
+91 |     while (i < m.rows) {
+   |           ^          ^
+   |
+help: remove these parentheses
+   |
+91 -     while (i < m.rows) {
+91 +     while i < m.rows {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:94:15
+   |
+94 |         while (j < m.cols) {
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+94 -         while (j < m.cols) {
+94 +         while j < m.cols {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:95:29
+   |
+95 |             let v: f64 = if (i == j) { 1.0 } else { 0.0 };
+   |                             ^      ^
+   |
+help: remove these parentheses
+   |
+95 -             let v: f64 = if (i == j) { 1.0 } else { 0.0 };
+95 +             let v: f64 = if i == j { 1.0 } else { 0.0 };
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:97:17
+   |
+97 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+97 -             j = (j + 1);
+97 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:100:13
+    |
+100 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+100 -         i = (i + 1);
+100 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:107:11
+    |
+107 |     while (i < m.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+107 -     while (i < m.rows) {
+107 +     while i < m.rows {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:108:12
+    |
+108 |         if (i != r) {
+    |            ^      ^
+    |
+help: remove these parentheses
+    |
+108 -         if (i != r) {
+108 +         if i != r {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:111:19
+    |
+111 |             while (j < m.cols) {
+    |                   ^          ^
+    |
+help: remove these parentheses
+    |
+111 -             while (j < m.cols) {
+111 +             while j < m.cols {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:112:20
+    |
+112 |                 if (j != c) {
+    |                    ^      ^
+    |
+help: remove these parentheses
+    |
+112 -                 if (j != c) {
+112 +                 if j != c {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:115:21
+    |
+115 |                 j = (j + 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+115 -                 j = (j + 1);
+115 +                 j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:119:13
+    |
+119 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+119 -         i = (i + 1);
+119 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:126:8
+    |
+126 |     if (((r + c) % 2) == 0) {
+    |        ^                  ^
+    |
+help: remove these parentheses
+    |
+126 -     if (((r + c) % 2) == 0) {
+126 +     if ((r + c) % 2) == 0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:129:12
+    |
+129 |     return (-1.0 * minor)
+    |            ^            ^
+    |
+help: remove these parentheses
+    |
+129 -     return (-1.0 * minor)
+129 +     return -1.0 * minor
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:134:11
+    |
+134 |     while (i < m.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+134 -     while (i < m.rows) {
+134 +     while i < m.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:137:15
+    |
+137 |         while (j < m.cols) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+137 -         while (j < m.cols) {
+137 +         while j < m.cols {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:139:17
+    |
+139 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+139 -             j = (j + 1);
+139 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:142:13
+    |
+142 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+142 -         i = (i + 1);
+142 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:149:11
+    |
+149 |     while (i < m.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+149 -     while (i < m.rows) {
+149 +     while i < m.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:152:15
+    |
+152 |         while (j < m.cols) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+152 -         while (j < m.cols) {
+152 +         while j < m.cols {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:154:17
+    |
+154 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+154 -             j = (j + 1);
+154 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:157:13
+    |
+157 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+157 -         i = (i + 1);
+157 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:162:8
+    |
+162 |     if (m.rows != m.cols) {
+    |        ^                ^
+    |
+help: remove these parentheses
+    |
+162 -     if (m.rows != m.cols) {
+162 +     if m.rows != m.cols {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:165:8
+    |
+165 |     if (m.rows == 0) {
+    |        ^           ^
+    |
+help: remove these parentheses
+    |
+165 -     if (m.rows == 0) {
+165 +     if m.rows == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:168:8
+    |
+168 |     if (m.rows == 1) {
+    |        ^           ^
+    |
+help: remove these parentheses
+    |
+168 -     if (m.rows == 1) {
+168 +     if m.rows == 1 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:171:8
+    |
+171 |     if (m.rows == 2) {
+    |        ^           ^
+    |
+help: remove these parentheses
+    |
+171 -     if (m.rows == 2) {
+171 +     if m.rows == 2 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:172:16
+    |
+172 | ...rn ((m.data.clone()[0 as usize].clone()[0 as usize] * m.data.clone()[1 as usize].clone()[1 as usize]) - (m.data.clone()[0 as usize].clone()[1 as usize] * m.data.clone()[1 as usize].clone()[0 as usize]))
+    |       ^                                                                                                                                                                                                     ^
+    |
+help: remove these parentheses
+    |
+172 -         return ((m.data.clone()[0 as usize].clone()[0 as usize] * m.data.clone()[1 as usize].clone()[1 as usize]) - (m.data.clone()[0 as usize].clone()[1 as usize] * m.data.clone()[1 as usize].clone()[0 as usize]))
+172 +         return (m.data.clone()[0 as usize].clone()[0 as usize] * m.data.clone()[1 as usize].clone()[1 as usize]) - (m.data.clone()[0 as usize].clone()[1 as usize] * m.data.clone()[1 as usize].clone()[0 as usize])
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:176:11
+    |
+176 |     while (j < m.cols) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+176 -     while (j < m.cols) {
+176 +     while j < m.cols {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:177:15
+    |
+177 |         sum = (sum + (m.data.clone()[0 as usize].clone()[j as usize] * matrix_cofactor(m.clone(), 0, j)));
+    |               ^                                                                                         ^
+    |
+help: remove these parentheses
+    |
+177 -         sum = (sum + (m.data.clone()[0 as usize].clone()[j as usize] * matrix_cofactor(m.clone(), 0, j)));
+177 +         sum = sum + (m.data.clone()[0 as usize].clone()[j as usize] * matrix_cofactor(m.clone(), 0, j));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:178:13
+    |
+178 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+178 -         j = (j + 1);
+178 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:183:12
+    |
+183 |     return (matrix_determinant(m.clone()) != 0.0)
+    |            ^                                    ^
+    |
+help: remove these parentheses
+    |
+183 -     return (matrix_determinant(m.clone()) != 0.0)
+183 +     return matrix_determinant(m.clone()) != 0.0
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:189:11
+    |
+189 |     while (i < m.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+189 -     while (i < m.rows) {
+189 +     while i < m.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:192:15
+    |
+192 |         while (j < m.cols) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+192 -         while (j < m.cols) {
+192 +         while j < m.cols {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:194:17
+    |
+194 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+194 -             j = (j + 1);
+194 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:197:13
+    |
+197 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+197 -         i = (i + 1);
+197 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:203:8
+    |
+203 |     if (det == 0.0) {
+    |        ^          ^
+    |
+help: remove these parentheses
+    |
+203 -     if (det == 0.0) {
+203 +     if det == 0.0 {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:207:43
+    |
+207 |     return matrix_mul_scalar(adj.clone(), (1.0 / det))
+    |                                           ^         ^
+    |
+help: remove these parentheses
+    |
+207 -     return matrix_mul_scalar(adj.clone(), (1.0 / det))
+207 +     return matrix_mul_scalar(adj.clone(), 1.0 / det)
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:217:11
+    |
+217 |     while (i < m.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+217 -     while (i < m.rows) {
+217 +     while i < m.rows {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:219:13
+    |
+219 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+219 -         i = (i + 1);
+219 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:226:11
+    |
+226 |     while (i < m.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+226 -     while (i < m.rows) {
+226 +     while i < m.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:229:15
+    |
+229 |         while (j < m.cols) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+229 -         while (j < m.cols) {
+229 +         while j < m.cols {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:230:55
+    |
+230 |             row = { let mut _v = row.clone(); _v.push((m.data.clone()[i as usize].clone()[j as usize] * s)); _v };
+    |                                                       ^                                                  ^
+    |
+help: remove these parentheses
+    |
+230 -             row = { let mut _v = row.clone(); _v.push((m.data.clone()[i as usize].clone()[j as usize] * s)); _v };
+230 +             row = { let mut _v = row.clone(); _v.push(m.data.clone()[i as usize].clone()[j as usize] * s); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:231:17
+    |
+231 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+231 -             j = (j + 1);
+231 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:234:13
+    |
+234 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+234 -         i = (i + 1);
+234 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:242:8
+    |
+242 |     if ((a.rows != b.rows) || (a.cols != b.cols)) {
+    |        ^                                        ^
+    |
+help: remove these parentheses
+    |
+242 -     if ((a.rows != b.rows) || (a.cols != b.cols)) {
+242 +     if (a.rows != b.rows) || (a.cols != b.cols) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:247:11
+    |
+247 |     while (i < a.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+247 -     while (i < a.rows) {
+247 +     while i < a.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:250:15
+    |
+250 |         while (j < a.cols) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+250 -         while (j < a.cols) {
+250 +         while j < a.cols {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:251:55
+    |
+251 | ....clone(); _v.push((a.data.clone()[i as usize].clone()[j as usize] + b.data.clone()[i as usize].clone()[j as usize])); _v };
+    |                      ^                                                                                               ^
+    |
+help: remove these parentheses
+    |
+251 -             row = { let mut _v = row.clone(); _v.push((a.data.clone()[i as usize].clone()[j as usize] + b.data.clone()[i as usize].clone()[j as usize])); _v };
+251 +             row = { let mut _v = row.clone(); _v.push(a.data.clone()[i as usize].clone()[j as usize] + b.data.clone()[i as usize].clone()[j as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:252:17
+    |
+252 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+252 -             j = (j + 1);
+252 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:255:13
+    |
+255 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+255 -         i = (i + 1);
+255 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:260:8
+    |
+260 |     if ((a.rows != b.rows) || (a.cols != b.cols)) {
+    |        ^                                        ^
+    |
+help: remove these parentheses
+    |
+260 -     if ((a.rows != b.rows) || (a.cols != b.cols)) {
+260 +     if (a.rows != b.rows) || (a.cols != b.cols) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:265:11
+    |
+265 |     while (i < a.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+265 -     while (i < a.rows) {
+265 +     while i < a.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:268:15
+    |
+268 |         while (j < a.cols) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+268 -         while (j < a.cols) {
+268 +         while j < a.cols {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:269:55
+    |
+269 | ....clone(); _v.push((a.data.clone()[i as usize].clone()[j as usize] - b.data.clone()[i as usize].clone()[j as usize])); _v };
+    |                      ^                                                                                               ^
+    |
+help: remove these parentheses
+    |
+269 -             row = { let mut _v = row.clone(); _v.push((a.data.clone()[i as usize].clone()[j as usize] - b.data.clone()[i as usize].clone()[j as usize])); _v };
+269 +             row = { let mut _v = row.clone(); _v.push(a.data.clone()[i as usize].clone()[j as usize] - b.data.clone()[i as usize].clone()[j as usize]); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:270:17
+    |
+270 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+270 -             j = (j + 1);
+270 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:273:13
+    |
+273 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+273 -         i = (i + 1);
+273 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:280:11
+    |
+280 |     while (i < (row.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+280 -     while (i < (row.len() as i64)) {
+280 +     while i < (row.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:281:15
+    |
+281 |         sum = (sum + (row[i as usize] * col[i as usize]));
+    |               ^                                         ^
+    |
+help: remove these parentheses
+    |
+281 -         sum = (sum + (row[i as usize] * col[i as usize]));
+281 +         sum = sum + (row[i as usize] * col[i as usize]);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:282:13
+    |
+282 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+282 -         i = (i + 1);
+282 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:287:8
+    |
+287 |     if (a.cols != b.rows) {
+    |        ^                ^
+    |
+help: remove these parentheses
+    |
+287 -     if (a.cols != b.rows) {
+287 +     if a.cols != b.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:293:11
+    |
+293 |     while (i < a.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+293 -     while (i < a.rows) {
+293 +     while i < a.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:296:15
+    |
+296 |         while (j < b.cols) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+296 -         while (j < b.cols) {
+296 +         while j < b.cols {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:298:17
+    |
+298 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+298 -             j = (j + 1);
+298 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:301:13
+    |
+301 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+301 -         i = (i + 1);
+301 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:307:8
+    |
+307 |     if (p == 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+307 -     if (p == 0) {
+307 +     if p == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:310:8
+    |
+310 |     if (p < 0) {
+    |        ^     ^
+    |
+help: remove these parentheses
+    |
+310 -     if (p < 0) {
+310 +     if p < 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:318:11
+    |
+318 |     while (i < p) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+318 -     while (i < p) {
+318 +     while i < p {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:320:13
+    |
+320 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+320 -         i = (i + 1);
+320 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:327:8
+    |
+327 |     if (m.rows == 0) {
+    |        ^           ^
+    |
+help: remove these parentheses
+    |
+327 -     if (m.rows == 0) {
+327 +     if m.rows == 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:332:11
+    |
+332 |     while (i < m.rows) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+332 -     while (i < m.rows) {
+332 +     while i < m.rows {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:335:15
+    |
+335 |         while (j < m.cols) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+335 -         while (j < m.cols) {
+335 +         while j < m.cols {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:337:16
+    |
+337 |             if (j < (m.cols - 1)) {
+    |                ^                ^
+    |
+help: remove these parentheses
+    |
+337 -             if (j < (m.cols - 1)) {
+337 +             if j < (m.cols - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:340:17
+    |
+340 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+340 -             j = (j + 1);
+340 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:343:12
+    |
+343 |         if (i < (m.rows - 1)) {
+    |            ^                ^
+    |
+help: remove these parentheses
+    |
+343 -         if (i < (m.rows - 1)) {
+343 +         if i < (m.rows - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:346:13
+    |
+346 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+346 -         i = (i + 1);
+346 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:374:28
+    |
+374 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+374 -     let duration_us: i64 = ((_end - _start) / 1000);
+374 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0425]: cannot find function `matrix_determinant` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:122:12
+    |
+122 |     return matrix_determinant(sub.clone())
+    |            ^^^^^^^^^^^^^^^^^^ not found in this scope
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:58:20
+   |
+58 |     fn make_matrix(mut values: Vec<Vec<f64>>) -> Matrix {
+   |                    ----^^^^^^
+   |                    |
+   |                    help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:73:23
+   |
+73 |     fn matrix_columns(mut m: Matrix) -> Vec<Vec<f64>> {
+   |                       ----^
+   |                       |
+   |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:88:24
+   |
+88 |     fn matrix_identity(mut m: Matrix) -> Matrix {
+   |                        ----^
+   |                        |
+   |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:209:23
+    |
+209 |     fn matrix_add_row(mut m: Matrix, mut row: Vec<f64>) -> Matrix {
+    |                       ----^
+    |                       |
+    |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:209:38
+    |
+209 |     fn matrix_add_row(mut m: Matrix, mut row: Vec<f64>) -> Matrix {
+    |                                      ----^^^
+    |                                      |
+    |                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:214:26
+    |
+214 |     fn matrix_add_column(mut m: Matrix, mut col: Vec<f64>) -> Matrix {
+    |                          ----^
+    |                          |
+    |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:214:41
+    |
+214 |     fn matrix_add_column(mut m: Matrix, mut col: Vec<f64>) -> Matrix {
+    |                                         ----^^^
+    |                                         |
+    |                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:223:26
+    |
+223 |     fn matrix_mul_scalar(mut m: Matrix, mut s: f64) -> Matrix {
+    |                          ----^
+    |                          |
+    |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:223:41
+    |
+223 |     fn matrix_mul_scalar(mut m: Matrix, mut s: f64) -> Matrix {
+    |                                         ----^
+    |                                         |
+    |                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:241:19
+    |
+241 |     fn matrix_add(mut a: Matrix, mut b: Matrix) -> Matrix {
+    |                   ----^
+    |                   |
+    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:241:34
+    |
+241 |     fn matrix_add(mut a: Matrix, mut b: Matrix) -> Matrix {
+    |                                  ----^
+    |                                  |
+    |                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:259:19
+    |
+259 |     fn matrix_sub(mut a: Matrix, mut b: Matrix) -> Matrix {
+    |                   ----^
+    |                   |
+    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:259:34
+    |
+259 |     fn matrix_sub(mut a: Matrix, mut b: Matrix) -> Matrix {
+    |                                  ----^
+    |                                  |
+    |                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:277:19
+    |
+277 |     fn matrix_dot(mut row: Vec<f64>, mut col: Vec<f64>) -> f64 {
+    |                   ----^^^
+    |                   |
+    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:277:38
+    |
+277 |     fn matrix_dot(mut row: Vec<f64>, mut col: Vec<f64>) -> f64 {
+    |                                      ----^^^
+    |                                      |
+    |                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:306:224
+    |
+306 | ...atrix_mul: &mut dyn FnMut(Matrix, Matrix) -> Matrix, mut m: Matrix, mut p: i64) -> Matrix {
+    |                                                         ----^
+    |                                                         |
+    |                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:306:239
+    |
+306 | ... dyn FnMut(Matrix, Matrix) -> Matrix, mut m: Matrix, mut p: i64) -> Matrix {
+    |                                                         ----^
+    |                                                         |
+    |                                                         help: remove this `mut`
+
+error[E0499]: cannot borrow `*matrix_inverse` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:312:98
+    |
+312 |             return matrix_pow(matrix_identity, matrix_inverse, matrix_is_invertible, matrix_mul, matrix_inverse(m.clone()), -p)
+    |                    ------------------------------------------------------------------------------^^^^^^^^^^^^^^----------------
+    |                    |                           |                                                 |
+    |                    |                           |                                                 second mutable borrow occurs here
+    |                    |                           first mutable borrow occurs here
+    |                    first borrow later captured here by trait object
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/matrix/matrix_class.rs:326:25
+    |
+326 |     fn matrix_to_string(mut m: Matrix) -> String {
+    |                         ----^
+    |                         |
+    |                         help: remove this `mut`
+
+error: aborting due to 4 previous errors; 116 warnings emitted
+
+Some errors have detailed explanations: E0425, E0434, E0499.
+For more information about an error, try `rustc --explain E0425`.

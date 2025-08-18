@@ -977,9 +977,13 @@ func (f *FunLit) emit(w io.Writer) {
 				io.WriteString(w, ", ")
 			}
 			if p.Type != "" {
-				fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
+				if strings.HasPrefix(p.Type, "&") {
+					fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
+				} else {
+					fmt.Fprintf(w, "mut %s: %s", rustIdent(p.Name), p.Type)
+				}
 			} else {
-				io.WriteString(w, rustIdent(p.Name))
+				fmt.Fprintf(w, "mut %s", rustIdent(p.Name))
 			}
 		}
 		io.WriteString(w, ")")
@@ -988,9 +992,19 @@ func (f *FunLit) emit(w io.Writer) {
 		}
 		io.WriteString(w, " {\n")
 		buf := w.(*bytes.Buffer)
+		oldParamTypes := currentParamTypes
+		locals := map[string]bool{}
+		currentParamTypes = map[string]string{}
+		for _, p := range append(f.Captures, f.Params...) {
+			currentParamTypes[p.Name] = p.Type
+			locals[p.Name] = true
+		}
+		localVarStack = append(localVarStack, locals)
 		for _, st := range f.Body {
 			writeStmt(buf, st, 1)
 		}
+		localVarStack = localVarStack[:len(localVarStack)-1]
+		currentParamTypes = oldParamTypes
 		io.WriteString(w, "}\n")
 		io.WriteString(w, "|")
 		for i, p := range f.Params {
@@ -998,9 +1012,13 @@ func (f *FunLit) emit(w io.Writer) {
 				io.WriteString(w, ", ")
 			}
 			if p.Type != "" {
-				fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
+				if strings.HasPrefix(p.Type, "&") {
+					fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
+				} else {
+					fmt.Fprintf(w, "mut %s: %s", rustIdent(p.Name), p.Type)
+				}
 			} else {
-				io.WriteString(w, rustIdent(p.Name))
+				fmt.Fprintf(w, "mut %s", rustIdent(p.Name))
 			}
 		}
 		io.WriteString(w, "|")
@@ -1038,9 +1056,13 @@ func (f *FunLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		if p.Type != "" {
-			fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
+			if strings.HasPrefix(p.Type, "&") {
+				fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
+			} else {
+				fmt.Fprintf(w, "mut %s: %s", rustIdent(p.Name), p.Type)
+			}
 		} else {
-			io.WriteString(w, rustIdent(p.Name))
+			fmt.Fprintf(w, "mut %s", rustIdent(p.Name))
 		}
 	}
 	io.WriteString(w, "|")
@@ -1050,9 +1072,19 @@ func (f *FunLit) emit(w io.Writer) {
 	if len(f.Body) > 0 {
 		io.WriteString(w, " {\n")
 		buf := w.(*bytes.Buffer)
+		oldParamTypes := currentParamTypes
+		locals := map[string]bool{}
+		currentParamTypes = map[string]string{}
+		for _, p := range f.Params {
+			currentParamTypes[p.Name] = p.Type
+			locals[p.Name] = true
+		}
+		localVarStack = append(localVarStack, locals)
 		for _, st := range f.Body {
 			writeStmt(buf, st, 1)
 		}
+		localVarStack = localVarStack[:len(localVarStack)-1]
+		currentParamTypes = oldParamTypes
 		io.WriteString(w, "}")
 		return
 	}
@@ -5889,16 +5921,52 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			ret = rustTypeRef(p.FunExpr.Return)
 		}
 		if p.FunExpr.BlockBody != nil {
+			// Track parameter types so assignments to referenced params
+			// like `&mut` can be properly dereferenced.
+			prevParamTypes := currentParamTypes
+			prevVarTypes := varTypes
+			prevMapVars := mapVars
+			prevStringVars := stringVars
+			locals := map[string]bool{}
+			currentParamTypes = map[string]string{}
+			varTypes = copyStringMap(varTypes)
+			mapVars = copyBoolMap(mapVars)
+			stringVars = copyBoolMap(stringVars)
+			for _, pa := range params {
+				currentParamTypes[pa.Name] = pa.Type
+				locals[pa.Name] = true
+				if pa.Type != "" {
+					varTypes[pa.Name] = pa.Type
+					if strings.HasPrefix(pa.Type, "HashMap") {
+						mapVars[pa.Name] = true
+					}
+					if pa.Type == "String" {
+						stringVars[pa.Name] = true
+					}
+				}
+			}
+			prevLocals := localVarStack
+			localVarStack = append(localVarStack, locals)
 			body := make([]Stmt, 0, len(p.FunExpr.BlockBody))
 			for _, st := range p.FunExpr.BlockBody {
 				cs, err := compileStmt(st)
 				if err != nil {
+					currentParamTypes = prevParamTypes
+					localVarStack = prevLocals
+					varTypes = prevVarTypes
+					mapVars = prevMapVars
+					stringVars = prevStringVars
 					return nil, err
 				}
 				if cs != nil {
 					body = append(body, cs)
 				}
 			}
+			currentParamTypes = prevParamTypes
+			localVarStack = prevLocals
+			varTypes = prevVarTypes
+			mapVars = prevMapVars
+			stringVars = prevStringVars
 			return &FunLit{Params: params, Return: ret, Body: body}, nil
 		}
 		var expr Expr
