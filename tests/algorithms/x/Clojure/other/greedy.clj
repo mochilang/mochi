@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -68,7 +71,7 @@
   (try (throw (ex-info "return" {:v (:name get_name_t)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn value_weight [value_weight_t]
-  (try (throw (ex-info "return" {:v (/ (:value value_weight_t) (:weight value_weight_t))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (quot (:value value_weight_t) (:weight value_weight_t))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn build_menu [build_menu_names build_menu_values build_menu_weights]
   (binding [build_menu_i nil build_menu_menu nil] (try (do (set! build_menu_menu []) (set! build_menu_i 0) (while (and (and (< build_menu_i (count build_menu_values)) (< build_menu_i (count build_menu_names))) (< build_menu_i (count build_menu_weights))) (do (set! build_menu_menu (conj build_menu_menu {:name (nth build_menu_names build_menu_i) :value (nth build_menu_values build_menu_i) :weight (nth build_menu_weights build_menu_i)})) (set! build_menu_i (+ build_menu_i 1)))) (throw (ex-info "return" {:v build_menu_menu}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -80,28 +83,33 @@
   (binding [greedy_i nil greedy_it nil greedy_items_copy nil greedy_result nil greedy_total_cost nil greedy_total_value nil greedy_w nil] (try (do (set! greedy_items_copy (sort_desc greedy_items greedy_key_func)) (set! greedy_result []) (set! greedy_total_value 0.0) (set! greedy_total_cost 0.0) (set! greedy_i 0) (while (< greedy_i (count greedy_items_copy)) (do (set! greedy_it (nth greedy_items_copy greedy_i)) (set! greedy_w (get_weight greedy_it)) (when (<= (+ greedy_total_cost greedy_w) greedy_max_cost) (do (set! greedy_result (conj greedy_result greedy_it)) (set! greedy_total_cost (+ greedy_total_cost greedy_w)) (set! greedy_total_value (+ greedy_total_value (get_value greedy_it))))) (set! greedy_i (+ greedy_i 1)))) (throw (ex-info "return" {:v {:items greedy_result :total_value greedy_total_value}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn thing_to_string [thing_to_string_t]
-  (try (throw (ex-info "return" {:v (str (str (str (str (str (str "Thing(" (:name thing_to_string_t)) ", ") (str (:value thing_to_string_t))) ", ") (str (:weight thing_to_string_t))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (str (str (str (str "Thing(" (:name thing_to_string_t)) ", ") (mochi_str (:value thing_to_string_t))) ", ") (mochi_str (:weight thing_to_string_t))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn list_to_string [list_to_string_ts]
   (binding [list_to_string_i nil list_to_string_s nil] (try (do (set! list_to_string_s "[") (set! list_to_string_i 0) (while (< list_to_string_i (count list_to_string_ts)) (do (set! list_to_string_s (str list_to_string_s (thing_to_string (nth list_to_string_ts list_to_string_i)))) (when (< list_to_string_i (- (count list_to_string_ts) 1)) (set! list_to_string_s (str list_to_string_s ", "))) (set! list_to_string_i (+ list_to_string_i 1)))) (set! list_to_string_s (str list_to_string_s "]")) (throw (ex-info "return" {:v list_to_string_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_food ["Burger" "Pizza" "Coca Cola" "Rice" "Sambhar" "Chicken" "Fries" "Milk"])
+(def ^:dynamic main_food nil)
 
-(def ^:dynamic main_value [80.0 100.0 60.0 70.0 50.0 110.0 90.0 60.0])
+(def ^:dynamic main_value nil)
 
-(def ^:dynamic main_weight [40.0 60.0 40.0 70.0 100.0 85.0 55.0 70.0])
+(def ^:dynamic main_weight nil)
 
-(def ^:dynamic main_foods (build_menu main_food main_value main_weight))
+(def ^:dynamic main_foods nil)
 
-(def ^:dynamic main_res (greedy main_foods 500.0 get_value))
+(def ^:dynamic main_res nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_food) (constantly ["Burger" "Pizza" "Coca Cola" "Rice" "Sambhar" "Chicken" "Fries" "Milk"]))
+      (alter-var-root (var main_value) (constantly [80.0 100.0 60.0 70.0 50.0 110.0 90.0 60.0]))
+      (alter-var-root (var main_weight) (constantly [40.0 60.0 40.0 70.0 100.0 85.0 55.0 70.0]))
+      (alter-var-root (var main_foods) (constantly (build_menu main_food main_value main_weight)))
       (println (list_to_string main_foods))
+      (alter-var-root (var main_res) (constantly (greedy main_foods 500.0 get_value)))
       (println (list_to_string (:items main_res)))
-      (println (str (:total_value main_res)))
+      (println (mochi_str (:total_value main_res)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

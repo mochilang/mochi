@@ -1,5 +1,5 @@
-Execution error at main/ln (softplus.clj:62).
+Execution error at main/ln (softplus.clj:65).
 ln domain error
 
 Full report at:
-/tmp/clojure-13928315888239739025.edn
+/tmp/clojure-9334651743063124239.edn

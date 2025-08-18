@@ -1,6 +1,6 @@
 LRUCache(4) => []
-Execution error at main/-main (least_recently_used.clj:94).
+Execution error at main/-main (least_recently_used.clj:97).
 Assertion error
 
 Full report at:
-/tmp/clojure-9412411417182571502.edn
+/tmp/clojure-9540785827142473583.edn

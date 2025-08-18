@@ -1,5 +1,5 @@
-Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/other/guess_the_number_search.clj:44:1301).
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/other/guess_the_number_search.clj:47:1301).
 Can only recur from tail position
 
 Full report at:
-/tmp/clojure-17868234994921144855.edn
+/tmp/clojure-7597958817198863853.edn

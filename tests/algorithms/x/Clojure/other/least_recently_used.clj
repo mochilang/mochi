@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -74,7 +77,7 @@
   (binding [repr_item_all_digits nil repr_item_ch nil repr_item_i nil] (try (do (set! repr_item_all_digits true) (set! repr_item_i 0) (while (< repr_item_i (count repr_item_s)) (do (set! repr_item_ch (subs repr_item_s repr_item_i (+ repr_item_i 1))) (when (or (< (compare repr_item_ch "0") 0) (> (compare repr_item_ch "9") 0)) (set! repr_item_all_digits false)) (set! repr_item_i (+ repr_item_i 1)))) (if repr_item_all_digits repr_item_s (str (str "'" repr_item_s) "'"))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn cache_repr [cache_repr_cache]
-  (binding [cache_repr_i nil cache_repr_res nil] (try (do (set! cache_repr_res (str (str "LRUCache(" (str (:max_capacity cache_repr_cache))) ") => [")) (set! cache_repr_i 0) (while (< cache_repr_i (count (:store cache_repr_cache))) (do (set! cache_repr_res (str cache_repr_res (repr_item (get (:store cache_repr_cache) cache_repr_i)))) (when (< cache_repr_i (- (count (:store cache_repr_cache)) 1)) (set! cache_repr_res (str cache_repr_res ", "))) (set! cache_repr_i (+ cache_repr_i 1)))) (set! cache_repr_res (str cache_repr_res "]")) (throw (ex-info "return" {:v cache_repr_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [cache_repr_i nil cache_repr_res nil] (try (do (set! cache_repr_res (str (str "LRUCache(" (mochi_str (:max_capacity cache_repr_cache))) ") => [")) (set! cache_repr_i 0) (while (< cache_repr_i (count (:store cache_repr_cache))) (do (set! cache_repr_res (str cache_repr_res (repr_item (get (:store cache_repr_cache) cache_repr_i)))) (when (< cache_repr_i (- (count (:store cache_repr_cache)) 1)) (set! cache_repr_res (str cache_repr_res ", "))) (set! cache_repr_i (+ cache_repr_i 1)))) (set! cache_repr_res (str cache_repr_res "]")) (throw (ex-info "return" {:v cache_repr_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (def ^:dynamic main_lru (new_cache 4))
 
@@ -84,12 +87,12 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (def main_lru (refer main_lru "A"))
-      (def main_lru (refer main_lru "2"))
-      (def main_lru (refer main_lru "3"))
-      (def main_lru (refer main_lru "A"))
-      (def main_lru (refer main_lru "4"))
-      (def main_lru (refer main_lru "5"))
+      (alter-var-root (var main_lru) (constantly (refer main_lru "A")))
+      (alter-var-root (var main_lru) (constantly (refer main_lru "2")))
+      (alter-var-root (var main_lru) (constantly (refer main_lru "3")))
+      (alter-var-root (var main_lru) (constantly (refer main_lru "A")))
+      (alter-var-root (var main_lru) (constantly (refer main_lru "4")))
+      (alter-var-root (var main_lru) (constantly (refer main_lru "5")))
       (println main_r)
       (when (not= main_r "LRUCache(4) => [5, 4, 'A', 3]") (throw (Exception. "Assertion error")))
       (System/gc)

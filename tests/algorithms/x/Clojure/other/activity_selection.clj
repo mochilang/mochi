@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -33,16 +36,18 @@
 (def ^:dynamic print_max_activities_result nil)
 
 (defn print_max_activities [print_max_activities_start print_max_activities_finish]
-  (binding [print_max_activities_i nil print_max_activities_j nil print_max_activities_n nil print_max_activities_result nil] (do (set! print_max_activities_n (count print_max_activities_finish)) (println "The following activities are selected:") (set! print_max_activities_i 0) (set! print_max_activities_result "0,") (set! print_max_activities_j 1) (while (< print_max_activities_j print_max_activities_n) (do (when (>= (nth print_max_activities_start print_max_activities_j) (nth print_max_activities_finish print_max_activities_i)) (do (set! print_max_activities_result (str (str print_max_activities_result (str print_max_activities_j)) ",")) (set! print_max_activities_i print_max_activities_j))) (set! print_max_activities_j (+ print_max_activities_j 1)))) (println print_max_activities_result))))
+  (binding [print_max_activities_i nil print_max_activities_j nil print_max_activities_n nil print_max_activities_result nil] (do (set! print_max_activities_n (count print_max_activities_finish)) (println "The following activities are selected:") (set! print_max_activities_i 0) (set! print_max_activities_result "0,") (set! print_max_activities_j 1) (while (< print_max_activities_j print_max_activities_n) (do (when (>= (nth print_max_activities_start print_max_activities_j) (nth print_max_activities_finish print_max_activities_i)) (do (set! print_max_activities_result (str (str print_max_activities_result (mochi_str print_max_activities_j)) ",")) (set! print_max_activities_i print_max_activities_j))) (set! print_max_activities_j (+ print_max_activities_j 1)))) (println print_max_activities_result))))
 
-(def ^:dynamic main_start [1 3 0 5 8 5])
+(def ^:dynamic main_start nil)
 
-(def ^:dynamic main_finish [2 4 6 7 9 9])
+(def ^:dynamic main_finish nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_start) (constantly [1 3 0 5 8 5]))
+      (alter-var-root (var main_finish) (constantly [2 4 6 7 9 9]))
       (print_max_activities main_start main_finish)
       (System/gc)
       (let [end (System/nanoTime)

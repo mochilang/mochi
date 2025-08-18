@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/other/guess_the_number_search.clj:47:1301).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-7597958817198863853.edn

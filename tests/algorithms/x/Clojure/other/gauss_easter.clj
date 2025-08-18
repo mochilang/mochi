@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -55,12 +58,12 @@
 (def ^:dynamic main_i nil)
 
 (defn gauss_easter [gauss_easter_year]
-  (binding [gauss_easter_century_starting_point nil gauss_easter_days_from_phm_to_sunday nil gauss_easter_days_to_add nil gauss_easter_julian_leap_year nil gauss_easter_leap_day_inhibits nil gauss_easter_leap_day_reinstall_number nil gauss_easter_lunar_orbit_correction nil gauss_easter_metonic_cycle nil gauss_easter_non_leap_year nil gauss_easter_offset nil gauss_easter_secular_moon_shift nil gauss_easter_total nil] (try (do (set! gauss_easter_metonic_cycle (mod gauss_easter_year 19)) (set! gauss_easter_julian_leap_year (mod gauss_easter_year 4)) (set! gauss_easter_non_leap_year (mod gauss_easter_year 7)) (set! gauss_easter_leap_day_inhibits (/ gauss_easter_year 100)) (set! gauss_easter_lunar_orbit_correction (/ (+ 13 (* 8 gauss_easter_leap_day_inhibits)) 25)) (set! gauss_easter_leap_day_reinstall_number (/ (double gauss_easter_leap_day_inhibits) 4.0)) (set! gauss_easter_secular_moon_shift (mod (- (+ (- 15.0 (double gauss_easter_lunar_orbit_correction)) (double gauss_easter_leap_day_inhibits)) gauss_easter_leap_day_reinstall_number) 30.0)) (set! gauss_easter_century_starting_point (mod (- (+ 4.0 (double gauss_easter_leap_day_inhibits)) gauss_easter_leap_day_reinstall_number) 7.0)) (set! gauss_easter_days_to_add (mod (+ (* 19.0 (double gauss_easter_metonic_cycle)) gauss_easter_secular_moon_shift) 30.0)) (set! gauss_easter_days_from_phm_to_sunday (mod (+ (+ (+ (* 2.0 (double gauss_easter_julian_leap_year)) (* 4.0 (double gauss_easter_non_leap_year))) (* 6.0 gauss_easter_days_to_add)) gauss_easter_century_starting_point) 7.0)) (when (and (= gauss_easter_days_to_add 29.0) (= gauss_easter_days_from_phm_to_sunday 6.0)) (throw (ex-info "return" {:v {:day 19 :month 4}}))) (when (and (= gauss_easter_days_to_add 28.0) (= gauss_easter_days_from_phm_to_sunday 6.0)) (throw (ex-info "return" {:v {:day 18 :month 4}}))) (set! gauss_easter_offset (long (+ gauss_easter_days_to_add gauss_easter_days_from_phm_to_sunday))) (set! gauss_easter_total (+ 22 gauss_easter_offset)) (if (> gauss_easter_total 31) {:day (- gauss_easter_total 31) :month 4} {:day gauss_easter_total :month 3})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [gauss_easter_century_starting_point nil gauss_easter_days_from_phm_to_sunday nil gauss_easter_days_to_add nil gauss_easter_julian_leap_year nil gauss_easter_leap_day_inhibits nil gauss_easter_leap_day_reinstall_number nil gauss_easter_lunar_orbit_correction nil gauss_easter_metonic_cycle nil gauss_easter_non_leap_year nil gauss_easter_offset nil gauss_easter_secular_moon_shift nil gauss_easter_total nil] (try (do (set! gauss_easter_metonic_cycle (mod gauss_easter_year 19)) (set! gauss_easter_julian_leap_year (mod gauss_easter_year 4)) (set! gauss_easter_non_leap_year (mod gauss_easter_year 7)) (set! gauss_easter_leap_day_inhibits (quot gauss_easter_year 100)) (set! gauss_easter_lunar_orbit_correction (quot (+ 13 (* 8 gauss_easter_leap_day_inhibits)) 25)) (set! gauss_easter_leap_day_reinstall_number (/ (double gauss_easter_leap_day_inhibits) 4.0)) (set! gauss_easter_secular_moon_shift (mod (- (+ (- 15.0 (double gauss_easter_lunar_orbit_correction)) (double gauss_easter_leap_day_inhibits)) gauss_easter_leap_day_reinstall_number) 30.0)) (set! gauss_easter_century_starting_point (mod (- (+ 4.0 (double gauss_easter_leap_day_inhibits)) gauss_easter_leap_day_reinstall_number) 7.0)) (set! gauss_easter_days_to_add (mod (+ (* 19.0 (double gauss_easter_metonic_cycle)) gauss_easter_secular_moon_shift) 30.0)) (set! gauss_easter_days_from_phm_to_sunday (mod (+ (+ (+ (* 2.0 (double gauss_easter_julian_leap_year)) (* 4.0 (double gauss_easter_non_leap_year))) (* 6.0 gauss_easter_days_to_add)) gauss_easter_century_starting_point) 7.0)) (when (and (= gauss_easter_days_to_add 29.0) (= gauss_easter_days_from_phm_to_sunday 6.0)) (throw (ex-info "return" {:v {:day 19 :month 4}}))) (when (and (= gauss_easter_days_to_add 28.0) (= gauss_easter_days_from_phm_to_sunday 6.0)) (throw (ex-info "return" {:v {:day 18 :month 4}}))) (set! gauss_easter_offset (long (+ gauss_easter_days_to_add gauss_easter_days_from_phm_to_sunday))) (set! gauss_easter_total (+ 22 gauss_easter_offset)) (if (> gauss_easter_total 31) {:day (- gauss_easter_total 31) :month 4} {:day gauss_easter_total :month 3})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn format_date [format_date_year format_date_d]
-  (binding [format_date_day nil format_date_month nil] (try (do (set! format_date_month (if (< (:month format_date_d) 10) (str "0" (str (:month format_date_d))) (str (:month format_date_d)))) (set! format_date_day (if (< (:day format_date_d) 10) (str "0" (str (:day format_date_d))) (str (:day format_date_d)))) (throw (ex-info "return" {:v (str (str (str (str (str format_date_year) "-") format_date_month) "-") format_date_day)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [format_date_day nil format_date_month nil] (try (do (set! format_date_month (if (< (:month format_date_d) 10) (str "0" (mochi_str (:month format_date_d))) (mochi_str (:month format_date_d)))) (set! format_date_day (if (< (:day format_date_d) 10) (str "0" (mochi_str (:day format_date_d))) (mochi_str (:day format_date_d)))) (throw (ex-info "return" {:v (str (str (str (str (mochi_str format_date_year) "-") format_date_month) "-") format_date_day)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_years [1994 2000 2010 2021 2023 2032 2100])
+(def ^:dynamic main_years nil)
 
 (def ^:dynamic main_i 0)
 
@@ -68,7 +71,8 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (while (< main_i (count main_years)) (do (def ^:dynamic main_y (nth main_years main_i)) (def ^:dynamic main_e (gauss_easter main_y)) (println (str (str (str "Easter in " (str main_y)) " is ") (format_date main_y main_e))) (def main_i (+ main_i 1))))
+      (alter-var-root (var main_years) (constantly [1994 2000 2010 2021 2023 2032 2100]))
+      (while (< main_i (count main_years)) (do (def ^:dynamic main_y (nth main_years main_i)) (def ^:dynamic main_e (gauss_easter main_y)) (println (str (str (str "Easter in " (mochi_str main_y)) " is ") (format_date main_y main_e))) (alter-var-root (var main_i) (constantly (+ main_i 1)))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

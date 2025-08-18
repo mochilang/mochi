@@ -1,1 +1,5 @@
-12
+Syntax error (IllegalArgumentException) compiling fn* at (/workspace/mochi/tests/algorithms/x/Clojure/matrix/matrix_based_game.clj:194:1).
+Cannot assign to non-mutable: play_pos_y
+
+Full report at:
+/tmp/clojure-12195236957363228039.edn

@@ -17,6 +17,12 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare generate_large_matrix find_negative_index count_negatives_binary_search count_negatives_brute_force count_negatives_brute_force_with_break)
@@ -86,11 +92,11 @@
   (binding [count_negatives_brute_force_i nil count_negatives_brute_force_j nil count_negatives_brute_force_row nil count_v nil] (try (do (set! count_v 0) (set! count_negatives_brute_force_i 0) (while (< count_negatives_brute_force_i (count count_negatives_brute_force_grid)) (do (set! count_negatives_brute_force_row (nth count_negatives_brute_force_grid count_negatives_brute_force_i)) (set! count_negatives_brute_force_j 0) (while (< count_negatives_brute_force_j (count count_negatives_brute_force_row)) (do (when (< (nth count_negatives_brute_force_row count_negatives_brute_force_j) 0) (set! count_v (+ count_v 1))) (set! count_negatives_brute_force_j (+ count_negatives_brute_force_j 1)))) (set! count_negatives_brute_force_i (+ count_negatives_brute_force_i 1)))) (throw (ex-info "return" {:v count_v}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn count_negatives_brute_force_with_break [count_negatives_brute_force_with_break_grid]
-  (binding [count_negatives_brute_force_with_break_i nil count_negatives_brute_force_with_break_j nil count_negatives_brute_force_with_break_number nil count_negatives_brute_force_with_break_row nil count_negatives_brute_force_with_break_total nil] (try (do (set! count_negatives_brute_force_with_break_total 0) (set! count_negatives_brute_force_with_break_i 0) (while (< count_negatives_brute_force_with_break_i (count count_negatives_brute_force_with_break_grid)) (do (set! count_negatives_brute_force_with_break_row (nth count_negatives_brute_force_with_break_grid count_negatives_brute_force_with_break_i)) (set! count_negatives_brute_force_with_break_j 0) (loop [while_flag_1 true] (when (and while_flag_1 (< count_negatives_brute_force_with_break_j (count count_negatives_brute_force_with_break_row))) (do (set! count_negatives_brute_force_with_break_number (nth count_negatives_brute_force_with_break_row count_negatives_brute_force_with_break_j)) (cond (< count_negatives_brute_force_with_break_number 0) (do (set! count_negatives_brute_force_with_break_total (+ count_negatives_brute_force_with_break_total (- (count count_negatives_brute_force_with_break_row) count_negatives_brute_force_with_break_j))) (recur false)) :else (do (set! count_negatives_brute_force_with_break_j (+ count_negatives_brute_force_with_break_j 1)) (recur while_flag_1)))))) (set! count_negatives_brute_force_with_break_i (+ count_negatives_brute_force_with_break_i 1)))) (throw (ex-info "return" {:v count_negatives_brute_force_with_break_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [count_negatives_brute_force_with_break_i nil count_negatives_brute_force_with_break_j nil count_negatives_brute_force_with_break_number nil count_negatives_brute_force_with_break_row nil count_negatives_brute_force_with_break_total nil] (try (do (set! count_negatives_brute_force_with_break_total 0) (set! count_negatives_brute_force_with_break_i 0) (loop [while_flag_1 true] (when (and while_flag_1 (< count_negatives_brute_force_with_break_i (count count_negatives_brute_force_with_break_grid))) (do (set! count_negatives_brute_force_with_break_row (nth count_negatives_brute_force_with_break_grid count_negatives_brute_force_with_break_i)) (set! count_negatives_brute_force_with_break_j 0) (loop [while_flag_2 true] (when (and while_flag_2 (< count_negatives_brute_force_with_break_j (count count_negatives_brute_force_with_break_row))) (do (set! count_negatives_brute_force_with_break_number (nth count_negatives_brute_force_with_break_row count_negatives_brute_force_with_break_j)) (cond (< count_negatives_brute_force_with_break_number 0) (do (set! count_negatives_brute_force_with_break_total (+ count_negatives_brute_force_with_break_total (- (count count_negatives_brute_force_with_break_row) count_negatives_brute_force_with_break_j))) (recur false)) :else (do (set! count_negatives_brute_force_with_break_j (+ count_negatives_brute_force_with_break_j 1)) (recur while_flag_2)))))) (set! count_negatives_brute_force_with_break_i (+ count_negatives_brute_force_with_break_i 1)) (cond :else (recur while_flag_1))))) (throw (ex-info "return" {:v count_negatives_brute_force_with_break_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_grid (generate_large_matrix))
+(def ^:dynamic main_grid nil)
 
-(def ^:dynamic main_test_grids [[[4 3 2 (- 1)] [3 2 1 (- 1)] [1 1 (- 1) (- 2)] [(- 1) (- 1) (- 2) (- 3)]] [[3 2] [1 0]] [[7 7 6]] [[7 7 6] [(- 1) (- 2) (- 3)]] main_grid])
+(def ^:dynamic main_test_grids nil)
 
 (def ^:dynamic main_results_bin [])
 
@@ -104,14 +110,16 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (while (< main_i (count main_test_grids)) (do (def main_results_bin (conj main_results_bin (count_negatives_binary_search (nth main_test_grids main_i)))) (def main_i (+ main_i 1))))
-      (println (str main_results_bin))
-      (def main_i 0)
-      (while (< main_i (count main_test_grids)) (do (def main_results_brute (conj main_results_brute (count_negatives_brute_force (nth main_test_grids main_i)))) (def main_i (+ main_i 1))))
-      (println (str main_results_brute))
-      (def main_i 0)
-      (while (< main_i (count main_test_grids)) (do (def main_results_break (conj main_results_break (count_negatives_brute_force_with_break (nth main_test_grids main_i)))) (def main_i (+ main_i 1))))
-      (println (str main_results_break))
+      (alter-var-root (var main_grid) (constantly (generate_large_matrix)))
+      (alter-var-root (var main_test_grids) (constantly [[[4 3 2 (- 1)] [3 2 1 (- 1)] [1 1 (- 1) (- 2)] [(- 1) (- 1) (- 2) (- 3)]] [[3 2] [1 0]] [[7 7 6]] [[7 7 6] [(- 1) (- 2) (- 3)]] main_grid]))
+      (while (< main_i (count main_test_grids)) (do (alter-var-root (var main_results_bin) (constantly (conj main_results_bin (count_negatives_binary_search (nth main_test_grids main_i))))) (alter-var-root (var main_i) (constantly (+ main_i 1)))))
+      (println (mochi_str main_results_bin))
+      (alter-var-root (var main_i) (constantly 0))
+      (while (< main_i (count main_test_grids)) (do (alter-var-root (var main_results_brute) (constantly (conj main_results_brute (count_negatives_brute_force (nth main_test_grids main_i))))) (alter-var-root (var main_i) (constantly (+ main_i 1)))))
+      (println (mochi_str main_results_brute))
+      (alter-var-root (var main_i) (constantly 0))
+      (while (< main_i (count main_test_grids)) (do (alter-var-root (var main_results_break) (constantly (conj main_results_break (count_negatives_brute_force_with_break (nth main_test_grids main_i))))) (alter-var-root (var main_i) (constantly (+ main_i 1)))))
+      (println (mochi_str main_results_break))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -60,17 +63,19 @@
 (defn fisher_yates_shuffle_str [fisher_yates_shuffle_str_data]
   (binding [fisher_yates_shuffle_str_a nil fisher_yates_shuffle_str_b nil fisher_yates_shuffle_str_i nil fisher_yates_shuffle_str_res nil fisher_yates_shuffle_str_temp nil] (try (do (set! fisher_yates_shuffle_str_res fisher_yates_shuffle_str_data) (set! fisher_yates_shuffle_str_i 0) (while (< fisher_yates_shuffle_str_i (count fisher_yates_shuffle_str_res)) (do (set! fisher_yates_shuffle_str_a (randint 0 (- (count fisher_yates_shuffle_str_res) 1))) (set! fisher_yates_shuffle_str_b (randint 0 (- (count fisher_yates_shuffle_str_res) 1))) (set! fisher_yates_shuffle_str_temp (nth fisher_yates_shuffle_str_res fisher_yates_shuffle_str_a)) (set! fisher_yates_shuffle_str_res (assoc fisher_yates_shuffle_str_res fisher_yates_shuffle_str_a (nth fisher_yates_shuffle_str_res fisher_yates_shuffle_str_b))) (set! fisher_yates_shuffle_str_res (assoc fisher_yates_shuffle_str_res fisher_yates_shuffle_str_b fisher_yates_shuffle_str_temp)) (set! fisher_yates_shuffle_str_i (+ fisher_yates_shuffle_str_i 1)))) (throw (ex-info "return" {:v fisher_yates_shuffle_str_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_integers [0 1 2 3 4 5 6 7])
+(def ^:dynamic main_integers nil)
 
-(def ^:dynamic main_strings ["python" "says" "hello" "!"])
+(def ^:dynamic main_strings nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_integers) (constantly [0 1 2 3 4 5 6 7]))
+      (alter-var-root (var main_strings) (constantly ["python" "says" "hello" "!"]))
       (println "Fisher-Yates Shuffle:")
-      (println (str (str (str "List " (str main_integers)) " ") (str main_strings)))
-      (println (str (str (str "FY Shuffle " (str (fisher_yates_shuffle_int main_integers))) " ") (str (fisher_yates_shuffle_str main_strings))))
+      (println (str (str (str "List " (mochi_str main_integers)) " ") (mochi_str main_strings)))
+      (println (str (str (str "FY Shuffle " (mochi_str (fisher_yates_shuffle_int main_integers))) " ") (mochi_str (fisher_yates_shuffle_str main_strings))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))
