@@ -1327,12 +1327,8 @@ func (f *Func) emit(w io.Writer) {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else if isStructType(typ) {
-				if p.ByVal {
-					// Struct parameters are copied when mutated to preserve Mochi semantics.
-					io.WriteString(w, typ+" ")
-				} else {
-					io.WriteString(w, "const "+typ+"& ")
-				}
+				// Pass structs by reference to allow field mutations.
+				io.WriteString(w, typ+"& ")
 			} else {
 				// Primitive types are always passed by value.
 				io.WriteString(w, typ+" ")
@@ -3217,6 +3213,16 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	if s.Value != nil {
 		valType = exprType(s.Value)
 	}
+	if idx, ok := s.Value.(*IndexExpr); ok && strings.HasPrefix(exprType(idx.Target), "std::vector<") {
+		io.WriteString(w, "auto& ")
+		io.WriteString(w, safeName(s.Name))
+		io.WriteString(w, " = ")
+		idx.Target.emit(w)
+		io.WriteString(w, "[")
+		emitIndex(w, idx.Index)
+		io.WriteString(w, "];\n")
+		return
+	}
 	if bl, ok := s.Value.(*BlockLambda); ok {
 		if currentProgram != nil {
 			currentProgram.addInclude("<functional>")
@@ -4880,6 +4886,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		ls := &LetStmt{Name: s.Var.Name, Type: typ, Value: val}
+		if idx, ok := val.(*IndexExpr); ok {
+			base := idx.Target
+			for {
+				if ix, ok2 := base.(*IndexExpr); ok2 {
+					base = ix.Target
+				} else {
+					break
+				}
+			}
+			if vr, ok2 := base.(*VarRef); ok2 {
+				if paramNames != nil && paramNames[vr.Name] {
+					mutatedParams[vr.Name] = true
+				}
+			}
+		}
 		if currentVarDecls != nil {
 			currentVarDecls[s.Var.Name] = ls
 		}
