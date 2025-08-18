@@ -1465,7 +1465,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 		}
 	}
 	io.WriteString(w, "$__end = _now();\n")
-	io.WriteString(w, "$__end_mem = memory_get_peak_usage();\n")
+	io.WriteString(w, "$__end_mem = memory_get_peak_usage(true);\n")
 	io.WriteString(w, "$__duration = max(1, intdiv($__end - $__start, 1000));\n")
 	io.WriteString(w, "$__mem_diff = max(0, $__end_mem - $__start_mem);\n")
 	fmt.Fprintf(w, "$__bench = [\"duration_us\" => $__duration, \"memory_bytes\" => $__mem_diff, \"name\" => %q];\n", b.Name)
