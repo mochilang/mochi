@@ -4349,18 +4349,42 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 	rt := inferExprType(currentEnv, b.Right)
 	if (b.Op == "==" || b.Op == "!=") && lt == rt && strings.HasSuffix(lt, "[]") {
 		base := strings.TrimSuffix(lt, "[]")
+		funcName := ""
 		switch base {
 		case "long long":
 			needListEqInt = true
-			io.WriteString(w, "list_eq_int(")
+			funcName = "list_eq_int"
 		case "double":
 			needListEqDouble = true
-			io.WriteString(w, "list_eq_double(")
+			funcName = "list_eq_double"
 		case "const char*":
 			needListEqStr = true
-			io.WriteString(w, "list_eq_str(")
+			funcName = "list_eq_str"
 		}
-		if base == "long long" || base == "double" || base == "const char*" {
+		if funcName != "" {
+			if ce, ok := b.Left.(*CallExpr); ok {
+				if ret, ok2 := funcReturnTypes[ce.Func]; ok2 && strings.HasSuffix(ret, "[]") {
+					tmp := fmt.Sprintf("__tmp%d", tempCounter)
+					tempCounter++
+					decl := listPtrType(ret)
+					tmpLen := tmp + "_len"
+					fmt.Fprintf(w, "({ %s %s = ", decl, tmp)
+					ce.emitExpr(w)
+					fmt.Fprintf(w, "; size_t %s = %s_len; %s(%s, %s, ", tmpLen, ce.Func, funcName, tmp, tmpLen)
+					b.Right.emitExpr(w)
+					io.WriteString(w, ", ")
+					emitLenExpr(w, b.Right)
+					io.WriteString(w, ")")
+					if b.Op == "!=" {
+						io.WriteString(w, " == 0")
+					} else {
+						io.WriteString(w, " != 0")
+					}
+					io.WriteString(w, "; })")
+					return
+				}
+			}
+			io.WriteString(w, funcName+"(")
 			b.Left.emitExpr(w)
 			io.WriteString(w, ", ")
 			emitLenExpr(w, b.Left)
