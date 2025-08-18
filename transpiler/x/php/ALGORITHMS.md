@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-17 15:46 GMT+7
+Last updated: 2025-08-17 20:47 GMT+7
 
 ## Algorithms Golden Test Checklist (993/1077)
 | Index | Name | Status | Duration | Memory |
@@ -750,7 +750,7 @@ Last updated: 2025-08-17 15:46 GMT+7
 | 741 | other/doomsday | ✓ | 88µs | 35.9 KB |
 | 742 | other/fischer_yates_shuffle | ✓ | 323µs | 40.0 KB |
 | 743 | other/gauss_easter | ✓ | 118µs | 40.2 KB |
-| 744 | other/greedy | ✓ | 96µs | 40.2 KB |
+| 744 | other/greedy | ✓ | 122µs | 1.6 MB |
 | 745 | other/guess_the_number_search | ✓ | 205µs | 41.0 KB |
 | 746 | other/h_index | ✓ | 186µs | 39.5 KB |
 | 747 | other/least_recently_used | ✓ | 142µs | 41.0 KB |
