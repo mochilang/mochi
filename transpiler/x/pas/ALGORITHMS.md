@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-17 14:29 GMT+7
+Last updated: 2025-08-17 21:05 GMT+7
 
 ## Algorithms Golden Test Checklist (538/1077)
 | Index | Name | Status | Duration | Memory |
@@ -705,7 +705,7 @@ Last updated: 2025-08-17 14:29 GMT+7
 | 696 | maths/zellers_congruence | ✓ | 0ns | 17.34KB |
 | 697 | matrix/binary_search_matrix | ✓ | 0ns | 0B |
 | 698 | matrix/count_islands_in_matrix | ✓ | 0ns | 384B |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 2.0ms | 7.70MB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 1.0ms | 7.70MB |
 | 700 | matrix/count_paths | ✓ | 0ns | 0B |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 0ns | 0B |
 | 702 | matrix/inverse_of_matrix | ✓ | 0ns | 896B |
@@ -714,19 +714,19 @@ Last updated: 2025-08-17 14:29 GMT+7
 | 705 | matrix/matrix_class | ✓ | 1.0µs | 64B |
 | 706 | matrix/matrix_equalization | error |  |  |
 | 707 | matrix/matrix_multiplication_recursion | ✓ | 0ns | 1.31KB |
-| 708 | matrix/matrix_operation | ✓ | 1.0µs | 0B |
+| 708 | matrix/matrix_operation | ✓ | 0ns | 0B |
 | 709 | matrix/max_area_of_island | ✓ | 0ns | 8.28KB |
 | 710 | matrix/median_matrix | ✓ | 0ns | 512B |
 | 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 0ns | 0B |
 | 712 | matrix/pascal_triangle | ✓ | 0ns | 0B |
-| 713 | matrix/rotate_matrix | ✓ | 1.0µs | 1.25KB |
-| 714 | matrix/searching_in_sorted_matrix | ✓ | 1.0µs | 0B |
+| 713 | matrix/rotate_matrix | ✓ | 0ns | 1.25KB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 0ns | 0B |
 | 715 | matrix/sherman_morrison | ✓ | 1.0µs | 0B |
-| 716 | matrix/spiral_print | ✓ | 1.0µs | 0B |
+| 716 | matrix/spiral_print | ✓ | 0ns | 0B |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 0ns | 0B |
 | 718 | matrix/validate_sudoku_board | ✓ | 0ns | 41.81KB |
-| 719 | networking_flow/ford_fulkerson | ✓ | 0ns | 544B |
-| 720 | networking_flow/minimum_cut | ✓ | 1.0µs | 640B |
+| 719 | networking_flow/ford_fulkerson | ✓ | 1.0µs | 544B |
+| 720 | networking_flow/minimum_cut | ✓ | 0ns | 640B |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 0ns | 0B |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 1.0µs | 192B |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 0ns | 256B |
@@ -738,10 +738,10 @@ Last updated: 2025-08-17 14:29 GMT+7
 | 729 | neural_network/activation_functions/softplus | ✓ | 0ns | 0B |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 1.0µs | 0B |
 | 731 | neural_network/activation_functions/swish | ✓ | 0ns | 0B |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 522.0µs | 0B |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 366.0µs | 0B |
 | 733 | neural_network/convolution_neural_network | ✓ | 1.0µs | 0B |
 | 734 | neural_network/input_data | ✓ | 0ns | 0B |
-| 735 | neural_network/simple_neural_network | ✓ | 147.0µs | 0B |
+| 735 | neural_network/simple_neural_network | ✓ | 104.0µs | 0B |
 | 736 | neural_network/two_hidden_layers_neural_network | ✓ | 1.0µs | 0B |
 | 737 | other/activity_selection | ✓ | 0ns | 128B |
 | 738 | other/alternative_list_arrange | error |  |  |
