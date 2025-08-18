@@ -3683,7 +3683,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
-		if (st.Fun.Name == "ln" || st.Fun.Name == "exp") && len(st.Fun.Params) == 1 {
+		if (st.Fun.Name == "ln" || st.Fun.Name == "exp") && len(st.Fun.Params) == 1 && len(st.Fun.Body) == 0 {
 			p := safeName(st.Fun.Params[0].Name)
 			call := "Math.log"
 			if st.Fun.Name == "exp" {
@@ -3786,7 +3786,7 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 	for _, p := range fn.Params {
 		addVar(p.Name)
 	}
-	if (fn.Name == "ln" || fn.Name == "exp") && len(fn.Params) == 1 {
+	if (fn.Name == "ln" || fn.Name == "exp") && len(fn.Params) == 1 && len(fn.Body) == 0 {
 		popScope()
 		currentEnv = savedEnv
 		funcDepth--

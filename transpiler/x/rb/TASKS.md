@@ -1,3 +1,453 @@
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-17 21:09 +0700)
+- Commit 582498e3e2: rb transpiler: fold pow10 muls, tweak float string
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-17 14:17 +0700)
 - Commit f130ea8b8b: rb: add algorithm outputs for indexes 679-728
 - Generated Ruby for 104/105 programs
