@@ -1,0 +1,350 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:42:2
+   |
+42 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:45:2
+   |
+45 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:48:2
+   |
+48 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:44:12
+   |
+44 |     return ((((row >= 0) && (row < rows)) && (col >= 0)) && (col < cols))
+   |            ^                                                            ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+44 -     return ((((row >= 0) && (row < rows)) && (col >= 0)) && (col < cols))
+44 +     return (((row >= 0) && (row < rows)) && (col >= 0)) && (col < cols)
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:51:21
+   |
+51 |     let rows: i64 = (mat.len() as i64);
+   |                     ^                ^
+   |
+help: remove these parentheses
+   |
+51 -     let rows: i64 = (mat.len() as i64);
+51 +     let rows: i64 = mat.len() as i64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:52:21
+   |
+52 |     let cols: i64 = (mat[0 as usize].clone().len() as i64);
+   |                     ^                                    ^
+   |
+help: remove these parentheses
+   |
+52 -     let cols: i64 = (mat[0 as usize].clone().len() as i64);
+52 +     let cols: i64 = mat[0 as usize].clone().len() as i64;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:54:8
+   |
+54 |     if ((is_safe(row, col, rows, cols) && !has(seen.clone(), key.clone())) && (mat[row as usize].clone()[col as usize] == 1)) {
+   |        ^                                                                                                                    ^
+   |
+help: remove these parentheses
+   |
+54 -     if ((is_safe(row, col, rows, cols) && !has(seen.clone(), key.clone())) && (mat[row as usize].clone()[col as usize] == 1)) {
+54 +     if (is_safe(row, col, rows, cols) && !has(seen.clone(), key.clone())) && (mat[row as usize].clone()[col as usize] == 1) {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:56:16
+   |
+56 | ...rn ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+   |       ^                                                                                                                                                                                                                                                                                               ^
+   |
+help: remove these parentheses
+   |
+56 -         return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+56 +         return (((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone())
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:56:57
+   |
+56 | ...   return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), c...
+   |                                                       ^       ^
+   |
+help: remove these parentheses
+   |
+56 -         return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+56 +         return ((((1 + depth_first_search(has, is_safe, row + 1, col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:56:128
+   |
+56 | ...   return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), c...
+   |                                                                                                                              ^       ^
+   |
+help: remove these parentheses
+   |
+56 -         return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+56 +         return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row - 1, col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:56:204
+   |
+56 | ..., seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (...
+   |                                                                  ^       ^
+   |
+help: remove these parentheses
+   |
+56 -         return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+56 +         return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, col + 1, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:56:275
+   |
+56 | ..., seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+   |                                                                  ^       ^
+   |
+help: remove these parentheses
+   |
+56 -         return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, (col - 1), seen, mat.clone()))
+56 +         return ((((1 + depth_first_search(has, is_safe, (row + 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, (row - 1), col, seen, mat.clone())) + depth_first_search(has, is_safe, row, (col + 1), seen, mat.clone())) + depth_first_search(has, is_safe, row, col - 1, seen, mat.clone()))
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:65:21
+   |
+65 |     let rows: i64 = (mat.len() as i64);
+   |                     ^                ^
+   |
+help: remove these parentheses
+   |
+65 -     let rows: i64 = (mat.len() as i64);
+65 +     let rows: i64 = mat.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:68:11
+   |
+68 |     while (r < rows) {
+   |           ^        ^
+   |
+help: remove these parentheses
+   |
+68 -     while (r < rows) {
+68 +     while r < rows {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:70:25
+   |
+70 |         let cols: i64 = (line.len() as i64);
+   |                         ^                 ^
+   |
+help: remove these parentheses
+   |
+70 -         let cols: i64 = (line.len() as i64);
+70 +         let cols: i64 = line.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:72:15
+   |
+72 |         while (c < cols) {
+   |               ^        ^
+   |
+help: remove these parentheses
+   |
+72 -         while (c < cols) {
+72 +         while c < cols {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:73:16
+   |
+73 |             if (line[c as usize] == 1) {
+   |                ^                     ^
+   |
+help: remove these parentheses
+   |
+73 -             if (line[c as usize] == 1) {
+73 +             if line[c as usize] == 1 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:77:24
+   |
+77 |                     if (area > max_area) {
+   |                        ^               ^
+   |
+help: remove these parentheses
+   |
+77 -                     if (area > max_area) {
+77 +                     if area > max_area {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:82:17
+   |
+82 |             c = (c + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+82 -             c = (c + 1);
+82 +             c = c + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:84:13
+   |
+84 |         r = (r + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+84 -         r = (r + 1);
+84 +         r = r + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:91:28
+   |
+91 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+91 -     let duration_us: i64 = ((_end - _start) / 1000);
+91 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:76:62
+   |
+76 |                     let area: i64 = depth_first_search(r, c, seen.clone(), mat.clone());
+   |                                     ------------------       ^^^^^^^^^^^^ expected `&mut HashMap<String, bool>`, found `HashMap<String, bool>`
+   |                                     |
+   |                                     arguments to this function are incorrect
+   |
+   = note: expected mutable reference `&mut HashMap<_, _>`
+                         found struct `HashMap<_, _>`
+note: closure parameter defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:61:30
+   |
+61 | |mut row: i64, mut col: i64, seen: &mut HashMap<String, bool>, mut mat: Vec<Vec<i64>>| -> i64 { depth_first_search(&mut has, &mut is_safe...
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: consider mutably borrowing here
+   |
+76 |                     let area: i64 = depth_first_search(r, c, &mut seen.clone(), mat.clone());
+   |                                                              ++++
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:40:15
+   |
+40 |     fn encode(mut row: i64, mut col: i64) -> String {
+   |               ----^^^
+   |               |
+   |               help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:40:29
+   |
+40 |     fn encode(mut row: i64, mut col: i64) -> String {
+   |                             ----^^^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:43:16
+   |
+43 |     fn is_safe(mut row: i64, mut col: i64, mut rows: i64, mut cols: i64) -> bool {
+   |                ----^^^
+   |                |
+   |                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:43:30
+   |
+43 |     fn is_safe(mut row: i64, mut col: i64, mut rows: i64, mut cols: i64) -> bool {
+   |                              ----^^^
+   |                              |
+   |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:43:44
+   |
+43 |     fn is_safe(mut row: i64, mut col: i64, mut rows: i64, mut cols: i64) -> bool {
+   |                                            ----^^^^
+   |                                            |
+   |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:43:59
+   |
+43 |     fn is_safe(mut row: i64, mut col: i64, mut rows: i64, mut cols: i64) -> bool {
+   |                                                           ----^^^^
+   |                                                           |
+   |                                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:46:12
+   |
+46 |     fn has(mut seen: HashMap<String, bool>, mut key: String) -> bool {
+   |            ----^^^^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:46:45
+   |
+46 |     fn has(mut seen: HashMap<String, bool>, mut key: String) -> bool {
+   |                                             ----^^^
+   |                                             |
+   |                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:50:136
+   |
+50 | ...is_safe: &mut dyn FnMut(i64, i64, i64, i64) -> bool, mut row: i64, mut col: i64, seen: &mut HashMap<String, bool>, mut mat: Vec<Vec<i6...
+   |                                                         ----^^^
+   |                                                         |
+   |                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:50:150
+   |
+50 | ...dyn FnMut(i64, i64, i64, i64) -> bool, mut row: i64, mut col: i64, seen: &mut HashMap<String, bool>, mut mat: Vec<Vec<i64>>) -> i64 {
+   |                                                         ----^^^
+   |                                                         |
+   |                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/matrix/max_area_of_island.rs:50:198
+   |
+50 | ...i64, mut col: i64, seen: &mut HashMap<String, bool>, mut mat: Vec<Vec<i64>>) -> i64 {
+   |                                                         ----^^^
+   |                                                         |
+   |                                                         help: remove this `mut`
+
+error: aborting due to 1 previous error; 32 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

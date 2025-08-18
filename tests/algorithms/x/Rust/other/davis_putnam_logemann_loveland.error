@@ -1,0 +1,506 @@
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:108:2
+    |
+108 | };
+    |  ^ help: remove this semicolon
+    |
+    = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:126:2
+    |
+126 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:163:2
+    |
+163 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:174:2
+    |
+174 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:222:2
+    |
+222 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:101:11
+    |
+101 |     while (i < (lits.len() as i64)) {
+    |           ^                       ^
+    |
+    = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+    |
+101 -     while (i < (lits.len() as i64)) {
+101 +     while i < (lits.len() as i64) {
+    |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:103:31
+    |
+103 |         m.insert(lit.clone(), (0 - 1));
+    |                               ^     ^
+    |
+help: remove these parentheses
+    |
+103 -         m.insert(lit.clone(), (0 - 1));
+103 +         m.insert(lit.clone(), 0 - 1);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:105:13
+    |
+105 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+105 -         i = (i + 1);
+105 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:112:11
+    |
+112 |     while (i < (c.names.clone().len() as i64)) {
+    |           ^                                  ^
+    |
+help: remove these parentheses
+    |
+112 -     while (i < (c.names.clone().len() as i64)) {
+112 +     while i < (c.names.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:117:16
+    |
+117 | ...if (({ let tmp = &lit; tmp.chars().skip(((lit.len() as i64) - 1) as usize).take(((lit.len() as i64) - ((lit.len() as i64) - 1)) as usize).collect::<String>() }.as_str() == "'") && (value != (0 - 1))) {
+    |       ^                                                                                                                                                                                                  ^
+    |
+help: remove these parentheses
+    |
+117 -             if (({ let tmp = &lit; tmp.chars().skip(((lit.len() as i64) - 1) as usize).take(((lit.len() as i64) - ((lit.len() as i64) - 1)) as usize).collect::<String>() }.as_str() == "'") && (value != (0 - 1))) {
+117 +             if ({ let tmp = &lit; tmp.chars().skip(((lit.len() as i64) - 1) as usize).take(((lit.len() as i64) - ((lit.len() as i64) - 1)) as usize).collect::<String>() }.as_str() == "'") && (value != (0 - 1)) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:118:25
+    |
+118 |                 value = (1 - value);
+    |                         ^         ^
+    |
+help: remove these parentheses
+    |
+118 -                 value = (1 - value);
+118 +                 value = 1 - value;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:122:13
+    |
+122 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+122 -         i = (i + 1);
+122 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:129:11
+    |
+129 |     while (i < (c.names.clone().len() as i64)) {
+    |           ^                                  ^
+    |
+help: remove these parentheses
+    |
+129 -     while (i < (c.names.clone().len() as i64)) {
+129 +     while i < (c.names.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:131:30
+    |
+131 | ...if ({ let tmp = &lit; tmp.chars().skip(((lit.len() as i64) - 1) as usize).take(((lit.len() as i64) - ((lit.len() as i64) - 1)) as usize).collect::<String>() }.as_str() == "'") { ...
+    |       ^                                                                                                                                                                          ^
+    |
+help: remove these parentheses
+    |
+131 -         let sym: String = if ({ let tmp = &lit; tmp.chars().skip(((lit.len() as i64) - 1) as usize).take(((lit.len() as i64) - ((lit.len() as i64) - 1)) as usize).collect::<String>() }.as_str() == "'") { { let tmp = &lit; tmp.chars().skip(0 as usize).take((2 - 0) as usize).collect::<String>() } } else { format!("{}{}", lit, "'") }.clone();
+131 +         let sym: String = if { let tmp = &lit; tmp.chars().skip(((lit.len() as i64) - 1) as usize).take(((lit.len() as i64) - ((lit.len() as i64) - 1)) as usize).collect::<String>() }.as_str() == "'" { { let tmp = &lit; tmp.chars().skip(0 as usize).take((2 - 0) as usize).collect::<String>() } } else { format!("{}{}", lit, "'") }.clone();
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:135:13
+    |
+135 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+135 -         i = (i + 1);
+135 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:139:11
+    |
+139 |     while (i < (c.names.clone().len() as i64)) {
+    |           ^                                  ^
+    |
+help: remove these parentheses
+    |
+139 -     while (i < (c.names.clone().len() as i64)) {
+139 +     while i < (c.names.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:142:12
+    |
+142 |         if (value == 1) {
+    |            ^          ^
+    |
+help: remove these parentheses
+    |
+142 -         if (value == 1) {
+142 +         if value == 1 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:145:12
+    |
+145 |         if (value == (0 - 1)) {
+    |            ^                ^
+    |
+help: remove these parentheses
+    |
+145 -         if (value == (0 - 1)) {
+145 +         if value == (0 - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:148:13
+    |
+148 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+148 -         i = (i + 1);
+148 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:152:11
+    |
+152 |     while (i < (c.names.clone().len() as i64)) {
+    |           ^                                  ^
+    |
+help: remove these parentheses
+    |
+152 -     while (i < (c.names.clone().len() as i64)) {
+152 +     while i < (c.names.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:154:12
+    |
+154 |         if (c.literals.clone()[lit.as_str()] == 1) {
+    |            ^                                     ^
+    |
+help: remove these parentheses
+    |
+154 -         if (c.literals.clone()[lit.as_str()] == 1) {
+154 +         if c.literals.clone()[lit.as_str()] == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:157:13
+    |
+157 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+157 -         i = (i + 1);
+157 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:167:11
+    |
+167 |     while (i < (symbols.len() as i64)) {
+    |           ^                          ^
+    |
+help: remove these parentheses
+    |
+167 -     while (i < (symbols.len() as i64)) {
+167 +     while i < (symbols.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:168:12
+    |
+168 |         if (symbols[i as usize].clone().as_str() != s.as_str()) {
+    |            ^                                                  ^
+    |
+help: remove these parentheses
+    |
+168 -         if (symbols[i as usize].clone().as_str() != s.as_str()) {
+168 +         if symbols[i as usize].clone().as_str() != s.as_str() {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:171:13
+    |
+171 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+171 -         i = (i + 1);
+171 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:179:11
+    |
+179 |     while (i < (clauses.len() as i64)) {
+    |           ^                          ^
+    |
+help: remove these parentheses
+    |
+179 -     while (i < (clauses.len() as i64)) {
+179 +     while i < (clauses.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:182:12
+    |
+182 |         if (ev.value == 0) {
+    |            ^             ^
+    |
+help: remove these parentheses
+    |
+182 -         if (ev.value == 0) {
+182 +         if ev.value == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:184:19
+    |
+184 |         } else if (ev.value == (0 - 1)) {
+    |                   ^                   ^
+    |
+help: remove these parentheses
+    |
+184 -         } else if (ev.value == (0 - 1)) {
+184 +         } else if ev.value == (0 - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:187:13
+    |
+187 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+187 -         i = (i + 1);
+187 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:210:11
+    |
+210 |     while (i < (c.names.clone().len() as i64)) {
+    |           ^                                  ^
+    |
+help: remove these parentheses
+    |
+210 -     while (i < (c.names.clone().len() as i64)) {
+210 +     while i < (c.names.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:218:13
+    |
+218 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+218 -         i = (i + 1);
+218 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:226:11
+    |
+226 |     while (i < (f.clauses.clone().len() as i64)) {
+    |           ^                                    ^
+    |
+help: remove these parentheses
+    |
+226 -     while (i < (f.clauses.clone().len() as i64)) {
+226 +     while i < (f.clauses.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:228:12
+    |
+228 |         if (i < ((f.clauses.clone().len() as i64) - 1)) {
+    |            ^                                          ^
+    |
+help: remove these parentheses
+    |
+228 -         if (i < ((f.clauses.clone().len() as i64) - 1)) {
+228 +         if i < ((f.clauses.clone().len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:231:13
+    |
+231 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+231 -         i = (i + 1);
+231 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:250:28
+    |
+250 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+250 -     let duration_us: i64 = ((_end - _start) / 1000);
+250 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:243:45
+    |
+243 |     let result: DPLLResult = dpll_algorithm(clauses.clone(), symbols.clone(), model.clone());
+    |                              -------------- ^^^^^^^^^^^^^^^ expected `&mut Vec<Clause>`, found `Vec<Clause>`
+    |                              |
+    |                              arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut Vec<_>`
+                          found struct `Vec<_>`
+note: closure parameter defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:204:2
+    |
+204 | |clauses: &mut Vec<Clause>, mut symbols: Vec<String>, mut model: HashMap<String, i64>| -> DPLLResult { dpll_algorithm(&mut evaluate_claus...
+    |  ^^^^^^^^^^^^^^^^^^^^^^^^^
+help: consider mutably borrowing here
+    |
+243 |     let result: DPLLResult = dpll_algorithm(&mut clauses.clone(), symbols.clone(), model.clone());
+    |                                             ++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:198:75
+    |
+198 |     let res1: DPLLResult = dpll_algorithm(evaluate_clause, remove_symbol, clauses.clone(), rest.clone(), tmp1.clone());
+    |                            --------------                                 ^^^^^^^^^^^^^^^ expected `&mut Vec<Clause>`, found `Vec<Clause>`
+    |                            |
+    |                            arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut Vec<_>`
+                          found struct `Vec<_>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:176:4
+    |
+176 | fn dpll_algorithm(evaluate_clause: &mut dyn FnMut(Clause, HashMap<String, i64>) -> EvalResult, remove_symbol: &mut dyn FnMut(Vec<String>, String) -> Vec<String>, clauses: &mut Vec<Clause>, m...
+    |    ^^^^^^^^^^^^^^                                                                                                                                                 -------------------------
+help: consider mutably borrowing here
+    |
+198 |     let res1: DPLLResult = dpll_algorithm(evaluate_clause, remove_symbol, &mut clauses.clone(), rest.clone(), tmp1.clone());
+    |                                                                           ++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:202:59
+    |
+202 |     return dpll_algorithm(evaluate_clause, remove_symbol, clauses.clone(), rest.clone(), tmp2.clone())
+    |            --------------                                 ^^^^^^^^^^^^^^^ expected `&mut Vec<Clause>`, found `Vec<Clause>`
+    |            |
+    |            arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut Vec<_>`
+                          found struct `Vec<_>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:176:4
+    |
+176 | fn dpll_algorithm(evaluate_clause: &mut dyn FnMut(Clause, HashMap<String, i64>) -> EvalResult, remove_symbol: &mut dyn FnMut(Vec<String>, String) -> Vec<String>, clauses: &mut Vec<Clause>, m...
+    |    ^^^^^^^^^^^^^^                                                                                                                                                 -------------------------
+help: consider mutably borrowing here
+    |
+202 |     return dpll_algorithm(evaluate_clause, remove_symbol, &mut clauses.clone(), rest.clone(), tmp2.clone())
+    |                                                           ++++
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:97:19
+   |
+97 |     fn new_clause(mut lits: Vec<String>) -> Clause {
+   |                   ----^^^^
+   |                   |
+   |                   help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:109:37
+    |
+109 |     fn assign_clause(mut c: Clause, mut model: HashMap<String, i64>) -> Clause {
+    |                                     ----^^^^^
+    |                                     |
+    |                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:161:20
+    |
+161 |     fn new_formula(mut cs: Vec<Clause>) -> Formula {
+    |                    ----^^
+    |                    |
+    |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:164:22
+    |
+164 |     fn remove_symbol(mut symbols: Vec<String>, mut s: String) -> Vec<String> {
+    |                      ----^^^^^^^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:164:48
+    |
+164 |     fn remove_symbol(mut symbols: Vec<String>, mut s: String) -> Vec<String> {
+    |                                                ----^
+    |                                                |
+    |                                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/davis_putnam_logemann_loveland.rs:206:19
+    |
+206 |     fn str_clause(mut c: Clause) -> String {
+    |                   ----^
+    |                   |
+    |                   help: remove this `mut`
+
+error: aborting due to 3 previous errors; 41 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
