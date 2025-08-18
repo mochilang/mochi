@@ -3643,6 +3643,17 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					fmt.Fprintf(w, "concat_strptr(%s, &%s_len, &%s_lens, &%s_lens_len, %s, %s_len, %s_lens)", a.Name, a.Name, a.Name, a.Name, b.Name, b.Name, b.Name)
 					return
 				}
+			} else if alit, ok := c.Args[0].(*ListLit); ok {
+				if b, ok2 := c.Args[1].(*VarRef); ok2 && len(alit.Elems) == 1 {
+					needConcatLongLong = true
+					tmp := fmt.Sprintf("__tmp%d", tempCounter)
+					tempCounter++
+					fmt.Fprintf(w, "({const char** %s = malloc((%s_len + 1) * sizeof(const char*)); %s[0] = ", tmp, b.Name, tmp)
+					alit.Elems[0].emitExpr(w)
+					io.WriteString(w, "; if (")
+					fmt.Fprintf(w, "%s_len > 0) memcpy(%s + 1, %s, %s_len * sizeof(const char*)); %s_len = %s_len + 1; concat_len = %s_len; %s;})", b.Name, tmp, b.Name, b.Name, b.Name, b.Name, b.Name, tmp)
+					return
+				}
 			}
 		} else if base != "" {
 			needConcatLongLong = true
