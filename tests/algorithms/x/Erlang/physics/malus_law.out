@@ -1,3 +1,1 @@
-/workspace/mochi/tests/algorithms/x/Erlang/physics/malus_law.erl:39:1: Warning: function mochi_nth/2 is unused
-%   39| mochi_nth(I, L) ->
-%     | ^
+24.996456658452885
