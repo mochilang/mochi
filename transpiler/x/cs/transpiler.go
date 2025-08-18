@@ -5683,9 +5683,13 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 		return &ListLit{}, nil
 	}
 	root := repoRoot()
-	if root != "" && strings.HasPrefix(path, "../") {
-		clean := strings.TrimPrefix(path, "../")
-		path = filepath.Join(root, "tests", clean)
+	if root != "" {
+		if strings.HasPrefix(path, "../") {
+			clean := strings.TrimPrefix(path, "../")
+			path = filepath.Join(root, "tests", clean)
+		} else if strings.HasPrefix(path, "tests/") {
+			path = filepath.Join(root, path)
+		}
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {
