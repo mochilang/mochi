@@ -4276,9 +4276,21 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		// Ensure value type matches target element type
 		tgtType := inferType(target)
+		if tgtType == "int" {
+			if fe, ok := target.(*FieldExpr); ok {
+				baseT := inferType(fe.Target)
+				baseName := strings.TrimSuffix(strings.TrimSuffix(baseT, " list"), " array")
+				if ft, ok := structFieldType(baseName, fe.Name); ok && ft == "int64" {
+					tgtType = "int64"
+				}
+			}
+		}
 		valType := inferType(val)
 		if tgtType == "int" && valType == "int64" {
-			val = &CastExpr{Expr: val, Type: "int"}
+			if id, ok := target.(*IdentExpr); ok {
+				varTypes[id.Name] = "int64"
+			}
+			tgtType = "int64"
 		} else if tgtType == "int64" && valType == "int" {
 			val = &CastExpr{Expr: val, Type: "int64"}
 		} else if tgtType != "" && valType != "" && tgtType != valType {
@@ -4298,13 +4310,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if id, ok := base.(*IdentExpr); ok {
 			t := inferType(id)
-			// Map assignment: use helper to update dictionary even if type is unknown
-			if (strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") || ((t == "" || t == "obj") && len(indices) > 0 && inferType(indices[0]) != "int")) && !strings.HasSuffix(t, " array") {
+			if ls, ok2 := letPtrs[id.Name]; ok2 && len(ls) > 0 && ls[0].Type != "" {
+				t = ls[0].Type
+			}
+			// Map assignment: use helper only when type is explicitly a dictionary
+			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && !strings.HasSuffix(t, " array") {
 				expr := buildMapUpdate(&IdentExpr{Name: id.Name}, indices, val)
 				return &AssignStmt{Name: fsIdent(id.Name), Expr: expr}, nil
 			}
 			// Array assignment with single index uses dynamic resize helper
 			if strings.HasSuffix(t, " array") && idxCount == 1 {
+				usesArraySet = true
+			} else if t == "" && idxCount == 1 {
 				usesArraySet = true
 			}
 		}
