@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -35,7 +38,7 @@
 (def ^:dynamic show_f nil)
 
 (defn centripetal [centripetal_mass centripetal_velocity centripetal_radius]
-  (try (do (when (< centripetal_mass 0.0) (throw (Exception. "The mass of the body cannot be negative"))) (when (<= centripetal_radius 0.0) (throw (Exception. "The radius is always a positive non zero integer"))) (throw (ex-info "return" {:v (/ (* (* centripetal_mass centripetal_velocity) centripetal_velocity) centripetal_radius)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (when (< centripetal_mass 0.0) (throw (Exception. "The mass of the body cannot be negative"))) (when (<= centripetal_radius 0.0) (throw (Exception. "The radius is always a positive non zero integer"))) (throw (ex-info "return" {:v (quot (* (* centripetal_mass centripetal_velocity) centripetal_velocity) centripetal_radius)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn floor [floor_x]
   (binding [floor_i nil] (try (do (set! floor_i (long floor_x)) (when (> (double floor_i) floor_x) (set! floor_i (- floor_i 1))) (throw (ex-info "return" {:v (double floor_i)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -47,7 +50,7 @@
   (binding [round_m nil] (try (do (set! round_m (pow10 round_n)) (throw (ex-info "return" {:v (/ (floor (+ (* round_x round_m) 0.5)) round_m)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn show [show_mass show_velocity show_radius]
-  (binding [show_f nil] (do (set! show_f (centripetal show_mass show_velocity show_radius)) (println (str (round show_f 2))) show_mass)))
+  (binding [show_f nil] (do (set! show_f (centripetal show_mass show_velocity show_radius)) (println (mochi_str (round show_f 2))) show_mass)))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

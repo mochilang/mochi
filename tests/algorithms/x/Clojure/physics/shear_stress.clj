@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -27,23 +30,26 @@
 (def ^:dynamic shear_stress_zeros nil)
 
 (defn shear_stress [shear_stress_stress shear_stress_tangential_force shear_stress_area]
-  (binding [shear_stress_zeros nil] (try (do (set! shear_stress_zeros 0) (when (= shear_stress_stress 0.0) (set! shear_stress_zeros (+ shear_stress_zeros 1))) (when (= shear_stress_tangential_force 0.0) (set! shear_stress_zeros (+ shear_stress_zeros 1))) (when (= shear_stress_area 0.0) (set! shear_stress_zeros (+ shear_stress_zeros 1))) (if (not= shear_stress_zeros 1) (throw (Exception. "You cannot supply more or less than 2 values")) (if (< shear_stress_stress 0.0) (throw (Exception. "Stress cannot be negative")) (if (< shear_stress_tangential_force 0.0) (throw (Exception. "Tangential Force cannot be negative")) (if (< shear_stress_area 0.0) (throw (Exception. "Area cannot be negative")) (if (= shear_stress_stress 0.0) (throw (ex-info "return" {:v {:name "stress" :value (/ shear_stress_tangential_force shear_stress_area)}})) (if (= shear_stress_tangential_force 0.0) (throw (ex-info "return" {:v {:name "tangential_force" :value (* shear_stress_stress shear_stress_area)}})) (throw (ex-info "return" {:v {:name "area" :value (/ shear_stress_tangential_force shear_stress_stress)}}))))))))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [shear_stress_zeros nil] (try (do (set! shear_stress_zeros 0) (when (= shear_stress_stress 0.0) (set! shear_stress_zeros (+ shear_stress_zeros 1))) (when (= shear_stress_tangential_force 0.0) (set! shear_stress_zeros (+ shear_stress_zeros 1))) (when (= shear_stress_area 0.0) (set! shear_stress_zeros (+ shear_stress_zeros 1))) (if (not= shear_stress_zeros 1) (throw (Exception. "You cannot supply more or less than 2 values")) (if (< shear_stress_stress 0.0) (throw (Exception. "Stress cannot be negative")) (if (< shear_stress_tangential_force 0.0) (throw (Exception. "Tangential Force cannot be negative")) (if (< shear_stress_area 0.0) (throw (Exception. "Area cannot be negative")) (if (= shear_stress_stress 0.0) (throw (ex-info "return" {:v {:name "stress" :value (quot shear_stress_tangential_force shear_stress_area)}})) (if (= shear_stress_tangential_force 0.0) (throw (ex-info "return" {:v {:name "tangential_force" :value (* shear_stress_stress shear_stress_area)}})) (throw (ex-info "return" {:v {:name "area" :value (quot shear_stress_tangential_force shear_stress_stress)}}))))))))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn str_result [str_result_r]
-  (try (throw (ex-info "return" {:v (str (str (str (str "Result(name='" (:name str_result_r)) "', value=") (str (:value str_result_r))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (str (str "Result(name='" (:name str_result_r)) "', value=") (mochi_str (:value str_result_r))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def ^:dynamic main_r1 (shear_stress 25.0 100.0 0.0))
+(def ^:dynamic main_r1 nil)
 
-(def ^:dynamic main_r2 (shear_stress 0.0 1600.0 200.0))
+(def ^:dynamic main_r2 nil)
 
-(def ^:dynamic main_r3 (shear_stress 1000.0 0.0 1200.0))
+(def ^:dynamic main_r3 nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_r1) (constantly (shear_stress 25.0 100.0 0.0)))
       (println (str_result main_r1))
+      (alter-var-root (var main_r2) (constantly (shear_stress 0.0 1600.0 200.0)))
       (println (str_result main_r2))
+      (alter-var-root (var main_r3) (constantly (shear_stress 1000.0 0.0 1200.0)))
       (println (str_result main_r3))
       (System/gc)
       (let [end (System/nanoTime)

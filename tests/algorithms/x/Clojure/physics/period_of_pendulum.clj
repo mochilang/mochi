@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -28,12 +31,12 @@
 
 (def ^:dynamic sqrt_i nil)
 
-(def ^:dynamic main_PI 3.141592653589793)
+(def ^:dynamic main_PI nil)
 
-(def ^:dynamic main_G 9.80665)
+(def ^:dynamic main_G nil)
 
 (defn sqrt [sqrt_x]
-  (binding [sqrt_guess nil sqrt_i nil] (try (do (when (<= sqrt_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_guess sqrt_x) (set! sqrt_i 0) (while (< sqrt_i 10) (do (set! sqrt_guess (/ (+ sqrt_guess (/ sqrt_x sqrt_guess)) 2.0)) (set! sqrt_i (+ sqrt_i 1)))) (throw (ex-info "return" {:v sqrt_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrt_guess nil sqrt_i nil] (try (do (when (<= sqrt_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_guess sqrt_x) (set! sqrt_i 0) (while (< sqrt_i 10) (do (set! sqrt_guess (/ (+ sqrt_guess (quot sqrt_x sqrt_guess)) 2.0)) (set! sqrt_i (+ sqrt_i 1)))) (throw (ex-info "return" {:v sqrt_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn period_of_pendulum [period_of_pendulum_length]
   (try (do (when (< period_of_pendulum_length 0.0) (throw (Exception. "The length should be non-negative"))) (throw (ex-info "return" {:v (* (* 2.0 main_PI) (sqrt (/ period_of_pendulum_length main_G)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -42,10 +45,12 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (period_of_pendulum 1.23)))
-      (println (str (period_of_pendulum 2.37)))
-      (println (str (period_of_pendulum 5.63)))
-      (println (str (period_of_pendulum 0.0)))
+      (alter-var-root (var main_PI) (constantly 3.141592653589793))
+      (alter-var-root (var main_G) (constantly 9.80665))
+      (println (mochi_str (period_of_pendulum 1.23)))
+      (println (mochi_str (period_of_pendulum 2.37)))
+      (println (mochi_str (period_of_pendulum 5.63)))
+      (println (mochi_str (period_of_pendulum 0.0)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

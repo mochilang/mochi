@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -30,12 +33,13 @@
 (defn move_disk [move_disk_fp move_disk_tp]
   (do (println (str (str (str "moving disk from " move_disk_fp) " to ") move_disk_tp)) move_disk_fp))
 
-(def ^:dynamic main_height 3)
+(def ^:dynamic main_height nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_height) (constantly 3))
       (move_tower main_height "A" "B" "C")
       (System/gc)
       (let [end (System/nanoTime)

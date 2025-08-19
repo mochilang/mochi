@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -52,7 +55,7 @@
   (do (when (not= (solution 3) 0) (throw (Exception. "solution(3) failed"))) (when (not= (solution 4) 3) (throw (Exception. "solution(4) failed"))) (when (not= (solution 10) 23) (throw (Exception. "solution(10) failed"))) (when (not= (solution 600) 83700) (throw (Exception. "solution(600) failed")))))
 
 (defn main []
-  (do (test_solution) (println (str "solution() = " (str (solution 1000))))))
+  (do (test_solution) (println (str "solution() = " (mochi_str (solution 1000))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

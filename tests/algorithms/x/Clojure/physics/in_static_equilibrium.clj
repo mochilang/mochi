@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -56,12 +59,12 @@
 
 (def ^:dynamic sin_approx_y7 nil)
 
-(def ^:dynamic main_PI 3.141592653589793)
+(def ^:dynamic main_PI nil)
 
-(def ^:dynamic main_TWO_PI 6.283185307179586)
+(def ^:dynamic main_TWO_PI nil)
 
 (defn _mod [_mod_x _mod_m]
-  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (/ _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (quot _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sin_approx [sin_approx_x]
   (binding [sin_approx_y nil sin_approx_y2 nil sin_approx_y3 nil sin_approx_y5 nil sin_approx_y7 nil] (try (do (set! sin_approx_y (- (_mod (+ sin_approx_x main_PI) main_TWO_PI) main_PI)) (set! sin_approx_y2 (* sin_approx_y sin_approx_y)) (set! sin_approx_y3 (* sin_approx_y2 sin_approx_y)) (set! sin_approx_y5 (* sin_approx_y3 sin_approx_y2)) (set! sin_approx_y7 (* sin_approx_y5 sin_approx_y2)) (throw (ex-info "return" {:v (- (+ (- sin_approx_y (/ sin_approx_y3 6.0)) (/ sin_approx_y5 120.0)) (/ sin_approx_y7 5040.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -78,30 +81,40 @@
 (defn in_static_equilibrium [in_static_equilibrium_forces in_static_equilibrium_location in_static_equilibrium_eps]
   (binding [in_static_equilibrium_f nil in_static_equilibrium_i nil in_static_equilibrium_moment nil in_static_equilibrium_n nil in_static_equilibrium_r nil in_static_equilibrium_sum_moments nil] (try (do (set! in_static_equilibrium_sum_moments 0.0) (set! in_static_equilibrium_i 0) (set! in_static_equilibrium_n (count in_static_equilibrium_forces)) (while (< in_static_equilibrium_i in_static_equilibrium_n) (do (set! in_static_equilibrium_r (nth in_static_equilibrium_location in_static_equilibrium_i)) (set! in_static_equilibrium_f (nth in_static_equilibrium_forces in_static_equilibrium_i)) (set! in_static_equilibrium_moment (- (* (nth in_static_equilibrium_r 0) (nth in_static_equilibrium_f 1)) (* (nth in_static_equilibrium_r 1) (nth in_static_equilibrium_f 0)))) (set! in_static_equilibrium_sum_moments (+ in_static_equilibrium_sum_moments in_static_equilibrium_moment)) (set! in_static_equilibrium_i (+ in_static_equilibrium_i 1)))) (throw (ex-info "return" {:v (< (abs_float in_static_equilibrium_sum_moments) in_static_equilibrium_eps)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_forces1 [[1.0 1.0] [(- 1.0) 2.0]])
+(def ^:dynamic main_forces1 nil)
 
-(def ^:dynamic main_location1 [[1.0 0.0] [10.0 0.0]])
+(def ^:dynamic main_location1 nil)
 
-(def ^:dynamic main_forces2 [(polar_force 718.4 150.0 false) (polar_force 879.54 45.0 false) (polar_force 100.0 (- 90.0) false)])
+(def ^:dynamic main_forces2 nil)
 
-(def ^:dynamic main_location2 [[0.0 0.0] [0.0 0.0] [0.0 0.0]])
+(def ^:dynamic main_location2 nil)
 
-(def ^:dynamic main_forces3 [(polar_force (* 30.0 9.81) 15.0 false) (polar_force 215.0 135.0 false) (polar_force 264.0 60.0 false)])
+(def ^:dynamic main_forces3 nil)
 
-(def ^:dynamic main_location3 [[0.0 0.0] [0.0 0.0] [0.0 0.0]])
+(def ^:dynamic main_location3 nil)
 
-(def ^:dynamic main_forces4 [[0.0 (- 2000.0)] [0.0 (- 1200.0)] [0.0 15600.0] [0.0 (- 12400.0)]])
+(def ^:dynamic main_forces4 nil)
 
-(def ^:dynamic main_location4 [[0.0 0.0] [6.0 0.0] [10.0 0.0] [12.0 0.0]])
+(def ^:dynamic main_location4 nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (in_static_equilibrium main_forces1 main_location1 0.1)))
-      (println (str (in_static_equilibrium main_forces2 main_location2 0.1)))
-      (println (str (in_static_equilibrium main_forces3 main_location3 0.1)))
-      (println (str (in_static_equilibrium main_forces4 main_location4 0.1)))
+      (alter-var-root (var main_PI) (constantly 3.141592653589793))
+      (alter-var-root (var main_TWO_PI) (constantly 6.283185307179586))
+      (alter-var-root (var main_forces1) (constantly [[1.0 1.0] [(- 1.0) 2.0]]))
+      (alter-var-root (var main_location1) (constantly [[1.0 0.0] [10.0 0.0]]))
+      (println (mochi_str (in_static_equilibrium main_forces1 main_location1 0.1)))
+      (alter-var-root (var main_forces2) (constantly [(polar_force 718.4 150.0 false) (polar_force 879.54 45.0 false) (polar_force 100.0 (- 90.0) false)]))
+      (alter-var-root (var main_location2) (constantly [[0.0 0.0] [0.0 0.0] [0.0 0.0]]))
+      (println (mochi_str (in_static_equilibrium main_forces2 main_location2 0.1)))
+      (alter-var-root (var main_forces3) (constantly [(polar_force (* 30.0 9.81) 15.0 false) (polar_force 215.0 135.0 false) (polar_force 264.0 60.0 false)]))
+      (alter-var-root (var main_location3) (constantly [[0.0 0.0] [0.0 0.0] [0.0 0.0]]))
+      (println (mochi_str (in_static_equilibrium main_forces3 main_location3 0.1)))
+      (alter-var-root (var main_forces4) (constantly [[0.0 (- 2000.0)] [0.0 (- 1200.0)] [0.0 15600.0] [0.0 (- 12400.0)]]))
+      (alter-var-root (var main_location4) (constantly [[0.0 0.0] [6.0 0.0] [10.0 0.0] [12.0 0.0]]))
+      (println (mochi_str (in_static_equilibrium main_forces4 main_location4 0.1)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

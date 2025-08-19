@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -29,13 +32,13 @@
 (def ^:dynamic sum_of_multiples_total nil)
 
 (defn sum_of_multiples [sum_of_multiples_n]
-  (binding [sum_of_multiples_terms nil sum_of_multiples_total nil] (try (do (set! sum_of_multiples_total 0) (set! sum_of_multiples_terms (/ (- sum_of_multiples_n 1) 3)) (set! sum_of_multiples_total (+ sum_of_multiples_total (/ (* sum_of_multiples_terms (+ 6 (* (- sum_of_multiples_terms 1) 3))) 2))) (set! sum_of_multiples_terms (/ (- sum_of_multiples_n 1) 5)) (set! sum_of_multiples_total (+ sum_of_multiples_total (/ (* sum_of_multiples_terms (+ 10 (* (- sum_of_multiples_terms 1) 5))) 2))) (set! sum_of_multiples_terms (/ (- sum_of_multiples_n 1) 15)) (set! sum_of_multiples_total (- sum_of_multiples_total (/ (* sum_of_multiples_terms (+ 30 (* (- sum_of_multiples_terms 1) 15))) 2))) (throw (ex-info "return" {:v sum_of_multiples_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sum_of_multiples_terms nil sum_of_multiples_total nil] (try (do (set! sum_of_multiples_total 0) (set! sum_of_multiples_terms (quot (- sum_of_multiples_n 1) 3)) (set! sum_of_multiples_total (+ sum_of_multiples_total (quot (* sum_of_multiples_terms (+ 6 (* (- sum_of_multiples_terms 1) 3))) 2))) (set! sum_of_multiples_terms (quot (- sum_of_multiples_n 1) 5)) (set! sum_of_multiples_total (+ sum_of_multiples_total (quot (* sum_of_multiples_terms (+ 10 (* (- sum_of_multiples_terms 1) 5))) 2))) (set! sum_of_multiples_terms (quot (- sum_of_multiples_n 1) 15)) (set! sum_of_multiples_total (- sum_of_multiples_total (quot (* sum_of_multiples_terms (+ 30 (* (- sum_of_multiples_terms 1) 15))) 2))) (throw (ex-info "return" {:v sum_of_multiples_total}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str "solution() = " (str (sum_of_multiples 1000))))
+      (println (str "solution() = " (mochi_str (sum_of_multiples 1000))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

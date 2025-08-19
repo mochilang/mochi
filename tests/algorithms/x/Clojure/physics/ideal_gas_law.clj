@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -24,7 +27,7 @@
 
 (declare pressure_of_gas_system volume_of_gas_system temperature_of_gas_system moles_of_gas_system)
 
-(def ^:dynamic main_UNIVERSAL_GAS_CONSTANT 8.314462)
+(def ^:dynamic main_UNIVERSAL_GAS_CONSTANT nil)
 
 (defn pressure_of_gas_system [pressure_of_gas_system_moles pressure_of_gas_system_kelvin pressure_of_gas_system_volume]
   (try (do (when (or (or (< pressure_of_gas_system_moles 0) (< pressure_of_gas_system_kelvin 0)) (< pressure_of_gas_system_volume 0)) (throw (Exception. "Invalid inputs. Enter positive value."))) (throw (ex-info "return" {:v (/ (* (* pressure_of_gas_system_moles pressure_of_gas_system_kelvin) main_UNIVERSAL_GAS_CONSTANT) pressure_of_gas_system_volume)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -42,6 +45,7 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_UNIVERSAL_GAS_CONSTANT) (constantly 8.314462))
       (println (pressure_of_gas_system 2.0 100.0 5.0))
       (println (volume_of_gas_system 0.5 273.0 0.004))
       (println (temperature_of_gas_system 2.0 100.0 5.0))

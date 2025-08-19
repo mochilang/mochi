@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -27,17 +30,20 @@
 (defn newtons_second_law_of_motion [newtons_second_law_of_motion_mass newtons_second_law_of_motion_acceleration]
   (try (if (or (< newtons_second_law_of_motion_mass 0.0) (< newtons_second_law_of_motion_acceleration 0.0)) 0.0 (* newtons_second_law_of_motion_mass newtons_second_law_of_motion_acceleration)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def ^:dynamic main_mass 12.5)
+(def ^:dynamic main_mass nil)
 
-(def ^:dynamic main_acceleration 10.0)
+(def ^:dynamic main_acceleration nil)
 
-(def ^:dynamic main_force (newtons_second_law_of_motion main_mass main_acceleration))
+(def ^:dynamic main_force nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (str "The force is " (str main_force)) " N"))
+      (alter-var-root (var main_mass) (constantly 12.5))
+      (alter-var-root (var main_acceleration) (constantly 10.0))
+      (alter-var-root (var main_force) (constantly (newtons_second_law_of_motion main_mass main_acceleration)))
+      (println (str (str "The force is " (mochi_str main_force)) " N"))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

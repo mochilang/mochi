@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -50,10 +53,10 @@
 
 (def ^:dynamic transformation_matrix_g nil)
 
-(def ^:dynamic main_c 299792458.0)
+(def ^:dynamic main_c nil)
 
 (defn sqrtApprox [sqrtApprox_x]
-  (binding [sqrtApprox_guess nil sqrtApprox_i nil] (try (do (when (<= sqrtApprox_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrtApprox_guess (/ sqrtApprox_x 2.0)) (set! sqrtApprox_i 0) (while (< sqrtApprox_i 20) (do (set! sqrtApprox_guess (/ (+ sqrtApprox_guess (/ sqrtApprox_x sqrtApprox_guess)) 2.0)) (set! sqrtApprox_i (+ sqrtApprox_i 1)))) (throw (ex-info "return" {:v sqrtApprox_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrtApprox_guess nil sqrtApprox_i nil] (try (do (when (<= sqrtApprox_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrtApprox_guess (/ sqrtApprox_x 2.0)) (set! sqrtApprox_i 0) (while (< sqrtApprox_i 20) (do (set! sqrtApprox_guess (/ (+ sqrtApprox_guess (quot sqrtApprox_x sqrtApprox_guess)) 2.0)) (set! sqrtApprox_i (+ sqrtApprox_i 1)))) (throw (ex-info "return" {:v sqrtApprox_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn beta [beta_velocity]
   (try (do (when (> beta_velocity main_c) (throw (Exception. "Speed must not exceed light speed 299,792,458 [m/s]!"))) (when (< beta_velocity 1.0) (throw (Exception. "Speed must be greater than or equal to 1!"))) (throw (ex-info "return" {:v (/ beta_velocity main_c)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -70,20 +73,22 @@
 (defn transform [transform_velocity transform_event]
   (binding [transform_b nil transform_ct nil transform_g nil transform_x nil] (try (do (set! transform_g (gamma transform_velocity)) (set! transform_b (beta transform_velocity)) (set! transform_ct (* (nth transform_event 0) main_c)) (set! transform_x (nth transform_event 1)) (throw (ex-info "return" {:v [(- (* transform_g transform_ct) (* (* transform_g transform_b) transform_x)) (+ (* (* (- transform_g) transform_b) transform_ct) (* transform_g transform_x)) (nth transform_event 2) (nth transform_event 3)]}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_v (transform 29979245.0 [1.0 2.0 3.0 4.0]))
+(def ^:dynamic main_v nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (beta main_c)))
-      (println (str (beta 199792458.0)))
-      (println (str (beta 100000.0)))
-      (println (str (gamma 4.0)))
-      (println (str (gamma 100000.0)))
-      (println (str (gamma 30000000.0)))
-      (println (str (transformation_matrix 29979245.0)))
-      (println (str main_v))
+      (alter-var-root (var main_c) (constantly 299792458.0))
+      (println (mochi_str (beta main_c)))
+      (println (mochi_str (beta 199792458.0)))
+      (println (mochi_str (beta 100000.0)))
+      (println (mochi_str (gamma 4.0)))
+      (println (mochi_str (gamma 100000.0)))
+      (println (mochi_str (gamma 30000000.0)))
+      (println (mochi_str (transformation_matrix 29979245.0)))
+      (alter-var-root (var main_v) (constantly (transform 29979245.0 [1.0 2.0 3.0 4.0])))
+      (println (mochi_str main_v))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

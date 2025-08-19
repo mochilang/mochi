@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -61,7 +64,7 @@
   (binding [test_image_distance_v1 nil test_image_distance_v2 nil] (do (set! test_image_distance_v1 (image_distance 10.0 40.0)) (when (not (isclose test_image_distance_v1 13.33333333 0.00000001)) (throw (Exception. "image_distance test1 failed"))) (set! test_image_distance_v2 (image_distance 1.5 6.7)) (when (not (isclose test_image_distance_v2 1.932692308 0.00000001)) (throw (Exception. "image_distance test2 failed"))))))
 
 (defn main []
-  (do (test_focal_length) (test_object_distance) (test_image_distance) (println (str (focal_length 10.0 20.0))) (println (str (object_distance 30.0 20.0))) (println (str (image_distance 10.0 40.0)))))
+  (do (test_focal_length) (test_object_distance) (test_image_distance) (println (mochi_str (focal_length 10.0 20.0))) (println (mochi_str (object_distance 30.0 20.0))) (println (mochi_str (image_distance 10.0 40.0)))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

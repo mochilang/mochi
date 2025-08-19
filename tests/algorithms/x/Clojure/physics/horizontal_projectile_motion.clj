@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -52,14 +55,14 @@
 
 (def ^:dynamic total_time_radians nil)
 
-(def ^:dynamic main_PI 3.141592653589793)
+(def ^:dynamic main_PI nil)
 
-(def ^:dynamic main_TWO_PI 6.283185307179586)
+(def ^:dynamic main_TWO_PI nil)
 
-(def ^:dynamic main_g 9.80665)
+(def ^:dynamic main_g nil)
 
 (defn _mod [_mod_x _mod_m]
-  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (/ _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (quot _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sin [sin_x]
   (binding [sin_y nil sin_y2 nil sin_y3 nil sin_y5 nil sin_y7 nil] (try (do (set! sin_y (- (_mod (+ sin_x main_PI) main_TWO_PI) main_PI)) (set! sin_y2 (* sin_y sin_y)) (set! sin_y3 (* sin_y2 sin_y)) (set! sin_y5 (* sin_y3 sin_y2)) (set! sin_y7 (* sin_y5 sin_y2)) (throw (ex-info "return" {:v (- (+ (- sin_y (/ sin_y3 6.0)) (/ sin_y5 120.0)) (/ sin_y7 5040.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -74,7 +77,7 @@
   (binding [pow10_i nil pow10_result nil] (try (do (set! pow10_result 1.0) (set! pow10_i 0) (while (< pow10_i pow10_n) (do (set! pow10_result (* pow10_result 10.0)) (set! pow10_i (+ pow10_i 1)))) (throw (ex-info "return" {:v pow10_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn round [round_x round_n]
-  (binding [round_m nil round_y nil] (try (do (set! round_m (pow10 round_n)) (set! round_y (floor (+ (* round_x round_m) 0.5))) (throw (ex-info "return" {:v (/ round_y round_m)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [round_m nil round_y nil] (try (do (set! round_m (pow10 round_n)) (set! round_y (floor (+ (* round_x round_m) 0.5))) (throw (ex-info "return" {:v (quot round_y round_m)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn check_args [check_args_init_velocity check_args_angle]
   (do (when (or (> check_args_angle 90.0) (< check_args_angle 1.0)) (throw (Exception. "Invalid angle. Range is 1-90 degrees."))) (when (< check_args_init_velocity 0.0) (throw (Exception. "Invalid velocity. Should be a positive number."))) check_args_init_velocity))
@@ -88,14 +91,19 @@
 (defn total_time [total_time_init_velocity total_time_angle]
   (binding [total_time_radians nil] (try (do (check_args total_time_init_velocity total_time_angle) (set! total_time_radians (deg_to_rad total_time_angle)) (throw (ex-info "return" {:v (round (/ (* (* 2.0 total_time_init_velocity) (sin total_time_radians)) main_g) 2)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_v0 25.0)
+(def ^:dynamic main_v0 nil)
 
-(def ^:dynamic main_angle 20.0)
+(def ^:dynamic main_angle nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_PI) (constantly 3.141592653589793))
+      (alter-var-root (var main_TWO_PI) (constantly 6.283185307179586))
+      (alter-var-root (var main_g) (constantly 9.80665))
+      (alter-var-root (var main_v0) (constantly 25.0))
+      (alter-var-root (var main_angle) (constantly 20.0))
       (println (horizontal_distance main_v0 main_angle))
       (println (max_height main_v0 main_angle))
       (println (total_time main_v0 main_angle))

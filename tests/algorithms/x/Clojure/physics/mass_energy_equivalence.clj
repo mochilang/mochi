@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -24,7 +27,7 @@
 
 (declare energy_from_mass mass_from_energy)
 
-(def ^:dynamic main_C 299792458.0)
+(def ^:dynamic main_C nil)
 
 (defn energy_from_mass [energy_from_mass_mass]
   (try (do (when (< energy_from_mass_mass 0.0) (throw (Exception. "Mass can't be negative."))) (throw (ex-info "return" {:v (* (* energy_from_mass_mass main_C) main_C)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -36,12 +39,13 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (energy_from_mass 124.56)))
-      (println (str (energy_from_mass 320.0)))
-      (println (str (energy_from_mass 0.0)))
-      (println (str (mass_from_energy 124.56)))
-      (println (str (mass_from_energy 320.0)))
-      (println (str (mass_from_energy 0.0)))
+      (alter-var-root (var main_C) (constantly 299792458.0))
+      (println (mochi_str (energy_from_mass 124.56)))
+      (println (mochi_str (energy_from_mass 320.0)))
+      (println (mochi_str (energy_from_mass 0.0)))
+      (println (mochi_str (mass_from_energy 124.56)))
+      (println (mochi_str (mass_from_energy 320.0)))
+      (println (mochi_str (mass_from_energy 0.0)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))
