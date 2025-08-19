@@ -86,27 +86,23 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  xs: IntArray;
-  votes: IntArray;
-  x: integer;
-  votes_needed_to_win: integer;
-function index_of(xs: IntArray; x: integer): integer; forward;
-function majority_vote(votes: IntArray; votes_needed_to_win: integer): IntArray; forward;
+function index_of(index_of_xs: IntArray; index_of_x: integer): integer; forward;
+function majority_vote(majority_vote_votes: IntArray; majority_vote_votes_needed_to_win: integer): IntArray; forward;
 procedure main(); forward;
-function index_of(xs: IntArray; x: integer): integer;
+function index_of(index_of_xs: IntArray; index_of_x: integer): integer;
 var
   index_of_i: integer;
 begin
   index_of_i := 0;
-  while index_of_i < Length(xs) do begin
-  if xs[index_of_i] = x then begin
+  while index_of_i < Length(index_of_xs) do begin
+  if index_of_xs[index_of_i] = index_of_x then begin
   exit(index_of_i);
 end;
   index_of_i := index_of_i + 1;
 end;
   exit(0 - 1);
 end;
-function majority_vote(votes: IntArray; votes_needed_to_win: integer): IntArray;
+function majority_vote(majority_vote_votes: IntArray; majority_vote_votes_needed_to_win: integer): IntArray;
 var
   majority_vote_candidates: array of integer;
   majority_vote_counts: array of integer;
@@ -117,21 +113,22 @@ var
   majority_vote_new_candidates: array of integer;
   majority_vote_new_counts: array of integer;
   majority_vote_final_counts: array of integer;
+  majority_vote_j_14: integer;
   majority_vote_result_: array of integer;
 begin
-  if votes_needed_to_win < 2 then begin
+  if majority_vote_votes_needed_to_win < 2 then begin
   exit([]);
 end;
   majority_vote_candidates := [];
   majority_vote_counts := [];
   majority_vote_i := 0;
-  while majority_vote_i < Length(votes) do begin
-  majority_vote_v := votes[majority_vote_i];
+  while majority_vote_i < Length(majority_vote_votes) do begin
+  majority_vote_v := majority_vote_votes[majority_vote_i];
   majority_vote_idx := index_of(majority_vote_candidates, majority_vote_v);
   if majority_vote_idx <> (0 - 1) then begin
   majority_vote_counts[majority_vote_idx] := majority_vote_counts[majority_vote_idx] + 1;
 end else begin
-  if Length(majority_vote_candidates) < (votes_needed_to_win - 1) then begin
+  if Length(majority_vote_candidates) < (majority_vote_votes_needed_to_win - 1) then begin
   majority_vote_candidates := concat(majority_vote_candidates, IntArray([majority_vote_v]));
   majority_vote_counts := concat(majority_vote_counts, IntArray([1]));
 end else begin
@@ -157,14 +154,14 @@ end;
   majority_vote_i := majority_vote_i + 1;
 end;
   majority_vote_final_counts := [];
-  majority_vote_j := 0;
-  while majority_vote_j < Length(majority_vote_candidates) do begin
+  majority_vote_j_14 := 0;
+  while majority_vote_j_14 < Length(majority_vote_candidates) do begin
   majority_vote_final_counts := concat(majority_vote_final_counts, IntArray([0]));
-  majority_vote_j := majority_vote_j + 1;
+  majority_vote_j_14 := majority_vote_j_14 + 1;
 end;
   majority_vote_i := 0;
-  while majority_vote_i < Length(votes) do begin
-  majority_vote_v := votes[majority_vote_i];
+  while majority_vote_i < Length(majority_vote_votes) do begin
+  majority_vote_v := majority_vote_votes[majority_vote_i];
   majority_vote_idx := index_of(majority_vote_candidates, majority_vote_v);
   if majority_vote_idx <> (0 - 1) then begin
   majority_vote_final_counts[majority_vote_idx] := majority_vote_final_counts[majority_vote_idx] + 1;
@@ -172,12 +169,12 @@ end;
   majority_vote_i := majority_vote_i + 1;
 end;
   majority_vote_result_ := [];
-  majority_vote_j := 0;
-  while majority_vote_j < Length(majority_vote_candidates) do begin
-  if (majority_vote_final_counts[majority_vote_j] * votes_needed_to_win) > Length(votes) then begin
-  majority_vote_result_ := concat(majority_vote_result_, IntArray([majority_vote_candidates[majority_vote_j]]));
+  majority_vote_j_14 := 0;
+  while majority_vote_j_14 < Length(majority_vote_candidates) do begin
+  if (majority_vote_final_counts[majority_vote_j_14] * majority_vote_votes_needed_to_win) > Length(majority_vote_votes) then begin
+  majority_vote_result_ := concat(majority_vote_result_, IntArray([majority_vote_candidates[majority_vote_j_14]]));
 end;
-  majority_vote_j := majority_vote_j + 1;
+  majority_vote_j_14 := majority_vote_j_14 + 1;
 end;
   exit(majority_vote_result_);
 end;
@@ -202,4 +199,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
