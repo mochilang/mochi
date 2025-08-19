@@ -3,17 +3,19 @@
 package rkt
 
 import (
-	"bufio"
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"sort"
-	"strings"
-	"time"
+        "bufio"
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io"
+       "math"
+        "os"
+        "os/exec"
+        "path/filepath"
+        "sort"
+       "strconv"
+        "strings"
+        "time"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -1414,7 +1416,7 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	switch b.Op {
+       switch b.Op {
 	case "!=":
 		io.WriteString(w, "(not (equal? ")
 		b.Left.emit(w)
@@ -1439,13 +1441,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, " ")
 		b.Right.emit(w)
 		io.WriteString(w, ")")
-	case "+":
+       case "+":
 		io.WriteString(w, "(let ([__l ")
 		b.Left.emit(w)
 		io.WriteString(w, "] [__r ")
 		b.Right.emit(w)
 		io.WriteString(w, "]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))")
-	case "<", "<=", ">", ">=":
+       case "<", "<=", ">", ">=":
 		io.WriteString(w, "(let ([__l ")
 		b.Left.emit(w)
 		io.WriteString(w, "] [__r ")
@@ -1455,13 +1457,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, " __l __r)] [else (")
 		io.WriteString(w, b.Op)
 		io.WriteString(w, " (int __l) (int __r))]))")
-	case "list-append":
+       case "list-append":
 		io.WriteString(w, "(append (or ")
 		b.Left.emit(w)
 		io.WriteString(w, " '()) (or ")
 		b.Right.emit(w)
 		io.WriteString(w, " '()))")
-	case "fmod":
+       case "fmod":
 		io.WriteString(w, "(- ")
 		b.Left.emit(w)
 		io.WriteString(w, " (* (floor (/ ")
@@ -1471,19 +1473,59 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")) ")
 		b.Right.emit(w)
 		io.WriteString(w, "))")
-	case "idiv":
+       case "idiv":
 		io.WriteString(w, "(floor (/ ")
 		b.Left.emit(w)
 		io.WriteString(w, " ")
 		b.Right.emit(w)
 		io.WriteString(w, "))")
-	default:
-		fmt.Fprintf(w, "(%s ", b.Op)
-		b.Left.emit(w)
-		io.WriteString(w, " ")
-		b.Right.emit(w)
-		io.WriteString(w, ")")
-	}
+       case "*":
+               if val, ok := foldPow10(b.Left, b.Right); ok {
+                       io.WriteString(w, val)
+                       return
+               }
+               if val, ok := foldPow10(b.Right, b.Left); ok {
+                       io.WriteString(w, val)
+                       return
+               }
+               fallthrough
+       default:
+               fmt.Fprintf(w, "(%s ", b.Op)
+               b.Left.emit(w)
+               io.WriteString(w, " ")
+               b.Right.emit(w)
+               io.WriteString(w, ")")
+       }
+}
+
+// foldPow10 returns the computed value of left*pow10(int) if the pattern
+// matches, otherwise it returns false. The result is returned as a string to
+// preserve precision for large numbers.
+func foldPow10(left, right Expr) (string, bool) {
+       var fl *FloatLit
+       switch v := left.(type) {
+       case *FloatLit:
+               fl = v
+       case *IntLit:
+               fl = &FloatLit{Value: float64(v.Value)}
+       default:
+               return "", false
+       }
+       call, ok := right.(*CallExpr)
+       if !ok || call.Func != "pow10" || len(call.Args) != 1 {
+               return "", false
+       }
+       ai, ok := call.Args[0].(*IntLit)
+       if !ok {
+               return "", false
+       }
+       val := fl.Value * math.Pow10(ai.Value)
+       if val > 0 {
+               val = math.Nextafter(val, math.Inf(-1))
+       } else {
+               val = math.Nextafter(val, math.Inf(1))
+       }
+       return strconv.FormatFloat(val, 'g', -1, 64), true
 }
 
 func repoRoot() string {
