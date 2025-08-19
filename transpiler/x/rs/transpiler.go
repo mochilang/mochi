@@ -6962,32 +6962,63 @@ func collectCaptures(body []Stmt, params []Param, locals map[string]bool, name s
 		delete(names, n)
 	}
 	delete(names, name)
-	var out []string
-	for n := range names {
-		orig := n
-		if gn, ok := globalRenames[n]; ok {
-			n = gn
-		}
-		if globalVars[n] {
-			continue
-		}
-		if _, ok := funReturns[n]; ok {
-			// Skip pure function declarations, but allow names
-			// that also have variable type info. Some Mochi
-			// functions are converted to captured closures during
-			// transpilation and retain entries in funReturns. In
-			// such cases, we still need to treat them as captures
-			// so that the generated closure receives the required
-			// environment variables.
-			if varTypes[n] == "" && currentParamTypes[n] == "" {
-				continue
-			}
-		} else if varTypes[n] == "" && currentParamTypes[n] == "" {
-			continue
-		}
-		out = append(out, orig)
-	}
-	sort.Strings(out)
+       var out []string
+       for n := range names {
+               orig := n
+               if gn, ok := globalRenames[n]; ok {
+                       n = gn
+               }
+               if globalVars[n] {
+                       continue
+               }
+               // Always capture names that come from the surrounding local
+               // scope. These represent variables or nested functions defined
+               // earlier in the same block and must be passed explicitly so
+               // that the generated Rust code can access them.
+               if locals != nil && locals[n] {
+                       out = append(out, orig)
+                       continue
+               }
+               if _, ok := funReturns[n]; ok {
+                       // Skip pure function declarations, but allow names
+                       // that also have variable type info. Some Mochi
+                       // functions are converted to captured closures during
+                       // transpilation and retain entries in funReturns. In
+                       // such cases, we still need to treat them as captures
+                       // so that the generated closure receives the required
+                       // environment variables.
+                       if varTypes[n] == "" && currentParamTypes[n] == "" {
+                               continue
+                       }
+               } else if varTypes[n] == "" && currentParamTypes[n] == "" {
+                       continue
+               }
+               out = append(out, orig)
+       }
+       // As a fallback, also scan the surrounding locals and include any that
+       // appear in the body. The structured collectors above may miss some
+       // cases (e.g. calling a closure stored in a local variable), so this
+       // extra pass ensures such variables are captured.
+       if locals != nil {
+               for ln := range locals {
+                       if ln == name {
+                               continue
+                       }
+                       if funcUsesName(body, ln) && !globalVars[ln] {
+                               found := false
+                               for _, existing := range out {
+                                       if existing == ln {
+                                               found = true
+                                               break
+                                       }
+                               }
+                               if !found {
+                                       out = append(out, ln)
+                               }
+                       }
+               }
+       }
+       sort.Strings(out)
 	return out
 }
 

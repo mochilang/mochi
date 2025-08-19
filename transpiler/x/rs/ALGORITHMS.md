@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-17 21:42 GMT+7
+Last updated: 2025-08-19 16:47 GMT+7
 
-## Algorithms Golden Test Checklist (810/1077)
+## Algorithms Golden Test Checklist (809/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -758,13 +758,13 @@ Last updated: 2025-08-17 21:42 GMT+7
 | 749 | other/linear_congruential_generator | ✓ | 42µs | 2.0 MB |
 | 750 | other/lru_cache | ✓ | 144µs | 2.1 MB |
 | 751 | other/magicdiamondpattern | ✓ | 69µs | 2.0 MB |
-| 752 | other/majority_vote_algorithm | ✓ | 50µs | 1.9 MB |
-| 753 | other/maximum_subsequence | ✓ | 29µs | 2.0 MB |
-| 754 | other/nested_brackets | ✓ | 128µs | 2.2 MB |
-| 755 | other/number_container_system | ✓ | 55µs | 1.9 MB |
-| 756 | other/quine | ✓ | 24µs | 2.0 MB |
-| 757 | other/scoring_algorithm | ✓ | 134µs | 2.1 MB |
-| 758 | other/sdes | ✓ | 117µs | 2.2 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 68µs | 2.0 MB |
+| 753 | other/maximum_subsequence | ✓ | 41µs | 2.0 MB |
+| 754 | other/nested_brackets | ✓ | 199µs | 2.1 MB |
+| 755 | other/number_container_system | ✓ | 60µs | 2.0 MB |
+| 756 | other/quine | ✓ | 27µs | 2.0 MB |
+| 757 | other/scoring_algorithm | ✓ | 117µs | 2.0 MB |
+| 758 | other/sdes | error | 117µs | 2.2 MB |
 | 759 | other/tower_of_hanoi | ✓ | 46µs | 2.0 MB |
 | 760 | other/word_search | ✓ | 595µs | 2.0 MB |
 | 761 | physics/altitude_pressure | ✓ | 46µs | 2.0 MB |
