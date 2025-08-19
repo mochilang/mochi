@@ -3146,6 +3146,8 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 	line4 := &BinaryExpr{Op: "+", Left: &BinaryExpr{Op: "+", Left: &StringLit{Value: "  \"name\": \""}, Right: &StringLit{Value: bench.Name}}, Right: &StringLit{Value: "\""}}
 	out = append(out, &WritelnStmt{Expr: line4})
 	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "}"}})
+	// ensure a trailing newline for bench output
+	out = append(out, &WritelnStmt{Expr: &StringLit{Value: ""}})
 	return out, nil
 }
 
