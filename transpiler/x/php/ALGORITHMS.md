@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-17 20:47 GMT+7
+Last updated: 2025-08-19 16:50 GMT+7
 
 ## Algorithms Golden Test Checklist (993/1077)
 | Index | Name | Status | Duration | Memory |
@@ -758,13 +758,13 @@ Last updated: 2025-08-17 20:47 GMT+7
 | 749 | other/linear_congruential_generator | ✓ | 78µs | 38.9 KB |
 | 750 | other/lru_cache | ✓ | 104µs | 75.3 KB |
 | 751 | other/magicdiamondpattern | ✓ | 56µs | 35.6 KB |
-| 752 | other/majority_vote_algorithm | ✓ | 150µs | 36.9 KB |
+| 752 | other/majority_vote_algorithm | ✓ | 214µs | 1.6 MB |
 | 753 | other/maximum_subsequence | ✓ | 115µs | 38.4 KB |
 | 754 | other/nested_brackets | ✓ | 211µs | 38.0 KB |
 | 755 | other/number_container_system | ✓ | 102µs | 36.5 KB |
 | 756 | other/quine | ✓ | 52µs | 35.2 KB |
 | 757 | other/scoring_algorithm | ✓ | 165µs | 39.2 KB |
-| 758 | other/sdes | ✓ | 236µs | 70.7 KB |
+| 758 | other/sdes | ✓ | 179µs | 1.6 MB |
 | 759 | other/tower_of_hanoi | ✓ | 51µs | 35.5 KB |
 | 760 | other/word_search | ✓ | 343µs | 39.0 KB |
 | 761 | physics/altitude_pressure | ✓ | 78µs | 39.3 KB |
@@ -777,21 +777,21 @@ Last updated: 2025-08-17 20:47 GMT+7
 | 768 | physics/doppler_frequency | ✓ | 59µs | 38.6 KB |
 | 769 | physics/escape_velocity | ✓ | 95µs | 35.0 KB |
 | 770 | physics/grahams_law | ✓ | 98µs | 36.7 KB |
-| 771 | physics/horizontal_projectile_motion | ✓ |  |  |
+| 771 | physics/horizontal_projectile_motion | ✓ | 329µs | 1.6 MB |
 | 772 | physics/hubble_parameter | ✓ | 109µs | 38.1 KB |
 | 773 | physics/ideal_gas_law | ✓ | 83µs | 34.9 KB |
 | 774 | physics/in_static_equilibrium | ✓ | 116µs | 36.1 KB |
 | 775 | physics/kinetic_energy | ✓ | 75µs | 35.3 KB |
 | 776 | physics/lens_formulae | ✓ | 116µs | 35.9 KB |
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 198µs | 36.6 KB |
-| 778 | physics/malus_law | ✓ |  |  |
+| 778 | physics/malus_law | ✓ | 65µs | 1.6 MB |
 | 779 | physics/mass_energy_equivalence | ✓ | 63µs | 35.6 KB |
-| 780 | physics/mirror_formulae | ✓ | 39µs | 38.3 KB |
+| 780 | physics/mirror_formulae | ✓ | 299µs | 1.6 MB |
 | 781 | physics/n_body_simulation | ✓ | 177µs | 37.3 KB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 177µs | 36.4 KB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 55µs | 39.5 KB |
 | 784 | physics/orbital_transfer_work | ✓ | 142µs | 40.4 KB |
-| 785 | physics/period_of_pendulum | ✓ |  |  |
+| 785 | physics/period_of_pendulum | ✓ | 74µs | 1.6 MB |
 | 786 | physics/photoelectric_effect | ✓ | 58µs | 35.3 KB |
 | 787 | physics/potential_energy | ✓ | 118µs | 38.7 KB |
 | 788 | physics/rainfall_intensity | ✓ | 68µs | 35.9 KB |
