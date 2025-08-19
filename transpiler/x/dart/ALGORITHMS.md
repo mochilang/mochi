@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-17 14:56 GMT+7
+Last updated: 2025-08-19 16:50 GMT+7
 
 ## Algorithms Golden Test Checklist (997/1077)
 | Index | Name | Status | Duration | Memory |
@@ -758,7 +758,7 @@ Last updated: 2025-08-17 14:56 GMT+7
 | 749 | other/linear_congruential_generator | ✓ | 15.607ms | 9.5 MB |
 | 750 | other/lru_cache | ✓ | 17.676ms | 4.8 MB |
 | 751 | other/magicdiamondpattern | ✓ | 10.014ms | 2.4 MB |
-| 752 | other/majority_vote_algorithm | ✓ | 20.15ms | 2.4 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 26.999ms | 2.3 MB |
 | 753 | other/maximum_subsequence | ✓ | 16.476ms | 9.6 MB |
 | 754 | other/nested_brackets | ✓ | 23.849ms | 10.4 MB |
 | 755 | other/number_container_system | ✓ | 12.101ms | 3.2 MB |

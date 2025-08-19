@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -1461,17 +1462,17 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		}
 		typ := strings.TrimSpace(buf.String())
 
-               // Numeric casts should use toInt()/toDouble() instead of `as`.
-               if typ == "double" || typ == "num" {
-                       if _, err := io.WriteString(w, "("); err != nil {
-                               return err
-                       }
-                       if err := b.Left.emit(w); err != nil {
-                               return err
-                       }
-                       _, err := io.WriteString(w, ").toDouble()")
-                       return err
-               }
+		// Numeric casts should use toInt()/toDouble() instead of `as`.
+		if typ == "double" || typ == "num" {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := b.Left.emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ").toDouble()")
+			return err
+		}
 		if typ == "int" {
 			lt := inferType(b.Left)
 			if lt != "int" && lt != "num" && lt != "double" && lt != "BigInt" {
@@ -2047,6 +2048,9 @@ type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) error {
 	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if f.Value != 0 && (math.Abs(f.Value) >= 1e6 || math.Abs(f.Value) < 1e-6) {
+		s = strconv.FormatFloat(f.Value, 'e', -1, 64)
+	}
 	if !strings.ContainsAny(s, ".eE") {
 		s += ".0"
 	}
@@ -2966,14 +2970,14 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) error {
 	valType := inferType(c.Value)
-       cType := strings.TrimSpace(c.Type)
-       if cType == "double" || cType == "num" {
-               if valType == "double" {
-                       return c.Value.emit(w)
-               }
-               if _, err := io.WriteString(w, "("); err != nil {
-                       return err
-               }
+	cType := strings.TrimSpace(c.Type)
+	if cType == "double" || cType == "num" {
+		if valType == "double" {
+			return c.Value.emit(w)
+		}
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
 		if err := c.Value.emit(w); err != nil {
 			return err
 		}
