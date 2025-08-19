@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -40,7 +41,7 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
@@ -126,23 +127,23 @@ $__start = _now();
   return format_scientific_3($work);
 };
   function test_orbital_transfer_work() {
-  if (orbital_transfer_work(5972000000000000419220214.0, 1000.0, 6371000.0, 7000000.0) != '2.811e+09') {
+  if (orbital_transfer_work(5972000000000000419220214.098459109663963, 1000.0, 6371000.000000000440536, 7000000.0) != '2.811e+09') {
   _panic('case1 failed');
 }
-  if (orbital_transfer_work(5972000000000000419220214.0, 500.0, 7000000.0, 6371000.0) != '-1.405e+09') {
+  if (orbital_transfer_work(5972000000000000419220214.098459109663963, 500.0, 7000000.0, 6371000.000000000440536) != '-1.405e+09') {
   _panic('case2 failed');
 }
-  if (orbital_transfer_work(1989000000000000101252339845814.0, 1000.0, 150000000000.0, 228000000000.0) != '1.514e+11') {
+  if (orbital_transfer_work(1989000000000000101252339845814.27648663520813, 1000.0, 150000000000.0, 227999999999.999980460074767) != '1.514e+11') {
   _panic('case3 failed');
 }
 };
   function main() {
   test_orbital_transfer_work();
-  echo rtrim(orbital_transfer_work(5972000000000000419220214.0, 1000.0, 6371000.0, 7000000.0)), PHP_EOL;
+  echo rtrim(orbital_transfer_work(5972000000000000419220214.098459109663963, 1000.0, 6371000.000000000440536, 7000000.0)), PHP_EOL;
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

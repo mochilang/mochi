@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -40,12 +41,12 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   function apply_table($inp, $table) {
-  global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
+  global $CT, $IP, $IP_inv, $PT, $expansion, $key, $key1, $key2, $left, $message, $p10_table, $p4_table, $p8_table, $right, $s0, $s1, $temp;
   $res = '';
   $i = 0;
   while ($i < count($table)) {
@@ -59,11 +60,11 @@ $__start = _now();
   return $res;
 };
   function left_shift($data) {
-  global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
+  global $CT, $IP, $IP_inv, $PT, $expansion, $key, $key1, $key2, $left, $message, $p10_table, $p4_table, $p8_table, $right, $s0, $s1, $temp;
   return substr($data, 1, strlen($data) - 1) . substr($data, 0, 1);
 };
   function mochi_xor($a, $b) {
-  global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
+  global $CT, $IP, $IP_inv, $PT, $expansion, $key, $key1, $key2, $left, $message, $p10_table, $p4_table, $p8_table, $right, $s0, $s1, $temp;
   $res = '';
   $i = 0;
   while ($i < strlen($a) && $i < strlen($b)) {
@@ -77,7 +78,7 @@ $__start = _now();
   return $res;
 };
   function int_to_binary($n) {
-  global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
+  global $CT, $IP, $IP_inv, $PT, $expansion, $key, $key1, $key2, $left, $message, $p10_table, $p4_table, $p8_table, $right, $s0, $s1, $temp;
   if ($n == 0) {
   return '0';
 }
@@ -90,7 +91,7 @@ $__start = _now();
   return $res;
 };
   function pad_left($s, $width) {
-  global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
+  global $CT, $IP, $IP_inv, $PT, $expansion, $key, $key1, $key2, $left, $message, $p10_table, $p4_table, $p8_table, $right, $s0, $s1, $temp;
   $res = $s;
   while (strlen($res) < $width) {
   $res = '0' . $res;
@@ -98,7 +99,7 @@ $__start = _now();
   return $res;
 };
   function bin_to_int($s) {
-  global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
+  global $CT, $IP, $IP_inv, $PT, $expansion, $key, $key1, $key2, $left, $message, $p10_table, $p4_table, $p8_table, $right, $s0, $s1, $temp;
   $result = 0;
   $i = 0;
   while ($i < strlen($s)) {
@@ -109,7 +110,7 @@ $__start = _now();
   return $result;
 };
   function apply_sbox($s, $data) {
-  global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
+  global $CT, $IP, $IP_inv, $PT, $expansion, $key, $key1, $key2, $left, $message, $p10_table, $p4_table, $p8_table, $right, $s0, $s1, $temp;
   $row_bits = substr($data, 0, 1) . substr($data, strlen($data) - 1, strlen($data) - (strlen($data) - 1));
   $col_bits = substr($data, 1, 3 - 1);
   $row = bin_to_int($row_bits);
@@ -120,7 +121,7 @@ $__start = _now();
 };
   $p4_table = [2, 4, 3, 1];
   function f($expansion, $s0, $s1, $key, $message) {
-  global $p4_table, $p8_table, $p10_table, $IP, $IP_inv, $key1, $key2, $CT, $PT;
+  global $CT, $IP, $IP_inv, $PT, $key1, $key2, $p10_table, $p4_table, $p8_table;
   $left = substr($message, 0, 4);
   $right = substr($message, 4, 8 - 4);
   $temp = apply_table($right, $expansion);
@@ -166,7 +167,7 @@ $__start = _now();
   $PT = apply_table($temp, $IP_inv);
   echo rtrim('Plain text after decypting is: ' . $PT), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

@@ -1,1 +1,5 @@
-Fatal error: Cannot redeclare function cos() in /workspace/mochi/tests/algorithms/x/PHP/physics/malus_law.php on line 46
+{
+  "duration_us": 44,
+  "memory_bytes": 1677576,
+  "name": "main"
+}

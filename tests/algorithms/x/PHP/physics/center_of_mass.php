@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -83,7 +84,7 @@ $__start = _now();
   $r2 = center_of_mass([['x' => 1.0, 'y' => 2.0, 'z' => 3.0, 'mass' => 4.0], ['x' => 5.0, 'y' => 6.0, 'z' => 7.0, 'mass' => 8.0], ['x' => 9.0, 'y' => 10.0, 'z' => 11.0, 'mass' => 12.0]]);
   echo rtrim(coord_to_string($r2)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -45,7 +46,7 @@ $__start = _now();
   echo rtrim(json_encode(max_subsequence_sum([1, 2, 3, 4, -2]), 1344)), PHP_EOL;
   echo rtrim(json_encode(max_subsequence_sum([-2, -3, -1, -4, -6]), 1344)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

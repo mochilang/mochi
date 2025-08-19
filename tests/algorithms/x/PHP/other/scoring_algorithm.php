@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -38,7 +39,7 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function get_data($source_data) {
-  global $vehicles, $weights, $result;
+  global $result, $vehicles, $weights;
   $data_lists = [];
   $i = 0;
   while ($i < count($source_data)) {
@@ -57,7 +58,7 @@ $__start = _now();
   return $data_lists;
 };
   function calculate_each_score($data_lists, $weights) {
-  global $vehicles, $result;
+  global $result, $vehicles;
   $score_lists = [];
   $i = 0;
   while ($i < count($data_lists)) {
@@ -105,7 +106,7 @@ $__start = _now();
   return $score_lists;
 };
   function generate_final_scores($score_lists) {
-  global $vehicles, $weights, $result;
+  global $result, $vehicles, $weights;
   $count = count($score_lists[0]);
   $final_scores = [];
   $i = 0;
@@ -126,7 +127,7 @@ $__start = _now();
   return $final_scores;
 };
   function procentual_proximity($source_data, $weights) {
-  global $vehicles, $result;
+  global $result, $vehicles;
   $data_lists = get_data($source_data);
   $score_lists = calculate_each_score($data_lists, $weights);
   $final_scores = generate_final_scores($score_lists);
@@ -145,7 +146,7 @@ $__start = _now();
   $result = procentual_proximity($vehicles, $weights);
   echo rtrim(_str($result)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -28,12 +29,12 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
   function remove_at($xs, $idx) {
-  global $nm, $im, $cont;
+  global $cont, $im, $nm;
   $res = [];
   $i = 0;
   while ($i < count($xs)) {
@@ -45,7 +46,7 @@ $__start = _now();
   return $res;
 };
   function insert_at($xs, $idx, $val) {
-  global $nm, $im, $cont;
+  global $cont, $im, $nm;
   $res = [];
   $i = 0;
   while ($i < count($xs)) {
@@ -61,7 +62,7 @@ $__start = _now();
   return $res;
 };
   function binary_search_delete($array, $item) {
-  global $nm, $im, $cont;
+  global $cont, $im, $nm;
   $low = 0;
   $high = count($array) - 1;
   $arr = $array;
@@ -82,7 +83,7 @@ $__start = _now();
   return $arr;
 };
   function binary_search_insert($array, $index) {
-  global $nm, $im, $cont;
+  global $cont, $im, $nm;
   $low = 0;
   $high = count($array) - 1;
   $arr = $array;
@@ -103,7 +104,7 @@ $__start = _now();
   return $arr;
 };
   function change($cont, $idx, $num) {
-  global $nm, $im;
+  global $im, $nm;
   $numbermap = $cont['numbermap'];
   $indexmap = $cont['indexmap'];
   if (array_key_exists($idx, $indexmap)) {
@@ -124,7 +125,7 @@ $__start = _now();
   return ['numbermap' => $numbermap, 'indexmap' => $indexmap];
 };
   function find($cont, $num) {
-  global $nm, $im;
+  global $im, $nm;
   $numbermap = $cont['numbermap'];
   if (array_key_exists($num, $numbermap)) {
   $arr = $numbermap[$num];
@@ -144,7 +145,7 @@ $__start = _now();
   echo rtrim(json_encode(find($cont, 10), 1344)), PHP_EOL;
   echo rtrim(json_encode(find($cont, 20), 1344)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

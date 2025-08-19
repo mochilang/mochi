@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -41,7 +42,7 @@ $__start = _now();
   $C = 299792458.0;
   $PI = 3.141592653589793;
   function pow10($n) {
-  global $G, $C, $PI;
+  global $C, $G, $PI;
   $result = 1.0;
   $i = 0;
   while ($i < $n) {
@@ -50,8 +51,8 @@ $__start = _now();
 };
   return $result;
 };
-  function sqrt($x) {
-  global $G, $C, $PI;
+  function mochi_sqrt($x) {
+  global $C, $G, $PI;
   if ($x <= 0.0) {
   return 0.0;
 }
@@ -64,14 +65,14 @@ $__start = _now();
   return $guess;
 };
   function mochi_abs($x) {
-  global $G, $C, $PI;
+  global $C, $G, $PI;
   if ($x < 0.0) {
   return -$x;
 }
   return $x;
 };
   function capture_radii($target_body_radius, $target_body_mass, $projectile_velocity) {
-  global $G, $C, $PI;
+  global $C, $G, $PI;
   if ($target_body_mass < 0.0) {
   _panic('Mass cannot be less than 0');
 }
@@ -83,11 +84,11 @@ $__start = _now();
 }
   $escape_velocity_squared = (2.0 * $G * $target_body_mass) / $target_body_radius;
   $denom = $projectile_velocity * $projectile_velocity;
-  $capture_radius = $target_body_radius * sqrt(1.0 + $escape_velocity_squared / $denom);
+  $capture_radius = $target_body_radius * mochi_sqrt(1.0 + $escape_velocity_squared / $denom);
   return $capture_radius;
 };
   function capture_area($capture_radius) {
-  global $G, $C, $PI;
+  global $C, $G, $PI;
   if ($capture_radius < 0.0) {
   _panic('Cannot have a capture radius less than 0');
 }
@@ -95,26 +96,26 @@ $__start = _now();
   return $sigma;
 };
   function run_tests() {
-  global $G, $C, $PI;
-  $r = capture_radii(6.957 * pow10(8), 1.99 * pow10(30), 25000.0);
-  if (mochi_abs($r - 1.720959069143714 * pow10(10)) > 1.0) {
+  global $C, $G, $PI;
+  $r = capture_radii(695699999.999999985078603, 1989999999999999991118215802998.747676610946655, 25000.0);
+  if (mochi_abs($r - 17209590691.437139930997091) > 1.0) {
   _panic('capture_radii failed');
 }
   $a = capture_area($r);
-  if (mochi_abs($a - 9.304455331801812 * pow10(20)) > 1.0) {
+  if (mochi_abs($a - 930445533180181172383.527155034244061) > 1.0) {
   _panic('capture_area failed');
 }
 };
   function main() {
-  global $G, $C, $PI;
+  global $C, $G, $PI;
   run_tests();
-  $r = capture_radii(6.957 * pow10(8), 1.99 * pow10(30), 25000.0);
+  $r = capture_radii(695699999.999999985078603, 1989999999999999991118215802998.747676610946655, 25000.0);
   echo rtrim(_str($r)), PHP_EOL;
   echo rtrim(_str(capture_area($r))), PHP_EOL;
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
