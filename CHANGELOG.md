@@ -1,5 +1,31 @@
 # 📦 CHANGELOG.md
 
+## [0.10.69] – 2025-08-18T18:36:29+07:00
+
+### Added
+
+* Pascal transpiler supports hyperbolic math functions.
+* C transpiler handles string casts, list equality, and list literal concatenation.
+* Scheme adds SwapBenchMain helper and refreshed algorithm outputs.
+* Rust transpiler tracks closure parameter types and string indexing casts.
+* Erlang and Clojure transpilers expand algorithm outputs (indices 754–804 and 698–747).
+* PHP benchmarks track peak memory usage.
+
+### Changed
+
+* Kotlin updates convolution neural network benchmarks.
+* Java and Go map `exp`/`ln` to native math libraries.
+* Ruby transpiler honors user-defined math functions and optimizes `pow10`.
+* Python refines numeric string conversion.
+* C# trims float literal precision.
+
+### Fixed
+
+* F# transpiler improves int64 assignments.
+* C# transpiler resolves test data path handling.
+* Racket handles late variable declarations.
+* Pascal cleanup removes stale error logs.
+
 ## [0.10.68] – 2025-08-17T08:35:51+00:00
 
 ### Added
