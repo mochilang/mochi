@@ -71,6 +71,8 @@ def _add(a, b)
     a.join + b
   elsif a.is_a?(String) && b.is_a?(Array)
     a + b.join
+  elsif a.is_a?(Array) && b.is_a?(Array)
+    a + b
   elsif a.is_a?(Array) && !b.is_a?(Array)
     a + [b]
   elsif !a.is_a?(Array) && b.is_a?(Array)
@@ -4328,25 +4330,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			// avoids the runtime multiplication and preserves
 			// precision.
 			if op.op == "*" {
-				if fl, ok := left.(*FloatLit); ok {
-					if call, ok2 := right.(*CallExpr); ok2 && call.Func == "pow10" && len(call.Args) == 1 {
-						if il, ok3 := call.Args[0].(*IntLit); ok3 {
-							s := strconv.FormatFloat(fl.Value, 'f', -1, 64) + "e" + strconv.Itoa(il.Value)
-							if v, err := strconv.ParseFloat(s, 64); err == nil {
-								expr = &FloatLit{Value: v}
-							}
-						}
-					}
-				} else if fl, ok := right.(*FloatLit); ok {
-					if call, ok2 := left.(*CallExpr); ok2 && call.Func == "pow10" && len(call.Args) == 1 {
-						if il, ok3 := call.Args[0].(*IntLit); ok3 {
-							s := strconv.FormatFloat(fl.Value, 'f', -1, 64) + "e" + strconv.Itoa(il.Value)
-							if v, err := strconv.ParseFloat(s, 64); err == nil {
-								expr = &FloatLit{Value: v}
-							}
-						}
-					}
-				} else if ilit, ok := left.(*IntLit); ok {
+				if ilit, ok := left.(*IntLit); ok {
 					if call, ok2 := right.(*CallExpr); ok2 && call.Func == "pow10" && len(call.Args) == 1 {
 						if n, ok3 := call.Args[0].(*IntLit); ok3 {
 							s := strconv.Itoa(ilit.Value) + "e" + strconv.Itoa(n.Value)
