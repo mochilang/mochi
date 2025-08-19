@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-17 14:19 GMT+7
+Last updated: 2025-08-19 16:46 GMT+7
 
 ## Algorithms Golden Test Checklist (1049/1077)
 | Index | Name | Status | Duration | Memory |
@@ -758,7 +758,7 @@ Last updated: 2025-08-17 14:19 GMT+7
 | 749 | other/linear_congruential_generator | ✓ | 148µs | 920 B |
 | 750 | other/lru_cache | ✓ | 146µs | 1.3 KB |
 | 751 | other/magicdiamondpattern | ✓ | 36µs | 272 B |
-| 752 | other/majority_vote_algorithm | ✓ | 294µs | 1016 B |
+| 752 | other/majority_vote_algorithm | ✓ | 371µs | 1.0 KB |
 | 753 | other/maximum_subsequence | ✓ | 95µs | 888 B |
 | 754 | other/nested_brackets | ✓ | 330µs | 1.4 KB |
 | 755 | other/number_container_system | ✓ | 83µs | 1.3 KB |

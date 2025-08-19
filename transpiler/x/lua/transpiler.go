@@ -275,9 +275,13 @@ local function _str(v)
     s = string.gsub(s, '%.0+$', '')
     return s
   elseif type(v) == 'table' then
+    local src = v
+    if v.items ~= nil then
+      src = v.items
+    end
     local parts = {}
-    for i = 1, #v do
-      parts[#parts+1] = _str(v[i])
+    for i = 1, #src do
+      parts[#parts+1] = _str(src[i])
     end
     return '[' .. table.concat(parts, ', ') .. ']'
   end
