@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-17 13:57 GMT+7
+Last updated: 2025-08-19 16:42 GMT+7
 
 ## Algorithms Golden Test Checklist (850/1077)
 | Index | Name | Status | Duration | Memory |
@@ -758,7 +758,7 @@ Last updated: 2025-08-17 13:57 GMT+7
 | 749 | other/linear_congruential_generator | ✓ | 4.78ms | 25.0 MB |
 | 750 | other/lru_cache | ✓ | 12.69ms | 25.0 MB |
 | 751 | other/magicdiamondpattern | ✓ | 6.22ms | 12.5 MB |
-| 752 | other/majority_vote_algorithm | ✓ | 8.31ms | 32.7 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 11.71ms | 32.7 MB |
 | 753 | other/maximum_subsequence | ✓ | 6.21ms | 17.3 MB |
 | 754 | other/nested_brackets | ✓ | 6.70ms | 15.4 MB |
 | 755 | other/number_container_system | ✓ | 6.57ms | 25.0 MB |
