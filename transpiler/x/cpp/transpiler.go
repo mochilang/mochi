@@ -712,6 +712,7 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<cmath>")
 	p.addInclude("<optional>")
 	p.addInclude("<vector>")
+	p.addInclude("<cstdint>")
 	p.addInclude("<any>")
 	p.addInclude("<type_traits>")
 	p.addInclude("<limits>")
@@ -909,12 +910,12 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseIndexOf {
-		fmt.Fprintln(w, "static long _index_of(const std::string& s, const std::string& sub) {")
+		fmt.Fprintln(w, "static int64_t _index_of(const std::string& s, const std::string& sub) {")
 		fmt.Fprintln(w, "    auto pos = s.find(sub);")
-		fmt.Fprintln(w, "    return pos == std::string::npos ? -1 : static_cast<long>(pos);")
+		fmt.Fprintln(w, "    return pos == std::string::npos ? -1 : static_cast<int64_t>(pos);")
 		fmt.Fprintln(w, "}")
-		fmt.Fprintln(w, "template<typename T> long _index_of(const std::vector<T>& xs, const T& v) {")
-		fmt.Fprintln(w, "    for(size_t i=0;i<xs.size();++i){ if(xs[i]==v) return i; }")
+		fmt.Fprintln(w, "template<typename T> int64_t _index_of(const std::vector<T>& xs, const T& v) {")
+		fmt.Fprintln(w, "    for(size_t i=0;i<xs.size();++i){ if(xs[i]==v) return static_cast<int64_t>(i); }")
 		fmt.Fprintln(w, "    return -1;")
 		fmt.Fprintln(w, "}")
 	}
@@ -8180,6 +8181,8 @@ func exprType(e Expr) string {
 			return "BigRat"
 		case "_num", "_denom":
 			return "boost::multiprecision::cpp_int"
+		case "_index_of":
+			return "int64_t"
 		case "_repeat":
 			if len(v.Args) > 0 {
 				return exprType(v.Args[0])
