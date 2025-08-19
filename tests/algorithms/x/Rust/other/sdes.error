@@ -1,0 +1,356 @@
+error[E0415]: identifier `key` is bound more than once in this parameter list
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:109:369
+    |
+109 | ...ut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String) -> String {
+    |                                                     ^^^ used as parameter more than once
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:114:36
+    |
+114 |     let mut left_bin_str: String = apply_sbox(s0.clone(), temp.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>()).clone();
+    |                                    ^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:115:37
+    |
+115 |     let mut right_bin_str: String = apply_sbox(s1.clone(), temp.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>()).clon...
+    |                                     ^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0425]: cannot find value `left` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:150
+    |
+122 | ...ing, mut message: String| -> String { f(&mut apply_table, &key, &left, &mut left_bin_str, &mut p4_table, &mut pad_left, &right, &mut r...
+    |                                                                     ^^^^
+    |
+help: the binding `left` is available in a different scope in the same function
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:110:9
+    |
+110 |     let left: String = message.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>().clone();
+    |         ^^^^
+
+error[E0425]: cannot find value `left_bin_str` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:161
+    |
+122 | ...e: String| -> String { f(&mut apply_table, &key, &left, &mut left_bin_str, &mut p4_table, &mut pad_left, &right, &mut right_bin_str, &...
+    |                                                                 ^^^^^^^^^^^^
+    |
+help: the binding `left_bin_str` is available in a different scope in the same function
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:114:13
+    |
+114 |     let mut left_bin_str: String = apply_sbox(s0.clone(), temp.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>()).clone();
+    |             ^^^^^^^^^^^^
+
+error[E0425]: cannot find value `right` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:206
+    |
+122 | ... &key, &left, &mut left_bin_str, &mut p4_table, &mut pad_left, &right, &mut right_bin_str, &mut temp, &mut xor, expansion, s0, s1, key...
+    |                                                                    ^^^^^
+    |
+help: the binding `right` is available in a different scope in the same function
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:111:9
+    |
+111 |     let right: String = message.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>().clone();
+    |         ^^^^^
+
+error[E0425]: cannot find value `right_bin_str` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:218
+    |
+122 | ...ut left_bin_str, &mut p4_table, &mut pad_left, &right, &mut right_bin_str, &mut temp, &mut xor, expansion, s0, s1, key, message) }
+    |                                                                ^^^^^^^^^^^^^
+    |
+help: the binding `right_bin_str` is available in a different scope in the same function
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:115:13
+    |
+115 |     let mut right_bin_str: String = apply_sbox(s1.clone(), temp.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>()).clon...
+    |             ^^^^^^^^^^^^^
+
+error[E0425]: cannot find value `temp` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:238
+    |
+122 | ..., &mut p4_table, &mut pad_left, &right, &mut right_bin_str, &mut temp, &mut xor, expansion, s0, s1, key, message) }
+    |                                                                     ^^^^
+    |
+help: the binding `temp` is available in a different scope in the same function
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:112:13
+    |
+112 |     let mut temp: String = apply_table(right.clone(), expansion.clone()).clone();
+    |             ^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:55:2
+   |
+55 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:43:11
+   |
+43 |     while (i < (table.len() as i64)) {
+   |           ^                        ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+43 -     while (i < (table.len() as i64)) {
+43 +     while i < (table.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:44:28
+   |
+44 |         let mut idx: i64 = (table[i as usize] - 1);
+   |                            ^                     ^
+   |
+help: remove these parentheses
+   |
+44 -         let mut idx: i64 = (table[i as usize] - 1);
+44 +         let mut idx: i64 = table[i as usize] - 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:45:12
+   |
+45 |         if (idx < 0) {
+   |            ^       ^
+   |
+help: remove these parentheses
+   |
+45 -         if (idx < 0) {
+45 +         if idx < 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:46:19
+   |
+46 |             idx = ((inp.len() as i64) - 1);
+   |                   ^                      ^
+   |
+help: remove these parentheses
+   |
+46 -             idx = ((inp.len() as i64) - 1);
+46 +             idx = (inp.len() as i64) - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:49:13
+   |
+49 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+49 -         i = (i + 1);
+49 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:59:11
+   |
+59 |     while ((i < (a.len() as i64)) && (i < (b.len() as i64))) {
+   |           ^                                                ^
+   |
+help: remove these parentheses
+   |
+59 -     while ((i < (a.len() as i64)) && (i < (b.len() as i64))) {
+59 +     while (i < (a.len() as i64)) && (i < (b.len() as i64)) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:60:12
+   |
+60 | ...if (a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()) {
+   |       ^                                                                                                                                                                            ^
+   |
+help: remove these parentheses
+   |
+60 -         if (a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()) {
+60 +         if a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:65:13
+   |
+65 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+65 -         i = (i + 1);
+65 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:70:8
+   |
+70 |     if (n == 0) {
+   |        ^      ^
+   |
+help: remove these parentheses
+   |
+70 -     if (n == 0) {
+70 +     if n == 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:75:11
+   |
+75 |     while (num > 0) {
+   |           ^       ^
+   |
+help: remove these parentheses
+   |
+75 -     while (num > 0) {
+75 +     while num > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:77:15
+   |
+77 |         num = (num / 2);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+77 -         num = (num / 2);
+77 +         num = num / 2;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:83:11
+   |
+83 |     while ((res.len() as i64) < width) {
+   |           ^                          ^
+   |
+help: remove these parentheses
+   |
+83 -     while ((res.len() as i64) < width) {
+83 +     while (res.len() as i64) < width {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:91:11
+   |
+91 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+91 -     while (i < (s.len() as i64)) {
+91 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:93:18
+   |
+93 |         result = ((result * 2) + digit);
+   |                  ^                    ^
+   |
+help: remove these parentheses
+   |
+93 -         result = ((result * 2) + digit);
+93 +         result = (result * 2) + digit;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:94:13
+   |
+94 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+94 -         i = (i + 1);
+94 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:157:28
+    |
+157 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+157 -     let duration_us: i64 = ((_end - _start) / 1000);
+157 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:113:15
+    |
+113 |     (*temp) = xor(temp.clone(), key.clone());
+    |     -------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `str`, found `String`
+    |     |
+    |     expected due to the type of this binding
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:113:5
+    |
+113 |     (*temp) = xor(temp.clone(), key.clone());
+    |     ^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+    = note: the left-hand-side of an assignment must have a statically known size
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:118:15
+    |
+118 |     (*temp) = apply_table(format!("{}{}", left_bin_str, right_bin_str), p4_table.clone());
+    |     -------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `str`, found `String`
+    |     |
+    |     expected due to the type of this binding
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:118:5
+    |
+118 |     (*temp) = apply_table(format!("{}{}", left_bin_str, right_bin_str), p4_table.clone());
+    |     ^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+    = note: the left-hand-side of an assignment must have a statically known size
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:119:15
+    |
+119 |     (*temp) = xor(left.clone(), temp.clone());
+    |     -------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `str`, found `String`
+    |     |
+    |     expected due to the type of this binding
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:119:5
+    |
+119 |     (*temp) = xor(left.clone(), temp.clone());
+    |     ^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+    = note: the left-hand-side of an assignment must have a statically known size
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:53:19
+   |
+53 |     fn left_shift(mut data: String) -> String {
+   |                   ----^^^^
+   |                   |
+   |                   help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 14 previous errors; 19 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0415, E0425, E0434.
+For more information about an error, try `rustc --explain E0277`.
