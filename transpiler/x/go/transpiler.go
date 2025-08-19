@@ -1427,12 +1427,13 @@ func foldPow10(left, right Expr) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	val := fl.Value * math.Pow10(ai.Value)
-	if val > 0 {
-		val = math.Nextafter(val, math.Inf(-1))
-	} else {
-		val = math.Nextafter(val, math.Inf(1))
-	}
+        val := fl.Value * math.Pow10(ai.Value)
+        // Adjust slightly toward zero to avoid rounding up when emitting
+        if val > 0 {
+                val = math.Nextafter(val, math.Inf(-1))
+        } else {
+                val = math.Nextafter(val, math.Inf(1))
+        }
 	return strconv.FormatFloat(val, 'g', -1, 64), true
 }
 
