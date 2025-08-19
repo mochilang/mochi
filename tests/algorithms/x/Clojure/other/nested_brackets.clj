@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -36,7 +39,7 @@
 
 (def ^:dynamic slice_without_last_res nil)
 
-(def ^:dynamic main_OPEN_TO_CLOSED {"(" ")" "[" "]" "{" "}"})
+(def ^:dynamic main_OPEN_TO_CLOSED nil)
 
 (defn slice_without_last [slice_without_last_xs]
   (binding [slice_without_last_i nil slice_without_last_res nil] (try (do (set! slice_without_last_res []) (set! slice_without_last_i 0) (while (< slice_without_last_i (- (count slice_without_last_xs) 1)) (do (set! slice_without_last_res (conj slice_without_last_res (nth slice_without_last_xs slice_without_last_i))) (set! slice_without_last_i (+ slice_without_last_i 1)))) (throw (ex-info "return" {:v slice_without_last_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -51,6 +54,7 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_OPEN_TO_CLOSED) (constantly {"(" ")" "[" "]" "{" "}"}))
       (main)
       (System/gc)
       (let [end (System/nanoTime)

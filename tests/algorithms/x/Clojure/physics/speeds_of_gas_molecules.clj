@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -36,12 +39,12 @@
 
 (def ^:dynamic sqrt_i nil)
 
-(def ^:dynamic main_PI 3.141592653589793)
+(def ^:dynamic main_PI nil)
 
-(def ^:dynamic main_R 8.31446261815324)
+(def ^:dynamic main_R nil)
 
 (defn sqrt [sqrt_x]
-  (binding [sqrt_guess nil sqrt_i nil] (try (do (when (<= sqrt_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_guess sqrt_x) (set! sqrt_i 0) (while (< sqrt_i 20) (do (set! sqrt_guess (/ (+ sqrt_guess (/ sqrt_x sqrt_guess)) 2.0)) (set! sqrt_i (+ sqrt_i 1)))) (throw (ex-info "return" {:v sqrt_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrt_guess nil sqrt_i nil] (try (do (when (<= sqrt_x 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_guess sqrt_x) (set! sqrt_i 0) (while (< sqrt_i 20) (do (set! sqrt_guess (/ (+ sqrt_guess (quot sqrt_x sqrt_guess)) 2.0)) (set! sqrt_i (+ sqrt_i 1)))) (throw (ex-info "return" {:v sqrt_guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn avg_speed_of_molecule [avg_speed_of_molecule_temperature avg_speed_of_molecule_molar_mass]
   (binding [avg_speed_of_molecule_expr nil avg_speed_of_molecule_s nil] (try (do (when (< avg_speed_of_molecule_temperature 0.0) (throw (Exception. "Absolute temperature cannot be less than 0 K"))) (when (<= avg_speed_of_molecule_molar_mass 0.0) (throw (Exception. "Molar mass should be greater than 0 kg/mol"))) (set! avg_speed_of_molecule_expr (/ (* (* 8.0 main_R) avg_speed_of_molecule_temperature) (* main_PI avg_speed_of_molecule_molar_mass))) (set! avg_speed_of_molecule_s (sqrt avg_speed_of_molecule_expr)) (throw (ex-info "return" {:v avg_speed_of_molecule_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -53,10 +56,12 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (avg_speed_of_molecule 273.0 0.028)))
-      (println (str (avg_speed_of_molecule 300.0 0.032)))
-      (println (str (mps_speed_of_molecule 273.0 0.028)))
-      (println (str (mps_speed_of_molecule 300.0 0.032)))
+      (alter-var-root (var main_PI) (constantly 3.141592653589793))
+      (alter-var-root (var main_R) (constantly 8.31446261815324))
+      (println (mochi_str (avg_speed_of_molecule 273.0 0.028)))
+      (println (mochi_str (avg_speed_of_molecule 300.0 0.032)))
+      (println (mochi_str (mps_speed_of_molecule 273.0 0.028)))
+      (println (mochi_str (mps_speed_of_molecule 300.0 0.032)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

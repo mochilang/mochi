@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -26,7 +29,7 @@
 
 (def ^:dynamic archimedes_principle_default_res nil)
 
-(def ^:dynamic main_G 9.80665)
+(def ^:dynamic main_G nil)
 
 (defn archimedes_principle [archimedes_principle_fluid_density archimedes_principle_volume archimedes_principle_gravity]
   (try (do (when (<= archimedes_principle_fluid_density 0.0) (throw (Exception. "Impossible fluid density"))) (when (<= archimedes_principle_volume 0.0) (throw (Exception. "Impossible object volume"))) (when (< archimedes_principle_gravity 0.0) (throw (Exception. "Impossible gravity"))) (throw (ex-info "return" {:v (* (* archimedes_principle_fluid_density archimedes_principle_volume) archimedes_principle_gravity)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -38,7 +41,7 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-
+      (alter-var-root (var main_G) (constantly 9.80665))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

@@ -17,6 +17,9 @@
 (defn toi [s]
   (Integer/parseInt (str s)))
 
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
 
@@ -46,7 +49,7 @@
   (binding [pow10_k nil pow10_m nil pow10_p nil] (try (do (set! pow10_p 1.0) (set! pow10_k 0) (if (>= pow10_n 0) (while (< pow10_k pow10_n) (do (set! pow10_p (* pow10_p 10.0)) (set! pow10_k (+ pow10_k 1)))) (do (set! pow10_m (- pow10_n)) (while (< pow10_k pow10_m) (do (set! pow10_p (/ pow10_p 10.0)) (set! pow10_k (+ pow10_k 1)))))) (throw (ex-info "return" {:v pow10_p}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn sqrt_newton [sqrt_newton_n]
-  (binding [sqrt_newton_j nil sqrt_newton_x nil] (try (do (when (= sqrt_newton_n 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_newton_x sqrt_newton_n) (set! sqrt_newton_j 0) (while (< sqrt_newton_j 20) (do (set! sqrt_newton_x (/ (+ sqrt_newton_x (/ sqrt_newton_n sqrt_newton_x)) 2.0)) (set! sqrt_newton_j (+ sqrt_newton_j 1)))) (throw (ex-info "return" {:v sqrt_newton_x}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [sqrt_newton_j nil sqrt_newton_x nil] (try (do (when (= sqrt_newton_n 0.0) (throw (ex-info "return" {:v 0.0}))) (set! sqrt_newton_x sqrt_newton_n) (set! sqrt_newton_j 0) (while (< sqrt_newton_j 20) (do (set! sqrt_newton_x (/ (+ sqrt_newton_x (quot sqrt_newton_n sqrt_newton_x)) 2.0)) (set! sqrt_newton_j (+ sqrt_newton_j 1)))) (throw (ex-info "return" {:v sqrt_newton_x}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn round3 [round3_x]
   (binding [round3_y nil round3_yi nil] (try (do (set! round3_y (+ (* round3_x 1000.0) 0.5)) (set! round3_yi (long round3_y)) (when (> (double round3_yi) round3_y) (set! round3_yi (- round3_yi 1))) (throw (ex-info "return" {:v (/ (double round3_yi) 1000.0)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

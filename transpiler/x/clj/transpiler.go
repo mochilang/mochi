@@ -1733,6 +1733,18 @@ func binPrec(op string) int {
 func applyBinOp(op string, left, right Node) Node {
 	sym := binOp[op]
 	switch sym {
+	case "-":
+		if il, ok := left.(IntLit); ok && il == 0 {
+			switch r := right.(type) {
+			case IntLit:
+				return IntLit(-r)
+			case FloatLit:
+				return FloatLit(-r)
+			default:
+				return &List{Elems: []Node{Symbol("-"), right}}
+			}
+		}
+		return &List{Elems: []Node{Symbol("-"), left, right}}
 	case "+":
 		if isVectorNode(left) || isVectorNode(right) {
 			cat := &List{Elems: []Node{Symbol("concat"), left, right}}

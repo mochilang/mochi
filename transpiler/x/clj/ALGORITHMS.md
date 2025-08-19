@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-17 20:36 GMT+7
+Last updated: 2025-08-19 16:49 GMT+7
 
-## Algorithms Golden Test Checklist (781/1077)
+## Algorithms Golden Test Checklist (782/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -758,56 +758,56 @@ Last updated: 2025-08-17 20:36 GMT+7
 | 749 | other/linear_congruential_generator | ✓ | 40.463ms | 19.90MB |
 | 750 | other/lru_cache | ✓ | 35.158ms | 23.75MB |
 | 751 | other/magicdiamondpattern | ✓ | 31.847ms | 20.70MB |
-| 752 | other/majority_vote_algorithm | ✓ | 44.111ms | 21.49MB |
-| 753 | other/maximum_subsequence | ✓ | 37.291ms | 20.10MB |
-| 754 | other/nested_brackets | ✓ | 35.274ms | 20.27MB |
-| 755 | other/number_container_system | ✓ | 40.989ms | 22.72MB |
-| 756 | other/quine | ✓ | 29.938ms | 18.47MB |
-| 757 | other/scoring_algorithm | ✓ | 56.711ms | 22.94MB |
+| 752 | other/majority_vote_algorithm | ✓ | 52.199ms | 22.24MB |
+| 753 | other/maximum_subsequence | ✓ | 35.003ms | 20.42MB |
+| 754 | other/nested_brackets | ✓ | 49.052ms | 21.30MB |
+| 755 | other/number_container_system | ✓ | 36.546ms | 23.28MB |
+| 756 | other/quine | ✓ | 33.083ms | 19.26MB |
+| 757 | other/scoring_algorithm | ✓ | 51.137ms | 23.85MB |
 | 758 | other/sdes |   |  |  |
-| 759 | other/tower_of_hanoi | ✓ | 49.908ms | 19.30MB |
-| 760 | other/word_search | ✓ | 63.711ms | 25.01MB |
-| 761 | physics/altitude_pressure | ✓ | 51.581ms | 21.27MB |
-| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 60.951ms | 19.23MB |
+| 759 | other/tower_of_hanoi | ✓ | 41.991ms | 19.84MB |
+| 760 | other/word_search | ✓ | 63.879ms | 25.85MB |
+| 761 | physics/altitude_pressure | ✓ | 35.52ms | 21.79MB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 41.009ms | 19.90MB |
 | 763 | physics/basic_orbital_capture | error |  |  |
-| 764 | physics/casimir_effect | ✓ | 47.483ms | 21.06MB |
-| 765 | physics/center_of_mass | ✓ | 34.849ms | 21.07MB |
-| 766 | physics/centripetal_force | ✓ | 44.778ms | 21.01MB |
-| 767 | physics/coulombs_law | ✓ | 43.547ms | 20.30MB |
-| 768 | physics/doppler_frequency | ✓ | 51.127ms | 20.42MB |
-| 769 | physics/escape_velocity | ✓ | 41.537ms | 21.41MB |
+| 764 | physics/casimir_effect | ✓ | 41.182ms | 22.13MB |
+| 765 | physics/center_of_mass | ✓ | 38.971ms | 21.55MB |
+| 766 | physics/centripetal_force | ✓ | 33.724ms | 21.16MB |
+| 767 | physics/coulombs_law | ✓ | 38.288ms | 20.74MB |
+| 768 | physics/doppler_frequency | error | 51.127ms | 20.42MB |
+| 769 | physics/escape_velocity | ✓ | 43.555ms | 21.85MB |
 | 770 | physics/grahams_law | error |  |  |
 | 771 | physics/horizontal_projectile_motion | error |  |  |
-| 772 | physics/hubble_parameter | ✓ | 36.977ms | 21.15MB |
-| 773 | physics/ideal_gas_law | ✓ | 38.322ms | 21.08MB |
+| 772 | physics/hubble_parameter | ✓ | 40.268ms | 21.81MB |
+| 773 | physics/ideal_gas_law | ✓ | 40.596ms | 21.21MB |
 | 774 | physics/in_static_equilibrium | error |  |  |
-| 775 | physics/kinetic_energy | ✓ | 30.958ms | 19.55MB |
-| 776 | physics/lens_formulae | ✓ | 40.352ms | 20.04MB |
-| 777 | physics/lorentz_transformation_four_vector | ✓ | 51.057ms | 22.38MB |
-| 778 | physics/malus_law | error |  |  |
-| 779 | physics/mass_energy_equivalence | ✓ | 32.967ms | 19.67MB |
-| 780 | physics/mirror_formulae | ✓ | 39.621ms | 21.58MB |
-| 781 | physics/n_body_simulation | ✓ | 41.661ms | 25.36MB |
-| 782 | physics/newtons_law_of_gravitation | ✓ | 33.721ms | 21.28MB |
-| 783 | physics/newtons_second_law_of_motion | ✓ | 32.036ms | 19.36MB |
-| 784 | physics/orbital_transfer_work | error |  |  |
-| 785 | physics/period_of_pendulum | ✓ | 36.805ms | 19.91MB |
-| 786 | physics/photoelectric_effect | ✓ | 31.647ms | 20.10MB |
-| 787 | physics/potential_energy | ✓ | 28.637ms | 19.42MB |
-| 788 | physics/rainfall_intensity | ✓ | 31.338ms | 22.10MB |
-| 789 | physics/reynolds_number | ✓ | 31.353ms | 19.61MB |
-| 790 | physics/rms_speed_of_molecule | ✓ | 33.253ms | 19.79MB |
-| 791 | physics/shear_stress | ✓ | 31.115ms | 19.77MB |
-| 792 | physics/speed_of_sound | ✓ | 32.5ms | 19.75MB |
-| 793 | physics/speeds_of_gas_molecules | ✓ | 33.542ms | 20.48MB |
-| 794 | physics/terminal_velocity | ✓ | 45.252ms | 20.40MB |
-| 795 | project_euler/problem_001/sol1 | ✓ | 39ms | 19.50MB |
-| 796 | project_euler/problem_001/sol2 | ✓ | 32.672ms | 19.73MB |
-| 797 | project_euler/problem_001/sol3 | ✓ | 35.894ms | 19.77MB |
-| 798 | project_euler/problem_001/sol4 | ✓ | 183.004ms | 20.73MB |
-| 799 | project_euler/problem_001/sol5 | ✓ | 38.454ms | 19.36MB |
-| 800 | project_euler/problem_001/sol6 | ✓ | 34.96ms | 19.67MB |
-| 801 | project_euler/problem_001/sol7 | ✓ | 37.729ms | 19.35MB |
+| 775 | physics/kinetic_energy | ✓ | 35.189ms | 20.18MB |
+| 776 | physics/lens_formulae | ✓ | 31.787ms | 20.65MB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 51.702ms | 23.31MB |
+| 778 | physics/malus_law | ✓ | 32.303ms | 21.75MB |
+| 779 | physics/mass_energy_equivalence | ✓ | 34.311ms | 20.11MB |
+| 780 | physics/mirror_formulae | ✓ | 34.688ms | 22.11MB |
+| 781 | physics/n_body_simulation | ✓ | 42.19ms | 25.72MB |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 31.563ms | 21.83MB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 41.223ms | 19.80MB |
+| 784 | physics/orbital_transfer_work | ✓ | 34.893ms | 23.17MB |
+| 785 | physics/period_of_pendulum | ✓ | 39.164ms | 20.61MB |
+| 786 | physics/photoelectric_effect | ✓ | 38.683ms | 20.63MB |
+| 787 | physics/potential_energy | ✓ | 45.078ms | 19.91MB |
+| 788 | physics/rainfall_intensity | ✓ | 55.859ms | 22.67MB |
+| 789 | physics/reynolds_number | ✓ | 39.465ms | 20.10MB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 32.76ms | 20.34MB |
+| 791 | physics/shear_stress | ✓ | 31.181ms | 20.65MB |
+| 792 | physics/speed_of_sound | ✓ | 31.112ms | 20.12MB |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 34.368ms | 21.25MB |
+| 794 | physics/terminal_velocity | ✓ | 36.174ms | 20.96MB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 36.088ms | 20.10MB |
+| 796 | project_euler/problem_001/sol2 | ✓ | 43.979ms | 20.62MB |
+| 797 | project_euler/problem_001/sol3 | ✓ | 33.116ms | 20.58MB |
+| 798 | project_euler/problem_001/sol4 | ✓ | 183.095ms | 21.71MB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 37.383ms | 19.86MB |
+| 800 | project_euler/problem_001/sol6 | ✓ | 34.362ms | 20.15MB |
+| 801 | project_euler/problem_001/sol7 | ✓ | 37.615ms | 19.82MB |
 | 802 | project_euler/problem_002/sol1 | ✓ | 28.469ms | 19.23MB |
 | 803 | project_euler/problem_002/sol2 | ✓ | 33.468ms | 19.33MB |
 | 804 | project_euler/problem_002/sol3 | ✓ | 37.929ms | 19.33MB |
