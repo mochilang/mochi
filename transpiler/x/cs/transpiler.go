@@ -775,6 +775,32 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "-" {
+		if l, ok := b.Left.(*IntLit); ok && l.Value == 0 {
+			switch b.Right.(type) {
+			case *BinaryExpr, *BoolOpExpr:
+				fmt.Fprint(w, "-(")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+			default:
+				fmt.Fprint(w, "-")
+				b.Right.emit(w)
+			}
+			return
+		}
+		if l, ok := b.Left.(*FloatLit); ok && l.Value == 0 {
+			switch b.Right.(type) {
+			case *BinaryExpr, *BoolOpExpr:
+				fmt.Fprint(w, "-(")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+			default:
+				fmt.Fprint(w, "-")
+				b.Right.emit(w)
+			}
+			return
+		}
+	}
 	switch b.Op {
 	case "union":
 		fmt.Fprint(w, "(")
