@@ -180,6 +180,19 @@ func isSimpleLiteral(e Expr) bool {
 	}
 }
 
+func isZeroExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return v.Value == 0
+	case *LongLit:
+		return v.Value == 0
+	case *FloatLit:
+		return v.Value == 0
+	default:
+		return false
+	}
+}
+
 func currentEnv() *types.Env {
 	if topEnv == nil {
 		return nil
@@ -2493,6 +2506,10 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "-" && isZeroExpr(b.Left) {
+		(&UnaryExpr{Op: "-", Value: b.Right}).emit(w)
+		return
+	}
 	if b.Op == "+" {
 		lt := inferType(b.Left)
 		rt := inferType(b.Right)
