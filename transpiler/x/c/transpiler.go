@@ -51,6 +51,7 @@ var (
 	needStrListDouble       bool
 	needStrListListDouble   bool
 	needStrMapIL            bool
+	needStrMapSD            bool
 	needJSONListListInt     bool
 	needJSONMapSD           bool
 	needUpper               bool
@@ -3938,6 +3939,23 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			}
 			return
 		}
+		if t == "MapSD" {
+			needStrMapSD = true
+			needStrFloat = true
+			needStrConcat = true
+			if _, ok := arg.(*CallExpr); ok {
+				tmp := fmt.Sprintf("__tmp%d", tempCounter)
+				tempCounter++
+				io.WriteString(w, "({MapSD "+tmp+" = ")
+				arg.emitExpr(w)
+				io.WriteString(w, "; char *__res = str_map_sd("+tmp+"); __res;})")
+			} else {
+				io.WriteString(w, "str_map_sd(")
+				arg.emitExpr(w)
+				io.WriteString(w, ")")
+			}
+			return
+		}
 		if t == "bigint" {
 			needStrBigInt = true
 			io.WriteString(w, "str_bigint(")
@@ -5119,8 +5137,24 @@ func (p *Program) Emit() []byte {
 	if needMapGetII || needMapSetII {
 		buf.WriteString("typedef struct { int *keys; int *vals; size_t len; size_t cap; } MapII;\n\n")
 	}
-	if needMapGetSD || needMapSetSD || needJSONMapSD {
+	if needMapGetSD || needMapSetSD || needJSONMapSD || needStrMapSD {
 		buf.WriteString("typedef struct { const char **keys; double *vals; size_t len; size_t cap; } MapSD;\n\n")
+	}
+	if needStrMapSD {
+		buf.WriteString("static char* str_map_sd(MapSD m) {\n")
+		buf.WriteString("    char *res = strdup(\"map[\");\n")
+		buf.WriteString("    for (size_t i = 0; i < m.len; i++) {\n")
+		buf.WriteString("        char *k = strdup(m.keys[i]);\n")
+		buf.WriteString("        char *v = str_float(m.vals[i]);\n")
+		buf.WriteString("        char *kv = str_concat(k, \":\");\n")
+		buf.WriteString("        kv = str_concat(kv, v);\n")
+		buf.WriteString("        res = str_concat(res, kv);\n")
+		buf.WriteString("        if (i + 1 < m.len) res = str_concat(res, \" \");\n")
+		buf.WriteString("        free(k); free(v); free(kv);\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    res = str_concat(res, \"]\");\n")
+		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
 	}
 	if needMapGetSMI || needMapSetSMI {
 		buf.WriteString("typedef struct { const char **keys; MapSI *vals; size_t len; size_t cap; } MapSMI;\n\n")
@@ -5979,6 +6013,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needStrListDouble = false
 	needStrListListDouble = false
 	needStrMapIL = false
+	needStrMapSD = false
 	needJSONListListInt = false
 	needJSONMapSD = false
 	needUpper = false
@@ -11577,7 +11612,9 @@ func aliasName(name string) string {
 	case "char", "double", "float", "int", "long", "short", "signed", "unsigned", "void", "enum", "struct", "union", "goto", "sizeof", "typedef",
 		// y0 and y1 are Bessel function names from <math.h>; guard
 		// against redeclaration by reserving y0-y9.
-		"y0", "y1", "y2", "y3", "y4", "y5", "y6", "y7", "y8", "y9":
+		"y0", "y1", "y2", "y3", "y4", "y5", "y6", "y7", "y8", "y9",
+		// avoid conflicts with runtime functions such as count
+		"count":
 		a := name + "_"
 		varAliases[name] = a
 		return a
@@ -11623,8 +11660,13 @@ func isMapVar(name string) bool {
 }
 
 func mapField(name, field string) string {
-	if t, ok := varTypes[name]; ok && strings.HasSuffix(t, "*") {
-		return name + "->" + field
+	if t, ok := varTypes[name]; ok {
+		if strings.Contains(t, "[]") {
+			return name + "_" + field
+		}
+		if strings.HasSuffix(t, "*") {
+			return name + "->" + field
+		}
 	}
 	return name + "." + field
 }

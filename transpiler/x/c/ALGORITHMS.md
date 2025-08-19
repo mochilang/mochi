@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (635/1077) - Last updated 2025-08-17 20:26 +0700:
+Checklist of programs that currently transpile and run (658/1077) - Last updated 2025-08-19 09:22 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -756,56 +756,56 @@ Checklist of programs that currently transpile and run (635/1077) - Last updated
 | 749 | other/linear_congruential_generator |  |  |  |
 | 750 | other/lru_cache | ✓ | 323us | 1.6 MB |
 | 751 | other/magicdiamondpattern | ✓ | 125us | 1.4 MB |
-| 752 | other/majority_vote_algorithm | ✓ | 252us | 1.6 MB |
-| 753 | other/maximum_subsequence | ✓ | 206us | 1.6 MB |
-| 754 | other/nested_brackets | ✓ | 391us | 1.6 MB |
-| 755 | other/number_container_system |  |  |  |
-| 756 | other/quine |  |  |  |
-| 757 | other/scoring_algorithm |  |  |  |
+| 752 | other/majority_vote_algorithm | ✓ | 574us | 1.5 MB |
+| 753 | other/maximum_subsequence | ✓ | 401us | 1.4 MB |
+| 754 | other/nested_brackets | ✓ | 499us | 1.5 MB |
+| 755 | other/number_container_system | ✓ | 381us | 1.4 MB |
+| 756 | other/quine | ✓ | 341us | 1.6 MB |
+| 757 | other/scoring_algorithm | ✓ | 500us | 1.6 MB |
 | 758 | other/sdes |  |  |  |
-| 759 | other/tower_of_hanoi |  |  |  |
-| 760 | other/word_search |  |  |  |
-| 761 | physics/altitude_pressure |  |  |  |
-| 762 | physics/archimedes_principle_of_buoyant_force |  |  |  |
+| 759 | other/tower_of_hanoi | ✓ | 624us | 1.4 MB |
+| 760 | other/word_search | ✓ | 426us | 1.8 MB |
+| 761 | physics/altitude_pressure | ✓ | 1.11ms | 2.1 MB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 1us | 1.4 MB |
 | 763 | physics/basic_orbital_capture |  |  |  |
-| 764 | physics/casimir_effect |  |  |  |
-| 765 | physics/center_of_mass |  |  |  |
-| 766 | physics/centripetal_force |  |  |  |
-| 767 | physics/coulombs_law |  |  |  |
-| 768 | physics/doppler_frequency |  |  |  |
-| 769 | physics/escape_velocity |  |  |  |
-| 770 | physics/grahams_law |  |  |  |
-| 771 | physics/horizontal_projectile_motion |  |  |  |
-| 772 | physics/hubble_parameter |  |  |  |
-| 773 | physics/ideal_gas_law |  |  |  |
-| 774 | physics/in_static_equilibrium |  |  |  |
-| 775 | physics/kinetic_energy |  |  |  |
-| 776 | physics/lens_formulae |  |  |  |
-| 777 | physics/lorentz_transformation_four_vector |  |  |  |
-| 778 | physics/malus_law |  |  |  |
-| 779 | physics/mass_energy_equivalence |  |  |  |
-| 780 | physics/mirror_formulae | ✓ | 410us | 1.7 MB |
-| 781 | physics/n_body_simulation | ✓ | 272us | 1.6 MB |
-| 782 | physics/newtons_law_of_gravitation | ✓ | 349us | 1.6 MB |
-| 783 | physics/newtons_second_law_of_motion | ✓ | 373us | 1.6 MB |
-| 784 | physics/orbital_transfer_work | ✓ | 257us | 1.4 MB |
-| 785 | physics/period_of_pendulum | ✓ | 376us | 1.6 MB |
-| 786 | physics/photoelectric_effect | ✓ | 360us | 1.5 MB |
-| 787 | physics/potential_energy | ✓ | 403us | 1.5 MB |
-| 788 | physics/rainfall_intensity | ✓ | 293us | 1.6 MB |
-| 789 | physics/reynolds_number | ✓ | 436us | 1.6 MB |
-| 790 | physics/rms_speed_of_molecule | ✓ | 319us | 1.6 MB |
-| 791 | physics/shear_stress | ✓ | 422us | 1.6 MB |
-| 792 | physics/speed_of_sound | ✓ | 414us | 1.5 MB |
-| 793 | physics/speeds_of_gas_molecules | ✓ | 385us | 1.5 MB |
-| 794 | physics/terminal_velocity | ✓ | 482us | 1.6 MB |
-| 795 | project_euler/problem_001/sol1 | ✓ | 294us | 1.4 MB |
-| 796 | project_euler/problem_001/sol2 | ✓ | 577us | 1.5 MB |
-| 797 | project_euler/problem_001/sol3 | ✓ | 250us | 1.6 MB |
-| 798 | project_euler/problem_001/sol4 | ✓ | 1.10ms | 1.5 MB |
-| 799 | project_euler/problem_001/sol5 | ✓ | 286us | 1.5 MB |
-| 800 | project_euler/problem_001/sol6 | ✓ | 371us | 1.4 MB |
-| 801 | project_euler/problem_001/sol7 | ✓ | 247us | 1.5 MB |
+| 764 | physics/casimir_effect | ✓ | 1.11ms | 1.7 MB |
+| 765 | physics/center_of_mass | ✓ | 468us | 1.7 MB |
+| 766 | physics/centripetal_force | ✓ | 588us | 1.7 MB |
+| 767 | physics/coulombs_law | ✓ | 1.22ms | 1.5 MB |
+| 768 | physics/doppler_frequency | ✓ | 489us | 1.7 MB |
+| 769 | physics/escape_velocity | ✓ | 726us | 1.6 MB |
+| 770 | physics/grahams_law | ✓ | 619us | 1.5 MB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 591us | 1.6 MB |
+| 772 | physics/hubble_parameter | ✓ | 619us | 1.6 MB |
+| 773 | physics/ideal_gas_law | ✓ | 587us | 1.6 MB |
+| 774 | physics/in_static_equilibrium | ✓ | 679us | 1.5 MB |
+| 775 | physics/kinetic_energy | ✓ | 410us | 1.6 MB |
+| 776 | physics/lens_formulae | ✓ | 514us | 1.7 MB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 519us | 1.7 MB |
+| 778 | physics/malus_law | ✓ | 1.04ms | 1.9 MB |
+| 779 | physics/mass_energy_equivalence | ✓ | 520us | 1.6 MB |
+| 780 | physics/mirror_formulae | ✓ | 482us | 1.6 MB |
+| 781 | physics/n_body_simulation | ✓ | 955us | 1.5 MB |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 606us | 1.6 MB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 827us | 1.7 MB |
+| 784 | physics/orbital_transfer_work | ✓ | 471us | 1.5 MB |
+| 785 | physics/period_of_pendulum | ✓ | 539us | 1.7 MB |
+| 786 | physics/photoelectric_effect | ✓ | 1.00ms | 1.7 MB |
+| 787 | physics/potential_energy | ✓ | 661us | 1.7 MB |
+| 788 | physics/rainfall_intensity | ✓ | 1.73ms | 2.1 MB |
+| 789 | physics/reynolds_number | ✓ | 563us | 1.7 MB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 1.09ms | 1.7 MB |
+| 791 | physics/shear_stress | ✓ | 520us | 1.6 MB |
+| 792 | physics/speed_of_sound | ✓ | 530us | 1.6 MB |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 700us | 1.6 MB |
+| 794 | physics/terminal_velocity | ✓ | 496us | 1.7 MB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 468us | 1.4 MB |
+| 796 | project_euler/problem_001/sol2 | ✓ | 337us | 1.4 MB |
+| 797 | project_euler/problem_001/sol3 | ✓ | 597us | 1.6 MB |
+| 798 | project_euler/problem_001/sol4 | ✓ | 1.28ms | 1.6 MB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 398us | 1.5 MB |
+| 800 | project_euler/problem_001/sol6 | ✓ | 415us | 1.5 MB |
+| 801 | project_euler/problem_001/sol7 | ✓ | 492us | 1.5 MB |
 | 802 | project_euler/problem_002/sol1 | ✓ | 911us | 1.5 MB |
 | 803 | project_euler/problem_002/sol2 | ✓ | 700us | 1.5 MB |
 | 804 | project_euler/problem_002/sol3 | ✓ | 280us | 1.5 MB |
