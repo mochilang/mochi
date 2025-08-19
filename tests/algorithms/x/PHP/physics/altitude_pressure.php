@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -37,7 +38,7 @@ function _panic($msg) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function to_float($x) {
+  function mochi_to_float($x) {
   return $x * 1.0;
 };
   function ln($x) {
@@ -58,16 +59,9 @@ $__start = _now();
   return 2.0 * $sum;
 };
   function mochi_exp($x) {
-  $term = 1.0;
-  $sum = 1.0;
-  $n = 1;
-  while ($n < 20) {
-  $term = $term * $x / floatval($n);
-  $sum = $sum + $term;
-  $n = $n + 1;
-};
-  return $sum;
-};
+  return exp($x);
+}
+;
   function pow_float($base, $exponent) {
   return mochi_exp($exponent * ln($base));
 };
@@ -85,7 +79,7 @@ $__start = _now();
   echo rtrim(_str(get_altitude_at_pressure(101325.0))), PHP_EOL;
   echo rtrim(_str(get_altitude_at_pressure(80000.0))), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

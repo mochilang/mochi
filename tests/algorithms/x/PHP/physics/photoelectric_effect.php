@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -38,7 +39,7 @@ function _panic($msg) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function pow10($exp) {
-  global $PLANCK_CONSTANT_JS, $PLANCK_CONSTANT_EVS;
+  global $PLANCK_CONSTANT_EVS, $PLANCK_CONSTANT_JS;
   $result = 1.0;
   $i = 0;
   while ($i < $exp) {
@@ -50,7 +51,7 @@ $__start = _now();
   $PLANCK_CONSTANT_JS = 6.6261 / pow10(34);
   $PLANCK_CONSTANT_EVS = 4.1357 / pow10(15);
   function maximum_kinetic_energy($frequency, $work_function, $in_ev) {
-  global $PLANCK_CONSTANT_JS, $PLANCK_CONSTANT_EVS;
+  global $PLANCK_CONSTANT_EVS, $PLANCK_CONSTANT_JS;
   if ($frequency < 0.0) {
   _panic('Frequency can\'t be negative.');
 }
@@ -64,7 +65,7 @@ $__start = _now();
   echo rtrim(_str(maximum_kinetic_energy(1000000.0, 2.0, true))), PHP_EOL;
   echo rtrim(_str(maximum_kinetic_energy(10000000000000000.0, 2.0, true))), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

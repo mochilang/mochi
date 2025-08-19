@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -25,11 +26,11 @@ $__start = _now();
   $TWO_PI = 6.283185307179586;
   $g = 9.80665;
   function _mod($x, $m) {
-  global $PI, $TWO_PI, $g, $v0, $angle;
+  global $PI, $TWO_PI, $angle, $g, $v0;
   return $x - (floatval(intval($x / $m))) * $m;
 };
   function mochi_sin($x) {
-  global $PI, $TWO_PI, $g, $v0, $angle;
+  global $PI, $TWO_PI, $angle, $g, $v0;
   $y = _mod($x + $PI, $TWO_PI) - $PI;
   $y2 = $y * $y;
   $y3 = $y2 * $y;
@@ -38,11 +39,11 @@ $__start = _now();
   return $y - $y3 / 6.0 + $y5 / 120.0 - $y7 / 5040.0;
 };
   function deg_to_rad($deg) {
-  global $PI, $TWO_PI, $g, $v0, $angle;
+  global $PI, $TWO_PI, $angle, $g, $v0;
   return $deg * $PI / 180.0;
 };
   function mochi_floor($x) {
-  global $PI, $TWO_PI, $g, $v0, $angle;
+  global $PI, $TWO_PI, $angle, $g, $v0;
   $i = intval($x);
   if ((floatval($i)) > $x) {
   $i = $i - 1;
@@ -50,7 +51,7 @@ $__start = _now();
   return floatval($i);
 };
   function pow10($n) {
-  global $PI, $TWO_PI, $g, $v0, $angle;
+  global $PI, $TWO_PI, $angle, $g, $v0;
   $result = 1.0;
   $i = 0;
   while ($i < $n) {
@@ -60,7 +61,7 @@ $__start = _now();
   return $result;
 };
   function mochi_round($x, $n) {
-  global $PI, $TWO_PI, $g, $v0, $angle;
+  global $PI, $TWO_PI, $angle, $g, $v0;
   $m = pow10($n);
   $y = mochi_floor($x * $m + 0.5);
   return $y / $m;
@@ -99,7 +100,7 @@ $__start = _now();
   echo rtrim(json_encode(max_height($v0, $angle), 1344)), PHP_EOL;
   echo rtrim(json_encode(total_time($v0, $angle), 1344)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -17,7 +18,7 @@ function _now() {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function to_float($x) {
+  function mochi_to_float($x) {
   return $x * 1.0;
 };
   function round6($x) {
@@ -89,7 +90,7 @@ $__start = _now();
   echo rtrim(json_encode(first_molar_mass(2.0, 1.408943, 0.709752), 1344)), PHP_EOL;
   echo rtrim(json_encode(second_molar_mass(2.0, 1.408943, 0.709752), 1344)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
