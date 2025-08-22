@@ -53,6 +53,9 @@ var useMD5 bool
 var useExists bool
 var useAnyVec bool
 var useIndex bool
+var useReadFile bool
+var dataDir string
+var useOrd bool
 var inStr bool
 var tmpCounter int
 var reserved = map[string]bool{
@@ -233,6 +236,9 @@ type Program struct {
 	UseMD5         bool
 	UseExists      bool
 	UseAnyVec      bool
+	UseReadFile    bool
+	DataDir        string
+	UseOrd         bool
 }
 
 func findFunc(name string) *Func {
@@ -744,6 +750,9 @@ func (p *Program) write(w io.Writer) {
 	if p.UseMD5 {
 		p.addInclude("<openssl/md5.h>")
 	}
+	if p.UseReadFile {
+		p.addInclude("<fstream>")
+	}
 	if p.UseSubprocess {
 		p.addInclude("<cstdio>")
 	}
@@ -981,6 +990,26 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    while((pos = s.find(sep, prev)) != std::string::npos){ out.push_back(s.substr(prev, pos - prev)); prev = pos + sep.size(); }")
 		fmt.Fprintln(w, "    out.push_back(s.substr(prev));")
 		fmt.Fprintln(w, "    return out;")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseReadFile {
+		if p.DataDir != "" {
+			fmt.Fprintf(w, "static std::string _dataDir = %q;\n", p.DataDir)
+		} else {
+			fmt.Fprintln(w, "static std::string _dataDir;")
+		}
+		fmt.Fprintln(w, "static std::string _read_file(const std::string& path) {")
+		fmt.Fprintln(w, "    std::ifstream f(path);")
+		fmt.Fprintln(w, "    if (!f && !_dataDir.empty()) f.open(_dataDir + \"/\" + path);")
+		fmt.Fprintln(w, "    if (!f) return \"\";")
+		fmt.Fprintln(w, "    std::ostringstream ss; ss << f.rdbuf();")
+		fmt.Fprintln(w, "    return ss.str();")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseOrd {
+		fmt.Fprintln(w, "static int64_t ord(const std::string& ch) {")
+		fmt.Fprintln(w, "    if (ch.empty()) return 0;")
+		fmt.Fprintln(w, "    return static_cast<unsigned char>(ch[0]);")
 		fmt.Fprintln(w, "}")
 	}
 	if usesAny {
@@ -4008,6 +4037,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useExists = false
 	useAnyVec = false
 	useIndex = false
+	useReadFile = false
+	dataDir = ""
+	useOrd = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -4536,6 +4568,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseMD5 = useMD5
 	cp.UseExists = useExists
 	cp.UseAnyVec = useAnyVec
+	cp.UseReadFile = useReadFile
+	cp.UseOrd = useOrd
+	if useReadFile {
+		cp.DataDir = filepath.Dir(prog.Pos.Filename)
+	}
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -6355,6 +6392,24 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				usesParseIntStr = true
 				return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
+			}
+		case "read_file":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				useReadFile = true
+				return &CallExpr{Name: "_read_file", Args: []Expr{arg}}, nil
+			}
+		case "ord":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				useOrd = true
+				return &CallExpr{Name: "ord", Args: []Expr{arg}}, nil
 			}
 		case "input":
 			if len(p.Call.Args) == 0 {

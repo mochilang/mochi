@@ -56,10 +56,26 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	// parse correctly.
 	{Name: "Float", Pattern: `\d+\.\d+(?:[eE][+-]?\d+)?|\d+[eE][+-]?\d+`},
 	{Name: "Int", Pattern: `0[xX][0-9a-fA-F]+|0[bB][01]+|0[oO][0-7]+|\d+`},
-	{Name: "String", Pattern: `"(?:\\.|[^"\\])*"`},
+	{Name: "String", Pattern: `"(?:\\.|""|[^"\\])*"`},
 	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r;]+`},
 })
+
+func unquoteString(tok lexer.Token) (lexer.Token, error) {
+	s := tok.Value
+	if strings.Contains(s, "\"\"") {
+		if len(s) >= 2 && strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"") {
+			inner := strings.ReplaceAll(s[1:len(s)-1], "\"\"", "\\\"")
+			s = "\"" + inner + "\""
+		}
+	}
+	v, err := strconv.Unquote(s)
+	if err != nil {
+		return tok, err
+	}
+	tok.Value = v
+	return tok, nil
+}
 
 // --- Program Structure ---
 
@@ -659,7 +675,7 @@ type IntentDecl struct {
 var Parser = participle.MustBuild[Program](
 	participle.Lexer(mochiLexer),
 	participle.Elide("Whitespace", "Comment"),
-	participle.Unquote("String"),
+	participle.Map(unquoteString, "String"),
 	participle.UseLookahead(999),
 )
 
