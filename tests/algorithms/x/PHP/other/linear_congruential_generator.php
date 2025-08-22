@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -34,10 +35,10 @@ function _str($x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function make_lcg($multiplier, $increment, $modulo, $seed) {
-  global $lcg, $i;
-  return ['multiplier' => $multiplier, 'increment' => $increment, 'modulo' => $modulo, 'seed' => $seed];
+  global $i, $lcg;
+  return ['increment' => $increment, 'modulo' => $modulo, 'multiplier' => $multiplier, 'seed' => $seed];
 };
-  function next_number(&$lcg) {
+  function &next_number(&$lcg) {
   global $i;
   $lcg['seed'] = fmod(($lcg['multiplier'] * $lcg['seed'] + $lcg['increment']), $lcg['modulo']);
   return $lcg['seed'];
@@ -49,7 +50,7 @@ $__start = _now();
   $i = $i + 1;
 }
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

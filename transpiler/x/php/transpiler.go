@@ -2435,8 +2435,18 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (m *MapLit) emit(w io.Writer) {
+	items := make([]MapEntry, len(m.Items))
+	copy(items, m.Items)
+	sort.SliceStable(items, func(i, j int) bool {
+		ki, ok1 := items[i].Key.(*StringLit)
+		kj, ok2 := items[j].Key.(*StringLit)
+		if ok1 && ok2 {
+			return ki.Value < kj.Value
+		}
+		return false
+	})
 	fmt.Fprint(w, "[")
-	for i, it := range m.Items {
+	for i, it := range items {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}

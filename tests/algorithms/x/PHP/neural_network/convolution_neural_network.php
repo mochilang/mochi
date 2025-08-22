@@ -228,7 +228,7 @@ $__start = _now();
 };
   $b_hidden = [0.0, 0.0];
   $b_out = [0.0, 0.0];
-  return ['conv_kernels' => $conv_kernels, 'conv_bias' => $conv_bias, 'conv_step' => $conv_step, 'pool_size' => $pool_size, 'w_hidden' => $w_hidden, 'w_out' => $w_out, 'b_hidden' => $b_hidden, 'b_out' => $b_out, 'rate_weight' => 0.2, 'rate_bias' => 0.2];
+  return ['b_hidden' => $b_hidden, 'b_out' => $b_out, 'conv_bias' => $conv_bias, 'conv_kernels' => $conv_kernels, 'conv_step' => $conv_step, 'pool_size' => $pool_size, 'rate_bias' => 0.2, 'rate_weight' => 0.2, 'w_hidden' => $w_hidden, 'w_out' => $w_out];
 };
   function forward($cnn, $data) {
   global $seed;
@@ -308,7 +308,7 @@ $__start = _now();
 };
   $e = $e + 1;
 };
-  return ['conv_kernels' => $cnn['conv_kernels'], 'conv_bias' => $cnn['conv_bias'], 'conv_step' => $cnn['conv_step'], 'pool_size' => $cnn['pool_size'], 'w_hidden' => $w_hidden, 'w_out' => $w_out, 'b_hidden' => $b_hidden, 'b_out' => $b_out, 'rate_weight' => $cnn['rate_weight'], 'rate_bias' => $cnn['rate_bias']];
+  return ['b_hidden' => $b_hidden, 'b_out' => $b_out, 'conv_bias' => $cnn['conv_bias'], 'conv_kernels' => $cnn['conv_kernels'], 'conv_step' => $cnn['conv_step'], 'pool_size' => $cnn['pool_size'], 'rate_bias' => $cnn['rate_bias'], 'rate_weight' => $cnn['rate_weight'], 'w_hidden' => $w_hidden, 'w_out' => $w_out];
 };
   function main() {
   global $seed;
@@ -321,7 +321,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

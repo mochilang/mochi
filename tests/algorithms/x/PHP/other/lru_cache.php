@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -39,11 +40,11 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   function new_list() {
   $nodes = [];
-  $head = ['key' => 0, 'value' => 0, 'prev' => 0 - 1, 'next' => 1];
-  $tail = ['key' => 0, 'value' => 0, 'prev' => 0, 'next' => 0 - 1];
+  $head = ['key' => 0, 'next' => 1, 'prev' => 0 - 1, 'value' => 0];
+  $tail = ['key' => 0, 'next' => 0 - 1, 'prev' => 0, 'value' => 0];
   $nodes = _append($nodes, $head);
   $nodes = _append($nodes, $tail);
-  return ['nodes' => $nodes, 'head' => 0, 'tail' => 1];
+  return ['head' => 0, 'nodes' => $nodes, 'tail' => 1];
 };
   function dll_add($lst, $idx) {
   $nodes = $lst['nodes'];
@@ -84,7 +85,7 @@ $__start = _now();
 };
   function new_cache($cap) {
   $empty_map = [];
-  return ['list' => new_list(), 'capacity' => $cap, 'num_keys' => 0, 'hits' => 0, 'misses' => 0, 'cache' => $empty_map];
+  return ['cache' => $empty_map, 'capacity' => $cap, 'hits' => 0, 'list' => new_list(), 'misses' => 0, 'num_keys' => 0];
 };
   function lru_get($c, $key) {
   $cache = $c;
@@ -97,11 +98,11 @@ $__start = _now();
   $value = $node['value'];
   $cache['list'] = dll_remove($cache['list'], $idx);
   $cache['list'] = dll_add($cache['list'], $idx);
-  return ['cache' => $cache, 'value' => $value, 'ok' => true];
+  return ['cache' => $cache, 'ok' => true, 'value' => $value];
 };
 }
   $cache['misses'] = $cache['misses'] + 1;
-  return ['cache' => $cache, 'value' => 0, 'ok' => false];
+  return ['cache' => $cache, 'ok' => false, 'value' => 0];
 };
   function lru_put($c, $key, $value) {
   $cache = $c;
@@ -119,7 +120,7 @@ $__start = _now();
   $cache['num_keys'] = $cache['num_keys'] - 1;
 };
   $nodes = $cache['list']['nodes'];
-  $new_node = ['key' => $key, 'value' => $value, 'prev' => 0 - 1, 'next' => 0 - 1];
+  $new_node = ['key' => $key, 'next' => 0 - 1, 'prev' => 0 - 1, 'value' => $value];
   $nodes = _append($nodes, $new_node);
   $idx = count($nodes) - 1;
   $cache['list']['nodes'] = $nodes;
@@ -177,7 +178,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

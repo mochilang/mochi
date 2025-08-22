@@ -122,7 +122,7 @@ $__start = _now();
 } else {
   $numbermap[$num] = [$idx];
 }
-  return ['numbermap' => $numbermap, 'indexmap' => $indexmap];
+  return ['indexmap' => $indexmap, 'numbermap' => $numbermap];
 };
   function find($cont, $num) {
   global $im, $nm;
@@ -137,7 +137,7 @@ $__start = _now();
 };
   $nm = [];
   $im = [];
-  $cont = ['numbermap' => $nm, 'indexmap' => $im];
+  $cont = ['indexmap' => $im, 'numbermap' => $nm];
   echo rtrim(json_encode(find($cont, 10), 1344)), PHP_EOL;
   $cont = change($cont, 0, 10);
   echo rtrim(json_encode(find($cont, 10), 1344)), PHP_EOL;

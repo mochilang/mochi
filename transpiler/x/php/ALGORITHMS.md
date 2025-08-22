@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-19 16:47 GMT+7
+Last updated: 2025-08-22 13:16 GMT+7
 
 ## Algorithms Golden Test Checklist (993/1077)
 | Index | Name | Status | Duration | Memory |
@@ -738,56 +738,56 @@ Last updated: 2025-08-19 16:47 GMT+7
 | 729 | neural_network/activation_functions/softplus | ✓ | 202µs | 35.0 KB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 214µs | 36.1 KB |
 | 731 | neural_network/activation_functions/swish | ✓ | 191µs | 36.2 KB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 474.637ms | 143.1 KB |
-| 733 | neural_network/convolution_neural_network | ✓ | 803µs | 109.6 KB |
-| 734 | neural_network/input_data | ✓ | 183µs | 41.9 KB |
-| 735 | neural_network/simple_neural_network | ✓ | 509.886ms | 39.4 KB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 934µs | 69.5 KB |
-| 737 | other/activity_selection | ✓ | 150µs | 35.7 KB |
-| 738 | other/alternative_list_arrange | ✓ | 269µs | 37.5 KB |
-| 739 | other/bankers_algorithm | ✓ | 160µs | 74.5 KB |
-| 740 | other/davis_putnam_logemann_loveland | ✓ | 146µs | 73.4 KB |
-| 741 | other/doomsday | ✓ | 88µs | 35.9 KB |
-| 742 | other/fischer_yates_shuffle | ✓ | 323µs | 40.0 KB |
-| 743 | other/gauss_easter | ✓ | 118µs | 40.2 KB |
-| 744 | other/greedy | ✓ | 122µs | 1.6 MB |
-| 745 | other/guess_the_number_search | ✓ | 205µs | 41.0 KB |
-| 746 | other/h_index | ✓ | 186µs | 39.5 KB |
-| 747 | other/least_recently_used | ✓ | 142µs | 41.0 KB |
-| 748 | other/lfu_cache | ✓ | 87µs | 72.3 KB |
-| 749 | other/linear_congruential_generator | ✓ | 78µs | 38.9 KB |
-| 750 | other/lru_cache | ✓ | 104µs | 75.3 KB |
-| 751 | other/magicdiamondpattern | ✓ | 56µs | 35.6 KB |
-| 752 | other/majority_vote_algorithm | ✓ | 208µs | 1.6 MB |
-| 753 | other/maximum_subsequence | ✓ | 320µs | 1.6 MB |
-| 754 | other/nested_brackets | ✓ | 174µs | 1.6 MB |
-| 755 | other/number_container_system | ✓ | 137µs | 1.6 MB |
-| 756 | other/quine | ✓ | 53µs | 1.6 MB |
-| 757 | other/scoring_algorithm | ✓ | 278µs | 1.6 MB |
-| 758 | other/sdes | ✓ | 189µs | 1.6 MB |
-| 759 | other/tower_of_hanoi | ✓ | 64µs | 1.6 MB |
-| 760 | other/word_search | ✓ | 242µs | 1.6 MB |
-| 761 | physics/altitude_pressure | ✓ | 138µs | 1.6 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 344.875ms | 1.6 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 576µs | 1.6 MB |
+| 734 | neural_network/input_data | ✓ | 137µs | 1.6 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 372.434ms | 1.6 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 623µs | 1.6 MB |
+| 737 | other/activity_selection | ✓ | 94µs | 1.6 MB |
+| 738 | other/alternative_list_arrange | ✓ | 152µs | 1.6 MB |
+| 739 | other/bankers_algorithm | ✓ | 128µs | 1.6 MB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 145µs | 1.6 MB |
+| 741 | other/doomsday | ✓ | 91µs | 1.6 MB |
+| 742 | other/fischer_yates_shuffle | ✓ | 135µs | 1.6 MB |
+| 743 | other/gauss_easter | ✓ | 220µs | 1.6 MB |
+| 744 | other/greedy | ✓ | 115µs | 1.6 MB |
+| 745 | other/guess_the_number_search | ✓ | 260µs | 1.6 MB |
+| 746 | other/h_index | ✓ | 216µs | 1.6 MB |
+| 747 | other/least_recently_used | ✓ | 105µs | 1.6 MB |
+| 748 | other/lfu_cache | ✓ | 91µs | 1.6 MB |
+| 749 | other/linear_congruential_generator | ✓ | 86µs | 1.6 MB |
+| 750 | other/lru_cache | ✓ | 116µs | 1.6 MB |
+| 751 | other/magicdiamondpattern | ✓ | 40µs | 1.6 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 117µs | 1.6 MB |
+| 753 | other/maximum_subsequence | ✓ | 69µs | 1.6 MB |
+| 754 | other/nested_brackets | ✓ | 121µs | 1.6 MB |
+| 755 | other/number_container_system | ✓ | 97µs | 1.6 MB |
+| 756 | other/quine | ✓ | 33µs | 1.6 MB |
+| 757 | other/scoring_algorithm | ✓ | 149µs | 1.6 MB |
+| 758 | other/sdes | ✓ | 124µs | 1.6 MB |
+| 759 | other/tower_of_hanoi | ✓ | 38µs | 1.6 MB |
+| 760 | other/word_search | ✓ | 153µs | 1.6 MB |
+| 761 | physics/altitude_pressure | ✓ | 94µs | 1.6 MB |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 1µs | 1.6 MB |
 | 763 | physics/basic_orbital_capture | error |  |  |
-| 764 | physics/casimir_effect | ✓ | 171µs | 1.6 MB |
-| 765 | physics/center_of_mass | ✓ | 114µs | 1.6 MB |
-| 766 | physics/centripetal_force | ✓ | 62µs | 1.6 MB |
-| 767 | physics/coulombs_law | ✓ | 153µs | 1.6 MB |
-| 768 | physics/doppler_frequency | ✓ | 59µs | 1.6 MB |
-| 769 | physics/escape_velocity | ✓ | 69µs | 1.6 MB |
-| 770 | physics/grahams_law | ✓ | 110µs | 1.6 MB |
-| 771 | physics/horizontal_projectile_motion | ✓ | 60µs | 1.6 MB |
-| 772 | physics/hubble_parameter | ✓ | 106µs | 1.6 MB |
-| 773 | physics/ideal_gas_law | ✓ | 82µs | 1.6 MB |
-| 774 | physics/in_static_equilibrium | ✓ | 196µs | 1.6 MB |
-| 775 | physics/kinetic_energy | ✓ | 159µs | 1.6 MB |
-| 776 | physics/lens_formulae | ✓ | 62µs | 1.6 MB |
-| 777 | physics/lorentz_transformation_four_vector | ✓ | 221µs | 1.6 MB |
-| 778 | physics/malus_law | ✓ | 44µs | 1.6 MB |
-| 779 | physics/mass_energy_equivalence | ✓ | 145µs | 1.6 MB |
-| 780 | physics/mirror_formulae | ✓ | 57µs | 1.6 MB |
-| 781 | physics/n_body_simulation | ✓ | 145µs | 1.6 MB |
+| 764 | physics/casimir_effect | ✓ | 131µs | 1.6 MB |
+| 765 | physics/center_of_mass | ✓ | 145µs | 1.6 MB |
+| 766 | physics/centripetal_force | ✓ | 81µs | 1.6 MB |
+| 767 | physics/coulombs_law | ✓ | 53µs | 1.6 MB |
+| 768 | physics/doppler_frequency | ✓ | 51µs | 1.6 MB |
+| 769 | physics/escape_velocity | ✓ | 47µs | 1.6 MB |
+| 770 | physics/grahams_law | ✓ | 70µs | 1.6 MB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 50µs | 1.6 MB |
+| 772 | physics/hubble_parameter | ✓ | 70µs | 1.6 MB |
+| 773 | physics/ideal_gas_law | ✓ | 57µs | 1.6 MB |
+| 774 | physics/in_static_equilibrium | ✓ | 136µs | 1.6 MB |
+| 775 | physics/kinetic_energy | ✓ | 46µs | 1.6 MB |
+| 776 | physics/lens_formulae | ✓ | 46µs | 1.6 MB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 204µs | 1.6 MB |
+| 778 | physics/malus_law | ✓ | 36µs | 1.6 MB |
+| 779 | physics/mass_energy_equivalence | ✓ | 44µs | 1.6 MB |
+| 780 | physics/mirror_formulae | ✓ | 62µs | 1.6 MB |
+| 781 | physics/n_body_simulation | ✓ | 93µs | 1.6 MB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 129µs | 1.6 MB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 68µs | 1.6 MB |
 | 784 | physics/orbital_transfer_work | ✓ | 203µs | 1.6 MB |

@@ -90,7 +90,7 @@ $__start = _now();
   echo rtrim('List ' . _str($integers) . ' ' . _str($strings)), PHP_EOL;
   echo rtrim('FY Shuffle ' . _str(fisher_yates_shuffle_int($integers)) . ' ' . _str(fisher_yates_shuffle_str($strings))), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

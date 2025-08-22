@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -44,7 +45,7 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function lfu_new($cap) {
-  return ['entries' => [], 'capacity' => $cap, 'hits' => 0, 'miss' => 0, 'tick' => 0];
+  return ['capacity' => $cap, 'entries' => [], 'hits' => 0, 'miss' => 0, 'tick' => 0];
 };
   function find_entry($entries, $key) {
   $i = 0;
@@ -60,8 +61,8 @@ $__start = _now();
   function lfu_get($cache, $key) {
   $idx = find_entry($cache['entries'], $key);
   if ($idx == 0 - 1) {
-  $new_cache = ['entries' => $cache['entries'], 'capacity' => $cache['capacity'], 'hits' => $cache['hits'], 'miss' => $cache['miss'] + 1, 'tick' => $cache['tick']];
-  return ['cache' => $new_cache, 'value' => 0, 'ok' => false];
+  $new_cache = ['capacity' => $cache['capacity'], 'entries' => $cache['entries'], 'hits' => $cache['hits'], 'miss' => $cache['miss'] + 1, 'tick' => $cache['tick']];
+  return ['cache' => $new_cache, 'ok' => false, 'value' => 0];
 }
   $entries = $cache['entries'];
   $e = $entries[$idx];
@@ -69,8 +70,8 @@ $__start = _now();
   $new_tick = $cache['tick'] + 1;
   $e['order'] = $new_tick;
   $entries[$idx] = $e;
-  $new_cache = ['entries' => $entries, 'capacity' => $cache['capacity'], 'hits' => $cache['hits'] + 1, 'miss' => $cache['miss'], 'tick' => $new_tick];
-  return ['cache' => $new_cache, 'value' => $e['val'], 'ok' => true];
+  $new_cache = ['capacity' => $cache['capacity'], 'entries' => $entries, 'hits' => $cache['hits'] + 1, 'miss' => $cache['miss'], 'tick' => $new_tick];
+  return ['cache' => $new_cache, 'ok' => true, 'value' => $e['val']];
 };
   function remove_lfu($entries) {
   if (count($entries) == 0) {
@@ -106,15 +107,15 @@ $__start = _now();
   $new_tick = $cache['tick'] + 1;
   $e['order'] = $new_tick;
   $entries[$idx] = $e;
-  return ['entries' => $entries, 'capacity' => $cache['capacity'], 'hits' => $cache['hits'], 'miss' => $cache['miss'], 'tick' => $new_tick];
+  return ['capacity' => $cache['capacity'], 'entries' => $entries, 'hits' => $cache['hits'], 'miss' => $cache['miss'], 'tick' => $new_tick];
 }
   if (count($entries) >= $cache['capacity']) {
   $entries = remove_lfu($entries);
 }
   $new_tick = $cache['tick'] + 1;
-  $new_entry = ['key' => $key, 'val' => $value, 'freq' => 1, 'order' => $new_tick];
+  $new_entry = ['freq' => 1, 'key' => $key, 'order' => $new_tick, 'val' => $value];
   $entries = _append($entries, $new_entry);
-  return ['entries' => $entries, 'capacity' => $cache['capacity'], 'hits' => $cache['hits'], 'miss' => $cache['miss'], 'tick' => $new_tick];
+  return ['capacity' => $cache['capacity'], 'entries' => $entries, 'hits' => $cache['hits'], 'miss' => $cache['miss'], 'tick' => $new_tick];
 };
   function cache_info($cache) {
   return 'CacheInfo(hits=' . _str($cache['hits']) . ', misses=' . _str($cache['miss']) . ', capacity=' . _str($cache['capacity']) . ', current_size=' . _str(_len($cache['entries'])) . ')';
@@ -164,7 +165,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

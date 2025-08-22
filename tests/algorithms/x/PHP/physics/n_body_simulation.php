@@ -19,7 +19,7 @@ function _now() {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function make_body($px, $py, $vx, $vy, $mass) {
-  return ['position_x' => $px, 'position_y' => $py, 'velocity_x' => $vx, 'velocity_y' => $vy, 'mass' => $mass];
+  return ['mass' => $mass, 'position_x' => $px, 'position_y' => $py, 'velocity_x' => $vx, 'velocity_y' => $vy];
 };
   function update_velocity($body, $force_x, $force_y, $delta_time) {
   $body['velocity_x'] = $body['velocity_x'] + $force_x * $delta_time;
@@ -32,7 +32,7 @@ $__start = _now();
   return $body;
 };
   function make_body_system($bodies, $g, $tf, $sf) {
-  return ['bodies' => $bodies, 'gravitation_constant' => $g, 'time_factor' => $tf, 'softening_factor' => $sf];
+  return ['bodies' => $bodies, 'gravitation_constant' => $g, 'softening_factor' => $sf, 'time_factor' => $tf];
 };
   function sqrtApprox($x) {
   $guess = $x / 2.0;

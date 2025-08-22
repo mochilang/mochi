@@ -70,7 +70,7 @@ $__start = _now();
   $board = _append($board, $row);
   $r = $r + 1;
 };
-  return ['words' => $words, 'width' => $width, 'height' => $height, 'board' => $board];
+  return ['board' => $board, 'height' => $height, 'width' => $width, 'words' => $words];
 };
   function insert_dir($ws, $word, $dr, $dc, $rows, $cols) {
   global $seed;
