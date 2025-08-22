@@ -1,11 +1,4 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 44 │       {i, product} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol3.exs:44:8: Main.str_eval/1
-
-    warning: variable "cur_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "cur_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
  83 │       {cur_index, largest_product, substr} = try do
     │        ~
