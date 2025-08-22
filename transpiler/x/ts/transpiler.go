@@ -45,6 +45,7 @@ var useStdout bool
 var useHas bool
 var useFetch bool
 var useLookupHost bool
+var useReadFile bool
 var useStr bool
 var useLen bool
 var useEqual bool
@@ -2185,6 +2186,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useHas = false
 	useFetch = false
 	useLookupHost = false
+	useReadFile = false
 	useStr = false
 	useLen = false
 	usePanic = false
@@ -2209,6 +2211,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useHas = false
 		useFetch = false
 		useLookupHost = false
+		useReadFile = false
 		useStr = false
 		useLen = false
 		usePanic = false
@@ -2454,6 +2457,32 @@ function sha256(bs: number[]): number[] {
   } else {
     console.log(s);
   }
+}`})
+	}
+	if useReadFile {
+		prelude = append(prelude, &RawStmt{Code: `function _read_file(path: string): string {
+  const read = (p: string): string => {
+    try {
+      if (typeof Deno !== 'undefined') {
+        return Deno.readTextFileSync(p);
+      } else {
+        const fs = require('fs');
+        if (fs.existsSync(p)) return fs.readFileSync(p, 'utf8');
+      }
+    } catch (_) {}
+    return '';
+  };
+  let text = read(path);
+  if (text) return text;
+  try {
+    const dir = typeof Deno !== 'undefined' ? new URL('.', import.meta.url).pathname : __dirname + '/';
+    text = read(dir + path);
+    if (text) return text;
+    const alt = dir.replace('tests/algorithms/x/TypeScript/', 'tests/github/TheAlgorithms/Mochi/') + path;
+    text = read(alt);
+    if (text) return text;
+  } catch (_) {}
+  return '';
 }`})
 	}
 	if useLookupHost {
@@ -3982,7 +4011,8 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 					case *IndexExpr:
 						if ct := curType; ct != nil {
 							if _, ok := ct.(types.StringType); ok {
-								expr = &MethodCallExpr{Target: e, Method: "charCodeAt", Args: []Expr{&NumberLit{Value: "0"}}}
+								useParseIntStr = true
+								expr = &CallExpr{Func: "parseIntStr", Args: []Expr{e, &NumberLit{Value: "10"}}}
 							} else {
 								expr = &CallExpr{Func: "Math.trunc", Args: []Expr{e}}
 							}
@@ -4322,6 +4352,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("slice expects three arguments")
 			}
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "ord":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("ord expects one argument")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "charCodeAt", Args: []Expr{&NumberLit{Value: "0"}}}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects one argument")
@@ -4357,6 +4392,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			target := &CallExpr{Func: "String", Args: []Expr{args[0]}}
 			return &MethodCallExpr{Target: target, Method: "padStart", Args: []Expr{args[1], args[2]}}, nil
+		case "read_file":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("read_file expects one argument")
+			}
+			useReadFile = true
+			return &CallExpr{Func: "_read_file", Args: args}, nil
 		case "sha256":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sha256 expects one argument")
