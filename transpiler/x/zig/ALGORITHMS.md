@@ -2,7 +2,7 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-19 09:22 +0700
+Last updated: 2025-08-22 13:08 +0700
 
 ## Program Checklist (457/1077)
 | Index | Name | Status | Duration | Memory |
@@ -786,7 +786,7 @@ Last updated: 2025-08-19 09:22 +0700
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 904µs | 512.0 KB |
 | 778 | physics/malus_law | ✓ | 392µs | 256.0 KB |
 | 779 | physics/mass_energy_equivalence | ✓ | 455µs | 384.0 KB |
-| 780 | physics/mirror_formulae | ✓ | 467µs | 256.0 KB |
+| 780 | physics/mirror_formulae | ✓ | 424µs | 256.0 KB |
 | 781 | physics/n_body_simulation |   |  |  |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 671µs | 384.0 KB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 405µs | 256.0 KB |
