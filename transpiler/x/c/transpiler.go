@@ -3548,7 +3548,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			if vr, ok2 := ie.Target.(*VarRef); ok2 {
 				elemType := inferExprType(currentEnv, c.Args[1])
 				switch {
-				case strings.HasSuffix(elemType, "*"):
+				case strings.HasSuffix(elemType, "*") && elemType != "const char*":
 					base := strings.TrimSuffix(elemType, "*")
 					switch base {
 					case "double":
@@ -3591,6 +3591,54 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				}
 				io.WriteString(w, ")")
 				return
+			} else if fe, ok2 := ie.Target.(*FieldExpr); ok2 {
+				if vr, ok3 := fe.Target.(*VarRef); ok3 {
+					elemType := inferExprType(currentEnv, c.Args[1])
+					switch {
+					case strings.HasSuffix(elemType, "*") && elemType != "const char*":
+						base := strings.TrimSuffix(elemType, "*")
+						switch base {
+						case "double":
+							needListAppendDoublePtr = true
+							io.WriteString(w, "list_append_doubleptr(")
+						case "const char*":
+							needListAppendStrPtr = true
+							io.WriteString(w, "list_append_strptr(")
+						default:
+							needListAppendPtr = true
+							io.WriteString(w, "list_append_intptr(")
+						}
+						c.Args[0].emitExpr(w)
+						io.WriteString(w, ", &")
+						fmt.Fprintf(w, "%s[(int)(", mapField(vr.Name, fe.Name+"_lens"))
+						ie.Index.emitExpr(w)
+						io.WriteString(w, ")], ")
+						if len(c.Args) > 1 && c.Args[1] != nil {
+							c.Args[1].emitExpr(w)
+						}
+						io.WriteString(w, ")")
+						return
+					case elemType == "double":
+						needListAppendDoubleNew = true
+						io.WriteString(w, "list_append_double_new(")
+					case elemType == "const char*":
+						needListAppendStrNew = true
+						io.WriteString(w, "list_append_str_new(")
+					default:
+						needListAppendIntNew = true
+						io.WriteString(w, "list_append_int_new(")
+					}
+					c.Args[0].emitExpr(w)
+					io.WriteString(w, ", ")
+					fmt.Fprintf(w, "%s[(int)(", mapField(vr.Name, fe.Name+"_lens"))
+					ie.Index.emitExpr(w)
+					io.WriteString(w, ")], ")
+					if len(c.Args) > 1 && c.Args[1] != nil {
+						c.Args[1].emitExpr(w)
+					}
+					io.WriteString(w, ")")
+					return
+				}
 			}
 		}
 		if fe, ok := c.Args[0].(*FieldExpr); ok {
@@ -4159,6 +4207,9 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				pre.WriteString(fmt.Sprintf("%s %s = ", decl, tmp))
 				ce.emitExpr(&pre)
 				pre.WriteString(fmt.Sprintf("; size_t %s_len = %s_len; ", tmp, ce.Func))
+				if strings.HasSuffix(ret, "[][]") {
+					pre.WriteString(fmt.Sprintf("size_t* %s_lens = %s_lens; ", tmp, ce.Func))
+				}
 				varTypes[tmp] = ret
 				args[i] = &VarRef{Name: tmp}
 			}
@@ -4330,6 +4381,43 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 					io.WriteString(w, "contains_str(")
 					io.WriteString(w, vr.Name+", ")
 					io.WriteString(w, vr.Name+"_len, ")
+					b.Left.emitExpr(w)
+					io.WriteString(w, ")")
+					return
+				}
+			}
+		}
+		if ie, ok := b.Right.(*IndexExpr); ok {
+			if vr, ok2 := ie.Target.(*VarRef); ok2 {
+				if exprIsString(b.Left) || exprIsString(b.Right) {
+					needContainsStr = true
+					io.WriteString(w, "contains_str(")
+				} else {
+					needContainsInt = true
+					io.WriteString(w, "contains_int(")
+				}
+				b.Right.emitExpr(w)
+				io.WriteString(w, ", ")
+				fmt.Fprintf(w, "%s[(int)(", mapField(vr.Name, "lens"))
+				ie.Index.emitExpr(w)
+				io.WriteString(w, ")], ")
+				b.Left.emitExpr(w)
+				io.WriteString(w, ")")
+				return
+			} else if fe, ok2 := ie.Target.(*FieldExpr); ok2 {
+				if vr, ok3 := fe.Target.(*VarRef); ok3 {
+					if exprIsString(b.Left) || exprIsString(b.Right) {
+						needContainsStr = true
+						io.WriteString(w, "contains_str(")
+					} else {
+						needContainsInt = true
+						io.WriteString(w, "contains_int(")
+					}
+					b.Right.emitExpr(w)
+					io.WriteString(w, ", ")
+					fmt.Fprintf(w, "%s[(int)(", mapField(vr.Name, fe.Name+"_lens"))
+					ie.Index.emitExpr(w)
+					io.WriteString(w, ")], ")
 					b.Left.emitExpr(w)
 					io.WriteString(w, ")")
 					return
@@ -7204,11 +7292,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			markMath()
 		}
 		delete(constLists, s.Var.Name)
-		if strVal, ok := evalString(valExpr); ok {
-			constStrings[s.Var.Name] = strVal
-		} else {
-			delete(constStrings, s.Var.Name)
-		}
+		delete(constStrings, s.Var.Name)
 		if val, ok := valueFromExpr(valExpr); ok {
 			if arr, ok2 := val.([]any); !ok2 || len(arr) > 0 {
 				env.SetValue(s.Var.Name, val, true)
@@ -8561,9 +8645,10 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		if strings.Contains(typ, "double") {
 			markMath()
 		}
+		name := aliasName(p.Name)
 		paramTypes = append(paramTypes, typ)
-		params = append(params, Param{Name: p.Name, Type: typ})
-		varTypes[p.Name] = typ
+		params = append(params, Param{Name: name, Type: typ})
+		varTypes[name] = typ
 		localEnv.SetVar(p.Name, mochiT, true)
 		if mt, ok := mochiT.(types.MapType); ok {
 			if _, isStruct := structTypes[typ]; !isStruct {
@@ -8585,14 +8670,14 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 			}
 		}
 		if strings.HasSuffix(typ, "[]") {
-			params = append(params, Param{Name: p.Name + "_len", Type: "size_t"})
-			varTypes[p.Name+"_len"] = "size_t"
+			params = append(params, Param{Name: name + "_len", Type: "size_t"})
+			varTypes[name+"_len"] = "size_t"
 			localEnv.SetVar(p.Name+"_len", types.IntType{}, true)
 			if strings.HasSuffix(typ, "[][]") {
-				params = append(params, Param{Name: p.Name + "_lens", Type: "size_t*"})
-				params = append(params, Param{Name: p.Name + "_lens_len", Type: "size_t"})
-				varTypes[p.Name+"_lens"] = "size_t*"
-				varTypes[p.Name+"_lens_len"] = "size_t"
+				params = append(params, Param{Name: name + "_lens", Type: "size_t*"})
+				params = append(params, Param{Name: name + "_lens_len", Type: "size_t"})
+				varTypes[name+"_lens"] = "size_t*"
+				varTypes[name+"_lens_len"] = "size_t"
 				localEnv.SetVar(p.Name+"_lens", types.IntType{}, true)
 				localEnv.SetVar(p.Name+"_lens_len", types.IntType{}, true)
 			}
