@@ -1,4 +1,4 @@
-// Generated 2025-08-12 13:41 +0700
+// Generated 2025-08-22 23:09 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -42,13 +42,16 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | :? int64 as n -> sprintf "%d" n
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 open System.Collections.Generic
@@ -57,7 +60,7 @@ let rec get_digits (num: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable num = num
     try
-        let cube: int = (num * num) * num
+        let cube: int64 = ((int64 num) * (int64 num)) * (int64 num)
         let s: string = _str (cube)
         let mutable counts: int array = Array.empty<int>
         let mutable j: int = 0
@@ -97,7 +100,7 @@ and solution (max_base: int) =
             freqs <- _dictAdd (freqs) (string (digits)) (arr)
             if (Seq.length (arr)) = max_base then
                 let ``base``: int = _idx arr (int 0)
-                __ret <- (``base`` * ``base``) * ``base``
+                __ret <- int (((int64 ``base``) * (int64 ``base``)) * (int64 ``base``))
                 raise Return
             num <- num + 1
         __ret
