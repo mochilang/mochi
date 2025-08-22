@@ -41,10 +41,13 @@ var usesJSON bool
 var usesBench bool
 var usesSubprocess bool
 var usesFetch bool
+var usesReadFile bool
+var usesOrd bool
 var needMD5Hex bool
 var needSHA256 bool
 var needToi bool
 var benchMain bool
+var dataDir string
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
@@ -417,8 +420,11 @@ func header() []byte {
           (let ((b (string->number (substring hex i (+ i 2)) 16)))
             (loop (+ i 2) (cons b out)))))))`
 	}
-	if usesInput {
+	if usesInput || usesReadFile {
 		prelude += "(import (chibi io))\n"
+	}
+	if usesReadFile {
+		prelude += "(import (chibi filesystem))\n"
 	}
 	if usesNow {
 		prelude += "(import (chibi time) (srfi 98))\n"
@@ -597,6 +603,26 @@ func header() []byte {
 	// algorithms to continue even when indices are computed inexactly.
 	prelude += "\n(define (list-ref-safe lst idx) (if (and (number? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) 0))"
 	prelude += "\n(define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst (inexact->exact idx) val)))"
+	if usesOrd {
+		prelude += "\n(define (_ord s) (cond ((char? s) (char->integer s)) ((and (string? s) (> (string-length s) 0)) (char->integer (string-ref s 0))) (else 0)))"
+	}
+	if usesReadFile {
+		prelude += fmt.Sprintf("\n(define _dataDir %q)", dataDir)
+		prelude += `
+(define (_read_file path)
+  (let ((p (if (file-exists? path)
+               path
+               (string-append _dataDir "/" path))))
+    (with-exception-handler (lambda (e) "")
+      (lambda ()
+        (call-with-input-file p
+          (lambda (in)
+            (let loop ((lines '()))
+              (let ((l (read-line in)))
+                (if (eof-object? l)
+                    (string-join (reverse lines) "\n")
+                    (loop (cons l lines)))))))))))`
+	}
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -1350,9 +1376,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesBench = false
 	usesSubprocess = false
 	usesFetch = false
+	usesReadFile = false
+	usesOrd = false
 	needMD5Hex = false
 	needSHA256 = false
 	needToi = false
+	dataDir = filepath.Dir(prog.Pos.Filename)
 	unionConsts = map[string]int{}
 	unionConstOrder = nil
 	methodNames = map[string]struct{}{}
@@ -3585,6 +3614,12 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				&List{Elems: []Node{&List{Elems: []Node{Symbol(x), args[0]}}}},
 				cond,
 			}}, nil
+		case "ord":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("ord expects 1 arg")
+			}
+			usesOrd = true
+			return &List{Elems: []Node{Symbol("_ord"), args[0]}}, nil
 		case "input":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("input expects no args")
@@ -3598,6 +3633,12 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			usesNow = true
 			needBase = true
 			return &List{Elems: []Node{Symbol("now")}}, nil
+		case "read_file":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			usesReadFile = true
+			return &List{Elems: []Node{Symbol("_read_file"), args[0]}}, nil
 		case "testpkg.FifteenPuzzleExample":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("FifteenPuzzleExample expects no args")
