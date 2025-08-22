@@ -1,5 +1,1 @@
-Execution error (ArithmeticException) at java.lang.Math/multiplyExact (Math.java:1032).
-long overflow
-
-Full report at:
-/tmp/clojure-9658134180089937704.edn
+run: timeout

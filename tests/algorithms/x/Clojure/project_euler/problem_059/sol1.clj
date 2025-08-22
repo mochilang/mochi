@@ -89,15 +89,15 @@
 (def ^:dynamic xor_y nil)
 
 (defn xor [xor_a xor_b]
-  (binding [xor_abit nil xor_bbit nil xor_bit nil xor_res nil xor_x nil xor_y nil] (try (do (set! xor_res 0) (set! xor_bit 1) (set! xor_x xor_a) (set! xor_y xor_b) (while (or (> xor_x 0) (> xor_y 0)) (do (set! xor_abit (mod xor_x 2)) (set! xor_bbit (mod xor_y 2)) (when (not= xor_abit xor_bbit) (set! xor_res (+ xor_res xor_bit))) (set! xor_x (/ xor_x 2)) (set! xor_y (/ xor_y 2)) (set! xor_bit (* xor_bit 2)))) (throw (ex-info "return" {:v xor_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [xor_abit nil xor_bbit nil xor_bit nil xor_res nil xor_x nil xor_y nil] (try (do (set! xor_res 0) (set! xor_bit 1) (set! xor_x xor_a) (set! xor_y xor_b) (while (or (> xor_x 0) (> xor_y 0)) (do (set! xor_abit (mod xor_x 2)) (set! xor_bbit (mod xor_y 2)) (when (not= xor_abit xor_bbit) (set! xor_res (+ xor_res xor_bit))) (set! xor_x (quot xor_x 2)) (set! xor_y (quot xor_y 2)) (set! xor_bit (* xor_bit 2)))) (throw (ex-info "return" {:v xor_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (def ^:dynamic main_ascii_chars nil)
 
 (defn chr [chr_code]
-  (try (do (when (= chr_code 10) (throw (ex-info "return" {:v "\n"}))) (when (= chr_code 13) (throw (ex-info "return" {:v "\r"}))) (when (= chr_code 9) (throw (ex-info "return" {:v "\t"}))) (if (and (>= chr_code 32) (< chr_code 127)) (subvec main_ascii_chars (- chr_code 32) (- chr_code 31)) "")) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (when (= chr_code 10) (throw (ex-info "return" {:v "\n"}))) (when (= chr_code 13) (throw (ex-info "return" {:v "\r"}))) (when (= chr_code 9) (throw (ex-info "return" {:v "\t"}))) (if (and (>= chr_code 32) (< chr_code 127)) (subs main_ascii_chars (- chr_code 32) (min (- chr_code 31) (count main_ascii_chars))) "")) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn ord [ord_ch]
-  (binding [ord_i nil] (try (do (when (= ord_ch "\n") (throw (ex-info "return" {:v 10}))) (when (= ord_ch "\r") (throw (ex-info "return" {:v 13}))) (when (= ord_ch "\t") (throw (ex-info "return" {:v 9}))) (set! ord_i 0) (while (< ord_i (count main_ascii_chars)) (do (when (= (subvec main_ascii_chars ord_i (+ ord_i 1)) ord_ch) (throw (ex-info "return" {:v (+ 32 ord_i)}))) (set! ord_i (+ ord_i 1)))) (throw (ex-info "return" {:v 0}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [ord_i nil] (try (do (when (= ord_ch "\n") (throw (ex-info "return" {:v 10}))) (when (= ord_ch "\r") (throw (ex-info "return" {:v 13}))) (when (= ord_ch "\t") (throw (ex-info "return" {:v 9}))) (set! ord_i 0) (while (< ord_i (count main_ascii_chars)) (do (when (= (subs main_ascii_chars ord_i (min (+ ord_i 1) (count main_ascii_chars))) ord_ch) (throw (ex-info "return" {:v (+ 32 ord_i)}))) (set! ord_i (+ ord_i 1)))) (throw (ex-info "return" {:v 0}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn is_valid_ascii [is_valid_ascii_code]
   (try (do (when (and (>= is_valid_ascii_code 32) (<= is_valid_ascii_code 126)) (throw (ex-info "return" {:v true}))) (if (or (or (= is_valid_ascii_code 9) (= is_valid_ascii_code 10)) (= is_valid_ascii_code 13)) true false)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
