@@ -1,0 +1,3 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/neural_network/convolution_neural_network.zig:316:62: error: expected type 'usize', found 'i64'
+/workspace/mochi/tests/algorithms/transpiler/Zig/neural_network/convolution_neural_network.zig:316:62: note: unsigned 64-bit int cannot represent all possible signed 64-bit values

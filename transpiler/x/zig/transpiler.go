@@ -395,7 +395,24 @@ func exprToString(e Expr) (string, bool) {
 	case *VarRef:
 		return t.Name, true
 	case *IndexExpr:
-		return exprToString(t.Target)
+		// Previously we returned the base target identifier when asked to
+		// stringify an index expression.  This caused constructs like
+		// `xs[len(xs)-1]` to be treated as if they were simply `xs` when
+		// performing alias analysis.  As a result, a temporary variable
+		// holding an indexed field could be optimised away incorrectly
+		// (e.g. `let out = layers[len(layers)-1].output`) which in turn
+		// generated invalid Zig such as `layers.output`.
+		//
+		// Instead, attempt to include the index as part of the string.
+		// If the index itself cannot be represented as a simple string,
+		// give up so that the caller does not treat the expression as an
+		// alias for the whole target.
+		if s, ok := exprToString(t.Target); ok {
+			if idx, ok2 := exprToString(t.Index); ok2 {
+				return s + "[" + idx + "]", true
+			}
+		}
+		return "", false
 	case *FieldExpr:
 		if s, ok := exprToString(t.Target); ok {
 			return s + "." + t.Name, true
