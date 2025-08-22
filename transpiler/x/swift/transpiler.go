@@ -46,6 +46,7 @@ var usesFetch bool
 var usesJSON bool
 var usesExists bool
 var usesReadFile bool
+var usesOrd bool
 var fetchStructs map[string]bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
@@ -99,6 +100,7 @@ type Program struct {
 	UseJSON       bool
 	UseExists     bool
 	UseReadFile   bool
+	UseOrd        bool
 	FetchStructs  map[string]bool
 	DataDir       string
 }
@@ -2264,6 +2266,11 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return (try? String(contentsOfFile: p)) ?? \"\"\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseOrd {
+		buf.WriteString("func _ord(_ s: String) -> Int {\n")
+		buf.WriteString("    return Int(Character(s).unicodeScalars.first?.value ?? 0)\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseJSON {
 		buf.WriteString("func _json(_ v: Any) {\n")
 		buf.WriteString("    if JSONSerialization.isValidJSONObject(v),\n")
@@ -2558,6 +2565,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesJSON = false
 	usesExists = false
 	usesReadFile = false
+	usesOrd = false
 	fetchStructs = map[string]bool{}
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
@@ -2605,6 +2613,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseJSON = usesJSON
 	p.UseExists = usesExists
 	p.UseReadFile = usesReadFile
+	p.UseOrd = usesOrd
 	p.FetchStructs = fetchStructs
 	if prog.Pos.Filename != "" {
 		p.DataDir = filepath.Dir(prog.Pos.Filename)
@@ -5652,6 +5661,15 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesSplit = true
 			return &CallExpr{Func: "_split", Args: []Expr{a0, a1}}, nil
+		}
+
+		if pr.Call.Func == "ord" && len(pr.Call.Args) == 1 {
+			a0, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesOrd = true
+			return &CallExpr{Func: "_ord", Args: []Expr{a0}}, nil
 		}
 		if pr.Call.Func == "read_file" && len(pr.Call.Args) == 1 {
 			a0, err := convertExpr(env, pr.Call.Args[0])
