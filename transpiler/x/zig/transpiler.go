@@ -5686,13 +5686,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if ml, ok := expr.(*MapLit); ok {
 			if ml.StructName != "" {
 				vd.Type = ml.StructName
-				if funDepth == 0 {
-					mapVars[s.Let.Name] = false
-				}
+				mapVars[s.Let.Name] = false
 			} else {
-				if funDepth == 0 {
-					mapVars[s.Let.Name] = true
-				}
+				mapVars[s.Let.Name] = true
 				mapVars[alias] = true
 				if vd.Type != "" {
 					if strings.HasPrefix(vd.Type, "std.StringHashMap(") {
@@ -5728,6 +5724,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
 			mapVars[s.Let.Name] = true
 			mapVars[alias] = true
+		}
+		if mapVars[s.Let.Name] {
+			vd.Mutable = true
 		}
 		if funDepth <= 1 && blockDepth == 0 && !isConstExpr(expr) {
 			vd.Value = nil
@@ -5781,10 +5780,11 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				expr = &IntLit{Value: 0}
 			}
 		}
-		mutable := funDepth <= 1
+		mutable := true
 		if funDepth > 0 && len(localMutablesStack) > 0 {
-			m := localMutablesStack[len(localMutablesStack)-1]
-			mutable = m[s.Var.Name]
+			if m, ok := localMutablesStack[len(localMutablesStack)-1][s.Var.Name]; ok {
+				mutable = m
+			}
 		}
 		name := s.Var.Name
 		if funDepth > 0 && globalNames[name] {
