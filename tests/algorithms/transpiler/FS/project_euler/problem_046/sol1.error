@@ -1,0 +1,36 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(55,17): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(55,38): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(58,23): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(58,42): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(58,77): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(62,36): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(64,29): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(64,68): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_046/sol1.fs(84,39): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    

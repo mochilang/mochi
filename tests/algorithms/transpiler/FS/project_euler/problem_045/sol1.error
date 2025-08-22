@@ -1,0 +1,8 @@
+exit status 1
+Unhandled Exception:
+System.Exception: 330 should be pentagonal
+  at Sol1.test_is_pentagonal () [0x0008b] in <68a82b879e02ff62a7450383872ba868>:0 
+  at <StartupCode$sol1>.$Sol1.main@ () [0x00038] in <68a82b879e02ff62a7450383872ba868>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Exception: 330 should be pentagonal
+  at Sol1.test_is_pentagonal () [0x0008b] in <68a82b879e02ff62a7450383872ba868>:0 
+  at <StartupCode$sol1>.$Sol1.main@ () [0x00038] in <68a82b879e02ff62a7450383872ba868>:0

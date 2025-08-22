@@ -65,6 +65,7 @@ type Program struct {
 	UseSafeIndex   bool
 	UseStr         bool
 	UseRepr        bool
+	UseOrd         bool
 	UseArraySet    bool
 	UseJSON        bool
 	UseFloorDiv    bool
@@ -107,6 +108,7 @@ var (
 	usesSafeIndex  bool
 	usesStr        bool
 	usesRepr       bool
+	usesOrd        bool
 	usesArraySet   bool
 	usesJSON       bool
 	usesFloorDiv   bool
@@ -162,6 +164,8 @@ const helperPadStart = `let _padStart (s:string) (width:int) (pad:string) =
         out <- pad + out
     out
 `
+
+const helperOrd = `let _ord (s:string) : int = int s.[0]`
 
 const helperToi = `let toi (v:obj) : int =
     match v with
@@ -2266,6 +2270,30 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if (b.Op == "==" || b.Op == "!=") && (inferType(left) == "float" || inferType(right) == "float") {
+		io.WriteString(w, "abs(")
+		if needsParen(left) {
+			io.WriteString(w, "(")
+			left.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			left.emit(w)
+		}
+		io.WriteString(w, " - ")
+		if needsParen(right) {
+			io.WriteString(w, "(")
+			right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			right.emit(w)
+		}
+		if b.Op == "==" {
+			io.WriteString(w, ") < 1e-9")
+		} else {
+			io.WriteString(w, ") >= 1e-9")
+		}
+		return
+	}
 	if needsParen(left) {
 		io.WriteString(w, "(")
 		left.emit(w)
@@ -3481,6 +3509,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperPadStart)
 		buf.WriteString("\n")
 	}
+	if prog.UseOrd {
+		buf.WriteString(helperOrd)
+		buf.WriteString("\n")
+	}
 	if prog.UseSHA256 {
 		buf.WriteString(helperSHA256)
 		buf.WriteString("\n")
@@ -3640,6 +3672,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSafeIndex = false
 	usesStr = false
 	usesRepr = false
+	usesOrd = false
 	usesArraySet = false
 	usesJSON = false
 	usesFloorDiv = false
@@ -3737,6 +3770,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseSafeIndex = usesSafeIndex
 	p.UseStr = usesStr
 	p.UseRepr = usesRepr
+	p.UseOrd = usesOrd
 	p.UseArraySet = usesArraySet
 	p.UseJSON = usesJSON
 	p.UseFloorDiv = usesFloorDiv
@@ -5122,6 +5156,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("to_int expects 1 arg")
 			}
 			return &CastExpr{Expr: args[0], Type: "int"}, nil
+		case "ord":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("ord expects 1 arg")
+			}
+			usesOrd = true
+			return &CallExpr{Func: "_ord", Args: args}, nil
 		case "toi":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("toi expects 1 arg")
