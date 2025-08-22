@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (658/1077) - Last updated 2025-08-19 09:22 +0700:
+Checklist of programs that currently transpile and run (677/1077) - Last updated 2025-08-19 17:31 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -705,37 +705,37 @@ Checklist of programs that currently transpile and run (658/1077) - Last updated
 | 698 | matrix/count_islands_in_matrix |  |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |  |  |  |
 | 700 | matrix/count_paths |  |  |  |
-| 701 | matrix/cramers_rule_2x2 |  |  |  |
-| 702 | matrix/inverse_of_matrix |  |  |  |
-| 703 | matrix/largest_square_area_in_matrix |  |  |  |
-| 704 | matrix/matrix_based_game |  |  |  |
-| 705 | matrix/matrix_class |  |  |  |
-| 706 | matrix/matrix_equalization |  |  |  |
-| 707 | matrix/matrix_multiplication_recursion |  |  |  |
-| 708 | matrix/matrix_operation |  |  |  |
-| 709 | matrix/max_area_of_island |  |  |  |
-| 710 | matrix/median_matrix |  |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |  |  |  |
-| 712 | matrix/pascal_triangle |  |  |  |
-| 713 | matrix/rotate_matrix |  |  |  |
-| 714 | matrix/searching_in_sorted_matrix |  |  |  |
-| 715 | matrix/sherman_morrison |  |  |  |
-| 716 | matrix/spiral_print |  |  |  |
-| 717 | matrix/tests/test_matrix_operation |  |  |  |
-| 718 | matrix/validate_sudoku_board |  |  |  |
-| 719 | networking_flow/ford_fulkerson |  |  |  |
-| 720 | networking_flow/minimum_cut | ✓ | 313us | 1.6 MB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 331us | 1.6 MB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 822us | 1.7 MB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 354us | 1.6 MB |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 514us | 1.6 MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 438us | 2.1 MB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 639us | 1.6 MB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 622us | 1.8 MB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 399us | 2.1 MB |
-| 729 | neural_network/activation_functions/softplus | ✓ | 407us | 2.2 MB |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 618us | 1.7 MB |
-| 731 | neural_network/activation_functions/swish | ✓ | 383us | 1.7 MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 362us | 1.6 MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 330us | 1.6 MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 352us | 1.5 MB |
+| 704 | matrix/matrix_based_game | ✓ | 289us | 1.7 MB |
+| 705 | matrix/matrix_class | ✓ | 639us | 1.7 MB |
+| 706 | matrix/matrix_equalization | ✓ | 377us | 1.5 MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 323us | 1.4 MB |
+| 708 | matrix/matrix_operation | ✓ | 788us | 1.6 MB |
+| 709 | matrix/max_area_of_island | ✓ | 837us | 1.5 MB |
+| 710 | matrix/median_matrix | ✓ | 300us | 1.5 MB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 481us | 1.7 MB |
+| 712 | matrix/pascal_triangle | ✓ | 310us | 1.5 MB |
+| 713 | matrix/rotate_matrix | ✓ | 370us | 1.4 MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 372us | 1.6 MB |
+| 715 | matrix/sherman_morrison | ✓ | 653us | 1.6 MB |
+| 716 | matrix/spiral_print | ✓ | 382us | 1.5 MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 530us | 1.6 MB |
+| 718 | matrix/validate_sudoku_board | ✓ | 1.04ms | 1.4 MB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 270us | 1.6 MB |
+| 720 | networking_flow/minimum_cut | ✓ | 310us | 1.6 MB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 310us | 1.5 MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 365us | 1.5 MB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 290us | 1.6 MB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 376us | 1.7 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 491us | 2.1 MB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 301us | 1.6 MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 286us | 1.8 MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 354us | 2.1 MB |
+| 729 | neural_network/activation_functions/softplus | ✓ | 417us | 2.2 MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 664us | 1.7 MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 406us | 1.7 MB |
 | 732 | neural_network/back_propagation_neural_network |  |  |  |
 | 733 | neural_network/convolution_neural_network |  |  |  |
 | 734 | neural_network/input_data |  |  |  |
