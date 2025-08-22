@@ -920,9 +920,22 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseParseIntStr {
-		fmt.Fprintln(w, "static long _parse_int_str(const std::string& s, long base) {")
+		fmt.Fprintln(w, "static boost::multiprecision::cpp_int _parse_int_str(const std::string& s, long base) {")
 		fmt.Fprintln(w, "    if(s.empty()) return 0;")
-		fmt.Fprintln(w, "    return std::stol(s, nullptr, base);")
+		fmt.Fprintln(w, "    boost::multiprecision::cpp_int r = 0;")
+		fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
+		fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
+		fmt.Fprintln(w, "    for(; i < s.size(); ++i){")
+		fmt.Fprintln(w, "        char c = s[i];")
+		fmt.Fprintln(w, "        int digit = 0;")
+		fmt.Fprintln(w, "        if(c >= '0' && c <= '9') digit = c - '0';")
+		fmt.Fprintln(w, "        else if(c >= 'a' && c <= 'z') digit = c - 'a' + 10;")
+		fmt.Fprintln(w, "        else if(c >= 'A' && c <= 'Z') digit = c - 'A' + 10;")
+		fmt.Fprintln(w, "        else continue;")
+		fmt.Fprintln(w, "        r *= base;")
+		fmt.Fprintln(w, "        r += digit;")
+		fmt.Fprintln(w, "    }")
+		fmt.Fprintln(w, "    return neg ? -r : r;")
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseBigRat {
@@ -2268,9 +2281,21 @@ func (s *SubstringExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "; long long __start = ")
-	s.Start.emit(w)
+	if exprType(s.Start) != "int64_t" {
+		io.WriteString(w, "static_cast<long long>(")
+		s.Start.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.Start.emit(w)
+	}
 	io.WriteString(w, "; long long __end = ")
-	s.End.emit(w)
+	if exprType(s.End) != "int64_t" {
+		io.WriteString(w, "static_cast<long long>(")
+		s.End.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.End.emit(w)
+	}
 	io.WriteString(w, "; if(__start < 0) __start = 0; if(__end < __start) __end = __start;")
 	io.WriteString(w, " if(__start > static_cast<long long>(__s.size())) __start = __s.size();")
 	io.WriteString(w, " if(__end > static_cast<long long>(__s.size())) __end = __s.size();")
@@ -3046,7 +3071,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if lt == "double" || rt == "double" {
 			io.WriteString(w, "((double)(")
 			b.Left.emit(w)
-			io.WriteString(w, ") / (")
+			io.WriteString(w, ") / (double)(")
 			b.Right.emit(w)
 			io.WriteString(w, "))")
 		} else {
@@ -6398,6 +6423,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}
 				}
 				usesParseIntStr = true
+				useBigInt = true
 				return &CallExpr{Name: "_parse_int_str", Args: []Expr{v0, v1}}, nil
 			}
 		case "toi":
@@ -6407,6 +6433,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				usesParseIntStr = true
+				useBigInt = true
 				return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
 			}
 		case "input":
@@ -7703,7 +7730,8 @@ func funcReturnType(ft string) string {
 func cppType(t string) string {
 	switch t {
 	case "int":
-		return "int64_t"
+		useBigInt = true
+		return "boost::multiprecision::cpp_int"
 	case "float":
 		return "double"
 	case "bool":
@@ -7797,7 +7825,8 @@ func cppType(t string) string {
 func cppTypeFrom(tp types.Type) string {
 	switch t := tp.(type) {
 	case types.IntType:
-		return "int64_t"
+		useBigInt = true
+		return "boost::multiprecision::cpp_int"
 	case types.Int64Type:
 		return "int64_t"
 	case types.BigIntType:
@@ -8130,7 +8159,8 @@ func defaultValueForType(t string) string {
 func exprType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		return "int64_t"
+		useBigInt = true
+		return "boost::multiprecision::cpp_int"
 	case *FloatLit:
 		return "double"
 	case *BoolLit:
@@ -8282,6 +8312,8 @@ func exprType(e Expr) string {
 		case "_bigrat":
 			return "BigRat"
 		case "_num", "_denom":
+			return "boost::multiprecision::cpp_int"
+		case "_parse_int_str":
 			return "boost::multiprecision::cpp_int"
 		case "_index_of":
 			return "int64_t"
