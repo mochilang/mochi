@@ -53,6 +53,8 @@ var useFloor bool
 var useSHA256 bool
 var usePad bool
 var useMD5 bool
+var useReadFile bool
+var useOrd bool
 var builtinAliases map[string]string
 var globalRenames map[string]string
 var globalRenameBack map[string]string
@@ -298,6 +300,8 @@ type Program struct {
 	UseTime     bool
 	UseInput    bool
 	UseInt      bool
+	UseReadFile bool
+	UseOrd      bool
 	UseAbs      bool
 	UseFloor    bool
 	UseSHA256   bool
@@ -3353,6 +3357,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	useTime = false
 	usesInput = false
 	usesInt = false
+	useReadFile = false
+	useOrd = false
 	useAbs = false
 	useSHA256 = false
 	usePad = false
@@ -3431,6 +3437,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.UseTime = useTime
 	prog.UseInput = usesInput
 	prog.UseInt = usesInt
+	prog.UseReadFile = useReadFile
+	prog.UseOrd = useOrd
 	prog.UseAbs = useAbs
 	prog.UseFloor = useFloor
 	prog.UseSHA256 = useSHA256
@@ -4687,7 +4695,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	if len(caps) > 0 {
 		filtered := make([]string, 0, len(caps))
 		for _, c := range caps {
-			if _, ok := funReturns[c]; ok && varTypes[c] == "" && currentParamTypes[c] == "" {
+			if _, ok := funReturns[c]; ok && currentParamTypes[c] == "" {
 				continue
 			}
 			filtered = append(filtered, c)
@@ -5154,6 +5162,34 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			if argT != "" && argT != "i64" {
 				return &IntCastExpr{Expr: args[0]}, nil
+			}
+		}
+		if name == "read_file" && len(args) == 1 {
+			if _, ok := funReturns["read_file"]; ok {
+				// user-defined read_file
+			} else {
+				useReadFile = true
+				funReturns[name] = "String"
+				if inferType(args[0]) == "String" {
+					if _, ok := args[0].(*StringLit); !ok {
+						args[0] = &MethodCallExpr{Receiver: args[0], Name: "as_str"}
+					}
+				}
+				return &CallExpr{Func: "read_file", Args: args}, nil
+			}
+		}
+		if name == "ord" && len(args) == 1 {
+			if _, ok := funReturns["ord"]; ok {
+				// user-defined ord
+			} else {
+				useOrd = true
+				funReturns[name] = "i64"
+				if inferType(args[0]) == "String" {
+					if _, ok := args[0].(*StringLit); !ok {
+						args[0] = &MethodCallExpr{Receiver: args[0], Name: "as_str"}
+					}
+				}
+				return &CallExpr{Func: "ord", Args: args}, nil
 			}
 		}
 		if (name == "float" || name == "to_float") && len(args) == 1 {
@@ -7882,6 +7918,16 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("fn _pad_start(mut s: String, w: i64, p: String) -> String {\n")
 		buf.WriteString("    while s.len() < w as usize { s = p.clone() + &s; }\n")
 		buf.WriteString("    s\n")
+		buf.WriteString("}\n")
+	}
+	if prog.UseReadFile {
+		buf.WriteString("fn read_file(path: &str) -> String {\n")
+		buf.WriteString("    std::fs::read_to_string(path).unwrap_or_else(|_| String::new())\n")
+		buf.WriteString("}\n")
+	}
+	if prog.UseOrd {
+		buf.WriteString("fn ord(s: &str) -> i64 {\n")
+		buf.WriteString("    s.chars().next().map(|c| c as i64).unwrap_or(0)\n")
 		buf.WriteString("}\n")
 	}
 	if prog.UseFetch {
