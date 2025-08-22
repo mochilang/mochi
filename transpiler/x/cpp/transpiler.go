@@ -717,7 +717,12 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<type_traits>")
 	p.addInclude("<limits>")
 	if p.UseBigInt || p.UseBigRat {
-		p.addInclude("<boost/multiprecision/cpp_int.hpp>")
+		fmt.Fprintln(w, "#if __has_include(<boost/multiprecision/cpp_int.hpp>)")
+		fmt.Fprintln(w, "#include <boost/multiprecision/cpp_int.hpp>")
+		fmt.Fprintln(w, "using cpp_int = boost::multiprecision::cpp_int;")
+		fmt.Fprintln(w, "#else")
+		fmt.Fprintln(w, "using cpp_int = __int128;")
+		fmt.Fprintln(w, "#endif")
 	}
 	if p.UseNow {
 		p.addInclude("<cstdlib>")
@@ -920,9 +925,9 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseParseIntStr {
-		fmt.Fprintln(w, "static boost::multiprecision::cpp_int _parse_int_str(const std::string& s, long base) {")
+		fmt.Fprintln(w, "static cpp_int _parse_int_str(const std::string& s, long base) {")
 		fmt.Fprintln(w, "    if(s.empty()) return 0;")
-		fmt.Fprintln(w, "    boost::multiprecision::cpp_int r = 0;")
+		fmt.Fprintln(w, "    cpp_int r = 0;")
 		fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
 		fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
 		fmt.Fprintln(w, "    for(; i < s.size(); ++i){")
@@ -939,7 +944,6 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseBigRat {
-		fmt.Fprintln(w, "using cpp_int = boost::multiprecision::cpp_int;")
 		fmt.Fprintln(w, "struct BigRat {")
 		fmt.Fprintln(w, "    cpp_int num; cpp_int den;")
 		fmt.Fprintln(w, "    BigRat(cpp_int n=0, cpp_int d=1){ init(n,d); }")
@@ -7731,7 +7735,7 @@ func cppType(t string) string {
 	switch t {
 	case "int":
 		useBigInt = true
-		return "boost::multiprecision::cpp_int"
+		return "cpp_int"
 	case "float":
 		return "double"
 	case "bool":
@@ -7747,7 +7751,7 @@ func cppType(t string) string {
 		return "void"
 	case "bigint":
 		useBigInt = true
-		return "boost::multiprecision::cpp_int"
+		return "cpp_int"
 	case "bigrat":
 		useBigRat = true
 		return "BigRat"
@@ -7826,12 +7830,12 @@ func cppTypeFrom(tp types.Type) string {
 	switch t := tp.(type) {
 	case types.IntType:
 		useBigInt = true
-		return "boost::multiprecision::cpp_int"
+		return "cpp_int"
 	case types.Int64Type:
 		return "int64_t"
 	case types.BigIntType:
 		useBigInt = true
-		return "boost::multiprecision::cpp_int"
+		return "cpp_int"
 	case types.BigRatType:
 		useBigRat = true
 		return "BigRat"
@@ -8160,7 +8164,7 @@ func exprType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
 		useBigInt = true
-		return "boost::multiprecision::cpp_int"
+		return "cpp_int"
 	case *FloatLit:
 		return "double"
 	case *BoolLit:
@@ -8312,9 +8316,9 @@ func exprType(e Expr) string {
 		case "_bigrat":
 			return "BigRat"
 		case "_num", "_denom":
-			return "boost::multiprecision::cpp_int"
+			return "cpp_int"
 		case "_parse_int_str":
-			return "boost::multiprecision::cpp_int"
+			return "cpp_int"
 		case "_index_of":
 			return "int64_t"
 		case "_repeat":
