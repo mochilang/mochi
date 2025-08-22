@@ -458,8 +458,15 @@ func pascalCase(name string) string {
 }
 
 func uniqueWhileVar() string {
-	whileCounter++
-	return fmt.Sprintf("while_flag_%d", whileCounter)
+        whileCounter++
+        return fmt.Sprintf("while_flag_%d", whileCounter)
+}
+
+func boolSym(n Node) bool {
+       if s, ok := n.(Symbol); ok {
+               return s == "true"
+       }
+       return false
 }
 
 func renameVar(name string) string {
@@ -3816,13 +3823,17 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 						} else {
 							ifList.Elems[2] = &List{Elems: []Node{Symbol("do"), ifList.Elems[2], recurThen}}
 						}
-						body := &List{Elems: append([]Node{Symbol("do")}, bodyNodes...)}
-						loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}}, body}}
-						binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
-						return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
-					}
-				}
-			}
+                                               body := &List{Elems: append([]Node{Symbol("do")}, bodyNodes...)}
+                                               condExpr := Node(&List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}})
+                                               if bl, ok := cond.(BoolLit); (ok && bool(bl)) || boolSym(cond) {
+                                                       condExpr = Symbol(flagVar)
+                                               }
+                                               loopBody := &List{Elems: []Node{Symbol("when"), condExpr, body}}
+                                               binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
+                                               return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
+                                       }
+                               }
+                       }
 		}
 	}
 
