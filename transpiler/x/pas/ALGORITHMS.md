@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-22 13:26 GMT+7
+Last updated: 2025-08-22 14:32 GMT+7
 
-## Algorithms Golden Test Checklist (542/1077)
+## Algorithms Golden Test Checklist (546/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -738,29 +738,29 @@ Last updated: 2025-08-22 13:26 GMT+7
 | 729 | neural_network/activation_functions/softplus | ✓ | 0ns | 0B |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 1.0µs | 0B |
 | 731 | neural_network/activation_functions/swish | ✓ | 0ns | 0B |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 348.0µs | 0B |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 366.0µs | 0B |
 | 733 | neural_network/convolution_neural_network | ✓ | 1.0µs | 0B |
 | 734 | neural_network/input_data | ✓ | 0ns | 0B |
-| 735 | neural_network/simple_neural_network | ✓ | 105.0µs | 0B |
+| 735 | neural_network/simple_neural_network | ✓ | 104.0µs | 0B |
 | 736 | neural_network/two_hidden_layers_neural_network | ✓ | 1.0µs | 0B |
 | 737 | other/activity_selection | ✓ | 0ns | 128B |
-| 738 | other/alternative_list_arrange | ✓ | 0ns | 9.59KB |
+| 738 | other/alternative_list_arrange | error |  |  |
 | 739 | other/bankers_algorithm | ✓ | 0ns | 832B |
-| 740 | other/davis_putnam_logemann_loveland | ✓ | 1.0µs | 9.66KB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 0ns | 9.66KB |
 | 741 | other/doomsday | ✓ | 0ns | 3.66KB |
 | 742 | other/fischer_yates_shuffle | ✓ | 0ns | 1.12KB |
-| 743 | other/gauss_easter | ✓ | 0ns | 288B |
+| 743 | other/gauss_easter | error |  |  |
 | 744 | other/greedy | ✓ | 0ns | 6.41KB |
 | 745 | other/guess_the_number_search | ✓ | 0ns | 0B |
 | 746 | other/h_index | ✓ | 0ns | 128B |
-| 747 | other/least_recently_used | ✓ | 0ns | 4.56KB |
+| 747 | other/least_recently_used | ✓ | 1.0µs | 4.56KB |
 | 748 | other/lfu_cache | ✓ | 0ns | 0B |
 | 749 | other/linear_congruential_generator | error |  |  |
-| 750 | other/lru_cache | ✓ | 0ns | 1.44KB |
+| 750 | other/lru_cache | ✓ | 1.0µs | 1.44KB |
 | 751 | other/magicdiamondpattern | ✓ | 0ns | 0B |
 | 752 | other/majority_vote_algorithm | ✓ | 0ns | 0B |
 | 753 | other/maximum_subsequence | ✓ | 0ns | 64B |
-| 754 | other/nested_brackets | ✓ | 0ns | 2.66KB |
+| 754 | other/nested_brackets | ✓ | 1.0µs | 2.66KB |
 | 755 | other/number_container_system | ✓ | 0ns | 448B |
 | 756 | other/quine | ✓ | 0ns | 0B |
 | 757 | other/scoring_algorithm | ✓ | 0ns | 608B |
@@ -770,12 +770,12 @@ Last updated: 2025-08-22 13:26 GMT+7
 | 761 | physics/altitude_pressure | ✓ | 0ns | 64B |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 0ns | 0B |
 | 763 | physics/basic_orbital_capture | error |  |  |
-| 764 | physics/casimir_effect | ✓ | 0ns | 4.31KB |
+| 764 | physics/casimir_effect | error |  |  |
 | 765 | physics/center_of_mass | ✓ | 0ns | 128B |
 | 766 | physics/centripetal_force | ✓ | 0ns | 0B |
 | 767 | physics/coulombs_law | ✓ | 0ns | 0B |
 | 768 | physics/doppler_frequency | ✓ | 0ns | 0B |
-| 769 | physics/escape_velocity | ✓ | 0ns | 0B |
+| 769 | physics/escape_velocity | ✓ | 1.0µs | 0B |
 | 770 | physics/grahams_law | ✓ | 0ns | 0B |
 | 771 | physics/horizontal_projectile_motion | ✓ | 0ns | 0B |
 | 772 | physics/hubble_parameter | ✓ | 0ns | 0B |
@@ -783,7 +783,7 @@ Last updated: 2025-08-22 13:26 GMT+7
 | 774 | physics/in_static_equilibrium | ✓ | 0ns | 2.12KB |
 | 775 | physics/kinetic_energy | ✓ | 0ns | 0B |
 | 776 | physics/lens_formulae | ✓ | 0ns | 64B |
-| 777 | physics/lorentz_transformation_four_vector | ✓ | 0ns | 512B |
+| 777 | physics/lorentz_transformation_four_vector | error |  |  |
 | 778 | physics/malus_law | ✓ | 0ns | 0B |
 | 779 | physics/mass_energy_equivalence | ✓ | 0ns | 64B |
 | 780 | physics/mirror_formulae | ✓ | 0ns | 0B |
@@ -806,16 +806,16 @@ Last updated: 2025-08-22 13:26 GMT+7
 | 797 | project_euler/problem_001/sol3 | ✓ | 0ns | 64B |
 | 798 | project_euler/problem_001/sol4 | ✓ | 2.0µs | 0B |
 | 799 | project_euler/problem_001/sol5 | ✓ | 0ns | 64B |
-| 800 | project_euler/problem_001/sol6 |   |  |  |
-| 801 | project_euler/problem_001/sol7 |   |  |  |
-| 802 | project_euler/problem_002/sol1 |   |  |  |
-| 803 | project_euler/problem_002/sol2 |   |  |  |
-| 804 | project_euler/problem_002/sol3 |   |  |  |
-| 805 | project_euler/problem_002/sol4 |   |  |  |
-| 806 | project_euler/problem_002/sol5 |   |  |  |
-| 807 | project_euler/problem_003/sol1 |   |  |  |
-| 808 | project_euler/problem_003/sol2 |   |  |  |
-| 809 | project_euler/problem_003/sol3 |   |  |  |
+| 800 | project_euler/problem_001/sol6 | ✓ | 0ns | 0B |
+| 801 | project_euler/problem_001/sol7 | ✓ | 0ns | 64B |
+| 802 | project_euler/problem_002/sol1 | ✓ | 0ns | 128B |
+| 803 | project_euler/problem_002/sol2 | ✓ | 0ns | 128B |
+| 804 | project_euler/problem_002/sol3 | ✓ | 0ns | 128B |
+| 805 | project_euler/problem_002/sol4 | ✓ | 0ns | 0B |
+| 806 | project_euler/problem_002/sol5 | ✓ | 0ns | 64B |
+| 807 | project_euler/problem_003/sol1 | ✓ | 0ns | 0B |
+| 808 | project_euler/problem_003/sol2 | error |  |  |
+| 809 | project_euler/problem_003/sol3 | error |  |  |
 | 810 | project_euler/problem_004/sol1 |   |  |  |
 | 811 | project_euler/problem_004/sol2 |   |  |  |
 | 812 | project_euler/problem_005/sol1 |   |  |  |

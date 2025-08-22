@@ -647,7 +647,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprintf(w, "%s(", c.Name)
 			c.Args[0].emit(w)
 			io.WriteString(w, ", ")
-			if strings.HasPrefix(t, "array of integer") {
+			if strings.HasPrefix(t, "array of int64") {
 				io.WriteString(w, "IntArray(")
 				l.emit(w)
 				io.WriteString(w, ")")
@@ -1419,8 +1419,8 @@ func (p *Program) Emit() []byte {
 		if p.ArrayAliases == nil {
 			p.ArrayAliases = make(map[string]string)
 		}
-		if _, ok := p.ArrayAliases["integer"]; !ok {
-			p.ArrayAliases["integer"] = "IntArray"
+		if _, ok := p.ArrayAliases["int64"]; !ok {
+			p.ArrayAliases["int64"] = "IntArray"
 		}
 	}
 	if p.NeedShowList2 || p.NeedListStr2 {
@@ -1595,17 +1595,17 @@ end;
 		delete(p.ArrayAliases, "Variant")
 	}
 	if p.NeedContains {
-		buf.WriteString("function contains(xs: array of integer; v: integer): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
+		buf.WriteString("function contains(xs: array of int64; v: int64): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
 		buf.WriteString("function contains(xs: array of string; v: string): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
 	}
 	if p.NeedAvg {
-		buf.WriteString("function avg(xs: array of integer): real;\nvar i, s: integer;\nbegin\n  if Length(xs) = 0 then begin avg := 0; exit; end;\n  s := 0;\n  for i := 0 to High(xs) do s := s + xs[i];\n  avg := s / Length(xs);\nend;\n")
+		buf.WriteString("function avg(xs: array of int64): real;\nvar i, s: integer;\nbegin\n  if Length(xs) = 0 then begin avg := 0; exit; end;\n  s := 0;\n  for i := 0 to High(xs) do s := s + xs[i];\n  avg := s / Length(xs);\nend;\n")
 	}
 	if p.NeedMin {
-		buf.WriteString("function min(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin min := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] < m then m := xs[i];\n  min := m;\nend;\n")
+		buf.WriteString("function min(xs: array of int64): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin min := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] < m then m := xs[i];\n  min := m;\nend;\n")
 	}
 	if p.NeedMax {
-		buf.WriteString("function max(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
+		buf.WriteString("function max(xs: array of int64): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
 	}
 	if p.NeedMinReal {
 		buf.WriteString("function min_real(xs: array of real): real;\nvar i: integer; m: real;\nbegin\n  if Length(xs) = 0 then begin min_real := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] < m then m := xs[i];\n  min_real := m;\nend;\n")
@@ -1620,7 +1620,7 @@ end;
 		buf.WriteString("function indexOf(s: string; ch: string): integer;\nbegin\n  Result := Pos(ch, s);\n  if Result = 0 then Result := -1 else Dec(Result);\nend;\n")
 	}
 	if p.NeedShowList || p.NeedShowList2 {
-		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
+		buf.WriteString("procedure show_list(xs: array of int64);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
 	}
 	if p.NeedShowListReal {
 		buf.WriteString("procedure show_list_real(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
@@ -1660,7 +1660,7 @@ end;
 `)
 	}
 	if p.NeedListStr2 {
-		buf.WriteString(`function list_int_to_str(xs: array of integer): string;
+		buf.WriteString(`function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -1940,7 +1940,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							}
 						} else if strings.HasPrefix(t, "specialize TFPGMap") {
 							tt := strings.ToLower(t)
-							if strings.Contains(tt, "tfpgmap<integer") && (strings.Contains(tt, "intarray") || strings.Contains(tt, "array of integer")) {
+							if strings.Contains(tt, "tfpgmap<int64") && (strings.Contains(tt, "intarray") || strings.Contains(tt, "array of int64")) {
 								pr.NeedShowMapIntArray = true
 							} else if strings.Contains(tt, "tfpgmap<string, real>") {
 								pr.NeedShowMapReal = true
@@ -2238,7 +2238,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							typ = pasTypeFromType(tt)
 						}
 					}
-					if typ != "" && (!ok || existing == "" || existing == "array of integer") {
+					if typ != "" && (!ok || existing == "" || existing == "array of int64") {
 						varTypes[name] = typ
 						setVarType(name, typ)
 					}
@@ -3022,7 +3022,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						}
 					} else if strings.HasPrefix(t, "specialize TFPGMap") {
 						tt := strings.ToLower(t)
-						if strings.Contains(tt, "tfpgmap<integer") && (strings.Contains(tt, "intarray") || strings.Contains(tt, "array of integer")) {
+						if strings.Contains(tt, "tfpgmap<int64") && (strings.Contains(tt, "intarray") || strings.Contains(tt, "array of int64")) {
 							currProg.NeedShowMapIntArray = true
 						} else if strings.Contains(tt, "tfpgmap<string, real>") {
 							currProg.NeedShowMapReal = true
@@ -4522,7 +4522,7 @@ func typeOf(e *parser.Expr, env *types.Env) string {
 		} else if _, ok := v.Elem.(types.BoolType); ok {
 			return "array of boolean"
 		}
-		return "array of integer"
+		return "array of int64"
 	case types.StructType:
 		return v.Name
 	case types.StringType:
@@ -4627,7 +4627,7 @@ func pasTypeFromType(t types.Type) string {
 	case types.BoolType:
 		return "boolean"
 	case types.IntType, types.Int64Type:
-		return "integer"
+		return "int64"
 	case types.FloatType:
 		return "real"
 	case types.BigRatType:
@@ -4749,20 +4749,27 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					name = mapped
 				}
 				if name == "json" && len(args) == 1 {
-					currProg.NeedJSON = true
 					t := inferType(args[0])
-					if strings.HasPrefix(t, "array of real") || t == "RealArray" {
+					switch {
+					case strings.HasPrefix(t, "array of real") || t == "RealArray":
+						currProg.NeedJSON = true
 						_ = currProg.addArrayAlias("real")
 						currProg.NeedJSONReal = true
 						expr = &CallExpr{Name: "json", Args: args}
-					} else if strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || t == "IntArrayArray" {
+					case strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || t == "IntArrayArray":
+						currProg.NeedJSON = true
 						arr := currProg.addArrayAlias("integer")
 						_ = currProg.addArrayAlias(arr)
 						expr = &CallExpr{Name: name, Args: args}
-					} else {
+					case strings.HasPrefix(t, "array of"):
+						currProg.NeedJSON = true
 						arr := currProg.addArrayAlias("integer")
 						_ = currProg.addArrayAlias(arr)
 						expr = &CallExpr{Name: "json_intarray", Args: args}
+					case t == "integer" || t == "real":
+						expr = &CallExpr{Name: "writeln", Args: args}
+					default:
+						expr = &CallExpr{Name: "writeln", Args: args}
 					}
 				} else if name == "to_float" && len(args) == 1 {
 					currProg.NeedToFloat = true
