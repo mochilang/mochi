@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-19 16:49 GMT+7
+Last updated: 2025-08-22 13:19 GMT+7
 
-## Algorithms Golden Test Checklist (782/1077)
+## Algorithms Golden Test Checklist (789/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -738,7 +738,7 @@ Last updated: 2025-08-19 16:49 GMT+7
 | 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 50.688ms | 20.41MB |
 | 731 | neural_network/activation_functions/swish | error | 74.303ms | 22.98MB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 3.842242s | 32.02MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 5.591598s | 33.14MB |
 | 733 | neural_network/convolution_neural_network | ✓ | 371.368ms | 32.99MB |
 | 734 | neural_network/input_data | ✓ | 63.644ms | 22.08MB |
 | 735 | neural_network/simple_neural_network | ✓ | 10.584167s | 21.80MB |
@@ -746,14 +746,14 @@ Last updated: 2025-08-19 16:49 GMT+7
 | 737 | other/activity_selection | ✓ | 28.536ms | 19.62MB |
 | 738 | other/alternative_list_arrange | ✓ | 34.852ms | 21.28MB |
 | 739 | other/bankers_algorithm | ✓ | 36.045ms | 25.03MB |
-| 740 | other/davis_putnam_logemann_loveland | error | 42.769ms | 25.08MB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 55.513ms | 25.26MB |
 | 741 | other/doomsday | ✓ | 36.789ms | 20.60MB |
 | 742 | other/fischer_yates_shuffle | ✓ | 61.604ms | 21.32MB |
 | 743 | other/gauss_easter | ✓ | 36.104ms | 21.55MB |
 | 744 | other/greedy | ✓ | 42.604ms | 23.68MB |
 | 745 | other/guess_the_number_search | error |  |  |
 | 746 | other/h_index | ✓ | 37.277ms | 21.83MB |
-| 747 | other/least_recently_used | error |  |  |
+| 747 | other/least_recently_used | ✓ | 58.089ms | 22.97MB |
 | 748 | other/lfu_cache | ✓ | 51.11ms | 23.45MB |
 | 749 | other/linear_congruential_generator | ✓ | 40.463ms | 19.90MB |
 | 750 | other/lru_cache | ✓ | 35.158ms | 23.75MB |
@@ -769,25 +769,25 @@ Last updated: 2025-08-19 16:49 GMT+7
 | 760 | other/word_search | ✓ | 63.879ms | 25.85MB |
 | 761 | physics/altitude_pressure | ✓ | 35.52ms | 21.79MB |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 41.009ms | 19.90MB |
-| 763 | physics/basic_orbital_capture | error |  |  |
+| 763 | physics/basic_orbital_capture | ✓ |  |  |
 | 764 | physics/casimir_effect | ✓ | 41.182ms | 22.13MB |
 | 765 | physics/center_of_mass | ✓ | 38.971ms | 21.55MB |
 | 766 | physics/centripetal_force | ✓ | 33.724ms | 21.16MB |
 | 767 | physics/coulombs_law | ✓ | 38.288ms | 20.74MB |
-| 768 | physics/doppler_frequency | error | 51.127ms | 20.42MB |
+| 768 | physics/doppler_frequency | ✓ | 53.437ms | 21.02MB |
 | 769 | physics/escape_velocity | ✓ | 43.555ms | 21.85MB |
-| 770 | physics/grahams_law | error |  |  |
-| 771 | physics/horizontal_projectile_motion | error |  |  |
+| 770 | physics/grahams_law | ✓ | 62.969ms | 22.98MB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 62.235ms | 23.70MB |
 | 772 | physics/hubble_parameter | ✓ | 40.268ms | 21.81MB |
 | 773 | physics/ideal_gas_law | ✓ | 40.596ms | 21.21MB |
-| 774 | physics/in_static_equilibrium | error |  |  |
+| 774 | physics/in_static_equilibrium | ✓ | 58.507ms | 23.85MB |
 | 775 | physics/kinetic_energy | ✓ | 35.189ms | 20.18MB |
 | 776 | physics/lens_formulae | ✓ | 31.787ms | 20.65MB |
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 51.702ms | 23.31MB |
 | 778 | physics/malus_law | ✓ | 32.303ms | 21.75MB |
 | 779 | physics/mass_energy_equivalence | ✓ | 34.311ms | 20.11MB |
 | 780 | physics/mirror_formulae | ✓ | 34.688ms | 22.11MB |
-| 781 | physics/n_body_simulation | ✓ | 42.19ms | 25.72MB |
+| 781 | physics/n_body_simulation | ✓ | 62.65ms | 25.74MB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 31.563ms | 21.83MB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 41.223ms | 19.80MB |
 | 784 | physics/orbital_transfer_work | ✓ | 34.893ms | 23.17MB |

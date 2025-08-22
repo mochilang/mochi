@@ -1,7 +1,0 @@
-run: exit status 1
-false
-Execution error (NumberFormatException) at java.lang.NumberFormatException/forInputString (NumberFormatException.java:67).
-For input string: "0.0"
-
-Full report at:
-/tmp/clojure-4620530297546038010.edn

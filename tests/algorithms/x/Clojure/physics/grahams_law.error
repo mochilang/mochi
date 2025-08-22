@@ -1,6 +1,0 @@
-run: exit status 1
-Execution error (NumberFormatException) at java.lang.NumberFormatException/forInputString (NumberFormatException.java:67).
-For input string: "999999.0694885254"
-
-Full report at:
-/tmp/clojure-43203846949625980.edn

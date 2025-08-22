@@ -1,5 +1,5 @@
-Execution error (NumberFormatException) at java.lang.NumberFormatException/forInputString (NumberFormatException.java:67).
-For input string: "1408943.028146215"
-
-Full report at:
-/tmp/clojure-344089409304258166.edn
+1.408943
+1.408943
+0.709752
+0.507524
+1.970351

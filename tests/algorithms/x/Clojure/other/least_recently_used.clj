@@ -79,20 +79,22 @@
 (defn cache_repr [cache_repr_cache]
   (binding [cache_repr_i nil cache_repr_res nil] (try (do (set! cache_repr_res (str (str "LRUCache(" (mochi_str (:max_capacity cache_repr_cache))) ") => [")) (set! cache_repr_i 0) (while (< cache_repr_i (count (:store cache_repr_cache))) (do (set! cache_repr_res (str cache_repr_res (repr_item (get (:store cache_repr_cache) cache_repr_i)))) (when (< cache_repr_i (- (count (:store cache_repr_cache)) 1)) (set! cache_repr_res (str cache_repr_res ", "))) (set! cache_repr_i (+ cache_repr_i 1)))) (set! cache_repr_res (str cache_repr_res "]")) (throw (ex-info "return" {:v cache_repr_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_lru (new_cache 4))
+(def ^:dynamic main_lru nil)
 
-(def ^:dynamic main_r (cache_repr main_lru))
+(def ^:dynamic main_r nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_lru) (constantly (new_cache 4)))
       (alter-var-root (var main_lru) (constantly (refer main_lru "A")))
       (alter-var-root (var main_lru) (constantly (refer main_lru "2")))
       (alter-var-root (var main_lru) (constantly (refer main_lru "3")))
       (alter-var-root (var main_lru) (constantly (refer main_lru "A")))
       (alter-var-root (var main_lru) (constantly (refer main_lru "4")))
       (alter-var-root (var main_lru) (constantly (refer main_lru "5")))
+      (alter-var-root (var main_r) (constantly (cache_repr main_lru)))
       (println main_r)
       (when (not= main_r "LRUCache(4) => [5, 4, 'A', 3]") (throw (Exception. "Assertion error")))
       (System/gc)
