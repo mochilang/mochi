@@ -4626,6 +4626,59 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func literalBool(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return false, false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
+		return bool(*p.Target.Lit.Bool), true
+	}
+	return false, false
+}
+
+func parseLoadOptions(e *parser.Expr) (format, delim string, header bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if !ok {
+			continue
+		}
+		switch key {
+		case "format":
+			if s, ok := literalString(it.Value); ok {
+				format = s
+			}
+		case "delimiter":
+			if s, ok := literalString(it.Value); ok {
+				delim = s
+			}
+		case "header":
+			if b, ok := literalBool(it.Value); ok {
+				header = b
+			}
+		}
+	}
+	return
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -6499,12 +6552,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.Load != nil:
-		format := parseFormat(p.Load.With)
+		format, delim, header := parseLoadOptions(p.Load.With)
 		path := ""
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
 		}
-		expr, err := dataExprFromFile(path, format, p.Load.Type)
+		expr, err := dataExprFromFile(path, format, delim, header, p.Load.Type)
 		if err != nil {
 			return nil, err
 		}
@@ -8579,7 +8632,7 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 	}
 }
 
-func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+func dataExprFromFile(path, format, delim string, header bool, typ *parser.TypeRef) (Expr, error) {
 	if path == "" {
 		return &ListLit{}, nil
 	}
@@ -8622,10 +8675,56 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 			}
 		}
 		v = arr
+	case "csv", "tsv":
+		if delim == "" {
+			if format == "tsv" {
+				delim = "\t"
+			} else {
+				delim = ","
+			}
+		}
+		v = parseDelimited(data, delim, header)
 	default:
-		return nil, fmt.Errorf("unsupported load format")
+		if delim != "" {
+			v = parseDelimited(data, delim, header)
+		} else {
+			return nil, fmt.Errorf("unsupported load format")
+		}
 	}
 	return valueToExpr(v, typ), nil
+}
+
+func parseDelimited(data []byte, delim string, header bool) []interface{} {
+	lines := bytes.Split(data, []byte{'\n'})
+	var headers []string
+	var rows []interface{}
+	for _, line := range lines {
+		line = bytes.TrimSpace(line)
+		if len(line) == 0 {
+			continue
+		}
+		cols := strings.Split(string(line), delim)
+		if headers == nil {
+			if header {
+				headers = cols
+				continue
+			}
+			headers = make([]string, len(cols))
+			for i := range cols {
+				headers[i] = fmt.Sprintf("c%d", i)
+			}
+		}
+		m := make(map[string]interface{}, len(headers))
+		for i, h := range headers {
+			val := ""
+			if i < len(cols) {
+				val = cols[i]
+			}
+			m[h] = val
+		}
+		rows = append(rows, m)
+	}
+	return rows
 }
 
 func simpleIdent(e *parser.Expr) (string, bool) {
