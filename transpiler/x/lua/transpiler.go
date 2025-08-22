@@ -82,7 +82,11 @@ local function _len(v)
     return #v.items
   elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then
     local c = 0
-    for _ in pairs(v) do c = c + 1 end
+    for k in pairs(v) do
+      if k ~= '__name' and k ~= '__order' then
+        c = c + 1
+      end
+    end
     return c
   elseif type(v) == 'string' then
     local l = utf8.len(v)
