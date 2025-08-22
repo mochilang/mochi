@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -5373,8 +5372,9 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		}
 		if pr.Lit.Float != nil {
 			v := *pr.Lit.Float
-			s := strconv.FormatFloat(v, 'f', -1, 64)
-			if math.Trunc(v) == v && !strings.Contains(s, ".") {
+			// Use maximum precision for floats to minimize rounding errors
+			s := strconv.FormatFloat(v, 'g', 17, 64)
+			if !strings.ContainsAny(s, ".eE") {
 				s += ".0"
 			}
 			return &LitExpr{Value: s, IsString: false}, nil
@@ -6358,8 +6358,9 @@ func valueToExpr(env *types.Env, v interface{}, typ *parser.TypeRef) Expr {
 		return &LitExpr{Value: fmt.Sprintf("%v", val)}
 	case float64, float32:
 		f := reflect.ValueOf(val).Float()
-		s := strconv.FormatFloat(f, 'f', -1, 64)
-		if math.Trunc(f) == f && !strings.Contains(s, ".") {
+		// Emit floats with high precision to preserve accuracy
+		s := strconv.FormatFloat(f, 'g', 17, 64)
+		if !strings.ContainsAny(s, ".eE") {
 			s += ".0"
 		}
 		return &LitExpr{Value: s}
