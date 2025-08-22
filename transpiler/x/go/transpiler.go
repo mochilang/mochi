@@ -6899,9 +6899,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "read_file":
 			usesReadFile = true
 			return &CallExpr{Func: "read_file", Args: args}, nil
-		case "ord":
-			usesOrd = true
-			return &CallExpr{Func: "ord", Args: args}, nil
+               case "ord":
+                       if _, err := env.GetVar(name); err == nil {
+                               break
+                       }
+                       usesOrd = true
+                       return &CallExpr{Func: "_ord", Args: args}, nil
 		case "sqrt":
 			if imports != nil {
 				imports["math"] = "math"
@@ -7866,18 +7869,18 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    return b-a < 1e-6\n")
 		buf.WriteString("}\n\n")
 	}
-	if prog.UseOrd {
-		buf.WriteString("func ord(v any) any {\n")
-		buf.WriteString("    switch s := v.(type) {\n")
-		buf.WriteString("    case string:\n")
-		buf.WriteString("        r := []rune(s)\n")
-		buf.WriteString("        if len(r) == 0 { return 0 }\n")
-		buf.WriteString("        return int(r[0])\n")
-		buf.WriteString("    default:\n")
-		buf.WriteString("        return 0\n")
-		buf.WriteString("    }\n")
-		buf.WriteString("}\n\n")
-	}
+       if prog.UseOrd {
+               buf.WriteString("func _ord(v any) any {\n")
+                buf.WriteString("    switch s := v.(type) {\n")
+                buf.WriteString("    case string:\n")
+                buf.WriteString("        r := []rune(s)\n")
+                buf.WriteString("        if len(r) == 0 { return 0 }\n")
+                buf.WriteString("        return int(r[0])\n")
+                buf.WriteString("    default:\n")
+                buf.WriteString("        return 0\n")
+                buf.WriteString("    }\n")
+                buf.WriteString("}\n\n")
+        }
 	if prog.UseReadFile {
 		buf.WriteString("func read_file(path string) string {\n")
 		buf.WriteString("    b, err := os.ReadFile(path)\n")
