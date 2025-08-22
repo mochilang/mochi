@@ -1,0 +1,65 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c: In function ‘next_batch’:
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:229:51: warning: passing argument 1 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  229 |         long long batch_images = concat_long_long(images_rest, images_rest_len, images_new, images_new_len);
+      |                                                   ^~~~~~~~~~~
+      |                                                   |
+      |                                                   long long int **
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:74:47: note: expected ‘long long int *’ but argument is of type ‘long long int **’
+   74 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                    ~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:229:81: warning: passing argument 3 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  229 |         long long batch_images = concat_long_long(images_rest, images_rest_len, images_new, images_new_len);
+      |                                                                                 ^~~~~~~~~~
+      |                                                                                 |
+      |                                                                                 long long int **
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:74:81: note: expected ‘const long long int *’ but argument is of type ‘long long int **’
+   74 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                                                ~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:229:34: warning: initialization of ‘long long int’ from ‘long long int *’ makes integer from pointer without a cast [-Wint-conversion]
+  229 |         long long batch_images = concat_long_long(images_rest, images_rest_len, images_new, images_new_len);
+      |                                  ^~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:230:51: warning: passing argument 1 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  230 |         long long batch_labels = concat_long_long(labels_rest, labels_rest_len, labels_new, labels_new_len);
+      |                                                   ^~~~~~~~~~~
+      |                                                   |
+      |                                                   long long int **
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:74:47: note: expected ‘long long int *’ but argument is of type ‘long long int **’
+   74 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                    ~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:230:81: warning: passing argument 3 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  230 |         long long batch_labels = concat_long_long(labels_rest, labels_rest_len, labels_new, labels_new_len);
+      |                                                                                 ^~~~~~~~~~
+      |                                                                                 |
+      |                                                                                 long long int **
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:74:81: note: expected ‘const long long int *’ but argument is of type ‘long long int **’
+   74 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                                                ~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:230:34: warning: initialization of ‘long long int’ from ‘long long int *’ makes integer from pointer without a cast [-Wint-conversion]
+  230 |         long long batch_labels = concat_long_long(labels_rest, labels_rest_len, labels_new, labels_new_len);
+      |                                  ^~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:59: warning: initialization of ‘long long int **’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  232 |         return (BatchResult){.dataset = new_ds, .images = batch_images, .images_len = batch_images_len, .images_lens = batch_images_lens, .images_lens_len = batch_images_len, .labels = batch_labels, .labels_len = batch_labels_len, .labels_lens = batch_labels_lens, .labels_lens_len = batch_labels_len};
+      |                                                           ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:59: note: (near initialization for ‘(anonymous).images’)
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:87: error: ‘batch_images_len’ undeclared (first use in this function); did you mean ‘batch_images’?
+  232 |         return (BatchResult){.dataset = new_ds, .images = batch_images, .images_len = batch_images_len, .images_lens = batch_images_lens, .images_lens_len = batch_images_len, .labels = batch_labels, .labels_len = batch_labels_len, .labels_lens = batch_labels_lens, .labels_lens_len = batch_labels_len};
+      |                                                                                       ^~~~~~~~~~~~~~~~
+      |                                                                                       batch_images
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:87: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:120: error: ‘batch_images_lens’ undeclared (first use in this function); did you mean ‘batch_images’?
+  232 |         return (BatchResult){.dataset = new_ds, .images = batch_images, .images_len = batch_images_len, .images_lens = batch_images_lens, .images_lens_len = batch_images_len, .labels = batch_labels, .labels_len = batch_labels_len, .labels_lens = batch_labels_lens, .labels_lens_len = batch_labels_len};
+      |                                                                                                                        ^~~~~~~~~~~~~~~~~
+      |                                                                                                                        batch_images
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:186: warning: initialization of ‘long long int **’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  232 |         return (BatchResult){.dataset = new_ds, .images = batch_images, .images_len = batch_images_len, .images_lens = batch_images_lens, .images_lens_len = batch_images_len, .labels = batch_labels, .labels_len = batch_labels_len, .labels_lens = batch_labels_lens, .labels_lens_len = batch_labels_len};
+      |                                                                                                                                                                                          ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:186: note: (near initialization for ‘(anonymous).labels’)
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:214: error: ‘batch_labels_len’ undeclared (first use in this function); did you mean ‘batch_labels’?
+  232 |         return (BatchResult){.dataset = new_ds, .images = batch_images, .images_len = batch_images_len, .images_lens = batch_images_lens, .images_lens_len = batch_images_len, .labels = batch_labels, .labels_len = batch_labels_len, .labels_lens = batch_labels_lens, .labels_lens_len = batch_labels_len};
+      |                                                                                                                                                                                                                      ^~~~~~~~~~~~~~~~
+      |                                                                                                                                                                                                                      batch_labels
+/workspace/mochi/tests/algorithms/x/C/neural_network/input_data.c:232:247: error: ‘batch_labels_lens’ undeclared (first use in this function); did you mean ‘batch_labels’?
+  232 |         return (BatchResult){.dataset = new_ds, .images = batch_images, .images_len = batch_images_len, .images_lens = batch_images_lens, .images_lens_len = batch_images_len, .labels = batch_labels, .labels_len = batch_labels_len, .labels_lens = batch_labels_lens, .labels_lens_len = batch_labels_len};
+      |                                                                                                                                                                                                                                                       ^~~~~~~~~~~~~~~~~
+      |                                                                                                                                                                                                                                                       batch_labels
