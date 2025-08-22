@@ -97,6 +97,9 @@ var methodFuncs map[string]struct{}
 // definedFuncs maps top-level function names to their arity.
 var definedFuncs map[string]int
 
+// dataDir holds the directory of the current program for read_file helper.
+var dataDir string
+
 func isGlobalVar(name string) bool {
 	_, ok := globalVars[name]
 	return ok
@@ -2040,6 +2043,11 @@ func Emit(p *Program, benchMain bool) []byte {
 	}
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
+	if dataDir != "" {
+		fmt.Fprintf(&buf, "  @data_dir %q\n", dataDir)
+	} else {
+		buf.WriteString("  @data_dir nil\n")
+	}
 	if ex := kernelImportExcepts(); len(ex) > 0 {
 		buf.WriteString("  import Kernel, except: [")
 		buf.WriteString(strings.Join(ex, ", "))
@@ -2070,8 +2078,14 @@ func Emit(p *Program, benchMain bool) []byte {
 	if usedHelpers["bigrat"] {
 		buf.WriteString(bigRatHelper(1))
 	}
+	if usedHelpers["ord"] {
+		buf.WriteString(ordHelper(1))
+	}
 	if usedHelpers["sha256"] {
 		buf.WriteString(sha256Helper(1))
+	}
+	if usedHelpers["read_file"] {
+		buf.WriteString(readFileHelper(1))
 	}
 	if usedHelpers["getenv"] {
 		buf.WriteString(getenvHelper(1))
@@ -2207,6 +2221,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	methodFuncs = make(map[string]struct{})
 	definedFuncs = make(map[string]int)
 	usedHelpers = make(map[string]bool)
+	dataDir = ""
 	moduleMode = false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
@@ -2261,6 +2276,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				res.Stmts = append(res.Stmts, stmt)
 			}
 		}
+	}
+	if usedHelpers["read_file"] {
+		dataDir = filepath.Dir(prog.Pos.Filename)
 	}
 	_ = env
 	return res, nil
@@ -4318,10 +4336,20 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				}
 				return &CallExpr{Func: "Enum.member?", Args: []Expr{args[0], args[1]}}, nil
 			}
+		case "ord":
+			if len(args) == 1 {
+				usedHelpers["ord"] = true
+				return &CallExpr{Func: "_ord", Args: []Expr{args[0]}}, nil
+			}
 		case "sha256":
 			if len(args) == 1 {
 				usedHelpers["sha256"] = true
 				return &CallExpr{Func: "_sha256", Args: []Expr{args[0]}}, nil
+			}
+		case "read_file":
+			if len(args) == 1 {
+				usedHelpers["read_file"] = true
+				return &CallExpr{Func: "_read_file", Args: []Expr{args[0]}}, nil
 			}
 		case "json":
 			if len(args) == 1 {
@@ -4713,6 +4741,18 @@ func toiHelper(indent int) string {
 	return buf.String()
 }
 
+func ordHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _ord(s) do\n")
+	buf.WriteString(pad + "  case String.to_charlist(s) do\n")
+	buf.WriteString(pad + "    [c | _] -> c\n")
+	buf.WriteString(pad + "    _ -> 0\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
 func bigRatHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
@@ -4808,6 +4848,23 @@ func fetchHelper(indent int) string {
 	buf.WriteString(pad + "        [title | _] -> title\n")
 	buf.WriteString(pad + "        _ -> \"\"\n")
 	buf.WriteString(pad + "      end\n")
+	buf.WriteString(pad + "    _ -> \"\"\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func readFileHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _read_file(path) do\n")
+	buf.WriteString(pad + "  p = if @data_dir != nil and @data_dir != \"\" and not File.exists?(path) do\n")
+	buf.WriteString(pad + "    Path.join(@data_dir, path)\n")
+	buf.WriteString(pad + "  else\n")
+	buf.WriteString(pad + "    path\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "  case File.read(p) do\n")
+	buf.WriteString(pad + "    {:ok, data} -> data\n")
 	buf.WriteString(pad + "    _ -> \"\"\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")

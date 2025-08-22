@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-22 14:43 GMT+7
+Last updated: 2025-08-22 15:49 GMT+7
 
-## Algorithms Golden Test Checklist (853/1077)
+## Algorithms Golden Test Checklist (854/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -878,7 +878,7 @@ Last updated: 2025-08-22 14:43 GMT+7
 | 869 | project_euler/problem_039/sol1 |   |  |  |
 | 870 | project_euler/problem_040/sol1 |   |  |  |
 | 871 | project_euler/problem_041/sol1 |   |  |  |
-| 872 | project_euler/problem_042/solution42 |   |  |  |
+| 872 | project_euler/problem_042/solution42 | ✓ | 1m54.743418s | 1.7 GB |
 | 873 | project_euler/problem_043/sol1 |   |  |  |
 | 874 | project_euler/problem_044/sol1 |   |  |  |
 | 875 | project_euler/problem_045/sol1 |   |  |  |
