@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (677/1077) - Last updated 2025-08-19 17:31 +0700:
+Checklist of programs that currently transpile and run (675/1077) - Last updated 2025-08-22 13:08 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -721,21 +721,21 @@ Checklist of programs that currently transpile and run (677/1077) - Last updated
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 372us | 1.6 MB |
 | 715 | matrix/sherman_morrison | ✓ | 653us | 1.6 MB |
 | 716 | matrix/spiral_print | ✓ | 382us | 1.5 MB |
-| 717 | matrix/tests/test_matrix_operation | ✓ | 530us | 1.6 MB |
+| 717 | matrix/tests/test_matrix_operation |  |  |  |
 | 718 | matrix/validate_sudoku_board | ✓ | 1.04ms | 1.4 MB |
-| 719 | networking_flow/ford_fulkerson | ✓ | 270us | 1.6 MB |
-| 720 | networking_flow/minimum_cut | ✓ | 310us | 1.6 MB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 310us | 1.5 MB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 365us | 1.5 MB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 290us | 1.6 MB |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 376us | 1.7 MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 491us | 2.1 MB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 301us | 1.6 MB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 286us | 1.8 MB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 354us | 2.1 MB |
-| 729 | neural_network/activation_functions/softplus | ✓ | 417us | 2.2 MB |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 664us | 1.7 MB |
-| 731 | neural_network/activation_functions/swish | ✓ | 406us | 1.7 MB |
+| 719 | networking_flow/ford_fulkerson |  |  |  |
+| 720 | networking_flow/minimum_cut | ✓ | 313us | 1.6 MB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 331us | 1.6 MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 822us | 1.7 MB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 354us | 1.6 MB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 514us | 1.6 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 438us | 2.1 MB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 639us | 1.6 MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 622us | 1.8 MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 399us | 2.1 MB |
+| 729 | neural_network/activation_functions/softplus | ✓ | 407us | 2.2 MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 618us | 1.7 MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 383us | 1.7 MB |
 | 732 | neural_network/back_propagation_neural_network |  |  |  |
 | 733 | neural_network/convolution_neural_network |  |  |  |
 | 734 | neural_network/input_data |  |  |  |

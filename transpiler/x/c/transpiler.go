@@ -410,14 +410,36 @@ func varBaseType(name string) string {
 }
 
 func fieldBaseType(varName, field string) string {
-	if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
-		if st, ok := structTypes[stName]; ok {
-			if ft, ok2 := st.Fields[field]; ok2 {
-				return strings.TrimSuffix(cTypeFromMochiType(ft), "[]")
-			}
-		}
-	}
-	return ""
+        if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
+                if st, ok := structTypes[stName]; ok {
+                        if ft, ok2 := st.Fields[field]; ok2 {
+                                return strings.TrimSuffix(cTypeFromMochiType(ft), "[]")
+                        }
+                }
+        }
+        return ""
+}
+
+func fieldCType(varName, field string) string {
+        if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
+                if st, ok := structTypes[stName]; ok {
+                        if ft, ok2 := st.Fields[field]; ok2 {
+                                return cTypeFromMochiType(ft)
+                        }
+                }
+        }
+        return ""
+}
+
+func fieldMochiType(varName, field string) types.Type {
+        if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
+                if st, ok := structTypes[stName]; ok {
+                        if ft, ok2 := st.Fields[field]; ok2 {
+                                return ft
+                        }
+                }
+        }
+        return nil
 }
 
 const version = "0.10.32"
@@ -2324,9 +2346,22 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		currentVarName = prevVar
 		currentVarType = prevType
 	}
-	io.WriteString(w, ";\n")
+        io.WriteString(w, ";\n")
 
-	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(a.Indexes) == 1 && len(a.Fields) == 0 {
+        if len(a.Indexes) == 0 && len(a.Fields) == 1 {
+                if ft := fieldCType(a.Name, a.Fields[0]); strings.HasSuffix(ft, "[]") {
+                        writeIndent(w, indent)
+                        sep := "."
+                        if t, ok := varTypes[a.Name]; ok && strings.HasSuffix(t, "*") {
+                                sep = "->"
+                        }
+                        fmt.Fprintf(w, "%s%s%s_len = ", a.Name, sep, a.Fields[0])
+                        emitLenExpr(w, a.Value)
+                        io.WriteString(w, ";\n")
+                }
+        }
+
+        if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(a.Indexes) == 1 && len(a.Fields) == 0 {
 		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[][][]") {
 			needListAppendSizeT = true
 			writeIndent(w, indent)
@@ -2369,9 +2404,9 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		}
 	}
 
-	if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-		if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
-			writeIndent(w, indent)
+        if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+                if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
+                        writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_lens = ({size_t *tmp = malloc(%d * sizeof(size_t)); ", a.Name, len(lst.Elems))
@@ -2391,19 +2426,26 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
 		}
-	}
+        }
 
-	if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, vr.Name)
+        if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+                if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
+                        writeIndent(w, indent)
+                        fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, vr.Name)
 			if strings.HasSuffix(vt, "[][]") && !strings.Contains(vt, "char[][]") {
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "%s_lens = %s_lens;\n", a.Name, vr.Name)
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "%s_lens_len = %s_lens_len;\n", a.Name, vr.Name)
-			}
-		}
+                }
+        }
+
+        if fe, ok := a.Value.(*FieldExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+                writeIndent(w, indent)
+                fmt.Fprintf(w, "%s_len = ", a.Name)
+                (&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+                io.WriteString(w, ";\n")
+        }
 	}
 
 	if call, ok := a.Value.(*CallExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
