@@ -2,7 +2,7 @@
 This directory contains the experimental Racket transpiler. Golden tests under `tests/vm/valid` check the generated code and its runtime output.
 
 ## Golden Test Checklist (103/105)
-Last updated: 2025-08-19 09:22 +0700
+Last updated: 2025-08-22 14:19 +0700
 
 - [x] append_builtin
 - [x] avg_builtin
