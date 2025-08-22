@@ -1,6 +1,0 @@
-run: exit status 1
-Execution error at main/test-doppler-effect (doppler_frequency.clj:42).
-test 1 failed
-
-Full report at:
-/tmp/clojure-13850381790985342564.edn

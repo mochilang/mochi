@@ -15,7 +15,7 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -64,7 +64,7 @@
 (def ^:dynamic main_TWO_PI nil)
 
 (defn _mod [_mod_x _mod_m]
-  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (quot _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (/ _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sin_approx [sin_approx_x]
   (binding [sin_approx_y nil sin_approx_y2 nil sin_approx_y3 nil sin_approx_y5 nil sin_approx_y7 nil] (try (do (set! sin_approx_y (- (_mod (+ sin_approx_x main_PI) main_TWO_PI) main_PI)) (set! sin_approx_y2 (* sin_approx_y sin_approx_y)) (set! sin_approx_y3 (* sin_approx_y2 sin_approx_y)) (set! sin_approx_y5 (* sin_approx_y3 sin_approx_y2)) (set! sin_approx_y7 (* sin_approx_y5 sin_approx_y2)) (throw (ex-info "return" {:v (- (+ (- sin_approx_y (/ sin_approx_y3 6.0)) (/ sin_approx_y5 120.0)) (/ sin_approx_y7 5040.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

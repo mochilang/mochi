@@ -30,7 +30,7 @@
 (def ^:dynamic doppler_effect_doppler_freq nil)
 
 (defn doppler_effect [doppler_effect_org_freq doppler_effect_wave_vel doppler_effect_obs_vel doppler_effect_src_vel]
-  (binding [doppler_effect_doppler_freq nil] (try (do (when (= doppler_effect_wave_vel doppler_effect_src_vel) (throw (Exception. "division by zero implies vs=v and observer in front of the source"))) (set! doppler_effect_doppler_freq (quot (* doppler_effect_org_freq (+ doppler_effect_wave_vel doppler_effect_obs_vel)) (- doppler_effect_wave_vel doppler_effect_src_vel))) (when (<= doppler_effect_doppler_freq 0.0) (throw (Exception. "non-positive frequency implies vs>v or v0>v (in the opposite direction)"))) (throw (ex-info "return" {:v doppler_effect_doppler_freq}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [doppler_effect_doppler_freq nil] (try (do (when (= doppler_effect_wave_vel doppler_effect_src_vel) (throw (Exception. "division by zero implies vs=v and observer in front of the source"))) (set! doppler_effect_doppler_freq (/ (* doppler_effect_org_freq (+ doppler_effect_wave_vel doppler_effect_obs_vel)) (- doppler_effect_wave_vel doppler_effect_src_vel))) (when (<= doppler_effect_doppler_freq 0.0) (throw (Exception. "non-positive frequency implies vs>v or v0>v (in the opposite direction)"))) (throw (ex-info "return" {:v doppler_effect_doppler_freq}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn absf [absf_x]
   (try (if (< absf_x 0.0) (- absf_x) absf_x) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

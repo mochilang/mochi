@@ -15,7 +15,7 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -62,7 +62,7 @@
 (def ^:dynamic main_g nil)
 
 (defn _mod [_mod_x _mod_m]
-  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (quot _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (- _mod_x (* (double (toi (/ _mod_x _mod_m))) _mod_m))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sin [sin_x]
   (binding [sin_y nil sin_y2 nil sin_y3 nil sin_y5 nil sin_y7 nil] (try (do (set! sin_y (- (_mod (+ sin_x main_PI) main_TWO_PI) main_PI)) (set! sin_y2 (* sin_y sin_y)) (set! sin_y3 (* sin_y2 sin_y)) (set! sin_y5 (* sin_y3 sin_y2)) (set! sin_y7 (* sin_y5 sin_y2)) (throw (ex-info "return" {:v (- (+ (- sin_y (/ sin_y3 6.0)) (/ sin_y5 120.0)) (/ sin_y7 5040.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -77,7 +77,7 @@
   (binding [pow10_i nil pow10_result nil] (try (do (set! pow10_result 1.0) (set! pow10_i 0) (while (< pow10_i pow10_n) (do (set! pow10_result (* pow10_result 10.0)) (set! pow10_i (+ pow10_i 1)))) (throw (ex-info "return" {:v pow10_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn round [round_x round_n]
-  (binding [round_m nil round_y nil] (try (do (set! round_m (pow10 round_n)) (set! round_y (floor (+ (* round_x round_m) 0.5))) (throw (ex-info "return" {:v (quot round_y round_m)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [round_m nil round_y nil] (try (do (set! round_m (pow10 round_n)) (set! round_y (floor (+ (* round_x round_m) 0.5))) (throw (ex-info "return" {:v (/ round_y round_m)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn check_args [check_args_init_velocity check_args_angle]
   (do (when (or (> check_args_angle 90.0) (< check_args_angle 1.0)) (throw (Exception. "Invalid angle. Range is 1-90 degrees."))) (when (< check_args_init_velocity 0.0) (throw (Exception. "Invalid velocity. Should be a positive number."))) check_args_init_velocity))

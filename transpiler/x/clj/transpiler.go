@@ -955,7 +955,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	pr.Forms = append(pr.Forms, splitFn)
 
 	toiFn := &Defn{Name: "toi", Params: []Node{Symbol("s")}, Body: []Node{
-		&List{Elems: []Node{Symbol("Integer/parseInt"), &List{Elems: []Node{Symbol("str"), Symbol("s")}}}},
+		&List{Elems: []Node{Symbol("int"), &List{Elems: []Node{Symbol("Double/valueOf"), &List{Elems: []Node{Symbol("str"), Symbol("s")}}}}}},
 	}}
 	pr.Forms = append(pr.Forms, toiFn)
 
@@ -1139,13 +1139,37 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			continue
 		}
 		if st.Var != nil {
-			n, err := transpileStmt(st)
-			if err != nil {
-				return nil, err
+			name := renameVar(st.Var.Name)
+			var v Node
+			var err error
+			if st.Var.Value != nil {
+				v, err = transpileExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				if st.Var.Type != nil {
+					v = defaultValue(st.Var.Type)
+				} else {
+					v = Symbol("nil")
+				}
 			}
-			if n != nil {
-				pr.Forms = append(pr.Forms, n)
+			if stringVars != nil && isStringNode(v) {
+				stringVars[name] = true
 			}
+			if stringListVars != nil && isStringListNode(v) {
+				stringListVars[name] = true
+			}
+			if mapVars != nil && isMapNode(v) {
+				mapVars[name] = true
+			}
+			pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("def"), Symbol("^:dynamic"), Symbol(name), Symbol("nil")}})
+			assign := &List{Elems: []Node{
+				Symbol("alter-var-root"),
+				&List{Elems: []Node{Symbol("var"), Symbol(name)}},
+				&List{Elems: []Node{Symbol("constantly"), v}},
+			}}
+			body = append(body, assign)
 			continue
 		}
 		n, err := transpileStmt(st)
@@ -1777,8 +1801,10 @@ func applyBinOp(op string, left, right Node) Node {
 	case "/":
 		// Clojure's `/` yields rational numbers when both operands are
 		// integers, whereas Mochi uses truncating integer division in
-		// that case. Use `quot` unless either operand is a float.
-		if !isFloatNode(left) && !isFloatNode(right) {
+		// that case. Use `quot` only when both operands are integers;
+		// otherwise fall back to `/` to preserve floating point
+		// semantics when type information is imprecise.
+		if isIntNode(left) && isIntNode(right) {
 			return &List{Elems: []Node{Symbol("quot"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol(sym), left, right}}
@@ -2205,6 +2231,22 @@ func isReturnThrow(n Node) bool {
 	if inner, ok := l.Elems[1].(*List); ok && len(inner.Elems) >= 2 {
 		if s, ok := inner.Elems[0].(Symbol); ok && s == "ex-info" {
 			if str, ok := inner.Elems[1].(StringLit); ok && string(str) == "return" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasRecur(n Node) bool {
+	if l, ok := n.(*List); ok {
+		if len(l.Elems) > 0 {
+			if sym, ok := l.Elems[0].(Symbol); ok && sym == "recur" {
+				return true
+			}
+		}
+		for _, e := range l.Elems {
+			if hasRecur(e) {
 				return true
 			}
 		}
@@ -3537,6 +3579,9 @@ func identName(e *parser.Expr) (string, bool) {
 	if u == nil || len(u.Ops) > 0 || u.Value == nil {
 		return "", false
 	}
+	if len(u.Value.Ops) > 0 {
+		return "", false
+	}
 	p := u.Value.Target
 	if p == nil || p.Selector == nil || len(p.Selector.Tail) > 0 {
 		return "", false
@@ -3798,6 +3843,12 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 
 	elseBody := append([]Node{}, other...)
 	appendRecur := true
+	for _, n := range append([]Node{}, append(pre, other...)...) {
+		if hasRecur(n) {
+			appendRecur = false
+			break
+		}
+	}
 	var last Node
 	if len(other) > 0 {
 		last = other[len(other)-1]
