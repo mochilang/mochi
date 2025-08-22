@@ -93,6 +93,7 @@ var (
 	needListAppendPtrPtr    bool
 	needListAppendStrPtr    bool
 	needConcatStrPtr        bool
+	needConcatIntPtr        bool
 	needConcatLongLong      bool
 	needListAppendDouble    bool
 	needListAppendDoublePtr bool
@@ -410,36 +411,36 @@ func varBaseType(name string) string {
 }
 
 func fieldBaseType(varName, field string) string {
-        if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
-                if st, ok := structTypes[stName]; ok {
-                        if ft, ok2 := st.Fields[field]; ok2 {
-                                return strings.TrimSuffix(cTypeFromMochiType(ft), "[]")
-                        }
-                }
-        }
-        return ""
+	if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
+		if st, ok := structTypes[stName]; ok {
+			if ft, ok2 := st.Fields[field]; ok2 {
+				return strings.TrimSuffix(cTypeFromMochiType(ft), "[]")
+			}
+		}
+	}
+	return ""
 }
 
 func fieldCType(varName, field string) string {
-        if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
-                if st, ok := structTypes[stName]; ok {
-                        if ft, ok2 := st.Fields[field]; ok2 {
-                                return cTypeFromMochiType(ft)
-                        }
-                }
-        }
-        return ""
+	if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
+		if st, ok := structTypes[stName]; ok {
+			if ft, ok2 := st.Fields[field]; ok2 {
+				return cTypeFromMochiType(ft)
+			}
+		}
+	}
+	return ""
 }
 
 func fieldMochiType(varName, field string) types.Type {
-        if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
-                if st, ok := structTypes[stName]; ok {
-                        if ft, ok2 := st.Fields[field]; ok2 {
-                                return ft
-                        }
-                }
-        }
-        return nil
+	if stName := strings.TrimSuffix(varBaseType(varName), "*"); stName != "" {
+		if st, ok := structTypes[stName]; ok {
+			if ft, ok2 := st.Fields[field]; ok2 {
+				return ft
+			}
+		}
+	}
+	return nil
 }
 
 const version = "0.10.32"
@@ -2346,22 +2347,22 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		currentVarName = prevVar
 		currentVarType = prevType
 	}
-        io.WriteString(w, ";\n")
+	io.WriteString(w, ";\n")
 
-        if len(a.Indexes) == 0 && len(a.Fields) == 1 {
-                if ft := fieldCType(a.Name, a.Fields[0]); strings.HasSuffix(ft, "[]") {
-                        writeIndent(w, indent)
-                        sep := "."
-                        if t, ok := varTypes[a.Name]; ok && strings.HasSuffix(t, "*") {
-                                sep = "->"
-                        }
-                        fmt.Fprintf(w, "%s%s%s_len = ", a.Name, sep, a.Fields[0])
-                        emitLenExpr(w, a.Value)
-                        io.WriteString(w, ";\n")
-                }
-        }
+	if len(a.Indexes) == 0 && len(a.Fields) == 1 {
+		if ft := fieldCType(a.Name, a.Fields[0]); strings.HasSuffix(ft, "[]") {
+			writeIndent(w, indent)
+			sep := "."
+			if t, ok := varTypes[a.Name]; ok && strings.HasSuffix(t, "*") {
+				sep = "->"
+			}
+			fmt.Fprintf(w, "%s%s%s_len = ", a.Name, sep, a.Fields[0])
+			emitLenExpr(w, a.Value)
+			io.WriteString(w, ";\n")
+		}
+	}
 
-        if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(a.Indexes) == 1 && len(a.Fields) == 0 {
+	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(a.Indexes) == 1 && len(a.Fields) == 0 {
 		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[][][]") {
 			needListAppendSizeT = true
 			writeIndent(w, indent)
@@ -2404,9 +2405,9 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		}
 	}
 
-        if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-                if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
-                        writeIndent(w, indent)
+	if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+		if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
+			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_lens = ({size_t *tmp = malloc(%d * sizeof(size_t)); ", a.Name, len(lst.Elems))
@@ -2426,26 +2427,26 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
 		}
-        }
+	}
 
-        if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-                if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
-                        writeIndent(w, indent)
-                        fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, vr.Name)
+	if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, vr.Name)
 			if strings.HasSuffix(vt, "[][]") && !strings.Contains(vt, "char[][]") {
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "%s_lens = %s_lens;\n", a.Name, vr.Name)
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "%s_lens_len = %s_lens_len;\n", a.Name, vr.Name)
-                }
-        }
+			}
+		}
 
-        if fe, ok := a.Value.(*FieldExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-                writeIndent(w, indent)
-                fmt.Fprintf(w, "%s_len = ", a.Name)
-                (&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
-                io.WriteString(w, ";\n")
-        }
+		if fe, ok := a.Value.(*FieldExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s_len = ", a.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			io.WriteString(w, ";\n")
+		}
 	}
 
 	if call, ok := a.Value.(*CallExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
@@ -3723,6 +3724,17 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		t0 := inferExprType(currentEnv, c.Args[0])
 		if t0 == "" {
 			t0 = inferExprType(currentEnv, c.Args[1])
+		}
+		if strings.Contains(t0, "**") {
+			if a, ok := c.Args[0].(*VarRef); ok {
+				if b, ok2 := c.Args[1].(*VarRef); ok2 {
+					needConcatIntPtr = true
+					needListAppendPtr = true
+					needListAppendSizeT = true
+					fmt.Fprintf(w, "concat_intptr(%s, &%s_len, &%s_lens, &%s_lens_len, %s, %s_len, %s_lens)", a.Name, a.Name, a.Name, a.Name, b.Name, b.Name, b.Name)
+					return
+				}
+			}
 		}
 		base := strings.TrimSuffix(t0, "[]")
 		if strings.Contains(base, "const char*") {
@@ -5593,6 +5605,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return a;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needConcatIntPtr {
+		buf.WriteString("static long long*** concat_intptr(long long ***a, size_t *a_len, size_t **a_lens, size_t *a_lens_len, long long **b, size_t b_len, size_t *b_lens) {\n")
+		buf.WriteString("    for (size_t i = 0; i < b_len; i++) {\n")
+		buf.WriteString("        *a_lens = list_append_szt(*a_lens, a_lens_len, b_lens[i]);\n")
+		buf.WriteString("        a = list_append_intptr(a, a_len, b[i]);\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return a;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needConcatLongLong {
 		buf.WriteString("static size_t concat_len;\n")
 		buf.WriteString("static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {\n")
@@ -6173,6 +6194,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendPtrPtr = false
 	needListAppendStrPtr = false
 	needConcatStrPtr = false
+	needConcatIntPtr = false
 	needListAppendDouble = false
 	needListAppendDoublePtr = false
 	needListAppendDoubleNew = false
