@@ -47,6 +47,8 @@ var needsMD5 bool
 var needsEnviron bool
 var needsSubprocess bool
 var needsStr bool
+var needsReadFile bool
+var needsOrd bool
 var mapEntryTypes map[string]map[string]string
 var builtinAliases map[string]string
 var localVarTypes map[string]string
@@ -173,7 +175,8 @@ func quoteScalaString(s string) string {
 
 // Program represents a simple Scala program consisting of statements in main.
 type Program struct {
-	Stmts []Stmt
+	Stmts   []Stmt
+	DataDir string
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -2064,6 +2067,9 @@ func Emit(p *Program) []byte {
 		buf.WriteString("import scala.sys.process._\n")
 	}
 	buf.WriteString("object Main {\n")
+	if needsReadFile && p.DataDir != "" {
+		fmt.Fprintf(&buf, "  private val _dataDir = %q\n", p.DataDir)
+	}
 	if useNow {
 		buf.WriteString("  private var _nowSeed: Long = 0L\n")
 		buf.WriteString("  private var _nowSeeded: Boolean = false\n")
@@ -2166,6 +2172,21 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    md.digest().map(b => f\"$b%02x\").mkString\n")
 		buf.WriteString("  }\n\n")
 	}
+	if needsReadFile {
+		buf.WriteString("  private def _read_file(path: String): String = {\n")
+		buf.WriteString("    val f = new java.io.File(path)\n")
+		buf.WriteString("    val p = if (f.exists) f else new java.io.File(_dataDir, path)\n")
+		buf.WriteString("    try {\n")
+		buf.WriteString("      val src = scala.io.Source.fromFile(p)\n")
+		buf.WriteString("      try src.mkString finally src.close()\n")
+		buf.WriteString("    } catch { case _: Throwable => \"\" }\n")
+		buf.WriteString("  }\n\n")
+	}
+	if needsOrd {
+		buf.WriteString("  private def _ord(s: String): Int = {\n")
+		buf.WriteString("    if (s != null && s.nonEmpty) s.codePointAt(0) else 0\n")
+		buf.WriteString("  }\n\n")
+	}
 	if needsEnviron {
 		buf.WriteString("  private def _osEnviron(): ArrayBuffer[String] = {\n")
 		buf.WriteString("    ArrayBuffer(sys.env.map{ case (k,v) => s\"$k=$v\" }.toSeq: _*)\n")
@@ -2241,6 +2262,7 @@ func Emit(p *Program) []byte {
 // Transpile converts a Mochi AST into our simple Scala AST.
 func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, error) {
 	sc := &Program{}
+	sc.DataDir = filepath.Dir(prog.Pos.Filename)
 	typeDecls = nil
 	needsBreaks = false
 	needsJSON = false
@@ -2260,6 +2282,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	needsEnviron = false
 	needsSubprocess = false
 	needsStr = false
+	needsReadFile = false
+	needsOrd = false
 	mapEntryTypes = make(map[string]map[string]string)
 	builtinAliases = map[string]string{"Object": "js_object"}
 	localVarTypes = make(map[string]string)
@@ -3840,6 +3864,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "floor":
 		if len(args) == 1 {
+			if env != nil {
+				if _, ok := env.GetFunc("floor"); ok {
+					break
+				}
+			}
 			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "floor"}, Args: args}, nil
 		}
 	case "input":
@@ -3985,6 +4014,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 1 {
 			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toLowerCase"}}, nil
 		}
+	case "ord":
+		if len(args) == 1 {
+			needsOrd = true
+			if inferTypeWithEnv(args[0], env) != "String" {
+				args[0] = &FieldExpr{Receiver: args[0], Name: "toString"}
+			}
+			return &CallExpr{Fn: &Name{Name: "_ord"}, Args: args[:1]}, nil
+		}
 	case "padStart":
 		if len(args) == 3 {
 			needsPadStart = true
@@ -4014,6 +4051,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				args[0] = &FieldExpr{Receiver: args[0], Name: "toString"}
 			}
 			return &CallExpr{Fn: &Name{Name: "_parseIntStr"}, Args: args[:2]}, nil
+		}
+	case "read_file":
+		if len(args) == 1 {
+			needsReadFile = true
+			if inferTypeWithEnv(args[0], env) != "String" {
+				args[0] = &FieldExpr{Receiver: args[0], Name: "toString"}
+			}
+			return &CallExpr{Fn: &Name{Name: "_read_file"}, Args: args[:1]}, nil
 		}
 	case "sum":
 		if len(args) == 1 {
