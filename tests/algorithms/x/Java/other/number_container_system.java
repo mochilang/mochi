@@ -21,7 +21,7 @@ public class Main {
         long i_1 = 0L;
         while ((long)(i_1) < (long)(xs.length)) {
             if ((long)(i_1) != (long)(idx)) {
-                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of((long)(xs[(int)((long)(i_1))]))).toArray()));
+                res = ((long[])(appendLong(res, (long)(xs[(int)((long)(i_1))]))));
             }
             i_1 = (long)((long)(i_1) + 1L);
         }
@@ -33,13 +33,13 @@ public class Main {
         long i_3 = 0L;
         while ((long)(i_3) < (long)(xs.length)) {
             if ((long)(i_3) == (long)(idx)) {
-                res_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_1), java.util.stream.LongStream.of((long)(val))).toArray()));
+                res_1 = ((long[])(appendLong(res_1, (long)(val))));
             }
-            res_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_1), java.util.stream.LongStream.of((long)(xs[(int)((long)(i_3))]))).toArray()));
+            res_1 = ((long[])(appendLong(res_1, (long)(xs[(int)((long)(i_3))]))));
             i_3 = (long)((long)(i_3) + 1L);
         }
         if ((long)(idx) == (long)(xs.length)) {
-            res_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_1), java.util.stream.LongStream.of((long)(val))).toArray()));
+            res_1 = ((long[])(appendLong(res_1, (long)(val))));
         }
         return res_1;
     }
@@ -49,7 +49,7 @@ public class Main {
         long high_1 = (long)((long)(array.length) - 1L);
         long[] arr_1 = ((long[])(array));
         while ((long)(low) <= (long)(high_1)) {
-            long mid_1 = (long)((long)(((long)(low) + (long)(high_1))) / 2L);
+            long mid_1 = Math.floorDiv(((long)(low) + (long)(high_1)), 2);
             if ((long)(arr_1[(int)((long)(mid_1))]) == (long)(item)) {
                 arr_1 = ((long[])(remove_at(((long[])(arr_1)), (long)(mid_1))));
                 return arr_1;
@@ -68,14 +68,14 @@ public class Main {
         long high_3 = (long)((long)(array.length) - 1L);
         long[] arr_3 = ((long[])(array));
         while ((long)(low_1) <= (long)(high_3)) {
-            long mid_3 = (long)((long)(((long)(low_1) + (long)(high_3))) / 2L);
-            if ((long)(arr_3[(int)((long)(mid_3))]) == (long)(index)) {
-                arr_3 = ((long[])(insert_at(((long[])(arr_3)), (long)((long)(mid_3) + 1L), (long)(index))));
+            Object mid_3 = Math.floorDiv(((long)(low_1) + (long)(high_3)), 2);
+            if ((long)(arr_3[(int)(((Number)(mid_3)).longValue())]) == (long)(index)) {
+                arr_3 = ((long[])(insert_at(((long[])(arr_3)), (long)(((Number)(mid_3)).intValue() + 1L), (long)(index))));
                 return arr_3;
-            } else             if ((long)(arr_3[(int)((long)(mid_3))]) < (long)(index)) {
-                low_1 = (long)((long)(mid_3) + 1L);
+            } else             if ((long)(arr_3[(int)(((Number)(mid_3)).longValue())]) < (long)(index)) {
+                low_1 = (long)(((Number)(mid_3)).intValue() + 1L);
             } else {
-                high_3 = (long)((long)(mid_3) - 1L);
+                high_3 = (long)(((Number)(mid_3)).intValue() - 1L);
             }
         }
         arr_3 = ((long[])(insert_at(((long[])(arr_3)), (long)(low_1), (long)(index))));
@@ -108,54 +108,26 @@ numbermap.put(num, ((long[])(new long[]{idx})));
         if (numbermap_1.containsKey(num)) {
             long[] arr_5 = (long[])(((long[])(numbermap_1).get(num)));
             if ((long)(arr_5.length) > 0L) {
-                return arr_5[(int)((long)(0))];
+                return arr_5[(int)(0L)];
             }
         }
         return -1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            nm = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>()));
-            im = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
-            cont = new NumberContainer(nm, im);
-            System.out.println(find(cont, 10L));
-            cont = change(cont, 0L, 10L);
-            System.out.println(find(cont, 10L));
-            cont = change(cont, 0L, 20L);
-            System.out.println(find(cont, 10L));
-            System.out.println(find(cont, 20L));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        nm = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>()));
+        im = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+        cont = new NumberContainer(nm, im);
+        System.out.println(find(cont, 10L));
+        cont = change(cont, 0L, 10L);
+        System.out.println(find(cont, 10L));
+        cont = change(cont, 0L, 20L);
+        System.out.println(find(cont, 10L));
+        System.out.println(find(cont, 20L));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

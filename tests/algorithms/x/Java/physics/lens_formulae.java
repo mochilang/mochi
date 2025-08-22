@@ -21,46 +21,12 @@ public class Main {
         return (double)(1.0) / (double)(((double)(((double)(1.0) / (double)(object_distance_from_lens))) + (double)(((double)(1.0) / (double)(focal_length_of_lens)))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(focal_length_of_lens((double)(10.0), (double)(4.0))));
-            System.out.println(_p(focal_length_of_lens((double)(2.7), (double)(5.8))));
-            System.out.println(_p(object_distance((double)(10.0), (double)(40.0))));
-            System.out.println(_p(object_distance((double)(6.2), (double)(1.5))));
-            System.out.println(_p(image_distance((double)(50.0), (double)(40.0))));
-            System.out.println(_p(image_distance((double)(5.3), (double)(7.9))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(focal_length_of_lens((double)(10.0), (double)(4.0))));
+        System.out.println(_p(focal_length_of_lens((double)(2.7), (double)(5.8))));
+        System.out.println(_p(object_distance((double)(10.0), (double)(40.0))));
+        System.out.println(_p(object_distance((double)(6.2), (double)(1.5))));
+        System.out.println(_p(image_distance((double)(50.0), (double)(40.0))));
+        System.out.println(_p(image_distance((double)(5.3), (double)(7.9))));
     }
 
     static String _p(Object v) {

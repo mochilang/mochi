@@ -19,7 +19,7 @@ public class Main {
     static long[][] maximum_claim_table = ((long[][])(new long[][]{new long[]{3, 2, 1, 4}, new long[]{0, 2, 5, 2}, new long[]{5, 1, 0, 5}, new long[]{1, 5, 3, 0}, new long[]{3, 0, 3, 3}}));
 
     static long[] processes_resource_summation(long[][] alloc) {
-        long resources = (long)(alloc[(int)((long)(0))].length);
+        long resources = (long)(alloc[(int)(0L)].length);
         long[] sums_1 = ((long[])(new long[]{}));
         long i_1 = 0L;
         while ((long)(i_1) < (long)(resources)) {
@@ -29,7 +29,7 @@ public class Main {
                 total_1 = (long)((long)(total_1) + (long)(alloc[(int)((long)(j_1))][(int)((long)(i_1))]));
                 j_1 = (long)((long)(j_1) + 1L);
             }
-            sums_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(sums_1), java.util.stream.LongStream.of((long)(total_1))).toArray()));
+            sums_1 = ((long[])(appendLong(sums_1, (long)(total_1))));
             i_1 = (long)((long)(i_1) + 1L);
         }
         return sums_1;
@@ -39,7 +39,7 @@ public class Main {
         long[] avail = ((long[])(new long[]{}));
         long i_3 = 0L;
         while ((long)(i_3) < (long)(claim.length)) {
-            avail = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(avail), java.util.stream.LongStream.of((long)((long)(claim[(int)((long)(i_3))]) - (long)(alloc_sum[(int)((long)(i_3))])))).toArray()));
+            avail = ((long[])(appendLong(avail, (long)((long)(claim[(int)((long)(i_3))]) - (long)(alloc_sum[(int)((long)(i_3))])))));
             i_3 = (long)((long)(i_3) + 1L);
         }
         return avail;
@@ -51,8 +51,8 @@ public class Main {
         while ((long)(i_5) < (long)(max.length)) {
             long[] row_1 = ((long[])(new long[]{}));
             long j_3 = 0L;
-            while ((long)(j_3) < (long)(max[(int)((long)(0))].length)) {
-                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of((long)((long)(max[(int)((long)(i_5))][(int)((long)(j_3))]) - (long)(alloc[(int)((long)(i_5))][(int)((long)(j_3))])))).toArray()));
+            while ((long)(j_3) < (long)(max[(int)(0L)].length)) {
+                row_1 = ((long[])(appendLong(row_1, (long)((long)(max[(int)((long)(i_5))][(int)((long)(j_3))]) - (long)(alloc[(int)((long)(i_5))][(int)((long)(j_3))])))));
                 j_3 = (long)((long)(j_3) + 1L);
             }
             needs = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(needs), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
@@ -181,46 +181,18 @@ finished_1[(int)((long)(p_1))] = true;
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            pretty_print(((long[])(claim_vector)), ((long[][])(allocated_resources_table)), ((long[][])(maximum_claim_table)));
-            bankers_algorithm(((long[])(claim_vector)), ((long[][])(allocated_resources_table)), ((long[][])(maximum_claim_table)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        pretty_print(((long[])(claim_vector)), ((long[][])(allocated_resources_table)), ((long[][])(maximum_claim_table)));
+        bankers_algorithm(((long[])(claim_vector)), ((long[][])(allocated_resources_table)), ((long[][])(maximum_claim_table)));
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
         boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }

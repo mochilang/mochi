@@ -42,7 +42,7 @@ list_int[(int)((long)(j_1))] = (long)(tmp_1);
     static String rand_letter() {
         String letters = "abcdefghijklmnopqrstuvwxyz";
         long i_2 = (long)(rand_range(26L));
-        return _substr(letters, (int)((long)(i_2)), (int)((long)((long)(i_2) + 1L))));
+        return _substr(letters, (int)((long)(i_2)), (int)((long)((long)(i_2) + 1L)));
     }
 
     static WordSearch make_word_search(String[] words, long width, long height) {
@@ -92,7 +92,7 @@ list_int[(int)((long)(j_1))] = (long)(tmp_1);
                         long rr2_1 = (long)((long)(row_3) + (long)((long)(dr) * (long)(k_1)));
                         long cc2_1 = (long)((long)(col_1) + (long)((long)(dc) * (long)(k_1)));
                         String[] row_list_1 = ((String[])(ws.board[(int)((long)(rr2_1))]));
-row_list_1[(int)((long)(cc2_1))] = _substr(word, (int)((long)(k_1)), (int)((long)((long)(k_1) + 1L))));
+row_list_1[(int)((long)(cc2_1))] = _substr(word, (int)((long)(k_1)), (int)((long)((long)(k_1) + 1L)));
                         k_1 = (long)((long)(k_1) + 1L);
                     }
                     return true;
@@ -113,13 +113,13 @@ row_list_1[(int)((long)(cc2_1))] = _substr(word, (int)((long)(k_1)), (int)((long
             long[] rows_1 = ((long[])(new long[]{}));
             long r_3 = 0L;
             while ((long)(r_3) < (long)(ws.height)) {
-                rows_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(rows_1), java.util.stream.LongStream.of((long)(r_3))).toArray()));
+                rows_1 = ((long[])(appendLong(rows_1, (long)(r_3))));
                 r_3 = (long)((long)(r_3) + 1L);
             }
             long[] cols_1 = ((long[])(new long[]{}));
             long c_3 = 0L;
             while ((long)(c_3) < (long)(ws.width)) {
-                cols_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(cols_1), java.util.stream.LongStream.of((long)(c_3))).toArray()));
+                cols_1 = ((long[])(appendLong(cols_1, (long)(c_3))));
                 c_3 = (long)((long)(c_3) + 1L);
             }
             rows_1 = ((long[])(shuffle(((long[])(rows_1)))));
@@ -160,41 +160,13 @@ row_list_1[(int)((long)(cc2_1))] = _substr(word, (int)((long)(k_1)), (int)((long
         System.out.println(visualise(ws_1, true));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static int _runeLen(String s) {

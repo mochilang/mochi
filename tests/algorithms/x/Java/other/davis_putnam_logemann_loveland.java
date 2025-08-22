@@ -53,7 +53,7 @@ public class Main {
     static Clause clause2;
     static Formula formula;
     static String formula_str;
-    static Clause[] clauses = ((Clause[])(new Clause[]{clause1, clause2}));
+    static Clause[] clauses;
     static String[] symbols = ((String[])(new String[]{"A4", "A3", "A5", "A1"}));
     static java.util.Map<String,Long> model = null;
     static DPLLResult result;
@@ -64,7 +64,7 @@ public class Main {
         long i_1 = 0L;
         while ((long)(i_1) < (long)(lits.length)) {
             String lit_1 = lits[(int)((long)(i_1))];
-m.put(lit_1, (long)(0L - 1L));
+m.put(lit_1, (long)(-1));
             names_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(names_1), java.util.stream.Stream.of(lit_1)).toArray(String[]::new)));
             i_1 = (long)((long)(i_1) + 1L);
         }
@@ -76,10 +76,10 @@ m.put(lit_1, (long)(0L - 1L));
         long i_3 = 0L;
         while ((long)(i_3) < (long)(c.names.length)) {
             String lit_3 = c.names[(int)((long)(i_3))];
-            String symbol_1 = _substr(lit_3, (int)((long)(0)), (int)((long)(2)));
+            String symbol_1 = _substr(lit_3, (int)(0L), (int)(2L));
             if (model.containsKey(symbol_1)) {
                 long value_1 = (long)(((long)(model).getOrDefault(symbol_1, 0L)));
-                if ((_substr(lit_3, (int)((long)((long)(_runeLen(lit_3)) - 1L)), (int)((long)(_runeLen(lit_3)))).equals("'")) && (long)(value_1) != (long)(0L - 1L)) {
+                if ((_substr(lit_3, (int)((long)((long)(_runeLen(lit_3)) - 1L)), (int)((long)(_runeLen(lit_3)))).equals("'")) && (long)(value_1) != (long)(-1)) {
                     value_1 = (long)(1L - (long)(value_1));
                 }
 lits.put(lit_3, (long)(value_1));
@@ -94,7 +94,7 @@ c.literals = lits;
         long i_4 = 0L;
         while ((long)(i_4) < (long)(c.names.length)) {
             String lit_5 = c.names[(int)((long)(i_4))];
-            String sym_1 = String.valueOf((_substr(lit_5, (int)((long)((long)(_runeLen(lit_5)) - 1L)), (int)((long)(_runeLen(lit_5)))).equals("'")) ? _substr(lit_5, (int)((long)(0)), (int)((long)(2))) : lit_5 + "'");
+            String sym_1 = String.valueOf((_substr(lit_5, (int)((long)((long)(_runeLen(lit_5)) - 1L)), (int)((long)(_runeLen(lit_5)))).equals("'")) ? _substr(lit_5, (int)(0L), (int)(2L)) : lit_5 + "'");
             if (c.literals.containsKey(sym_1)) {
                 return new EvalResult(1, c);
             }
@@ -108,8 +108,8 @@ c.literals = lits;
             if ((long)(value_3) == 1L) {
                 return new EvalResult(1, c);
             }
-            if ((long)(value_3) == (long)(0L - 1L)) {
-                return new EvalResult(0L - 1L, c);
+            if ((long)(value_3) == (long)(-1)) {
+                return new EvalResult(-1, c);
             }
             i_4 = (long)((long)(i_4) + 1L);
         }
@@ -149,7 +149,7 @@ c.literals = lits;
 clauses[(int)((long)(i_8))] = ev_1.clause;
             if ((long)(ev_1.value) == 0L) {
                 return new DPLLResult(false, new java.util.LinkedHashMap<String, Long>());
-            } else             if ((long)(ev_1.value) == (long)(0L - 1L)) {
+            } else             if ((long)(ev_1.value) == (long)(-1)) {
                 all_true = false;
             }
             i_8 = (long)((long)(i_8) + 1L);
@@ -157,7 +157,7 @@ clauses[(int)((long)(i_8))] = ev_1.clause;
         if (all_true) {
             return new DPLLResult(true, model);
         }
-        String p_1 = symbols[(int)((long)(0))];
+        String p_1 = symbols[(int)(0L)];
         String[] rest_1 = ((String[])(remove_symbol(((String[])(symbols)), p_1)));
         java.util.Map<String,Long> tmp1_1 = model;
         java.util.Map<String,Long> tmp2_1 = model;
@@ -202,51 +202,18 @@ tmp2_1.put(p_1, 0L);
         return line_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            clause1 = new_clause(((String[])(new String[]{"A4", "A3", "A5'", "A1", "A3'"})));
-            clause2 = new_clause(((String[])(new String[]{"A4"})));
-            formula = new_formula(((Clause[])(new Clause[]{clause1, clause2})));
-            formula_str = String.valueOf(str_formula(formula));
-            model = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
-            result = dpll_algorithm(((Clause[])(clauses)), ((String[])(symbols)), model);
-            if (result.sat) {
-                System.out.println("The formula " + formula_str + " is satisfiable.");
-            } else {
-                System.out.println("The formula " + formula_str + " is not satisfiable.");
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        clause1 = new_clause(((String[])(new String[]{"A4", "A3", "A5'", "A1", "A3'"})));
+        clause2 = new_clause(((String[])(new String[]{"A4"})));
+        formula = new_formula(((Clause[])(new Clause[]{clause1, clause2})));
+        formula_str = String.valueOf(str_formula(formula));
+        clauses = ((Clause[])(new Clause[]{clause1, clause2}));
+        model = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
+        result = dpll_algorithm(((Clause[])(clauses)), ((String[])(symbols)), model);
+        if (result.sat) {
+            System.out.println("The formula " + formula_str + " is satisfiable.");
+        } else {
+            System.out.println("The formula " + formula_str + " is not satisfiable.");
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {

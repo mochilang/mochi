@@ -70,8 +70,8 @@ public class Main {
 
     static DoubleLinkedList new_list() {
         Node[] nodes = ((Node[])(new Node[]{}));
-        Node head_1 = new Node(0, 0, 0L - 1L, 1);
-        Node tail_1 = new Node(0, 0, 0, 0L - 1L);
+        Node head_1 = new Node(0, 0, -1, 1);
+        Node tail_1 = new Node(0, 0, 0, -1);
         nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(head_1)).toArray(Node[]::new)));
         nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(tail_1)).toArray(Node[]::new)));
         return new DoubleLinkedList(nodes, 0, 1);
@@ -100,7 +100,7 @@ lst.nodes = nodes_1;
         Node node_3 = nodes_2[(int)((long)(idx))];
         long prev_idx_3 = (long)(node_3.prev);
         long next_idx_1 = (long)(node_3.next);
-        if ((long)(prev_idx_3) == (long)(0L - 1L) || (long)(next_idx_1) == (long)(0L - 1L)) {
+        if ((long)(prev_idx_3) == (long)(-1) || (long)(next_idx_1) == (long)(-1)) {
             return lst;
         }
         Node prev_node_3 = nodes_2[(int)((long)(prev_idx_3))];
@@ -109,8 +109,8 @@ nodes_2[(int)((long)(prev_idx_3))] = prev_node_3;
         Node next_node_1 = nodes_2[(int)((long)(next_idx_1))];
 next_node_1.prev = prev_idx_3;
 nodes_2[(int)((long)(next_idx_1))] = next_node_1;
-node_3.prev = 0L - 1L;
-node_3.next = 0L - 1L;
+node_3.prev = -1;
+node_3.next = -1;
 nodes_2[(int)((long)(idx))] = node_3;
 lst.nodes = nodes_2;
         return lst;
@@ -126,7 +126,7 @@ lst.nodes = nodes_2;
         String key_str_1 = _p(key);
         if (cache.cache.containsKey(key_str_1)) {
             long idx_1 = (long)(((long)(cache.cache).getOrDefault(key_str_1, 0L)));
-            if ((long)(idx_1) != (long)(0L - 1L)) {
+            if ((long)(idx_1) != (long)(-1)) {
 cache.hits = (long)(cache.hits) + 1L;
                 Node node_5 = cache.list.nodes[(int)((long)(idx_1))];
                 long value_1 = (long)(node_5.value);
@@ -150,12 +150,12 @@ cache.misses = (long)(cache.misses) + 1L;
                 long old_key_1 = (long)(first_node_1.key);
 cache_1.list = dll_remove(cache_1.list, (long)(first_idx_1));
                 java.util.Map<String,Long> mdel_1 = cache_1.cache;
-mdel_1.put(_p(old_key_1), (long)(0L - 1L));
+mdel_1.put(_p(old_key_1), (long)(-1));
 cache_1.cache = mdel_1;
 cache_1.num_keys = (long)(cache_1.num_keys) - 1L;
             }
             Node[] nodes_5 = ((Node[])(cache_1.list.nodes));
-            Node new_node_1 = new Node(key, value, 0L - 1L, 0L - 1L);
+            Node new_node_1 = new Node(key, value, -1, -1);
             nodes_5 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes_5), java.util.stream.Stream.of(new_node_1)).toArray(Node[]::new)));
             long idx_4 = (long)((long)(nodes_5.length) - 1L);
 cache_1.list.nodes = nodes_5;
@@ -215,41 +215,7 @@ cache_1.cache = m_3;
         System.out.println(cache_info(cache_2));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {

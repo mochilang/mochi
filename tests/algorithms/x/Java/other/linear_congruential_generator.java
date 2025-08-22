@@ -28,22 +28,10 @@ lcg.seed = Math.floorMod(((long)((long)(lcg.multiplier) * (long)(lcg.seed)) + (l
         return lcg.seed;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            lcg = make_lcg(1664525L, 1013904223L, 4294967296L, (long)(_now()));
-            while ((long)(i) < 5L) {
-                System.out.println(_p(next_number(lcg)));
-                i = (long)((long)(i) + 1L);
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        lcg = make_lcg(1664525L, 1013904223L, 4294967296L, (long)(_now()));
+        while ((long)(i) < 5L) {
+            System.out.println(_p(next_number(lcg)));
+            i = (long)((long)(i) + 1L);
         }
     }
 
@@ -61,12 +49,6 @@ lcg.seed = Math.floorMod(((long)((long)(lcg.multiplier) * (long)(lcg.seed)) + (l
             return _nowSeed;
         }
         return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

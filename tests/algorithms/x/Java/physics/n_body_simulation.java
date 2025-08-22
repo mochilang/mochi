@@ -107,7 +107,7 @@ system.bodies = bodies;
         Body b2_1 = make_body((double)(10.0), (double)(0.0), (double)(0.0), (double)(0.0), (double)(1.0));
         BodySystem sys1_1 = make_body_system(((Body[])(new Body[]{b1, b2_1})), (double)(1.0), (double)(1.0), (double)(0.0));
         sys1_1 = update_system(sys1_1, (double)(1.0));
-        Body b1_after_1 = sys1_1.bodies[(int)((long)(0))];
+        Body b1_after_1 = sys1_1.bodies[(int)(0L)];
         double pos1x_1 = (double)(b1_after_1.position_x);
         double pos1y_1 = (double)(b1_after_1.position_y);
         json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("x", (Object)(pos1x_1)), java.util.Map.entry("y", (Object)(pos1y_1)))));
@@ -118,7 +118,7 @@ system.bodies = bodies;
         Body b4_1 = make_body((double)(10.0), (double)(0.0), (double)(0.0), (double)(0.0), (double)(4.0));
         BodySystem sys2_1 = make_body_system(((Body[])(new Body[]{b3_1, b4_1})), (double)(1.0), (double)(10.0), (double)(0.0));
         sys2_1 = update_system(sys2_1, (double)(1.0));
-        Body b2_after_1 = sys2_1.bodies[(int)((long)(0))];
+        Body b2_after_1 = sys2_1.bodies[(int)(0L)];
         double pos2x_1 = (double)(b2_after_1.position_x);
         double pos2y_1 = (double)(b2_after_1.position_y);
         json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("x", (Object)(pos2x_1)), java.util.Map.entry("y", (Object)(pos2y_1)))));
@@ -127,41 +127,7 @@ system.bodies = bodies;
         json(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("vx", (Object)(vel2x_1)), java.util.Map.entry("vy", (Object)(vel2y_1)))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static void json(Object v) {

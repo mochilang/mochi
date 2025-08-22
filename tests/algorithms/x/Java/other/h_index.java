@@ -4,7 +4,7 @@ public class Main {
         long[] result = ((long[])(new long[]{}));
         long k_1 = (long)(start);
         while ((long)(k_1) < (long)(end)) {
-            result = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result), java.util.stream.LongStream.of((long)(xs[(int)((long)(k_1))]))).toArray()));
+            result = ((long[])(appendLong(result, (long)(xs[(int)((long)(k_1))]))));
             k_1 = (long)((long)(k_1) + 1L);
         }
         return result;
@@ -16,19 +16,19 @@ public class Main {
         long j_1 = 0L;
         while ((long)(i_1) < (long)(left_half.length) && (long)(j_1) < (long)(right_half.length)) {
             if ((long)(left_half[(int)((long)(i_1))]) < (long)(right_half[(int)((long)(j_1))])) {
-                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(left_half[(int)((long)(i_1))]))).toArray()));
+                result_1 = ((long[])(appendLong(result_1, (long)(left_half[(int)((long)(i_1))]))));
                 i_1 = (long)((long)(i_1) + 1L);
             } else {
-                result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(right_half[(int)((long)(j_1))]))).toArray()));
+                result_1 = ((long[])(appendLong(result_1, (long)(right_half[(int)((long)(j_1))]))));
                 j_1 = (long)((long)(j_1) + 1L);
             }
         }
         while ((long)(i_1) < (long)(left_half.length)) {
-            result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(left_half[(int)((long)(i_1))]))).toArray()));
+            result_1 = ((long[])(appendLong(result_1, (long)(left_half[(int)((long)(i_1))]))));
             i_1 = (long)((long)(i_1) + 1L);
         }
         while ((long)(j_1) < (long)(right_half.length)) {
-            result_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result_1), java.util.stream.LongStream.of((long)(right_half[(int)((long)(j_1))]))).toArray()));
+            result_1 = ((long[])(appendLong(result_1, (long)(right_half[(int)((long)(j_1))]))));
             j_1 = (long)((long)(j_1) + 1L);
         }
         return result_1;
@@ -38,7 +38,7 @@ public class Main {
         if ((long)(array.length) <= 1L) {
             return array;
         }
-        long middle_1 = (long)((long)(array.length) / 2L);
+        long middle_1 = Math.floorDiv(array.length, 2);
         long[] left_half_1 = ((long[])(subarray(((long[])(array)), 0L, (long)(middle_1))));
         long[] right_half_1 = ((long[])(subarray(((long[])(array)), (long)(middle_1), (long)(array.length))));
         long[] sorted_left_1 = ((long[])(merge_sort(((long[])(left_half_1)))));
@@ -66,43 +66,15 @@ public class Main {
         return n_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(h_index(((long[])(new long[]{3, 0, 6, 1, 5})))));
-            System.out.println(_p(h_index(((long[])(new long[]{1, 3, 1})))));
-            System.out.println(_p(h_index(((long[])(new long[]{1, 2, 3})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(_p(h_index(((long[])(new long[]{3, 0, 6, 1, 5})))));
+        System.out.println(_p(h_index(((long[])(new long[]{1, 3, 1})))));
+        System.out.println(_p(h_index(((long[])(new long[]{1, 2, 3})))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {

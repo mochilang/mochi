@@ -72,48 +72,14 @@ public class Main {
         return s;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            example1 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})), ((Item[])(new Item[]{from_string("A"), from_string("B"), from_string("C")})))));
-            System.out.println(list_to_string(((Item[])(example1))));
-            example2 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_string("A"), from_string("B"), from_string("C")})), ((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})))));
-            System.out.println(list_to_string(((Item[])(example2))));
-            example3 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_string("X"), from_string("Y"), from_string("Z")})), ((Item[])(new Item[]{from_int(9L), from_int(8L), from_int(7L), from_int(6L)})))));
-            System.out.println(list_to_string(((Item[])(example3))));
-            example4 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})), ((Item[])(new Item[]{})))));
-            System.out.println(list_to_string(((Item[])(example4))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        example1 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})), ((Item[])(new Item[]{from_string("A"), from_string("B"), from_string("C")})))));
+        System.out.println(list_to_string(((Item[])(example1))));
+        example2 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_string("A"), from_string("B"), from_string("C")})), ((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})))));
+        System.out.println(list_to_string(((Item[])(example2))));
+        example3 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_string("X"), from_string("Y"), from_string("Z")})), ((Item[])(new Item[]{from_int(9L), from_int(8L), from_int(7L), from_int(6L)})))));
+        System.out.println(list_to_string(((Item[])(example3))));
+        example4 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})), ((Item[])(new Item[]{})))));
+        System.out.println(list_to_string(((Item[])(example4))));
     }
 
     static String _p(Object v) {

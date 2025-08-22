@@ -1,4 +1,1 @@
-Exception in thread "main" java.lang.NullPointerException: Cannot read field "names" because "<parameter1>" is null
-	at Main.evaluate_clause(Main.java:95)
-	at Main.dpll_algorithm(Main.java:148)
-	at Main.main(Main.java:213)
+{"duration_us": 41675, "memory_bytes": 92880, "name": "main"}

@@ -75,44 +75,10 @@ public class Main {
         return "Coord3D(x=" + _p(c.x) + ", y=" + _p(c.y) + ", z=" + _p(c.z) + ")";
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            r1 = center_of_mass(((Particle[])(new Particle[]{new Particle(1.5, 4.0, 3.4, 4.0), new Particle(5.0, 6.8, 7.0, 8.1), new Particle(9.4, 10.1, 11.6, 12.0)})));
-            System.out.println(coord_to_string(r1));
-            r2 = center_of_mass(((Particle[])(new Particle[]{new Particle(1.0, 2.0, 3.0, 4.0), new Particle(5.0, 6.0, 7.0, 8.0), new Particle(9.0, 10.0, 11.0, 12.0)})));
-            System.out.println(coord_to_string(r2));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        r1 = center_of_mass(((Particle[])(new Particle[]{new Particle(1.5, 4.0, 3.4, 4.0), new Particle(5.0, 6.8, 7.0, 8.1), new Particle(9.4, 10.1, 11.6, 12.0)})));
+        System.out.println(coord_to_string(r1));
+        r2 = center_of_mass(((Particle[])(new Particle[]{new Particle(1.0, 2.0, 3.0, 4.0), new Particle(5.0, 6.0, 7.0, 8.0), new Particle(9.0, 10.0, 11.0, 12.0)})));
+        System.out.println(coord_to_string(r2));
     }
 
     static String _p(Object v) {

@@ -19,8 +19,8 @@ public class Main {
         long metonic_cycle = Math.floorMod(year, 19);
         long julian_leap_year_1 = Math.floorMod(year, 4);
         long non_leap_year_1 = Math.floorMod(year, 7);
-        long leap_day_inhibits_1 = (long)((long)(year) / 100L);
-        long lunar_orbit_correction_1 = (long)((long)((13L + (long)(8L * (long)(leap_day_inhibits_1)))) / 25L);
+        long leap_day_inhibits_1 = Math.floorDiv(((long)(year)), ((long)(100)));
+        long lunar_orbit_correction_1 = Math.floorDiv((13L + (long)(8L * (long)(leap_day_inhibits_1))), 25);
         double leap_day_reinstall_number_1 = (double)((double)((((Number)(leap_day_inhibits_1)).doubleValue())) / (double)(4.0));
         double secular_moon_shift_1 = (double)((double)(((double)((double)((double)(15.0) - (double)((((Number)(lunar_orbit_correction_1)).doubleValue()))) + (double)((((Number)(leap_day_inhibits_1)).doubleValue()))) - (double)(leap_day_reinstall_number_1))) % (double)(30.0));
         double century_starting_point_1 = (double)((double)(((double)((double)(4.0) + (double)((((Number)(leap_day_inhibits_1)).doubleValue()))) - (double)(leap_day_reinstall_number_1))) % (double)(7.0));
@@ -46,46 +46,12 @@ public class Main {
         return _p(year) + "-" + month + "-" + day_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            while ((long)(i) < (long)(years.length)) {
-                long y = (long)(years[(int)((long)(i))]);
-                EasterDate e = gauss_easter((long)(y));
-                System.out.println("Easter in " + _p(y) + " is " + String.valueOf(format_date((long)(y), e)));
-                i = (long)((long)(i) + 1L);
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        while ((long)(i) < (long)(years.length)) {
+            long y = (long)(years[(int)((long)(i))]);
+            EasterDate e = gauss_easter((long)(y));
+            System.out.println("Easter in " + _p(y) + " is " + String.valueOf(format_date((long)(y), e)));
+            i = (long)((long)(i) + 1L);
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

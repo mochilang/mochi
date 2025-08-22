@@ -64,12 +64,12 @@ public class Main {
             }
             i = (long)((long)(i) + 1L);
         }
-        return 0L - 1L;
+        return -1;
     }
 
     static GetResult lfu_get(LFUCache cache, long key) {
         long idx = (long)(find_entry(((Entry[])(cache.entries)), (long)(key)));
-        if ((long)(idx) == (long)(0L - 1L)) {
+        if ((long)(idx) == (long)(-1)) {
             LFUCache new_cache_1 = new LFUCache(cache.entries, cache.capacity, cache.hits, (long)(cache.miss) + 1L, cache.tick);
             return new GetResult(new_cache_1, 0, false);
         }
@@ -111,7 +111,7 @@ entries_1[(int)((long)(idx))] = e_3;
     static LFUCache lfu_put(LFUCache cache, long key, long value) {
         Entry[] entries_2 = ((Entry[])(cache.entries));
         long idx_2 = (long)(find_entry(((Entry[])(entries_2)), (long)(key)));
-        if ((long)(idx_2) != (long)(0L - 1L)) {
+        if ((long)(idx_2) != (long)(-1)) {
             Entry e_7 = entries_2[(int)((long)(idx_2))];
 e_7.val = value;
 e_7.freq = (long)(e_7.freq) + 1L;
@@ -177,41 +177,7 @@ entries_2[(int)((long)(idx_2))] = e_7;
         System.out.println(cache_info(cache));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {

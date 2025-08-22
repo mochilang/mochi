@@ -67,7 +67,7 @@ public class Main {
         double sum3_1 = (double)(0.0);
         long k2_1 = 0L;
         while ((long)(k2_1) < 3L) {
-            sum3_1 = (double)((double)(sum3_1) + (double)((double)(hidden2_1[(int)((long)(k2_1))]) * (double)(net.w3[(int)((long)(k2_1))][(int)((long)(0))])));
+            sum3_1 = (double)((double)(sum3_1) + (double)((double)(hidden2_1[(int)((long)(k2_1))]) * (double)(net.w3[(int)((long)(k2_1))][(int)(0L)])));
             k2_1 = (long)((long)(k2_1) + 1L);
         }
         double out_1 = (double)(sigmoid((double)(sum3_1)));
@@ -108,7 +108,7 @@ public class Main {
                 double sum3_3 = (double)(0.0);
                 long k3_1 = 0L;
                 while ((long)(k3_1) < 3L) {
-                    sum3_3 = (double)((double)(sum3_3) + (double)((double)(hidden2_3[(int)((long)(k3_1))]) * (double)(net.w3[(int)((long)(k3_1))][(int)((long)(0))])));
+                    sum3_3 = (double)((double)(sum3_3) + (double)((double)(hidden2_3[(int)((long)(k3_1))]) * (double)(net.w3[(int)((long)(k3_1))][(int)(0L)])));
                     k3_1 = (long)((long)(k3_1) + 1L);
                 }
                 double output_1 = (double)(sigmoid((double)(sum3_3)));
@@ -118,7 +118,7 @@ public class Main {
                 long k4_1 = 0L;
                 while ((long)(k4_1) < 3L) {
                     double[] w3row_1 = ((double[])(((double[])(net.w3[(int)((long)(k4_1))]))));
-w3row_1[(int)((long)(0))] = (double)((double)(w3row_1[(int)((long)(0))]) + (double)((double)(hidden2_3[(int)((long)(k4_1))]) * (double)(delta_output_1)));
+w3row_1[(int)(0L)] = (double)((double)(w3row_1[(int)(0L)]) + (double)((double)(hidden2_3[(int)((long)(k4_1))]) * (double)(delta_output_1)));
                     new_w3_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_w3_1), java.util.stream.Stream.of(new double[][]{w3row_1})).toArray(double[][]::new)));
                     k4_1 = (long)((long)(k4_1) + 1L);
                 }
@@ -127,7 +127,7 @@ net.w3 = new_w3_1;
                 long k5_1 = 0L;
                 while ((long)(k5_1) < 3L) {
                     double[] row_1 = ((double[])(net.w3[(int)((long)(k5_1))]));
-                    double dh2_1 = (double)((double)((double)(row_1[(int)((long)(0))]) * (double)(delta_output_1)) * (double)(sigmoid_derivative((double)(hidden2_3[(int)((long)(k5_1))]))));
+                    double dh2_1 = (double)((double)((double)(row_1[(int)(0L)]) * (double)(delta_output_1)) * (double)(sigmoid_derivative((double)(hidden2_3[(int)((long)(k5_1))]))));
                     delta_hidden2_1 = ((double[])(appendDouble(delta_hidden2_1, (double)(dh2_1))));
                     k5_1 = (long)((long)(k5_1) + 1L);
                 }
@@ -198,41 +198,7 @@ net.w1 = new_w1_1;
         example();
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static double[] appendDouble(double[] arr, double v) {
