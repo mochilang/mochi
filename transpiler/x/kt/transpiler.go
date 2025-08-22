@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -154,6 +155,27 @@ func init() {
     val d = v.toDouble()
     val i = d.toLong()
     return if (d == i.toDouble()) i.toString() else d.toString()
+}`,
+		"_read_file": `fun _read_file(path: String): String {
+    var f = java.io.File(path)
+    if (!f.isAbsolute) {
+        val local = if (_dataDir != "") java.io.File(_dataDir, path) else null
+        if (local != null && local.exists()) {
+            f = local
+        } else {
+            System.getenv("MOCHI_ROOT")?.let { root ->
+                var clean = path
+                while (clean.startsWith("../")) clean = clean.substring(3)
+                var cand = java.io.File(root + "/tests/" + clean)
+                if (!cand.exists()) cand = java.io.File(root + "/" + clean)
+                f = cand
+            }
+        }
+    }
+    return if (f.exists()) f.readText() else ""
+}`,
+		"_ord": `fun _ord(s: String): Int {
+    return s[0].toInt()
 }`,
 		"expect":   `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
 		"panic":    `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
@@ -331,6 +353,7 @@ type Program struct {
 	Globals []Stmt
 	Stmts   []Stmt
 	Helpers []string
+	DataDir string
 }
 
 func indent(w io.Writer, n int) {
@@ -3492,7 +3515,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	helpersUsed = map[string]bool{}
 	localFuncs = map[string]bool{}
 	varDecls = map[string]*VarStmt{}
-	p := &Program{}
+	p := &Program{DataDir: filepath.Dir(prog.Pos.Filename)}
 	seenStmt := false
 	for _, st := range prog.Statements {
 		switch {
@@ -5953,7 +5976,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: p.Call.Func, Args: args}, nil
 		}
 		switch p.Call.Func {
-		case "count", "sum", "avg", "len", "str", "abs":
+		case "count", "sum", "avg", "len", "str", "abs", "ord", "read_file":
 			if len(p.Call.Args) != 1 {
 				return nil, fmt.Errorf("%s expects 1 arg", p.Call.Func)
 			}
@@ -5992,6 +6015,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return &StrExpr{Value: arg}, nil
 			case "abs":
 				return &CallExpr{Func: "kotlin.math.abs", Args: []Expr{arg}}, nil
+			case "ord":
+				useHelper("_ord")
+				return &CallExpr{Func: "_ord", Args: []Expr{arg}}, nil
+			case "read_file":
+				useHelper("_read_file")
+				return &CallExpr{Func: "_read_file", Args: []Expr{arg}}, nil
 			}
 			return nil, fmt.Errorf("unsupported builtin")
 		case "append":
@@ -6563,6 +6592,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 // Emit returns formatted Kotlin source code for prog.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
+	if prog.DataDir != "" {
+		fmt.Fprintf(&buf, "val _dataDir = %q\n\n", prog.DataDir)
+	}
 	// import helpers must appear before other declarations
 	for _, h := range prog.Helpers {
 		if strings.HasPrefix(h, "import ") {
