@@ -2433,11 +2433,21 @@ func (f *FloatLit) emit(w io.Writer) {
 	if math.Trunc(f.Value) == f.Value {
 		io.WriteString(w, strconv.FormatFloat(f.Value, 'f', 1, 64))
 	} else {
-		io.WriteString(w, strconv.FormatFloat(f.Value, 'f', -1, 64))
+		// Use high precision formatting to preserve significant digits
+		// from the original literal. Using "g" with a precision of 18
+		// avoids rounding up values such as 9.304455331801811 which
+		// previously became 9.304455331801812 and caused numerical
+		// comparisons in algorithm tests to fail.
+		io.WriteString(w, strconv.FormatFloat(f.Value, 'g', 18, 64))
 	}
 }
 
-func (v *VarRef) emit(w io.Writer) { io.WriteString(w, resolveAlias(v.Name)) }
+// emit writes the variable reference. The `Name` field of VarRef is already
+// resolved to a unique identifier during the translation phase, so we should
+// not perform further alias lookups here. Doing so could produce incorrect
+// names if later declarations update the alias map. Simply emit the stored
+// name to keep references stable.
+func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
@@ -3286,9 +3296,10 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 					ll.emit(w)
 				} else {
 					lbl := newLabel()
-					fmt.Fprintf(w, "%s: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator);", lbl, ll.ElemType)
+					tmpVar := uniqueName("_tmp")
+					fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).init(std.heap.page_allocator);", lbl, tmpVar, ll.ElemType)
 					for _, e := range ll.Elems {
-						io.WriteString(w, " _tmp.append(")
+						fmt.Fprintf(w, " %s.append(", tmpVar)
 						if ll.ElemType == "Value" {
 							switch ev := e.(type) {
 							case *ListLit:
@@ -3313,9 +3324,9 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 						} else {
 							e.emit(w)
 						}
-						io.WriteString(w, ") catch |err| handleError(err);")
+						fmt.Fprintf(w, ") catch |err| handleError(err);")
 					}
-					fmt.Fprintf(w, " break :%s (_tmp.toOwnedSlice() catch |err| handleError(err)); }", lbl)
+					fmt.Fprintf(w, " break :%s (%s.toOwnedSlice() catch |err| handleError(err)); }", lbl, tmpVar)
 				}
 			} else {
 				exprType := zigTypeFromExpr(r.Value)
@@ -3851,7 +3862,20 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			continue
 		}
 		if s != nil {
-			main.Body = append(main.Body, s)
+			// Top-level assignments must execute in source order relative
+			// to other initializations. Previously we appended all
+			// global variable initializations before the rest of the
+			// program, which could reorder statements and cause
+			// variables to be used before being populated (see
+			// issue observed with scoring_algorithm.mochi). To
+			// preserve the original evaluation order, collect
+			// top-level assignments into globalInits alongside
+			// other deferred initializations.
+			if asgn, ok := s.(*AssignStmt); ok && funDepth == 1 && blockDepth == 0 {
+				globalInits = append(globalInits, asgn)
+			} else {
+				main.Body = append(main.Body, s)
+			}
 		}
 	}
 	funParamsStack = funParamsStack[:len(funParamsStack)-1]
@@ -5570,18 +5594,16 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if _, ok := expr.(*FieldExpr); ok {
-				if str, ok := exprToString(expr); ok {
+			if fe, ok := expr.(*FieldExpr); ok {
+				if str, ok := exprToString(fe); ok {
 					t := zigTypeFromExpr(expr)
-					if strings.HasPrefix(t, "[]") || strings.Contains(t, "HashMap") {
-						aliasStack[len(aliasStack)-1][s.Let.Name] = str
-						varTypes[s.Let.Name] = t
-						varTypes[str] = t
-						if strings.Contains(t, "HashMap") {
-							mapVars[s.Let.Name] = true
-						}
-						return nil, nil
+					aliasStack[len(aliasStack)-1][s.Let.Name] = str
+					varTypes[s.Let.Name] = t
+					varTypes[str] = t
+					if strings.Contains(t, "HashMap") {
+						mapVars[s.Let.Name] = true
 					}
+					return nil, nil
 				}
 			}
 		} else {
