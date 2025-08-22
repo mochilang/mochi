@@ -1673,12 +1673,21 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "%s %s%s = ", base, stars, d.Name)
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", d.Name, call.Func)
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, call.Func)
+			if call.Func == "concat" {
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = concat_len;\n", d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t *%s_lens = concat_lens;\n", d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_lens_len = concat_len;\n", d.Name)
+			} else {
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", d.Name, call.Func)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, call.Func)
+			}
 			return
 		}
 		if vr, ok := d.Value.(*VarRef); ok {
@@ -3725,14 +3734,17 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		if t0 == "" {
 			t0 = inferExprType(currentEnv, c.Args[1])
 		}
-		if strings.Contains(t0, "**") {
-			if a, ok := c.Args[0].(*VarRef); ok {
-				if b, ok2 := c.Args[1].(*VarRef); ok2 {
-					needConcatIntPtr = true
-					needListAppendPtr = true
-					needListAppendSizeT = true
-					fmt.Fprintf(w, "concat_intptr(%s, &%s_len, &%s_lens, &%s_lens_len, %s, %s_len, %s_lens)", a.Name, a.Name, a.Name, a.Name, b.Name, b.Name, b.Name)
-					return
+		// handle concatenation of list<list<...>> by emitting concat_intptr
+		t0nospace := strings.ReplaceAll(t0, " ", "")
+		if strings.Contains(t0nospace, "**") || strings.HasPrefix(t0, "list<") || strings.HasSuffix(t0, "[][]") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(t0, "list<"), ">")
+			if strings.Contains(t0nospace, "**") || strings.HasPrefix(inner, "list<") || strings.HasSuffix(t0, "[][]") {
+				if a, ok := c.Args[0].(*VarRef); ok {
+					if b, ok2 := c.Args[1].(*VarRef); ok2 {
+						needConcatIntPtr = true
+						fmt.Fprintf(w, "concat_intptr(%s, %s_len, %s_lens, %s, %s_len, %s_lens)", a.Name, a.Name, a.Name, b.Name, b.Name, b.Name)
+						return
+					}
 				}
 			}
 		}
@@ -5606,16 +5618,23 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needConcatIntPtr {
-		buf.WriteString("static long long*** concat_intptr(long long ***a, size_t *a_len, size_t **a_lens, size_t *a_lens_len, long long **b, size_t b_len, size_t *b_lens) {\n")
-		buf.WriteString("    for (size_t i = 0; i < b_len; i++) {\n")
-		buf.WriteString("        *a_lens = list_append_szt(*a_lens, a_lens_len, b_lens[i]);\n")
-		buf.WriteString("        a = list_append_intptr(a, a_len, b[i]);\n")
-		buf.WriteString("    }\n")
-		buf.WriteString("    return a;\n")
+		buf.WriteString("static size_t concat_len;\n")
+		buf.WriteString("static size_t* concat_lens;\n")
+		buf.WriteString("static long long** concat_intptr(long long **a, size_t a_len, size_t *a_lens, long long **b, size_t b_len, size_t *b_lens) {\n")
+		buf.WriteString("    long long **res = malloc((a_len + b_len) * sizeof(long long*));\n")
+		buf.WriteString("    if (a_len > 0) memcpy(res, a, a_len * sizeof(long long*));\n")
+		buf.WriteString("    if (b_len > 0) memcpy(res + a_len, b, b_len * sizeof(long long*));\n")
+		buf.WriteString("    concat_len = a_len + b_len;\n")
+		buf.WriteString("    concat_lens = malloc(concat_len * sizeof(size_t));\n")
+		buf.WriteString("    if (a_len > 0) memcpy(concat_lens, a_lens, a_len * sizeof(size_t));\n")
+		buf.WriteString("    if (b_len > 0) memcpy(concat_lens + a_len, b_lens, b_len * sizeof(size_t));\n")
+		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needConcatLongLong {
-		buf.WriteString("static size_t concat_len;\n")
+		if !needConcatIntPtr {
+			buf.WriteString("static size_t concat_len;\n")
+		}
 		buf.WriteString("static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {\n")
 		buf.WriteString("    long long *res = realloc(a, (a_len + b_len) * sizeof(long long));\n")
 		buf.WriteString("    if (b_len > 0) memcpy(res + a_len, b, b_len * sizeof(long long));\n")
@@ -10972,6 +10991,13 @@ func inferExprType(env *types.Env, e Expr) string {
 		case "_bigrat", "_add", "_sub", "_mul", "_div":
 			return "bigrat"
 		case "append":
+			if len(v.Args) > 0 {
+				if t := inferExprType(env, v.Args[0]); t != "" {
+					return t
+				}
+			}
+			return "long long[]"
+		case "concat":
 			if len(v.Args) > 0 {
 				if t := inferExprType(env, v.Args[0]); t != "" {
 					return t
