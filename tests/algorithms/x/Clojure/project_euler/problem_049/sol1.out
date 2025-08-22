@@ -1,0 +1,5 @@
+Execution error (IndexOutOfBoundsException) at main/solution (sol1.clj:136).
+null
+
+Full report at:
+/tmp/clojure-8530065526639417972.edn

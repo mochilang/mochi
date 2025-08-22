@@ -1,0 +1,5 @@
+Execution error at main/test-is-pentagonal (sol1.clj:73).
+330 should be pentagonal
+
+Full report at:
+/tmp/clojure-3722939895942876892.edn

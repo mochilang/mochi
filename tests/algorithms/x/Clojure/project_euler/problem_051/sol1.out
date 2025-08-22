@@ -1,0 +1,5 @@
+Execution error (IndexOutOfBoundsException) at main/digit-replacements (sol1.clj:87).
+null
+
+Full report at:
+/tmp/clojure-1530741797174852610.edn

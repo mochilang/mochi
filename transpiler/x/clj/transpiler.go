@@ -458,15 +458,15 @@ func pascalCase(name string) string {
 }
 
 func uniqueWhileVar() string {
-        whileCounter++
-        return fmt.Sprintf("while_flag_%d", whileCounter)
+	whileCounter++
+	return fmt.Sprintf("while_flag_%d", whileCounter)
 }
 
 func boolSym(n Node) bool {
-       if s, ok := n.(Symbol); ok {
-               return s == "true"
-       }
-       return false
+	if s, ok := n.(Symbol); ok {
+		return s == "true"
+	}
+	return false
 }
 
 func renameVar(name string) string {
@@ -804,6 +804,7 @@ var stringVars map[string]bool
 var stringListVars map[string]bool
 var mapVars map[string]bool
 var renameVars map[string]string
+var usesReadFile bool
 var currentFun string
 var declVars map[string]bool
 var localVars map[string]bool
@@ -852,11 +853,13 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	stringListVars = nil
 	mapVars = nil
 	renameVars = nil
+	usesReadFile = false
 	declVars = make(map[string]bool)
 	currentStruct = nil
 	currentSelf = ""
 	outerVarStack = nil
 	pr := &Program{}
+	dataDir := filepath.Dir(prog.Pos.Filename)
 	currentProgram = pr
 	defer func() {
 		transpileEnv = nil
@@ -869,6 +872,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		stringListVars = nil
 		mapVars = nil
 		renameVars = nil
+		usesReadFile = false
 		declVars = nil
 		currentStruct = nil
 		currentSelf = ""
@@ -966,6 +970,11 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	}}
 	pr.Forms = append(pr.Forms, toiFn)
 
+	ordFn := &Defn{Name: "_ord", Params: []Node{Symbol("s")}, Body: []Node{
+		&List{Elems: []Node{Symbol("int"), &List{Elems: []Node{Symbol("first"), Symbol("s")}}}},
+	}}
+	pr.Forms = append(pr.Forms, ordFn)
+
 	mochiStrFn := &Defn{Name: "mochi_str", Params: []Node{Symbol("v")}, Body: []Node{
 		&List{Elems: []Node{
 			Symbol("cond"),
@@ -1046,6 +1055,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		}
 		pr.Forms = append(pr.Forms, decl)
 	}
+	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("declare"), Symbol("_read_file")}})
 	varDeclIndex := len(pr.Forms)
 
 	// treat the -main body like a function for variable tracking
@@ -1186,6 +1196,29 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		if n != nil {
 			body = append(body, n)
 		}
+	}
+
+	if usesReadFile {
+		pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("def"), Symbol("_dataDir"), StringLit(dataDir)}})
+		readFileFn := &Defn{Name: "_read_file", Params: []Node{Symbol("path")}, Body: []Node{
+			&List{Elems: []Node{
+				Symbol("let"), &Vector{Elems: []Node{Symbol("f"), &List{Elems: []Node{Symbol("java.io.File."), Symbol("path")}}}},
+				&List{Elems: []Node{
+					Symbol("try"),
+					&List{Elems: []Node{
+						Symbol("slurp"),
+						&List{Elems: []Node{
+							Symbol("if"),
+							&List{Elems: []Node{Symbol(".exists"), Symbol("f")}},
+							Symbol("f"),
+							&List{Elems: []Node{Symbol("java.io.File."), Symbol("_dataDir"), Symbol("path")}},
+						}},
+					}},
+					&List{Elems: []Node{Symbol("catch"), Symbol("Exception"), Symbol("_"), StringLit("")}},
+				}},
+			}},
+		}}
+		pr.Forms = append(pr.Forms, readFileFn)
 	}
 
 	mainBody := body
@@ -2829,6 +2862,25 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 				return nil, err
 			}
 			return &List{Elems: []Node{Symbol("mochi_str"), arg}}, nil
+		case "read_file":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			usesReadFile = true
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("_read_file"), arg}}, nil
+		case "ord":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("ord expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("_ord"), arg}}, nil
 		case "now":
 			if len(c.Args) != 0 {
 				return nil, fmt.Errorf("now expects no args")
@@ -3823,17 +3875,17 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 						} else {
 							ifList.Elems[2] = &List{Elems: []Node{Symbol("do"), ifList.Elems[2], recurThen}}
 						}
-                                               body := &List{Elems: append([]Node{Symbol("do")}, bodyNodes...)}
-                                               condExpr := Node(&List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}})
-                                               if bl, ok := cond.(BoolLit); (ok && bool(bl)) || boolSym(cond) {
-                                                       condExpr = Symbol(flagVar)
-                                               }
-                                               loopBody := &List{Elems: []Node{Symbol("when"), condExpr, body}}
-                                               binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
-                                               return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
-                                       }
-                               }
-                       }
+						body := &List{Elems: append([]Node{Symbol("do")}, bodyNodes...)}
+						condExpr := Node(&List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}})
+						if bl, ok := cond.(BoolLit); (ok && bool(bl)) || boolSym(cond) {
+							condExpr = Symbol(flagVar)
+						}
+						loopBody := &List{Elems: []Node{Symbol("when"), condExpr, body}}
+						binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
+						return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
+					}
+				}
+			}
 		}
 	}
 
