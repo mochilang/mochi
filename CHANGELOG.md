@@ -1,5 +1,30 @@
 # 📦 CHANGELOG.md
 
+## [0.10.70] – 2025-08-22T14:19:51+07:00
+
+### Added
+
+* Pascal transpiler adds union and map helpers.
+* Kotlin supports `Math.floorMod`.
+* C transpiler accepts string-double maps and aliases reserved names.
+* Racket adds neural network algorithms with expanded outputs across transpilers.
+* Algorithm outputs refreshed across TypeScript, Go, Scala, Ruby, PHP, Erlang and more.
+
+### Changed
+
+* Scala, Swift, Ruby and Python refine float literal emission and printing.
+* Java optimizes array calls and folds zero subtraction into unary minus.
+* TypeScript folds `pow10` constants and updates algorithm benchmarks.
+* Lua and OCaml improve typed list helpers and map printing.
+
+### Fixed
+
+* Zig resolves field indexing, var aliasing and float precision.
+* F# corrects map vs list updates.
+* C++ handles negative zero; C# handles zero-minus unary form.
+* Pascal benchmark newline corrected; OCaml list detection and map key handling fixed.
+* Python transpiler precision improved.
+
 ## [0.10.69] – 2025-08-18T18:36:29+07:00
 
 ### Added
