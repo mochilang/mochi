@@ -1,37 +1,36 @@
 public class Main {
 
-    static boolean is_prime(int number) {
-        if (1 < number && number < 4) {
+    static boolean is_prime(long number) {
+        if (1L < (long)(number) && (long)(number) < 4L) {
             return true;
-        } else         if (number < 2 || Math.floorMod(number, 2) == 0 || Math.floorMod(number, 3) == 0) {
+        } else         if ((long)(number) < 2L || Math.floorMod(number, 2) == 0L || Math.floorMod(number, 3) == 0L) {
             return false;
         }
-        int i = 5;
-        while (i * i <= number) {
-            if (Math.floorMod(number, i) == 0 || Math.floorMod(number, (i + 2)) == 0) {
+        long i_1 = 5L;
+        while ((long)((long)(i_1) * (long)(i_1)) <= (long)(number)) {
+            if (Math.floorMod(number, i_1) == 0L || Math.floorMod(number, ((long)(i_1) + 2L)) == 0L) {
                 return false;
             }
-            i = i + 6;
+            i_1 = (long)((long)(i_1) + 6L);
         }
         return true;
     }
 
-    static int solution(int nth) {
-        int count = 0;
-        int num = 2;
+    static long solution(long nth) {
+        long count = 0L;
+        long num_1 = 2L;
         while (true) {
-            if (((Boolean)(is_prime(num)))) {
-                count = count + 1;
-                if (count == nth) {
-                    return num;
+            if (is_prime((long)(num_1))) {
+                count = (long)((long)(count) + 1L);
+                if ((long)(count) == (long)(nth)) {
+                    return num_1;
                 }
             }
-            num = num + 1;
+            num_1 = (long)((long)(num_1) + 1L);
         }
-        return 0;
     }
     public static void main(String[] args) {
-        System.out.println("solution() = " + _p(solution(10001)));
+        System.out.println("solution() = " + _p(solution(10001L)));
     }
 
     static String _p(Object v) {
@@ -46,6 +45,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

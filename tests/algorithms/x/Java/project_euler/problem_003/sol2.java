@@ -1,27 +1,27 @@
 public class Main {
 
-    static int largest_prime_factor(int n) {
-        if (n <= 0) {
+    static long largest_prime_factor(long n) {
+        if ((long)(n) <= 0L) {
             throw new RuntimeException(String.valueOf("Parameter n must be greater than or equal to one."));
         }
-        int num = n;
-        int prime = 1;
-        int i = 2;
-        while (i * i <= num) {
-            while (Math.floorMod(num, i) == 0) {
-                prime = i;
-                num = Math.floorDiv(num, i);
+        long num_1 = (long)(n);
+        long prime_1 = 1L;
+        long i_1 = 2L;
+        while ((long)((long)(i_1) * (long)(i_1)) <= (long)(num_1)) {
+            while (Math.floorMod(num_1, i_1) == 0L) {
+                prime_1 = (long)(i_1);
+                num_1 = Math.floorDiv(num_1, i_1);
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
-        if (num > 1) {
-            prime = num;
+        if ((long)(num_1) > 1L) {
+            prime_1 = (long)(num_1);
         }
-        return prime;
+        return prime_1;
     }
 
     static void main() {
-        System.out.println(_p(largest_prime_factor((int)600851475143L)));
+        System.out.println(_p(largest_prime_factor(600851475143L)));
     }
     public static void main(String[] args) {
         main();
@@ -39,6 +39,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

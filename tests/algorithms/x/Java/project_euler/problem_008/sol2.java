@@ -1,20 +1,20 @@
 public class Main {
     static String N;
 
-    static int solution(String n) {
-        int max_product = 0;
-        int i = 0;
-        while (i <= _runeLen(n) - 13) {
-            int product = 1;
-            int j = 0;
-            while (j < 13) {
-                product = product * (n.substring(i + j, i + j+1));
-                j = j + 1;
+    static long solution(String n) {
+        long max_product = 0L;
+        long i_1 = 0L;
+        while ((long)(i_1) <= (long)((long)(_runeLen(n)) - 13L)) {
+            long product_1 = 1L;
+            long j_1 = 0L;
+            while ((long)(j_1) < 13L) {
+                product_1 = (long)((long)(product_1) * (long)((Long.parseLong(n.substring((int)((long)((long)(i_1) + (long)(j_1))), (int)((long)((long)(i_1) + (long)(j_1)))+1)))));
+                j_1 = (long)((long)(j_1) + 1L);
             }
-            if (product > max_product) {
-                max_product = product;
+            if ((long)(product_1) > (long)(max_product)) {
+                max_product = (long)(product_1);
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + 1L);
         }
         return max_product;
     }

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-22 13:20 GMT+7
+Last updated: 2025-08-22 14:29 GMT+7
 
-## Algorithms Golden Test Checklist (966/1077)
+## Algorithms Golden Test Checklist (968/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -797,7 +797,7 @@ Last updated: 2025-08-22 13:20 GMT+7
 | 788 | physics/rainfall_intensity | ✓ | 30.0ms | 10.45KB |
 | 789 | physics/reynolds_number | ✓ | 29.0ms | 10.25KB |
 | 790 | physics/rms_speed_of_molecule | ✓ | 63.0ms | 81.83KB |
-| 791 | physics/shear_stress | ✓ | 107.0ms | 88.09KB |
+| 791 | physics/shear_stress | error | 107.0ms | 88.09KB |
 | 792 | physics/speed_of_sound | ✓ | 27.0ms | 10.55KB |
 | 793 | physics/speeds_of_gas_molecules | ✓ | 25.0ms | 10.55KB |
 | 794 | physics/terminal_velocity | ✓ | 26.0ms | 10.55KB |
@@ -814,7 +814,7 @@ Last updated: 2025-08-22 13:20 GMT+7
 | 805 | project_euler/problem_002/sol4 | ✓ | 23.0ms | 37.63KB |
 | 806 | project_euler/problem_002/sol5 | ✓ | 14.0ms | 768B |
 | 807 | project_euler/problem_003/sol1 | ✓ | 22.0ms | 37.62KB |
-| 808 | project_euler/problem_003/sol2 | error |  |  |
+| 808 | project_euler/problem_003/sol2 | ✓ | 16.0ms | 968B |
 | 809 | project_euler/problem_003/sol3 | ✓ | 14.0ms | 768B |
 | 810 | project_euler/problem_004/sol1 | ✓ | 64.0ms | 38.10KB |
 | 811 | project_euler/problem_004/sol2 | ✓ | 30.0ms | 1.13KB |
@@ -826,15 +826,15 @@ Last updated: 2025-08-22 13:20 GMT+7
 | 817 | project_euler/problem_006/sol4 | ✓ | 14.0ms | 552B |
 | 818 | project_euler/problem_007/sol1 | ✓ | 36.0ms | 38.02KB |
 | 819 | project_euler/problem_007/sol2 | ✓ | 278.0ms | 53.95KB |
-| 820 | project_euler/problem_007/sol3 | error |  |  |
+| 820 | project_euler/problem_007/sol3 | ✓ | 29.0ms | 37.97KB |
 | 821 | project_euler/problem_008/sol1 | ✓ | 34.0ms | 38.82KB |
-| 822 | project_euler/problem_008/sol2 | error |  |  |
+| 822 | project_euler/problem_008/sol2 | ✓ | 23.0ms | 1.77KB |
 | 823 | project_euler/problem_008/sol3 | ✓ | 25.0ms | 39.17KB |
 | 824 | project_euler/problem_009/sol1 | ✓ | 17.0ms | 664B |
 | 825 | project_euler/problem_009/sol2 | ✓ | 27.0ms | 37.63KB |
 | 826 | project_euler/problem_009/sol3 | ✓ | 21.0ms | 944B |
 | 827 | project_euler/problem_010/sol1 | ✓ | 21.0ms | 37.74KB |
-| 828 | project_euler/problem_010/sol2 | ✓ |  |  |
+| 828 | project_euler/problem_010/sol2 | ✓ | 1.16s | 1.20KB |
 | 829 | project_euler/problem_010/sol3 | ✓ | 208.0ms | 1.13KB |
 | 830 | project_euler/problem_011/sol1 | ✓ | 13.0ms | 664B |
 | 831 | project_euler/problem_011/sol2 | ✓ | 14.0ms | 2.62KB |
