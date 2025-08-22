@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 935/1077
-Last updated: 2025-08-22 13:05 +0700
+Completed programs: 936/1077
+Last updated: 2025-08-22 15:25 +0700
 
 Checklist:
 
@@ -878,7 +878,7 @@ Checklist:
 | 869 | project_euler/problem_039/sol1 | ✓ | 1.244ms | 8.7 MB |
 | 870 | project_euler/problem_040/sol1 | ✓ | 443µs | 8.7 MB |
 | 871 | project_euler/problem_041/sol1 | ✓ | 176µs | 8.7 MB |
-| 872 | project_euler/problem_042/solution42 | error |  |  |
+| 872 | project_euler/problem_042/solution42 | ✓ | 183.317ms | 8.8 MB |
 | 873 | project_euler/problem_043/sol1 | ✓ | 2.486ms | 8.7 MB |
 | 874 | project_euler/problem_044/sol1 | ✓ | 3µs | 8.7 MB |
 | 875 | project_euler/problem_045/sol1 | error |  |  |
