@@ -1,5 +1,5 @@
-## Progress (2025-08-17 12:10 +0700)
-- Commit dbe447fdfb: swift transpiler: support complex float math
+## Progress (2025-08-22 13:05 +0700)
+- Commit 840fa1fa71: Run Scala transpiler on algorithms 752-801
 - Generated Python for 104/105 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference

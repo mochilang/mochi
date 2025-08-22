@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-17 14:24 GMT+7
+Last updated: 2025-08-22 13:18 GMT+7
 
 ## Algorithms Golden Test Checklist (971/1077)
 | Index | Name | Status | Duration | Memory |
@@ -763,11 +763,11 @@ Last updated: 2025-08-17 14:24 GMT+7
 | 754 | other/nested_brackets | ✓ | 99.0µs | 13.32MB |
 | 755 | other/number_container_system | ✓ | 674.0µs | 13.70MB |
 | 756 | other/quine | ✓ | 9.0µs | 12.50MB |
-| 757 | other/scoring_algorithm | ✓ | 45.0µs | 13.85MB |
-| 758 | other/sdes | ✓ | 13.0ms | 13.93MB |
+| 757 | other/scoring_algorithm | ✓ | 92.0µs | 0B |
+| 758 | other/sdes | ✓ | 246.0µs | 0B |
 | 759 | other/tower_of_hanoi | ✓ | 17.0µs | 12.69MB |
 | 760 | other/word_search | ✓ | 193.0µs | 13.62MB |
-| 761 | physics/altitude_pressure | ✓ | 40.0µs | 12.46MB |
+| 761 | physics/altitude_pressure | ✓ | 139.0µs | 0B |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 4.0µs | 12.21MB |
 | 763 | physics/basic_orbital_capture | error |  |  |
 | 764 | physics/casimir_effect | ✓ | 49.0µs | 12.82MB |

@@ -155,7 +155,7 @@ def _str(v):
     if isinstance(v, float):
         if abs(v - builtins.round(v)) < 1e-9:
             return builtins.str(int(builtins.round(v)))
-        return builtins.format(v, ".15g")
+        return builtins.format(v, ".17g")
     return builtins.str(v)
 `
 
