@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
 Completed programs: 935/1077
-Last updated: 2025-08-17 13:29 +0700
+Last updated: 2025-08-19 09:22 +0700
 
 Checklist:
 
@@ -758,34 +758,34 @@ Checklist:
 | 749 | other/linear_congruential_generator | ✓ | 478.787ms | 3.5 MB |
 | 750 | other/lru_cache | ✓ | 183.317ms | 3.5 MB |
 | 751 | other/magicdiamondpattern | ✓ | 183.317ms | 3.5 MB |
-| 752 | other/majority_vote_algorithm | ✓ | 183.317ms | 3.5 MB |
-| 753 | other/maximum_subsequence | ✓ | 183.317ms | 3.5 MB |
-| 754 | other/nested_brackets | ✓ | 183.317ms | 3.5 MB |
-| 755 | other/number_container_system | ✓ | 183.317ms | 3.5 MB |
-| 756 | other/quine | ✓ | 183.317ms | 3.5 MB |
-| 757 | other/scoring_algorithm | ✓ | 183.317ms | 3.5 MB |
-| 758 | other/sdes | ✓ | 183.317ms | 3.5 MB |
-| 759 | other/tower_of_hanoi | ✓ | 183.317ms | 3.5 MB |
-| 760 | other/word_search | ✓ | 183.317ms | 3.5 MB |
-| 761 | physics/altitude_pressure | ✓ | 183.317ms | 3.5 MB |
-| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 183.317ms | 3.4 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 183.317ms | 8.7 MB |
+| 753 | other/maximum_subsequence | ✓ | 183.317ms | 8.7 MB |
+| 754 | other/nested_brackets | ✓ | 183.317ms | 8.7 MB |
+| 755 | other/number_container_system | ✓ | 183.317ms | 8.7 MB |
+| 756 | other/quine | ✓ | 183.317ms | 8.8 MB |
+| 757 | other/scoring_algorithm | ✓ | 183.317ms | 8.7 MB |
+| 758 | other/sdes | ✓ | 183.317ms | 8.7 MB |
+| 759 | other/tower_of_hanoi | ✓ | 183.317ms | 8.7 MB |
+| 760 | other/word_search | ✓ | 183.317ms | 8.7 MB |
+| 761 | physics/altitude_pressure | ✓ | 183.317ms | 8.7 MB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 183.317ms | 8.7 MB |
 | 763 | physics/basic_orbital_capture | error |  |  |
-| 764 | physics/casimir_effect | ✓ | 183.317ms | 3.5 MB |
-| 765 | physics/center_of_mass | ✓ | 183.317ms | 3.5 MB |
-| 766 | physics/centripetal_force | ✓ | 183.317ms | 3.5 MB |
-| 767 | physics/coulombs_law | ✓ | 183.317ms | 3.5 MB |
-| 768 | physics/doppler_frequency | ✓ | 183.317ms | 3.5 MB |
-| 769 | physics/escape_velocity | ✓ | 183.317ms | 3.5 MB |
-| 770 | physics/grahams_law | ✓ | 183.317ms | 3.5 MB |
-| 771 | physics/horizontal_projectile_motion | ✓ | 183.317ms | 3.5 MB |
-| 772 | physics/hubble_parameter | ✓ | 183.317ms | 3.5 MB |
-| 773 | physics/ideal_gas_law | ✓ | 183.317ms | 3.5 MB |
-| 774 | physics/in_static_equilibrium | ✓ | 183.317ms | 3.5 MB |
-| 775 | physics/kinetic_energy | ✓ | 183.317ms | 3.5 MB |
-| 776 | physics/lens_formulae | ✓ | 183.317ms | 3.5 MB |
-| 777 | physics/lorentz_transformation_four_vector | ✓ | 183.317ms | 3.5 MB |
-| 778 | physics/malus_law | ✓ | 183.317ms | 3.5 MB |
-| 779 | physics/mass_energy_equivalence | ✓ | 2µs | 8.7 MB |
+| 764 | physics/casimir_effect | ✓ | 183.317ms | 8.7 MB |
+| 765 | physics/center_of_mass | ✓ | 183.317ms | 8.7 MB |
+| 766 | physics/centripetal_force | ✓ | 183.317ms | 8.7 MB |
+| 767 | physics/coulombs_law | ✓ | 183.317ms | 8.7 MB |
+| 768 | physics/doppler_frequency | ✓ | 183.317ms | 8.7 MB |
+| 769 | physics/escape_velocity | ✓ | 183.317ms | 8.7 MB |
+| 770 | physics/grahams_law | ✓ | 183.317ms | 8.7 MB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 183.317ms | 8.7 MB |
+| 772 | physics/hubble_parameter | ✓ | 183.317ms | 8.7 MB |
+| 773 | physics/ideal_gas_law | ✓ | 183.317ms | 8.7 MB |
+| 774 | physics/in_static_equilibrium | ✓ | 183.317ms | 8.7 MB |
+| 775 | physics/kinetic_energy | ✓ | 183.317ms | 8.7 MB |
+| 776 | physics/lens_formulae | ✓ | 183.317ms | 8.7 MB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 183.317ms | 8.8 MB |
+| 778 | physics/malus_law | ✓ | 183.317ms | 8.7 MB |
+| 779 | physics/mass_energy_equivalence | ✓ | 183.317ms | 8.7 MB |
 | 780 | physics/mirror_formulae | ✓ | 183.317ms | 8.7 MB |
 | 781 | physics/n_body_simulation | ✓ | 183.317ms | 8.8 MB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 183.317ms | 8.7 MB |
@@ -797,7 +797,7 @@ Checklist:
 | 788 | physics/rainfall_intensity | ✓ | 183.317ms | 8.7 MB |
 | 789 | physics/reynolds_number | ✓ | 183.317ms | 8.7 MB |
 | 790 | physics/rms_speed_of_molecule | ✓ | 183.317ms | 8.7 MB |
-| 791 | physics/shear_stress | ✓ | 183.317ms | 8.7 MB |
+| 791 | physics/shear_stress | ✓ | 183.317ms | 8.8 MB |
 | 792 | physics/speed_of_sound | ✓ | 183.317ms | 8.7 MB |
 | 793 | physics/speeds_of_gas_molecules | ✓ | 183.317ms | 8.7 MB |
 | 794 | physics/terminal_velocity | ✓ | 183.317ms | 8.7 MB |
