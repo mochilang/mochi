@@ -46,6 +46,7 @@ var (
 	usesConcat        bool
 	usesStr           bool
 	usesToi           bool
+	usesReadFile      bool
 	usesSetIndex      bool
 	usesPanic         bool
 	funcDepth         int
@@ -162,6 +163,18 @@ def _str(v):
 const helperToi = `
 def _toi(v):
     return int(v)
+`
+
+const helperReadFile = `
+def _read_file(path):
+    p = path
+    if '_dataDir' in globals() and _dataDir and not os.path.exists(p):
+        p = os.path.join(_dataDir, path)
+    try:
+        with open(p, 'r') as f:
+            return f.read()
+    except Exception:
+        return ''
 `
 
 var pyKeywords = map[string]bool{
@@ -3337,6 +3350,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesReadFile {
+		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
+			return err
+		}
+	}
 	// no runtime helpers required
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
@@ -3630,6 +3648,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesConcat = false
 	usesStr = false
 	usesToi = false
+	usesReadFile = false
 	usesSetIndex = false
 	usesPanic = false
 	p := &Program{}
@@ -5447,6 +5466,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				usesToi = true
 				return &CallExpr{Func: &Name{Name: "_toi"}, Args: args}, nil
+			}
+		case "read_file":
+			if len(args) == 1 {
+				usesReadFile = true
+				return &CallExpr{Func: &Name{Name: "_read_file"}, Args: args}, nil
 			}
 		case "split":
 			if len(args) == 2 {
