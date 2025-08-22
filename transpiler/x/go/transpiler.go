@@ -46,6 +46,8 @@ type Program struct {
 	UsePadStart  bool
 	UseIndex     bool
 	UseSetIndex  bool
+	UseFloatEq   bool
+	UseOrd       bool
 	UseSHA256    bool
 	UseBigInt    bool
 	UseBigRat    bool
@@ -79,6 +81,8 @@ var (
 	usesPadStart       bool
 	usesIndex          bool
 	usesSetIndex       bool
+	usesFloatEq        bool
+	usesOrd            bool
 	usesSHA256         bool
 	usesBigInt         bool
 	usesBigRat         bool
@@ -2643,6 +2647,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesPadStart = false
 	usesIndex = false
 	usesSetIndex = false
+	usesFloatEq = false
+	usesOrd = false
 	usesSHA256 = false
 	usesBigInt = false
 	usesBigRat = false
@@ -2707,6 +2713,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UsePadStart = usesPadStart
 	gp.UseIndex = usesIndex
 	gp.UseSetIndex = usesSetIndex
+	gp.UseFloatEq = usesFloatEq
+	gp.UseOrd = usesOrd
 	gp.UseRepeat = usesRepeat
 	gp.UseConcat = usesConcat
 	gp.UseMapConv = usesMapConv
@@ -5728,6 +5736,17 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 						}
 					}
+					if newExpr == nil && (ops[i].Op == "==" || ops[i].Op == "!=") {
+						if isFloatType(typesList[i]) && isFloatType(typesList[i+1]) {
+							usesFloatEq = true
+							eq := &CallExpr{Func: "_floatEqual", Args: []Expr{left, right}}
+							if ops[i].Op == "==" {
+								newExpr = eq
+							} else {
+								newExpr = &NotExpr{Expr: eq}
+							}
+						}
+					}
 					// list concatenation or string concat with list of strings
 					if ops[i].Op == "+" {
 						if _, ok := typesList[i].(types.StringType); ok {
@@ -6880,6 +6899,14 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "read_file":
 			usesReadFile = true
 			return &CallExpr{Func: "read_file", Args: args}, nil
+		case "ord":
+			usesOrd = true
+			return &CallExpr{Func: "ord", Args: args}, nil
+		case "sqrt":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			return &CallExpr{Func: "math.Sqrt", Args: args}, nil
 		case "error":
 			if !types.IsStringType(types.TypeOfExpr(p.Call.Args[0], env)) {
 				usesPrint = true
@@ -7831,6 +7858,24 @@ func Emit(prog *Program, bench bool) []byte {
 	if prog.UseConcat {
 		buf.WriteString("func _concat[T any](a, b []T) []T {\n")
 		buf.WriteString("    return append(append([]T{}, a...), b...)\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseFloatEq {
+		buf.WriteString("func _floatEqual(a, b float64) bool {\n")
+		buf.WriteString("    if a > b { return a-b < 1e-6 }\n")
+		buf.WriteString("    return b-a < 1e-6\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseOrd {
+		buf.WriteString("func ord(v any) any {\n")
+		buf.WriteString("    switch s := v.(type) {\n")
+		buf.WriteString("    case string:\n")
+		buf.WriteString("        r := []rune(s)\n")
+		buf.WriteString("        if len(r) == 0 { return 0 }\n")
+		buf.WriteString("        return int(r[0])\n")
+		buf.WriteString("    default:\n")
+		buf.WriteString("        return 0\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseReadFile {
