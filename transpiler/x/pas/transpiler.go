@@ -157,6 +157,12 @@ type RecordDef struct {
 	Fields []Field
 }
 
+type VariantDef struct {
+	Union  string
+	Tag    int
+	Fields []Field
+}
+
 type MapItem struct {
 	Key   Expr
 	Value Expr
@@ -204,6 +210,7 @@ type Program struct {
 	Funs                []FunDecl
 	Vars                []VarDecl
 	Records             []RecordDef
+	Variants            map[string]VariantDef
 	ArrayAliases        map[string]string
 	LateAliases         map[string]string
 	FuncAliases         map[string]string
@@ -228,6 +235,7 @@ type Program struct {
 	NeedShowListReal2   bool
 	NeedShowMap         bool
 	NeedShowMapIntArray bool
+	NeedShowMapReal     bool
 	NeedMapIntIntStr    bool
 	NeedMapStrIntStr    bool
 	NeedListStr         bool
@@ -862,6 +870,7 @@ type BinaryExpr struct {
 	Bool  bool
 	Real  bool // use real division for '/'
 	Rat   bool // operation on BigRat
+	FMod  bool // floating mod
 }
 
 type ContainsExpr struct {
@@ -1088,6 +1097,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	if b.Op == "%" && b.FMod {
+		io.WriteString(w, "(")
+		b.Left.emit(w)
+		io.WriteString(w, " - Floor(")
+		b.Left.emit(w)
+		io.WriteString(w, " / ")
+		b.Right.emit(w)
+		io.WriteString(w, ") * ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if _, ok := b.Left.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
 		b.Left.emit(w)
@@ -1274,6 +1295,11 @@ func (p *PrintStmt) emit(w io.Writer) {
 		if t == "specialize TFPGMap<integer, IntArray>" {
 			currProg.NeedShowMapIntArray = true
 			io.WriteString(w, "show_map_int_array(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
+		} else if strings.HasSuffix(t, ", real>") {
+			currProg.NeedShowMapReal = true
+			io.WriteString(w, "show_map_real(")
 			p.Exprs[0].emit(w)
 			io.WriteString(w, ");")
 		} else {
@@ -1732,6 +1758,9 @@ end;
 	if p.NeedShowMapIntArray {
 		buf.WriteString("procedure show_map_int_array(m: specialize TFPGMap<integer, IntArray>);\nvar i,j: integer;\nbegin\n  write('map[');\n  for i := 0 to m.Count - 1 do begin\n    write(m.Keys[i]);\n    write(':');\n    write('[');\n    for j := 0 to Length(m.Data[i]) - 1 do begin\n      write(m.Data[i][j]);\n      if j < Length(m.Data[i]) - 1 then write(' ');\n    end;\n    write(']');\n    if i < m.Count - 1 then write(' ');\n  end;\n  writeln(']');\nend;\n")
 	}
+	if p.NeedShowMapReal {
+		buf.WriteString("procedure show_map_real(m: specialize TFPGMap<string, real>);\nvar i: integer;\nbegin\n  write('map[');\n  for i := 0 to m.Count - 1 do begin\n    write(m.Keys[i]);\n    write(':');\n    write(m.Data[i]);\n    if i < m.Count - 1 then write(' ');\n  end;\n  writeln(']');\nend;\n")
+	}
 	if len(p.Vars) > 0 {
 		buf.WriteString("var\n")
 		for _, v := range p.Vars {
@@ -1913,6 +1942,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							tt := strings.ToLower(t)
 							if strings.Contains(tt, "tfpgmap<integer") && (strings.Contains(tt, "intarray") || strings.Contains(tt, "array of integer")) {
 								pr.NeedShowMapIntArray = true
+							} else if strings.Contains(tt, "tfpgmap<string, real>") {
+								pr.NeedShowMapReal = true
 							} else {
 								pr.NeedShowMap = true
 							}
@@ -1928,18 +1959,56 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				pr.Stmts = append(pr.Stmts, &ExprStmt{Expr: ex})
 				continue
 			case st.Type != nil:
-				var fields []Field
-				for _, m := range st.Type.Members {
-					if m.Field == nil || m.Field.Type == nil {
-						continue
+				if len(st.Type.Variants) > 0 {
+					fields := []Field{{Name: "_tag", Type: "integer"}}
+					if pr.Variants == nil {
+						pr.Variants = make(map[string]VariantDef)
 					}
-					typ := typeFromRef(m.Field.Type)
-					if typ == "" {
-						continue
+					for idx, v := range st.Type.Variants {
+						vinfo := VariantDef{Union: st.Type.Name, Tag: idx}
+						for _, f := range v.Fields {
+							if f.Type == nil {
+								continue
+							}
+							typ := typeFromRef(f.Type)
+							fname := sanitizeField(v.Name + "_" + f.Name)
+							fields = append(fields, Field{Name: fname, Type: typ})
+							vinfo.Fields = append(vinfo.Fields, Field{Name: fname, Type: typ})
+						}
+						pr.Variants[v.Name] = vinfo
+						var params []string
+						var body []Stmt
+						for _, f := range v.Fields {
+							if f.Type == nil {
+								continue
+							}
+							typ := typeFromRef(f.Type)
+							paramName := sanitize(f.Name)
+							params = append(params, fmt.Sprintf("%s: %s", paramName, pasType(typ)))
+							body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{sanitizeField(v.Name + "_" + f.Name)}}, Expr: &VarRef{Name: paramName}})
+						}
+						body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{"_tag"}}, Expr: &IntLit{Value: int64(idx)}})
+						fn := FunDecl{Name: ctorName(v.Name), Params: params, ReturnType: st.Type.Name, Body: body}
+						pr.Funs = append([]FunDecl{fn}, pr.Funs...)
+						if funcReturns != nil {
+							funcReturns[fn.Name] = st.Type.Name
+						}
 					}
-					fields = append(fields, Field{Name: sanitizeField(m.Field.Name), Type: typ})
+					pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
+				} else {
+					var fields []Field
+					for _, m := range st.Type.Members {
+						if m.Field == nil || m.Field.Type == nil {
+							continue
+						}
+						typ := typeFromRef(m.Field.Type)
+						if typ == "" {
+							continue
+						}
+						fields = append(fields, Field{Name: sanitizeField(m.Field.Name), Type: typ})
+					}
+					pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 				}
-				pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 			case st.Let != nil:
 				name := declareName(st.Let.Name)
 				vd := VarDecl{Name: name}
@@ -2665,18 +2734,56 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				varTypes[vd.Name] = vd.Type
 			}
 		case st.Type != nil:
-			var fields []Field
-			for _, m := range st.Type.Members {
-				if m.Field == nil || m.Field.Type == nil {
-					continue
+			if len(st.Type.Variants) > 0 {
+				fields := []Field{{Name: "_tag", Type: "integer"}}
+				if currProg.Variants == nil {
+					currProg.Variants = make(map[string]VariantDef)
 				}
-				typ := typeFromRef(m.Field.Type)
-				if typ == "" {
-					continue
+				for idx, v := range st.Type.Variants {
+					vinfo := VariantDef{Union: st.Type.Name, Tag: idx}
+					for _, f := range v.Fields {
+						if f.Type == nil {
+							continue
+						}
+						typ := typeFromRef(f.Type)
+						fname := sanitizeField(v.Name + "_" + f.Name)
+						fields = append(fields, Field{Name: fname, Type: typ})
+						vinfo.Fields = append(vinfo.Fields, Field{Name: fname, Type: typ})
+					}
+					currProg.Variants[v.Name] = vinfo
+					var params []string
+					var body []Stmt
+					for _, f := range v.Fields {
+						if f.Type == nil {
+							continue
+						}
+						typ := typeFromRef(f.Type)
+						paramName := sanitize(f.Name)
+						params = append(params, fmt.Sprintf("%s: %s", paramName, pasType(typ)))
+						body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{sanitizeField(v.Name + "_" + f.Name)}}, Expr: &VarRef{Name: paramName}})
+					}
+					body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{"_tag"}}, Expr: &IntLit{Value: int64(idx)}})
+					fn := FunDecl{Name: ctorName(v.Name), Params: params, ReturnType: st.Type.Name, Body: body}
+					currProg.Funs = append([]FunDecl{fn}, currProg.Funs...)
+					if funcReturns != nil {
+						funcReturns[fn.Name] = st.Type.Name
+					}
 				}
-				fields = append(fields, Field{Name: sanitizeField(m.Field.Name), Type: typ})
+				currProg.Records = append(currProg.Records, RecordDef{Name: st.Type.Name, Fields: fields})
+			} else {
+				var fields []Field
+				for _, m := range st.Type.Members {
+					if m.Field == nil || m.Field.Type == nil {
+						continue
+					}
+					typ := typeFromRef(m.Field.Type)
+					if typ == "" {
+						continue
+					}
+					fields = append(fields, Field{Name: sanitizeField(m.Field.Name), Type: typ})
+				}
+				currProg.Records = append(currProg.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 			}
-			currProg.Records = append(currProg.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 		case st.Var != nil:
 			name := declareName(st.Var.Name)
 			vd := VarDecl{Name: name}
@@ -2917,6 +3024,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						tt := strings.ToLower(t)
 						if strings.Contains(tt, "tfpgmap<integer") && (strings.Contains(tt, "intarray") || strings.Contains(tt, "array of integer")) {
 							currProg.NeedShowMapIntArray = true
+						} else if strings.Contains(tt, "tfpgmap<string, real>") {
+							currProg.NeedShowMapReal = true
 						} else {
 							currProg.NeedShowMap = true
 						}
@@ -3230,6 +3339,10 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			rt := inferType(right)
 			if lt == "BigRat" || rt == "BigRat" {
 				be.Rat = true
+			}
+			if op == "%" && (lt == "real" || rt == "real") {
+				be.FMod = true
+				currProg.UseMath = true
 			}
 		case "/":
 			be = &BinaryExpr{Op: "/", Left: left, Right: right}
@@ -5481,6 +5594,7 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 		return nil, err
 	}
 	var expr Expr
+	tname := exprToVarRef(target)
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
 		res, err := convertExpr(env, c.Result)
@@ -5491,11 +5605,49 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 			expr = res
 			continue
 		}
+		if call := callFromExpr(c.Pattern); call != nil {
+			if vinfo, ok := currProg.Variants[call.Func]; ok {
+				cond := &BinaryExpr{Op: "=", Left: &SelectorExpr{Root: tname, Tail: []string{"_tag"}}, Right: &IntLit{Value: int64(vinfo.Tag)}, Bool: true}
+				for j, a := range call.Args {
+					if name, ok := exprToIdent(a); ok && j < len(vinfo.Fields) {
+						res = replaceVar(res, name, &SelectorExpr{Root: tname, Tail: []string{vinfo.Fields[j].Name}})
+					}
+				}
+				if currProg != nil {
+					t := inferType(res)
+					if t == "" && expr != nil {
+						t = inferType(expr)
+					}
+					if t == "string" {
+						currProg.UseStrUtils = true
+					} else {
+						currProg.UseMath = true
+					}
+				}
+				if expr == nil {
+					expr = res
+				} else {
+					expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+				}
+				continue
+			}
+		}
 		pat, err := convertExpr(env, c.Pattern)
 		if err != nil {
 			return nil, err
 		}
 		cond := &BinaryExpr{Op: "=", Left: target, Right: pat, Bool: true}
+		if currProg != nil {
+			t := inferType(res)
+			if t == "" && expr != nil {
+				t = inferType(expr)
+			}
+			if t == "string" {
+				currProg.UseStrUtils = true
+			} else {
+				currProg.UseMath = true
+			}
+		}
 		if expr == nil {
 			expr = res
 		} else {
@@ -6202,7 +6354,11 @@ func formatParam(name, typ string) string {
 	// arrays when using recursion. Using "var" for array parameters caused
 	// access violations on some programs (e.g. Cramer's rule) so we no
 	// longer emit it here.
-	name = sanitize(name)
+	if currentFunc != "" && strings.HasPrefix(name, currentFunc+"_") {
+		// already sanitized with current function prefix
+	} else {
+		name = sanitize(name)
+	}
 	return fmt.Sprintf("%s: %s", name, pasType(typ))
 }
 
