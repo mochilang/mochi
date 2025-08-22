@@ -5473,7 +5473,7 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		if e != nil {
 			valType = inferType(e)
 		}
-		if _, ok := localVarTypes[name]; ok {
+		if _, ok := localVarTypes[name]; ok && !convInFunc {
 			return &AssignStmt{Target: &Name{Name: name}, Value: e}, nil
 		}
 		if typ != "" {

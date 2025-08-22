@@ -22,10 +22,10 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
+dynamic _substr(dynamic s, num start, [num? end]) {
   int n = s.length;
   int s0 = start.toInt();
-  int e0 = end.toInt();
+  int e0 = end == null ? n : end.toInt();
   if (s0 < 0) s0 += n;
   if (e0 < 0) e0 += n;
   if (s0 < 0) s0 = 0;
@@ -39,7 +39,7 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 
 List<int> _sha256(dynamic data) {
@@ -70,7 +70,7 @@ String HEX = "0123456789abcdef";
 String byte_to_hex(int b) {
   int hi = b ~/ 16;
   int lo = b % 16;
-  return HEX.substring(hi, hi + 1) + HEX.substring(lo, lo + 1);
+  return _substr(HEX, hi, hi + 1) + _substr(HEX, lo, lo + 1);
 }
 
 String bytes_to_hex(List<int> bs) {

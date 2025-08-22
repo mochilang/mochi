@@ -22,24 +22,7 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
-  int n = s.length;
-  int s0 = start.toInt();
-  int e0 = end.toInt();
-  if (s0 < 0) s0 += n;
-  if (e0 < 0) e0 += n;
-  if (s0 < 0) s0 = 0;
-  if (s0 > n) s0 = n;
-  if (e0 < 0) e0 = 0;
-  if (e0 > n) e0 = n;
-  if (s0 > e0) s0 = e0;
-  if (s is String) {
-    return s.substring(s0, e0);
-  }
-  return s.sublist(s0, e0);
-}
-
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 List<List<int>> partition(List<int> data, int pivot) {
   List<int> less = <int>[];
@@ -48,12 +31,12 @@ List<List<int>> partition(List<int> data, int pivot) {
   for (int i = 0; i < data.length; i++) {
     int v = data[i];
     if (v < pivot) {
-    less = (less..add(v));
+    less = [...less, v];
   } else {
     if (v > pivot) {
-    greater = (greater..add(v));
+    greater = [...greater, v];
   } else {
-    equal = (equal..add(v));
+    equal = [...equal, v];
   };
   }
   }
