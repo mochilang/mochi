@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-22 14:29 GMT+7
+Last updated: 2025-08-22 15:50 GMT+7
 
-## Algorithms Golden Test Checklist (968/1077)
+## Algorithms Golden Test Checklist (970/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -797,7 +797,7 @@ Last updated: 2025-08-22 14:29 GMT+7
 | 788 | physics/rainfall_intensity | ✓ | 30.0ms | 10.45KB |
 | 789 | physics/reynolds_number | ✓ | 29.0ms | 10.25KB |
 | 790 | physics/rms_speed_of_molecule | ✓ | 63.0ms | 81.83KB |
-| 791 | physics/shear_stress | error | 107.0ms | 88.09KB |
+| 791 | physics/shear_stress | ✓ | 107.0ms | 88.09KB |
 | 792 | physics/speed_of_sound | ✓ | 27.0ms | 10.55KB |
 | 793 | physics/speeds_of_gas_molecules | ✓ | 25.0ms | 10.55KB |
 | 794 | physics/terminal_velocity | ✓ | 26.0ms | 10.55KB |
@@ -834,7 +834,7 @@ Last updated: 2025-08-22 14:29 GMT+7
 | 825 | project_euler/problem_009/sol2 | ✓ | 27.0ms | 37.63KB |
 | 826 | project_euler/problem_009/sol3 | ✓ | 21.0ms | 944B |
 | 827 | project_euler/problem_010/sol1 | ✓ | 21.0ms | 37.74KB |
-| 828 | project_euler/problem_010/sol2 | ✓ | 1.16s | 1.20KB |
+| 828 | project_euler/problem_010/sol2 | ✓ |  |  |
 | 829 | project_euler/problem_010/sol3 | ✓ | 208.0ms | 1.13KB |
 | 830 | project_euler/problem_011/sol1 | ✓ | 13.0ms | 664B |
 | 831 | project_euler/problem_011/sol2 | ✓ | 14.0ms | 2.62KB |
@@ -878,7 +878,7 @@ Last updated: 2025-08-22 14:29 GMT+7
 | 869 | project_euler/problem_039/sol1 | ✓ | 90.0ms | 70.23KB |
 | 870 | project_euler/problem_040/sol1 | error |  |  |
 | 871 | project_euler/problem_041/sol1 | ✓ | 70.0ms | 53.84KB |
-| 872 | project_euler/problem_042/solution42 | error |  |  |
+| 872 | project_euler/problem_042/solution42 | ✓ | 100.0ms | 124.61KB |
 | 873 | project_euler/problem_043/sol1 | ✓ | 2.51s | 53.58KB |
 | 874 | project_euler/problem_044/sol1 | ✓ | 1.09s | 53.77KB |
 | 875 | project_euler/problem_045/sol1 | error |  |  |

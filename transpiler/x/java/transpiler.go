@@ -57,6 +57,8 @@ var needSHA256 bool
 var needMD5Hex bool
 var needRuneLen bool
 var needSubstr bool
+var needReadFile bool
+var needOrd bool
 var needArrGetI bool
 var needArrGetD bool
 var needArrGetB bool
@@ -1128,8 +1130,9 @@ func collectReturnMap(body []Stmt) map[string]string {
 // --- Simple Java AST ---
 
 type Program struct {
-	Funcs []*Function
-	Stmts []Stmt
+	Funcs   []*Function
+	Stmts   []Stmt
+	DataDir string
 }
 
 type Param struct {
@@ -4263,6 +4266,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needModPow2 = false
 	needRuneLen = false
 	needSubstr = false
+	needReadFile = false
+	needOrd = false
 	needFetch = false
 	fetchStructs = nil
 	needArrGetI = false
@@ -4415,6 +4420,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	if benchMain {
 		needNow = true
 		needMem = true
+	}
+	dir := filepath.ToSlash(filepath.Dir(p.Pos.Filename))
+	const prefix = "tests/github/TheAlgorithms/Mochi/"
+	if idx := strings.Index(dir, prefix); idx >= 0 {
+		prog.DataDir = dir[idx+len(prefix):]
 	}
 	return &prog, nil
 }
@@ -6029,6 +6039,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "now" && len(args) == 0 {
 			needNow = true
 			return &CallExpr{Func: "_now", Args: nil}, nil
+		}
+		if name == "ord" && len(args) == 1 {
+			needOrd = true
+			if funcRet != nil {
+				funcRet["_ord"] = "int"
+			}
+			return &CallExpr{Func: "_ord", Args: args}, nil
+		}
+		if name == "read_file" && len(args) == 1 {
+			needReadFile = true
+			if funcRet != nil {
+				funcRet["read_file"] = "String"
+			}
+			return &CallExpr{Func: "read_file", Args: args}, nil
 		}
 		aliasName := resolveAlias(name)
 		if t, ok := varTypes[aliasName]; ok {
@@ -7719,6 +7743,29 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        int start = s.offsetByCodePoints(0, i);\n")
 		buf.WriteString("        int end = s.offsetByCodePoints(0, j);\n")
 		buf.WriteString("        return s.substring(start, end);\n")
+		buf.WriteString("    }\n")
+	}
+	if needReadFile {
+		fmt.Fprintf(&buf, "\n    static final String _dataDir = %q;\n", prog.DataDir)
+		buf.WriteString("    static String read_file(String path) {\n")
+		buf.WriteString("        java.io.File f = new java.io.File(path);\n")
+		buf.WriteString("        if (!f.isAbsolute()) {\n")
+		buf.WriteString("            String root = System.getenv(\"MOCHI_ROOT\");\n")
+		buf.WriteString("            if (root != null && !root.isEmpty()) {\n")
+		buf.WriteString("                java.io.File alt = new java.io.File(root + java.io.File.separator + \"tests\" + java.io.File.separator + \"github\" + java.io.File.separator + \"TheAlgorithms\" + java.io.File.separator + \"Mochi\" + java.io.File.separator + _dataDir, path);\n")
+		buf.WriteString("                if (alt.exists()) f = alt;\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        try {\n")
+		buf.WriteString("            return new String(java.nio.file.Files.readAllBytes(f.toPath()));\n")
+		buf.WriteString("        } catch (Exception e) {\n")
+		buf.WriteString("            return \"\";\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+	}
+	if needOrd {
+		buf.WriteString("\n    static int _ord(String s) {\n")
+		buf.WriteString("        return s.codePointAt(0);\n")
 		buf.WriteString("    }\n")
 	}
 	if needJSON {
