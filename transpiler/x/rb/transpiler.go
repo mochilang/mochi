@@ -167,8 +167,8 @@ end
 const helperReadFile = `
 def _read_file(path)
   p = path
-  if defined?(_dataDir) && !_dataDir.nil? && !File.exist?(p)
-    p = File.join(_dataDir, path)
+  if defined?($_dataDir) && !$_dataDir.nil? && !File.exist?(p)
+    p = File.join($_dataDir, path)
   end
   begin
     File.read(p)
@@ -3256,7 +3256,7 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if usesReadFile {
 		if dataDir != "" {
-			fmt.Fprintf(w, "_dataDir = %q\n", dataDir)
+			fmt.Fprintf(w, "$_dataDir = %q\n", dataDir)
 		}
 		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
 			return err
@@ -4725,6 +4725,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "downcase"}, nil
+		case "ord":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("ord expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "ord"}, nil
 		case "contains":
 			if currentEnv != nil {
 				if _, ok := currentEnv.GetFunc(name); ok {
