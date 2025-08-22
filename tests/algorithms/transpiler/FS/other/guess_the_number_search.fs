@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Break
 exception Continue
@@ -25,13 +25,15 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -43,7 +45,7 @@ let rec get_avg (number_1: int) (number_2: int) =
     let mutable number_1 = number_1
     let mutable number_2 = number_2
     try
-        __ret <- _floordiv (number_1 + number_2) 2
+        __ret <- _floordiv (int (number_1 + number_2)) (int 2)
         raise Return
         __ret
     with

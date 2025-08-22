@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -22,17 +22,23 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
     if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
+let _floordiv64 (a:int64) (b:int64) : int64 =
+    let q = a / b
+    let r = a % b
+    if r <> 0L && ((a < 0L) <> (b < 0L)) then q - 1L else q
 type EasterDate = {
     mutable _month: int
     mutable _day: int
@@ -46,8 +52,8 @@ let rec gauss_easter (year: int) =
         let metonic_cycle: int = ((year % 19 + 19) % 19)
         let julian_leap_year: int = ((year % 4 + 4) % 4)
         let non_leap_year: int = ((year % 7 + 7) % 7)
-        let leap_day_inhibits: int = _floordiv year 100
-        let lunar_orbit_correction: int = _floordiv (13 + (8 * leap_day_inhibits)) 25
+        let leap_day_inhibits: int = _floordiv (int year) (int 100)
+        let lunar_orbit_correction: int64 = _floordiv64 (int64 ((int64 13) + ((int64 8) * (int64 leap_day_inhibits)))) (int64 (int64 25))
         let leap_day_reinstall_number: float = (float leap_day_inhibits) / 4.0
         let secular_moon_shift: float = (((((15.0 - (float lunar_orbit_correction)) + (float leap_day_inhibits)) - leap_day_reinstall_number) % 30.0 + 30.0) % 30.0)
         let century_starting_point: float = ((((4.0 + (float leap_day_inhibits)) - leap_day_reinstall_number) % 7.0 + 7.0) % 7.0)

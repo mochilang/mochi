@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -22,13 +22,15 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -84,7 +86,7 @@ and merge_sort (array: int array) =
         if (Seq.length (array)) <= 1 then
             __ret <- array
             raise Return
-        let middle: int = _floordiv (Seq.length (array)) 2
+        let middle: int = _floordiv (int (Seq.length (array))) (int 2)
         let left_half: int array = subarray (array) (0) (middle)
         let right_half: int array = subarray (array) (middle) (Seq.length (array))
         let sorted_left: int array = merge_sort (left_half)

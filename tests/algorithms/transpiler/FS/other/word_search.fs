@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Break
 exception Continue
@@ -52,7 +52,7 @@ let mutable _seed: int = 123456789
 let rec rand () =
     let mutable __ret : int = Unchecked.defaultof<int>
     try
-        _seed <- int ((((int64 ((_seed * 1103515245) + 12345)) % 2147483648L + 2147483648L) % 2147483648L))
+        _seed <- int ((((((int64 _seed) * (int64 1103515245)) + (int64 12345)) % 2147483648L + 2147483648L) % 2147483648L))
         __ret <- _seed
         raise Return
         __ret
@@ -134,9 +134,9 @@ and insert_dir (ws: WordSearch) (word: string) (dr: int) (dc: int) (rows: int ar
                         while ci < (Seq.length (cols)) do
                             try
                                 let col: int = _idx cols (int ci)
-                                let end_r: int = row + (dr * (word_len - 1))
-                                let end_c: int = col + (dc * (word_len - 1))
-                                if (((end_r < 0) || (end_r >= (ws._height))) || (end_c < 0)) || (end_c >= (ws._width)) then
+                                let end_r: int64 = (int64 row) + ((int64 dr) * (int64 (word_len - 1)))
+                                let end_c: int64 = (int64 col) + ((int64 dc) * (int64 (word_len - 1)))
+                                if (((end_r < (int64 0)) || (end_r >= (int64 (ws._height)))) || (end_c < (int64 0))) || (end_c >= (int64 (ws._width))) then
                                     ci <- ci + 1
                                     raise Continue
                                 let mutable k: int = 0
@@ -144,8 +144,8 @@ and insert_dir (ws: WordSearch) (word: string) (dr: int) (dc: int) (rows: int ar
                                 try
                                     while k < word_len do
                                         try
-                                            let rr: int = row + (dr * k)
-                                            let cc: int = col + (dc * k)
+                                            let rr: int64 = (int64 row) + ((int64 dr) * (int64 k))
+                                            let cc: int64 = (int64 col) + ((int64 dc) * (int64 k))
                                             if (_idx (_idx (ws._board) (int rr)) (int cc)) <> "" then
                                                 ok <- false
                                                 raise Break
@@ -159,10 +159,10 @@ and insert_dir (ws: WordSearch) (word: string) (dr: int) (dc: int) (rows: int ar
                                 if ok then
                                     k <- 0
                                     while k < word_len do
-                                        let rr2: int = row + (dr * k)
-                                        let cc2: int = col + (dc * k)
+                                        let rr2: int64 = (int64 row) + ((int64 dr) * (int64 k))
+                                        let cc2: int64 = (int64 col) + ((int64 dc) * (int64 k))
                                         let mutable row_list: string array = _idx (ws._board) (int rr2)
-                                        row_list.[cc2] <- _substring word (k) (k + 1)
+                                        row_list.[int cc2] <- _substring word (k) (k + 1)
                                         k <- k + 1
                                     __ret <- true
                                     raise Return
@@ -186,7 +186,7 @@ and insert_dir (ws: WordSearch) (word: string) (dr: int) (dc: int) (rows: int ar
     with
         | Return -> __ret
 and generate_board (ws: WordSearch) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable ws = ws
     try
         let dirs_r: int array = unbox<int array> [|-1; -1; 0; 1; 1; 1; 0; -1|]
@@ -238,13 +238,13 @@ and visualise (ws: WordSearch) (add_fake_chars: bool) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let _words: string array = unbox<string array> [|"cat"; "dog"; "snake"; "fish"|]
         let mutable ws: WordSearch = make_word_search (_words) (10) (10)
-        generate_board (ws)
+        ignore (generate_board (ws))
         ignore (printfn "%s" (visualise (ws) (true)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
@@ -253,4 +253,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

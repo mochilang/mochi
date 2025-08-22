@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -42,13 +42,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 type Node = {
     mutable _key: int
     mutable value: int
@@ -227,7 +229,7 @@ and cache_info (cache: LRUCache) =
     with
         | Return -> __ret
 and print_result (res: GetResult) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable res = res
     try
         if res._ok then
@@ -238,7 +240,7 @@ and print_result (res: GetResult) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -247,21 +249,21 @@ and main () =
         cache <- lru_put (cache) (2) (2)
         let mutable r1: GetResult = lru_get (cache) (1)
         cache <- r1.cache
-        print_result (r1)
+        ignore (print_result (r1))
         cache <- lru_put (cache) (3) (3)
         let mutable r2: GetResult = lru_get (cache) (2)
         cache <- r2.cache
-        print_result (r2)
+        ignore (print_result (r2))
         cache <- lru_put (cache) (4) (4)
         let mutable r3: GetResult = lru_get (cache) (1)
         cache <- r3.cache
-        print_result (r3)
+        ignore (print_result (r3))
         let mutable r4: GetResult = lru_get (cache) (3)
         cache <- r4.cache
-        print_result (r4)
+        ignore (print_result (r4))
         let mutable r5: GetResult = lru_get (cache) (4)
         cache <- r5.cache
-        print_result (r5)
+        ignore (print_result (r5))
         ignore (printfn "%s" (cache_info (cache)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
@@ -270,4 +272,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

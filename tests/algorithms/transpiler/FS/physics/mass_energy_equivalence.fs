@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let C: float = 299792458.0
@@ -35,29 +37,29 @@ let rec energy_from_mass (mass: float) =
     let mutable mass = mass
     try
         if mass < 0.0 then
-            failwith ("Mass can't be negative.")
+            ignore (failwith ("Mass can't be negative."))
         __ret <- (mass * C) * C
         raise Return
         __ret
     with
         | Return -> __ret
-let rec mass_from_energy (energy: float) =
+and mass_from_energy (energy: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable energy = energy
     try
         if energy < 0.0 then
-            failwith ("Energy can't be negative.")
+            ignore (failwith ("Energy can't be negative."))
         __ret <- energy / (C * C)
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (energy_from_mass (124.56)))
-printfn "%s" (_str (energy_from_mass (320.0)))
-printfn "%s" (_str (energy_from_mass (0.0)))
-printfn "%s" (_str (mass_from_energy (124.56)))
-printfn "%s" (_str (mass_from_energy (320.0)))
-printfn "%s" (_str (mass_from_energy (0.0)))
+ignore (printfn "%s" (_str (energy_from_mass (124.56))))
+ignore (printfn "%s" (_str (energy_from_mass (320.0))))
+ignore (printfn "%s" (_str (energy_from_mass (0.0))))
+ignore (printfn "%s" (_str (mass_from_energy (124.56))))
+ignore (printfn "%s" (_str (mass_from_energy (320.0))))
+ignore (printfn "%s" (_str (mass_from_energy (0.0))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

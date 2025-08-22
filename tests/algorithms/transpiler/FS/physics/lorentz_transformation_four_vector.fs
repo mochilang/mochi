@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -22,13 +22,15 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let c: float = 299792458.0
@@ -49,20 +51,20 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec beta (velocity: float) =
+and beta (velocity: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable velocity = velocity
     try
         if velocity > c then
-            failwith ("Speed must not exceed light speed 299,792,458 [m/s]!")
+            ignore (failwith ("Speed must not exceed light speed 299,792,458 [m/s]!"))
         if velocity < 1.0 then
-            failwith ("Speed must be greater than or equal to 1!")
+            ignore (failwith ("Speed must be greater than or equal to 1!"))
         __ret <- velocity / c
         raise Return
         __ret
     with
         | Return -> __ret
-let rec gamma (velocity: float) =
+and gamma (velocity: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable velocity = velocity
     try
@@ -72,7 +74,7 @@ let rec gamma (velocity: float) =
         __ret
     with
         | Return -> __ret
-let rec transformation_matrix (velocity: float) =
+and transformation_matrix (velocity: float) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable velocity = velocity
     try
@@ -83,7 +85,7 @@ let rec transformation_matrix (velocity: float) =
         __ret
     with
         | Return -> __ret
-let rec mat_vec_mul (mat: float array array) (vec: float array) =
+and mat_vec_mul (mat: float array array) (vec: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable mat = mat
     let mutable vec = vec
@@ -100,7 +102,7 @@ let rec mat_vec_mul (mat: float array array) (vec: float array) =
         __ret
     with
         | Return -> __ret
-let rec transform (velocity: float) (event: float array) =
+and transform (velocity: float) (event: float array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable velocity = velocity
     let mutable event = event
@@ -114,15 +116,15 @@ let rec transform (velocity: float) (event: float array) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (beta (c)))
-printfn "%s" (_str (beta (199792458.0)))
-printfn "%s" (_str (beta (100000.0)))
-printfn "%s" (_str (gamma (4.0)))
-printfn "%s" (_str (gamma (100000.0)))
-printfn "%s" (_str (gamma (30000000.0)))
-printfn "%s" (_str (transformation_matrix (29979245.0)))
+ignore (printfn "%s" (_str (beta (c))))
+ignore (printfn "%s" (_str (beta (199792458.0))))
+ignore (printfn "%s" (_str (beta (100000.0))))
+ignore (printfn "%s" (_str (gamma (4.0))))
+ignore (printfn "%s" (_str (gamma (100000.0))))
+ignore (printfn "%s" (_str (gamma (30000000.0))))
+ignore (printfn "%s" (_str (transformation_matrix (29979245.0))))
 let v: float array = transform (29979245.0) (unbox<float array> [|1.0; 2.0; 3.0; 4.0|])
-printfn "%s" (_str (v))
+ignore (printfn "%s" (_str (v)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

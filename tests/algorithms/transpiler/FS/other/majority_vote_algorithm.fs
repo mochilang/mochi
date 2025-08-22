@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -30,13 +30,15 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec index_of (xs: int array) (x: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable xs = xs
@@ -104,7 +106,7 @@ and majority_vote (votes: int array) (votes_needed_to_win: int) =
         let mutable result: int array = Array.empty<int>
         j <- 0
         while j < (Seq.length (candidates)) do
-            if ((_idx final_counts (int j)) * votes_needed_to_win) > (Seq.length (votes)) then
+            if ((int64 (_idx final_counts (int j))) * (int64 votes_needed_to_win)) > (int64 (Seq.length (votes))) then
                 result <- Array.append result [|(_idx candidates (int j))|]
             j <- j + 1
         __ret <- result
@@ -113,7 +115,7 @@ and majority_vote (votes: int array) (votes_needed_to_win: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -128,4 +130,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

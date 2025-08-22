@@ -1,3 +1,7 @@
+## Progress (2025-08-22 13:05 +0700)
+- Run Scala transpiler on algorithms 752-801
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-17 20:31 +0700)
 - dart: handle num casts as double
 - Generated F# for 103/105 programs (103 passing)

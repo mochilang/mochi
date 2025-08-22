@@ -1,4 +1,4 @@
-// Generated 2025-08-13 16:00 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let G: float = 0.000000000066743
 let C: float = 299792458.0
 let PI: float = 3.141592653589793
@@ -103,7 +105,7 @@ and capture_area (capture_radius: float) =
     with
         | Return -> __ret
 and run_tests () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let r: float = capture_radii (6.957 * (pow10 (8))) (1.99 * (pow10 (30))) (25000.0)
         if (abs (r - (1.720959069143714 * (pow10 (10))))) > 1.0 then
@@ -115,11 +117,11 @@ and run_tests () =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        run_tests()
+        ignore (run_tests())
         let r: float = capture_radii (6.957 * (pow10 (8))) (1.99 * (pow10 (30))) (25000.0)
         ignore (printfn "%s" (_str (r)))
         ignore (printfn "%s" (_str (capture_area (r))))
@@ -130,4 +132,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

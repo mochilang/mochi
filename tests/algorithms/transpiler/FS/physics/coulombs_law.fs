@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -44,7 +46,7 @@ let rec format2 (x: float) =
         let mutable i: int = int scaled
         if (scaled - (float i)) >= 0.5 then
             i <- i + 1
-        let int_part: int = _floordiv i 100
+        let int_part: int = _floordiv (int i) (int 100)
         let frac_part: int = ((i % 100 + 100) % 100)
         let mutable frac_str: string = _str (frac_part)
         if frac_part < 10 then

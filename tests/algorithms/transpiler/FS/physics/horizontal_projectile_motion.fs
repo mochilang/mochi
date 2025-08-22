@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,6 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let PI: float = 3.141592653589793
@@ -34,7 +44,7 @@ let rec _mod (x: float) (m: float) =
         __ret
     with
         | Return -> __ret
-let rec sin (x: float) =
+and sin (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -48,7 +58,7 @@ let rec sin (x: float) =
         __ret
     with
         | Return -> __ret
-let rec deg_to_rad (deg: float) =
+and deg_to_rad (deg: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable deg = deg
     try
@@ -57,7 +67,7 @@ let rec deg_to_rad (deg: float) =
         __ret
     with
         | Return -> __ret
-let rec floor (x: float) =
+and floor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -69,7 +79,7 @@ let rec floor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec pow10 (n: int) =
+and pow10 (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable n = n
     try
@@ -83,7 +93,7 @@ let rec pow10 (n: int) =
         __ret
     with
         | Return -> __ret
-let rec round (x: float) (n: int) =
+and round (x: float) (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable n = n
@@ -95,36 +105,36 @@ let rec round (x: float) (n: int) =
         __ret
     with
         | Return -> __ret
-let rec check_args (init_velocity: float) (angle: float) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and check_args (init_velocity: float) (angle: float) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable init_velocity = init_velocity
     let mutable angle = angle
     try
         if (angle > 90.0) || (angle < 1.0) then
-            failwith ("Invalid angle. Range is 1-90 degrees.")
+            ignore (failwith ("Invalid angle. Range is 1-90 degrees."))
         if init_velocity < 0.0 then
-            failwith ("Invalid velocity. Should be a positive number.")
+            ignore (failwith ("Invalid velocity. Should be a positive number."))
         __ret
     with
         | Return -> __ret
-let rec horizontal_distance (init_velocity: float) (angle: float) =
+and horizontal_distance (init_velocity: float) (angle: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable init_velocity = init_velocity
     let mutable angle = angle
     try
-        check_args (init_velocity) (angle)
+        ignore (check_args (init_velocity) (angle))
         let radians: float = deg_to_rad (2.0 * angle)
         __ret <- round (((init_velocity * init_velocity) * (sin (radians))) / g) (2)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec max_height (init_velocity: float) (angle: float) =
+and max_height (init_velocity: float) (angle: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable init_velocity = init_velocity
     let mutable angle = angle
     try
-        check_args (init_velocity) (angle)
+        ignore (check_args (init_velocity) (angle))
         let radians: float = deg_to_rad (angle)
         let s: float = sin (radians)
         __ret <- round ((((init_velocity * init_velocity) * s) * s) / (2.0 * g)) (2)
@@ -132,12 +142,12 @@ let rec max_height (init_velocity: float) (angle: float) =
         __ret
     with
         | Return -> __ret
-let rec total_time (init_velocity: float) (angle: float) =
+and total_time (init_velocity: float) (angle: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable init_velocity = init_velocity
     let mutable angle = angle
     try
-        check_args (init_velocity) (angle)
+        ignore (check_args (init_velocity) (angle))
         let radians: float = deg_to_rad (angle)
         __ret <- round (((2.0 * init_velocity) * (sin (radians))) / g) (2)
         raise Return
@@ -146,9 +156,9 @@ let rec total_time (init_velocity: float) (angle: float) =
         | Return -> __ret
 let v0: float = 25.0
 let angle: float = 20.0
-printfn "%g" (horizontal_distance (v0) (angle))
-printfn "%g" (max_height (v0) (angle))
-printfn "%g" (total_time (v0) (angle))
+ignore (printfn "%s" (_str (horizontal_distance (v0) (angle))))
+ignore (printfn "%s" (_str (max_height (v0) (angle))))
+ignore (printfn "%s" (_str (total_time (v0) (angle))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

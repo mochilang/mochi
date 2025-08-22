@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,16 @@ let _now () =
 _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec pow (``base``: float) (exp: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable ``base`` = ``base``
@@ -65,12 +75,12 @@ and hubble_parameter (hubble_constant: float) (radiation_density: float) (matter
         let mutable i: int = 0
         while i < (Seq.length (parameters)) do
             if (_idx parameters (int i)) < 0.0 then
-                failwith ("All input parameters must be positive")
+                ignore (failwith ("All input parameters must be positive"))
             i <- i + 1
         i <- 1
         while i < 4 do
             if (_idx parameters (int i)) > 1.0 then
-                failwith ("Relative densities cannot be greater than one")
+                ignore (failwith ("Relative densities cannot be greater than one"))
             i <- i + 1
         let curvature: float = 1.0 - ((matter_density + radiation_density) + dark_energy)
         let zp1: float = redshift + 1.0
@@ -81,21 +91,21 @@ and hubble_parameter (hubble_constant: float) (radiation_density: float) (matter
     with
         | Return -> __ret
 and test_hubble_parameter () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let h: float = hubble_parameter (68.3) (0.0001) (0.3) (0.7) (0.0)
         if (h < 68.2999) || (h > 68.3001) then
-            failwith ("hubble_parameter test failed")
+            ignore (failwith ("hubble_parameter test failed"))
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_hubble_parameter()
-        printfn "%g" (hubble_parameter (68.3) (0.0001) (0.3) (0.7) (0.0))
+        ignore (test_hubble_parameter())
+        ignore (printfn "%s" (_str (hubble_parameter (68.3) (0.0001) (0.3) (0.7) (0.0))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -103,4 +113,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

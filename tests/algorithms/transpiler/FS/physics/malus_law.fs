@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let PI: float = 3.141592653589793
 let TWO_PI: float = 6.283185307179586
 let rec _mod (x: float) (m: float) =
@@ -76,9 +78,9 @@ and malus_law (initial_intensity: float) (angle: float) =
     let mutable angle = angle
     try
         if initial_intensity < 0.0 then
-            failwith ("The value of intensity cannot be negative")
+            ignore (failwith ("The value of intensity cannot be negative"))
         if (angle < 0.0) || (angle > 360.0) then
-            failwith ("In Malus Law, the angle is in the range 0-360 degrees")
+            ignore (failwith ("In Malus Law, the angle is in the range 0-360 degrees"))
         let theta: float = radians (angle)
         let c: float = cos (theta)
         __ret <- initial_intensity * (c * c)
@@ -87,11 +89,11 @@ and malus_law (initial_intensity: float) (angle: float) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        printfn "%s" (_str (malus_law (100.0) (60.0)))
+        ignore (printfn "%s" (_str (malus_law (100.0) (60.0))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -99,4 +101,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

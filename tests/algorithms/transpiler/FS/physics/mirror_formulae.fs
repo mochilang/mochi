@@ -1,4 +1,4 @@
-// Generated 2025-08-12 12:29 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec abs_float (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
@@ -84,7 +86,7 @@ and image_distance (focal_length: float) (distance_of_object: float) =
     with
         | Return -> __ret
 and test_focal_length () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let f1: float = focal_length (10.0) (20.0)
         if not (isclose (f1) (6.66666666666666) (0.00000001)) then
@@ -96,7 +98,7 @@ and test_focal_length () =
     with
         | Return -> __ret
 and test_object_distance () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let u1: float = object_distance (30.0) (20.0)
         if not (isclose (u1) (-60.0) (0.00000001)) then
@@ -108,7 +110,7 @@ and test_object_distance () =
     with
         | Return -> __ret
 and test_image_distance () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let v1: float = image_distance (10.0) (40.0)
         if not (isclose (v1) (13.33333333) (0.00000001)) then
@@ -120,13 +122,13 @@ and test_image_distance () =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_focal_length()
-        test_object_distance()
-        test_image_distance()
+        ignore (test_focal_length())
+        ignore (test_object_distance())
+        ignore (test_image_distance())
         ignore (printfn "%s" (_str (focal_length (10.0) (20.0))))
         ignore (printfn "%s" (_str (object_distance (30.0) (20.0))))
         ignore (printfn "%s" (_str (image_distance (10.0) (40.0))))
@@ -137,4 +139,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())
