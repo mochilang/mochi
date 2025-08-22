@@ -76,9 +76,12 @@ String _read_file(String path) {
       var rel = '';
       if (idx >= 0) {
         rel = dirPath.substring(idx + base.length);
+        if (!rel.endsWith('/')) {
+          rel += '/';
+        }
       }
       alt = dir.uri
-          .resolve('../../../../github/TheAlgorithms/Mochi/' + rel + path)
+          .resolve('../../../../../github/TheAlgorithms/Mochi/' + rel + path)
           .toFilePath();
       f = File(alt);
     }
@@ -178,6 +181,7 @@ var (
 	useRepeat         bool
 	useStr            bool
 	useParseIntStr    bool
+	useOrd            bool
 	useFloor          bool
 	useListEq         bool
 	useMath           bool
@@ -4722,6 +4726,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useOrd {
+		if _, err := io.WriteString(w, "int _ord(String s) => s.isEmpty ? 0 : s.codeUnitAt(0);\n\n"); err != nil {
+			return err
+		}
+	}
 	if useFloor {
 		if _, err := io.WriteString(w, "double floor(num x) => x.floor().toDouble();\n\n"); err != nil {
 			return err
@@ -4976,6 +4985,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useRepeat = false
 	useStr = false
 	useParseIntStr = false
+	useOrd = false
 	useFloor = false
 	useListEq = false
 	useMath = false
@@ -6330,6 +6340,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: &Name{"_denom"}, Args: []Expr{arg}}, nil
 			}
 			return &IntLit{Value: 1}, nil
+		}
+		if p.Call.Func == "ord" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			useOrd = true
+			return &CallExpr{Func: &Name{Name: "_ord"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "read_file" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])

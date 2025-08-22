@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-22 15:15 GMT+7
+Last updated: 2025-08-22 15:38 GMT+7
 
 ## Algorithms Golden Test Checklist (997/1077)
 | Index | Name | Status | Duration | Memory |
@@ -878,14 +878,14 @@ Last updated: 2025-08-22 15:15 GMT+7
 | 869 | project_euler/problem_039/sol1 | ✓ | 89.962ms | 720.0 KB |
 | 870 | project_euler/problem_040/sol1 | ✓ | 67.077ms | 12.9 MB |
 | 871 | project_euler/problem_041/sol1 | ✓ | 26.103ms | 6.9 MB |
-| 872 | project_euler/problem_042/solution42 | error |  |  |
-| 873 | project_euler/problem_043/sol1 | ✓ | 1.809548s | 129.1 MB |
-| 874 | project_euler/problem_044/sol1 | ✓ | 800.873ms | 1.5 MB |
-| 875 | project_euler/problem_045/sol1 | ✓ | 1.123173s | 7.5 MB |
-| 876 | project_euler/problem_046/sol1 | ✓ | 20.558ms | 6.0 MB |
-| 877 | project_euler/problem_047/sol1 | ✓ | 252.759ms | 10.7 MB |
-| 878 | project_euler/problem_048/sol1 | ✓ | 26.116ms | 9.8 MB |
-| 879 | project_euler/problem_049/sol1 | ✓ | 199.242ms | 1.7 MB |
+| 872 | project_euler/problem_042/solution42 | ✓ | 74.785ms | 6.2 MB |
+| 873 | project_euler/problem_043/sol1 | ✓ | 779.607ms | 3.1 MB |
+| 874 | project_euler/problem_044/sol1 | ✓ | 616.705ms | 5.4 MB |
+| 875 | project_euler/problem_045/sol1 | error |  |  |
+| 876 | project_euler/problem_046/sol1 | ✓ | 23.15ms | 8.0 MB |
+| 877 | project_euler/problem_047/sol1 | ✓ | 195.958ms | 6.4 MB |
+| 878 | project_euler/problem_048/sol1 | ✓ | 9.183ms | 3.2 MB |
+| 879 | project_euler/problem_049/sol1 | ✓ | 188.296ms | 596.0 KB |
 | 880 | project_euler/problem_050/sol1 | ✓ | 300.469ms | 15.6 MB |
 | 881 | project_euler/problem_051/sol1 | ✓ | 25.454ms | 11.0 MB |
 | 882 | project_euler/problem_052/sol1 | ✓ | 83.269ms | 1.9 MB |
