@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 975/1077
-Last updated: 2025-08-17 12:10 +0700
+Last updated: 2025-08-22 13:05 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -738,7 +738,7 @@ Last updated: 2025-08-17 12:10 +0700
 | 729 | neural_network/activation_functions/softplus |   |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 904µs | 3.5 MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 975µs | 3.5 MB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 3.243812s | 3.2 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 2.879315s | 3.4 MB |
 | 733 | neural_network/convolution_neural_network | ✓ | 5.855ms | 3.0 MB |
 | 734 | neural_network/input_data | ✓ | 1.77ms | 3.7 MB |
 | 735 | neural_network/simple_neural_network | ✓ | 1.390256s | 3.2 MB |
