@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-19 16:47 GMT+7
+Last updated: 2025-08-22 13:10 GMT+7
 
-## Algorithms Golden Test Checklist (809/1077)
+## Algorithms Golden Test Checklist (811/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -738,14 +738,14 @@ Last updated: 2025-08-19 16:47 GMT+7
 | 729 | neural_network/activation_functions/softplus | ✓ | 111µs | 2.7 MB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 58µs | 2.1 MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 67µs | 2.0 MB |
-| 732 | neural_network/back_propagation_neural_network | error | 580.473ms | 2.2 MB |
-| 733 | neural_network/convolution_neural_network | error | 636µs | 2.6 MB |
-| 734 | neural_network/input_data | ✓ | 161µs | 2.0 MB |
-| 735 | neural_network/simple_neural_network | ✓ | 100.075ms | 2.1 MB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 993µs | 2.1 MB |
-| 737 | other/activity_selection | ✓ | 96µs | 2.1 MB |
-| 738 | other/alternative_list_arrange | ✓ | 139µs | 2.1 MB |
-| 739 | other/bankers_algorithm | ✓ | 185µs | 2.0 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 669.895ms | 2.5 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 957µs | 2.8 MB |
+| 734 | neural_network/input_data | ✓ | 151µs | 2.2 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 100.613ms | 2.0 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 859µs | 2.1 MB |
+| 737 | other/activity_selection | ✓ | 53µs | 2.1 MB |
+| 738 | other/alternative_list_arrange | ✓ | 107µs | 2.1 MB |
+| 739 | other/bankers_algorithm | ✓ | 170µs | 2.1 MB |
 | 740 | other/davis_putnam_logemann_loveland | error | 131µs | 2.1 MB |
 | 741 | other/doomsday | ✓ | 32µs | 1.9 MB |
 | 742 | other/fischer_yates_shuffle | ✓ | 122µs | 2.0 MB |
