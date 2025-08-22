@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ClassCastException) at main/parse-hand (test_poker_hand.clj:90).
+class java.lang.String cannot be cast to class clojure.lang.IPersistentVector (java.lang.String is in module java.base of loader 'bootstrap'; clojure.lang.IPersistentVector is in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-12011159660209208781.edn

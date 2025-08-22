@@ -1,0 +1,5 @@
+Execution error (IllegalArgumentException) at main/has-same-digits (sol1.clj:69).
+Key must be integer
+
+Full report at:
+/tmp/clojure-17177666954114062674.edn

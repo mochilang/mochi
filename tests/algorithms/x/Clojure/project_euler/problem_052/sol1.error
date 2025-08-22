@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (IllegalArgumentException) at main/digits-count (sol1.clj:50).
+Key must be integer
+
+Full report at:
+/tmp/clojure-6647602674168742080.edn

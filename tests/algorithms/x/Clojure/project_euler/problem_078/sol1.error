@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (IndexOutOfBoundsException) at main/solution (sol1.clj:48).
+null
+
+Full report at:
+/tmp/clojure-6758292320427844987.edn
