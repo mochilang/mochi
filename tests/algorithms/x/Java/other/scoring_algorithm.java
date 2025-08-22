@@ -28,8 +28,8 @@ data_lists[(int)((long)(j_1))] = ((double[])(appendDouble(data_lists[(int)((long
         while ((long)(i_3) < (long)(data_lists.length)) {
             double[] dlist_1 = ((double[])(data_lists[(int)((long)(i_3))]));
             long weight_1 = (long)(weights[(int)((long)(i_3))]);
-            double mind_1 = (double)(dlist_1[(int)((long)(0))]);
-            double maxd_1 = (double)(dlist_1[(int)((long)(0))]);
+            double mind_1 = (double)(dlist_1[(int)(0L)]);
+            double maxd_1 = (double)(dlist_1[(int)(0L)]);
             long j_3 = 1L;
             while ((long)(j_3) < (long)(dlist_1.length)) {
                 double val_1 = (double)(dlist_1[(int)((long)(j_3))]);
@@ -71,7 +71,7 @@ data_lists[(int)((long)(j_1))] = ((double[])(appendDouble(data_lists[(int)((long
     }
 
     static double[] generate_final_scores(double[][] score_lists) {
-        long count = (long)(score_lists[(int)((long)(0))].length);
+        long count = (long)(score_lists[(int)(0L)].length);
         double[] final_scores_1 = ((double[])(new double[]{}));
         long i_5 = 0L;
         while ((long)(i_5) < (long)(count)) {
@@ -103,45 +103,11 @@ source_data[(int)((long)(i_7))] = ((double[])(appendDouble(source_data[(int)((lo
         return source_data;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{20.0, 60.0, 2012.0}})).toArray(double[][]::new)));
-            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{23.0, 90.0, 2015.0}})).toArray(double[][]::new)));
-            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{22.0, 50.0, 2011.0}})).toArray(double[][]::new)));
-            result = ((double[][])(procentual_proximity(((double[][])(vehicles)), ((long[])(weights)))));
-            System.out.println(_p(result));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{20.0, 60.0, 2012.0}})).toArray(double[][]::new)));
+        vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{23.0, 90.0, 2015.0}})).toArray(double[][]::new)));
+        vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{22.0, 50.0, 2011.0}})).toArray(double[][]::new)));
+        result = ((double[][])(procentual_proximity(((double[][])(vehicles)), ((long[])(weights)))));
+        System.out.println(_p(result));
     }
 
     static double[] appendDouble(double[] arr, double v) {

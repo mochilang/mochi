@@ -49,7 +49,7 @@ public class Main {
     }
 
     static double sigmoid(double x) {
-        return (double)(1.0) / (double)(((double)(1.0) + (double)(exp((double)(-x)))));
+        return (double)(1.0) / (double)(((double)(1.0) + (double)(Math.exp(-x))));
     }
 
     static double to_float(long x) {
@@ -336,42 +336,12 @@ b_hidden_3[(int)((long)(j_15))] = (double)((double)(b_hidden_3[(int)((long)(j_15
         CNN cnn = new_cnn();
         double[][] image_1 = ((double[][])(new double[][]{new double[]{1.0, 0.0, 1.0, 0.0}, new double[]{0.0, 1.0, 0.0, 1.0}, new double[]{1.0, 0.0, 1.0, 0.0}, new double[]{0.0, 1.0, 0.0, 1.0}}));
         TrainSample sample_1 = new TrainSample(image_1, new double[]{1.0, 0.0});
-        System.out.println("Before training:" + " " + String.valueOf(forward(cnn, ((double[][])(image_1)))));
+        System.out.println("Before training:" + " " + (String)(java.util.Arrays.toString(forward(cnn, ((double[][])(image_1))))));
         CNN trained_1 = train(cnn, ((TrainSample[])(new TrainSample[]{sample_1})), 50L);
-        System.out.println("After training:" + " " + String.valueOf(forward(trained_1, ((double[][])(image_1)))));
+        System.out.println("After training:" + " " + (String)(java.util.Arrays.toString(forward(trained_1, ((double[][])(image_1))))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static double[] appendDouble(double[] arr, double v) {

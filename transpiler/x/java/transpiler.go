@@ -163,16 +163,14 @@ func resolveAlias(name string) string {
 }
 
 func isSimpleLiteral(e Expr) bool {
-	switch ex := e.(type) {
-	case *IntLit, *FloatLit, *StringLit, *BoolLit:
-		return true
-	case *VarExpr:
-		return true
-	case *ListLit:
-		for _, el := range ex.Elems {
-			if !isSimpleLiteral(el) {
-				return false
-			}
+        switch ex := e.(type) {
+        case *IntLit, *FloatLit, *StringLit, *BoolLit:
+                return true
+        case *ListLit:
+                for _, el := range ex.Elems {
+                        if !isSimpleLiteral(el) {
+                                return false
+                        }
 		}
 		return true
 	default:
@@ -4010,21 +4008,29 @@ func isArrayExpr(e Expr) bool {
 		if t := arrayElemType(ex.Target); t != "" {
 			return strings.HasSuffix(t, "[]")
 		}
-	case *FieldExpr:
-		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
-			return strings.HasSuffix(t, "[]")
-		}
-	case *VarExpr:
+        case *FieldExpr:
+                if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
+                        return strings.HasSuffix(t, "[]")
+                }
+        case *VarExpr:
 		if ex.Type != "" {
 			if strings.HasSuffix(ex.Type, "[]") {
 				return true
 			}
 		}
-		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
-			return true
-		}
-	}
-	return false
+                if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
+                        return true
+                }
+       case *CallExpr:
+               if t := inferType(ex); strings.HasSuffix(t, "[]") {
+                       return true
+               }
+       case *MethodCallExpr:
+               if t := inferType(ex); strings.HasSuffix(t, "[]") {
+                       return true
+               }
+        }
+        return false
 }
 
 func arrayElemType(e Expr) string {

@@ -102,52 +102,18 @@ public class Main {
         return res_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            lru = new_cache(4L);
-            lru = refer(lru, "A");
-            lru = refer(lru, "2");
-            lru = refer(lru, "3");
-            lru = refer(lru, "A");
-            lru = refer(lru, "4");
-            lru = refer(lru, "5");
-            r = String.valueOf(cache_repr(lru));
-            System.out.println(r);
-            if (!(r.equals("LRUCache(4) => [5, 4, 'A', 3]"))) {
-                throw new RuntimeException(String.valueOf("Assertion error"));
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        lru = new_cache(4L);
+        lru = refer(lru, "A");
+        lru = refer(lru, "2");
+        lru = refer(lru, "3");
+        lru = refer(lru, "A");
+        lru = refer(lru, "4");
+        lru = refer(lru, "5");
+        r = String.valueOf(cache_repr(lru));
+        System.out.println(r);
+        if (!(r.equals("LRUCache(4) => [5, 4, 'A', 3]"))) {
+            throw new RuntimeException(String.valueOf("Assertion error"));
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {

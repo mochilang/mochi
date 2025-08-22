@@ -41,7 +41,7 @@ public class Main {
         long i_3 = 0L;
         while ((long)(i_3) < 4L) {
             double[] row_1 = ((double[])(mat[(int)((long)(i_3))]));
-            double value_1 = (double)((double)((double)((double)((double)(row_1[(int)((long)(0))]) * (double)(vec[(int)((long)(0))])) + (double)((double)(row_1[(int)((long)(1))]) * (double)(vec[(int)((long)(1))]))) + (double)((double)(row_1[(int)((long)(2))]) * (double)(vec[(int)((long)(2))]))) + (double)((double)(row_1[(int)((long)(3))]) * (double)(vec[(int)((long)(3))])));
+            double value_1 = (double)((double)((double)((double)((double)(row_1[(int)(0L)]) * (double)(vec[(int)(0L)])) + (double)((double)(row_1[(int)(1L)]) * (double)(vec[(int)(1L)]))) + (double)((double)(row_1[(int)(2L)]) * (double)(vec[(int)(2L)]))) + (double)((double)(row_1[(int)(3L)]) * (double)(vec[(int)(3L)])));
             res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new double[]{value_1})).toArray()));
             i_3 = (long)((long)(i_3) + 1L);
         }
@@ -51,54 +51,20 @@ public class Main {
     static double[] transform(double velocity, double[] event) {
         double g_1 = (double)(gamma((double)(velocity)));
         double b_4 = (double)(beta((double)(velocity)));
-        double ct_1 = (double)((double)(event[(int)((long)(0))]) * (double)(c));
-        double x_1 = (double)(event[(int)((long)(1))]);
-        return new double[]{(double)((double)(g_1) * (double)(ct_1)) - (double)((double)((double)(g_1) * (double)(b_4)) * (double)(x_1)), (double)((double)((double)(-g_1) * (double)(b_4)) * (double)(ct_1)) + (double)((double)(g_1) * (double)(x_1)), event[(int)((long)(2))], event[(int)((long)(3))]};
+        double ct_1 = (double)((double)(event[(int)(0L)]) * (double)(c));
+        double x_1 = (double)(event[(int)(1L)]);
+        return new double[]{(double)((double)(g_1) * (double)(ct_1)) - (double)((double)((double)(g_1) * (double)(b_4)) * (double)(x_1)), (double)((double)((double)(-g_1) * (double)(b_4)) * (double)(ct_1)) + (double)((double)(g_1) * (double)(x_1)), event[(int)(2L)], event[(int)(3L)]};
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(beta((double)(c))));
-            System.out.println(_p(beta((double)(199792458.0))));
-            System.out.println(_p(beta((double)(100000.0))));
-            System.out.println(_p(gamma((double)(4.0))));
-            System.out.println(_p(gamma((double)(100000.0))));
-            System.out.println(_p(gamma((double)(30000000.0))));
-            System.out.println(_p(transformation_matrix((double)(29979245.0))));
-            v = ((double[])(transform((double)(29979245.0), ((double[])(new double[]{1.0, 2.0, 3.0, 4.0})))));
-            System.out.println(_p(v));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(beta((double)(c))));
+        System.out.println(_p(beta((double)(199792458.0))));
+        System.out.println(_p(beta((double)(100000.0))));
+        System.out.println(_p(gamma((double)(4.0))));
+        System.out.println(_p(gamma((double)(100000.0))));
+        System.out.println(_p(gamma((double)(30000000.0))));
+        System.out.println(_p(transformation_matrix((double)(29979245.0))));
+        v = ((double[])(transform((double)(29979245.0), ((double[])(new double[]{1.0, 2.0, 3.0, 4.0})))));
+        System.out.println(_p(v));
     }
 
     static String _p(Object v) {

@@ -51,55 +51,21 @@ public class Main {
         while ((long)(i_1) < (long)(n_1)) {
             double[] r_1 = ((double[])(location[(int)((long)(i_1))]));
             double[] f_1 = ((double[])(forces[(int)((long)(i_1))]));
-            double moment_1 = (double)((double)((double)(r_1[(int)((long)(0))]) * (double)(f_1[(int)((long)(1))])) - (double)((double)(r_1[(int)((long)(1))]) * (double)(f_1[(int)((long)(0))])));
+            double moment_1 = (double)((double)((double)(r_1[(int)(0L)]) * (double)(f_1[(int)(1L)])) - (double)((double)(r_1[(int)(1L)]) * (double)(f_1[(int)(0L)])));
             sum_moments = (double)((double)(sum_moments) + (double)(moment_1));
             i_1 = (long)((long)(i_1) + 1L);
         }
         return (double)(abs_float((double)(sum_moments))) < (double)(eps);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            forces1 = ((double[][])(new double[][]{new double[]{1.0, 1.0}, new double[]{-1.0, 2.0}}));
-            System.out.println(_p(in_static_equilibrium(((double[][])(forces1)), ((double[][])(location1)), (double)(0.1))));
-            forces2 = ((double[][])(new double[][]{polar_force((double)(718.4), (double)(150.0), false), polar_force((double)(879.54), (double)(45.0), false), polar_force((double)(100.0), (double)(-90.0), false)}));
-            System.out.println(_p(in_static_equilibrium(((double[][])(forces2)), ((double[][])(location2)), (double)(0.1))));
-            forces3 = ((double[][])(new double[][]{polar_force((double)((double)(30.0) * (double)(9.81)), (double)(15.0), false), polar_force((double)(215.0), (double)(135.0), false), polar_force((double)(264.0), (double)(60.0), false)}));
-            System.out.println(_p(in_static_equilibrium(((double[][])(forces3)), ((double[][])(location3)), (double)(0.1))));
-            forces4 = ((double[][])(new double[][]{new double[]{0.0, -2000.0}, new double[]{0.0, -1200.0}, new double[]{0.0, 15600.0}, new double[]{0.0, -12400.0}}));
-            System.out.println(_p(in_static_equilibrium(((double[][])(forces4)), ((double[][])(location4)), (double)(0.1))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        forces1 = ((double[][])(new double[][]{new double[]{1.0, 1.0}, new double[]{-1.0, 2.0}}));
+        System.out.println(_p(in_static_equilibrium(((double[][])(forces1)), ((double[][])(location1)), (double)(0.1))));
+        forces2 = ((double[][])(new double[][]{polar_force((double)(718.4), (double)(150.0), false), polar_force((double)(879.54), (double)(45.0), false), polar_force((double)(100.0), (double)(-90.0), false)}));
+        System.out.println(_p(in_static_equilibrium(((double[][])(forces2)), ((double[][])(location2)), (double)(0.1))));
+        forces3 = ((double[][])(new double[][]{polar_force((double)((double)(30.0) * (double)(9.81)), (double)(15.0), false), polar_force((double)(215.0), (double)(135.0), false), polar_force((double)(264.0), (double)(60.0), false)}));
+        System.out.println(_p(in_static_equilibrium(((double[][])(forces3)), ((double[][])(location3)), (double)(0.1))));
+        forces4 = ((double[][])(new double[][]{new double[]{0.0, -2000.0}, new double[]{0.0, -1200.0}, new double[]{0.0, 15600.0}, new double[]{0.0, -12400.0}}));
+        System.out.println(_p(in_static_equilibrium(((double[][])(forces4)), ((double[][])(location4)), (double)(0.1))));
     }
 
     static String _p(Object v) {

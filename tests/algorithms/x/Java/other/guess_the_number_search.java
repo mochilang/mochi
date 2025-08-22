@@ -1,7 +1,7 @@
 public class Main {
 
     static long get_avg(long number_1, long number_2) {
-        return (long)(((long)(number_1) + (long)(number_2))) / 2L;
+        return ((long)(Math.floorDiv(((long)(((long)(number_1) + (long)(number_2)))), ((long)(2)))));
     }
 
     static long[] guess_the_number(long lower, long higher, long to_guess) {
@@ -27,7 +27,7 @@ public class Main {
         long[] last_numbers_1 = ((long[])(new long[]{}));
         while (true) {
             long number_1 = (long)(get_avg((long)(last_lowest_1), (long)(last_highest_1)));
-            last_numbers_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(last_numbers_1), java.util.stream.LongStream.of((long)(number_1))).toArray()));
+            last_numbers_1 = ((long[])(appendLong(last_numbers_1, (long)(number_1))));
             String resp_1 = String.valueOf(answer[0].apply((long)(number_1)));
             if ((resp_1.equals("low"))) {
                 last_lowest_1 = (long)(number_1);
@@ -42,42 +42,14 @@ public class Main {
         return last_numbers_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            guess_the_number(10L, 1000L, 17L);
-            guess_the_number((long)(-10000), 10000L, 7L);
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        guess_the_number(10L, 1000L, 17L);
+        guess_the_number((long)(-10000), 10000L, 7L);
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static long[] appendLong(long[] arr, long v) {
+        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {

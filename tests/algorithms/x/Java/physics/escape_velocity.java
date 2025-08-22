@@ -49,42 +49,8 @@ public class Main {
         return round3((double)(velocity_1));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(escape_velocity((double)((double)(5.972) * (double)(pow10(24L))), (double)((double)(6.371) * (double)(pow10(6L)))));
-            System.out.println(escape_velocity((double)((double)(7.348) * (double)(pow10(22L))), (double)((double)(1.737) * (double)(pow10(6L)))));
-            System.out.println(escape_velocity((double)((double)(1.898) * (double)(pow10(27L))), (double)((double)(6.9911) * (double)(pow10(7L)))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(escape_velocity((double)((double)(5.972) * (double)(pow10(24L))), (double)((double)(6.371) * (double)(pow10(6L)))));
+        System.out.println(escape_velocity((double)((double)(7.348) * (double)(pow10(22L))), (double)((double)(1.737) * (double)(pow10(6L)))));
+        System.out.println(escape_velocity((double)((double)(1.898) * (double)(pow10(27L))), (double)((double)(6.9911) * (double)(pow10(7L)))));
     }
 }

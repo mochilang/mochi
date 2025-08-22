@@ -5,7 +5,7 @@ public class Main {
 
     static long rand() {
         seed = (long)(((long)(Math.floorMod(((long)(((long)((long)(seed) * 1103515245L) + 12345L))), 2147483648L))));
-        return (long)(seed) / 65536L;
+        return ((long)(Math.floorDiv(seed, 65536)));
     }
 
     static long randint(long a, long b) {
@@ -41,43 +41,9 @@ res_1[(int)((long)(b_3))] = temp_3;
         return res_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println("Fisher-Yates Shuffle:");
-            System.out.println("List " + _p(integers) + " " + _p(strings));
-            System.out.println("FY Shuffle " + _p(fisher_yates_shuffle_int(((long[])(integers)))) + " " + _p(fisher_yates_shuffle_str(((String[])(strings)))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println("Fisher-Yates Shuffle:");
+        System.out.println("List " + _p(integers) + " " + _p(strings));
+        System.out.println("FY Shuffle " + _p(fisher_yates_shuffle_int(((long[])(integers)))) + " " + _p(fisher_yates_shuffle_str(((String[])(strings)))));
     }
 
     static String _p(Object v) {

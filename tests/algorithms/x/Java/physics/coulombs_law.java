@@ -10,7 +10,7 @@ public class Main {
         if ((double)((double)(scaled_1) - (double)((((Number)(i_1)).doubleValue()))) >= (double)(0.5)) {
             i_1 = (long)((long)(i_1) + 1L);
         }
-        long int_part_1 = (long)((long)(i_1) / 100L);
+        long int_part_1 = Math.floorDiv(i_1, 100);
         long frac_part_1 = Math.floorMod(i_1, 100);
         String frac_str_1 = _p(frac_part_1);
         if ((long)(frac_part_1) < 10L) {
@@ -27,45 +27,11 @@ public class Main {
         return force_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(format2((double)(coulombs_law((double)(15.5), (double)(20.0), (double)(15.0)))));
-            System.out.println(format2((double)(coulombs_law((double)(1.0), (double)(15.0), (double)(5.0)))));
-            System.out.println(format2((double)(coulombs_law((double)(20.0), (double)(-50.0), (double)(15.0)))));
-            System.out.println(format2((double)(coulombs_law((double)(-5.0), (double)(-8.0), (double)(10.0)))));
-            System.out.println(format2((double)(coulombs_law((double)(50.0), (double)(100.0), (double)(50.0)))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(format2((double)(coulombs_law((double)(15.5), (double)(20.0), (double)(15.0)))));
+        System.out.println(format2((double)(coulombs_law((double)(1.0), (double)(15.0), (double)(5.0)))));
+        System.out.println(format2((double)(coulombs_law((double)(20.0), (double)(-50.0), (double)(15.0)))));
+        System.out.println(format2((double)(coulombs_law((double)(-5.0), (double)(-8.0), (double)(10.0)))));
+        System.out.println(format2((double)(coulombs_law((double)(50.0), (double)(100.0), (double)(50.0)))));
     }
 
     static String _p(Object v) {
