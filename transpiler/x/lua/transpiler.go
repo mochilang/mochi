@@ -30,6 +30,7 @@ var structCount int
 var funcDepth int
 var benchMainFlag bool
 var currentStruct string
+var usesReadFile bool
 
 func init() {
 	if v := os.Getenv("MOCHI_BENCHMARK"); v != "" {
@@ -318,6 +319,29 @@ local function _fetch(url)
 end
 `
 
+const helperReadFile = `
+local function _read_file(path)
+  local p = path
+  local f = io.open(p, 'rb')
+  if not f and _dataDir then
+    f = io.open(_dataDir .. '/' .. path, 'rb')
+  end
+  if not f then return '' end
+  local data = f:read('*a') or ''
+  f:close()
+  return data
+end
+`
+
+const helperOrd = `
+local function _ord(s)
+  if type(s) == 'string' and #s > 0 then
+    return string.byte(s, 1)
+  end
+  return 0
+end
+`
+
 const helperSlice = `
 local function slice(lst, s, e)
   local len = #lst
@@ -362,8 +386,9 @@ end
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
-	Stmts []Stmt
-	Env   *types.Env
+	Stmts   []Stmt
+	Env     *types.Env
+	DataDir string
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -2918,6 +2943,10 @@ func collectHelpers(p *Program) map[string]bool {
 				used["parseIntStr"] = true
 			case "_fetch":
 				used["fetch"] = true
+			case "_ord":
+				used["ord"] = true
+			case "_read_file":
+				used["readFile"] = true
 			case "_environ":
 				used["environ"] = true
 			case "_panic":
@@ -3146,6 +3175,15 @@ func Emit(p *Program) []byte {
 	}
 	if used["fetch"] {
 		b.WriteString(helperFetch)
+	}
+	if used["readFile"] {
+		if p.DataDir != "" {
+			fmt.Fprintf(&b, "_dataDir = %q\n", p.DataDir)
+		}
+		b.WriteString(helperReadFile)
+	}
+	if used["ord"] {
+		b.WriteString(helperOrd)
 	}
 	if used["split"] {
 		b.WriteString(helperSplit)
@@ -3604,6 +3642,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		switch p.Call.Func {
 		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr", "repeat", "_environ", "int", "float", "str":
 			// handled during emission
+			return ce, nil
+		case "ord":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("ord expects 1 arg")
+			}
+			ce.Func = "_ord"
+			return ce, nil
+		case "read_file":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			usesReadFile = true
+			ce.Func = "_read_file"
 			return ce, nil
 		case "panic":
 			if _, ok := currentEnv.GetFunc("panic"); ok {
@@ -4623,6 +4674,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	structCount = 0
 	funcDepth = 0
 	currentStruct = ""
+	usesReadFile = false
 	lp := &Program{Env: env}
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st)
@@ -4632,6 +4684,9 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		if s != nil {
 			lp.Stmts = append(lp.Stmts, s)
 		}
+	}
+	if usesReadFile {
+		lp.DataDir = filepath.Dir(prog.Pos.Filename)
 	}
 	if benchMain || benchMainFlag {
 		lp.Stmts = []Stmt{&BenchStmt{Name: "main", Body: lp.Stmts}}

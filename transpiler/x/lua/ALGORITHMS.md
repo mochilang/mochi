@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-22 14:28 GMT+7
+Last updated: 2025-08-22 15:45 GMT+7
 
-## Algorithms Golden Test Checklist (1050/1077)
+## Algorithms Golden Test Checklist (1051/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -878,7 +878,7 @@ Last updated: 2025-08-22 14:28 GMT+7
 | 869 | project_euler/problem_039/sol1 | error |  |  |
 | 870 | project_euler/problem_040/sol1 | ✓ | 1.156793s | 1.1 KB |
 | 871 | project_euler/problem_041/sol1 | ✓ | 71.316ms | 10.2 KB |
-| 872 | project_euler/problem_042/solution42 | error |  |  |
+| 872 | project_euler/problem_042/solution42 | ✓ | 945.655ms | 52.1 KB |
 | 873 | project_euler/problem_043/sol1 | ✓ | 22.100211s | 2.9 KB |
 | 874 | project_euler/problem_044/sol1 | ✓ | 6.764591s | 79.6 KB |
 | 875 | project_euler/problem_045/sol1 | error |  |  |
