@@ -76,7 +76,7 @@ var reserved = map[string]bool{
 	"union": true, "unsigned": true, "using": true, "virtual": true, "void": true, "volatile": true,
 	"wchar_t": true, "while": true, "xor": true, "xor_eq": true,
 	// avoid clashing with C standard library functions
-	"ceil": true, "floor": true, "rand": true, "random": true, "time": true,
+	"ceil": true, "floor": true, "sqrt": true, "rand": true, "random": true, "time": true,
 	"j0": true, "j1": true, "jn": true, "y0": true, "y1": true, "yn": true,
 	"NULL": true,
 }
@@ -2320,6 +2320,20 @@ func (v *VarRef) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Name == "sqrt" || c.Name == "_sqrt" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<cmath>")
+		}
+		io.WriteString(w, "std::sqrt(")
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	if c.Name == "_floor" {
 		if currentProgram != nil {
 			currentProgram.addInclude("<cmath>")
@@ -3079,6 +3093,36 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	lt := exprType(b.Left)
 	rt := exprType(b.Right)
+	if (b.Op == "==" || b.Op == "!=") && (lt == "double" || rt == "double") && lt != "std::any" && rt != "std::any" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<cmath>")
+		}
+		io.WriteString(w, "(")
+		io.WriteString(w, "std::fabs(")
+		if lt == "double" {
+			b.Left.emit(w)
+		} else {
+			io.WriteString(w, "(double)(")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, " - ")
+		if rt == "double" {
+			b.Right.emit(w)
+		} else {
+			io.WriteString(w, "(double)(")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ") ")
+		if b.Op == "==" {
+			io.WriteString(w, "< 1e-6")
+		} else {
+			io.WriteString(w, ">= 1e-6")
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	if (b.Op == "==" || b.Op == "!=") && lt == "std::any" && rt == "std::any" {
 		if vr, ok := b.Left.(*VarRef); ok && vr.Name == "nil" {
 			if b.Op == "==" {
@@ -5542,7 +5586,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					expr = &FuncCallExpr{Fun: expr, Args: args}
 				}
 			} else if vr, ok := expr.(*VarRef); ok {
-				if currentEnv != nil {
+				if vr.Name == "sqrt" && len(args) == 1 {
+					if currentProgram != nil {
+						currentProgram.addInclude("<cmath>")
+					}
+					expr = &CallExpr{Name: "std::sqrt", Args: args}
+				} else if currentEnv != nil {
 					if _, ok := currentEnv.GetFunc(vr.Name); ok {
 						expr = &CallExpr{Name: safeName(vr.Name), Args: args}
 					} else {
