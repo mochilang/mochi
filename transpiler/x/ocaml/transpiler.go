@@ -3370,7 +3370,10 @@ let _sha256_str s =
 `
 
 const helperFetch = `
- let _fetch url = "{\"data\":[{\"from\":\"0\",\"to\":\"0\",\"intensity\":{\"forecast\":0,\"actual\":1,\"index\":\"g\"}}]}"
+let _fetch url =
+  match Sys.getenv_opt "OCAML_FETCH_DATA" with
+  | Some v -> v
+  | None -> "{\"data\":[{\"from\":\"0\",\"to\":\"0\",\"intensity\":{\"forecast\":0,\"actual\":1,\"index\":\"g\"}}]}"
 `
 
 const helperSplit = `
