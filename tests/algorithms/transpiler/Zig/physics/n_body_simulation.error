@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/physics/n_body_simulation.zig:105:98: error: use of undeclared identifier 'b1_after'

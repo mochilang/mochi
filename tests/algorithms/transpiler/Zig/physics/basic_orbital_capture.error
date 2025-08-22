@@ -1,0 +1,19 @@
+signal: aborted
+thread 12997 panic: capture_area failed
+/workspace/mochi/tests/algorithms/transpiler/Zig/physics/basic_orbital_capture.zig:77:9: 0x103bd00 in run_tests (basic_orbital_capture)
+        @panic("capture_area failed");
+        ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/physics/basic_orbital_capture.zig:82:14: 0x1039159 in mochi_main (basic_orbital_capture)
+    run_tests();
+             ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/physics/basic_orbital_capture.zig:92:19: 0x1037866 in main (basic_orbital_capture)
+        mochi_main();
+                  ^
+/usr/local/zig/lib/std/start.zig:501:22: 0x1037479 in main (basic_orbital_capture)
+            root.main();
+                     ^
+???:?:?: 0x7fb544a091c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7fb544a091c9` was not available, trace may be incomplete
+
+???:?:?: 0x7fb544a0928a in ??? (libc.so.6)
+???:?:?: 0x1037124 in ??? (???)
