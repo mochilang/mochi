@@ -1,0 +1,13 @@
+exit status 1
+panic: solution 100 100 failed
+
+goroutine 1 [running]:
+main.test_solution()
+	/workspace/mochi/tests/algorithms/transpiler/Go/project_euler/problem_056/sol1.go:108 +0x7e
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/project_euler/problem_056/sol1.go:116 +0x17
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/project_euler/problem_056/sol1.go:126
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/project_euler/problem_056/sol1.go:133 +0x92
+exit status 2
