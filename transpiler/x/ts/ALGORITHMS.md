@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-22 06:11 UTC
+Last updated: 2025-08-22 07:36 UTC
 
-## Algorithms Golden Test Checklist (1061/1077)
+## Algorithms Golden Test Checklist (1062/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -840,7 +840,7 @@ Last updated: 2025-08-22 06:11 UTC
 | 831 | project_euler/problem_011/sol2 | ✓ | 1.388ms | 534.5 KB |
 | 832 | project_euler/problem_012/sol1 | ✓ | 13.903ms | 33.3 KB |
 | 833 | project_euler/problem_012/sol2 | ✓ | 13.292ms | 35.6 KB |
-| 834 | project_euler/problem_013/sol1 |   |  |  |
+| 834 | project_euler/problem_013/sol1 | ✓ | 571.223ms | 872.8 KB |
 | 835 | project_euler/problem_014/sol1 | ✓ | 981µs | 24.1 KB |
 | 836 | project_euler/problem_014/sol2 | ✓ | 973µs | 23.6 KB |
 | 837 | project_euler/problem_015/sol1 | ✓ | 601µs | 28.8 KB |
