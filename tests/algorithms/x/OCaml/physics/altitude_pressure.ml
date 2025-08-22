@@ -83,65 +83,87 @@ let _now () =
 let _mem () =
   int_of_float (Gc.allocated_bytes ())
 
+exception Break
+exception Continue
+
 exception Return
 
-let _universal_gas_constant = 8.314462
-let rec pressure_of_gas_system moles kelvin volume =
+let rec to_float x =
   let __ret = ref 0.0 in
   (try
-  let moles = (Obj.magic moles : float) in
-  let kelvin = (Obj.magic kelvin : float) in
-  let volume = (Obj.magic volume : float) in
-  if (((moles < float_of_int (0)) || (kelvin < float_of_int (0))) || (volume < float_of_int (0))) then (
-  (failwith ("Invalid inputs. Enter positive value."));
-  );
-  __ret := (Obj.magic ((((moles *. kelvin) *. _universal_gas_constant) /. volume)) : float); raise Return
+  let x = (Obj.magic x : int) in
+  __ret := (Obj.magic ((float_of_int (x) *. 1.0)) : float); raise Return
   with Return -> !__ret)
 
-and volume_of_gas_system moles kelvin pressure =
+and ln x =
   let __ret = ref 0.0 in
   (try
-  let moles = (Obj.magic moles : float) in
-  let kelvin = (Obj.magic kelvin : float) in
-  let pressure = (Obj.magic pressure : float) in
-  if (((moles < float_of_int (0)) || (kelvin < float_of_int (0))) || (pressure < float_of_int (0))) then (
-  (failwith ("Invalid inputs. Enter positive value."));
+  let x = (Obj.magic x : float) in
+  if (x <= 0.0) then (
+  (failwith ("ln domain error"));
   );
-  __ret := (Obj.magic ((((moles *. kelvin) *. _universal_gas_constant) /. pressure)) : float); raise Return
+  let y = ((x -. 1.0) /. (x +. 1.0)) in
+  let y2 = (y *. y) in
+  let term = ref (y) in
+  let sum = ref (0.0) in
+  let k = ref (0) in
+  (try while (!k < 10) do
+    try
+  let denom = float_of_int (((2 * !k) + 1)) in
+  sum := (!sum +. (!term /. denom));
+  term := (!term *. y2);
+  k := (!k + 1);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic ((2.0 *. !sum)) : float); raise Return
   with Return -> !__ret)
 
-and temperature_of_gas_system moles volume pressure =
+and exp x =
   let __ret = ref 0.0 in
   (try
-  let moles = (Obj.magic moles : float) in
-  let volume = (Obj.magic volume : float) in
-  let pressure = (Obj.magic pressure : float) in
-  if (((moles < float_of_int (0)) || (volume < float_of_int (0))) || (pressure < float_of_int (0))) then (
-  (failwith ("Invalid inputs. Enter positive value."));
-  );
-  __ret := (Obj.magic (((pressure *. volume) /. (moles *. _universal_gas_constant))) : float); raise Return
+  let x = (Obj.magic x : float) in
+  let term = ref (1.0) in
+  let sum = ref (1.0) in
+  let n = ref (1) in
+  (try while (!n < 20) do
+    try
+  term := ((!term *. x) /. float_of_int (!n));
+  sum := (!sum +. !term);
+  n := (!n + 1);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!sum) : float); raise Return
   with Return -> !__ret)
 
-and moles_of_gas_system kelvin volume pressure =
+and pow_float base exponent =
   let __ret = ref 0.0 in
   (try
-  let kelvin = (Obj.magic kelvin : float) in
-  let volume = (Obj.magic volume : float) in
+  let base = (Obj.magic base : float) in
+  let exponent = (Obj.magic exponent : float) in
+  __ret := (Obj.magic (Float.exp ((exponent *. Float.log (base)))) : float); raise Return
+  with Return -> !__ret)
+
+and get_altitude_at_pressure pressure =
+  let __ret = ref 0.0 in
+  (try
   let pressure = (Obj.magic pressure : float) in
-  if (((kelvin < float_of_int (0)) || (volume < float_of_int (0))) || (pressure < float_of_int (0))) then (
-  (failwith ("Invalid inputs. Enter positive value."));
+  if (pressure > 101325.0) then (
+  (failwith ("Value Higher than Pressure at Sea Level !"));
   );
-  __ret := (Obj.magic (((pressure *. volume) /. (kelvin *. _universal_gas_constant))) : float); raise Return
+  if (pressure < 0.0) then (
+  (failwith ("Atmospheric Pressure can not be negative !"));
+  );
+  let ratio = (pressure /. 101325.0) in
+  __ret := (Obj.magic ((44330.0 *. (1.0 -. pow_float (Obj.repr (ratio)) (Obj.repr ((1.0 /. 5.5255)))))) : float); raise Return
   with Return -> !__ret)
 
 
 let () =
   let bench_mem_start = _mem () in
   let bench_start = _now () in
-  print_endline (string_of_float (pressure_of_gas_system (Obj.repr (2.0)) (Obj.repr (100.0)) (Obj.repr (5.0))));
-  print_endline (string_of_float (volume_of_gas_system (Obj.repr (0.5)) (Obj.repr (273.0)) (Obj.repr (0.004))));
-  print_endline (string_of_float (temperature_of_gas_system (Obj.repr (2.0)) (Obj.repr (100.0)) (Obj.repr (5.0))));
-  print_endline (string_of_float (moles_of_gas_system (Obj.repr (100.0)) (Obj.repr (5.0)) (Obj.repr (10.0))));
+  print_endline ((Printf.sprintf "%.16g" (Obj.magic (get_altitude_at_pressure (Obj.repr (100000.0))) : float)));
+  print_endline ((Printf.sprintf "%.16g" (Obj.magic (get_altitude_at_pressure (Obj.repr (101325.0))) : float)));
+  print_endline ((Printf.sprintf "%.16g" (Obj.magic (get_altitude_at_pressure (Obj.repr (80000.0))) : float)));
   let bench_finish = _now () in
   let bench_mem_end = _mem () in
   let bench_dur = (bench_finish - bench_start) / 1000 in
