@@ -1427,13 +1427,13 @@ func foldPow10(left, right Expr) (string, bool) {
 	if !ok {
 		return "", false
 	}
-        val := fl.Value * math.Pow10(ai.Value)
-        // Adjust slightly toward zero to avoid rounding up when emitting
-        if val > 0 {
-                val = math.Nextafter(val, math.Inf(-1))
-        } else {
-                val = math.Nextafter(val, math.Inf(1))
-        }
+	val := fl.Value * math.Pow10(ai.Value)
+	// Adjust slightly toward zero to avoid rounding up when emitting
+	if val > 0 {
+		val = math.Nextafter(val, math.Inf(-1))
+	} else {
+		val = math.Nextafter(val, math.Inf(1))
+	}
 	return strconv.FormatFloat(val, 'g', -1, 64), true
 }
 
@@ -3981,9 +3981,14 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) 
 		return &ListLit{}, nil
 	}
 	root := meta.RepoRoot()
-	if root != "" && strings.HasPrefix(path, "../") {
-		clean := strings.TrimPrefix(path, "../")
-		path = filepath.Join(root, "tests", clean)
+	if root != "" {
+		switch {
+		case strings.HasPrefix(path, "../"):
+			clean := strings.TrimPrefix(path, "../")
+			path = filepath.Join(root, "tests", clean)
+		case strings.HasPrefix(path, "tests/"):
+			path = filepath.Join(root, path)
+		}
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {
