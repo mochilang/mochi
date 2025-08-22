@@ -1841,10 +1841,12 @@ func applyBinOp(op string, left, right Node) Node {
 	case "/":
 		// Clojure's `/` yields rational numbers when both operands are
 		// integers, whereas Mochi uses truncating integer division in
-		// that case. Use `quot` only when both operands are integers;
-		// otherwise fall back to `/` to preserve floating point
-		// semantics when type information is imprecise.
+		// that case. Prefer `quot` when operands are known integers,
+		// and also when neither operand is known to be floating point.
 		if isIntNode(left) && isIntNode(right) {
+			return &List{Elems: []Node{Symbol("quot"), left, right}}
+		}
+		if !isFloatNode(left) && !isFloatNode(right) {
 			return &List{Elems: []Node{Symbol("quot"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol(sym), left, right}}
@@ -1942,8 +1944,21 @@ func isStringNode(n Node) bool {
 					return true
 				}
 			}
-			if i := strings.LastIndex(name, "_"); i >= 0 {
-				if typ, err := transpileEnv.GetVar(name[i+1:]); err == nil {
+			if orig := originalVar(name); orig != name {
+				if typ, err := transpileEnv.GetVar(orig); err == nil {
+					if _, ok := typ.(types.StringType); ok {
+						return true
+					}
+				}
+				name = orig
+			}
+			for {
+				i := strings.Index(name, "_")
+				if i < 0 {
+					break
+				}
+				name = name[i+1:]
+				if typ, err := transpileEnv.GetVar(name); err == nil {
 					if _, ok := typ.(types.StringType); ok {
 						return true
 					}
