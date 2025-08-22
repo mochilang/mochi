@@ -204,6 +204,21 @@ mochi_read_file(Path) ->
     end.
 `
 
+const helperOrd = `
+mochi_ord(S) when is_list(S) ->
+    case S of
+        [C|_] -> C;
+        _ -> 0
+    end;
+mochi_ord(S) when is_binary(S) ->
+    case S of
+        <<C,_/binary>> -> C;
+        _ -> 0
+    end;
+mochi_ord(C) when is_integer(C) -> C;
+mochi_ord(_) -> 0.
+`
+
 const helperNot = `
 mochi_not(X) ->
     case X of
@@ -338,6 +353,7 @@ var useRepeat bool
 var useStr bool
 var useFetch bool
 var useReadFile bool
+var useOrd bool
 var useNot bool
 var useSafeMul bool
 var useSafeDiv bool
@@ -378,6 +394,7 @@ type Program struct {
 	UseStr          bool
 	UseFetch        bool
 	UseReadFile     bool
+	UseOrd          bool
 	UseNot          bool
 	UseSafeMul      bool
 	UseSafeDiv      bool
@@ -3268,7 +3285,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split", "reverse", "first", "read_file":
+	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split", "reverse", "first", "ord", "read_file":
 		return true
 	default:
 		return false
@@ -3458,6 +3475,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useStr = false
 	useFetch = false
 	useReadFile = false
+	useOrd = false
 	useNot = false
 	useSafeMul = false
 	useSafeDiv = false
@@ -3515,6 +3533,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseStr = useStr
 	p.UseFetch = useFetch
 	p.UseReadFile = useReadFile
+	p.UseOrd = useOrd
 	p.UseNot = useNot
 	p.UseSafeMul = useSafeMul
 	p.UseSafeDiv = useSafeDiv
@@ -5538,6 +5557,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			useRepeat = true
 			useToInt = true
 			return &CallExpr{Func: "mochi_repeat", Args: ce.Args}, nil
+		} else if ce.Func == "ord" && len(ce.Args) == 1 {
+			useOrd = true
+			return &CallExpr{Func: "mochi_ord", Args: ce.Args}, nil
 		} else if ce.Func == "read_file" && len(ce.Args) == 1 {
 			useReadFile = true
 			return &CallExpr{Func: "mochi_read_file", Args: ce.Args}, nil
@@ -6754,6 +6776,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseReadFile {
 		buf.WriteString(helperReadFile)
+		buf.WriteString("\n")
+	}
+	if p.UseOrd {
+		buf.WriteString(helperOrd)
 		buf.WriteString("\n")
 	}
 	if p.UseNot {
