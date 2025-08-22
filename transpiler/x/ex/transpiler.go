@@ -1483,6 +1483,10 @@ func isStringExpr(e Expr) bool {
 		if strings.HasPrefix(t.Func, "String.") || t.Func == "Kernel.to_string" {
 			return true
 		}
+	case *IndexExpr:
+		if t.IsString {
+			return true
+		}
 	}
 	return false
 }
@@ -4097,7 +4101,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "int":
 			if len(args) == 1 {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
-				if _, ok := t.(types.StringType); ok {
+				if _, ok := t.(types.StringType); ok || isStringExpr(args[0]) {
 					return &CallExpr{Func: "String.to_integer", Args: []Expr{args[0]}}, nil
 				}
 				return &CallExpr{Func: "Kernel.trunc", Args: []Expr{args[0]}}, nil
