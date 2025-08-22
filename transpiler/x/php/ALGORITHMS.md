@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-22 13:16 GMT+7
+Last updated: 2025-08-22 15:31 GMT+7
 
-## Algorithms Golden Test Checklist (993/1077)
+## Algorithms Golden Test Checklist (994/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -878,7 +878,7 @@ Last updated: 2025-08-22 13:16 GMT+7
 | 869 | project_euler/problem_039/sol1 |   |  |  |
 | 870 | project_euler/problem_040/sol1 | ✓ | 721.455ms | 41.4 KB |
 | 871 | project_euler/problem_041/sol1 | ✓ | 269.629ms | 151.0 KB |
-| 872 | project_euler/problem_042/solution42 | error |  |  |
+| 872 | project_euler/problem_042/solution42 | ✓ | 177µs | 1.6 MB |
 | 873 | project_euler/problem_043/sol1 | ✓ | 10.504336s | 42.4 KB |
 | 874 | project_euler/problem_044/sol1 | ✓ | 49.992918s | 264.2 KB |
 | 875 | project_euler/problem_045/sol1 | ✓ |  |  |

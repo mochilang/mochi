@@ -27,7 +27,7 @@ var builtinNames = map[string]struct{}{
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
 	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "first": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {}, "toi": {}, "reset": {},
 	"concat": {}, "panic": {}, "error": {}, "ceil": {}, "floor": {},
-	"sha1": {},
+	"sha1": {}, "read_file": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -183,6 +183,16 @@ const helperParseIntStr = `function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }`
 
+const helperReadFile = `function _read_file($path) {
+    $p = $path;
+    if (!file_exists($p) && isset($_dataDir)) {
+        $p = $_dataDir . DIRECTORY_SEPARATOR . $path;
+    }
+    $data = @file_get_contents($p);
+    if ($data === false) return '';
+    return $data;
+}`
+
 const helperAppend = `function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
@@ -313,6 +323,7 @@ var usesStr bool
 var usesIndexOf bool
 var usesRepeat bool
 var usesParseIntStr bool
+var usesReadFile bool
 var usesIntDiv bool
 var usesSHA256 bool
 var usesEnviron bool
@@ -428,8 +439,9 @@ func addGlobalFunc(name string) {
 // --- Simple PHP AST ---
 
 type Program struct {
-	Env   *types.Env
-	Stmts []Stmt
+	Env     *types.Env
+	Stmts   []Stmt
+	DataDir string
 }
 
 func exprString(e Expr) string {
@@ -2615,6 +2627,16 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesReadFile {
+		if p.DataDir != "" {
+			if _, err := fmt.Fprintf(w, "$_dataDir = %q;\n", p.DataDir); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesAppend {
 		if _, err := io.WriteString(w, helperAppend+"\n"); err != nil {
 			return err
@@ -2717,6 +2739,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesIndexOf = false
 	usesRepeat = false
 	usesParseIntStr = false
+	usesReadFile = false
 	usesIntDiv = false
 	usesSHA256 = false
 	usesEnviron = false
@@ -2727,6 +2750,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesFetch = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
+	if prog.Pos.Filename != "" {
+		p.DataDir = filepath.Dir(prog.Pos.Filename)
+	}
 	extraStmts = nil
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
@@ -3374,6 +3400,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesGetOutput = true
 			return &CallExpr{Func: "_getoutput", Args: args}, nil
+		} else if name == "read_file" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			usesReadFile = true
+			return &CallExpr{Func: "_read_file", Args: args}, nil
 		} else if name == "count" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("count expects 1 arg")
