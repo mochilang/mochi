@@ -1,4 +1,4 @@
-// Generated 2025-08-12 13:41 +0700
+// Generated 2025-08-22 23:09 +0700
 
 exception Break
 exception Continue
@@ -35,13 +35,16 @@ let _substring (s:string) (start:int) (finish:int) =
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | :? int64 as n -> sprintf "%d" n
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -62,9 +65,9 @@ let rec xor (a: int) (b: int) =
             let bbit: int = ((y % 2 + 2) % 2)
             if abit <> bbit then
                 res <- res + bit
-            x <- _floordiv x 2
-            y <- _floordiv y 2
-            bit <- bit * 2
+            x <- _floordiv (int x) (int 2)
+            y <- _floordiv (int y) (int 2)
+            bit <- int ((int64 bit) * (int64 2))
         __ret <- res
         raise Return
         __ret

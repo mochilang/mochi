@@ -235,6 +235,7 @@ const helperJSON = `let json (arr:obj) =
 const helperStr = `let rec _str v =
     match box v with
     | :? float as f -> sprintf "%.10g" f
+    | :? int64 as n -> sprintf "%d" n
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")
@@ -3658,6 +3659,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	definedFuncs = map[string]bool{}
 	mutatedVars = map[string]bool{}
 	letPtrs = map[string][]*LetStmt{}
+	methodDefs = nil
+	funcParamTypes = nil
+	funcParamNames = nil
+	funcDefs = nil
 	useParseIntStr = false
 	usesToi = false
 	usesNow = false
