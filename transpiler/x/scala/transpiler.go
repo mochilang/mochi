@@ -1111,7 +1111,11 @@ func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) {
-	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	// Use 'g' format to retain a compact representation while
+	// preserving as much precision as possible. This avoids
+	// unnecessarily truncating significant digits for very small
+	// or very large values.
+	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
 	if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
 		s += ".0"
 	}

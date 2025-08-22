@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
 Completed programs: 935/1077
-Last updated: 2025-08-19 09:22 +0700
+Last updated: 2025-08-22 13:05 +0700
 
 Checklist:
 
@@ -738,7 +738,7 @@ Checklist:
 | 729 | neural_network/activation_functions/softplus | ✓ | 183.317ms | 3.5 MB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 183.317ms | 3.5 MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 183.317ms | 3.5 MB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 183.317ms | 3.5 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 183.317ms | 8.7 MB |
 | 733 | neural_network/convolution_neural_network | ✓ | 183.317ms | 3.5 MB |
 | 734 | neural_network/input_data | ✓ | 183.317ms | 3.5 MB |
 | 735 | neural_network/simple_neural_network | ✓ | 183.317ms | 3.5 MB |
