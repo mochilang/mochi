@@ -22,24 +22,7 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
-  int n = s.length;
-  int s0 = start.toInt();
-  int e0 = end.toInt();
-  if (s0 < 0) s0 += n;
-  if (e0 < 0) e0 += n;
-  if (s0 < 0) s0 = 0;
-  if (s0 > n) s0 = n;
-  if (e0 < 0) e0 = 0;
-  if (e0 > n) e0 = n;
-  if (s0 > e0) s0 = e0;
-  if (s is String) {
-    return s.substring(s0, e0);
-  }
-  return s.sublist(s0, e0);
-}
-
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 class SearchProblem {
   double x;
@@ -79,12 +62,12 @@ SearchProblem hill_climbing(SearchProblem sp, bool find_max, double max_x, doubl
   int iterations = 0;
   bool solution_found = false;
   while (solution_found == false && iterations < max_iter) {
-    visited = (visited..add(current));
+    visited = [...visited, current];
     iterations = iterations + 1;
     double current_score = score(current);
     List<SearchProblem> neighs = neighbors(current);
-    num max_change = -1000000000000000000.0;
-    double min_change = 1000000000000000000.0;
+    double max_change = -1e+18;
+    double min_change = 1e+18;
     SearchProblem next = current;
     bool improved = false;
     int i = 0;
@@ -127,14 +110,14 @@ double test_f1(double x, double y) {
 
 void _main() {
   SearchProblem prob1 = SearchProblem(x: 3.0, y: 4.0, step: 1.0, f: test_f1);
-  SearchProblem local_min1 = hill_climbing(prob1, false, 1000000000.0, -1000000000.0, 1000000000.0, -1000000000.0, 10000);
-  print(_str((score(local_min1)).toInt()));
+  SearchProblem local_min1 = hill_climbing(prob1, false, 1e+09, -1e+09, 1e+09, -1e+09, 10000);
+  print(_str(score(local_min1).toInt()));
   SearchProblem prob2 = SearchProblem(x: 12.0, y: 47.0, step: 1.0, f: test_f1);
   SearchProblem local_min2 = hill_climbing(prob2, false, 100.0, 5.0, 50.0, -5.0, 10000);
-  print(_str((score(local_min2)).toInt()));
+  print(_str(score(local_min2).toInt()));
   SearchProblem prob3 = SearchProblem(x: 3.0, y: 4.0, step: 1.0, f: test_f1);
-  SearchProblem local_max = hill_climbing(prob3, true, 1000000000.0, -1000000000.0, 1000000000.0, -1000000000.0, 1000);
-  print(_str((score(local_max)).toInt()));
+  SearchProblem local_max = hill_climbing(prob3, true, 1e+09, -1e+09, 1e+09, -1e+09, 1000);
+  print(_str(score(local_max).toInt()));
 }
 
 void _start() {

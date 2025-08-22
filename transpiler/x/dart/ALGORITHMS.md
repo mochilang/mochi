@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-22 15:38 GMT+7
+Last updated: 2025-08-22 23:26 GMT+7
 
-## Algorithms Golden Test Checklist (997/1077)
+## Algorithms Golden Test Checklist (998/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -879,13 +879,13 @@ Last updated: 2025-08-22 15:38 GMT+7
 | 870 | project_euler/problem_040/sol1 | ✓ | 67.077ms | 12.9 MB |
 | 871 | project_euler/problem_041/sol1 | ✓ | 26.103ms | 6.9 MB |
 | 872 | project_euler/problem_042/solution42 | ✓ | 74.785ms | 6.2 MB |
-| 873 | project_euler/problem_043/sol1 | ✓ | 779.607ms | 3.1 MB |
-| 874 | project_euler/problem_044/sol1 | ✓ | 616.705ms | 5.4 MB |
-| 875 | project_euler/problem_045/sol1 | error |  |  |
-| 876 | project_euler/problem_046/sol1 | ✓ | 23.15ms | 8.0 MB |
-| 877 | project_euler/problem_047/sol1 | ✓ | 195.958ms | 6.4 MB |
-| 878 | project_euler/problem_048/sol1 | ✓ | 9.183ms | 3.2 MB |
-| 879 | project_euler/problem_049/sol1 | ✓ | 188.296ms | 596.0 KB |
+| 873 | project_euler/problem_043/sol1 | ✓ | 1.809548s | 129.1 MB |
+| 874 | project_euler/problem_044/sol1 | ✓ | 800.873ms | 1.5 MB |
+| 875 | project_euler/problem_045/sol1 | error | 1.123173s | 7.5 MB |
+| 876 | project_euler/problem_046/sol1 | ✓ | 20.558ms | 6.0 MB |
+| 877 | project_euler/problem_047/sol1 | ✓ | 252.759ms | 10.7 MB |
+| 878 | project_euler/problem_048/sol1 | ✓ | 26.116ms | 9.8 MB |
+| 879 | project_euler/problem_049/sol1 | ✓ | 199.242ms | 1.7 MB |
 | 880 | project_euler/problem_050/sol1 | ✓ | 300.469ms | 15.6 MB |
 | 881 | project_euler/problem_051/sol1 | ✓ | 25.454ms | 11.0 MB |
 | 882 | project_euler/problem_052/sol1 | ✓ | 83.269ms | 1.9 MB |
@@ -896,56 +896,56 @@ Last updated: 2025-08-22 15:38 GMT+7
 | 887 | project_euler/problem_056/sol1 | ✓ | 78.006ms | 1.7 MB |
 | 888 | project_euler/problem_057/sol1 | ✓ | 31.734ms | 8.3 MB |
 | 889 | project_euler/problem_058/sol1 | ✓ | 134.712ms | 1.9 MB |
-| 890 | project_euler/problem_059/sol1 | ✓ | 356.145ms | 2.7 MB |
-| 891 | project_euler/problem_062/sol1 | ✓ | 88.37ms | 5.0 MB |
-| 892 | project_euler/problem_063/sol1 | ✓ | 10.706ms | 2.8 MB |
-| 893 | project_euler/problem_064/sol1 | error |  |  |
-| 894 | project_euler/problem_065/sol1 | ✓ | 20.287ms | 9.6 MB |
-| 895 | project_euler/problem_067/sol1 | ✓ | 73.817ms | 4.3 MB |
-| 896 | project_euler/problem_067/sol2 | ✓ | 55.608ms | 9.8 MB |
-| 897 | project_euler/problem_068/sol1 | ✓ | 1.977114s | 3.6 MB |
-| 898 | project_euler/problem_069/sol1 | ✓ | 17.93ms | 2.0 MB |
-| 899 | project_euler/problem_070/sol1 | ✓ | 35.959ms | 8.6 MB |
-| 900 | project_euler/problem_071/sol1 | ✓ | 33.884ms | 9.4 MB |
+| 890 | project_euler/problem_059/sol1 | ✓ | 754.442ms | 172.0 KB |
+| 891 | project_euler/problem_062/sol1 | ✓ | 87.357ms | 13.8 MB |
+| 892 | project_euler/problem_063/sol1 | ✓ | 8.037ms | 2.8 MB |
+| 893 | project_euler/problem_064/sol1 | ✓ | 45.422ms | 5.3 MB |
+| 894 | project_euler/problem_065/sol1 | ✓ | 10.725ms | 3.2 MB |
+| 895 | project_euler/problem_067/sol1 | ✓ | 45.242ms | 12.8 MB |
+| 896 | project_euler/problem_067/sol2 | ✓ | 55.158ms | 2.0 MB |
+| 897 | project_euler/problem_068/sol1 | ✓ | 5.142566s | 2.8 MB |
+| 898 | project_euler/problem_069/sol1 | ✓ | 14.37ms | 10.0 MB |
+| 899 | project_euler/problem_070/sol1 | ✓ | 203.984ms | 3.5 MB |
+| 900 | project_euler/problem_071/sol1 | ✓ | 14.198ms | 4.4 MB |
 | 901 | project_euler/problem_072/sol1 | ✓ | 314.248ms | 19.3 MB |
-| 902 | project_euler/problem_072/sol2 | ✓ | 19.089ms | 2.2 MB |
-| 903 | project_euler/problem_073/sol1 | ✓ | 948.928ms | 9.7 MB |
-| 904 | project_euler/problem_074/sol1 | ✓ | 27.037ms | 7.6 MB |
-| 905 | project_euler/problem_074/sol2 | ✓ | 5.012822s | 4.0 MB |
-| 906 | project_euler/problem_075/sol1 | ✓ | 410.507ms | 13.6 MB |
-| 907 | project_euler/problem_076/sol1 | ✓ | 46.401ms | 13.4 MB |
-| 908 | project_euler/problem_077/sol1 | ✓ | 501.055ms | 944.0 KB |
-| 909 | project_euler/problem_078/sol1 | ✓ | 242.93ms | 9.4 MB |
-| 910 | project_euler/problem_079/sol1 | ✓ | 78.461ms | 3.9 MB |
-| 911 | project_euler/problem_092/sol1 | ✓ | 17.432ms | 1.7 MB |
-| 912 | project_euler/problem_116/sol1 | ✓ | 26.97ms | 4.6 MB |
-| 913 | project_euler/problem_345/sol1 | ✓ | 50.343ms | 11.4 MB |
-| 914 | quantum/q_fourier_transform | ✓ | 28.425ms | 10.5 MB |
-| 915 | scheduling/job_sequence_with_deadline | ✓ | 20.987ms | 2.4 MB |
-| 916 | scheduling/job_sequencing_with_deadline | ✓ | 13.443ms | 3.6 MB |
-| 917 | scheduling/multi_level_feedback_queue | ✓ | 15.612ms | 3.5 MB |
-| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 26.517ms | 10.4 MB |
-| 919 | scheduling/round_robin | ✓ | 29.107ms | 10.7 MB |
-| 920 | scheduling/shortest_job_first | ✓ | 13.636ms | 3.6 MB |
-| 921 | scripts/build_directory_md | ✓ | 18.007ms | 4.1 MB |
-| 922 | scripts/validate_filenames | ✓ | 12.647ms | 3.2 MB |
-| 923 | scripts/validate_solutions | ✓ | 115.921ms | 13.2 MB |
-| 924 | searches/binary_search | ✓ | 9.62ms | 3.6 MB |
-| 925 | searches/double_linear_search | ✓ | 8.229ms | 2.0 MB |
-| 926 | searches/double_linear_search_recursion | ✓ | 8.818ms | 2.9 MB |
-| 927 | searches/exponential_search | ✓ | 10.731ms | 768.0 KB |
-| 928 | searches/fibonacci_search | ✓ | 9.221ms | 3.5 MB |
-| 929 | searches/hill_climbing | ✓ | 39.646ms | 11.9 MB |
-| 930 | searches/interpolation_search | ✓ | 9.897ms | 3.4 MB |
-| 931 | searches/jump_search | ✓ | 21.17ms | 10.0 MB |
-| 932 | searches/linear_search | ✓ | 13.967ms | 9.8 MB |
-| 933 | searches/median_of_medians | ✓ | 12.609ms | 4.6 MB |
-| 934 | searches/quick_select | ✓ | 17.668ms | 8.0 MB |
-| 935 | searches/sentinel_linear_search | ✓ | 18.825ms | 11.0 MB |
-| 936 | searches/simple_binary_search | ✓ | 9.458ms | 2.3 MB |
-| 937 | searches/simulated_annealing | ✓ | 29.107ms | 11.6 MB |
-| 938 | searches/tabu_search | ✓ | 11.415ms | 4.1 MB |
-| 939 | searches/ternary_search | ✓ | 8.59ms | 3.1 MB |
+| 902 | project_euler/problem_072/sol2 | ✓ | 24.07ms | 8.0 MB |
+| 903 | project_euler/problem_073/sol1 | ✓ | 689.669ms | 4.8 MB |
+| 904 | project_euler/problem_074/sol1 | ✓ | 24.738ms | 5.9 MB |
+| 905 | project_euler/problem_074/sol2 | ✓ | 3.846032s | 1.5 MB |
+| 906 | project_euler/problem_075/sol1 | ✓ | 368.437ms | 25.5 MB |
+| 907 | project_euler/problem_076/sol1 | ✓ | 71.844ms | 4.4 MB |
+| 908 | project_euler/problem_077/sol1 | ✓ | 626.437ms | 2.5 MB |
+| 909 | project_euler/problem_078/sol1 | ✓ | 1m24.102183s | 7.3 MB |
+| 910 | project_euler/problem_079/sol1 | ✓ | 23.265ms | 7.6 MB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 12.091ms | 3.0 MB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 20.695ms | 5.2 MB |
+| 913 | project_euler/problem_345/sol1 | ✓ | 15.40338s | 1.0 MB |
+| 914 | quantum/q_fourier_transform | ✓ | 8.973ms | 2.5 MB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 11.114ms | 3.2 MB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 11.672ms | 3.0 MB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 25.574ms | 9.2 MB |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 15.05ms | 3.5 MB |
+| 919 | scheduling/round_robin | ✓ | 13.986ms | 3.1 MB |
+| 920 | scheduling/shortest_job_first | ✓ | 10.37ms | 2.9 MB |
+| 921 | scripts/build_directory_md | ✓ | 30.36ms | 9.4 MB |
+| 922 | scripts/validate_filenames | ✓ | 11.418ms | 3.1 MB |
+| 923 | scripts/validate_solutions | ✓ | 131.627ms | 2.0 MB |
+| 924 | searches/binary_search | ✓ | 19.179ms | 3.0 MB |
+| 925 | searches/double_linear_search | ✓ | 13.31ms | 3.4 MB |
+| 926 | searches/double_linear_search_recursion | ✓ | 10.163ms | 2.9 MB |
+| 927 | searches/exponential_search | ✓ | 9.027ms | 2.5 MB |
+| 928 | searches/fibonacci_search | ✓ | 18.528ms | 1.5 MB |
+| 929 | searches/hill_climbing | ✓ | 68.067ms | 228.0 KB |
+| 930 | searches/interpolation_search | ✓ | 13.396ms | 3.0 MB |
+| 931 | searches/jump_search | ✓ | 12.881ms | 3.9 MB |
+| 932 | searches/linear_search | ✓ | 15.377ms | 3.1 MB |
+| 933 | searches/median_of_medians | ✓ | 10.364ms | 2.9 MB |
+| 934 | searches/quick_select | ✓ | 15.848ms | 3.9 MB |
+| 935 | searches/sentinel_linear_search | ✓ | 8.24ms | 2.4 MB |
+| 936 | searches/simple_binary_search | ✓ | 9.314ms | 2.8 MB |
+| 937 | searches/simulated_annealing | ✓ | 62.568ms | 656.0 KB |
+| 938 | searches/tabu_search | ✓ | 23.848ms | 8.5 MB |
+| 939 | searches/ternary_search | ✓ | 13.603ms | 3.1 MB |
 | 940 | sorts/bead_sort | ✓ | 13.348ms | 2.1 MB |
 | 941 | sorts/binary_insertion_sort | ✓ | 18.19ms | 10.8 MB |
 | 942 | sorts/bitonic_sort | ✓ | 16.213ms | 2.8 MB |
