@@ -1,5 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/algorithms/transpiler/Go/project_euler/problem_059/sol1.go:138:6: ord redeclared in this block
-	../../../tests/algorithms/transpiler/Go/project_euler/problem_059/sol1.go:83:6: other declaration of ord
-../../../tests/algorithms/transpiler/Go/project_euler/problem_059/sol1.go:376:10: invalid operation: sum + ord(_substr(decoded_text, j, (j + 1))) (mismatched types int and any)
