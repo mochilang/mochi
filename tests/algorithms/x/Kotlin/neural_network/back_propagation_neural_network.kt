@@ -32,7 +32,7 @@ data class Layer(var units: Int = 0, var weight: MutableList<MutableList<Double>
 data class Data(var x: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>(), var y: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>())
 var seed: Int = (1).toInt()
 fun rand(): Int {
-    seed = (((Math.floorMod((((seed * 1103515245) + 12345).toLong()), (2147483648L).toInt())).toInt())).toInt()
+    seed = ((Math.floorMod((((seed * 1103515245) + 12345).toLong()), 2147483648L)).toInt()).toInt()
     return seed
 }
 
@@ -51,11 +51,11 @@ fun expApprox(x: Double): Double {
     var sum: Double = 1.0
     var n: Int = (1).toInt()
     while (n < 30) {
-        term = (term * y) / ((n.toDouble()))
+        term = (term * y) / (n.toDouble())
         sum = sum + term
         n = n + 1
     }
-    if ((is_neg as Boolean)) {
+    if (is_neg as Boolean) {
         return 1.0 / sum
     }
     return sum
@@ -113,7 +113,7 @@ fun matvec(mat: MutableList<MutableList<Double>>, vec: MutableList<Double>): Mut
         var s: Double = 0.0
         var j: Int = (0).toInt()
         while (j < vec.size) {
-            s = s + ((((mat[i]!!) as MutableList<Double>))[j]!! * vec[j]!!)
+            s = s + (((mat[i]!!) as MutableList<Double>)[j]!! * vec[j]!!)
             j = j + 1
         }
         res = run { val _tmp = res.toMutableList(); _tmp.add(s); _tmp }
@@ -130,7 +130,7 @@ fun matTvec(mat: MutableList<MutableList<Double>>, vec: MutableList<Double>): Mu
         var s: Double = 0.0
         var i: Int = (0).toInt()
         while (i < mat.size) {
-            s = s + ((((mat[i]!!) as MutableList<Double>))[j]!! * vec[i]!!)
+            s = s + (((mat[i]!!) as MutableList<Double>)[j]!! * vec[i]!!)
             i = i + 1
         }
         res = run { val _tmp = res.toMutableList(); _tmp.add(s); _tmp }
@@ -192,7 +192,7 @@ fun mat_scalar_mul(mat: MutableList<MutableList<Double>>, s: Double): MutableLis
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < (mat[i]!!).size) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((mat[i]!!) as MutableList<Double>))[j]!! * s); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((mat[i]!!) as MutableList<Double>)[j]!! * s); _tmp }
             j = j + 1
         }
         res = run { val _tmp = res.toMutableList(); _tmp.add(row); _tmp }
@@ -208,7 +208,7 @@ fun mat_sub(a: MutableList<MutableList<Double>>, b: MutableList<MutableList<Doub
         var row: MutableList<Double> = mutableListOf<Double>()
         var j: Int = (0).toInt()
         while (j < (a[i]!!).size) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((((a[i]!!) as MutableList<Double>))[j]!! - (((b[i]!!) as MutableList<Double>))[j]!!); _tmp }
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((a[i]!!) as MutableList<Double>)[j]!! - ((b[i]!!) as MutableList<Double>)[j]!!); _tmp }
             j = j + 1
         }
         res = run { val _tmp = res.toMutableList(); _tmp.add(row); _tmp }
