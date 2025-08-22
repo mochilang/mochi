@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -22,13 +22,15 @@ _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let PI: float = 3.141592653589793
@@ -43,7 +45,7 @@ let rec _mod (x: float) (m: float) =
         __ret
     with
         | Return -> __ret
-let rec sin_approx (x: float) =
+and sin_approx (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -57,7 +59,7 @@ let rec sin_approx (x: float) =
         __ret
     with
         | Return -> __ret
-let rec cos_approx (x: float) =
+and cos_approx (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -70,7 +72,7 @@ let rec cos_approx (x: float) =
         __ret
     with
         | Return -> __ret
-let rec polar_force (magnitude: float) (angle: float) (radian_mode: bool) =
+and polar_force (magnitude: float) (angle: float) (radian_mode: bool) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable magnitude = magnitude
     let mutable angle = angle
@@ -82,7 +84,7 @@ let rec polar_force (magnitude: float) (angle: float) (radian_mode: bool) =
         __ret
     with
         | Return -> __ret
-let rec abs_float (x: float) =
+and abs_float (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -95,7 +97,7 @@ let rec abs_float (x: float) =
         __ret
     with
         | Return -> __ret
-let rec in_static_equilibrium (forces: float array array) (location: float array array) (eps: float) =
+and in_static_equilibrium (forces: float array array) (location: float array array) (eps: float) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable forces = forces
     let mutable location = location
@@ -117,16 +119,16 @@ let rec in_static_equilibrium (forces: float array array) (location: float array
         | Return -> __ret
 let forces1: float array array = [|[|1.0; 1.0|]; [|-1.0; 2.0|]|]
 let location1: float array array = [|[|1.0; 0.0|]; [|10.0; 0.0|]|]
-printfn "%s" (_str (in_static_equilibrium (forces1) (location1) (0.1)))
+ignore (printfn "%s" (_str (in_static_equilibrium (forces1) (location1) (0.1))))
 let forces2: float array array = [|polar_force (718.4) (150.0) (false); polar_force (879.54) (45.0) (false); polar_force (100.0) (-90.0) (false)|]
 let location2: float array array = [|[|0.0; 0.0|]; [|0.0; 0.0|]; [|0.0; 0.0|]|]
-printfn "%s" (_str (in_static_equilibrium (forces2) (location2) (0.1)))
+ignore (printfn "%s" (_str (in_static_equilibrium (forces2) (location2) (0.1))))
 let forces3: float array array = [|polar_force (30.0 * 9.81) (15.0) (false); polar_force (215.0) (135.0) (false); polar_force (264.0) (60.0) (false)|]
 let location3: float array array = [|[|0.0; 0.0|]; [|0.0; 0.0|]; [|0.0; 0.0|]|]
-printfn "%s" (_str (in_static_equilibrium (forces3) (location3) (0.1)))
+ignore (printfn "%s" (_str (in_static_equilibrium (forces3) (location3) (0.1))))
 let forces4: float array array = [|[|0.0; -2000.0|]; [|0.0; -1200.0|]; [|0.0; 15600.0|]; [|0.0; -12400.0|]|]
 let location4: float array array = [|[|0.0; 0.0|]; [|6.0; 0.0|]; [|10.0; 0.0|]; [|12.0; 0.0|]|]
-printfn "%s" (_str (in_static_equilibrium (forces4) (location4) (0.1)))
+ignore (printfn "%s" (_str (in_static_equilibrium (forces4) (location4) (0.1))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

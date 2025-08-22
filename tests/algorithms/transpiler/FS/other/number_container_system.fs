@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -90,7 +90,7 @@ and binary_search_delete (array: int array) (item: int) =
         let mutable high: int = (Seq.length (array)) - 1
         let mutable arr: int array = array
         while low <= high do
-            let mid: int = _floordiv (low + high) 2
+            let mid: int = _floordiv (int (low + high)) (int 2)
             if (_idx arr (int mid)) = item then
                 arr <- remove_at (arr) (mid)
                 __ret <- arr
@@ -115,7 +115,7 @@ and binary_search_insert (array: int array) (index: int) =
         let mutable high: int = (Seq.length (array)) - 1
         let mutable arr: int array = array
         while low <= high do
-            let mid: int = _floordiv (low + high) 2
+            let mid: int = _floordiv (int (low + high)) (int 2)
             if (_idx arr (int mid)) = index then
                 arr <- insert_at (arr) (mid + 1) (index)
                 __ret <- arr

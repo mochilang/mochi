@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,16 +20,18 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
-let rec to_float (x: int) =
+let rec to_float (x: int64) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -50,7 +52,7 @@ and ln (x: float) =
         let mutable sum: float = 0.0
         let mutable k: int = 0
         while k < 10 do
-            let denom: float = to_float ((2 * k) + 1)
+            let denom: float = to_float (((int64 2) * (int64 k)) + (int64 1))
             sum <- sum + (term / denom)
             term <- term * y2
             k <- k + 1

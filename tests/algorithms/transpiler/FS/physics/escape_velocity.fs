@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,6 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec pow10 (n: int) =
@@ -85,9 +95,9 @@ and escape_velocity (mass: float) (radius: float) =
         __ret
     with
         | Return -> __ret
-ignore (printfn "%g" (escape_velocity (5.972 * (pow10 (24))) (6.371 * (pow10 (6)))))
-ignore (printfn "%g" (escape_velocity (7.348 * (pow10 (22))) (1.737 * (pow10 (6)))))
-ignore (printfn "%g" (escape_velocity (1.898 * (pow10 (27))) (6.9911 * (pow10 (7)))))
+ignore (printfn "%s" (_str (escape_velocity (5.972 * (pow10 (24))) (6.371 * (pow10 (6))))))
+ignore (printfn "%s" (_str (escape_velocity (7.348 * (pow10 (22))) (1.737 * (pow10 (6))))))
+ignore (printfn "%s" (_str (escape_velocity (1.898 * (pow10 (27))) (6.9911 * (pow10 (7))))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

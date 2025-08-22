@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,6 +21,16 @@ let _now () =
 _initNow()
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec to_float (x: int) =
@@ -150,11 +160,11 @@ and second_molar_mass (mass: float) (r1: float) (r2: float) =
         __ret
     with
         | Return -> __ret
-ignore (printfn "%g" (effusion_ratio (2.016) (4.002)))
-ignore (printfn "%g" (first_effusion_rate (1.0) (2.016) (4.002)))
-ignore (printfn "%g" (second_effusion_rate (1.0) (2.016) (4.002)))
-ignore (printfn "%g" (first_molar_mass (2.0) (1.408943) (0.709752)))
-ignore (printfn "%g" (second_molar_mass (2.0) (1.408943) (0.709752)))
+ignore (printfn "%s" (_str (effusion_ratio (2.016) (4.002))))
+ignore (printfn "%s" (_str (first_effusion_rate (1.0) (2.016) (4.002))))
+ignore (printfn "%s" (_str (second_effusion_rate (1.0) (2.016) (4.002))))
+ignore (printfn "%s" (_str (first_molar_mass (2.0) (1.408943) (0.709752))))
+ignore (printfn "%s" (_str (second_molar_mass (2.0) (1.408943) (0.709752))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

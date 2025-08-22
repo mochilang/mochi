@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -62,6 +62,8 @@ type BodySystem = {
     mutable _time_factor: float
     mutable _softening_factor: float
 }
+open System.Collections.Generic
+
 let rec make_body (px: float) (py: float) (vx: float) (vy: float) (_mass: float) =
     let mutable __ret : Body = Unchecked.defaultof<Body>
     let mutable px = px
@@ -151,13 +153,13 @@ and update_system (system: BodySystem) (delta_time: float) =
                     force_y <- force_y + ((((system._gravitation_constant) * (body2._mass)) * dif_y) / denom)
                 j <- j + 1
             body1 <- update_velocity (body1) (force_x) (force_y) (delta_time * (system._time_factor))
-            _bodies.[int i] <- body1
+            _bodies.[i] <- body1
             i <- i + 1
         i <- 0
         while i < (Seq.length (_bodies)) do
             let mutable body: Body = _idx _bodies (int i)
             body <- update_position (body) (delta_time * (system._time_factor))
-            _bodies.[int i] <- body
+            _bodies.[i] <- body
             i <- i + 1
         system._bodies <- _bodies
         __ret <- system
@@ -166,7 +168,7 @@ and update_system (system: BodySystem) (delta_time: float) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
@@ -177,10 +179,10 @@ and main () =
         let b1_after: Body = _idx (sys1._bodies) (int 0)
         let pos1x: float = b1_after._position_x
         let pos1y: float = b1_after._position_y
-        json (_dictCreate [("x", pos1x); ("y", pos1y)])
+        ignore (json (_dictCreate [("x", pos1x); ("y", pos1y)]))
         let vel1x: float = b1_after._velocity_x
         let vel1y: float = b1_after._velocity_y
-        json (_dictCreate [("vx", vel1x); ("vy", vel1y)])
+        ignore (json (_dictCreate [("vx", vel1x); ("vy", vel1y)]))
         let b3: Body = make_body (-10.0) (0.0) (0.0) (0.0) (1.0)
         let b4: Body = make_body (10.0) (0.0) (0.0) (0.0) (4.0)
         let mutable sys2: BodySystem = make_body_system (unbox<Body array> [|b3; b4|]) (1.0) (10.0) (0.0)
@@ -188,10 +190,10 @@ and main () =
         let b2_after: Body = _idx (sys2._bodies) (int 0)
         let pos2x: float = b2_after._position_x
         let pos2y: float = b2_after._position_y
-        json (_dictCreate [("x", pos2x); ("y", pos2y)])
+        ignore (json (_dictCreate [("x", pos2x); ("y", pos2y)]))
         let vel2x: float = b2_after._velocity_x
         let vel2y: float = b2_after._velocity_y
-        json (_dictCreate [("vx", vel2x); ("vy", vel2y)])
+        ignore (json (_dictCreate [("vx", vel2x); ("vy", vel2y)]))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -199,4 +201,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -20,13 +20,15 @@ let _now () =
 
 _initNow()
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec centripetal (mass: float) (velocity: float) (radius: float) =
@@ -82,7 +84,7 @@ and round (x: float) (n: int) =
     with
         | Return -> __ret
 and show (mass: float) (velocity: float) (radius: float) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable mass = mass
     let mutable velocity = velocity
     let mutable radius = radius
@@ -92,11 +94,11 @@ and show (mass: float) (velocity: float) (radius: float) =
         __ret
     with
         | Return -> __ret
-show (15.5) (-30.0) (10.0)
-show (10.0) (15.0) (5.0)
-show (20.0) (-50.0) (15.0)
-show (12.25) (40.0) (25.0)
-show (50.0) (100.0) (50.0)
+ignore (show (15.5) (-30.0) (10.0))
+ignore (show (10.0) (15.0) (5.0))
+ignore (show (20.0) (-50.0) (15.0))
+ignore (show (12.25) (40.0) (25.0))
+ignore (show (50.0) (100.0) (50.0))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

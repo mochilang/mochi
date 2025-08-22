@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,6 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let rec _str v =
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let rec doppler_effect (org_freq: float) (wave_vel: float) (obs_vel: float) (src_vel: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable org_freq = org_freq
@@ -57,7 +67,7 @@ and almost_equal (a: float) (b: float) (tol: float) =
     with
         | Return -> __ret
 and test_doppler_effect () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         if not (almost_equal (doppler_effect (100.0) (330.0) (10.0) (0.0)) (103.03030303030303) (0.0000001)) then
             ignore (failwith ("test 1 failed"))
@@ -75,12 +85,12 @@ and test_doppler_effect () =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        test_doppler_effect()
-        ignore (printfn "%g" (doppler_effect (100.0) (330.0) (10.0) (0.0)))
+        ignore (test_doppler_effect())
+        ignore (printfn "%s" (_str (doppler_effect (100.0) (330.0) (10.0) (0.0))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
@@ -88,4 +98,4 @@ and main () =
         __ret
     with
         | Return -> __ret
-main()
+ignore (main())

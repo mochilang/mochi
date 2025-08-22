@@ -1613,7 +1613,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 		name := fsIdent(id.Name)
 		// handle dictionary updates
 		if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") ||
-			((t == "" || t == "obj") && len(indices) > 0 && inferType(indices[0]) != "int") {
+			((t == "" || t == "obj") && len(indices) > 0 && inferType(indices[0]) != "int" && inferType(indices[0]) != "int64") {
 			writeIndent(w)
 			expr := buildMapUpdate(&IdentExpr{Name: name}, indices, s.Value)
 			expr.emit(w)

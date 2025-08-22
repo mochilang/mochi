@@ -1,4 +1,4 @@
-// Generated 2025-08-12 16:24 +0700
+// Generated 2025-08-22 13:05 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -32,13 +32,15 @@ let _substring (s:string) (start:int) (finish:int) =
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
-    let s = sprintf "%A" v
-    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
+    match box v with
+    | :? float as f -> sprintf "%.10g" f
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("\"", "")
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -101,7 +103,7 @@ and int_to_binary (n: int) =
         let mutable num: int = n
         while num > 0 do
             res <- (_str (((num % 2 + 2) % 2))) + res
-            num <- _floordiv num 2
+            num <- _floordiv (int num) (int 2)
         __ret <- res
         raise Return
         __ret
@@ -128,7 +130,7 @@ and bin_to_int (s: string) =
         let mutable i: int = 0
         while i < (String.length (s)) do
             let digit: int = int (_substring s (i) (i + 1))
-            result <- (result * 2) + digit
+            result <- int (((int64 result) * (int64 2)) + (int64 digit))
             i <- i + 1
         __ret <- result
         raise Return
