@@ -37,6 +37,8 @@ var usesEnviron bool
 var usesSplit bool
 var usesDynLen bool
 var usesFetch bool
+var usesReadFile bool
+var usesOrd bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
@@ -63,7 +65,8 @@ func GetVarType(env *types.Env, name string) string {
 // Program represents an OCaml program. All statements are emitted inside
 // a `let () =` block.
 type Program struct {
-	Stmts []Stmt
+	Stmts   []Stmt
+	DataDir string
 }
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -3376,6 +3379,22 @@ let _fetch url =
   | None -> "{\"data\":[{\"from\":\"0\",\"to\":\"0\",\"intensity\":{\"forecast\":0,\"actual\":1,\"index\":\"g\"}}]}"
 `
 
+const helperReadFile = `
+let _read_file path =
+  let p = if Sys.file_exists path then path else Filename.concat _dataDir path in
+  try
+    let ic = open_in p in
+    let len = in_channel_length ic in
+    let s = really_input_string ic len in
+    close_in ic;
+    s
+  with _ -> ""
+`
+
+const helperOrd = `
+let _ord s = Char.code s.[0]
+`
+
 const helperSplit = `
 let _split s sep =
   let c = if String.length sep = 0 then ' ' else sep.[0] in
@@ -3580,6 +3599,17 @@ func (p *Program) Emit() []byte {
 	}
 	if usesFetch {
 		buf.WriteString(helperFetch)
+		buf.WriteString("\n")
+	}
+	if usesReadFile {
+		if p.DataDir != "" {
+			fmt.Fprintf(&buf, "let _dataDir = %q\n", p.DataDir)
+		}
+		buf.WriteString(helperReadFile)
+		buf.WriteString("\n")
+	}
+	if usesOrd {
+		buf.WriteString(helperOrd)
 		buf.WriteString("\n")
 	}
 	if usesGetOutput {
@@ -4367,9 +4397,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSplit = false
 	usesDynLen = false
 	usesFetch = false
+	usesReadFile = false
+	usesOrd = false
 	structFields = map[string]map[string]string{}
 	funcMutations = map[string]map[string]bool{}
-	pr := &Program{}
+	pr := &Program{DataDir: filepath.Dir(prog.Pos.Filename)}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
 	if err != nil {
@@ -6059,6 +6091,28 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", err
 		}
 		return &FuncCall{Name: "int_of_string", Args: []Expr{arg}, Ret: "int"}, "int", nil
+	}
+	if c.Func == "ord" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "string" {
+			return nil, "", fmt.Errorf("ord expects string")
+		}
+		usesOrd = true
+		return &FuncCall{Name: "_ord", Args: []Expr{arg}, Ret: "int"}, "int", nil
+	}
+	if c.Func == "read_file" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "string" {
+			return nil, "", fmt.Errorf("read_file expects string")
+		}
+		usesReadFile = true
+		return &FuncCall{Name: "_read_file", Args: []Expr{arg}, Ret: "string"}, "string", nil
 	}
 	if c.Func == "len" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
