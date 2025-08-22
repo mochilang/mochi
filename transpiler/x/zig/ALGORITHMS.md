@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-22 14:19 +0700
+Last updated: 2025-08-22 15:25 +0700
 
-## Program Checklist (457/1077)
+## Program Checklist (458/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -878,7 +878,7 @@ Last updated: 2025-08-22 14:19 +0700
 | 869 | project_euler/problem_039/sol1 |   |  |  |
 | 870 | project_euler/problem_040/sol1 |   |  |  |
 | 871 | project_euler/problem_041/sol1 |   |  |  |
-| 872 | project_euler/problem_042/solution42 |   |  |  |
+| 872 | project_euler/problem_042/solution42 | ✓ | 379.233ms | 71.5 MB |
 | 873 | project_euler/problem_043/sol1 |   |  |  |
 | 874 | project_euler/problem_044/sol1 |   |  |  |
 | 875 | project_euler/problem_045/sol1 |   |  |  |

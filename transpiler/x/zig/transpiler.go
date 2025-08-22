@@ -57,6 +57,9 @@ var useSplit bool
 var useValue bool
 var useSha256 bool
 var useNewNode bool
+var useReadFile bool
+var useOrd bool
+var dataDir string
 var aliasStack []map[string]string
 var namesStack [][]string
 var nameCounts map[string]int
@@ -1639,11 +1642,14 @@ func (p *Program) Emit() []byte {
 			}
 		}
 	}
-	buf.WriteString(header())
-	buf.WriteString("const std = @import(\"std\");\n")
-	if useValue {
-		buf.WriteString("const Value = union(enum) { Null: void, Int: i64, Float: f64, Str: []const u8, Bool: bool, List: []Value, StrList: [][]const u8, };\n")
-	}
+        buf.WriteString(header())
+        buf.WriteString("const std = @import(\"std\");\n")
+       if useReadFile && dataDir != "" {
+               fmt.Fprintf(&buf, "const _dataDir = %q;\n", dataDir)
+       }
+        if useValue {
+                buf.WriteString("const Value = union(enum) { Null: void, Int: i64, Float: f64, Str: []const u8, Bool: bool, List: []Value, StrList: [][]const u8, };\n")
+        }
 	buf.WriteString("\nfn handleError(err: anyerror) noreturn {\n")
 	buf.WriteString("    std.debug.panic(\"{any}\", .{err});\n}\n\n")
 	for _, st := range p.Structs {
@@ -1814,22 +1820,41 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out;\n")
 		buf.WriteString("}\n")
 	}
-	if useInput {
-		buf.WriteString("\nfn _input() []const u8 {\n")
-		buf.WriteString("    var reader = std.io.bufferedReaderSize(4096, std.io.getStdIn().reader());\n")
-		buf.WriteString("    const opt_line = reader.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\\n', 1 << 20) catch return \"\";\n")
-		buf.WriteString("    const line = opt_line orelse return \"\";\n")
-		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\\n') {\n")
-		buf.WriteString("        return line[0..line.len-1];\n")
-		buf.WriteString("    }\n")
-		buf.WriteString("    return line;\n")
-		buf.WriteString("}\n")
-	}
-	if useLookupHost {
-		buf.WriteString("\nfn _lookup_host(host: []const u8) []const i32 {\n")
-		buf.WriteString("    return &[_]i32{0, 0};\n")
-		buf.WriteString("}\n")
-	}
+        if useInput {
+                buf.WriteString("\nfn _input() []const u8 {\n")
+                buf.WriteString("    var reader = std.io.bufferedReaderSize(4096, std.io.getStdIn().reader());\n")
+                buf.WriteString("    const opt_line = reader.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\\n', 1 << 20) catch return \"\";\n")
+                buf.WriteString("    const line = opt_line orelse return \"\";\n")
+                buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\\n') {\n")
+                buf.WriteString("        return line[0..line.len-1];\n")
+                buf.WriteString("    }\n")
+                buf.WriteString("    return line;\n")
+                buf.WriteString("}\n")
+        }
+       if useReadFile {
+               buf.WriteString("\nfn _read_file(path: []const u8) []const u8 {\n")
+               buf.WriteString("    const alloc = std.heap.page_allocator;\n")
+               if dataDir != "" {
+                       buf.WriteString("    if (std.fs.cwd().readFileAlloc(alloc, path, 1 << 20) catch null) |d| { return d; }\n")
+                       buf.WriteString("    const joined = std.fs.path.join(alloc, &[_][]const u8{_dataDir, path}) catch return \"\";\n")
+                       buf.WriteString("    defer alloc.free(joined);\n")
+                       buf.WriteString("    return std.fs.cwd().readFileAlloc(alloc, joined, 1 << 20) catch \"\";\n")
+               } else {
+                       buf.WriteString("    return std.fs.cwd().readFileAlloc(alloc, path, 1 << 20) catch \"\";\n")
+               }
+               buf.WriteString("}\n")
+       }
+       if useOrd {
+               buf.WriteString("\nfn _ord(s: []const u8) i64 {\n")
+               buf.WriteString("    if (s.len == 0) return 0;\n")
+               buf.WriteString("    return @as(i64, s[0]);\n")
+               buf.WriteString("}\n")
+       }
+        if useLookupHost {
+                buf.WriteString("\nfn _lookup_host(host: []const u8) []const i32 {\n")
+                buf.WriteString("    return &[_]i32{0, 0};\n")
+                buf.WriteString("}\n")
+        }
 	if useMem {
 		buf.WriteString("\nfn _mem() i64 {\n")
 		buf.WriteString("    const path = \"/proc/self/statm\";\n")
@@ -3166,14 +3191,13 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 }
 
 func (f *ForStmt) emit(w io.Writer, indent int) {
-	pushAliasScope()
-	alias := f.Name
-	used := stmtsUse(f.Name, f.Body)
-	if used {
-		alias = uniqueName(f.Name)
-		aliasStack[len(aliasStack)-1][f.Name] = alias
-		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], f.Name)
-	}
+        pushAliasScope()
+        alias := f.Name
+        used := stmtsUse(alias, f.Body)
+        if used {
+                aliasStack[len(aliasStack)-1][alias] = alias
+                namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], alias)
+        }
 	writeIndent(w, indent)
 	tmp := fmt.Sprintf("__it%d", loopCounter)
 	loopCounter++
@@ -3763,30 +3787,36 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	nestedFunArgs = map[string][]string{}
 	funcReturns = map[string]string{}
 	funcParamTypes = map[string][]string{}
-	builtinAliases = map[string]string{}
-	mainFuncName = ""
-	loopCounter = 0
-	labelCounter = 0
-	blockDepth = 0
-	useNow = false
+       builtinAliases = map[string]string{}
+       mainFuncName = ""
+       loopCounter = 0
+       labelCounter = 0
+       blockDepth = 0
+       useNow = false
 	useStr = false
 	useConcat = false
 	useLookupHost = false
 	useAscii = false
 	useMem = false
-	usePrint = false
-	useSplit = false
-	useValue = false
-	useSha256 = false
-	aliasStack = nil
+        usePrint = false
+        useSplit = false
+        useValue = false
+       useSha256 = false
+       useReadFile = false
+       useOrd = false
+       dataDir = ""
+       aliasStack = nil
 	namesStack = nil
-	nameCounts = map[string]int{}
-	pushAliasScope()
-	globalNames = map[string]bool{}
-	funDepth++
-	funParamsStack = append(funParamsStack, nil)
-	currentFunc = "main"
-	for _, st := range prog.Statements {
+       nameCounts = map[string]int{}
+       pushAliasScope()
+       globalNames = map[string]bool{}
+       funDepth++
+       funParamsStack = append(funParamsStack, nil)
+       currentFunc = "main"
+       if prog != nil {
+               dataDir = filepath.Dir(prog.Pos.Filename)
+       }
+       for _, st := range prog.Statements {
 		if st.Let != nil {
 			globalNames[st.Let.Name] = true
 		}
@@ -4486,17 +4516,31 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			useAscii = true
 			return &CallExpr{Func: "_lower", Args: args}, nil
-		case "split":
-			if len(args) != 2 {
-				return nil, fmt.Errorf("split expects two arguments")
-			}
-			useSplit = true
-			return &CallExpr{Func: "_split_string", Args: args}, nil
-		case "sha256":
-			if len(args) != 1 {
-				return nil, fmt.Errorf("sha256 expects one argument")
-			}
-			useSha256 = true
+                case "split":
+                        if len(args) != 2 {
+                                return nil, fmt.Errorf("split expects two arguments")
+                        }
+                        useSplit = true
+                        return &CallExpr{Func: "_split_string", Args: args}, nil
+               case "read_file":
+                       if len(args) != 1 {
+                               return nil, fmt.Errorf("read_file expects one argument")
+                       }
+                       useReadFile = true
+                       funcReturns["_read_file"] = "[]const u8"
+                       return &CallExpr{Func: "_read_file", Args: args}, nil
+               case "ord":
+                       if len(args) != 1 {
+                               return nil, fmt.Errorf("ord expects one argument")
+                       }
+                       useOrd = true
+                       funcReturns["_ord"] = "i64"
+                       return &CallExpr{Func: "_ord", Args: args}, nil
+                case "sha256":
+                        if len(args) != 1 {
+                                return nil, fmt.Errorf("sha256 expects one argument")
+                        }
+                        useSha256 = true
 			funcReturns["_sha256"] = "[]i64"
 			return &CallExpr{Func: "_sha256", Args: args}, nil
 		case "print":
