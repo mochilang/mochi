@@ -2,12 +2,12 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 975/1077
-Last updated: 2025-08-19 09:22 +0700
+Completed programs: 977/1077
+Last updated: 2025-08-22 14:19 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.152ms | 3.8 MB |
+| 1 | backtracking/all_combinations | ✓ | 2.345ms | 3.7 MB |
 | 2 | backtracking/all_permutations | ✓ | 1.383ms | 3.5 MB |
 | 3 | backtracking/all_subsequences | ✓ | 914µs | 3.4 MB |
 | 4 | backtracking/coloring | ✓ | 540µs | 3.3 MB |
@@ -834,7 +834,7 @@ Last updated: 2025-08-19 09:22 +0700
 | 825 | project_euler/problem_009/sol2 | ✓ | 581µs | 3.1 MB |
 | 826 | project_euler/problem_009/sol3 | ✓ | 16.858ms | 3.3 MB |
 | 827 | project_euler/problem_010/sol1 | ✓ | 759µs | 2.9 MB |
-| 828 | project_euler/problem_010/sol2 |   |  |  |
+| 828 | project_euler/problem_010/sol2 | ✓ |  |  |
 | 829 | project_euler/problem_010/sol3 | ✓ | 46.582ms | 3.2 MB |
 | 830 | project_euler/problem_011/sol1 | ✓ | 1.117ms | 3.2 MB |
 | 831 | project_euler/problem_011/sol2 | ✓ | 1.292ms | 3.1 MB |
@@ -878,7 +878,7 @@ Last updated: 2025-08-19 09:22 +0700
 | 869 | project_euler/problem_039/sol1 | ✓ | 2.303767s | 3.2 MB |
 | 870 | project_euler/problem_040/sol1 | ✓ | 1.160102s | 3.1 MB |
 | 871 | project_euler/problem_041/sol1 | ✓ | 119.439ms | 3.2 MB |
-| 872 | project_euler/problem_042/solution42 |   |  |  |
+| 872 | project_euler/problem_042/solution42 | ✓ | 6.884394s | 4.1 MB |
 | 873 | project_euler/problem_043/sol1 | ✓ | 19.368652s | 3.2 MB |
 | 874 | project_euler/problem_044/sol1 | ✓ | 21.486592s | 3.3 MB |
 | 875 | project_euler/problem_045/sol1 | ✓ |  |  |

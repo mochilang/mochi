@@ -12,6 +12,8 @@ Algorithm:
 The approach runs in O(W*L) time where W is the number of words and L the average word length.
 */
 
+extern fun read_file(path: string): string
+
 fun triangular_numbers(limit: int): list<int> {
   var res: list<int> = []
   var n = 1
@@ -31,7 +33,7 @@ fun parse_words(text: string): list<string> {
     if c == "," {
       words = append(words, current)
       current = ""
-    } else if c == """" {
+    } else if c == "\"" {
       // skip quotes
     } else if c == "\r" || c == "\n" {
       // ignore newline characters
