@@ -11158,10 +11158,17 @@ func cTypeFromMochiType(t types.Type) string {
 		return "bigrat"
 	case types.BoolType:
 		return "long long"
-	case types.AnyType:
-		return "const char*"
-	case types.StructType:
-		return tt.Name
+       case types.AnyType:
+               return "const char*"
+       case types.UnionType:
+               // Simplistically map union types to strings. This allows
+               // algorithms using small tagged unions that ultimately
+               // render to text to compile, even though the runtime
+               // representation is lossy. A fuller implementation would
+               // encode the discriminant and variant fields explicitly.
+               return "const char*"
+       case types.StructType:
+               return tt.Name
 	case types.ListType:
 		return cTypeFromMochiType(tt.Elem) + "[]"
 	case types.MapType:
