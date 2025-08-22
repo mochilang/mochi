@@ -278,6 +278,8 @@ local function _str(v)
     local s = tostring(v)
     s = string.gsub(s, '%.0+$', '')
     return s
+  elseif type(v) == 'boolean' then
+    if v then return 'true' else return 'false' end
   elseif type(v) == 'table' then
     local src = v
     if v.items ~= nil then
