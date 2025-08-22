@@ -1,8 +1,1 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 34 │       {i, num, prime} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_003/sol2.exs:34:8: Main.largest_prime_factor/1
-
 6857

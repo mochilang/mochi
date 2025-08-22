@@ -1,11 +1,4 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 47 │       i = try do
-    │       ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_007/sol1.exs:47:7: Main.is_prime/1
-
-    warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
  96 │       {count, number} = try do
     │        ~

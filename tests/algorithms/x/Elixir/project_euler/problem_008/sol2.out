@@ -1,17 +1,3 @@
-warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 27 │           {j, product} = try do
-    │            ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol2.exs:27:12: Main.solution/1
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 45 │       {i, max_product} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol2.exs:45:8: Main.solution/1
-
 609638400
 2612736000
 209018880

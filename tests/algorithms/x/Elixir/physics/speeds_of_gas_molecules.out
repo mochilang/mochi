@@ -1,10 +1,3 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 19 │       {guess, i} = try do
-    │               ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/speeds_of_gas_molecules.exs:19:15: Main.sqrt/1
-
 454.3488755062257
 445.52572734330454
 402.65620702280023
