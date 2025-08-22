@@ -560,6 +560,16 @@ func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "*" {
+		if val, ok := foldPow10(b.Left, b.Right); ok {
+			io.WriteString(w, val)
+			return
+		}
+		if val, ok := foldPow10(b.Right, b.Left); ok {
+			io.WriteString(w, val)
+			return
+		}
+	}
 	if b.Op == "/" && isIntExpr(b.Left) && isIntExpr(b.Right) {
 		io.WriteString(w, "Math.trunc(")
 		b.Left.emit(w)
@@ -575,6 +585,44 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, " ")
 	b.Right.emit(w)
 	io.WriteString(w, ")")
+}
+
+func foldPow10(left, right Expr) (string, bool) {
+	ln, ok := left.(*NumberLit)
+	if !ok {
+		if un, ok2 := left.(*UnaryExpr); ok2 && un.Op == "-" {
+			if lit, ok3 := un.Expr.(*NumberLit); ok3 {
+				ln = &NumberLit{Value: "-" + lit.Value}
+			} else {
+				return "", false
+			}
+		} else {
+			return "", false
+		}
+	}
+	lv, err := strconv.ParseFloat(ln.Value, 64)
+	if err != nil {
+		return "", false
+	}
+	call, ok := right.(*CallExpr)
+	if !ok || call.Func != "pow10" || len(call.Args) != 1 {
+		return "", false
+	}
+	aiLit, ok := call.Args[0].(*NumberLit)
+	if !ok || strings.Contains(aiLit.Value, ".") {
+		return "", false
+	}
+	ai, err := strconv.Atoi(aiLit.Value)
+	if err != nil {
+		return "", false
+	}
+	val := lv * math.Pow10(ai)
+	if val > 0 {
+		val = math.Nextafter(val, math.Inf(-1))
+	} else {
+		val = math.Nextafter(val, math.Inf(1))
+	}
+	return formatFloat(val), true
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
