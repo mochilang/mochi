@@ -1473,7 +1473,7 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 			io.WriteString(w, ind+"{")
 			io.WriteString(w, " std::ostringstream __ss; double __dv = ")
 			e.emit(w)
-			io.WriteString(w, "; if(std::floor(__dv) == __dv) { __ss<<std::fixed<<std::setprecision(1)<<__dv; } else { __ss<<std::defaultfloat<<std::setprecision(17)<<__dv; } "+stream+" << __ss.str(); }\n")
+			io.WriteString(w, "; if(__dv == 0) __dv = 0; if(std::floor(__dv) == __dv) { __ss<<std::fixed<<std::setprecision(1)<<__dv; } else { __ss<<std::defaultfloat<<std::setprecision(17)<<__dv; } "+stream+" << __ss.str(); }\n")
 		} else {
 			io.WriteString(w, ind+stream+" << ")
 			e.emit(w)
