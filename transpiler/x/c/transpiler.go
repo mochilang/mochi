@@ -3142,6 +3142,10 @@ func (f *FieldExpr) emitExpr(w io.Writer) {
 	if vr, ok := f.Target.(*VarRef); ok {
 		if vt := varTypes[vr.Name]; vt != "" {
 			typ = vt
+		} else if mutatedParams != nil && mutatedParams[vr.Name] {
+			if _, ok := structTypes[typ]; ok && !strings.HasSuffix(typ, "*") {
+				typ += "*"
+			}
 		}
 	}
 	base := strings.TrimPrefix(typ, "struct ")
