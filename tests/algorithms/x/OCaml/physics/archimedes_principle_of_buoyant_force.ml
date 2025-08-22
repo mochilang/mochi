@@ -85,63 +85,38 @@ let _mem () =
 
 exception Return
 
-let _universal_gas_constant = 8.314462
-let rec pressure_of_gas_system moles kelvin volume =
+let _g = 9.80665
+let rec archimedes_principle fluid_density volume gravity =
   let __ret = ref 0.0 in
   (try
-  let moles = (Obj.magic moles : float) in
-  let kelvin = (Obj.magic kelvin : float) in
+  let fluid_density = (Obj.magic fluid_density : float) in
   let volume = (Obj.magic volume : float) in
-  if (((moles < float_of_int (0)) || (kelvin < float_of_int (0))) || (volume < float_of_int (0))) then (
-  (failwith ("Invalid inputs. Enter positive value."));
+  let gravity = (Obj.magic gravity : float) in
+  if (fluid_density <= 0.0) then (
+  (failwith ("Impossible fluid density"));
   );
-  __ret := (Obj.magic ((((moles *. kelvin) *. _universal_gas_constant) /. volume)) : float); raise Return
+  if (volume <= 0.0) then (
+  (failwith ("Impossible object volume"));
+  );
+  if (gravity < 0.0) then (
+  (failwith ("Impossible gravity"));
+  );
+  __ret := (Obj.magic (((fluid_density *. volume) *. gravity)) : float); raise Return
   with Return -> !__ret)
 
-and volume_of_gas_system moles kelvin pressure =
+and archimedes_principle_default fluid_density volume =
   let __ret = ref 0.0 in
   (try
-  let moles = (Obj.magic moles : float) in
-  let kelvin = (Obj.magic kelvin : float) in
-  let pressure = (Obj.magic pressure : float) in
-  if (((moles < float_of_int (0)) || (kelvin < float_of_int (0))) || (pressure < float_of_int (0))) then (
-  (failwith ("Invalid inputs. Enter positive value."));
-  );
-  __ret := (Obj.magic ((((moles *. kelvin) *. _universal_gas_constant) /. pressure)) : float); raise Return
-  with Return -> !__ret)
-
-and temperature_of_gas_system moles volume pressure =
-  let __ret = ref 0.0 in
-  (try
-  let moles = (Obj.magic moles : float) in
+  let fluid_density = (Obj.magic fluid_density : float) in
   let volume = (Obj.magic volume : float) in
-  let pressure = (Obj.magic pressure : float) in
-  if (((moles < float_of_int (0)) || (volume < float_of_int (0))) || (pressure < float_of_int (0))) then (
-  (failwith ("Invalid inputs. Enter positive value."));
-  );
-  __ret := (Obj.magic (((pressure *. volume) /. (moles *. _universal_gas_constant))) : float); raise Return
-  with Return -> !__ret)
-
-and moles_of_gas_system kelvin volume pressure =
-  let __ret = ref 0.0 in
-  (try
-  let kelvin = (Obj.magic kelvin : float) in
-  let volume = (Obj.magic volume : float) in
-  let pressure = (Obj.magic pressure : float) in
-  if (((kelvin < float_of_int (0)) || (volume < float_of_int (0))) || (pressure < float_of_int (0))) then (
-  (failwith ("Invalid inputs. Enter positive value."));
-  );
-  __ret := (Obj.magic (((pressure *. volume) /. (kelvin *. _universal_gas_constant))) : float); raise Return
+  let res = archimedes_principle (Obj.repr (fluid_density)) (Obj.repr (volume)) (Obj.repr (_g)) in
+  __ret := (Obj.magic (res) : float); raise Return
   with Return -> !__ret)
 
 
 let () =
   let bench_mem_start = _mem () in
   let bench_start = _now () in
-  print_endline (string_of_float (pressure_of_gas_system (Obj.repr (2.0)) (Obj.repr (100.0)) (Obj.repr (5.0))));
-  print_endline (string_of_float (volume_of_gas_system (Obj.repr (0.5)) (Obj.repr (273.0)) (Obj.repr (0.004))));
-  print_endline (string_of_float (temperature_of_gas_system (Obj.repr (2.0)) (Obj.repr (100.0)) (Obj.repr (5.0))));
-  print_endline (string_of_float (moles_of_gas_system (Obj.repr (100.0)) (Obj.repr (5.0)) (Obj.repr (10.0))));
   let bench_finish = _now () in
   let bench_mem_end = _mem () in
   let bench_dur = (bench_finish - bench_start) / 1000 in

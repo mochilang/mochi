@@ -1694,8 +1694,9 @@ func (c *ExprCall) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_bool ")
 		c.emit(w)
 	default:
-		io.WriteString(w, "__show ")
+		io.WriteString(w, "__show (Obj.repr (")
 		c.emit(w)
+		io.WriteString(w, "))")
 	}
 }
 
@@ -1745,9 +1746,9 @@ func (f *FuncCall) emitPrint(w io.Writer) {
 		f.emit(w)
 		io.WriteString(w, ")")
 	default:
-		io.WriteString(w, "__show (")
+		io.WriteString(w, "__show (Obj.repr (")
 		f.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	}
 }
 
@@ -1843,10 +1844,10 @@ func (m *MapLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, "; ")
 		}
-               io.WriteString(w, "(")
-               io.WriteString(w, "__str (Obj.repr (")
-               it.Key.emit(w)
-               io.WriteString(w, ")), ")
+		io.WriteString(w, "(")
+		io.WriteString(w, "__str (Obj.repr (")
+		it.Key.emit(w)
+		io.WriteString(w, ")), ")
 		if m.Dynamic {
 			io.WriteString(w, "Obj.repr (")
 			it.Value.emit(w)
@@ -1913,22 +1914,18 @@ type MapIndexExpr struct {
 
 func (mi *MapIndexExpr) emit(w io.Writer) {
 	if mi.Dyn {
-               io.WriteString(w, "(match List.assoc_opt (__str (Obj.repr (")
-               mi.Key.emit(w)
-               io.WriteString(w, "))) (")
+		io.WriteString(w, "(match List.assoc_opt (__str (Obj.repr (")
+		mi.Key.emit(w)
+		io.WriteString(w, "))) (")
 		mi.Map.emit(w)
 		io.WriteString(w, ") with Some v -> (Obj.obj (v : Obj.t) : ")
 		if strings.HasPrefix(mi.Typ, "map-") {
-			parts := strings.SplitN(strings.TrimPrefix(mi.Typ, "map-"), "-", 2)
+			inner := strings.TrimPrefix(mi.Typ, "map-")
 			keyTyp := "string"
-			valTyp := "Obj.t"
-			if len(parts) == 2 {
-				keyTyp = ocamlType(parts[0])
-				valTyp = ocamlType(parts[1])
-			} else if mi.KeyTyp != "" {
+			if mi.KeyTyp != "" {
 				keyTyp = ocamlType(mi.KeyTyp)
 			}
-			io.WriteString(w, "( "+keyTyp+" * "+valTyp+" ) list")
+			io.WriteString(w, "( "+keyTyp+" * "+ocamlType(inner)+" ) list")
 		} else {
 			io.WriteString(w, ocamlType(mi.Typ))
 		}
@@ -1936,11 +1933,17 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		io.WriteString(w, zeroValue(mi.Typ))
 		io.WriteString(w, ")")
 	} else {
-               io.WriteString(w, "(match List.assoc_opt (__str (Obj.repr (")
-               mi.Key.emit(w)
-               io.WriteString(w, "))) (")
+		io.WriteString(w, "(match List.assoc_opt (__str (Obj.repr (")
+		mi.Key.emit(w)
+		io.WriteString(w, "))) (")
 		mi.Map.emit(w)
-		io.WriteString(w, ") with Some v -> v | None -> ")
+		io.WriteString(w, ") with Some v -> ")
+		if ocamlType(mi.Typ) != "Obj.t" {
+			fmt.Fprintf(w, "(Obj.magic v : %s)", ocamlType(mi.Typ))
+		} else {
+			io.WriteString(w, "v")
+		}
+		io.WriteString(w, " | None -> ")
 		def := zeroValue(mi.Typ)
 		if def == "\"\"" {
 			if n, ok := mi.Map.(*Name); ok && strings.HasPrefix(n.Typ, "map-list") {
@@ -2276,18 +2279,18 @@ func (in *InExpr) emit(w io.Writer) {
 	case "string":
 		(&StringContainsBuiltin{Str: in.Coll, Sub: in.Item}).emit(w)
 	case "map":
-               io.WriteString(w, "(List.mem_assoc (__str (Obj.repr (")
-               in.Item.emit(w)
-               io.WriteString(w, "))) ")
-               in.Coll.emit(w)
-               io.WriteString(w, ")")
+		io.WriteString(w, "(List.mem_assoc (__str (Obj.repr (")
+		in.Item.emit(w)
+		io.WriteString(w, "))) ")
+		in.Coll.emit(w)
+		io.WriteString(w, ")")
 	default: // list
 		if strings.HasPrefix(in.Typ, "map-") || strings.HasPrefix(in.Typ, "map{") || strings.HasPrefix(in.Typ, "map-dyn{") {
-                       io.WriteString(w, "(List.mem_assoc (__str (Obj.repr (")
-                       in.Item.emit(w)
-                       io.WriteString(w, "))) ")
-                       in.Coll.emit(w)
-                       io.WriteString(w, ")")
+			io.WriteString(w, "(List.mem_assoc (__str (Obj.repr (")
+			in.Item.emit(w)
+			io.WriteString(w, "))) ")
+			in.Coll.emit(w)
+			io.WriteString(w, ")")
 			return
 		}
 		io.WriteString(w, "(List.mem ")
@@ -2339,10 +2342,10 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 
 func (mu *MapUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
-       io.WriteString(w, "(")
-       io.WriteString(w, "__str (Obj.repr (")
-       mu.Key.emit(w)
-       io.WriteString(w, ")), ")
+	io.WriteString(w, "(")
+	io.WriteString(w, "__str (Obj.repr (")
+	mu.Key.emit(w)
+	io.WriteString(w, ")), ")
 	if mu.Dyn {
 		io.WriteString(w, "Obj.repr (Obj.magic (")
 		mu.Value.emit(w)
@@ -2352,9 +2355,9 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	} else {
 		mu.Value.emit(w)
 	}
-       io.WriteString(w, ") :: List.remove_assoc (__str (Obj.repr (")
-       mu.Key.emit(w)
-       io.WriteString(w, "))) ")
+	io.WriteString(w, ") :: List.remove_assoc (__str (Obj.repr (")
+	mu.Key.emit(w)
+	io.WriteString(w, "))) ")
 	if mu.Dyn {
 		if mi, ok := mu.Map.(*MapIndexExpr); ok && mi.Dyn {
 			// Map expression already yields a properly typed list.
