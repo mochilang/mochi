@@ -3210,7 +3210,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			finalVarTypes[alias] = t
 		}
-		if prog != nil && blockDepth == 0 && len(prog.Stmts) == 0 {
+		if prog != nil && blockDepth == 0 {
 			for m := range mutatedVars {
 				if exprUsesVar(val, m) {
 					return &LetStmt{Name: alias, Value: val}, nil
@@ -3330,7 +3330,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				delete(mapVars, s.Var.Name)
 			}
 		}
-		if prog != nil && blockDepth == 0 && len(prog.Stmts) == 0 {
+		if prog != nil && blockDepth == 0 {
 			for m := range mutatedVars {
 				if exprUsesVar(val, m) {
 					return &VarStmt{Name: alias, Value: val}, nil
