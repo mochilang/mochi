@@ -67,7 +67,7 @@ $__start = _now();
   $lit = $c['names'][$i];
   $sym = (substr($lit, strlen($lit) - 1, strlen($lit) - (strlen($lit) - 1)) == '\'' ? substr($lit, 0, 2) : $lit . '\'');
   if (isset($c['literals'][$sym])) {
-  return ['value' => 1, 'clause' => $c];
+  return ['clause' => $c, 'value' => 1];
 }
   $i = $i + 1;
 };
@@ -77,10 +77,10 @@ $__start = _now();
   $lit = $c['names'][$i];
   $value = $c['literals'][$lit];
   if ($value == 1) {
-  return ['value' => 1, 'clause' => $c];
+  return ['clause' => $c, 'value' => 1];
 }
   if ($value == 0 - 1) {
-  return ['value' => 0 - 1, 'clause' => $c];
+  return ['clause' => $c, 'value' => 0 - 1];
 }
   $i = $i + 1;
 };
@@ -93,7 +93,7 @@ $__start = _now();
 }
   $i = $i + 1;
 };
-  return ['value' => $any_true, 'clause' => $c];
+  return ['clause' => $c, 'value' => $any_true];
 };
   function new_formula($cs) {
   global $clause1, $clause2, $clauses, $formula, $formula_str, $model, $result, $symbols;
@@ -119,7 +119,7 @@ $__start = _now();
   $ev = evaluate_clause($clauses[$i], $model);
   $clauses[$i] = $ev['clause'];
   if ($ev['value'] == 0) {
-  return ['sat' => false, 'model' => []];
+  return ['model' => [], 'sat' => false];
 } else {
   if ($ev['value'] == 0 - 1) {
   $all_true = false;
@@ -128,7 +128,7 @@ $__start = _now();
   $i = $i + 1;
 };
   if ($all_true) {
-  return ['sat' => true, 'model' => $model];
+  return ['model' => $model, 'sat' => true];
 }
   $p = $symbols[0];
   $rest = remove_symbol($symbols, $p);
@@ -188,7 +188,7 @@ $__start = _now();
   echo rtrim('The formula ' . $formula_str . ' is not satisfiable.'), PHP_EOL;
 }
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

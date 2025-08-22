@@ -58,7 +58,7 @@ $__start = _now();
   return $result;
 };
   function new_dataset($images, $labels) {
-  return ['images' => $images, 'labels' => $labels, 'num_examples' => count($images), 'index_in_epoch' => 0, 'epochs_completed' => 0];
+  return ['epochs_completed' => 0, 'images' => $images, 'index_in_epoch' => 0, 'labels' => $labels, 'num_examples' => count($images)];
 };
   function next_batch($ds, $batch_size) {
   $start = $ds['index_in_epoch'];
@@ -71,13 +71,13 @@ $__start = _now();
   $labels_new = array_slice($ds['labels'], 0, $new_index);
   $batch_images = array_merge($images_rest, $images_new);
   $batch_labels = array_merge($labels_rest, $labels_new);
-  $new_ds = ['images' => $ds['images'], 'labels' => $ds['labels'], 'num_examples' => $ds['num_examples'], 'index_in_epoch' => $new_index, 'epochs_completed' => $ds['epochs_completed'] + 1];
+  $new_ds = ['epochs_completed' => $ds['epochs_completed'] + 1, 'images' => $ds['images'], 'index_in_epoch' => $new_index, 'labels' => $ds['labels'], 'num_examples' => $ds['num_examples']];
   return ['dataset' => $new_ds, 'images' => $batch_images, 'labels' => $batch_labels];
 } else {
   $end = $start + $batch_size;
   $batch_images = array_slice($ds['images'], $start, $end - $start);
   $batch_labels = array_slice($ds['labels'], $start, $end - $start);
-  $new_ds = ['images' => $ds['images'], 'labels' => $ds['labels'], 'num_examples' => $ds['num_examples'], 'index_in_epoch' => $end, 'epochs_completed' => $ds['epochs_completed']];
+  $new_ds = ['epochs_completed' => $ds['epochs_completed'], 'images' => $ds['images'], 'index_in_epoch' => $end, 'labels' => $ds['labels'], 'num_examples' => $ds['num_examples']];
   return ['dataset' => $new_ds, 'images' => $batch_images, 'labels' => $batch_labels];
 }
 };
@@ -91,7 +91,7 @@ $__start = _now();
   $train = new_dataset($train_images_rest, $train_labels_rest);
   $validation = new_dataset($validation_images, $validation_labels);
   $testset = new_dataset($test_images, $test_labels);
-  return ['train' => $train, 'validation' => $validation, 'test_ds' => $testset];
+  return ['test_ds' => $testset, 'train' => $train, 'validation' => $validation];
 };
   function main() {
   $train_images = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]];
@@ -115,7 +115,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

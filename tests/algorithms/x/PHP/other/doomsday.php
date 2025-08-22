@@ -66,7 +66,7 @@ $__start = _now();
   echo rtrim(get_week_day(1870, 8, 13)), PHP_EOL;
   echo rtrim(get_week_day(2040, 3, 14)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

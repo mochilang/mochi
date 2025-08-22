@@ -58,17 +58,17 @@ $__start = _now();
   $days_to_add = fmod((19.0 * (floatval($metonic_cycle)) + $secular_moon_shift), 30.0);
   $days_from_phm_to_sunday = fmod((2.0 * (floatval($julian_leap_year)) + 4.0 * (floatval($non_leap_year)) + 6.0 * $days_to_add + $century_starting_point), 7.0);
   if ($days_to_add == 29.0 && $days_from_phm_to_sunday == 6.0) {
-  return ['month' => 4, 'day' => 19];
+  return ['day' => 19, 'month' => 4];
 }
   if ($days_to_add == 28.0 && $days_from_phm_to_sunday == 6.0) {
-  return ['month' => 4, 'day' => 18];
+  return ['day' => 18, 'month' => 4];
 }
   $offset = intval(($days_to_add + $days_from_phm_to_sunday));
   $total = 22 + $offset;
   if ($total > 31) {
-  return ['month' => 4, 'day' => $total - 31];
+  return ['day' => $total - 31, 'month' => 4];
 }
-  return ['month' => 3, 'day' => $total];
+  return ['day' => $total, 'month' => 3];
 };
   function format_date($year, $d) {
   global $e, $i, $y, $years;
@@ -85,7 +85,7 @@ $__start = _now();
   $i = $i + 1;
 }
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

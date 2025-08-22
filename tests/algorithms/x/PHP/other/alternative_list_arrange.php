@@ -99,7 +99,7 @@ $__start = _now();
   $example4 = alternative_list_arrange([from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)], []);
   echo rtrim(list_to_string($example4)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

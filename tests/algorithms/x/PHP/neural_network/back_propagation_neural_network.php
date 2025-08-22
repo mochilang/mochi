@@ -211,7 +211,7 @@ $__start = _now();
 };
   function init_layer($units, $back_units, $lr) {
   global $seed;
-  return ['units' => $units, 'weight' => random_matrix($units, $back_units), 'bias' => random_vector($units), 'output' => [], 'xdata' => [], 'learn_rate' => $lr];
+  return ['bias' => random_vector($units), 'learn_rate' => $lr, 'output' => [], 'units' => $units, 'weight' => random_matrix($units, $back_units), 'xdata' => []];
 };
   function forward($layers, $x) {
   global $seed;
@@ -312,7 +312,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
