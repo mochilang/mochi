@@ -250,6 +250,7 @@ type Program struct {
 	UseMem              bool
 	NeedBenchNow        bool
 	UseInput            bool
+	UseReadFile         bool
 	UseBigRat           bool
 	UseSHA256           bool
 	NeedPadStart        bool
@@ -258,6 +259,7 @@ type Program struct {
 	NeedToFloat         bool
 	Maps                []MapLitDef
 	VarTypes            map[string]string
+	DataDir             string
 }
 
 func collectVarNames(e Expr, set map[string]struct{}) {
@@ -617,6 +619,18 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if strings.EqualFold(c.Name, "ord") && len(c.Args) == 1 {
+		if s, ok := c.Args[0].(*SliceExpr); ok && s.String {
+			io.WriteString(w, "Ord(")
+			idx := s.Start
+			if idx == nil {
+				idx = &IntLit{Value: 0}
+			}
+			(&IndexExpr{Target: s.Target, Index: idx, String: true}).emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if c.Name == "Length" && len(c.Args) == 1 {
 		t := resolveAlias(inferType(c.Args[0]))
 		if strings.HasPrefix(t, "specialize TFPGMap") {
@@ -686,13 +700,47 @@ func (r *RealLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", r.Value) }
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) {
-	escaped := strings.ReplaceAll(s.Value, "'", "''")
-	parts := strings.Split(escaped, "\n")
-	for i, p := range parts {
-		if i > 0 {
-			io.WriteString(w, " + #10 + ")
+	if s.Value == "" {
+		io.WriteString(w, "''")
+		return
+	}
+	var buf strings.Builder
+	first := true
+	writePart := func(part string) {
+		if !first {
+			io.WriteString(w, " + ")
 		}
-		fmt.Fprintf(w, "'%s'", p)
+		fmt.Fprintf(w, "'%s'", strings.ReplaceAll(part, "'", "''"))
+		first = false
+	}
+	for _, r := range s.Value {
+		switch r {
+		case '\n':
+			if buf.Len() > 0 {
+				writePart(buf.String())
+				buf.Reset()
+			}
+			if !first {
+				io.WriteString(w, " + ")
+			}
+			io.WriteString(w, "#10")
+			first = false
+		case '\r':
+			if buf.Len() > 0 {
+				writePart(buf.String())
+				buf.Reset()
+			}
+			if !first {
+				io.WriteString(w, " + ")
+			}
+			io.WriteString(w, "#13")
+			first = false
+		default:
+			buf.WriteRune(r)
+		}
+	}
+	if buf.Len() > 0 {
+		writePart(buf.String())
 	}
 }
 
@@ -1531,6 +1579,9 @@ func (p *Program) Emit() []byte {
 		alias := p.ArrayAliases[elem]
 		fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
 	}
+	if p.UseReadFile && p.DataDir != "" {
+		fmt.Fprintf(&buf, "var _dataDir: string = '%s';\n", strings.ReplaceAll(p.DataDir, "'", "''"))
+	}
 	if p.UseNow {
 		buf.WriteString("var _nowSeed: int64 = 0;\n")
 		buf.WriteString("var _nowSeeded: boolean = false;\n")
@@ -1545,6 +1596,9 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseInput {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
+	}
+	if p.UseReadFile {
+		buf.WriteString("function _read_file(path: string): string;\nvar f: Text; line, out, pth: string;\nbegin\n  pth := path;\n  if (_dataDir <> '') and (not FileExists(pth)) then pth := _dataDir + '/' + path;\n  out := '';\n  if FileExists(pth) then begin\n    Assign(f, pth);\n    Reset(f);\n    while not EOF(f) do begin\n      ReadLn(f, line);\n      if out <> '' then out := out + #10;\n      out := out + line;\n    end;\n    Close(f);\n  end;\n  _read_file := out;\nend;\n")
 	}
 	buf.WriteString("procedure panic(msg: string);\nbegin\n  writeln(msg);\n  halt(1);\nend;\n")
 	buf.WriteString("procedure error(msg: string);\nbegin\n  panic(msg);\nend;\n")
@@ -1825,7 +1879,7 @@ end;
 // Transpile converts a Mochi AST to our Pascal AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	_ = env
-	pr := &Program{}
+	pr := &Program{DataDir: filepath.Dir(prog.Pos.Filename)}
 	currProg = pr
 	nameStack = []map[string]string{{}}
 	funcNames = make(map[string]struct{})
@@ -5221,6 +5275,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "input" && len(args) == 0 {
 			currProg.UseInput = true
 			return &CallExpr{Name: "_input", Args: nil}, nil
+		} else if name == "read_file" && len(args) == 1 {
+			currProg.UseSysUtils = true
+			currProg.UseReadFile = true
+			return &CallExpr{Name: "_read_file", Args: args}, nil
 		} else if name == "padStart" && len(args) == 3 {
 			currProg.NeedPadStart = true
 			currProg.UseSysUtils = true
