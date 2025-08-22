@@ -113,12 +113,7 @@ def _str(x)
     if x == x.to_i
       x.to_i.to_s
     else
-      s = x.to_s
-      if s.include?('e') || s.include?('E')
-        s
-      else
-        s
-      end
+      sprintf('%.17g', x)
     end
   else
     x.to_s
