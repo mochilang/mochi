@@ -686,10 +686,10 @@ func (ae *AppendExpr) emit(w io.Writer) {
 	tmp := uniqueName("_tmp")
 	lbl := newLabel()
 	fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); ", lbl, tmp, elem)
-	fmt.Fprintf(w, "%s.appendSlice(std.heap.page_allocator, @as([]const %s, ", tmp, elem)
+	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
 	ae.List.emit(w)
 	io.WriteString(w, ")) catch |err| handleError(err); ")
-	fmt.Fprintf(w, "%s.append(std.heap.page_allocator, ", tmp)
+	fmt.Fprintf(w, "%s.append(", tmp)
 	valType := zigTypeFromExpr(ae.Value)
 	if strings.HasPrefix(elem, "[]") {
 		if ll, ok := ae.Value.(*ListLit); ok {
@@ -709,7 +709,7 @@ func (ae *AppendExpr) emit(w io.Writer) {
 		ae.Value.emit(w)
 	}
 	io.WriteString(w, ") catch |err| handleError(err); ")
-	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice(std.heap.page_allocator) catch |err| handleError(err)); }", lbl, tmp)
+	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch |err| handleError(err)); }", lbl, tmp)
 }
 
 // ConcatExpr concatenates two lists.
@@ -733,21 +733,21 @@ func (ce *ConcatExpr) emit(w io.Writer) {
 	tmp := uniqueName("_tmp")
 	lbl := newLabel()
 	fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); ", lbl, tmp, elem)
-	fmt.Fprintf(w, "%s.appendSlice(std.heap.page_allocator, @as([]const %s, ", tmp, elem)
+	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
 	if ll, ok := ce.A.(*ListLit); ok {
 		ll.emit(w)
 	} else {
 		ce.A.emit(w)
 	}
 	io.WriteString(w, ")) catch |err| handleError(err); ")
-	fmt.Fprintf(w, "%s.appendSlice(std.heap.page_allocator, @as([]const %s, ", tmp, elem)
+	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
 	if ll, ok := ce.B.(*ListLit); ok {
 		ll.emit(w)
 	} else {
 		ce.B.emit(w)
 	}
 	io.WriteString(w, ")) catch |err| handleError(err); ")
-	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice(std.heap.page_allocator) catch |err| handleError(err)); }", lbl, tmp)
+	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch |err| handleError(err)); }", lbl, tmp)
 }
 
 type FieldExpr struct {
@@ -1867,7 +1867,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * @as(i64, @intCast(std.heap.page_size_min));\n")
+		buf.WriteString("        return pages * @as(i64, @intCast(std.mem.page_size));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -3011,10 +3011,25 @@ func (l *ListLit) emit(w io.Writer) {
 
 func (i *IndexExpr) emit(w io.Writer) {
 	if i.Map {
+		elem := i.ElemType
+		if elem == "" {
+			if tgtStr, ok := exprToString(i.Target); ok {
+				if t, ok2 := varTypes[tgtStr]; ok2 {
+					if pos := strings.Index(t, ","); pos != -1 {
+						elem = strings.TrimSpace(strings.TrimSuffix(t[pos+1:], ")"))
+					}
+				}
+			}
+			if elem == "" {
+				elem = "i64"
+			}
+		}
+		lbl := newLabel()
+		fmt.Fprintf(w, "(%s: { if (", lbl)
 		i.Target.emit(w)
 		io.WriteString(w, ".get(")
 		i.Index.emit(w)
-		io.WriteString(w, ").?")
+		fmt.Fprintf(w, ")) |v| { break :%s v; } break :%s %s; })", lbl, lbl, zeroValue(elem))
 		return
 	}
 	targetType := zigTypeFromExpr(i.Target)

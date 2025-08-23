@@ -1,0 +1,16 @@
+signal: aborted
+Segmentation fault at address 0x1001a30
+/workspace/mochi/tests/algorithms/transpiler/Zig/project_euler/problem_018/solution.zig:20:124: 0x1035324 in solution (solution)
+            triangle[_idx(triangle.len, i)][_idx(triangle[_idx(triangle.len, i)].len, j)] = triangle[_idx(triangle.len, i)][_idx(triangle[_idx(triangle.len, i)].len, j)] +% max_val;
+                                                                                                                           ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/project_euler/problem_018/solution.zig:43:49: 0x103350f in main (solution)
+        std.debug.print("{s}\n", .{_str(solution())});
+                                                ^
+/tmp/zig-linux-x86_64-0.13.0/lib/std/start.zig:514:22: 0x1033119 in main (solution)
+            root.main();
+                     ^
+???:?:?: 0x7f897c5181c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f897c5181c9` was not available, trace may be incomplete
+
+???:?:?: 0x7f897c51828a in ??? (libc.so.6)
+???:?:?: 0x1032dc4 in ??? (???)
