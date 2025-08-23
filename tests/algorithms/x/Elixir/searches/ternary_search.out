@@ -1,0 +1,25 @@
+warning: variable "left" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 73 │       {left, right} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/ternary_search.exs:73:8: Main.ite_ternary_search/2
+
+    warning: variable "right" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 73 │       {left, right} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/ternary_search.exs:73:14: Main.ite_ternary_search/2
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/ternary_search.exs:3: Main (module)
+
+-1
+4
+-1
+4

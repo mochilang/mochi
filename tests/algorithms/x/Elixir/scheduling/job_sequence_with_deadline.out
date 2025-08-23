@@ -1,0 +1,16 @@
+warning: variable "pos" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 89 │       {_, pos, result} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/job_sequence_with_deadline.exs:89:11: Main.max_tasks/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/job_sequence_with_deadline.exs:3: Main (module)
+
+[2, 0]
+[3, 2]

@@ -1,0 +1,13 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/quick_select.exs:3: Main (module)
+
+54
+4
+4
+7
+3.0
+6.0

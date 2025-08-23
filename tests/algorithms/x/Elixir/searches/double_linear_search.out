@@ -1,0 +1,22 @@
+warning: variable "end_ind" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {end_ind, start_ind} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/double_linear_search.exs:30:8: Main.double_linear_search/2
+
+    warning: variable "start_ind" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {end_ind, start_ind} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/double_linear_search.exs:30:17: Main.double_linear_search/2
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/double_linear_search.exs:3: Main (module)
+
+40

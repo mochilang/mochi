@@ -1,0 +1,15 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/linear_search.exs:3: Main (module)
+
+0
+4
+1
+-1
+0
+4
+1
+-1

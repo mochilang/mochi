@@ -1,0 +1,29 @@
+warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {cur, length, seen} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_074/sol2.exs:50:8: Main.chain_len/2
+
+    warning: variable "seen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {cur, length, seen} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_074/sol2.exs:50:21: Main.chain_len/2
+
+    warning: variable "start" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │       {count, start} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_074/sol2.exs:82:15: Main.solution/2
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_074/sol2.exs:3: Main (module)
+
+402

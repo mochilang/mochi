@@ -1,0 +1,36 @@
+warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 37 │             {totients, x} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_070/sol1.exs:37:24: Main.get_totients/1
+
+     warning: variable "n1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {count1, n1} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_070/sol1.exs:109:16: Main.has_same_digits/2
+
+     warning: variable "n2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │       {count2, n2} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_070/sol1.exs:125:16: Main.has_same_digits/2
+
+     warning: variable "min_denominator" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │       {_, min_denominator, min_numerator} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_070/sol1.exs:176:11: Main.solution/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_070/sol1.exs:3: Main (module)
+
+4435

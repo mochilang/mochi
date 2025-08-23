@@ -1,0 +1,27 @@
+warning: variable "cap" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 252 │       {cap, _, out} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scripts/build_directory_md.exs:252:8: Main.title_case/1
+
+     warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 412 │           res = if ext == ".py" || ext == ".ipynb" do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scripts/build_directory_md.exs:412:11: Main.good_file_paths/1
+
+     warning: variable "old_path" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 467 │       {_, old_path} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scripts/build_directory_md.exs:467:11: Main.print_directory_md/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/scripts/build_directory_md.exs:3: Main (module)

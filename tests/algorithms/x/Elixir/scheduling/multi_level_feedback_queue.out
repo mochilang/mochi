@@ -1,0 +1,60 @@
+warning: variable "mlfq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 188 │             mlfq = Map.put(mlfq, :current_time, cp.arrival_time)
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/multi_level_feedback_queue.exs:188:13: Main.first_come_first_served/2
+
+     warning: variable "mlfq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 207 │       mlfq = Map.put(mlfq, :finish_queue, (mlfq.finish_queue ++ finished))
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/multi_level_feedback_queue.exs:207:7: Main.first_come_first_served/2
+
+     warning: variable "rq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 201 │       {finished, rq} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/multi_level_feedback_queue.exs:201:18: Main.first_come_first_served/2
+
+     warning: variable "mlfq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 224 │             mlfq = Map.put(mlfq, :current_time, cp.arrival_time)
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/multi_level_feedback_queue.exs:224:13: Main.round_robin/3
+
+     warning: variable "cp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 227 │           {cp, finished, rq} = if cp.burst_time > time_slice do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/multi_level_feedback_queue.exs:227:12: Main.round_robin/3
+
+     warning: variable "mlfq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 253 │       mlfq = Map.put(mlfq, :finish_queue, (mlfq.finish_queue ++ finished))
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/multi_level_feedback_queue.exs:253:7: Main.round_robin/3
+
+     warning: variable "mlfq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 265 │           mlfq = Map.put(mlfq, :ready_queue, rr.ready)
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/multi_level_feedback_queue.exs:265:11: Main.multi_level_feedback_queue/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/multi_level_feedback_queue.exs:3: Main (module)
+
+waiting time:			[0, 0, 0, 0]
+completion time:		[0, 0, 0, 0]
+turnaround time:		[0, 0, 0, 0]
+sequence of finished processes:	[]

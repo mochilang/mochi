@@ -1,0 +1,43 @@
+error: invalid use of _. _ can only be used inside patterns to ignore values and cannot be used in expressions. Make sure you are inside a pattern or change it accordingly
+     │
+ 109 │                   {_, improved, max_change, min_change, next}
+     │                    ^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/hill_climbing.exs:109:20: Main.hill_climbing/7
+
+     warning: variable "max_change" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 118 │             {_, improved, max_change, min_change, next} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/hill_climbing.exs:118:27: Main.hill_climbing/7
+
+     warning: variable "min_change" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 118 │             {_, improved, max_change, min_change, next} = try do
+     │                                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/hill_climbing.exs:118:39: Main.hill_climbing/7
+
+     warning: variable "iterations" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 140 │       {current, iterations, solution_found, visited} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/hill_climbing.exs:140:17: Main.hill_climbing/7
+
+     warning: variable "solution_found" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 140 │       {current, iterations, solution_found, visited} = try do
+     │                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/hill_climbing.exs:140:29: Main.hill_climbing/7
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 140 │       {current, iterations, solution_found, visited} = try do
+     │                                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/hill_climbing.exs:140:45: Main.hill_climbing/7
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/searches/hill_climbing.exs: cannot compile module Main (errors have been logged)

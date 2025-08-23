@@ -1,0 +1,53 @@
+warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/simulated_annealing.exs:15:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 16 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/simulated_annealing.exs:16:15: Main._now/0
+
+     warning: variable "neighbors" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 209 │             {found_next, neighbors, next_state} = try do
+     │                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/simulated_annealing.exs:209:26: Main.simulated_annealing/10
+
+     warning: variable "current_state" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 232 │       {best_state, current_state, current_temp, search_end} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/simulated_annealing.exs:232:20: Main.simulated_annealing/10
+
+     warning: variable "current_temp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 232 │       {best_state, current_state, current_temp, search_end} = try do
+     │                                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/simulated_annealing.exs:232:35: Main.simulated_annealing/10
+
+     warning: variable "search_end" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 232 │       {best_state, current_state, current_temp, search_end} = try do
+     │                                                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/simulated_annealing.exs:232:49: Main.simulated_annealing/10
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/simulated_annealing.exs:3: Main (module)
+
+min1 2448.0
+max1 12500.0
+min2 237.0
+max2 145134.0

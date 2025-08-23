@@ -1,0 +1,18 @@
+warning: variable "pass" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │       {pass, sequence} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/bead_sort.exs:66:8: Main.bead_sort/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/bead_sort.exs:3: Main (module)
+
+[1, 4, 5, 6, 11, 12]
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 3, 4, 5]
+[1, 2, 8]

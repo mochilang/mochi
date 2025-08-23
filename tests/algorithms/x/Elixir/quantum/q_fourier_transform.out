@@ -1,0 +1,29 @@
+warning: variable "num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │       {num, res, w} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/quantum/q_fourier_transform.exs:19:8: Main.to_bits/2
+
+    warning: variable "w" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │       {num, res, w} = try do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/quantum/q_fourier_transform.exs:19:18: Main.to_bits/2
+
+    warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {p, states} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/quantum/q_fourier_transform.exs:50:8: Main.quantum_fourier_transform/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/quantum/q_fourier_transform.exs:3: Main (module)
+
+Total count for quantum fourier transform state is: %{"000" => 1250, "001" => 1250, "010" => 1250, "011" => 1250, "100" => 1250, "101" => 1250, "110" => 1250, "111" => 1250}
