@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-22 16:23 UTC
+Last updated: 2025-08-23 06:57 UTC
 
-## Algorithms Golden Test Checklist (1062/1077)
+## Algorithms Golden Test Checklist (1064/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -996,56 +996,56 @@ Last updated: 2025-08-22 16:23 UTC
 | 987 | sorts/wiggle_sort | ✓ | 2.111ms | 292.3 KB |
 | 988 | strings/aho_corasick | ✓ | 1.148ms | 27.9 KB |
 | 989 | strings/alternative_string_arrange | ✓ | 524µs | 23.0 KB |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie | ✓ | 560µs | 15.5 KB |
-| 992 | strings/barcode_validator | ✓ | 997µs | 42.8 KB |
-| 993 | strings/bitap_string_match | ✓ | 1.442ms | 45.1 KB |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case | ✓ | 2.304ms | 34.4 KB |
-| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 1.953ms | 27.6 KB |
-| 997 | strings/capitalize | ✓ | 852µs | 26.1 KB |
-| 998 | strings/check_anagrams | ✓ | 1.11ms | 288.9 KB |
-| 999 | strings/count_vowels | ✓ | 1.739ms | 31.9 KB |
-| 1000 | strings/credit_card_validator | ✓ | 1.216ms | 532.5 KB |
-| 1001 | strings/damerau_levenshtein_distance | ✓ | 1.74ms | 53.6 KB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 3.219ms | 36.0 KB |
-| 1003 | strings/dna | ✓ | 987µs | 26.7 KB |
-| 1004 | strings/edit_distance | ✓ | 14.972ms | 372.4 KB |
-| 1005 | strings/frequency_finder | ✓ | 5.252ms | 59.6 KB |
-| 1006 | strings/hamming_distance | ✓ | 1.048ms | 20.4 KB |
-| 1007 | strings/indian_phone_validator | ✓ | 1.339ms | 29.9 KB |
-| 1008 | strings/is_contains_unique_chars | ✓ | 2.939ms | 622.4 KB |
-| 1009 | strings/is_isogram | ✓ | 2.242ms | 27.6 KB |
-| 1010 | strings/is_pangram | ✓ | 2.311ms | 291.5 KB |
-| 1011 | strings/is_polish_national_id | ✓ | 1.328ms | 30.3 KB |
-| 1012 | strings/is_spain_national_id | ✓ | 2.39ms | 38.2 KB |
-| 1013 | strings/is_srilankan_phone_number | ✓ | 850µs | 16.2 KB |
-| 1014 | strings/is_valid_email_address | ✓ | 5.982ms | 165.7 KB |
-| 1015 | strings/jaro_winkler | ✓ | 1.72ms | 530.5 KB |
-| 1016 | strings/join | ✓ | 949µs | 30.0 KB |
-| 1017 | strings/knuth_morris_pratt | ✓ | 1.417ms | 528.7 KB |
-| 1018 | strings/levenshtein_distance | ✓ | 2.27ms | 537.1 KB |
-| 1019 | strings/lower | ✓ | 904µs | 24.7 KB |
-| 1020 | strings/manacher | ✓ | 1.194ms | 533.3 KB |
-| 1021 | strings/min_cost_string_conversion | ✓ | 2.298ms | 582.5 KB |
-| 1022 | strings/naive_string_search | ✓ | 1.045ms | 15.8 KB |
-| 1023 | strings/ngram | ✓ | 1.008ms | 21.8 KB |
-| 1024 | strings/palindrome | ✓ | 2.199ms | 44.6 KB |
-| 1025 | strings/pig_latin | ✓ | 968µs | 21.4 KB |
-| 1026 | strings/prefix_function | ✓ | 3.314ms | 37.4 KB |
-| 1027 | strings/rabin_karp | ✓ | 2.719ms | 29.4 KB |
-| 1028 | strings/remove_duplicate | ✓ | 1.694ms | 535.1 KB |
-| 1029 | strings/reverse_letters | ✓ | 1.845ms | 277.3 KB |
-| 1030 | strings/reverse_words | ✓ | 916µs | 19.8 KB |
-| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 1.334ms | 25.8 KB |
-| 1032 | strings/split | ✓ | 1.382ms | 28.1 KB |
-| 1033 | strings/string_switch_case | ✓ | 2.227ms | 65.9 KB |
-| 1034 | strings/strip | ✓ | 1.761ms | 537.2 KB |
-| 1035 | strings/text_justification | ✓ | 1.964ms | 35.0 KB |
-| 1036 | strings/title | ✓ | 3.6ms | 48.0 KB |
-| 1037 | strings/top_k_frequent_words | ✓ | 2.161ms | 30.6 KB |
-| 1038 | strings/upper | ✓ | 770µs | 21.8 KB |
-| 1039 | strings/wave_string | ✓ | 1.115ms | 22.9 KB |
+| 990 | strings/anagrams | ✓ | 571.223ms | 878.6 KB |
+| 991 | strings/autocomplete_using_trie | ✓ | 571.223ms | 16.2 KB |
+| 992 | strings/barcode_validator | ✓ | 571.223ms | 45.9 KB |
+| 993 | strings/bitap_string_match | ✓ | 571.223ms | 56.9 KB |
+| 994 | strings/boyer_moore_search | ✓ | 571.223ms | 3.0 KB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 571.223ms | 1.8 MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 571.223ms | 30.7 KB |
+| 997 | strings/capitalize | ✓ | 571.223ms | 26.0 KB |
+| 998 | strings/check_anagrams | ✓ | 571.223ms | 564.0 KB |
+| 999 | strings/count_vowels | ✓ | 571.223ms | 86.5 KB |
+| 1000 | strings/credit_card_validator | ✓ | 571.223ms | 276.2 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 571.223ms | 151.2 KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 571.223ms | 37.5 KB |
+| 1003 | strings/dna | ✓ | 571.223ms | 26.5 KB |
+| 1004 | strings/edit_distance | ✓ | 571.223ms | 372.2 KB |
+| 1005 | strings/frequency_finder | ✓ | 571.223ms | 162.6 KB |
+| 1006 | strings/hamming_distance | ✓ | 571.223ms | 23.3 KB |
+| 1007 | strings/indian_phone_validator | ✓ | 571.223ms | 33.9 KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 571.223ms | 114.7 KB |
+| 1009 | strings/is_isogram | ✓ | 571.223ms | 540.8 KB |
+| 1010 | strings/is_pangram | ✓ | 571.223ms | 114.5 KB |
+| 1011 | strings/is_polish_national_id | ✓ | 571.223ms | 38.9 KB |
+| 1012 | strings/is_spain_national_id | ✓ | 571.223ms | 134.6 KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 571.223ms | 18.2 KB |
+| 1014 | strings/is_valid_email_address | ✓ | 571.223ms | 166.1 KB |
+| 1015 | strings/jaro_winkler | ✓ | 571.223ms | 277.5 KB |
+| 1016 | strings/join | ✓ | 571.223ms | 31.6 KB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 571.223ms | 17.1 KB |
+| 1018 | strings/levenshtein_distance | ✓ | 571.223ms | 820.3 KB |
+| 1019 | strings/lower | ✓ | 571.223ms | 24.6 KB |
+| 1020 | strings/manacher | ✓ | 571.223ms | 795.4 KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 571.223ms | 213.0 KB |
+| 1022 | strings/naive_string_search | ✓ | 571.223ms | 276.6 KB |
+| 1023 | strings/ngram | ✓ | 571.223ms | 21.8 KB |
+| 1024 | strings/palindrome | ✓ | 571.223ms | 315.6 KB |
+| 1025 | strings/pig_latin | ✓ | 571.223ms | 21.3 KB |
+| 1026 | strings/prefix_function | ✓ | 571.223ms | 827.6 KB |
+| 1027 | strings/rabin_karp | ✓ | 571.223ms | 45.4 KB |
+| 1028 | strings/remove_duplicate | ✓ | 571.223ms | 804.4 KB |
+| 1029 | strings/reverse_letters | ✓ | 571.223ms | 45.9 KB |
+| 1030 | strings/reverse_words | ✓ | 571.223ms | 535.1 KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 571.223ms | 30.3 KB |
+| 1032 | strings/split | ✓ | 571.223ms | 28.5 KB |
+| 1033 | strings/string_switch_case | ✓ | 571.223ms | 66.6 KB |
+| 1034 | strings/strip | ✓ | 571.223ms | 547.8 KB |
+| 1035 | strings/text_justification | ✓ | 571.223ms | 30.0 KB |
+| 1036 | strings/title | ✓ | 571.223ms | 119.0 KB |
+| 1037 | strings/top_k_frequent_words | ✓ | 571.223ms | 45.3 KB |
+| 1038 | strings/upper | ✓ | 571.223ms | 21.7 KB |
+| 1039 | strings/wave_string | ✓ | 571.223ms | 23.4 KB |
 | 1040 | strings/wildcard_pattern_matching | ✓ | 5.972ms | 576.0 KB |
 | 1041 | strings/word_occurrence | ✓ | 1.703ms | 27.0 KB |
 | 1042 | strings/word_patterns | ✓ | 1.502ms | 31.5 KB |
