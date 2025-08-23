@@ -88,59 +88,59 @@ exception Continue
 
 exception Return
 
-let rec solution length =
+let rec gcd a b =
   let __ret = ref 0 in
   (try
-  let length = (Obj.magic length : int) in
-  let ways = ref (([] : (int list) list)) in
-  let i = ref (0) in
-  (try while (!i <= length) do
+  let a = (Obj.magic a : int) in
+  let b = (Obj.magic b : int) in
+  let x = ref (a) in
+  let y = ref (b) in
+  (try while (!y <> 0) do
     try
-  let row = ref (([] : (int) list)) in
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  ways := (Obj.magic ((List.append (!ways) [(Obj.magic (!row) : int list)])) : int list list);
-  i := (!i + 1);
+  let temp = ((!x mod !y + !y) mod !y) in
+  x := !y;
+  y := temp;
     with Continue -> ()
   done with Break -> ());
-  let row_length = ref (0) in
-  (try while (!row_length <= length) do
+  __ret := (Obj.magic (!x) : int); raise Return
+  with Return -> !__ret)
+
+and solution max_d =
+  let __ret = ref 0 in
+  (try
+  let max_d = (Obj.magic max_d : int) in
+  let fractions_number = ref (0) in
+  let d = ref (0) in
+  (try while (!d <= max_d) do
     try
-  let tile_length = ref (2) in
-  (try while (!tile_length <= 4) do
+  let n = ref (((!d / 3) + 1)) in
+  let half = ((!d + 1) / 2) in
+  (try while (!n < half) do
     try
-  let tile_start = ref (0) in
-  (try while (!tile_start <= (!row_length - !tile_length)) do
-    try
-  let remaining = ((!row_length - !tile_start) - !tile_length) in
-  ways := (List.mapi (fun __i __x -> if __i = !row_length then (List.mapi (fun __i __x -> if __i = (!tile_length - 2) then (((let __l = (let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0) + (let __l = (let __l = !ways in let __i = remaining in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0)) + 1) else __x) ((let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []))) else __x) (!ways));
-  tile_start := (!tile_start + 1);
+  if (gcd (Obj.repr (!n)) (Obj.repr (!d)) = 1) then (
+  fractions_number := (!fractions_number + 1);
+  );
+  n := (!n + 1);
     with Continue -> ()
   done with Break -> ());
-  tile_length := (!tile_length + 1);
+  d := (!d + 1);
     with Continue -> ()
   done with Break -> ());
-  row_length := (!row_length + 1);
-    with Continue -> ()
-  done with Break -> ());
-  let total = ref (0) in
-  let j = ref (0) in
-  (try while (!j < 3) do
-    try
-  total := (!total + (let __l = (let __l = !ways in let __i = length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = !j in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-  __ret := (Obj.magic (!total) : int); raise Return
+  __ret := (Obj.magic (!fractions_number) : int); raise Return
+  with Return -> !__ret)
+
+and main () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  print_endline (string_of_int (solution (Obj.repr (12000))));
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let bench_mem_start = _mem () in
   let bench_start = _now () in
-  print_endline (string_of_int (solution (Obj.repr (5))));
-  print_endline (string_of_int (solution (Obj.repr (50))));
+  ignore (main ());
   let bench_finish = _now () in
   let bench_mem_end = _mem () in
   let bench_dur = (bench_finish - bench_start) / 1000 in

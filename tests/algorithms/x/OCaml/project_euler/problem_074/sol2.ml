@@ -88,59 +88,73 @@ exception Continue
 
 exception Return
 
-let rec solution length =
+let _digit_factorial = ref ([1; 1; 2; 6; 24; 120; 720; 5040; 40320; 362880])
+let rec digit_factorial_sum number =
   let __ret = ref 0 in
   (try
-  let length = (Obj.magic length : int) in
-  let ways = ref (([] : (int list) list)) in
-  let i = ref (0) in
-  (try while (!i <= length) do
-    try
-  let row = ref (([] : (int) list)) in
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  ways := (Obj.magic ((List.append (!ways) [(Obj.magic (!row) : int list)])) : int list list);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  let row_length = ref (0) in
-  (try while (!row_length <= length) do
-    try
-  let tile_length = ref (2) in
-  (try while (!tile_length <= 4) do
-    try
-  let tile_start = ref (0) in
-  (try while (!tile_start <= (!row_length - !tile_length)) do
-    try
-  let remaining = ((!row_length - !tile_start) - !tile_length) in
-  ways := (List.mapi (fun __i __x -> if __i = !row_length then (List.mapi (fun __i __x -> if __i = (!tile_length - 2) then (((let __l = (let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0) + (let __l = (let __l = !ways in let __i = remaining in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0)) + 1) else __x) ((let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []))) else __x) (!ways));
-  tile_start := (!tile_start + 1);
-    with Continue -> ()
-  done with Break -> ());
-  tile_length := (!tile_length + 1);
-    with Continue -> ()
-  done with Break -> ());
-  row_length := (!row_length + 1);
-    with Continue -> ()
-  done with Break -> ());
+  let number = (Obj.magic number : int) in
+  if (number < 0) then (
+  (failwith ("Parameter number must be greater than or equal to 0"));
+  );
+  if (number = 0) then (
+  __ret := (Obj.magic ((let __l = !_digit_factorial in let __i = 0 in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0)) : int); raise Return
+  );
+  let n = ref (number) in
   let total = ref (0) in
-  let j = ref (0) in
-  (try while (!j < 3) do
+  (try while (!n > 0) do
     try
-  total := (!total + (let __l = (let __l = !ways in let __i = length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = !j in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0));
-  j := (!j + 1);
+  let digit = ((!n mod 10 + 10) mod 10) in
+  total := (!total + (let __l = !_digit_factorial in let __i = digit in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0));
+  n := (!n / 10);
     with Continue -> ()
   done with Break -> ());
   __ret := (Obj.magic (!total) : int); raise Return
+  with Return -> !__ret)
+
+and chain_len n limit =
+  let __ret = ref 0 in
+  (try
+  let n = (Obj.magic n : int) in
+  let limit = (Obj.magic limit : int) in
+  let seen = ref ([] : (string * bool) list) in
+  let length = ref (0) in
+  let cur = ref (n) in
+  (try while (((List.mem_assoc (__str (Obj.repr (!cur))) !seen) = false) && (!length <= limit)) do
+    try
+  seen := ((__str (Obj.repr (!cur)), true) :: List.remove_assoc (__str (Obj.repr (!cur))) (!seen));
+  length := (!length + 1);
+  cur := digit_factorial_sum (Obj.repr (!cur));
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!length) : int); raise Return
+  with Return -> !__ret)
+
+and solution chain_length number_limit =
+  let __ret = ref 0 in
+  (try
+  let chain_length = (Obj.magic chain_length : int) in
+  let number_limit = (Obj.magic number_limit : int) in
+  if ((chain_length <= 0) || (number_limit <= 0)) then (
+  (failwith ("Parameters chain_length and number_limit must be greater than 0"));
+  );
+  let count = ref (0) in
+  let start = ref (1) in
+  (try while (!start < number_limit) do
+    try
+  if (chain_len (Obj.repr (!start)) (Obj.repr (chain_length)) = chain_length) then (
+  count := (!count + 1);
+  );
+  start := (!start + 1);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!count) : int); raise Return
   with Return -> !__ret)
 
 
 let () =
   let bench_mem_start = _mem () in
   let bench_start = _now () in
-  print_endline (string_of_int (solution (Obj.repr (5))));
-  print_endline (string_of_int (solution (Obj.repr (50))));
+  print_endline ((string_of_int (Obj.magic (solution (Obj.repr (60)) (Obj.repr (1000000))) : int)));
   let bench_finish = _now () in
   let bench_mem_end = _mem () in
   let bench_dur = (bench_finish - bench_start) / 1000 in

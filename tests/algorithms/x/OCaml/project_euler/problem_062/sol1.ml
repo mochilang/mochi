@@ -88,59 +88,75 @@ exception Continue
 
 exception Return
 
-let rec solution length =
-  let __ret = ref 0 in
+let rec get_digits num =
+  let __ret = ref "" in
   (try
-  let length = (Obj.magic length : int) in
-  let ways = ref (([] : (int list) list)) in
-  let i = ref (0) in
-  (try while (!i <= length) do
-    try
-  let row = ref (([] : (int) list)) in
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  ways := (Obj.magic ((List.append (!ways) [(Obj.magic (!row) : int list)])) : int list list);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  let row_length = ref (0) in
-  (try while (!row_length <= length) do
-    try
-  let tile_length = ref (2) in
-  (try while (!tile_length <= 4) do
-    try
-  let tile_start = ref (0) in
-  (try while (!tile_start <= (!row_length - !tile_length)) do
-    try
-  let remaining = ((!row_length - !tile_start) - !tile_length) in
-  ways := (List.mapi (fun __i __x -> if __i = !row_length then (List.mapi (fun __i __x -> if __i = (!tile_length - 2) then (((let __l = (let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0) + (let __l = (let __l = !ways in let __i = remaining in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0)) + 1) else __x) ((let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []))) else __x) (!ways));
-  tile_start := (!tile_start + 1);
-    with Continue -> ()
-  done with Break -> ());
-  tile_length := (!tile_length + 1);
-    with Continue -> ()
-  done with Break -> ());
-  row_length := (!row_length + 1);
-    with Continue -> ()
-  done with Break -> ());
-  let total = ref (0) in
+  let num = (Obj.magic num : int) in
+  let cube = ((num * num) * num) in
+  let s = (string_of_int (Obj.magic (cube) : int)) in
+  let counts = ref (([] : (int) list)) in
   let j = ref (0) in
-  (try while (!j < 3) do
+  (try while (!j < 10) do
     try
-  total := (!total + (let __l = (let __l = !ways in let __i = length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = !j in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0));
+  counts := (Obj.magic ((List.append (!counts) [(Obj.magic (0) : int)])) : int list);
   j := (!j + 1);
     with Continue -> ()
   done with Break -> ());
-  __ret := (Obj.magic (!total) : int); raise Return
+  let i = ref (0) in
+  (try while (!i < String.length (s)) do
+    try
+  let d = int_of_string ((let __s = s in let __i = !i in let __len = String.length __s in String.make 1 (String.get __s (if __i >= 0 then __i else __len + __i)))) in
+  counts := (List.mapi (fun __i __x -> if __i = d then ((let __l = !counts in let __i = d in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0) + 1) else __x) (!counts));
+  i := (!i + 1);
+    with Continue -> ()
+  done with Break -> ());
+  let result = ref ("") in
+  let d = ref (0) in
+  (try while (!d < 10) do
+    try
+  let c = ref ((let __l = !counts in let __i = !d in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0)) in
+  (try while (!c > 0) do
+    try
+  result := (!result ^ (string_of_int (Obj.magic (!d) : int)));
+  c := (!c - 1);
+    with Continue -> ()
+  done with Break -> ());
+  d := (!d + 1);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!result) : string); raise Return
+  with Return -> !__ret)
+
+and solution max_base =
+  let __ret = ref 0 in
+  (try
+  let max_base = (Obj.magic max_base : int) in
+  let freqs = ref ([] : (string * int list) list) in
+  let num = ref (0) in
+  (try while true do
+    try
+  let digits = get_digits (Obj.repr (!num)) in
+  let arr = ref (([] : (int) list)) in
+  if (List.mem_assoc (__str (Obj.repr (digits))) !freqs) then (
+  arr := (Obj.magic ((match List.assoc_opt (__str (Obj.repr (digits))) (!freqs) with Some v -> (Obj.magic v : int list) | None -> [])) : int list);
+  );
+  arr := (Obj.magic ((List.append (!arr) [(Obj.magic (!num) : int)])) : int list);
+  freqs := ((__str (Obj.repr (digits)), !arr) :: List.remove_assoc (__str (Obj.repr (digits))) (!freqs));
+  if (List.length (!arr) = max_base) then (
+  let base = (let __l = !arr in let __i = 0 in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0) in
+  __ret := (Obj.magic (((base * base) * base)) : int); raise Return
+  );
+  num := (!num + 1);
+    with Continue -> ()
+  done with Break -> ());
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let bench_mem_start = _mem () in
   let bench_start = _now () in
-  print_endline (string_of_int (solution (Obj.repr (5))));
-  print_endline (string_of_int (solution (Obj.repr (50))));
+  print_endline (("solution() = " ^ (string_of_int (Obj.magic (solution (Obj.repr (5))) : int))));
   let bench_finish = _now () in
   let bench_mem_end = _mem () in
   let bench_dur = (bench_finish - bench_start) / 1000 in
