@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 915/1077
-Last updated: 2025-08-22 15:25 +0700
+Completed programs: 916/1077
+Last updated: 2025-08-23 13:46 +0700
 
 Checklist:
 
@@ -996,7 +996,7 @@ Checklist:
 | 987 | sorts/wiggle_sort | ✓ | 270.0µs | 5.59KB |
 | 988 | strings/aho_corasick |   |  |  |
 | 989 | strings/alternative_string_arrange | ✓ | 32.0µs | 848B |
-| 990 | strings/anagrams |   |  |  |
+| 990 | strings/anagrams | ✓ | 469.0µs | 43.48KB |
 | 991 | strings/autocomplete_using_trie | ✓ | 38.0µs | 984B |
 | 992 | strings/barcode_validator | ✓ | 185.0µs | 2.54KB |
 | 993 | strings/bitap_string_match | ✓ | 540.0µs | 40.92KB |

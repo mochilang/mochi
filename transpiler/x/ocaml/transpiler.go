@@ -6397,6 +6397,16 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &PanicExpr{Arg: arg}, "", nil
 	}
+	if c.Func == "not" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "bool" {
+			return nil, "", fmt.Errorf("not expects bool")
+		}
+		return &UnaryNot{Expr: arg}, "bool", nil
+	}
 	if c.Func == "input" && len(c.Args) == 0 {
 		return &InputBuiltin{}, "string", nil
 	}
