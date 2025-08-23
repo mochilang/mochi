@@ -2981,6 +2981,18 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 		case types.StringType:
 			elemType = types.StringType{}
 		}
+		if !keys {
+			if name, ok := isSimpleIdent(f.Source); ok {
+				if t, err := env.GetVar(name); err == nil {
+					if mt, ok := t.(types.MapType); ok {
+						keys = true
+						elemType = mt.Key
+					}
+				}
+			} else if _, ok := types.ExprType(f.Source, env).(types.MapType); ok {
+				keys = true
+			}
+		}
 		if elemType != nil {
 			env.SetVar(f.Name, elemType, true)
 		}
@@ -3715,7 +3727,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			if isMap {
 				operands[i] = &BinaryExpr{Left: operands[i], Op: "in", Right: operands[i+1]}
 			} else {
-				cond := &CallExpr{Func: "Array.isArray", Args: []Expr{operands[i+1]}}
+				cond := &BinaryExpr{
+					Left:  &CallExpr{Func: "Array.isArray", Args: []Expr{operands[i+1]}},
+					Op:    "||",
+					Right: &BinaryExpr{Left: &UnaryExpr{Op: "typeof ", Expr: operands[i+1]}, Op: "===", Right: &StringLit{Value: "string"}},
+				}
 				thenExpr := &MethodCallExpr{Target: operands[i+1], Method: "includes", Args: []Expr{operands[i]}}
 				elseExpr := &BinaryExpr{Left: operands[i], Op: "in", Right: operands[i+1]}
 				operands[i] = &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
@@ -3830,6 +3846,9 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
+		if op == "not" {
+			op = "!"
+		}
 		expr = &UnaryExpr{Op: op, Expr: expr}
 	}
 	return expr, nil
@@ -3942,6 +3961,12 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 					_ = keyStr // avoid unused variable warnings
 				}
 				raw := isMapExpr(partial) || isStructExpr(partial) || !isIntType(idxType)
+				if transpileEnv != nil {
+					t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: partial}}}, transpileEnv)
+					if _, ok := t.(types.MapType); ok {
+						raw = true
+					}
+				}
 				expr = &IndexExpr{Target: expr, Index: idx, Raw: raw}
 			}
 		case op.Call != nil:
@@ -4129,6 +4154,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ae
 		}
 		switch p.Call.Func {
+		case "not":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("not expects one argument")
+			}
+			return &UnaryExpr{Op: "!", Expr: args[0]}, nil
 		case "print":
 			if transpileEnv != nil {
 				for i, a := range args {
