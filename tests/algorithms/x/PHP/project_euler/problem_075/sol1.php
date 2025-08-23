@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -31,41 +32,6 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function gcd($a, $b) {
@@ -73,7 +39,7 @@ $__start = _now();
   $x = $a;
   $y = $b;
   while ($y != 0) {
-  $t = _imod($x, $y);
+  $t = $x % $y;
   $x = $y;
   $y = $t;
 };
@@ -83,30 +49,30 @@ $__start = _now();
   global $result;
   $frequencies = [];
   $m = 2;
-  while (_imul(_imul(2, $m), (_iadd($m, 1))) <= $limit) {
-  $n = _iadd((_imod($m, 2)), 1);
+  while (2 * $m * ($m + 1) <= $limit) {
+  $n = ($m % 2) + 1;
   while ($n < $m) {
   if (gcd($m, $n) > 1) {
-  $n = _iadd($n, 2);
+  $n = $n + 2;
   continue;
 }
-  $primitive_perimeter = _imul(_imul(2, $m), (_iadd($m, $n)));
+  $primitive_perimeter = 2 * $m * ($m + $n);
   $perimeter = $primitive_perimeter;
   while ($perimeter <= $limit) {
   if (!(array_key_exists($perimeter, $frequencies))) {
   $frequencies[$perimeter] = 0;
 }
-  $frequencies[$perimeter] = _iadd($frequencies[$perimeter], 1);
-  $perimeter = _iadd($perimeter, $primitive_perimeter);
+  $frequencies[$perimeter] = $frequencies[$perimeter] + 1;
+  $perimeter = $perimeter + $primitive_perimeter;
 };
-  $n = _iadd($n, 2);
+  $n = $n + 2;
 };
-  $m = _iadd($m, 1);
+  $m = $m + 1;
 };
   $count = 0;
   foreach (array_keys($frequencies) as $p) {
   if ($frequencies[$p] == 1) {
-  $count = _iadd($count, 1);
+  $count = $count + 1;
 }
 };
   return $count;
@@ -114,7 +80,7 @@ $__start = _now();
   $result = solution(1500000);
   echo rtrim('solution() = ' . _str($result)), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

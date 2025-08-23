@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -29,76 +45,51 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
-function solution($number) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function solution($number) {
   $partitions = [1];
   $i = count($partitions);
   while (true) {
   $item = 0;
   $j = 1;
   while (true) {
-  $sign = (_imod($j, 2) == 0 ? -1 : 1);
-  $index = _intdiv((_isub(_imul(_imul($j, $j), 3), $j)), 2);
+  $sign = ($j % 2 == 0 ? -1 : 1);
+  $index = _intdiv(($j * $j * 3 - $j), 2);
   if ($index > $i) {
   break;
 }
-  $item = _iadd($item, _imul($partitions[_isub($i, $index)], $sign));
-  $item = _imod($item, $number);
-  $index = _iadd($index, $j);
+  $item = $item + $partitions[$i - $index] * $sign;
+  $item = $item % $number;
+  $index = $index + $j;
   if ($index > $i) {
   break;
 }
-  $item = _iadd($item, _imul($partitions[_isub($i, $index)], $sign));
-  $item = _imod($item, $number);
-  $j = _iadd($j, 1);
+  $item = $item + $partitions[$i - $index] * $sign;
+  $item = $item % $number;
+  $j = $j + 1;
 };
   if ($item == 0) {
   return $i;
 }
   $partitions = _append($partitions, $item);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return 0;
-}
-function main() {
+};
+  function main() {
   echo rtrim(_str(solution(1))), PHP_EOL;
   echo rtrim(_str(solution(9))), PHP_EOL;
   echo rtrim(_str(solution(1000000))), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
