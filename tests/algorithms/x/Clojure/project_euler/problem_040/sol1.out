@@ -1,0 +1,5 @@
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/project_euler/problem_040/sol1.clj:50:784).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-11876153782010662258.edn
