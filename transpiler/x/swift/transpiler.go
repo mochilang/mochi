@@ -4201,12 +4201,16 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		}
 
 		if ot, ok := ltyp.(types.OptionType); ok {
+			if !isNilExpr(right) {
+				left = &CastExpr{Expr: left, Type: swiftTypeOf(ot.Elem) + "!"}
+			}
 			ltyp = ot.Elem
-			left = &CastExpr{Expr: left, Type: swiftTypeOf(ot.Elem) + "!"}
 		}
 		if ot, ok := rtyp.(types.OptionType); ok {
+			if !isNilExpr(left) {
+				right = &CastExpr{Expr: right, Type: swiftTypeOf(ot.Elem) + "!"}
+			}
 			rtyp = ot.Elem
-			right = &CastExpr{Expr: right, Type: swiftTypeOf(ot.Elem) + "!"}
 		}
 		if types.IsAnyType(rtyp) && types.IsIntType(ltyp) {
 			if _, ok := right.(*IndexExpr); ok {
