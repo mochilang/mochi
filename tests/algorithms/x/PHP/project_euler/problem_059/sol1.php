@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _str($x) {
     if (is_array($x)) {
@@ -29,103 +30,70 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
-}
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
+    return intdiv(intval($a), intval($b));
 }
 function mochi_xor($a, $b) {
-  global $ascii_chars, $LOWERCASE_INTS, $i, $COMMON_WORDS, $ciphertext;
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars, $ciphertext, $i;
   $res = 0;
   $bit = 1;
   $x = $a;
   $y = $b;
   while ($x > 0 || $y > 0) {
-  $abit = _imod($x, 2);
-  $bbit = _imod($y, 2);
+  $abit = $x % 2;
+  $bbit = $y % 2;
   if ($abit != $bbit) {
-  $res = _iadd($res, $bit);
+  $res = $res + $bit;
 }
   $x = _intdiv($x, 2);
   $y = _intdiv($y, 2);
-  $bit = _imul($bit, 2);
+  $bit = $bit * 2;
 };
   return $res;
 }
 $ascii_chars = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 function mochi_chr($code) {
-  global $ascii_chars, $LOWERCASE_INTS, $i, $COMMON_WORDS, $ciphertext;
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars, $ciphertext, $i;
   if ($code == 10) {
   return '
 ';
 }
   if ($code == 13) {
-  return '';
+  return substr($ascii_chars, $code - 32, $code - 31 - ($code - 32));
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars, $ciphertext;
 }
-  if ($code == 9) {
-  return '	';
+  if (substr($ascii_chars, $i, $i + 1 - $i) == $ch) {
+  return 32 + $i;
 }
-  if ($code >= 32 && $code < 127) {
-  return substr($ascii_chars, _isub($code, 32), _isub($code, 31) - _isub($code, 32));
+  $i = $i + 1;
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars, $ciphertext, $i;
 }
-  return '';
+  $i = $i + 1;
 }
-function mochi_ord($ch) {
-  global $ascii_chars, $LOWERCASE_INTS, $COMMON_WORDS, $ciphertext;
-  if ($ch == '
-') {
-  return 10;
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars;
+  $decodedchar = mochi_xor($ciphertext[$i], $key[$i % $klen]);
+  $i = $i + 1;
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars;
+  $k = $k + 1;
+  $j = $j + 1;
+  $i = $i + 1;
+function mochi_contains($s, $sub) {
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars, $ciphertext;
 }
-  if ($ch == '') {
-  return 13;
+  while ($i <= $n - $m) {
+  if (substr($s, $i + $j, $i + $j + 1 - ($i + $j)) != substr($sub, $j, $j + 1 - $j)) {
 }
-  if ($ch == '	') {
-  return 9;
+  $j = $j + 1;
+  $i = $i + 1;
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars, $ciphertext;
+  if (mochi_contains(strtolower($p), $common_word)) {
 }
-  $i = 0;
-  while ($i < strlen($ascii_chars)) {
-  if (substr($ascii_chars, $i, _iadd($i, 1) - $i) == $ch) {
-  return _iadd(32, $i);
-}
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
-  return 0;
+  global $COMMON_WORDS, $LOWERCASE_INTS, $ascii_chars;
 }
-function is_valid_ascii($code) {
-  global $ascii_chars, $LOWERCASE_INTS, $i, $COMMON_WORDS, $ciphertext;
-  if ($code >= 32 && $code <= 126) {
+  $i = $i + 1;
+  $sum = $sum + mochi_ord(substr($decoded_text, $j, $j + 1 - $j));
+  $j = $j + 1;
   return true;
 }
   if ($code == 9 || $code == 10 || $code == 13) {

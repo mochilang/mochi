@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,80 +36,36 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _intdiv($a, $b) {
-    if ($b === 0 || $b === '0') {
-        throw new DivisionByZeroError();
-    }
-    if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcdiv($sa, $sb, 0));
-    }
-    return intdiv($a, $b);
-}
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
-function range_desc($start, $end) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function range_desc($start, $end) {
   $res = [];
   $i = $start;
   while ($i >= $end) {
   $res = _append($res, $i);
-  $i = _isub($i, 1);
+  $i = $i - 1;
 };
   return $res;
-}
-function range_asc($start, $end) {
+};
+  function range_asc($start, $end) {
   $res = [];
   $i = $start;
   while ($i <= $end) {
   $res = _append($res, $i);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $res;
-}
-function concat_lists($a, $b) {
+};
+  function concat_lists($a, $b) {
   $res = $a;
   $i = 0;
   while ($i < count($b)) {
   $res = _append($res, $b[$i]);
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $res;
-}
-function swap($xs, $i, $j) {
+};
+  function swap($xs, $i, $j) {
   $res = [];
   $k = 0;
   while ($k < count($xs)) {
@@ -106,11 +78,11 @@ function swap($xs, $i, $j) {
   $res = _append($res, $xs[$k]);
 };
 }
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   return $res;
-}
-function generate_gon_ring($gon_side, $perm) {
+};
+  function generate_gon_ring($gon_side, $perm) {
   $result = [];
   $result = _append($result, $perm[0]);
   $result = _append($result, $perm[1]);
@@ -118,43 +90,43 @@ function generate_gon_ring($gon_side, $perm) {
   $extended = _append($perm, $perm[1]);
   $magic_number = ($gon_side < 5 ? 1 : 2);
   $i = 1;
-  while ($i < _iadd(_idiv(count($extended), 3), $magic_number)) {
-  $result = _append($result, $extended[_iadd(_imul(2, $i), 1)]);
-  $result = _append($result, $result[_isub(_imul(3, $i), 1)]);
-  $result = _append($result, $extended[_iadd(_imul(2, $i), 2)]);
-  $i = _iadd($i, 1);
+  while ($i < count($extended) / 3 + $magic_number) {
+  $result = _append($result, $extended[2 * $i + 1]);
+  $result = _append($result, $result[3 * $i - 1]);
+  $result = _append($result, $extended[2 * $i + 2]);
+  $i = $i + 1;
 };
   return $result;
-}
-function min_outer($numbers) {
+};
+  function min_outer($numbers) {
   $min_val = $numbers[0];
   $i = 3;
   while ($i < count($numbers)) {
   if ($numbers[$i] < $min_val) {
   $min_val = $numbers[$i];
 }
-  $i = _iadd($i, 3);
+  $i = $i + 3;
 };
   return $min_val;
-}
-function is_magic_gon($numbers) {
-  if (_imod(count($numbers), 3) != 0) {
+};
+  function is_magic_gon($numbers) {
+  if (fmod(count($numbers), 3) != 0) {
   return false;
 }
   if (min_outer($numbers) != $numbers[0]) {
   return false;
 }
-  $total = _iadd(_iadd($numbers[0], $numbers[1]), $numbers[2]);
+  $total = $numbers[0] + $numbers[1] + $numbers[2];
   $i = 3;
   while ($i < count($numbers)) {
-  if (_iadd(_iadd($numbers[$i], $numbers[_iadd($i, 1)]), $numbers[_iadd($i, 2)]) != $total) {
+  if ($numbers[$i] + $numbers[$i + 1] + $numbers[$i + 2] != $total) {
   return false;
 }
-  $i = _iadd($i, 3);
+  $i = $i + 3;
 };
   return true;
-}
-function permute_search($nums, $start, $gon_side, $current_max) {
+};
+  function permute_search($nums, $start, $gon_side, $current_max) {
   if ($start == count($nums)) {
   $ring = generate_gon_ring($gon_side, $nums);
   if (is_magic_gon($ring)) {
@@ -162,7 +134,7 @@ function permute_search($nums, $start, $gon_side, $current_max) {
   $k = 0;
   while ($k < count($ring)) {
   $s = $s . _str($ring[$k]);
-  $k = _iadd($k, 1);
+  $k = $k + 1;
 };
   if ($s > $current_max) {
   return $s;
@@ -174,22 +146,30 @@ function permute_search($nums, $start, $gon_side, $current_max) {
   $i = $start;
   while ($i < count($nums)) {
   $swapped = swap($nums, $start, $i);
-  $candidate = permute_search($swapped, _iadd($start, 1), $gon_side, $res);
+  $candidate = permute_search($swapped, $start + 1, $gon_side, $res);
   if ($candidate > $res) {
   $res = $candidate;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $res;
-}
-function solution($gon_side) {
+};
+  function solution($gon_side) {
   if ($gon_side < 3 || $gon_side > 5) {
   return '';
 }
-  $small = range_desc(_iadd($gon_side, 1), 1);
-  $big = range_asc(_iadd($gon_side, 2), _imul($gon_side, 2));
+  $small = range_desc($gon_side + 1, 1);
+  $big = range_asc($gon_side + 2, $gon_side * 2);
   $numbers = concat_lists($small, $big);
   $max_str = permute_search($numbers, 0, $gon_side, '');
   return $max_str;
-}
-echo rtrim(solution(5)), PHP_EOL;
+};
+  echo rtrim(solution(5)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
