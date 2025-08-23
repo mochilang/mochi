@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-22 23:14 GMT+7
+Last updated: 2025-08-23 13:54 GMT+7
 
-## Algorithms Golden Test Checklist (972/1077)
+## Algorithms Golden Test Checklist (975/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -13,7 +13,7 @@ Last updated: 2025-08-22 23:14 GMT+7
 | 4 | backtracking/coloring | ✓ | 63.0µs | 14.51MB |
 | 5 | backtracking/combination_sum | ✓ | 70.0µs | 14.63MB |
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 62.0µs | 14.76MB |
-| 7 | backtracking/hamiltonian_cycle | error | 58.0µs | 14.76MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 58.0µs | 14.76MB |
 | 8 | backtracking/knight_tour | ✓ | 29.0µs | 14.76MB |
 | 9 | backtracking/match_word_pattern | ✓ | 270.0µs | 14.76MB |
 | 10 | backtracking/minimax | ✓ | 24.0µs | 14.76MB |
@@ -996,7 +996,7 @@ Last updated: 2025-08-22 23:14 GMT+7
 | 987 | sorts/wiggle_sort | ✓ | 81.0µs | 12.31MB |
 | 988 | strings/aho_corasick | ✓ | 38.0µs | 12.71MB |
 | 989 | strings/alternative_string_arrange | ✓ | 14.0µs | 12.71MB |
-| 990 | strings/anagrams | error |  |  |
+| 990 | strings/anagrams | ✓ | 16.0µs | 0B |
 | 991 | strings/autocomplete_using_trie | ✓ | 17.0µs | 12.55MB |
 | 992 | strings/barcode_validator | ✓ | 131.0µs | 13.08MB |
 | 993 | strings/bitap_string_match | ✓ | 246.0µs | 13.30MB |
@@ -1026,7 +1026,7 @@ Last updated: 2025-08-22 23:14 GMT+7
 | 1017 | strings/knuth_morris_pratt | ✓ | 23.0µs | 12.62MB |
 | 1018 | strings/levenshtein_distance | ✓ | 57.0µs | 13.36MB |
 | 1019 | strings/lower | ✓ | 11.0µs | 12.23MB |
-| 1020 | strings/manacher | error |  |  |
+| 1020 | strings/manacher | ✓ | 64.0µs | 0B |
 | 1021 | strings/min_cost_string_conversion | ✓ | 137.0µs | 14.20MB |
 | 1022 | strings/naive_string_search | ✓ | 17.0µs | 12.43MB |
 | 1023 | strings/ngram | ✓ | 30.0µs | 12.93MB |

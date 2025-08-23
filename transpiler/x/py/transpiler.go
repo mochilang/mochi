@@ -2030,9 +2030,12 @@ func isLikelyIntExpr(e Expr) bool {
 			if t, err := currentEnv.GetVar(ex.Name); err == nil {
 				return isIntLike(t)
 			}
-			return false
 		}
-		return false
+		// When the type information is unavailable, assume the name is
+		// an integer. This mirrors the historical behaviour of this
+		// helper and increases the chance of replacing divisions with
+		// integer divisions for index calculations.
+		return true
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
 			return true
@@ -2053,6 +2056,9 @@ func isLikelyIntExpr(e Expr) bool {
 		return isLikelyIntExpr(ex.Expr)
 	case *IndexExpr:
 		if isIntLike(inferPyType(ex, currentEnv)) {
+			return true
+		}
+		if isLikelyIntExpr(ex.Target) && isLikelyIntExpr(ex.Index) {
 			return true
 		}
 		return false
@@ -5538,26 +5544,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &SliceExpr{Target: args[0], Start: args[1], End: end}, nil
 			}
-               case "upper":
-                       if len(args) == 1 {
-                               tgt := args[0]
-                               if currentEnv != nil {
-                                       if _, ok := inferPyType(tgt, currentEnv).(types.StringType); !ok {
-                                               tgt = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{tgt}}
-                                       }
-                               }
-                               return &CallExpr{Func: &FieldExpr{Target: tgt, Name: "upper"}}, nil
-                       }
-               case "lower":
-                       if len(args) == 1 {
-                               tgt := args[0]
-                               if currentEnv != nil {
-                                       if _, ok := inferPyType(tgt, currentEnv).(types.StringType); !ok {
-                                               tgt = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{tgt}}
-                                       }
-                               }
-                               return &CallExpr{Func: &FieldExpr{Target: tgt, Name: "lower"}}, nil
-                       }
+		case "upper":
+			if len(args) == 1 {
+				tgt := args[0]
+				if currentEnv != nil {
+					if _, ok := inferPyType(tgt, currentEnv).(types.StringType); !ok {
+						tgt = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{tgt}}
+					}
+				}
+				return &CallExpr{Func: &FieldExpr{Target: tgt, Name: "upper"}}, nil
+			}
+		case "lower":
+			if len(args) == 1 {
+				tgt := args[0]
+				if currentEnv != nil {
+					if _, ok := inferPyType(tgt, currentEnv).(types.StringType); !ok {
+						tgt = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{tgt}}
+					}
+				}
+				return &CallExpr{Func: &FieldExpr{Target: tgt, Name: "lower"}}, nil
+			}
 		case "padStart":
 			if len(args) == 3 {
 				tgt := args[0]
