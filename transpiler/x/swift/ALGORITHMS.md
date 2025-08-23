@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 976/1077
-Last updated: 2025-08-22 23:09 +0700
+Last updated: 2025-08-23 13:46 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -996,56 +996,56 @@ Last updated: 2025-08-22 23:09 +0700
 | 987 | sorts/wiggle_sort | ✓ | 804µs | 3.7 MB |
 | 988 | strings/aho_corasick | ✓ | 634µs | 3.3 MB |
 | 989 | strings/alternative_string_arrange | ✓ | 196µs | 3.2 MB |
-| 990 | strings/anagrams | ✓ | 1.47ms | 3.7 MB |
-| 991 | strings/autocomplete_using_trie | ✓ | 909µs | 3.5 MB |
-| 992 | strings/barcode_validator | ✓ | 740µs | 3.2 MB |
-| 993 | strings/bitap_string_match | ✓ | 1.475ms | 3.2 MB |
-| 994 | strings/boyer_moore_search | ✓ | 394µs | 3.2 MB |
-| 995 | strings/camel_case_to_snake_case | ✓ | 7.121ms | 3.0 MB |
-| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 2.423ms | 3.3 MB |
-| 997 | strings/capitalize | ✓ | 513µs | 3.2 MB |
-| 998 | strings/check_anagrams | ✓ | 1.343ms | 3.3 MB |
-| 999 | strings/count_vowels | ✓ | 1.593ms | 3.2 MB |
-| 1000 | strings/credit_card_validator | ✓ | 475µs | 3.3 MB |
-| 1001 | strings/damerau_levenshtein_distance | ✓ | 1.487ms | 3.2 MB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 5.088ms | 3.4 MB |
-| 1003 | strings/dna | ✓ | 424µs | 3.3 MB |
-| 1004 | strings/edit_distance | ✓ | 177.02ms | 3.2 MB |
-| 1005 | strings/frequency_finder | ✓ | 23.234ms | 3.6 MB |
-| 1006 | strings/hamming_distance | ✓ | 564µs | 3.2 MB |
-| 1007 | strings/indian_phone_validator | ✓ | 759µs | 3.2 MB |
-| 1008 | strings/is_contains_unique_chars | ✓ | 2.401ms | 3.1 MB |
-| 1009 | strings/is_isogram | ✓ | 2.541ms | 3.2 MB |
-| 1010 | strings/is_pangram | ✓ | 2.399ms | 3.5 MB |
-| 1011 | strings/is_polish_national_id | ✓ | 696µs | 3.4 MB |
-| 1012 | strings/is_spain_national_id | ✓ | 2.339ms | 3.2 MB |
-| 1013 | strings/is_srilankan_phone_number | ✓ | 617µs | 3.2 MB |
-| 1014 | strings/is_valid_email_address | ✓ | 40.61ms | 3.2 MB |
-| 1015 | strings/jaro_winkler | ✓ | 754µs | 3.4 MB |
-| 1016 | strings/join | ✓ | 440µs | 3.4 MB |
-| 1017 | strings/knuth_morris_pratt | ✓ | 786µs | 3.4 MB |
-| 1018 | strings/levenshtein_distance | ✓ | 642µs | 3.2 MB |
-| 1019 | strings/lower | ✓ | 554µs | 3.2 MB |
-| 1020 | strings/manacher | ✓ | 520µs | 2.9 MB |
-| 1021 | strings/min_cost_string_conversion | ✓ | 1.12ms | 3.2 MB |
-| 1022 | strings/naive_string_search | ✓ | 621µs | 3.2 MB |
-| 1023 | strings/ngram | ✓ | 1.048ms | 3.4 MB |
-| 1024 | strings/palindrome | ✓ | 1.068ms | 3.2 MB |
-| 1025 | strings/pig_latin | ✓ | 462µs | 3.3 MB |
-| 1026 | strings/prefix_function | ✓ | 1.704ms | 3.5 MB |
-| 1027 | strings/rabin_karp | ✓ | 7.306ms | 3.2 MB |
-| 1028 | strings/remove_duplicate | ✓ | 670µs | 3.1 MB |
-| 1029 | strings/reverse_letters | ✓ | 548µs | 3.5 MB |
-| 1030 | strings/reverse_words | ✓ | 291µs | 3.1 MB |
-| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 496µs | 3.4 MB |
-| 1032 | strings/split | ✓ | 1.17ms | 3.6 MB |
-| 1033 | strings/string_switch_case | ✓ | 1.104ms | 3.2 MB |
-| 1034 | strings/strip | ✓ | 400µs | 3.2 MB |
-| 1035 | strings/text_justification | ✓ | 1.357ms | 3.7 MB |
-| 1036 | strings/title | ✓ | 2.291ms | 3.3 MB |
-| 1037 | strings/top_k_frequent_words | ✓ | 2.116ms | 3.7 MB |
-| 1038 | strings/upper | ✓ | 288µs | 3.2 MB |
-| 1039 | strings/wave_string | ✓ | 1.613ms | 3.5 MB |
+| 990 | strings/anagrams | ✓ | 927µs | 3.8 MB |
+| 991 | strings/autocomplete_using_trie | ✓ | 846µs | 3.5 MB |
+| 992 | strings/barcode_validator | ✓ | 497µs | 3.2 MB |
+| 993 | strings/bitap_string_match | ✓ | 771µs | 3.2 MB |
+| 994 | strings/boyer_moore_search | ✓ | 253µs | 3.4 MB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 3.876ms | 3.2 MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 1.717ms | 3.5 MB |
+| 997 | strings/capitalize | ✓ | 356µs | 3.2 MB |
+| 998 | strings/check_anagrams | ✓ | 774µs | 3.3 MB |
+| 999 | strings/count_vowels | ✓ | 583µs | 3.1 MB |
+| 1000 | strings/credit_card_validator | ✓ | 295µs | 3.1 MB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 1.172ms | 3.3 MB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 3.112ms | 3.3 MB |
+| 1003 | strings/dna | ✓ | 303µs | 3.4 MB |
+| 1004 | strings/edit_distance | ✓ | 100.714ms | 3.2 MB |
+| 1005 | strings/frequency_finder | ✓ | 15.181ms | 3.5 MB |
+| 1006 | strings/hamming_distance | ✓ | 297µs | 3.0 MB |
+| 1007 | strings/indian_phone_validator | ✓ | 380µs | 3.4 MB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 934µs | 3.2 MB |
+| 1009 | strings/is_isogram | ✓ | 439µs | 3.4 MB |
+| 1010 | strings/is_pangram | ✓ | 1.593ms | 3.6 MB |
+| 1011 | strings/is_polish_national_id | ✓ | 550µs | 3.4 MB |
+| 1012 | strings/is_spain_national_id | ✓ | 1.503ms | 3.5 MB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 380µs | 3.5 MB |
+| 1014 | strings/is_valid_email_address | ✓ | 26.038ms | 3.2 MB |
+| 1015 | strings/jaro_winkler | ✓ | 416µs | 3.2 MB |
+| 1016 | strings/join | ✓ | 254µs | 3.4 MB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 439µs | 3.2 MB |
+| 1018 | strings/levenshtein_distance | ✓ | 427µs | 2.9 MB |
+| 1019 | strings/lower | ✓ | 227µs | 3.2 MB |
+| 1020 | strings/manacher | ✓ | 382µs | 3.2 MB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 743µs | 3.2 MB |
+| 1022 | strings/naive_string_search | ✓ | 310µs | 3.3 MB |
+| 1023 | strings/ngram | ✓ | 754µs | 3.7 MB |
+| 1024 | strings/palindrome | ✓ | 506µs | 3.2 MB |
+| 1025 | strings/pig_latin | ✓ | 322µs | 3.4 MB |
+| 1026 | strings/prefix_function | ✓ | 851µs | 3.6 MB |
+| 1027 | strings/rabin_karp | ✓ | 444µs | 3.0 MB |
+| 1028 | strings/remove_duplicate | ✓ | 505µs | 3.4 MB |
+| 1029 | strings/reverse_letters | ✓ | 376µs | 3.2 MB |
+| 1030 | strings/reverse_words | ✓ | 227µs | 3.2 MB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 421µs | 3.6 MB |
+| 1032 | strings/split | ✓ | 687µs | 3.6 MB |
+| 1033 | strings/string_switch_case | ✓ | 850µs | 3.5 MB |
+| 1034 | strings/strip | ✓ | 332µs | 3.3 MB |
+| 1035 | strings/text_justification | ✓ | 838µs | 3.7 MB |
+| 1036 | strings/title | ✓ | 1.843ms | 3.3 MB |
+| 1037 | strings/top_k_frequent_words | ✓ | 931µs | 3.6 MB |
+| 1038 | strings/upper | ✓ | 145µs | 3.2 MB |
+| 1039 | strings/wave_string | ✓ | 953µs | 3.7 MB |
 | 1040 | strings/wildcard_pattern_matching | ✓ | 1.163ms | 3.4 MB |
 | 1041 | strings/word_occurrence |   |  |  |
 | 1042 | strings/word_patterns |   |  |  |
