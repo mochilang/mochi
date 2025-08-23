@@ -1,5 +1,27 @@
 # 📦 CHANGELOG.md
 
+## [0.10.71] – 2025-08-23T14:49:16+07:00
+
+### Added
+
+* `not` operator implemented for Zig, TypeScript, Scala, Rust, OCaml, Java and Lua transpilers.
+* `read_file` and `ord` builtins introduced across C, C++, Zig, TypeScript, Scheme, Scala, Rust, Racket, Ruby, Python, Pascal, PHP, OCaml, Kotlin, Go, Erlang, Clojure and Swift.
+* Big integer support improved with a C# BigInteger mode and C++ big integer printing.
+* Go transpiler gains `__name__` recognition and C adds nested list concatenation with a simple neural network algorithm.
+* New OHP transpiler and benchmarks expand algorithm coverage across languages.
+
+### Changed
+
+* Go runtime simplifies list printing and Ruby updates float formatting.
+* Algorithm and benchmark data refreshed for Racket, Dart and others.
+
+### Fixed
+
+* Python integer division for index expressions.
+* C map scoping and Java break detection.
+* Dart variable shadowing, Lua boolean string helpers and C++ digit-to-big-int casting issues.
+* Improved Scala case handling and Zig map mutability.
+
 ## [0.10.70] – 2025-08-22T14:19:51+07:00
 
 ### Added
