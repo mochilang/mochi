@@ -243,7 +243,7 @@ func simpleUnionAlias(ut types.UnionType) string {
 func javaType(t string) string {
 	switch t {
 	case "int":
-		return "long"
+		return "java.math.BigInteger"
 	case "bool":
 		return "boolean"
 	case "boolean":
@@ -260,7 +260,7 @@ func javaType(t string) string {
 		needBigRat = true
 		return "BigRat"
 	case "int[]":
-		return "long[]"
+		return "java.math.BigInteger[]"
 	case "string[]":
 		return "String[]"
 	case "bool[]":
@@ -370,7 +370,7 @@ func canonicalType(t string) string {
 	case t == "String":
 		return "string"
 	case strings.HasPrefix(t, "int"):
-		return "long" + t[3:]
+		return "bigint" + t[3:]
 	default:
 		return t
 	}
@@ -389,7 +389,9 @@ func sameType(a, b string) bool {
 
 func javaBoxType(t string) string {
 	switch t {
-	case "int", "long":
+	case "int", "bigint", "java.math.BigInteger":
+		return "java.math.BigInteger"
+	case "long":
 		return "Long"
 	case "float", "float64", "double":
 		return "Double"
@@ -397,8 +399,6 @@ func javaBoxType(t string) string {
 		return "Boolean"
 	case "string", "String":
 		return "String"
-	case "bigint", "java.math.BigInteger":
-		return "java.math.BigInteger"
 	case "bigrat", "BigRat":
 		return "BigRat"
 	case "void", "unit":
@@ -552,7 +552,7 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	}
 	if typ == "int" || typ == "long" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
-		if typ == "long" && it == "java.math.BigInteger" {
+		if typ == "long" && (it == "java.math.BigInteger" || it == "bigint") {
 			fmt.Fprint(w, "((java.math.BigInteger)(")
 			e.emit(w)
 			fmt.Fprint(w, ")).longValue()")
@@ -649,14 +649,14 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		return
 	}
 	if jt == "java.math.BigInteger" {
-		if inferType(e) == "bigint" {
-			e.emit(w)
-			return
-		}
 		if _, ok := e.(*IntLit); ok {
 			fmt.Fprint(w, "java.math.BigInteger.valueOf(")
 			e.emit(w)
 			fmt.Fprint(w, ")")
+			return
+		}
+		if it := inferType(e); it == "bigint" || it == "java.math.BigInteger" {
+			e.emit(w)
 			return
 		}
 		fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
@@ -795,7 +795,7 @@ func fieldTypeFromVar(target Expr, name string) (string, bool) {
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
-		return "int"
+		return "bigint"
 	case *LongLit:
 		return "long"
 	case *FloatLit:
@@ -1083,11 +1083,11 @@ func inferType(e Expr) string {
 }
 
 func guessIntExpr(e Expr) bool {
-	if inferType(e) == "int" {
+	if inferType(e) == "bigint" {
 		return true
 	}
 	if ix, ok := e.(*IndexExpr); ok {
-		if arrayElemType(ix.Target) == "int" {
+		if arrayElemType(ix.Target) == "bigint" {
 			return true
 		}
 	}
@@ -2684,12 +2684,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		if big {
 			emitBigIntOperand := func(e Expr, t string) {
-				if it := inferType(e); it == "bigint" || it == "java.math.BigInteger" {
-					e.emit(w)
-				} else if _, ok := e.(*IntLit); ok {
+				if _, ok := e.(*IntLit); ok {
 					fmt.Fprint(w, "java.math.BigInteger.valueOf(")
 					e.emit(w)
 					fmt.Fprint(w, ")")
+				} else if it := inferType(e); it == "bigint" || it == "java.math.BigInteger" {
+					e.emit(w)
 				} else {
 					fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
 					e.emit(w)
@@ -3733,6 +3733,14 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "+1))")
 		} else if ix.ResultType == "long" {
 			fmt.Fprint(w, "Long.parseLong(")
+			ix.Target.emit(w)
+			fmt.Fprint(w, ".substring(")
+			emitIndex(w, ix.Index)
+			fmt.Fprint(w, ", ")
+			emitIndex(w, ix.Index)
+			fmt.Fprint(w, "+1))")
+		} else if ix.ResultType == "bigint" || ix.ResultType == "java.math.BigInteger" {
+			fmt.Fprint(w, "new java.math.BigInteger(")
 			ix.Target.emit(w)
 			fmt.Fprint(w, ".substring(")
 			emitIndex(w, ix.Index)
@@ -7873,7 +7881,7 @@ func typeRefString(tr *parser.TypeRef) string {
 		case "any":
 			return "Object"
 		case "int":
-			return "long"
+			return "bigint"
 		case "bool", "boolean", "string", "float", "float64", "double", "void", "bigint", "bigrat":
 			// Primitive types should not consult the environment
 			return name
@@ -7932,7 +7940,7 @@ func typeRefString(tr *parser.TypeRef) string {
 func toJavaTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "int"
+		return "bigint"
 	case types.FloatType:
 		return "double"
 	case types.BoolType:
@@ -8291,7 +8299,7 @@ func substituteVars(e Expr, vars map[string]Expr) Expr {
 
 func zeroValueExpr(t string) Expr {
 	switch t {
-	case "int", "long":
+	case "int", "long", "bigint", "java.math.BigInteger":
 		return &IntLit{Value: 0}
 	case "double":
 		return &FloatLit{Value: 0}
