@@ -1606,8 +1606,9 @@ func (p *Program) Emit() []byte {
 	if _, ok := funcNames["to_float"]; !ok {
 		buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := _to_float(x);\nend;\n")
 	}
-	buf.WriteString("procedure json(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
-	if p.NeedJSON {
+       buf.WriteString("procedure json(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
+       buf.WriteString("procedure json(x: int64);\nbegin\n  writeln(x);\nend;\n")
+        if p.NeedJSON {
 		buf.WriteString("procedure json_intarray(xs: IntArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
 		if p.NeedJSONReal {
 			buf.WriteString("procedure json_realarray(xs: RealArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
@@ -4657,23 +4658,25 @@ func typeFromRef(tr *parser.TypeRef) string {
 }
 
 func typeFromSimple(s string) string {
-	switch s {
-	case "int":
-		return "int64"
-	case "string":
-		return "string"
-	case "bool":
-		return "boolean"
-	case "float":
-		return "real"
-	case "bigint":
-		return "int64"
-	case "bigrat":
-		currProg.UseBigRat = true
-		return "BigRat"
-	default:
-		return sanitize(s)
-	}
+        switch s {
+       case "void", "unit", "":
+               return ""
+       case "int":
+               return "int64"
+       case "string":
+               return "string"
+       case "bool":
+               return "boolean"
+       case "float":
+               return "real"
+       case "bigint":
+               return "int64"
+       case "bigrat":
+               currProg.UseBigRat = true
+               return "BigRat"
+       default:
+               return sanitize(s)
+       }
 }
 
 func pasTypeFromType(t types.Type) string {
@@ -5377,15 +5380,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			kType := inferType(keyExpr)
-			if kType != "string" && kType != "integer" {
-				return nil, fmt.Errorf("unsupported map key")
-			}
-			if kType == "integer" {
-				keyType = "integer"
-			} else {
-				keyType = "string"
-			}
+                       kType := inferType(keyExpr)
+                       if kType != "string" && kType != "integer" && kType != "int64" {
+                               return nil, fmt.Errorf("unsupported map key")
+                       }
+                       if kType == "integer" || kType == "int64" {
+                               keyType = "int64"
+                       } else {
+                               keyType = "string"
+                       }
 			vType := inferType(val)
 			items = append(items, MapItem{Key: keyExpr, Value: val, Type: vType})
 			collectVarNames(val, varsSet)

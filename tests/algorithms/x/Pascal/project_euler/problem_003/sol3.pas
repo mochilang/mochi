@@ -59,17 +59,21 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function largest_prime_factor(largest_prime_factor_n: integer): integer; forward;
-function largest_prime_factor(largest_prime_factor_n: integer): integer;
+function largest_prime_factor(largest_prime_factor_n: int64): int64; forward;
+function largest_prime_factor(largest_prime_factor_n: int64): int64;
 var
-  largest_prime_factor_i: integer;
-  largest_prime_factor_ans: integer;
-  largest_prime_factor_m: integer;
+  largest_prime_factor_i: int64;
+  largest_prime_factor_ans: int64;
+  largest_prime_factor_m: int64;
 begin
   if largest_prime_factor_n <= 1 then begin
   exit(largest_prime_factor_n);

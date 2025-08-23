@@ -37,53 +37,78 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-function solution(n: integer): integer; forward;
-function solution(n: integer): integer;
+function solution(solution_n: int64): int64; forward;
+function solution(solution_n: int64): int64;
 var
-  solution_total: integer;
-  solution_num: integer;
+  solution_total: int64;
+  solution_num: int64;
 begin
   solution_total := 0;
   solution_num := 0;
   while true do begin
   solution_num := solution_num + 3;
-  if solution_num >= n then begin
+  if solution_num >= solution_n then begin
   break;
 end;
   solution_total := solution_total + solution_num;
   solution_num := solution_num + 2;
-  if solution_num >= n then begin
+  if solution_num >= solution_n then begin
   break;
 end;
   solution_total := solution_total + solution_num;
   solution_num := solution_num + 1;
-  if solution_num >= n then begin
+  if solution_num >= solution_n then begin
   break;
 end;
   solution_total := solution_total + solution_num;
   solution_num := solution_num + 3;
-  if solution_num >= n then begin
+  if solution_num >= solution_n then begin
   break;
 end;
   solution_total := solution_total + solution_num;
   solution_num := solution_num + 1;
-  if solution_num >= n then begin
+  if solution_num >= solution_n then begin
   break;
 end;
   solution_total := solution_total + solution_num;
   solution_num := solution_num + 2;
-  if solution_num >= n then begin
+  if solution_num >= solution_n then begin
   break;
 end;
   solution_total := solution_total + solution_num;
   solution_num := solution_num + 3;
-  if solution_num >= n then begin
+  if solution_num >= solution_n then begin
   break;
 end;
   solution_total := solution_total + solution_num;
@@ -102,4 +127,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

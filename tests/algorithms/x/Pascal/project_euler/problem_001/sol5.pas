@@ -37,21 +37,46 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-function solution(n: integer): integer; forward;
-function solution(n: integer): integer;
+function solution(solution_n: int64): int64; forward;
+function solution(solution_n: int64): int64;
 var
-  solution_total: integer;
-  solution_i: integer;
+  solution_total: int64;
+  solution_i: int64;
 begin
   solution_total := 0;
   solution_i := 0;
-  while solution_i < n do begin
+  while solution_i < solution_n do begin
   if ((solution_i mod 3) = 0) or ((solution_i mod 5) = 0) then begin
   solution_total := solution_total + solution_i;
 end;
@@ -74,4 +99,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -38,48 +38,71 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  xs: IntArray;
-  value: integer;
-  n: integer;
-function contains(xs: IntArray; value: integer): boolean; forward;
-function solution(n: integer): integer; forward;
+function contains(contains_xs: IntArray; contains_value: int64): boolean; forward;
+function solution(solution_n: int64): int64; forward;
 procedure test_solution(); forward;
 procedure main(); forward;
-function contains(xs: IntArray; value: integer): boolean;
+function contains(contains_xs: IntArray; contains_value: int64): boolean;
 var
-  contains_i: integer;
+  contains_i: int64;
 begin
   contains_i := 0;
-  while contains_i < Length(xs) do begin
-  if xs[contains_i] = value then begin
+  while contains_i < Length(contains_xs) do begin
+  if contains_xs[contains_i] = contains_value then begin
   exit(true);
 end;
   contains_i := contains_i + 1;
 end;
   exit(false);
 end;
-function solution(n: integer): integer;
+function solution(solution_n: int64): int64;
 var
-  solution_zmulti: array of integer;
-  solution_xmulti: array of integer;
-  solution_temp: integer;
-  solution_result_: integer;
-  solution_collection: array of integer;
-  solution_i: integer;
-  solution_v: integer;
-  solution_total: integer;
+  solution_zmulti: array of int64;
+  solution_xmulti: array of int64;
+  solution_temp: int64;
+  solution_result_: int64;
+  solution_collection: array of int64;
+  solution_i: int64;
+  solution_v: int64;
+  solution_total: int64;
 begin
   solution_zmulti := [];
   solution_xmulti := [];
   solution_temp := 1;
   while true do begin
   solution_result_ := 3 * solution_temp;
-  if solution_result_ < n then begin
+  if solution_result_ < solution_n then begin
   solution_zmulti := concat(solution_zmulti, IntArray([solution_result_]));
   solution_temp := solution_temp + 1;
 end else begin
@@ -89,7 +112,7 @@ end;
   solution_temp := 1;
   while true do begin
   solution_result_ := 5 * solution_temp;
-  if solution_result_ < n then begin
+  if solution_result_ < solution_n then begin
   solution_xmulti := concat(solution_xmulti, IntArray([solution_result_]));
   solution_temp := solution_temp + 1;
 end else begin
@@ -153,4 +176,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

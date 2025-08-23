@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type Result = record
+type Result_ = record
   name: string;
   value: real;
 end;
@@ -41,59 +41,81 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  r1: Result;
-  r2: Result;
-  r3: Result;
-  stress: real;
-  tangential_force: real;
-  area: real;
-  r: Result;
-function makeResult(name: string; value: real): Result; forward;
-function shear_stress(stress: real; tangential_force: real; area: real): Result; forward;
-function str_result(r: Result): string; forward;
-function makeResult(name: string; value: real): Result;
+  r1: Result_;
+  r2: Result_;
+  r3: Result_;
+function makeResult_(name: string; value: real): Result_; forward;
+function shear_stress(shear_stress_stress: real; shear_stress_tangential_force: real; shear_stress_area: real): Result_; forward;
+function str_result(str_result_r: Result_): string; forward;
+function makeResult_(name: string; value: real): Result_;
 begin
   Result.name := name;
   Result.value := value;
 end;
-function shear_stress(stress: real; tangential_force: real; area: real): Result;
+function shear_stress(shear_stress_stress: real; shear_stress_tangential_force: real; shear_stress_area: real): Result_;
 var
-  shear_stress_zeros: integer;
+  shear_stress_zeros: int64;
 begin
   shear_stress_zeros := 0;
-  if stress = 0 then begin
+  if shear_stress_stress = 0 then begin
   shear_stress_zeros := shear_stress_zeros + 1;
 end;
-  if tangential_force = 0 then begin
+  if shear_stress_tangential_force = 0 then begin
   shear_stress_zeros := shear_stress_zeros + 1;
 end;
-  if area = 0 then begin
+  if shear_stress_area = 0 then begin
   shear_stress_zeros := shear_stress_zeros + 1;
 end;
   if shear_stress_zeros <> 1 then begin
   panic('You cannot supply more or less than 2 values');
 end else begin
-  if stress < 0 then begin
+  if shear_stress_stress < 0 then begin
   panic('Stress cannot be negative');
 end else begin
-  if tangential_force < 0 then begin
+  if shear_stress_tangential_force < 0 then begin
   panic('Tangential Force cannot be negative');
 end else begin
-  if area < 0 then begin
+  if shear_stress_area < 0 then begin
   panic('Area cannot be negative');
 end else begin
-  if stress = 0 then begin
-  exit(makeResult('stress', tangential_force / area));
+  if shear_stress_stress = 0 then begin
+  exit(makeResult_('stress', shear_stress_tangential_force / shear_stress_area));
 end else begin
-  if tangential_force = 0 then begin
-  exit(makeResult('tangential_force', stress * area));
+  if shear_stress_tangential_force = 0 then begin
+  exit(makeResult_('tangential_force', shear_stress_stress * shear_stress_area));
 end else begin
-  exit(makeResult('area', tangential_force / stress));
+  exit(makeResult_('area', shear_stress_tangential_force / shear_stress_stress));
 end;
 end;
 end;
@@ -101,9 +123,9 @@ end;
 end;
 end;
 end;
-function str_result(r: Result): string;
+function str_result(str_result_r: Result_): string;
 begin
-  exit(((('Result(name=''' + r.name) + ''', value=') + FloatToStr(r.value)) + ')');
+  exit(((('Result(name=''' + str_result_r.name) + ''', value=') + FloatToStr(str_result_r.value)) + ')');
 end;
 begin
   init_now();
@@ -122,4 +144,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
