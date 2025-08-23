@@ -137,9 +137,19 @@ func isConstExpr(e Expr) bool {
 		}
 		return false
 	case *ListLit:
-		return false
+		for _, el := range v.Elems {
+			if !isConstExpr(el) {
+				return false
+			}
+		}
+		return true
 	case *MapLit:
-		return false
+		for _, it := range v.Items {
+			if !isConstExpr(it.Key) || !isConstExpr(it.Value) {
+				return false
+			}
+		}
+		return true
 	case *StructLit:
 		for _, f := range v.Fields {
 			if !isConstExpr(f) {
@@ -2862,19 +2872,24 @@ type UnaryExpr struct {
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
-	if strings.TrimSpace(u.Op) == "&mut" {
+	op := strings.TrimSpace(u.Op)
+	switch op {
+	case "&mut":
 		io.WriteString(w, "&mut ")
 		old := refMode
 		refMode = true
 		u.Expr.emit(w)
 		refMode = old
-	} else if strings.TrimSpace(u.Op) == "&" {
+	case "&":
 		io.WriteString(w, "&")
 		old := refMode
 		refMode = true
 		u.Expr.emit(w)
 		refMode = old
-	} else {
+	case "not":
+		io.WriteString(w, "!")
+		u.Expr.emit(w)
+	default:
 		io.WriteString(w, u.Op)
 		u.Expr.emit(w)
 	}
@@ -4695,7 +4710,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	if len(caps) > 0 {
 		filtered := make([]string, 0, len(caps))
 		for _, c := range caps {
-			if _, ok := funReturns[c]; ok && currentParamTypes[c] == "" {
+			if _, ok := funReturns[c]; ok && currentParamTypes[c] == "" && varTypes[c] == "" {
 				continue
 			}
 			filtered = append(filtered, c)
@@ -4712,7 +4727,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	// (e.g. maths/fibonacci using `fib_recursive_cached_term`). By also
 	// considering `topLevelNonConstLet`, we ensure such functions become
 	// closures and can access surrounding state safely.
-	useClosure := nested || len(caps) > 0
+	useClosure := nested || len(caps) > 0 || topLevelNonConstLet
 	// Always emit the top-level `main` function as a closure so it can
 	// reference other generated closures. This avoids Rust compile errors
 	// when `main` needs to capture variables such as other function
@@ -5141,6 +5156,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "main" && mainFuncName != "" {
 			name = mainFuncName
+		}
+		if name == "not" && len(args) == 1 {
+			return &UnaryExpr{Op: "!", Expr: args[0]}, nil
 		}
 		if name == "now" && len(args) == 0 {
 			useTime = true
