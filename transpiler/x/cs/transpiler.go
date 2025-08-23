@@ -2334,6 +2334,8 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "false")
 		case "string":
 			fmt.Fprint(w, "\"\"")
+		case "BigInteger":
+			fmt.Fprint(w, "BigInteger.Zero")
 		default:
 			fmt.Fprint(w, "null")
 		}
@@ -2645,9 +2647,21 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "_substr(")
 	s.Str.emit(w)
 	fmt.Fprint(w, ", ")
-	s.Start.emit(w)
+	if typeOfExpr(s.Start) == "BigInteger" {
+		fmt.Fprint(w, "(long)(")
+		s.Start.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		s.Start.emit(w)
+	}
 	fmt.Fprint(w, ", ")
-	s.End.emit(w)
+	if typeOfExpr(s.End) == "BigInteger" {
+		fmt.Fprint(w, "(long)(")
+		s.End.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		s.End.emit(w)
+	}
 	fmt.Fprint(w, ")")
 }
 
@@ -5368,6 +5382,12 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tif ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;\n")
 		buf.WriteString("\t\treturn r;\n")
 		buf.WriteString("\t}\n")
+		buf.WriteString("\tstatic BigInteger _mod(BigInteger a, BigInteger b) {\n")
+		buf.WriteString("\t\tif (b == 0) return BigInteger.Zero;\n")
+		buf.WriteString("\t\tvar r = a % b;\n")
+		buf.WriteString("\t\tif ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;\n")
+		buf.WriteString("\t\treturn r;\n")
+		buf.WriteString("\t}\n")
 	}
 	if usesFloorDiv {
 		buf.WriteString("\tstatic long _floordiv(long a, long b) {\n")
@@ -5375,6 +5395,13 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tvar q = a / b;\n")
 		buf.WriteString("\t\tvar r = a % b;\n")
 		buf.WriteString("\t\tif ((r > 0 && b < 0) || (r < 0 && b > 0)) q--;\n")
+		buf.WriteString("\t\treturn q;\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tstatic BigInteger _floordiv(BigInteger a, BigInteger b) {\n")
+		buf.WriteString("\t\tif (b == 0) return BigInteger.Zero;\n")
+		buf.WriteString("\t\tvar q = a / b;\n")
+		buf.WriteString("\t\tvar r = a % b;\n")
+		buf.WriteString("\t\tif ((r > 0 && b < 0) || (r < 0 && b > 0)) q -= 1;\n")
 		buf.WriteString("\t\treturn q;\n")
 		buf.WriteString("\t}\n")
 	}
