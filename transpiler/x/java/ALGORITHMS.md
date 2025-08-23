@@ -2,13 +2,13 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-22 15:50 GMT+7
+Last updated: 2025-08-22 23:24 GMT+7
 
-## Algorithms Golden Test Checklist (970/1077)
+## Algorithms Golden Test Checklist (977/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
-| 2 | backtracking/all_permutations | ✓ | 42.0ms | 45.75KB |
+| 2 | backtracking/all_permutations | error | 42.0ms | 45.75KB |
 | 3 | backtracking/all_subsequences | ✓ | 60.0ms | 45.54KB |
 | 4 | backtracking/coloring | ✓ | 42.0ms | 46.43KB |
 | 5 | backtracking/combination_sum | ✓ | 62.0ms | 46.14KB |
@@ -897,9 +897,9 @@ Last updated: 2025-08-22 15:50 GMT+7
 | 888 | project_euler/problem_057/sol1 | ✓ | 23.0ms | 712B |
 | 889 | project_euler/problem_058/sol1 | ✓ | 80.0ms | 1.21KB |
 | 890 | project_euler/problem_059/sol1 | ✓ | 1.08s | 55.24KB |
-| 891 | project_euler/problem_062/sol1 | error |  |  |
+| 891 | project_euler/problem_062/sol1 | ✓ | 104.0ms | 38.48KB |
 | 892 | project_euler/problem_063/sol1 | ✓ | 25.0ms | 37.65KB |
-| 893 | project_euler/problem_064/sol1 | error |  |  |
+| 893 | project_euler/problem_064/sol1 | ✓ | 26.0ms | -1280B |
 | 894 | project_euler/problem_065/sol1 | ✓ | 16.0ms | 552B |
 | 895 | project_euler/problem_067/sol1 | ✓ | 17.0ms | 22.54KB |
 | 896 | project_euler/problem_067/sol2 | ✓ | 50.0ms | 68.20KB |
@@ -907,15 +907,15 @@ Last updated: 2025-08-22 15:50 GMT+7
 | 898 | project_euler/problem_069/sol1 | ✓ | 15.0ms | 664B |
 | 899 | project_euler/problem_070/sol1 | ✓ | 307.0ms | 46.79KB |
 | 900 | project_euler/problem_071/sol1 | ✓ | 25.0ms | 1.02KB |
-| 901 | project_euler/problem_072/sol1 |   |  |  |
+| 901 | project_euler/problem_072/sol1 | ✓ |  |  |
 | 902 | project_euler/problem_072/sol2 | ✓ | 46.0ms | 46.21KB |
 | 903 | project_euler/problem_073/sol1 | ✓ | 497.0ms | 784B |
 | 904 | project_euler/problem_074/sol1 | ✓ | 43.0ms | 222.55KB |
-| 905 | project_euler/problem_074/sol2 | error |  |  |
+| 905 | project_euler/problem_074/sol2 | ✓ | 2.25s | 1.50KB |
 | 906 | project_euler/problem_075/sol1 | ✓ | 524.0ms | 38.55KB |
 | 907 | project_euler/problem_076/sol1 | ✓ | 66.0ms | 46.30KB |
 | 908 | project_euler/problem_077/sol1 | ✓ | 594.0ms | 293.27KB |
-| 909 | project_euler/problem_078/sol1 | error |  |  |
+| 909 | project_euler/problem_078/sol1 | ✓ | 3.19s | 1.19KB |
 | 910 | project_euler/problem_079/sol1 | ✓ | 55.0ms | 53.62KB |
 | 911 | project_euler/problem_092/sol1 | ✓ | 15.0ms | 1.13KB |
 | 912 | project_euler/problem_116/sol1 | ✓ | 29.0ms | 46.04KB |
@@ -925,17 +925,17 @@ Last updated: 2025-08-22 15:50 GMT+7
 | 916 | scheduling/job_sequencing_with_deadline | ✓ | 32.0ms | 51.91KB |
 | 917 | scheduling/multi_level_feedback_queue | ✓ | 34.0ms | 59.23KB |
 | 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 45.0ms | 122.70KB |
-| 919 | scheduling/round_robin | error | 84.0ms | 116.46KB |
+| 919 | scheduling/round_robin | ✓ | 84.0ms | 116.46KB |
 | 920 | scheduling/shortest_job_first | ✓ | 43.0ms | 64.05KB |
 | 921 | scripts/build_directory_md | ✓ | 49.0ms | 122.77KB |
 | 922 | scripts/validate_filenames | ✓ | 33.0ms | 57.82KB |
-| 923 | scripts/validate_solutions | error | 108.0ms | 249.70KB |
+| 923 | scripts/validate_solutions | ✓ | 108.0ms | 249.70KB |
 | 924 | searches/binary_search | ✓ | 15.0ms | 880B |
 | 925 | searches/double_linear_search | ✓ | 27.0ms | 46.25KB |
 | 926 | searches/double_linear_search_recursion | ✓ | 16.0ms | 448B |
 | 927 | searches/exponential_search | ✓ | 14.0ms | 0B |
 | 928 | searches/fibonacci_search | ✓ | 15.0ms | 768B |
-| 929 | searches/hill_climbing | error | 127.0ms | 50.31KB |
+| 929 | searches/hill_climbing | ✓ | 127.0ms | 50.31KB |
 | 930 | searches/interpolation_search | ✓ | 15.0ms | 768B |
 | 931 | searches/jump_search | ✓ | 16.0ms | 664B |
 | 932 | searches/linear_search | ✓ | 16.0ms | 664B |
