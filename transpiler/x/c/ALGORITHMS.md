@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (689/1077) - Last updated 2025-08-23 13:39 +0700:
+Checklist of programs that currently transpile and run (690/1077) - Last updated 2025-08-23 14:44 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -795,7 +795,7 @@ Checklist of programs that currently transpile and run (689/1077) - Last updated
 | 788 | physics/rainfall_intensity | ✓ | 845us | 2.2 MB |
 | 789 | physics/reynolds_number | ✓ | 303us | 1.7 MB |
 | 790 | physics/rms_speed_of_molecule | ✓ | 322us | 1.6 MB |
-| 791 | physics/shear_stress | ✓ | 520us | 1.6 MB |
+| 791 | physics/shear_stress | ✓ | 750us | 1.5 MB |
 | 792 | physics/speed_of_sound | ✓ | 530us | 1.6 MB |
 | 793 | physics/speeds_of_gas_molecules | ✓ | 700us | 1.6 MB |
 | 794 | physics/terminal_velocity | ✓ | 496us | 1.7 MB |
@@ -844,7 +844,7 @@ Checklist of programs that currently transpile and run (689/1077) - Last updated
 | 837 | project_euler/problem_015/sol1 |  |  |  |
 | 838 | project_euler/problem_016/sol1 |  |  |  |
 | 839 | project_euler/problem_016/sol2 |  |  |  |
-| 840 | project_euler/problem_017/sol1 |  |  |  |
+| 840 | project_euler/problem_017/sol1 | ✓ | 252us | 1.4 MB |
 | 841 | project_euler/problem_018/solution |  |  |  |
 | 842 | project_euler/problem_019/sol1 |  |  |  |
 | 843 | project_euler/problem_020/sol1 |  |  |  |
