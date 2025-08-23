@@ -6042,6 +6042,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: "read_file", Args: args}, nil
 		}
+		if name == "not" && len(args) == 1 {
+			return &UnaryExpr{Op: "!", Value: args[0]}, nil
+		}
 		aliasName := resolveAlias(name)
 		if t, ok := varTypes[aliasName]; ok {
 			if strings.HasPrefix(t, "fn") {
