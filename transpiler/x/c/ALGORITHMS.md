@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (689/1077) - Last updated 2025-08-23 13:39 +0700:
+Checklist of programs that currently transpile and run (692/1077) - Last updated 2025-08-23 14:44 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -840,12 +840,12 @@ Checklist of programs that currently transpile and run (689/1077) - Last updated
 | 833 | project_euler/problem_012/sol2 |  |  |  |
 | 834 | project_euler/problem_013/sol1 |  |  |  |
 | 835 | project_euler/problem_014/sol1 |  |  |  |
-| 836 | project_euler/problem_014/sol2 |  |  |  |
+| 836 | project_euler/problem_014/sol2 | ✓ | 1.19ms | 1.6 MB |
 | 837 | project_euler/problem_015/sol1 |  |  |  |
 | 838 | project_euler/problem_016/sol1 |  |  |  |
 | 839 | project_euler/problem_016/sol2 |  |  |  |
-| 840 | project_euler/problem_017/sol1 |  |  |  |
-| 841 | project_euler/problem_018/solution |  |  |  |
+| 840 | project_euler/problem_017/sol1 | ✓ | 355us | 1.6 MB |
+| 841 | project_euler/problem_018/solution | ✓ | 412us | 1.6 MB |
 | 842 | project_euler/problem_019/sol1 |  |  |  |
 | 843 | project_euler/problem_020/sol1 |  |  |  |
 | 844 | project_euler/problem_020/sol2 |  |  |  |
