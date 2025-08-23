@@ -1,3 +1,486 @@
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
+## Progress (2025-08-23 14:49 +0700)
+- go transpiler: support __name__ (progress 103/105)
+
 ## Progress (2025-08-17 20:29 +0700)
 - chore(cs): regenerate two_sum algorithm (progress 103/105)
 
@@ -4183,6 +4666,167 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
