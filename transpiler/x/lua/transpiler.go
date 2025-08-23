@@ -721,6 +721,12 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
+	case "not":
+		io.WriteString(w, "(not ")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
 	case "get":
 		// map get with optional default
 		io.WriteString(w, "((function(m,k,d) local v=m[k] if v==nil then return d end return v end)(")
