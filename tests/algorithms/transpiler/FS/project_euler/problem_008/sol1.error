@@ -1,0 +1,5 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/project_euler/problem_008/sol1.fs(56,39): error FS0001: The type 'int' does not match the type 'int64'

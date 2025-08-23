@@ -32,39 +32,47 @@ let rec _str v =
          .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
-let rec sqrtApprox (x: float) =
-    let mutable __ret : float = Unchecked.defaultof<float>
-    let mutable x = x
+let rec is_prime (number: int64) =
+    let mutable __ret : bool = Unchecked.defaultof<bool>
+    let mutable number = number
     try
-        if abs(x - 0.0) < 1e-9 then
-            __ret <- 0.0
+        if ((int64 1) < number) && (number < (int64 4)) then
+            __ret <- true
             raise Return
-        let mutable guess: float = x / 2.0
-        let mutable i: int = 0
-        while i < 20 do
-            guess <- (guess + (x / guess)) / 2.0
-            i <- i + 1
-        __ret <- guess
+        else
+            if ((number < (int64 2)) || ((((number % (int64 2) + (int64 2)) % (int64 2))) = (int64 0))) || ((((number % (int64 3) + (int64 3)) % (int64 3))) = (int64 0)) then
+                __ret <- false
+                raise Return
+        let mutable i: int64 = int64 5
+        while (i * i) <= number do
+            if ((((number % i + i) % i)) = (int64 0)) || ((((number % (i + (int64 2)) + (i + (int64 2))) % (i + (int64 2)))) = (int64 0)) then
+                __ret <- false
+                raise Return
+            i <- i + (int64 6)
+        __ret <- true
         raise Return
         __ret
     with
         | Return -> __ret
-and speed_of_sound_in_a_fluid (density: float) (bulk_modulus: float) =
-    let mutable __ret : float = Unchecked.defaultof<float>
-    let mutable density = density
-    let mutable bulk_modulus = bulk_modulus
+and solution (nth: int64) =
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
+    let mutable nth = nth
     try
-        if density <= 0.0 then
-            ignore (failwith ("Impossible fluid density"))
-        if bulk_modulus <= 0.0 then
-            ignore (failwith ("Impossible bulk modulus"))
-        __ret <- sqrtApprox (bulk_modulus / density)
+        let mutable count: int64 = int64 0
+        let mutable num: int64 = int64 2
+        while true do
+            if is_prime (num) then
+                count <- count + (int64 1)
+                if count = nth then
+                    __ret <- num
+                    raise Return
+            num <- num + (int64 1)
+        __ret <- int64 0
         raise Return
         __ret
     with
         | Return -> __ret
-ignore (printfn "%s" (_str (speed_of_sound_in_a_fluid (998.0) (2150000000.0))))
-ignore (printfn "%s" (_str (speed_of_sound_in_a_fluid (13600.0) (28500000000.0))))
+ignore (printfn "%s" ("solution() = " + (_str (solution (int64 10001)))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

@@ -323,8 +323,10 @@ func fsType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.AnyType:
 		return "obj"
-	case types.IntType, types.Int64Type:
-		return "int"
+	case types.IntType:
+		return "int64"
+	case types.Int64Type:
+		return "int64"
 	case types.BigIntType:
 		return "bigint"
 	case types.BigRatType:
@@ -376,7 +378,7 @@ func fsType(t types.Type) string {
 func fsTypeFromString(s string) string {
 	switch s {
 	case "int":
-		return "int"
+		return "int64"
 	case "int64":
 		return "int64"
 	case "float":
@@ -1514,20 +1516,28 @@ func (s *SubstringExpr) emit(w io.Writer) {
 		s.Str.emit(w)
 	}
 	io.WriteString(w, " ")
-	if needsParen(s.Start) {
+	start := s.Start
+	if inferType(start) != "int" {
+		start = &CastExpr{Expr: start, Type: "int"}
+	}
+	if needsParen(start) {
 		io.WriteString(w, "(")
-		s.Start.emit(w)
+		start.emit(w)
 		io.WriteString(w, ")")
 	} else {
-		s.Start.emit(w)
+		start.emit(w)
 	}
 	io.WriteString(w, " ")
-	if needsParen(s.End) {
+	finish := s.End
+	if inferType(finish) != "int" {
+		finish = &CastExpr{Expr: finish, Type: "int"}
+	}
+	if needsParen(finish) {
 		io.WriteString(w, "(")
-		s.End.emit(w)
+		finish.emit(w)
 		io.WriteString(w, ")")
 	} else {
-		s.End.emit(w)
+		finish.emit(w)
 	}
 }
 
@@ -3260,10 +3270,18 @@ func (s *SliceExpr) emit(w io.Writer) {
 		} else {
 			s.Target.emit(w)
 		}
+		st := start
+		if inferType(st) != "int" {
+			st = &CastExpr{Expr: st, Type: "int"}
+		}
+		fn := finish
+		if inferType(fn) != "int" {
+			fn = &CastExpr{Expr: fn, Type: "int"}
+		}
 		io.WriteString(w, " (")
-		start.emit(w)
+		st.emit(w)
 		io.WriteString(w, ") (")
-		finish.emit(w)
+		fn.emit(w)
 		io.WriteString(w, ")")
 		return
 	}
@@ -3325,9 +3343,9 @@ func (c *CastExpr) emit(w io.Writer) {
 		}
 	case "int":
 		if t == "obj" {
-			io.WriteString(w, "unbox<int> ")
+			io.WriteString(w, "unbox<int64> ")
 		} else {
-			io.WriteString(w, "int ")
+			io.WriteString(w, "int64 ")
 		}
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
@@ -4110,7 +4128,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if declared == "" {
 			declared = inferType(e)
 		}
-		varTypes[st.Let.Name] = declared
+		if fsDecl != "" {
+			varTypes[st.Let.Name] = fsDecl
+		} else {
+			varTypes[st.Let.Name] = declared
+		}
 		typ := fsDecl
 		mut := mutatedVars[st.Let.Name]
 		if fsDecl != "" {
@@ -4242,7 +4264,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				ml.Types[i] = vtyp
 			}
 		}
-		varTypes[st.Var.Name] = declared
+		if fsDecl != "" {
+			varTypes[st.Var.Name] = fsDecl
+		} else {
+			varTypes[st.Var.Name] = declared
+		}
 		typ := fsDecl
 		if fsDecl != "" {
 			at := inferType(e)
@@ -4496,6 +4522,25 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					if inferType(r.Expr) == "int64" {
 						retType = "int64"
 						break
+					}
+				}
+			}
+		}
+		for i, p := range st.Fun.Params {
+			if paramTypes[i] == "int" {
+				if t, ok := varTypes[p.Name]; ok && t == "int64" {
+					paramTypes[i] = "int64"
+				}
+			}
+		}
+		for name, lsts := range letPtrs {
+			for _, ls := range lsts {
+				if id, ok := ls.Expr.(*IdentExpr); ok {
+					for j, p := range st.Fun.Params {
+						if id.Name == p.Name && paramTypes[j] == "int64" && ls.Type == "int" {
+							ls.Type = "int64"
+							varTypes[name] = "int64"
+						}
 					}
 				}
 			}
