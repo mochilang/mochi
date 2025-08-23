@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Numerics;
+using System.IO;
 using System.Collections;
 using System.Globalization;
 
@@ -42,18 +43,9 @@ class Program {
         if (i < 0 || i >= arr.Length) return default(T);
         return arr[(int)i];
     }
-    static long _atoi(object v) {
-        if (v == null) return 0;
-        if (v is long l) return l;
-        if (v is int i) return i;
-        if (v is double d) return (long)d;
-        if (v is bool b) return b ? 1L : 0L;
-        if (v is string s) {
-            if (long.TryParse(s, out var n)) return n;
-            if (double.TryParse(s, out var f)) return (long)f;
-            return 0;
-        }
-        try { return Convert.ToInt64(v); } catch { return 0; }
+    static long _ord(object v) {
+        if (v is string s && s.Length > 0) return (long)s[0];
+        return 0;
     }
     static long _floordiv(long a, long b) {
         if (b == 0) return 0;
@@ -137,54 +129,69 @@ class Program {
         return _fmt(v);
     }
     static string __name__ = "__main__";
-    static BigInteger result_17 = Program.solution(5000);
-    public static double sqrt(double x_0) {
-        if ((x_0 <= 0.0)) {
-            return 0.0;
+    public static BigInteger[] triangular_numbers(BigInteger limit_0) {
+        BigInteger[] res_1 = new BigInteger[]{};
+        BigInteger n_2 = 1;
+        while ((n_2 <= limit_0)) {
+            res_1 = ((Func<BigInteger[]>)(() => { var _tmp = res_1.Cast<BigInteger>().ToList(); _tmp.Add(((n_2 * (n_2 + 1)) / 2)); return _tmp.ToArray(); }))();
+            n_2 = (n_2 + 1);
         };
-        double guess_1 = x_0;
-        BigInteger i_2 = 0;
-        while ((i_2 < 10)) {
-            guess_1 = ((guess_1 + (x_0 / guess_1)) / 2.0);
-            i_2 = (i_2 + 1);
+        return res_1;
+    }
+
+    public static string[] parse_words(string text_3) {
+        string[] words_4 = new string[]{};
+        string current_5 = "";
+        BigInteger i_6 = 0;
+        while ((i_6 < text_3.Length)) {
+            string c_7 = _substr(text_3, (long)(i_6), (long)((i_6 + 1)));
+            if ((c_7 == ",")) {
+                words_4 = ((Func<string[]>)(() => { var _tmp = words_4.Cast<string>().ToList(); _tmp.Add(current_5); return _tmp.ToArray(); }))();
+                current_5 = "";
+            } else if ((c_7 == "\"")) {
+            } else if (((c_7 == "\r") || (c_7 == "\n"))) {
+            } else {
+                current_5 = (current_5 + c_7);
+            }
+            i_6 = (i_6 + 1);
         };
-        return guess_1;
+        if ((current_5.Length > 0)) {
+            words_4 = ((Func<string[]>)(() => { var _tmp = words_4.Cast<string>().ToList(); _tmp.Add(current_5); return _tmp.ToArray(); }))();
+        };
+        return words_4;
     }
 
-    public static bool is_pentagonal(BigInteger n_3) {
-        double root_4 = Program.sqrt((1.0 + (24.0 * (1.0 * (double)(n_3)))));
-        double val_5 = ((1.0 + root_4) / 6.0);
-        long val_int_6 = _atoi(val_5);
-        return (val_5 == (1.0 * val_int_6));
-    }
-
-    public static BigInteger pentagonal(BigInteger k_7) {
-        return ((k_7 * ((3 * k_7) - 1)) / 2);
-    }
-
-    public static BigInteger solution(BigInteger limit_8) {
-        BigInteger[] pentagonal_nums_9 = new BigInteger[]{};
-        BigInteger i_10 = 1;
-        while ((i_10 < limit_8)) {
-            pentagonal_nums_9 = ((Func<BigInteger[]>)(() => { var _tmp = pentagonal_nums_9.Cast<BigInteger>().ToList(); _tmp.Add(Program.pentagonal(i_10)); return _tmp.ToArray(); }))();
+    public static BigInteger word_value(string word_8) {
+        BigInteger total_9 = 0;
+        BigInteger i_10 = 0;
+        while ((i_10 < word_8.Length)) {
+            total_9 = ((((dynamic)(total_9)) + ((dynamic)(_ord(_substr(word_8, (long)(i_10), (long)((i_10 + 1))))))) - 64);
             i_10 = (i_10 + 1);
         };
-        BigInteger a_idx_11 = 0;
-        while ((a_idx_11 < pentagonal_nums_9.Length)) {
-            BigInteger pentagonal_i_12 = _idx(pentagonal_nums_9, (long)(a_idx_11));
-            BigInteger b_idx_13 = a_idx_11;
-            while ((b_idx_13 < pentagonal_nums_9.Length)) {
-                BigInteger pentagonal_j_14 = _idx(pentagonal_nums_9, (long)(b_idx_13));
-                BigInteger s_15 = (pentagonal_i_12 + pentagonal_j_14);
-                BigInteger d_16 = (pentagonal_j_14 - pentagonal_i_12);
-                if ((Program.is_pentagonal(s_15) && Program.is_pentagonal(d_16))) {
-                    return d_16;
-                }
-                b_idx_13 = (b_idx_13 + 1);
+        return total_9;
+    }
+
+    public static bool contains(BigInteger[] xs_11, BigInteger target_12) {
+        foreach (BigInteger x_13 in xs_11) {
+            if ((x_13 == target_12)) {
+                return true;
             }
-            a_idx_11 = (a_idx_11 + 1);
         };
-        return -1;
+        return false;
+    }
+
+    public static BigInteger solution() {
+        var text_14 = File.ReadAllText("words.txt");
+        string[] words_15 = Program.parse_words(text_14);
+        BigInteger[] tri_16 = Program.triangular_numbers(100);
+        BigInteger count_17 = 0;
+        foreach (string w_18 in words_15) {
+            BigInteger v_19 = Program.word_value(w_18);
+            if (Program.contains(tri_16, v_19)) {
+                count_17 = (count_17 + 1);
+            }
+        };
+        return count_17;
     }
 
     static void Main() {
@@ -192,7 +199,7 @@ class Program {
         {
             var __memStart = _mem();
             var __start = _now();
-            Console.WriteLine(Program._fmtTop(("solution() = " + _fmtStr(result_17))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.solution())));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

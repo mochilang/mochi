@@ -111,6 +111,7 @@ var usesMod bool
 var usesFloorDiv bool
 var usesAtoi bool
 var usesIdx bool
+var usesOrd bool
 var envTypes map[string]types.Type
 
 func isNullExpr(e Expr) bool {
@@ -913,6 +914,26 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				default:
 					fmt.Fprint(w, "0")
 				}
+				return
+			}
+			if (lt == "BigInteger" && rt == "double") || (lt == "double" && rt == "BigInteger") {
+				fmt.Fprint(w, "(")
+				if lt == "BigInteger" {
+					fmt.Fprint(w, "(double)(")
+					b.Left.emit(w)
+					fmt.Fprint(w, ")")
+				} else {
+					b.Left.emit(w)
+				}
+				fmt.Fprintf(w, " %s ", b.Op)
+				if rt == "BigInteger" {
+					fmt.Fprint(w, "(double)(")
+					b.Right.emit(w)
+					fmt.Fprint(w, ")")
+				} else {
+					b.Right.emit(w)
+				}
+				fmt.Fprint(w, ")")
 				return
 			}
 			useDyn := lt == "object" || lt == "" || rt == "object" || rt == ""
@@ -2546,9 +2567,10 @@ func (a *AppendExpr) emit(w io.Writer) {
 	elem := "object"
 	if strings.HasSuffix(t, "[]") {
 		elem = strings.TrimSuffix(t, "[]")
-	}
-	if et := typeOfExpr(a.Item); et != "" && !strings.HasPrefix(et, "object") {
-		elem = et
+	} else {
+		if et := typeOfExpr(a.Item); et != "" && !strings.HasPrefix(et, "object") {
+			elem = et
+		}
 	}
 	listStr := exprString(a.List)
 	itemStr := exprString(a.Item)
@@ -4283,6 +4305,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				usesFmt = true
 				return &StrExpr{Arg: args[0]}, nil
 			}
+		case "ord":
+			if len(args) == 1 {
+				usesOrd = true
+				return &CallExpr{Func: "_ord", Args: args}, nil
+			}
 		case "int":
 			if len(args) == 1 {
 				usesAtoi = true
@@ -5334,6 +5361,12 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t\treturn 0;\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\ttry { return Convert.ToInt64(v); } catch { return 0; }\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesOrd {
+		buf.WriteString("\tstatic long _ord(object v) {\n")
+		buf.WriteString("\t\tif (v is string s && s.Length > 0) return (long)s[0];\n")
+		buf.WriteString("\t\treturn 0;\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesBigRat {
