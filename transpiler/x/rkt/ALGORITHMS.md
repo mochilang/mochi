@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-22 16:24 UTC
+Last updated: 2025-08-23 06:50 UTC
 
-## Algorithms Golden Test Checklist (901/1077)
+## Algorithms Golden Test Checklist (911/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -996,16 +996,16 @@ Last updated: 2025-08-22 16:24 UTC
 | 987 | sorts/wiggle_sort |   |  |  |
 | 988 | strings/aho_corasick |   |  |  |
 | 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
+| 990 | strings/anagrams | ✓ | 275µs | 258.5 KB |
+| 991 | strings/autocomplete_using_trie | ✓ | 25µs | 5.6 KB |
+| 992 | strings/barcode_validator | ✓ | 52µs | 54.9 KB |
+| 993 | strings/bitap_string_match | ✓ | 190µs | 539.5 KB |
+| 994 | strings/boyer_moore_search | ✓ | 2µs | 512 B |
+| 995 | strings/camel_case_to_snake_case | ✓ | 602µs | 2.3 MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 97µs | 244.0 KB |
+| 997 | strings/capitalize | ✓ | 23µs | 32.3 KB |
+| 998 | strings/check_anagrams | ✓ | 72µs | 87.1 KB |
+| 999 | strings/count_vowels | ✓ | 103µs | 371.0 KB |
 | 1000 | strings/credit_card_validator | ✓ | 59µs | 23.5 KB |
 | 1001 | strings/damerau_levenshtein_distance | ✓ | 340µs | 111.0 KB |
 | 1002 | strings/detecting_english_programmatically | ✓ | 793µs | 1.4 MB |
