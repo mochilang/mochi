@@ -5498,6 +5498,7 @@ if (v is string s) return "\"" + s.Replace("\"", "\\\"") + "\"";
 if (v is bool b) return b ? "true" : "false";
 if (v is double dv) return dv.ToString("R", CultureInfo.InvariantCulture);
 if (v is float fv) return fv.ToString("R", CultureInfo.InvariantCulture);
+{{BIGINT_FMTSTR}}
 return Convert.ToString(v, CultureInfo.InvariantCulture);
 }
 `)
@@ -5555,6 +5556,11 @@ return _fmt(v);
 // formatCS performs very basic formatting and prepends a standard header.
 func formatCS(src []byte) []byte {
 	s := strings.ReplaceAll(string(src), "\t", "    ")
+	if usesBigInt {
+		s = strings.Replace(s, "{{BIGINT_FMTSTR}}", "if (v is BigInteger bi) return bi.ToString(CultureInfo.InvariantCulture);\n", 1)
+	} else {
+		s = strings.Replace(s, "{{BIGINT_FMTSTR}}", "", 1)
+	}
 	// fix casting of inline lambda expressions
 	re := regexp.MustCompile(`\(object\)\(object ([A-Za-z0-9_]+)\) => {`)
 	s = re.ReplaceAllString(s, "(object)((object $1) => {")
