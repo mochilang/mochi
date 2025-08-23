@@ -3822,6 +3822,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			useNow = true
 			return &NowExpr{}, nil
 		}
+	case "not":
+		if len(args) == 1 {
+			return &UnaryExpr{Op: "!", Expr: args[0]}, nil
+		}
 	case "str":
 		if len(args) == 1 {
 			name = "_str"
