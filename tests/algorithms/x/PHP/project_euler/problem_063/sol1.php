@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -40,42 +41,7 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
-}
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -83,8 +49,8 @@ $__start = _now();
   $result = 1;
   $i = 0;
   while ($i < $exponent) {
-  $result = _imul($result, $base);
-  $i = _iadd($i, 1);
+  $result = $result * $base;
+  $i = $i + 1;
 };
   return $result;
 };
@@ -96,7 +62,7 @@ $__start = _now();
   $x = $n;
   while ($x > 0) {
   $x = _intdiv($x, 10);
-  $count = _iadd($count, 1);
+  $count = $count + 1;
 };
   return $count;
 };
@@ -108,17 +74,17 @@ $__start = _now();
   while ($power < $max_power) {
   $digits = num_digits(mochi_pow($base, $power));
   if ($digits == $power) {
-  $total = _iadd($total, 1);
+  $total = $total + 1;
 }
-  $power = _iadd($power, 1);
+  $power = $power + 1;
 };
-  $base = _iadd($base, 1);
+  $base = $base + 1;
 };
   return $total;
 };
   echo rtrim('solution(10, 22) = ' . _str(solution(10, 22))), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

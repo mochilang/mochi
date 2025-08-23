@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -24,42 +25,7 @@ function _intdiv($a, $b) {
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
-}
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
+    return intdiv(intval($a), intval($b));
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -68,10 +34,10 @@ $__start = _now();
   return 0;
 }
   $x = $n;
-  $y = _intdiv((_iadd($x, 1)), 2);
+  $y = _intdiv(($x + 1), 2);
   while ($y < $x) {
   $x = $y;
-  $y = _intdiv((_iadd($x, _intdiv($n, $x))), 2);
+  $y = _intdiv(($x + _intdiv($n, $x)), 2);
 };
   return $x;
 };
@@ -81,22 +47,22 @@ $__start = _now();
   $a0 = intSqrt($n);
   $a = $a0;
   $period = 0;
-  while ($a != _imul(2, $a0)) {
-  $m = _isub(_imul($d, $a), $m);
-  $d = _intdiv((_isub($n, _imul($m, $m))), $d);
-  $a = _intdiv((_iadd($a0, $m)), $d);
-  $period = _iadd($period, 1);
+  while ($a != 2 * $a0) {
+  $m = $d * $a - $m;
+  $d = _intdiv(($n - $m * $m), $d);
+  $a = _intdiv(($a0 + $m), $d);
+  $period = $period + 1;
 };
   return $period;
 };
   function solution($n) {
   $count = 0;
-  for ($i = 2; $i < (_iadd($n, 1)); $i++) {
+  for ($i = 2; $i < ($n + 1); $i++) {
   $r = intSqrt($i);
-  if (_imul($r, $r) != $i) {
+  if ($r * $r != $i) {
   $p = continuousFractionPeriod($i);
-  if (_imod($p, 2) == 1) {
-  $count = _iadd($count, 1);
+  if ($p % 2 == 1) {
+  $count = $count + 1;
 };
 }
 };
@@ -109,7 +75,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

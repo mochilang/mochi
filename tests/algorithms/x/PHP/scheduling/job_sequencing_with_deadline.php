@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,61 +36,28 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function _iadd($a, $b) {
-    if (function_exists('bcadd')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcadd($sa, $sb, 0);
-    }
-    return $a + $b;
-}
-function _isub($a, $b) {
-    if (function_exists('bcsub')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcsub($sa, $sb, 0);
-    }
-    return $a - $b;
-}
-function _imul($a, $b) {
-    if (function_exists('bcmul')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return bcmul($sa, $sb, 0);
-    }
-    return $a * $b;
-}
-function _idiv($a, $b) {
-    return _intdiv($a, $b);
-}
-function _imod($a, $b) {
-    if (function_exists('bcmod')) {
-        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
-        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcmod($sa, $sb));
-    }
-    return $a % $b;
-}
-function sort_jobs_by_profit($jobs) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function sort_jobs_by_profit($jobs) {
   global $jobs1, $jobs2;
   $js = $jobs;
   $i = 0;
   while ($i < count($js)) {
   $j = 0;
-  while ($j < _isub(_isub(count($js), $i), 1)) {
+  while ($j < count($js) - $i - 1) {
   $a = $js[$j];
-  $b = $js[_iadd($j, 1)];
+  $b = $js[$j + 1];
   if ($a['profit'] < $b['profit']) {
   $js[$j] = $b;
-  $js[_iadd($j, 1)] = $a;
+  $js[$j + 1] = $a;
 }
-  $j = _iadd($j, 1);
+  $j = $j + 1;
 };
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $js;
-}
-function max_deadline($jobs) {
+};
+  function max_deadline($jobs) {
   global $jobs1, $jobs2;
   $max_d = 0;
   $i = 0;
@@ -84,52 +67,60 @@ function max_deadline($jobs) {
   if ($d > $max_d) {
   $max_d = $d;
 }
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   return $max_d;
-}
-function job_sequencing_with_deadlines($jobs) {
+};
+  function job_sequencing_with_deadlines($jobs) {
   global $jobs1, $jobs2;
   $js = sort_jobs_by_profit($jobs);
   $max_d = max_deadline($js);
   $time_slots = [];
   $t = 0;
   while ($t < $max_d) {
-  $time_slots = _append($time_slots, _isub(0, 1));
-  $t = _iadd($t, 1);
+  $time_slots = _append($time_slots, 0 - 1);
+  $t = $t + 1;
 };
   $count = 0;
   $max_profit = 0;
   $i = 0;
   while ($i < count($js)) {
   $job = $js[$i];
-  $j = _isub($job['deadline'], 1);
+  $j = $job['deadline'] - 1;
   while ($j >= 0) {
-  if ($time_slots[$j] == _isub(0, 1)) {
+  if ($time_slots[$j] == 0 - 1) {
   $time_slots[$j] = $job['id'];
-  $count = _iadd($count, 1);
-  $max_profit = _iadd($max_profit, $job['profit']);
+  $count = $count + 1;
+  $max_profit = $max_profit + $job['profit'];
   break;
 }
-  $j = _isub($j, 1);
+  $j = $j - 1;
 };
-  $i = _iadd($i, 1);
+  $i = $i + 1;
 };
   $result = [];
   $result = _append($result, $count);
   $result = _append($result, $max_profit);
   return $result;
-}
-$jobs1 = [];
-$jobs1 = _append($jobs1, ['id' => 1, 'deadline' => 4, 'profit' => 20]);
-$jobs1 = _append($jobs1, ['id' => 2, 'deadline' => 1, 'profit' => 10]);
-$jobs1 = _append($jobs1, ['id' => 3, 'deadline' => 1, 'profit' => 40]);
-$jobs1 = _append($jobs1, ['id' => 4, 'deadline' => 1, 'profit' => 30]);
-echo rtrim(_str(job_sequencing_with_deadlines($jobs1))), PHP_EOL;
-$jobs2 = [];
-$jobs2 = _append($jobs2, ['id' => 1, 'deadline' => 2, 'profit' => 100]);
-$jobs2 = _append($jobs2, ['id' => 2, 'deadline' => 1, 'profit' => 19]);
-$jobs2 = _append($jobs2, ['id' => 3, 'deadline' => 2, 'profit' => 27]);
-$jobs2 = _append($jobs2, ['id' => 4, 'deadline' => 1, 'profit' => 25]);
-$jobs2 = _append($jobs2, ['id' => 5, 'deadline' => 1, 'profit' => 15]);
-echo rtrim(_str(job_sequencing_with_deadlines($jobs2))), PHP_EOL;
+};
+  $jobs1 = [];
+  $jobs1 = _append($jobs1, ['deadline' => 4, 'id' => 1, 'profit' => 20]);
+  $jobs1 = _append($jobs1, ['deadline' => 1, 'id' => 2, 'profit' => 10]);
+  $jobs1 = _append($jobs1, ['deadline' => 1, 'id' => 3, 'profit' => 40]);
+  $jobs1 = _append($jobs1, ['deadline' => 1, 'id' => 4, 'profit' => 30]);
+  echo rtrim(_str(job_sequencing_with_deadlines($jobs1))), PHP_EOL;
+  $jobs2 = [];
+  $jobs2 = _append($jobs2, ['deadline' => 2, 'id' => 1, 'profit' => 100]);
+  $jobs2 = _append($jobs2, ['deadline' => 1, 'id' => 2, 'profit' => 19]);
+  $jobs2 = _append($jobs2, ['deadline' => 2, 'id' => 3, 'profit' => 27]);
+  $jobs2 = _append($jobs2, ['deadline' => 1, 'id' => 4, 'profit' => 25]);
+  $jobs2 = _append($jobs2, ['deadline' => 1, 'id' => 5, 'profit' => 15]);
+  echo rtrim(_str(job_sequencing_with_deadlines($jobs2))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
