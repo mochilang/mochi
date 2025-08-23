@@ -5538,14 +5538,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &SliceExpr{Target: args[0], Start: args[1], End: end}, nil
 			}
-		case "upper":
-			if len(args) == 1 {
-				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "upper"}}, nil
-			}
-		case "lower":
-			if len(args) == 1 {
-				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "lower"}}, nil
-			}
+               case "upper":
+                       if len(args) == 1 {
+                               tgt := args[0]
+                               if currentEnv != nil {
+                                       if _, ok := inferPyType(tgt, currentEnv).(types.StringType); !ok {
+                                               tgt = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{tgt}}
+                                       }
+                               }
+                               return &CallExpr{Func: &FieldExpr{Target: tgt, Name: "upper"}}, nil
+                       }
+               case "lower":
+                       if len(args) == 1 {
+                               tgt := args[0]
+                               if currentEnv != nil {
+                                       if _, ok := inferPyType(tgt, currentEnv).(types.StringType); !ok {
+                                               tgt = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{tgt}}
+                                       }
+                               }
+                               return &CallExpr{Func: &FieldExpr{Target: tgt, Name: "lower"}}, nil
+                       }
 		case "padStart":
 			if len(args) == 3 {
 				tgt := args[0]
