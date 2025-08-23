@@ -1,61 +1,90 @@
 public class Main {
-    static int[][] grid;
+    static java.math.BigInteger[][] grid = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(22), java.math.BigInteger.valueOf(97), java.math.BigInteger.valueOf(38), java.math.BigInteger.valueOf(15), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(75), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(78), java.math.BigInteger.valueOf(52), java.math.BigInteger.valueOf(12), java.math.BigInteger.valueOf(50), java.math.BigInteger.valueOf(77), java.math.BigInteger.valueOf(91), java.math.BigInteger.valueOf(8)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(49), java.math.BigInteger.valueOf(49), java.math.BigInteger.valueOf(99), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(81), java.math.BigInteger.valueOf(18), java.math.BigInteger.valueOf(57), java.math.BigInteger.valueOf(60), java.math.BigInteger.valueOf(87), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(98), java.math.BigInteger.valueOf(43), java.math.BigInteger.valueOf(69), java.math.BigInteger.valueOf(48), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(56), java.math.BigInteger.valueOf(62), java.math.BigInteger.valueOf(0)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(81), java.math.BigInteger.valueOf(49), java.math.BigInteger.valueOf(31), java.math.BigInteger.valueOf(73), java.math.BigInteger.valueOf(55), java.math.BigInteger.valueOf(79), java.math.BigInteger.valueOf(14), java.math.BigInteger.valueOf(29), java.math.BigInteger.valueOf(93), java.math.BigInteger.valueOf(71), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(53), java.math.BigInteger.valueOf(88), java.math.BigInteger.valueOf(30), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(49), java.math.BigInteger.valueOf(13), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(65)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(52), java.math.BigInteger.valueOf(70), java.math.BigInteger.valueOf(95), java.math.BigInteger.valueOf(23), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(60), java.math.BigInteger.valueOf(11), java.math.BigInteger.valueOf(42), java.math.BigInteger.valueOf(69), java.math.BigInteger.valueOf(24), java.math.BigInteger.valueOf(68), java.math.BigInteger.valueOf(56), java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(32), java.math.BigInteger.valueOf(56), java.math.BigInteger.valueOf(71), java.math.BigInteger.valueOf(37), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(91)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(22), java.math.BigInteger.valueOf(31), java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(71), java.math.BigInteger.valueOf(51), java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(63), java.math.BigInteger.valueOf(89), java.math.BigInteger.valueOf(41), java.math.BigInteger.valueOf(92), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(54), java.math.BigInteger.valueOf(22), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(28), java.math.BigInteger.valueOf(66), java.math.BigInteger.valueOf(33), java.math.BigInteger.valueOf(13), java.math.BigInteger.valueOf(80)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(24), java.math.BigInteger.valueOf(47), java.math.BigInteger.valueOf(32), java.math.BigInteger.valueOf(60), java.math.BigInteger.valueOf(99), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(45), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(44), java.math.BigInteger.valueOf(75), java.math.BigInteger.valueOf(33), java.math.BigInteger.valueOf(53), java.math.BigInteger.valueOf(78), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(84), java.math.BigInteger.valueOf(20), java.math.BigInteger.valueOf(35), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(12), java.math.BigInteger.valueOf(50)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(32), java.math.BigInteger.valueOf(98), java.math.BigInteger.valueOf(81), java.math.BigInteger.valueOf(28), java.math.BigInteger.valueOf(64), java.math.BigInteger.valueOf(23), java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(10), java.math.BigInteger.valueOf(26), java.math.BigInteger.valueOf(38), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(59), java.math.BigInteger.valueOf(54), java.math.BigInteger.valueOf(70), java.math.BigInteger.valueOf(66), java.math.BigInteger.valueOf(18), java.math.BigInteger.valueOf(38), java.math.BigInteger.valueOf(64), java.math.BigInteger.valueOf(70)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(26), java.math.BigInteger.valueOf(20), java.math.BigInteger.valueOf(68), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(62), java.math.BigInteger.valueOf(12), java.math.BigInteger.valueOf(20), java.math.BigInteger.valueOf(95), java.math.BigInteger.valueOf(63), java.math.BigInteger.valueOf(94), java.math.BigInteger.valueOf(39), java.math.BigInteger.valueOf(63), java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(91), java.math.BigInteger.valueOf(66), java.math.BigInteger.valueOf(49), java.math.BigInteger.valueOf(94), java.math.BigInteger.valueOf(21)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(24), java.math.BigInteger.valueOf(55), java.math.BigInteger.valueOf(58), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(66), java.math.BigInteger.valueOf(73), java.math.BigInteger.valueOf(99), java.math.BigInteger.valueOf(26), java.math.BigInteger.valueOf(97), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(78), java.math.BigInteger.valueOf(78), java.math.BigInteger.valueOf(96), java.math.BigInteger.valueOf(83), java.math.BigInteger.valueOf(14), java.math.BigInteger.valueOf(88), java.math.BigInteger.valueOf(34), java.math.BigInteger.valueOf(89), java.math.BigInteger.valueOf(63), java.math.BigInteger.valueOf(72)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(21), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(23), java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(75), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(76), java.math.BigInteger.valueOf(44), java.math.BigInteger.valueOf(20), java.math.BigInteger.valueOf(45), java.math.BigInteger.valueOf(35), java.math.BigInteger.valueOf(14), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(61), java.math.BigInteger.valueOf(33), java.math.BigInteger.valueOf(97), java.math.BigInteger.valueOf(34), java.math.BigInteger.valueOf(31), java.math.BigInteger.valueOf(33), java.math.BigInteger.valueOf(95)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(78), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(53), java.math.BigInteger.valueOf(28), java.math.BigInteger.valueOf(22), java.math.BigInteger.valueOf(75), java.math.BigInteger.valueOf(31), java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(15), java.math.BigInteger.valueOf(94), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(80), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(62), java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(14), java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(53), java.math.BigInteger.valueOf(56), java.math.BigInteger.valueOf(92)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(39), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(42), java.math.BigInteger.valueOf(96), java.math.BigInteger.valueOf(35), java.math.BigInteger.valueOf(31), java.math.BigInteger.valueOf(47), java.math.BigInteger.valueOf(55), java.math.BigInteger.valueOf(58), java.math.BigInteger.valueOf(88), java.math.BigInteger.valueOf(24), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(54), java.math.BigInteger.valueOf(24), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(29), java.math.BigInteger.valueOf(85), java.math.BigInteger.valueOf(57)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(86), java.math.BigInteger.valueOf(56), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(48), java.math.BigInteger.valueOf(35), java.math.BigInteger.valueOf(71), java.math.BigInteger.valueOf(89), java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(44), java.math.BigInteger.valueOf(44), java.math.BigInteger.valueOf(37), java.math.BigInteger.valueOf(44), java.math.BigInteger.valueOf(60), java.math.BigInteger.valueOf(21), java.math.BigInteger.valueOf(58), java.math.BigInteger.valueOf(51), java.math.BigInteger.valueOf(54), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(58)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(19), java.math.BigInteger.valueOf(80), java.math.BigInteger.valueOf(81), java.math.BigInteger.valueOf(68), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(94), java.math.BigInteger.valueOf(47), java.math.BigInteger.valueOf(69), java.math.BigInteger.valueOf(28), java.math.BigInteger.valueOf(73), java.math.BigInteger.valueOf(92), java.math.BigInteger.valueOf(13), java.math.BigInteger.valueOf(86), java.math.BigInteger.valueOf(52), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(77), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(89), java.math.BigInteger.valueOf(55), java.math.BigInteger.valueOf(40)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(52), java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(83), java.math.BigInteger.valueOf(97), java.math.BigInteger.valueOf(35), java.math.BigInteger.valueOf(99), java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(97), java.math.BigInteger.valueOf(57), java.math.BigInteger.valueOf(32), java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(26), java.math.BigInteger.valueOf(26), java.math.BigInteger.valueOf(79), java.math.BigInteger.valueOf(33), java.math.BigInteger.valueOf(27), java.math.BigInteger.valueOf(98), java.math.BigInteger.valueOf(66)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(88), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(68), java.math.BigInteger.valueOf(87), java.math.BigInteger.valueOf(57), java.math.BigInteger.valueOf(62), java.math.BigInteger.valueOf(20), java.math.BigInteger.valueOf(72), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(46), java.math.BigInteger.valueOf(33), java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(46), java.math.BigInteger.valueOf(55), java.math.BigInteger.valueOf(12), java.math.BigInteger.valueOf(32), java.math.BigInteger.valueOf(63), java.math.BigInteger.valueOf(93), java.math.BigInteger.valueOf(53), java.math.BigInteger.valueOf(69)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(42), java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(73), java.math.BigInteger.valueOf(38), java.math.BigInteger.valueOf(25), java.math.BigInteger.valueOf(39), java.math.BigInteger.valueOf(11), java.math.BigInteger.valueOf(24), java.math.BigInteger.valueOf(94), java.math.BigInteger.valueOf(72), java.math.BigInteger.valueOf(18), java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(46), java.math.BigInteger.valueOf(29), java.math.BigInteger.valueOf(32), java.math.BigInteger.valueOf(40), java.math.BigInteger.valueOf(62), java.math.BigInteger.valueOf(76), java.math.BigInteger.valueOf(36)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(20), java.math.BigInteger.valueOf(69), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(41), java.math.BigInteger.valueOf(72), java.math.BigInteger.valueOf(30), java.math.BigInteger.valueOf(23), java.math.BigInteger.valueOf(88), java.math.BigInteger.valueOf(34), java.math.BigInteger.valueOf(62), java.math.BigInteger.valueOf(99), java.math.BigInteger.valueOf(69), java.math.BigInteger.valueOf(82), java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(59), java.math.BigInteger.valueOf(85), java.math.BigInteger.valueOf(74), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(36), java.math.BigInteger.valueOf(16)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(20), java.math.BigInteger.valueOf(73), java.math.BigInteger.valueOf(35), java.math.BigInteger.valueOf(29), java.math.BigInteger.valueOf(78), java.math.BigInteger.valueOf(31), java.math.BigInteger.valueOf(90), java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(74), java.math.BigInteger.valueOf(31), java.math.BigInteger.valueOf(49), java.math.BigInteger.valueOf(71), java.math.BigInteger.valueOf(48), java.math.BigInteger.valueOf(86), java.math.BigInteger.valueOf(81), java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(23), java.math.BigInteger.valueOf(57), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(54)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(70), java.math.BigInteger.valueOf(54), java.math.BigInteger.valueOf(71), java.math.BigInteger.valueOf(83), java.math.BigInteger.valueOf(51), java.math.BigInteger.valueOf(54), java.math.BigInteger.valueOf(69), java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(92), java.math.BigInteger.valueOf(33), java.math.BigInteger.valueOf(48), java.math.BigInteger.valueOf(61), java.math.BigInteger.valueOf(43), java.math.BigInteger.valueOf(52), java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(89), java.math.BigInteger.valueOf(19), java.math.BigInteger.valueOf(67), java.math.BigInteger.valueOf(48)}))}));
 
-    static int max_product_four(int[][] grid) {
-        int maximum = 0;
-        int i = 0;
-        while (i < 20) {
-            int j = 0;
-            while (j < 17) {
-                int temp = grid[i][j] * grid[i][j + 1] * grid[i][j + 2] * grid[i][j + 3];
-                if (temp > maximum) {
-                    maximum = temp;
-                }
-                j = j + 1;
-            }
-            i = i + 1;
-        }
-        i = 0;
-        while (i < 17) {
-            int j_1 = 0;
-            while (j_1 < 20) {
-                int temp_1 = grid[i][j_1] * grid[i + 1][j_1] * grid[i + 2][j_1] * grid[i + 3][j_1];
-                if (temp_1 > maximum) {
+    static java.math.BigInteger max_product_four(java.math.BigInteger[][] grid) {
+        java.math.BigInteger maximum = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+            while (j_1.compareTo(java.math.BigInteger.valueOf(17)) < 0) {
+                java.math.BigInteger temp_1 = grid[(int)(((java.math.BigInteger)(i_1)).longValue())][(int)(((java.math.BigInteger)(j_1)).longValue())].multiply(grid[(int)(((java.math.BigInteger)(i_1)).longValue())][(int)(((java.math.BigInteger)(j_1.add(java.math.BigInteger.valueOf(1)))).longValue())]).multiply(grid[(int)(((java.math.BigInteger)(i_1)).longValue())][(int)(((java.math.BigInteger)(j_1.add(java.math.BigInteger.valueOf(2)))).longValue())]).multiply(grid[(int)(((java.math.BigInteger)(i_1)).longValue())][(int)(((java.math.BigInteger)(j_1.add(java.math.BigInteger.valueOf(3)))).longValue())]);
+                if (temp_1.compareTo(maximum) > 0) {
                     maximum = temp_1;
                 }
-                j_1 = j_1 + 1;
+                j_1 = j_1.add(java.math.BigInteger.valueOf(1));
             }
-            i = i + 1;
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
-        i = 0;
-        while (i < 17) {
-            int j_2 = 0;
-            while (j_2 < 17) {
-                int temp_2 = grid[i][j_2] * grid[i + 1][j_2 + 1] * grid[i + 2][j_2 + 2] * grid[i + 3][j_2 + 3];
-                if (temp_2 > maximum) {
-                    maximum = temp_2;
-                }
-                j_2 = j_2 + 1;
-            }
-            i = i + 1;
-        }
-        i = 0;
-        while (i < 17) {
-            int j_3 = 3;
-            while (j_3 < 20) {
-                int temp_3 = grid[i][j_3] * grid[i + 1][j_3 - 1] * grid[i + 2][j_3 - 2] * grid[i + 3][j_3 - 3];
-                if (temp_3 > maximum) {
+        i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(java.math.BigInteger.valueOf(17)) < 0) {
+            java.math.BigInteger j_3 = java.math.BigInteger.valueOf(0);
+            while (j_3.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
+                java.math.BigInteger temp_3 = grid[(int)(((java.math.BigInteger)(i_1)).longValue())][(int)(((java.math.BigInteger)(j_3)).longValue())].multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(1)))).longValue())][(int)(((java.math.BigInteger)(j_3)).longValue())]).multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(2)))).longValue())][(int)(((java.math.BigInteger)(j_3)).longValue())]).multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(3)))).longValue())][(int)(((java.math.BigInteger)(j_3)).longValue())]);
+                if (temp_3.compareTo(maximum) > 0) {
                     maximum = temp_3;
                 }
-                j_3 = j_3 + 1;
+                j_3 = j_3.add(java.math.BigInteger.valueOf(1));
             }
-            i = i + 1;
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
+        }
+        i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(java.math.BigInteger.valueOf(17)) < 0) {
+            java.math.BigInteger j_5 = java.math.BigInteger.valueOf(0);
+            while (j_5.compareTo(java.math.BigInteger.valueOf(17)) < 0) {
+                java.math.BigInteger temp_5 = grid[(int)(((java.math.BigInteger)(i_1)).longValue())][(int)(((java.math.BigInteger)(j_5)).longValue())].multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(1)))).longValue())][(int)(((java.math.BigInteger)(j_5.add(java.math.BigInteger.valueOf(1)))).longValue())]).multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(2)))).longValue())][(int)(((java.math.BigInteger)(j_5.add(java.math.BigInteger.valueOf(2)))).longValue())]).multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(3)))).longValue())][(int)(((java.math.BigInteger)(j_5.add(java.math.BigInteger.valueOf(3)))).longValue())]);
+                if (temp_5.compareTo(maximum) > 0) {
+                    maximum = temp_5;
+                }
+                j_5 = j_5.add(java.math.BigInteger.valueOf(1));
+            }
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
+        }
+        i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(java.math.BigInteger.valueOf(17)) < 0) {
+            java.math.BigInteger j_7 = java.math.BigInteger.valueOf(3);
+            while (j_7.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
+                java.math.BigInteger temp_7 = grid[(int)(((java.math.BigInteger)(i_1)).longValue())][(int)(((java.math.BigInteger)(j_7)).longValue())].multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(1)))).longValue())][(int)(((java.math.BigInteger)(j_7.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(2)))).longValue())][(int)(((java.math.BigInteger)(j_7.subtract(java.math.BigInteger.valueOf(2)))).longValue())]).multiply(grid[(int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(3)))).longValue())][(int)(((java.math.BigInteger)(j_7.subtract(java.math.BigInteger.valueOf(3)))).longValue())]);
+                if (temp_7.compareTo(maximum) > 0) {
+                    maximum = temp_7;
+                }
+                j_7 = j_7.add(java.math.BigInteger.valueOf(1));
+            }
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return maximum;
     }
     public static void main(String[] args) {
-        grid = ((int[][])(new int[][]{new int[]{8, 2, 22, 97, 38, 15, 0, 40, 0, 75, 4, 5, 7, 78, 52, 12, 50, 77, 91, 8}, new int[]{49, 49, 99, 40, 17, 81, 18, 57, 60, 87, 17, 40, 98, 43, 69, 48, 4, 56, 62, 0}, new int[]{81, 49, 31, 73, 55, 79, 14, 29, 93, 71, 40, 67, 53, 88, 30, 3, 49, 13, 36, 65}, new int[]{52, 70, 95, 23, 4, 60, 11, 42, 69, 24, 68, 56, 1, 32, 56, 71, 37, 2, 36, 91}, new int[]{22, 31, 16, 71, 51, 67, 63, 89, 41, 92, 36, 54, 22, 40, 40, 28, 66, 33, 13, 80}, new int[]{24, 47, 32, 60, 99, 3, 45, 2, 44, 75, 33, 53, 78, 36, 84, 20, 35, 17, 12, 50}, new int[]{32, 98, 81, 28, 64, 23, 67, 10, 26, 38, 40, 67, 59, 54, 70, 66, 18, 38, 64, 70}, new int[]{67, 26, 20, 68, 2, 62, 12, 20, 95, 63, 94, 39, 63, 8, 40, 91, 66, 49, 94, 21}, new int[]{24, 55, 58, 5, 66, 73, 99, 26, 97, 17, 78, 78, 96, 83, 14, 88, 34, 89, 63, 72}, new int[]{21, 36, 23, 9, 75, 0, 76, 44, 20, 45, 35, 14, 0, 61, 33, 97, 34, 31, 33, 95}, new int[]{78, 17, 53, 28, 22, 75, 31, 67, 15, 94, 3, 80, 4, 62, 16, 14, 9, 53, 56, 92}, new int[]{16, 39, 5, 42, 96, 35, 31, 47, 55, 58, 88, 24, 0, 17, 54, 24, 36, 29, 85, 57}, new int[]{86, 56, 0, 48, 35, 71, 89, 7, 5, 44, 44, 37, 44, 60, 21, 58, 51, 54, 17, 58}, new int[]{19, 80, 81, 68, 5, 94, 47, 69, 28, 73, 92, 13, 86, 52, 17, 77, 4, 89, 55, 40}, new int[]{4, 52, 8, 83, 97, 35, 99, 16, 7, 97, 57, 32, 16, 26, 26, 79, 33, 27, 98, 66}, new int[]{88, 36, 68, 87, 57, 62, 20, 72, 3, 46, 33, 67, 46, 55, 12, 32, 63, 93, 53, 69}, new int[]{4, 42, 16, 73, 38, 25, 39, 11, 24, 94, 72, 18, 8, 46, 29, 32, 40, 62, 76, 36}, new int[]{20, 69, 36, 41, 72, 30, 23, 88, 34, 62, 99, 69, 82, 67, 59, 85, 74, 4, 36, 16}, new int[]{20, 73, 35, 29, 78, 31, 90, 1, 74, 31, 49, 71, 48, 86, 81, 16, 23, 57, 5, 54}, new int[]{1, 70, 54, 71, 83, 51, 54, 69, 16, 92, 33, 48, 61, 43, 52, 1, 89, 19, 67, 48}}));
-        System.out.println(_p(max_product_four(((int[][])(grid)))));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(_p(max_product_four(((java.math.BigInteger[][])(grid)))));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -70,6 +99,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

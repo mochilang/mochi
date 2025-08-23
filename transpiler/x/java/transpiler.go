@@ -2360,7 +2360,7 @@ func (l *ListLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		e.emit(w)
+		emitCastExpr(w, e, arrType)
 	}
 	fmt.Fprint(w, "}")
 }
