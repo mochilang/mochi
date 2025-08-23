@@ -156,7 +156,7 @@ def _str(v):
     if isinstance(v, float):
         if abs(v - builtins.round(v)) < 1e-9:
             return builtins.str(int(builtins.round(v)))
-        return builtins.format(v, ".17g")
+        return builtins.str(v)
     return builtins.str(v)
 `
 
@@ -2030,11 +2030,15 @@ func isLikelyIntExpr(e Expr) bool {
 			if t, err := currentEnv.GetVar(ex.Name); err == nil {
 				return isIntLike(t)
 			}
+			// If the name is not present in the current environment,
+			// we lack type information. Assume non-integer to avoid
+			// accidentally converting float divisions to integer
+			// divisions.
+			return false
 		}
-		// When the type information is unavailable, assume the name is
-		// an integer. This mirrors the historical behaviour of this
-		// helper and increases the chance of replacing divisions with
-		// integer divisions for index calculations.
+		// Without any type information at all, fall back to treating the
+		// name as an integer, preserving the historical heuristic for
+		// index calculations.
 		return true
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
