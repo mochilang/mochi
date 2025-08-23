@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-23 15:04 GMT+7
+Last updated: 2025-08-23 15:36 GMT+7
 
-## Algorithms Golden Test Checklist (981/1077)
+## Algorithms Golden Test Checklist (978/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -842,9 +842,9 @@ Last updated: 2025-08-23 15:04 GMT+7
 | 833 | project_euler/problem_012/sol2 | ✓ | 26.0ms | 784B |
 | 834 | project_euler/problem_013/sol1 | error |  |  |
 | 835 | project_euler/problem_014/sol1 | error |  |  |
-| 836 | project_euler/problem_014/sol2 | ✓ | 27.0ms | 135.04KB |
-| 837 | project_euler/problem_015/sol1 | ✓ | 16.0ms | 9.63KB |
-| 838 | project_euler/problem_016/sol1 | ✓ | 20.0ms | 10.17KB |
+| 836 | project_euler/problem_014/sol2 | error |  |  |
+| 837 | project_euler/problem_015/sol1 | error | 16.0ms | 9.63KB |
+| 838 | project_euler/problem_016/sol1 | error | 20.0ms | 10.17KB |
 | 839 | project_euler/problem_016/sol2 | ✓ | 32.0ms | 46.70KB |
 | 840 | project_euler/problem_017/sol1 | ✓ | 14.0ms | 768B |
 | 841 | project_euler/problem_018/solution | ✓ | 14.0ms | 664B |
