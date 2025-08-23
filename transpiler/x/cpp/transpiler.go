@@ -4578,7 +4578,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseLookupHost = usesLookupHost
 	cp.UseSHA256 = usesSHA256
 	cp.UseIndexOf = usesIndexOf
-	cp.UseParseIntStr = usesParseIntStr
+	// Ensure string-to-integer helper is always available when big integers are used
+	// Some programs, like Project Euler problem 79, rely on `_parse_int_str` generated
+	// during casts without setting `usesParseIntStr`.  When `useBigInt` is true we still
+	// need the helper to parse digits into `cpp_int`, so include it unconditionally.
+	cp.UseParseIntStr = usesParseIntStr || useBigInt
 	cp.UseBigInt = useBigInt
 	cp.UseBigRat = useBigRat
 	cp.UseRepeat = useRepeat
