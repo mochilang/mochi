@@ -44,7 +44,12 @@ var continueLabels []string
 // funcNameMap tracks sanitized names for user defined functions so that
 // subsequent calls can use the sanitized version rather than clashing with
 // Racket builtins such as `list` or `length`.
-var funcNameMap = map[string]string{}
+var funcNameMap = map[string]string{
+	// Builtin helpers that would otherwise conflict with user defined
+	// functions. `ord` is provided as `_ord` in the prelude, so calls to
+	// the builtin are rewritten unless the user defines `ord` themselves.
+	"ord": "_ord",
+}
 
 func pushContinue(label string) {
 	continueLabels = append(continueLabels, label)
@@ -1607,7 +1612,10 @@ func header() string {
 	hdr += "(define (index-of s ch)\n  (cond\n    [(string? s)\n     (let loop ([i 0])\n       (cond [(>= i (string-length s)) -1]\n             [(string=? (substring s i (add1 i)) ch) i]\n             [else (loop (add1 i))]))]\n    [else\n     (let loop ([i 0] [lst s])\n       (cond [(null? lst) -1]\n             [(equal? (car lst) ch) i]\n             [else (loop (add1 i) (cdr lst))]))]))\n"
 	hdr += "(define (safe-index lst idx) (let ([i (int idx)]) (cond [(list? lst) (if (and (>= i 0) (< i (length lst))) (list-ref lst i) '())] [(string? lst) (if (and (>= i 0) (< i (string-length lst))) (substring lst i (add1 i)) \"\")] [else 0])))\n"
 	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
-	hdr += "(define (ord s) (char->integer (string-ref s 0)))\n"
+	// `_ord` implements the builtin `ord` function. It's intentionally
+	// named with an underscore to avoid clashing with user defined
+	// functions of the same name.
+	hdr += "(define (_ord s) (char->integer (string-ref s 0)))\n"
 	hdr += "(define (read_file path)\n  (define p path)\n  (let ([root (getenv \"MOCHI_ROOT\")])\n    (when (and root (not (file-exists? p)))\n      (set! p (path->string (build-path root _data_dir path)))))\n  (with-input-from-file p port->string))\n"
 	hdr += "(define (list-set lst idx val)\n  (define i (int idx))\n  (define len (length lst))\n  (cond\n    [(>= i len) (append lst (make-list (- i len) '()) (list val))]\n    [(zero? i) (cons val (cdr lst))]\n    [else (cons (car lst) (list-set (cdr lst) (sub1 i) val))]))\n"
 	hdr += "(define (_parse-int-str s base) (int (string->number s base)))\n"
@@ -2463,6 +2471,10 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	body, err := convertStatements(fn.Body, child)
 	if err != nil {
 		return nil, err
+	}
+	if fn.Name == "ord" {
+		// User defined `ord` should shadow the builtin helper.
+		delete(funcNameMap, "ord")
 	}
 	name := sanitizeName(fn.Name)
 	if name != fn.Name {
