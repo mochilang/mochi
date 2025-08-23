@@ -7751,6 +7751,9 @@ func Emit(prog *Program, bench bool) []byte {
 		if _, ok := prog.Imports["os"]; !ok {
 			buf.WriteString("    \"os\"\n")
 		}
+		if _, ok := prog.Imports["path/filepath"]; !ok {
+			buf.WriteString("    \"path/filepath\"\n")
+		}
 	}
 	if prog.UseFetch {
 		buf.WriteString("    \"net/http\"\n")
@@ -7879,7 +7882,8 @@ func Emit(prog *Program, bench bool) []byte {
 	}
 	if prog.UseReadFile {
 		buf.WriteString("func read_file(path string) string {\n")
-		buf.WriteString("    b, err := os.ReadFile(path)\n")
+		buf.WriteString("    p := filepath.Clean(path)\n")
+		buf.WriteString("    b, err := os.ReadFile(p)\n")
 		buf.WriteString("    if err != nil { return \"\" }\n")
 		buf.WriteString("    return string(b)\n")
 		buf.WriteString("}\n\n")

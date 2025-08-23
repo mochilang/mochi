@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 965/1077
-Last updated: 2025-08-23 01:23 +0700
+Completed programs: 973/1077
+Last updated: 2025-08-23 13:45 +0700
 
 Checklist:
 
@@ -996,7 +996,7 @@ Checklist:
 | 987 | sorts/wiggle_sort | ✓ | 550.0µs | 2.07KB |
 | 988 | strings/aho_corasick | ✓ | 778.0µs | 1.98KB |
 | 989 | strings/alternative_string_arrange | ✓ | 677.0µs | 1.07KB |
-| 990 | strings/anagrams | ✓ | 236.0µs | 128B |
+| 990 | strings/anagrams | ✓ | 104.0µs | 128B |
 | 991 | strings/autocomplete_using_trie | ✓ | 287.0µs | 1.39KB |
 | 992 | strings/barcode_validator | ✓ | 715.0µs | 3.83KB |
 | 993 | strings/bitap_string_match | ✓ | 501.0µs | 3.30KB |
@@ -1016,7 +1016,7 @@ Checklist:
 | 1007 | strings/indian_phone_validator | ✓ | 452.0µs | 1.04KB |
 | 1008 | strings/is_contains_unique_chars | ✓ | 273.0µs | 984B |
 | 1009 | strings/is_isogram | ✓ | 426.0µs | 1.12KB |
-| 1010 | strings/is_pangram |   |  |  |
+| 1010 | strings/is_pangram | ✓ | 826.0µs | 28.30KB |
 | 1011 | strings/is_polish_national_id | ✓ | 294.0µs | 2.87KB |
 | 1012 | strings/is_spain_national_id |   |  |  |
 | 1013 | strings/is_srilankan_phone_number | ✓ | 355.0µs | 1.34KB |
@@ -1027,17 +1027,17 @@ Checklist:
 | 1018 | strings/levenshtein_distance | ✓ | 373.0µs | 2.82KB |
 | 1019 | strings/lower | ✓ | 275.0µs | 1.01KB |
 | 1020 | strings/manacher | ✓ | 399.0µs | 2.57KB |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
+| 1021 | strings/min_cost_string_conversion | ✓ | 498.0µs | 10.80KB |
 | 1022 | strings/naive_string_search | ✓ | 383.0µs | 3.08KB |
 | 1023 | strings/ngram | ✓ | 602.0µs | 4.86KB |
 | 1024 | strings/palindrome | ✓ | 331.0µs | 1.84KB |
 | 1025 | strings/pig_latin | ✓ | 341.0µs | 1.54KB |
 | 1026 | strings/prefix_function | ✓ | 499.0µs | 2.80KB |
-| 1027 | strings/rabin_karp |   |  |  |
+| 1027 | strings/rabin_karp | ✓ | 651.0µs | 6.26KB |
 | 1028 | strings/remove_duplicate | ✓ | 688.0µs | 19.54KB |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
+| 1029 | strings/reverse_letters | ✓ | 450.0µs | 3.00KB |
+| 1030 | strings/reverse_words | ✓ | 515.0µs | 1.35KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 547.0µs | 12.43KB |
 | 1032 | strings/split | ✓ | 575.0µs | 3.48KB |
 | 1033 | strings/string_switch_case | ✓ | 426.0µs | 5.20KB |
 | 1034 | strings/strip | ✓ | 340.0µs | 1.02KB |
@@ -1046,10 +1046,10 @@ Checklist:
 | 1037 | strings/top_k_frequent_words | ✓ | 492.0µs | 6.05KB |
 | 1038 | strings/upper | ✓ | 222.0µs | 1016B |
 | 1039 | strings/wave_string | ✓ | 364.0µs | 2.23KB |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 717.0µs | 5.13KB |
 | 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function | ✓ | 504.0µs | 3.38KB |
+| 1042 | strings/word_patterns | ✓ | 571.0µs | 4.73KB |
+| 1043 | strings/z_function | ✓ | 493.0µs | 3.38KB |
 | 1044 | web_programming/co2_emission | ✓ | 1.11s | 363.97KB |
 | 1045 | web_programming/covid_stats_via_xpath | ✓ | 1.0ms | 120.87KB |
 | 1046 | web_programming/crawl_google_results |   |  |  |
