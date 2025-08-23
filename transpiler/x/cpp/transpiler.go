@@ -1014,7 +1014,9 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "static void any_to_stream(std::ostream& os, const std::any& val) {")
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(int64_t)) os << std::any_cast<int64_t>(val);")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(cpp_int)) os << _cpp_int_to_string(std::any_cast<cpp_int>(val));")
+		if p.UseBigInt {
+			fmt.Fprintln(w, "    else if(val.type() == typeid(cpp_int)) os << _cpp_int_to_string(std::any_cast<cpp_int>(val));")
+		}
 		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << std::any_cast<double>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << std::any_cast<std::string>(val);")
@@ -1028,7 +1030,9 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "static double any_to_double(const std::any& v) {")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return (double)std::any_cast<int>(v);")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int64_t)) return (double)std::any_cast<int64_t>(v);")
-		fmt.Fprintln(w, "    if(v.type() == typeid(cpp_int)) return (double)std::any_cast<cpp_int>(v);")
+		if p.UseBigInt {
+			fmt.Fprintln(w, "    if(v.type() == typeid(cpp_int)) return (double)std::any_cast<cpp_int>(v);")
+		}
 		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return std::any_cast<double>(v);")
 		fmt.Fprintln(w, "    return 0;")
 		fmt.Fprintln(w, "}")
@@ -1036,7 +1040,9 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    if(v.type() == typeid(std::string)) return std::any_cast<std::string>(v);")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return std::to_string(std::any_cast<int>(v));")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int64_t)) return std::to_string(std::any_cast<int64_t>(v));")
-		fmt.Fprintln(w, "    if(v.type() == typeid(cpp_int)) return _cpp_int_to_string(std::any_cast<cpp_int>(v));")
+		if p.UseBigInt {
+			fmt.Fprintln(w, "    if(v.type() == typeid(cpp_int)) return _cpp_int_to_string(std::any_cast<cpp_int>(v));")
+		}
 		fmt.Fprintln(w, "    if(v.type() == typeid(double)) {")
 		fmt.Fprintln(w, "        std::ostringstream ss;")
 		fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(17) << std::any_cast<double>(v);")
@@ -1085,9 +1091,13 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w)
 
 	fmt.Fprintln(w, "template<typename T> std::string _to_string(const T& v) {")
-	fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, cpp_int>) {")
-	fmt.Fprintln(w, "        return _cpp_int_to_string(v);")
-	fmt.Fprintln(w, "    } else if constexpr(std::is_same_v<T, double>) {")
+	if p.UseBigInt {
+		fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, cpp_int>) {")
+		fmt.Fprintln(w, "        return _cpp_int_to_string(v);")
+		fmt.Fprintln(w, "    } else if constexpr(std::is_same_v<T, double>) {")
+	} else {
+		fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, double>) {")
+	}
 	fmt.Fprintln(w, "        std::ostringstream ss;")
 	// match Mochi's default string conversion for floating point numbers
 	// using high precision to preserve significant digits and avoid
@@ -7770,8 +7780,11 @@ func funcReturnType(ft string) string {
 func cppType(t string) string {
 	switch t {
 	case "int":
-		useBigInt = true
-		return "cpp_int"
+		// use 64-bit signed integers for standard int to avoid requiring
+		// external big integer libraries.  Large integers can still be
+		// handled explicitly via the `bigint` type which enables
+		// Boost.Multiprecision support.
+		return "int64_t"
 	case "float":
 		return "double"
 	case "bool":
@@ -7865,8 +7878,10 @@ func cppType(t string) string {
 func cppTypeFrom(tp types.Type) string {
 	switch t := tp.(type) {
 	case types.IntType:
-		useBigInt = true
-		return "cpp_int"
+		// Treat generic integers as 64-bit signed values.  Programs that
+		// require arbitrary precision should employ the explicit
+		// `bigint` type instead.
+		return "int64_t"
 	case types.Int64Type:
 		return "int64_t"
 	case types.BigIntType:
@@ -8199,8 +8214,10 @@ func defaultValueForType(t string) string {
 func exprType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		useBigInt = true
-		return "cpp_int"
+		// default integer literals to 64-bit signed integers. Programs
+		// requiring larger precision should use the `bigint` type which
+		// triggers big integer support separately.
+		return "int64_t"
 	case *FloatLit:
 		return "double"
 	case *BoolLit:
