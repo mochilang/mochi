@@ -2594,7 +2594,19 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 func (ws *WhileStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "while (")
-	if ws.Cond != nil {
+	switch c := ws.Cond.(type) {
+	case nil:
+		// Treat a missing condition as an infinite loop.
+		io.WriteString(w, "1")
+	case *IntLit:
+		// Emit plain "1" for `while true` to avoid generating
+		// "1LL", which is unnecessary for boolean contexts.
+		if c.Value == 1 {
+			io.WriteString(w, "1")
+		} else {
+			c.emitExpr(w)
+		}
+	default:
 		ws.Cond.emitExpr(w)
 	}
 	io.WriteString(w, ") {\n")
