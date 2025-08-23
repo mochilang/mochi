@@ -1,3 +1,4 @@
+run: exit status 1
 Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/project_euler/problem_050/sol1.clj:67:1287).
 Can only recur from tail position
 
