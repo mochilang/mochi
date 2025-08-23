@@ -1998,10 +1998,13 @@ func Emit(p *Program) []byte {
 	for _, s := range p.Stmts {
 		emitStmt(iw, s, 0)
 	}
-	code := b.Bytes()
-	re := regexp.MustCompile(`= ([0-9]+);\n\s+e([0-9]+);`)
-	code = re.ReplaceAll(code, []byte(`= ${1}e${2};`))
-	return code
+       code := b.Bytes()
+       re := regexp.MustCompile(`= ([0-9]+);\n\s+e([0-9]+);`)
+       code = re.ReplaceAll(code, []byte(`= ${1}e${2};`))
+       if len(code) > 0 && code[len(code)-1] != '\n' {
+               code = append(code, '\n')
+       }
+       return code
 }
 
 func emitStmt(w *indentWriter, s Stmt, level int) {
