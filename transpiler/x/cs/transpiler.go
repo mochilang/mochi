@@ -1655,6 +1655,10 @@ func csType(t *parser.TypeRef) string {
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
+			if usesBigInt {
+				usesBigInt = true
+				return "BigInteger"
+			}
 			return "long"
 		case "string":
 			return "string"
@@ -1719,6 +1723,9 @@ func csType(t *parser.TypeRef) string {
 func csTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
+		if usesBigInt {
+			return "BigInteger"
+		}
 		return "long"
 	case types.FloatType:
 		return "double"
@@ -1934,6 +1941,9 @@ func typeOfExpr(e Expr) string {
 	case *StringLit:
 		return "string"
 	case *IntLit:
+		if usesBigInt {
+			return "BigInteger"
+		}
 		return "long"
 	case *FloatLit:
 		return "double"
@@ -1957,6 +1967,9 @@ func typeOfExpr(e Expr) string {
 		}
 		if lt == "double" || rt == "double" {
 			return "double"
+		}
+		if lt == "BigInteger" || rt == "BigInteger" {
+			return "BigInteger"
 		}
 		if lt == "long" || rt == "long" {
 			return "long"
@@ -1988,6 +2001,9 @@ func typeOfExpr(e Expr) string {
 		if t == "double" {
 			return "double"
 		}
+		if t == "BigInteger" {
+			return "BigInteger"
+		}
 		if t == "long" {
 			return "long"
 		}
@@ -2002,6 +2018,9 @@ func typeOfExpr(e Expr) string {
 		if t == "double" {
 			return "double"
 		}
+		if t == "BigInteger" {
+			return "BigInteger"
+		}
 		return "int"
 	case *MaxExpr:
 		t := typeOfExpr(ex.Arg)
@@ -2010,6 +2029,9 @@ func typeOfExpr(e Expr) string {
 		}
 		if t == "double" {
 			return "double"
+		}
+		if t == "BigInteger" {
+			return "BigInteger"
 		}
 		return "int"
 	case *LenExpr:
@@ -2331,7 +2353,13 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "_idx(")
 		ix.Target.emit(w)
 		fmt.Fprint(w, ", ")
-		ix.Index.emit(w)
+		if idxType != "long" && idxType != "int" {
+			fmt.Fprint(w, "(long)(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			ix.Index.emit(w)
+		}
 		fmt.Fprint(w, ")")
 		return
 	}
@@ -2682,6 +2710,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesFloorDiv = false
 	usesBigInt = false
 	usesBigRat = false
+	if os.Getenv("MOCHI_FORCE_BIGINT") != "" {
+		usesBigInt = true
+	}
 	usesFetch = false
 	fetchStructs = make(map[string]bool)
 	usesIdx = true
