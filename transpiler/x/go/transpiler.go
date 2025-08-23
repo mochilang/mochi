@@ -1713,11 +1713,9 @@ func (k *KeysExpr) emit(w io.Writer) {
 type ListStringExpr struct{ List Expr }
 
 func (ls *ListStringExpr) emit(w io.Writer) {
-	usesJSON = true
-	usesStrings = true
-	io.WriteString(w, "func() string { b, _ := json.Marshal(")
+	io.WriteString(w, "fmt.Sprint(")
 	ls.List.emit(w)
-	io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ":", ": "); s = strings.ReplaceAll(s, ",", ", "); s = strings.ReplaceAll(s, "}, {", "},{"); return s }()`)
+	io.WriteString(w, ")")
 }
 
 // StringJoinExpr joins a list of strings with spaces.
@@ -2903,8 +2901,6 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.TypeOfExpr(a, env)
 				switch t.(type) {
 				case types.ListType:
-					needStrings = true
-					usesJSON = true
 					ex = &ListStringExpr{List: ex}
 				case types.StructType:
 					needStrings = true
@@ -6899,12 +6895,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "read_file":
 			usesReadFile = true
 			return &CallExpr{Func: "read_file", Args: args}, nil
-               case "ord":
-                       if _, err := env.GetVar(name); err == nil {
-                               break
-                       }
-                       usesOrd = true
-                       return &CallExpr{Func: "_ord", Args: args}, nil
+		case "ord":
+			if _, err := env.GetVar(name); err == nil {
+				break
+			}
+			usesOrd = true
+			return &CallExpr{Func: "_ord", Args: args}, nil
 		case "sqrt":
 			if imports != nil {
 				imports["math"] = "math"
@@ -7869,18 +7865,18 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    return b-a < 1e-6\n")
 		buf.WriteString("}\n\n")
 	}
-       if prog.UseOrd {
-               buf.WriteString("func _ord(v any) any {\n")
-                buf.WriteString("    switch s := v.(type) {\n")
-                buf.WriteString("    case string:\n")
-                buf.WriteString("        r := []rune(s)\n")
-                buf.WriteString("        if len(r) == 0 { return 0 }\n")
-                buf.WriteString("        return int(r[0])\n")
-                buf.WriteString("    default:\n")
-                buf.WriteString("        return 0\n")
-                buf.WriteString("    }\n")
-                buf.WriteString("}\n\n")
-        }
+	if prog.UseOrd {
+		buf.WriteString("func _ord(v any) any {\n")
+		buf.WriteString("    switch s := v.(type) {\n")
+		buf.WriteString("    case string:\n")
+		buf.WriteString("        r := []rune(s)\n")
+		buf.WriteString("        if len(r) == 0 { return 0 }\n")
+		buf.WriteString("        return int(r[0])\n")
+		buf.WriteString("    default:\n")
+		buf.WriteString("        return 0\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("}\n\n")
+	}
 	if prog.UseReadFile {
 		buf.WriteString("func read_file(path string) string {\n")
 		buf.WriteString("    b, err := os.ReadFile(path)\n")

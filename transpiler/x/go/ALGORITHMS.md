@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 963/1077
-Last updated: 2025-08-22 23:09 +0700
+Completed programs: 965/1077
+Last updated: 2025-08-23 01:23 +0700
 
 Checklist:
 
@@ -946,56 +946,56 @@ Checklist:
 | 937 | searches/simulated_annealing | ✓ | 8.0ms | 1.32MB |
 | 938 | searches/tabu_search | ✓ | 1.0ms | 20.54KB |
 | 939 | searches/ternary_search | ✓ | 323.0µs | 1.01KB |
-| 940 | sorts/bead_sort | ✓ | 572.0µs | 1.52KB |
-| 941 | sorts/binary_insertion_sort | ✓ | 379.0µs | 1.27KB |
-| 942 | sorts/bitonic_sort | ✓ | 478.0µs | 7.62KB |
-| 943 | sorts/bogo_sort | ✓ | 453.0µs | 1.01KB |
-| 944 | sorts/bubble_sort | ✓ | 723.0µs | 1.59KB |
-| 945 | sorts/bucket_sort |   |  |  |
-| 946 | sorts/circle_sort | ✓ | 434.0µs | 1.22KB |
-| 947 | sorts/cocktail_shaker_sort | ✓ | 604.0µs | 1.36KB |
-| 948 | sorts/comb_sort | ✓ | 468.0µs | 3.34KB |
-| 949 | sorts/counting_sort | ✓ | 2.0ms | 451.09KB |
-| 950 | sorts/cycle_sort | ✓ | 352.0µs | 1.27KB |
-| 951 | sorts/double_sort | ✓ | 733.0µs | 1.50KB |
-| 952 | sorts/dutch_national_flag_sort | ✓ | 628.0µs | 3.49KB |
-| 953 | sorts/exchange_sort | ✓ | 490.0µs | 1.49KB |
-| 954 | sorts/external_sort | ✓ | 558.0µs | 2.07KB |
-| 955 | sorts/gnome_sort | ✓ | 441.0µs | 3.38KB |
-| 956 | sorts/heap_sort | ✓ | 832.0µs | 3.59KB |
-| 957 | sorts/insertion_sort | ✓ | 384.0µs | 1.31KB |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort | ✓ | 309.0µs | 2.39KB |
-| 960 | sorts/merge_insertion_sort | ✓ | 922.0µs | 1.80KB |
-| 961 | sorts/merge_sort | ✓ | 470.0µs | 1.70KB |
-| 962 | sorts/msd_radix_sort | ✓ | 491.0µs | 3.07KB |
-| 963 | sorts/natural_sort | ✓ | 793.0µs | 4.84KB |
-| 964 | sorts/odd_even_sort | ✓ | 249.0µs | 1.34KB |
-| 965 | sorts/odd_even_transposition_parallel | ✓ | 419.0µs | 1.30KB |
-| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 328.0µs | 1.37KB |
-| 967 | sorts/pancake_sort | ✓ | 357.0µs | 1.06KB |
-| 968 | sorts/patience_sort | ✓ | 646.0µs | 1.93KB |
-| 969 | sorts/pigeon_sort | ✓ | 723.0µs | 3.43KB |
-| 970 | sorts/pigeonhole_sort | ✓ | 311.0µs | 1.32KB |
-| 971 | sorts/quick_sort | ✓ | 720.0µs | 3.84KB |
-| 972 | sorts/quick_sort_3_partition | ✓ | 428.0µs | 3.22KB |
-| 973 | sorts/radix_sort | ✓ | 436.0µs | 7.52KB |
-| 974 | sorts/recursive_insertion_sort | ✓ | 499.0µs | 1.06KB |
-| 975 | sorts/recursive_mergesort_array | ✓ | 295.0µs | 2.98KB |
-| 976 | sorts/recursive_quick_sort | ✓ | 504.0µs | 1.50KB |
-| 977 | sorts/selection_sort | ✓ | 634.0µs | 1.21KB |
-| 978 | sorts/shell_sort | ✓ | 347.0µs | 1.21KB |
-| 979 | sorts/shrink_shell_sort | ✓ | 329.0µs | 1.12KB |
-| 980 | sorts/slowsort | ✓ | 781.0µs | 2.15KB |
-| 981 | sorts/stooge_sort | ✓ | 289.0µs | 1.11KB |
-| 982 | sorts/strand_sort | ✓ | 513.0µs | 1.71KB |
-| 983 | sorts/tim_sort | ✓ | 621.0µs | 4.43KB |
-| 984 | sorts/topological_sort | ✓ | 818.0µs | 1.83KB |
-| 985 | sorts/tree_sort | ✓ | 766.0µs | 1.61KB |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort | ✓ | 697.0µs | 2.13KB |
-| 988 | strings/aho_corasick | ✓ | 534.0µs | 1.98KB |
-| 989 | strings/alternative_string_arrange | ✓ | 196.0µs | 1.05KB |
+| 940 | sorts/bead_sort | ✓ | 529.0µs | 1.52KB |
+| 941 | sorts/binary_insertion_sort | ✓ | 754.0µs | 1.27KB |
+| 942 | sorts/bitonic_sort | ✓ | 520.0µs | 7.66KB |
+| 943 | sorts/bogo_sort | ✓ | 630.0µs | 1.01KB |
+| 944 | sorts/bubble_sort | ✓ | 982.0µs | 1.59KB |
+| 945 | sorts/bucket_sort | ✓ | 799.0µs | 16.77KB |
+| 946 | sorts/circle_sort | ✓ | 1.0ms | 1.23KB |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 786.0µs | 1.36KB |
+| 948 | sorts/comb_sort | ✓ | 648.0µs | 1.32KB |
+| 949 | sorts/counting_sort | ✓ | 3.0ms | 451.06KB |
+| 950 | sorts/cycle_sort | ✓ | 561.0µs | 1.27KB |
+| 951 | sorts/double_sort | ✓ | 793.0µs | 1.50KB |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 922.0µs | 1.48KB |
+| 953 | sorts/exchange_sort | ✓ | 782.0µs | 1.49KB |
+| 954 | sorts/external_sort | ✓ | 911.0µs | 2.11KB |
+| 955 | sorts/gnome_sort | ✓ | 468.0µs | 1.21KB |
+| 956 | sorts/heap_sort | ✓ | 611.0µs | 1.64KB |
+| 957 | sorts/insertion_sort | ✓ | 671.0µs | 1.27KB |
+| 958 | sorts/intro_sort | ✓ | 661.0µs | 1.53KB |
+| 959 | sorts/iterative_merge_sort | ✓ | 800.0µs | 2.41KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 693.0µs | 1.80KB |
+| 961 | sorts/merge_sort | ✓ | 457.0µs | 1.70KB |
+| 962 | sorts/msd_radix_sort | ✓ | 742.0µs | 3.07KB |
+| 963 | sorts/natural_sort | ✓ | 1.0ms | 4.12KB |
+| 964 | sorts/odd_even_sort | ✓ | 531.0µs | 1.34KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 885.0µs | 1.30KB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 971.0µs | 1.37KB |
+| 967 | sorts/pancake_sort | ✓ | 777.0µs | 1.06KB |
+| 968 | sorts/patience_sort | ✓ | 836.0µs | 1.93KB |
+| 969 | sorts/pigeon_sort | ✓ | 782.0µs | 3.43KB |
+| 970 | sorts/pigeonhole_sort | ✓ | 464.0µs | 1.32KB |
+| 971 | sorts/quick_sort | ✓ | 582.0µs | 1.83KB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 714.0µs | 3.28KB |
+| 973 | sorts/radix_sort | ✓ | 1.0ms | 7.52KB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 476.0µs | 1.06KB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 567.0µs | 2.98KB |
+| 976 | sorts/recursive_quick_sort | ✓ | 409.0µs | 1.50KB |
+| 977 | sorts/selection_sort | ✓ | 916.0µs | 1.21KB |
+| 978 | sorts/shell_sort | ✓ | 673.0µs | 1.21KB |
+| 979 | sorts/shrink_shell_sort | ✓ | 715.0µs | 1.12KB |
+| 980 | sorts/slowsort | ✓ | 887.0µs | 2.15KB |
+| 981 | sorts/stooge_sort | ✓ | 649.0µs | 1.11KB |
+| 982 | sorts/strand_sort | ✓ | 811.0µs | 1.71KB |
+| 983 | sorts/tim_sort | ✓ | 522.0µs | 4.43KB |
+| 984 | sorts/topological_sort | ✓ | 994.0µs | 1.83KB |
+| 985 | sorts/tree_sort |   | 766.0µs | 1.61KB |
+| 986 | sorts/unknown_sort | ✓ | 748.0µs | 2.01KB |
+| 987 | sorts/wiggle_sort | ✓ | 550.0µs | 2.07KB |
+| 988 | strings/aho_corasick | ✓ | 778.0µs | 1.98KB |
+| 989 | strings/alternative_string_arrange | ✓ | 677.0µs | 1.07KB |
 | 990 | strings/anagrams | ✓ | 236.0µs | 128B |
 | 991 | strings/autocomplete_using_trie | ✓ | 287.0µs | 1.39KB |
 | 992 | strings/barcode_validator | ✓ | 715.0µs | 3.83KB |

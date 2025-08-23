@@ -1,0 +1,269 @@
+exit status 1
+[]
+runtime: goroutine stack exceeds 1000000000-byte limit
+runtime: sp=0xc020170368 stack=[0xc020170000, 0xc040170000]
+fatal error: stack overflow
+
+runtime stack:
+runtime.throw({0x4df393?, 0x7ffe99b55df0?})
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/panic.go:1101 +0x48 fp=0x7ffe99b55dc0 sp=0x7ffe99b55d90 pc=0x46a0a8
+runtime.newstack()
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/stack.go:1107 +0x5bb fp=0x7ffe99b55ef8 sp=0x7ffe99b55dc0 pc=0x45239b
+runtime.morestack()
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/asm_amd64.s:621 +0x7a fp=0x7ffe99b55f00 sp=0x7ffe99b55ef8 pc=0x46ea9a
+
+goroutine 1 gp=0xc000002380 m=0 mp=0x5a9f00 [running]:
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:140 +0x1e5 fp=0xc020170378 sp=0xc020170370 pc=0x4b5f45
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170448 sp=0xc020170378 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170518 sp=0xc020170448 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201705e8 sp=0xc020170518 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201706b8 sp=0xc0201705e8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170788 sp=0xc0201706b8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170858 sp=0xc020170788 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170928 sp=0xc020170858 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201709f8 sp=0xc020170928 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170ac8 sp=0xc0201709f8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170b98 sp=0xc020170ac8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170c68 sp=0xc020170b98 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170d38 sp=0xc020170c68 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170e08 sp=0xc020170d38 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170ed8 sp=0xc020170e08 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020170fa8 sp=0xc020170ed8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171078 sp=0xc020170fa8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171148 sp=0xc020171078 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171218 sp=0xc020171148 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201712e8 sp=0xc020171218 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201713b8 sp=0xc0201712e8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171488 sp=0xc0201713b8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171558 sp=0xc020171488 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171628 sp=0xc020171558 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201716f8 sp=0xc020171628 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201717c8 sp=0xc0201716f8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171898 sp=0xc0201717c8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171968 sp=0xc020171898 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171a38 sp=0xc020171968 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171b08 sp=0xc020171a38 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171bd8 sp=0xc020171b08 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171ca8 sp=0xc020171bd8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171d78 sp=0xc020171ca8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171e48 sp=0xc020171d78 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171f18 sp=0xc020171e48 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020171fe8 sp=0xc020171f18 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201720b8 sp=0xc020171fe8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172188 sp=0xc0201720b8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172258 sp=0xc020172188 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172328 sp=0xc020172258 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201723f8 sp=0xc020172328 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201724c8 sp=0xc0201723f8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172598 sp=0xc0201724c8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172668 sp=0xc020172598 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172738 sp=0xc020172668 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172808 sp=0xc020172738 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201728d8 sp=0xc020172808 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc0201729a8 sp=0xc0201728d8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172a78 sp=0xc0201729a8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc020172b48 sp=0xc020172a78 pc=0x4b5de9
+...2580980 frames elided...
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c258 sp=0xc04016c188 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c328 sp=0xc04016c258 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c3f8 sp=0xc04016c328 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c4c8 sp=0xc04016c3f8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c598 sp=0xc04016c4c8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c668 sp=0xc04016c598 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c738 sp=0xc04016c668 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c808 sp=0xc04016c738 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c8d8 sp=0xc04016c808 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016c9a8 sp=0xc04016c8d8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016ca78 sp=0xc04016c9a8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016cb48 sp=0xc04016ca78 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016cc18 sp=0xc04016cb48 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016cce8 sp=0xc04016cc18 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016cdb8 sp=0xc04016cce8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016ce88 sp=0xc04016cdb8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016cf58 sp=0xc04016ce88 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d028 sp=0xc04016cf58 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d0f8 sp=0xc04016d028 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d1c8 sp=0xc04016d0f8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d298 sp=0xc04016d1c8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d368 sp=0xc04016d298 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d438 sp=0xc04016d368 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d508 sp=0xc04016d438 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d5d8 sp=0xc04016d508 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d6a8 sp=0xc04016d5d8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d778 sp=0xc04016d6a8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d848 sp=0xc04016d778 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d918 sp=0xc04016d848 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016d9e8 sp=0xc04016d918 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016dab8 sp=0xc04016d9e8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016db88 sp=0xc04016dab8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016dc58 sp=0xc04016db88 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016dd28 sp=0xc04016dc58 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016ddf8 sp=0xc04016dd28 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016dec8 sp=0xc04016ddf8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016df98 sp=0xc04016dec8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016e068 sp=0xc04016df98 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0x0?}, 0xc0000901d0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016e138 sp=0xc04016e068 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0xc000090248?, 0x4131fe?}, 0x7f0708573170?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016e208 sp=0xc04016e138 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x0?, 0x0?}, 0xc0000902d8?}, 0x0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016e2d8 sp=0xc04016e208 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0xc000090428?, 0x4172f1?}, 0x443fe5?}, 0x444ca0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016e3a8 sp=0xc04016e2d8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x7f070856aa78?, 0xc0000904a0?}, 0x41b0b6?}, 0x5c9700?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016e478 sp=0xc04016e3a8 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x3?, 0x8?}, 0x18?}, 0x1?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016e548 sp=0xc04016e478 pc=0x4b5de9
+main.inorder({{0x5c8a80?, 0x1?, 0xc00011c270?}, 0xc000090680?}, 0x497348?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:164 +0x89 fp=0xc04016e618 sp=0xc04016e548 pc=0x4b5de9
+main.tree_sort({0xc000091e00, 0x1, 0xc000091ef8?})
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:211 +0xd3 fp=0xc04016e690 sp=0xc04016e618 pc=0x4b6053
+main.main.func1()
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:239 +0x185 fp=0xc04016ff40 sp=0xc04016e690 pc=0x4b6245
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/tree_sort.go:350 +0xf fp=0xc04016ff50 sp=0xc04016ff40 pc=0x4b60af
+runtime.main()
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:283 +0x28b fp=0xc04016ffe0 sp=0xc04016ff50 pc=0x43b42b
+runtime.goexit({})
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc04016ffe8 sp=0xc04016ffe0 pc=0x4707c1
+
+goroutine 2 gp=0xc0000028c0 m=nil [force gc (idle)]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:435 +0xce fp=0xc00004efa8 sp=0xc00004ef88 pc=0x46a18e
+runtime.goparkunlock(...)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:441
+runtime.forcegchelper()
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:348 +0xb3 fp=0xc00004efe0 sp=0xc00004efa8 pc=0x43b773
+runtime.goexit({})
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00004efe8 sp=0xc00004efe0 pc=0x4707c1
+created by runtime.init.7 in goroutine 1
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:336 +0x1a
+
+goroutine 3 gp=0xc000002e00 m=nil [GC sweep wait]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:435 +0xce fp=0xc00004f780 sp=0xc00004f760 pc=0x46a18e
+runtime.goparkunlock(...)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:441
+runtime.bgsweep(0xc00006e000)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mgcsweep.go:276 +0x94 fp=0xc00004f7c8 sp=0xc00004f780 pc=0x4267f4
+runtime.gcenable.gowrap1()
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mgc.go:204 +0x25 fp=0xc00004f7e0 sp=0xc00004f7c8 pc=0x41af25
+runtime.goexit({})
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00004f7e8 sp=0xc00004f7e0 pc=0x4707c1
+created by runtime.gcenable in goroutine 1
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mgc.go:204 +0x66
+
+goroutine 4 gp=0xc000003340 m=nil [GC scavenge wait]:
+runtime.gopark(0xc00006e000?, 0x507de8?, 0x1?, 0x0?, 0xc000003340?)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:435 +0xce fp=0xc00004ff78 sp=0xc00004ff58 pc=0x46a18e
+runtime.goparkunlock(...)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:441
+runtime.(*scavengerState).park(0x5a9120)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mgcscavenge.go:425 +0x49 fp=0xc00004ffa8 sp=0xc00004ff78 pc=0x4242a9
+runtime.bgscavenge(0xc00006e000)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mgcscavenge.go:653 +0x3c fp=0xc00004ffc8 sp=0xc00004ffa8 pc=0x42481c
+runtime.gcenable.gowrap2()
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mgc.go:205 +0x25 fp=0xc00004ffe0 sp=0xc00004ffc8 pc=0x41aec5
+runtime.goexit({})
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00004ffe8 sp=0xc00004ffe0 pc=0x4707c1
+created by runtime.gcenable in goroutine 1
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mgc.go:205 +0xa5
+
+goroutine 17 gp=0xc00011a000 m=nil [finalizer wait]:
+runtime.gopark(0x5c9700?, 0x490013?, 0x78?, 0xe6?, 0x4131fe?)
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/proc.go:435 +0xce fp=0xc00004e630 sp=0xc00004e610 pc=0x46a18e
+runtime.runfinq()
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mfinal.go:196 +0x107 fp=0xc00004e7e0 sp=0xc00004e630 pc=0x419ee7
+runtime.goexit({})
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00004e7e8 sp=0xc00004e7e0 pc=0x4707c1
+created by runtime.createfing in goroutine 1
+	/root/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.linux-amd64/src/runtime/mfinal.go:166 +0x3d
+exit status 2
