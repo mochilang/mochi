@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-22 23:22 GMT+7
+Last updated: 2025-08-23 01:39 GMT+7
 
-## Algorithms Golden Test Checklist (1051/1077)
+## Algorithms Golden Test Checklist (1053/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -895,7 +895,7 @@ Last updated: 2025-08-22 23:22 GMT+7
 | 886 | project_euler/problem_055/sol1 | error |  |  |
 | 887 | project_euler/problem_056/sol1 | error |  |  |
 | 888 | project_euler/problem_057/sol1 | ✓ | 1.909ms | 2.8 KB |
-| 889 | project_euler/problem_058/sol1 | error |  |  |
+| 889 | project_euler/problem_058/sol1 | ✓ | 1.274548s | 1.0 KB |
 | 890 | project_euler/problem_059/sol1 | ✓ | 2.35992s | 284.8 KB |
 | 891 | project_euler/problem_062/sol1 | ✓ | 272.528ms | 60.9 KB |
 | 892 | project_euler/problem_063/sol1 | ✓ | 263µs | 808 B |
@@ -929,7 +929,7 @@ Last updated: 2025-08-22 23:22 GMT+7
 | 920 | scheduling/shortest_job_first | ✓ | 248µs | 968 B |
 | 921 | scripts/build_directory_md | ✓ | 1.04ms | 1.6 KB |
 | 922 | scripts/validate_filenames | ✓ | 185µs | 1.2 KB |
-| 923 | scripts/validate_solutions | error |  |  |
+| 923 | scripts/validate_solutions | ✓ | 9.89ms | 1.4 KB |
 | 924 | searches/binary_search | ✓ | 171µs | 1.1 KB |
 | 925 | searches/double_linear_search | ✓ | 116µs | 1000 B |
 | 926 | searches/double_linear_search_recursion | ✓ | 92µs | 912 B |

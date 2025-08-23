@@ -515,6 +515,7 @@ type FunExpr struct {
 	Expr   Expr
 	Env    *types.Env
 }
+type FloatCastExpr struct{ Expr Expr }
 type ListCastExpr struct{ Expr Expr }
 type BinaryExpr struct {
 	Left  Expr
@@ -1727,7 +1728,8 @@ func (f *FunExpr) emit(w io.Writer) {
 	currentEnv = prev
 }
 
-func (c *ListCastExpr) emit(w io.Writer) { c.Expr.emit(w) }
+func (c *ListCastExpr) emit(w io.Writer)  { c.Expr.emit(w) }
+func (c *FloatCastExpr) emit(w io.Writer) { c.Expr.emit(w) }
 func sanitizeName(n string) string {
 	switch n {
 	case "table", "string", "math", "io", "os", "coroutine", "utf8", "repeat", "pairs", "ipairs":
@@ -2021,6 +2023,8 @@ func exprType(e Expr) types.Type {
 		return types.FloatType{}
 	case *BoolLit:
 		return types.BoolType{}
+	case *FloatCastExpr:
+		return types.FloatType{}
 	case *CallExpr:
 		if ex.Func == "tostring" {
 			return types.StringType{}
@@ -3549,6 +3553,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					expr = &ListCastExpr{Expr: expr}
 				} else if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
 					expr = &CallExpr{Func: "int", Args: []Expr{expr}}
+				} else if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
+					expr = &FloatCastExpr{Expr: expr}
 				} else if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "bigrat" {
 					expr = &CallExpr{Func: "_bigrat", Args: []Expr{expr}}
 				}
