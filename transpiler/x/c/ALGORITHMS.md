@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (679/1077) - Last updated 2025-08-22 23:02 +0700:
+Checklist of programs that currently transpile and run (680/1077) - Last updated 2025-08-23 01:15 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -744,7 +744,7 @@ Checklist of programs that currently transpile and run (679/1077) - Last updated
 | 737 | other/activity_selection | ✓ | 778us | 1.6 MB |
 | 738 | other/alternative_list_arrange |  |  |  |
 | 739 | other/bankers_algorithm | ✓ | 431us | 1.4 MB |
-| 740 | other/davis_putnam_logemann_loveland |  |  |  |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 803us | 1.5 MB |
 | 741 | other/doomsday |  |  |  |
 | 742 | other/fischer_yates_shuffle |  |  |  |
 | 743 | other/gauss_easter |  |  |  |
