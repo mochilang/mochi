@@ -717,6 +717,8 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<type_traits>")
 	p.addInclude("<limits>")
 	if p.UseBigInt || p.UseBigRat {
+		// Big integer support relies on Boost.Multiprecision headers.
+		// Ensure the build environment provides <boost/multiprecision/cpp_int.hpp>.
 		fmt.Fprintln(w, "#include <boost/multiprecision/cpp_int.hpp>")
 		fmt.Fprintln(w, "using cpp_int = boost::multiprecision::cpp_int;")
 	}

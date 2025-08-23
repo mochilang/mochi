@@ -1,8 +1,37 @@
-parse: error[P001]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/project_euler/problem_042/solution42.mochi:34:22: unexpected token "" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/project_euler/problem_042/solution42.mochi:34:22
-
- 34 |     } else if c == """" {
-    |                      ^
-
-help:
-  Check for a missing `{` or `}` to close the block.
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp:112:215: warning: multi-character character constant [-Wmultichar]
+  112 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << " : "; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp: In instantiation of ‘parse_words(std::string)::<lambda(const auto:48&)> [with auto:48 = std::__cxx11::basic_string<char>]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp:197:285:   required from here
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp:197:136: error: cannot convert ‘cpp_int’ {aka ‘boost::multiprecision::number<boost::multiprecision::backends::cpp_int_backend<> >’} to ‘std::__cxx11::basic_string<char>::size_type’ {aka ‘long unsigned int’}
+  197 |         std::string c = ([&](const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(i, (i + int64_t(1)) - i); else return std::vector<typename std::decay_t<decltype(__v)>::value_type>(__v.begin()+i, __v.begin()+(i + int64_t(1))); })(text);
+      |                                                                                                                              ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/string:54,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /usr/include/boost/multiprecision/cpp_int.hpp:13,
+                 from /workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp:2:
+/usr/include/c++/13/bits/basic_string.h:3163:24: note:   initializing argument 1 of ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::substr(size_type, size_type) const [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+ 3163 |       substr(size_type __pos = 0, size_type __n = npos) const
+      |              ~~~~~~~~~~^~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp: In instantiation of ‘word_value(std::string)::<lambda(const auto:49&)> [with auto:49 = std::__cxx11::basic_string<char>]’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp:220:291:   required from here
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp:220:142: error: cannot convert ‘cpp_int’ {aka ‘boost::multiprecision::number<boost::multiprecision::backends::cpp_int_backend<> >’} to ‘std::__cxx11::basic_string<char>::size_type’ {aka ‘long unsigned int’}
+  220 |         total = ((total + ord(([&](const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(i, (i + int64_t(1)) - i); else return std::vector<typename std::decay_t<decltype(__v)>::value_type>(__v.begin()+i, __v.begin()+(i + int64_t(1))); })(word))) - int64_t(64));
+      |                                                                                                                                    ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3163:24: note:   initializing argument 1 of ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::substr(size_type, size_type) const [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+ 3163 |       substr(size_type __pos = 0, size_type __n = npos) const
+      |              ~~~~~~~~~~^~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp: In function ‘cpp_int word_value(std::string)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp:220:27: error: ‘ord’ was not declared in this scope; did you mean ‘word’?
+  220 |         total = ((total + ord(([&](const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(i, (i + int64_t(1)) - i); else return std::vector<typename std::decay_t<decltype(__v)>::value_type>(__v.begin()+i, __v.begin()+(i + int64_t(1))); })(word))) - int64_t(64));
+      |                           ^~~
+      |                           word
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp: In function ‘cpp_int solution()’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_042/solution42.cpp:236:24: error: ‘read_file’ was not declared in this scope
+  236 |     std::string text = read_file(std::string("words.txt"));
+      |                        ^~~~~~~~~
