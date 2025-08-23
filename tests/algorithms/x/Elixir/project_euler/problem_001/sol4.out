@@ -1,15 +1,22 @@
 warning: variable "temp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 56 │       {temp, zmulti} = try do
+ 57 │       {temp, zmulti} = try do
     │        ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_001/sol4.exs:56:8: Main.solution/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_001/sol4.exs:57:8: Main.solution/1
 
     warning: variable "temp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 79 │       {temp, xmulti} = try do
+ 80 │       {temp, xmulti} = try do
     │        ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_001/sol4.exs:79:8: Main.solution/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_001/sol4.exs:80:8: Main.solution/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_001/sol4.exs:3: Main (module)
 
 solution() = 233168

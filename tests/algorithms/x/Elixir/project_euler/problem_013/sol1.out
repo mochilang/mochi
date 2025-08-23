@@ -1,0 +1,25 @@
+warning: variable "carry" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       {carry, _, _, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_013/sol1.exs:65:8: Main.add_strings/2
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_013/sol1.exs:3: Main (module)
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a textual representation of an integer
+
+    :erlang.binary_to_integer("-")
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_013/sol1.exs:42: anonymous fn/7 in Main.add_strings/2
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_013/sol1.exs:66: Main.add_strings/2
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_013/sol1.exs:82: anonymous fn/4 in Main.first_ten_digits/1
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_013/sol1.exs:90: Main.first_ten_digits/1
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_013/sol1.exs:102: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_013/sol1.exs:110: (file)

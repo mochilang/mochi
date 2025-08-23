@@ -1,0 +1,36 @@
+warning: variable "number" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │           {counter, number} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_014/sol1.exs:61:21: Main.solution/1
+
+    warning: variable "counters" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │       {counters, largest_number, pre_counter, start} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_014/sol1.exs:86:8: Main.solution/1
+
+    warning: variable "pre_counter" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │       {counters, largest_number, pre_counter, start} = try do
+    │                                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_014/sol1.exs:86:34: Main.solution/1
+
+    warning: variable "start" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │       {counters, largest_number, pre_counter, start} = try do
+    │                                               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_014/sol1.exs:86:47: Main.solution/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_014/sol1.exs:3: Main (module)
+
+3711

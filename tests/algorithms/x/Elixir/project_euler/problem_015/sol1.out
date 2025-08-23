@@ -1,0 +1,12 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_015/sol1.exs:3: Main (module)
+
+126410606437752
+8233430727600
+137846528820
+155117520
+2

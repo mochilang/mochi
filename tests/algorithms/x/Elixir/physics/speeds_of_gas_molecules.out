@@ -1,3 +1,10 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/speeds_of_gas_molecules.exs:3: Main (module)
+
 454.3488755062257
 445.52572734330454
 402.65620702280023

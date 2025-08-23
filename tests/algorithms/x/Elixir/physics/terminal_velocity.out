@@ -1,3 +1,10 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/terminal_velocity.exs:3: Main (module)
+
 1.303119799604477
 1.9467947148674276
 4.428690551393267

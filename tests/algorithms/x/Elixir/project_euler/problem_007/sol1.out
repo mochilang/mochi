@@ -1,8 +1,15 @@
 warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 96 │       {count, number} = try do
+ 97 │       {count, number} = try do
     │        ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_007/sol1.exs:96:8: Main.solution/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_007/sol1.exs:97:8: Main.solution/1
 
-solution() = 104743
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_007/sol1.exs:3: Main (module)
+
+solution() = 29999
