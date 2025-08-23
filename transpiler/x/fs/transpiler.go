@@ -70,6 +70,7 @@ type Program struct {
 	UseJSON        bool
 	UseFloorDiv    bool
 	UseFloorDiv64  bool
+	UseReadLine    bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -113,6 +114,7 @@ var (
 	usesJSON       bool
 	usesFloorDiv   bool
 	usesFloorDiv64 bool
+	usesReadLine   bool
 	funcHasNull    bool
 )
 
@@ -164,6 +166,11 @@ const helperPadStart = `let _padStart (s:string) (width:int) (pad:string) =
         out <- pad + out
     out
 `
+
+const helperReadLine = `let _readLine () =
+    match System.Console.ReadLine() with
+    | null -> ""
+    | s -> s`
 
 const helperOrd = `let _ord (s:string) : int = int s.[0]`
 
@@ -2634,7 +2641,7 @@ func inferType(e Expr) string {
 		switch v.Func {
 		case "string":
 			return "string"
-		case "System.Console.ReadLine", "input":
+		case "System.Console.ReadLine", "input", "_readLine":
 			return "string"
 		case "_str":
 			return "string"
@@ -3510,6 +3517,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperPadStart)
 		buf.WriteString("\n")
 	}
+	if prog.UseReadLine {
+		buf.WriteString(helperReadLine)
+		buf.WriteString("\n")
+	}
 	if prog.UseOrd {
 		buf.WriteString(helperOrd)
 		buf.WriteString("\n")
@@ -3780,6 +3791,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseJSON = usesJSON
 	p.UseFloorDiv = usesFloorDiv
 	p.UseFloorDiv64 = usesFloorDiv64
+	p.UseReadLine = usesReadLine
 	return p, nil
 }
 
@@ -5115,7 +5127,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "input":
 			if len(args) == 0 {
 				neededOpens["System"] = true
-				return &CallExpr{Func: "System.Console.ReadLine", Args: nil}, nil
+				usesReadLine = true
+				return &CallExpr{Func: "_readLine", Args: nil}, nil
 			}
 		case "read_file":
 			if len(args) != 1 {

@@ -1,3 +1,7 @@
+## Progress (2025-08-23 01:21 +0700)
+- fs transpiler: reset state and fix int64 string
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-22 13:05 +0700)
 - Run Scala transpiler on algorithms 752-801
 - Generated F# for 103/105 programs (103 passing)
