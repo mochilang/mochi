@@ -1985,7 +1985,9 @@ func (f *FunDecl) emit(w io.Writer) {
 func (ws *WhileStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "while ")
 	if ws.Cond != nil {
+		fmt.Fprint(w, "(")
 		ws.Cond.emit(w)
+		fmt.Fprint(w, ")")
 	} else {
 		fmt.Fprint(w, "true")
 	}
