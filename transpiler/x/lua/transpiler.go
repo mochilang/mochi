@@ -217,7 +217,11 @@ end
 const helperPanic = `
 local function _panic(msg)
   -- ensure panic messages are newline-terminated for readability
-  io.stderr:write(tostring(msg) .. '\n')
+  if type(msg) == 'table' then
+    io.stderr:write(_str(msg) .. '\n')
+  else
+    io.stderr:write(tostring(msg) .. '\n')
+  end
   io.stderr:flush()
   os.exit(1)
 end
@@ -3131,6 +3135,9 @@ func collectHelpers(p *Program) map[string]bool {
 
 	for _, st := range p.Stmts {
 		walkStmt(st)
+	}
+	if used["panic"] {
+		used["str"] = true
 	}
 	return used
 }
