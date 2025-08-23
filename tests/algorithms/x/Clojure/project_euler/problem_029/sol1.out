@@ -1,0 +1,5 @@
+Execution error (NumberFormatException) at jdk.internal.math.FloatingDecimal/readJavaFormatString (FloatingDecimal.java:1842).
+empty String
+
+Full report at:
+/tmp/clojure-17592745984310017605.edn

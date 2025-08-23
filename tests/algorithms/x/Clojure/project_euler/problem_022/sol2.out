@@ -1,0 +1,5 @@
+Syntax error (IndexOutOfBoundsException) compiling fn* at (/workspace/mochi/tests/algorithms/x/Clojure/project_euler/problem_022/sol2.clj:78:1).
+Method code too large!
+
+Full report at:
+/tmp/clojure-5372952471980464549.edn
