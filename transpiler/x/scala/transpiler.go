@@ -4008,10 +4008,16 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "upper":
 		if len(args) == 1 {
+			if inferTypeWithEnv(args[0], env) != "String" {
+				args[0] = &FieldExpr{Receiver: args[0], Name: "toString"}
+			}
 			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}, nil
 		}
 	case "lower":
 		if len(args) == 1 {
+			if inferTypeWithEnv(args[0], env) != "String" {
+				args[0] = &FieldExpr{Receiver: args[0], Name: "toString"}
+			}
 			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toLowerCase"}}, nil
 		}
 	case "ord":
