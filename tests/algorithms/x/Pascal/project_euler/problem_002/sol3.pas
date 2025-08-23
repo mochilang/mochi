@@ -59,18 +59,22 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function solution(solution_n: integer): integer; forward;
-function solution(solution_n: integer): integer;
+function solution(solution_n: int64): int64; forward;
+function solution(solution_n: int64): int64;
 var
-  solution_a: integer;
-  solution_b: integer;
-  solution_count: integer;
-  solution_next: integer;
+  solution_a: int64;
+  solution_b: int64;
+  solution_count: int64;
+  solution_next: int64;
 begin
   if solution_n <= 1 then begin
   exit(0);

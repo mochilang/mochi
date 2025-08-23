@@ -59,17 +59,21 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function is_prime(is_prime_number: integer): boolean; forward;
-function solution(solution_n: integer): integer; forward;
+function is_prime(is_prime_number: int64): boolean; forward;
+function solution(solution_n: int64): int64; forward;
 procedure main(); forward;
-function is_prime(is_prime_number: integer): boolean;
+function is_prime(is_prime_number: int64): boolean;
 var
-  is_prime_i: integer;
+  is_prime_i: int64;
 begin
   if (is_prime_number > 1) and (is_prime_number < 4) then begin
   exit(true);
@@ -86,11 +90,11 @@ end;
 end;
   exit(true);
 end;
-function solution(solution_n: integer): integer;
+function solution(solution_n: int64): int64;
 var
-  solution_num: integer;
-  solution_max_number: integer;
-  solution_i: integer;
+  solution_num: int64;
+  solution_max_number: int64;
+  solution_i: int64;
 begin
   solution_num := solution_n;
   if solution_num <= 0 then begin
@@ -125,7 +129,7 @@ end;
 end;
 procedure main();
 var
-  main_result_: integer;
+  main_result_: int64;
 begin
   main_result_ := solution(600851475143);
   writeln('solution() = ' + IntToStr(main_result_));

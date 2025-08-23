@@ -59,19 +59,23 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  result_: integer;
-function solution(solution_n: integer): integer; forward;
-function solution(solution_n: integer): integer;
+  result_: int64;
+function solution(solution_n: int64): int64; forward;
+function solution(solution_n: int64): int64;
 var
-  solution_i: integer;
-  solution_j: integer;
-  solution_total: integer;
-  solution_next: integer;
+  solution_i: int64;
+  solution_j: int64;
+  solution_total: int64;
+  solution_next: int64;
 begin
   solution_i := 1;
   solution_j := 2;

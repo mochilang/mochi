@@ -37,41 +37,64 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  density: real;
-  bulk_modulus: real;
-  x: real;
-function sqrtApprox(x: real): real; forward;
-function speed_of_sound_in_a_fluid(density: real; bulk_modulus: real): real; forward;
-function sqrtApprox(x: real): real;
+function sqrtApprox(sqrtApprox_x: real): real; forward;
+function speed_of_sound_in_a_fluid(speed_of_sound_in_a_fluid_density: real; speed_of_sound_in_a_fluid_bulk_modulus: real): real; forward;
+function sqrtApprox(sqrtApprox_x: real): real;
 var
   sqrtApprox_guess: real;
-  sqrtApprox_i: integer;
+  sqrtApprox_i: int64;
 begin
-  if x = 0 then begin
+  if sqrtApprox_x = 0 then begin
   exit(0);
 end;
-  sqrtApprox_guess := x / 2;
+  sqrtApprox_guess := sqrtApprox_x / 2;
   sqrtApprox_i := 0;
   while sqrtApprox_i < 20 do begin
-  sqrtApprox_guess := (sqrtApprox_guess + (x / sqrtApprox_guess)) / 2;
+  sqrtApprox_guess := (sqrtApprox_guess + (sqrtApprox_x / sqrtApprox_guess)) / 2;
   sqrtApprox_i := sqrtApprox_i + 1;
 end;
   exit(sqrtApprox_guess);
 end;
-function speed_of_sound_in_a_fluid(density: real; bulk_modulus: real): real;
+function speed_of_sound_in_a_fluid(speed_of_sound_in_a_fluid_density: real; speed_of_sound_in_a_fluid_bulk_modulus: real): real;
 begin
-  if density <= 0 then begin
+  if speed_of_sound_in_a_fluid_density <= 0 then begin
   panic('Impossible fluid density');
 end;
-  if bulk_modulus <= 0 then begin
+  if speed_of_sound_in_a_fluid_bulk_modulus <= 0 then begin
   panic('Impossible bulk modulus');
 end;
-  exit(sqrtApprox(bulk_modulus / density));
+  exit(sqrtApprox(speed_of_sound_in_a_fluid_bulk_modulus / speed_of_sound_in_a_fluid_density));
 end;
 begin
   init_now();
@@ -86,4 +109,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
