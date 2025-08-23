@@ -2995,6 +2995,9 @@ func (s *StructLit) emitExpr(w io.Writer) {
 									io.WriteString(w, "(MapSL){0}")
 									printed = true
 								}
+							} else if _, ok2 := mt.Value.(types.IntType); ok2 {
+								io.WriteString(w, "(MapSI){0}")
+								printed = true
 							}
 						} else if _, ok := mt.Key.(types.IntType); ok {
 							if lt, ok2 := mt.Value.(types.ListType); ok2 {
@@ -8711,6 +8714,16 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	for k, v := range prevVarTypes {
 		varTypes[k] = v
 	}
+	prevMapKeyTypes := mapKeyTypes
+	mapKeyTypes = make(map[string]string)
+	for k, v := range prevMapKeyTypes {
+		mapKeyTypes[k] = v
+	}
+	prevMapValTypes := mapValTypes
+	mapValTypes = make(map[string]string)
+	for k, v := range prevMapValTypes {
+		mapValTypes[k] = v
+	}
 	localFuncs = map[string]bool{}
 	declStmts = map[string]*DeclStmt{}
 	declAliases = map[string]bool{}
@@ -8877,6 +8890,8 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	fnInfo := &Function{Name: name, Params: params, Body: body, Return: ret, VarTypes: varTypes, Locals: localFuncs}
 	currentEnv = prevEnv
 	varTypes = prevVarTypes
+	mapKeyTypes = prevMapKeyTypes
+	mapValTypes = prevMapValTypes
 	declStmts = nil
 	declAliases = nil
 	localFuncs = nil
@@ -11158,17 +11173,17 @@ func cTypeFromMochiType(t types.Type) string {
 		return "bigrat"
 	case types.BoolType:
 		return "long long"
-       case types.AnyType:
-               return "const char*"
-       case types.UnionType:
-               // Simplistically map union types to strings. This allows
-               // algorithms using small tagged unions that ultimately
-               // render to text to compile, even though the runtime
-               // representation is lossy. A fuller implementation would
-               // encode the discriminant and variant fields explicitly.
-               return "const char*"
-       case types.StructType:
-               return tt.Name
+	case types.AnyType:
+		return "const char*"
+	case types.UnionType:
+		// Simplistically map union types to strings. This allows
+		// algorithms using small tagged unions that ultimately
+		// render to text to compile, even though the runtime
+		// representation is lossy. A fuller implementation would
+		// encode the discriminant and variant fields explicitly.
+		return "const char*"
+	case types.StructType:
+		return tt.Name
 	case types.ListType:
 		return cTypeFromMochiType(tt.Elem) + "[]"
 	case types.MapType:
