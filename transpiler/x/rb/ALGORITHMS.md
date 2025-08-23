@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
 Completed programs: 1067/1077
-Last updated: 2025-08-22 15:25 +0700
+Last updated: 2025-08-23 13:46 +0700
 
 Checklist:
 
@@ -996,7 +996,7 @@ Checklist:
 | 987 | sorts/wiggle_sort | ✓ | 1ms | 14.2 KB |
 | 988 | strings/aho_corasick | ✓ | 1ms | 20.2 KB |
 | 989 | strings/alternative_string_arrange | ✓ | 1ms | 11.9 KB |
-| 990 | strings/anagrams | ✓ | 53µs | 2.9 KB |
+| 990 | strings/anagrams | ✓ | 595µs | 41.1 KB |
 | 991 | strings/autocomplete_using_trie | ✓ | 1ms | 10.8 KB |
 | 992 | strings/barcode_validator | ✓ | 1ms | 14.4 KB |
 | 993 | strings/bitap_string_match | ✓ | 1ms | 33.2 KB |
