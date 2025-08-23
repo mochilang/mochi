@@ -1,0 +1,43 @@
+warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │       {x, y} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_075/sol1.exs:24:11: Main.gcd/2
+
+    error: invalid use of _. _ can only be used inside patterns to ignore values and cannot be used in expressions. Make sure you are inside a pattern or change it accordingly
+    │
+ 77 │                   {frequencies, _}
+    │                                 ^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_075/sol1.exs:77:33: Main.solution/1
+
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │                   n = n + 2
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_075/sol1.exs:76:19: Main.solution/1
+
+    warning: variable "perimeter" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │                   {frequencies, perimeter} = try do
+    │                                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_075/sol1.exs:70:33: Main.solution/1
+
+    error: invalid use of _. _ can only be used inside patterns to ignore values and cannot be used in expressions. Make sure you are inside a pattern or change it accordingly
+    │
+ 93 │             {frequencies, _}
+    │                           ^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_075/sol1.exs:93:27: Main.solution/1
+
+    warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │             m = m + 1
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_075/sol1.exs:92:13: Main.solution/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_075/sol1.exs: cannot compile module Main (errors have been logged)

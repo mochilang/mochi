@@ -1,0 +1,24 @@
+warning: variable "currentDenominator" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {currentDenominator, maxDenominator, maxNumerator} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_071/sol1.exs:31:8: Main.solution/3
+
+    warning: variable "maxDenominator" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {currentDenominator, maxDenominator, maxNumerator} = try do
+    │                            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_071/sol1.exs:31:28: Main.solution/3
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_071/sol1.exs:3: Main (module)
+
+428570
+2
+47

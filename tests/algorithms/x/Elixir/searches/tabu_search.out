@@ -1,0 +1,44 @@
+warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 213 │               {forbidden, t} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/tabu_search.exs:213:27: Main.tabu_search/4
+
+     warning: variable "best" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 264 │             best = solution
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/tabu_search.exs:264:13: Main.tabu_search/4
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 272 │       {count, solution, tabu} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/tabu_search.exs:272:8: Main.tabu_search/4
+
+     warning: variable "solution" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 272 │       {count, solution, tabu} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/tabu_search.exs:272:15: Main.tabu_search/4
+
+     warning: variable "tabu" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 272 │       {count, solution, tabu} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/tabu_search.exs:272:25: Main.tabu_search/4
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/searches/tabu_search.exs:3: Main (module)
+
+["a", "c", "b", "d", "e", "a"]
+105

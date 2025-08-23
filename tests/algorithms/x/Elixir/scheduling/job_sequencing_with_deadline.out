@@ -1,0 +1,23 @@
+warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 104 │       {t, time_slots} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/job_sequencing_with_deadline.exs:104:8: Main.job_sequencing_with_deadlines/1
+
+     warning: variable "time_slots" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       {count, _, max_profit, time_slots} = try do
+     │                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/job_sequencing_with_deadline.exs:146:30: Main.job_sequencing_with_deadlines/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/job_sequencing_with_deadline.exs:3: Main (module)
+
+[2, 60]
+[2, 127]

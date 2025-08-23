@@ -1,0 +1,61 @@
+warning: variable "check" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       {check, complete, increment_time, minm, remaining_time, short, waiting_time} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/shortest_job_first.exs:112:8: Main.calculate_waitingtime/3
+
+     warning: variable "complete" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       {check, complete, increment_time, minm, remaining_time, short, waiting_time} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/shortest_job_first.exs:112:15: Main.calculate_waitingtime/3
+
+     warning: variable "increment_time" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       {check, complete, increment_time, minm, remaining_time, short, waiting_time} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/shortest_job_first.exs:112:25: Main.calculate_waitingtime/3
+
+     warning: variable "minm" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       {check, complete, increment_time, minm, remaining_time, short, waiting_time} = try do
+     │                                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/shortest_job_first.exs:112:41: Main.calculate_waitingtime/3
+
+     warning: variable "remaining_time" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       {check, complete, increment_time, minm, remaining_time, short, waiting_time} = try do
+     │                                               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/shortest_job_first.exs:112:47: Main.calculate_waitingtime/3
+
+     warning: variable "short" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       {check, complete, increment_time, minm, remaining_time, short, waiting_time} = try do
+     │                                                               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/shortest_job_first.exs:112:63: Main.calculate_waitingtime/3
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/scheduling/shortest_job_first.exs:3: Main (module)
+
+[0, 3, 5, 0]
+[0, 2, 0]
+[1, 0]
+[3, 6, 10, 1]
+[3, 6]
+[9, 10, 4]
+Average waiting time = 2
+Average turn around time = 5
+Average waiting time = 2.5
+Average turn around time = 4.5
+Average waiting time = 5.666666666666667
+Average turn around time = 5

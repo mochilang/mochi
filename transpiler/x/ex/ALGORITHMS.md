@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-22 23:21 GMT+7
+Last updated: 2025-08-23 01:41 GMT+7
 
-## Algorithms Golden Test Checklist (855/1077)
+## Algorithms Golden Test Checklist (902/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -897,60 +897,60 @@ Last updated: 2025-08-22 23:21 GMT+7
 | 888 | project_euler/problem_057/sol1 |   |  |  |
 | 889 | project_euler/problem_058/sol1 |   |  |  |
 | 890 | project_euler/problem_059/sol1 |   |  |  |
-| 891 | project_euler/problem_062/sol1 | ✓ | 118.79ms | 4.5 GB |
-| 892 | project_euler/problem_063/sol1 |   |  |  |
-| 893 | project_euler/problem_064/sol1 |   |  |  |
-| 894 | project_euler/problem_065/sol1 |   |  |  |
-| 895 | project_euler/problem_067/sol1 |   |  |  |
-| 896 | project_euler/problem_067/sol2 |   |  |  |
-| 897 | project_euler/problem_068/sol1 |   |  |  |
-| 898 | project_euler/problem_069/sol1 |   |  |  |
-| 899 | project_euler/problem_070/sol1 |   |  |  |
-| 900 | project_euler/problem_071/sol1 |   |  |  |
+| 891 | project_euler/problem_062/sol1 | ✓ | 180.23ms | 4.5 GB |
+| 892 | project_euler/problem_063/sol1 | ✓ | 2.79ms | 25.0 MB |
+| 893 | project_euler/problem_064/sol1 | ✓ | 60.95ms | 25.0 MB |
+| 894 | project_euler/problem_065/sol1 | ✓ | 2.39ms | 22.2 MB |
+| 895 | project_euler/problem_067/sol1 | ✓ | 23.90ms | 130.8 MB |
+| 896 | project_euler/problem_067/sol2 | ✓ | 7.56ms | 25.0 MB |
+| 897 | project_euler/problem_068/sol1 | ✓ | 26.19s | 29.8 MB |
+| 898 | project_euler/problem_069/sol1 | ✓ | 171us | 0 B |
+| 899 | project_euler/problem_070/sol1 | ✓ | 4.79s | 664.7 MB |
+| 900 | project_euler/problem_071/sol1 | ✓ | 40.88ms | 17.3 MB |
 | 901 | project_euler/problem_072/sol1 |   |  |  |
-| 902 | project_euler/problem_072/sol2 |   |  |  |
-| 903 | project_euler/problem_073/sol1 |   |  |  |
-| 904 | project_euler/problem_074/sol1 |   |  |  |
-| 905 | project_euler/problem_074/sol2 |   |  |  |
-| 906 | project_euler/problem_075/sol1 |   |  |  |
-| 907 | project_euler/problem_076/sol1 |   |  |  |
-| 908 | project_euler/problem_077/sol1 |   |  |  |
+| 902 | project_euler/problem_072/sol2 | ✓ | 34.91ms | 130.8 MB |
+| 903 | project_euler/problem_073/sol1 | ✓ | 4.59s | 17.3 MB |
+| 904 | project_euler/problem_074/sol1 | ✓ | 6.10ms | 269.3 MB |
+| 905 | project_euler/problem_074/sol2 | ✓ | 25.33s | 12.5 MB |
+| 906 | project_euler/problem_075/sol1 | error |  |  |
+| 907 | project_euler/problem_076/sol1 | ✓ | 51.08ms | 151.0 MB |
+| 908 | project_euler/problem_077/sol1 | ✓ | 468us | 20.2 MB |
 | 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
+| 910 | project_euler/problem_079/sol1 | ✓ | 15.35ms | 32.9 MB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 5.25ms | 12.5 MB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 6.45ms | 25.0 MB |
 | 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
-| 915 | scheduling/job_sequence_with_deadline |   |  |  |
-| 916 | scheduling/job_sequencing_with_deadline |   |  |  |
-| 917 | scheduling/multi_level_feedback_queue |   |  |  |
+| 914 | quantum/q_fourier_transform | ✓ | 42.94ms | 12.5 MB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 5.76ms | 12.5 MB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 8.70ms | 12.5 MB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 5.53ms | 12.6 MB |
 | 918 | scheduling/non_preemptive_shortest_job_first |   |  |  |
-| 919 | scheduling/round_robin |   |  |  |
-| 920 | scheduling/shortest_job_first |   |  |  |
-| 921 | scripts/build_directory_md |   |  |  |
-| 922 | scripts/validate_filenames |   |  |  |
-| 923 | scripts/validate_solutions |   |  |  |
-| 924 | searches/binary_search |   |  |  |
-| 925 | searches/double_linear_search |   |  |  |
-| 926 | searches/double_linear_search_recursion |   |  |  |
-| 927 | searches/exponential_search |   |  |  |
-| 928 | searches/fibonacci_search |   |  |  |
-| 929 | searches/hill_climbing |   |  |  |
-| 930 | searches/interpolation_search |   |  |  |
-| 931 | searches/jump_search |   |  |  |
-| 932 | searches/linear_search |   |  |  |
-| 933 | searches/median_of_medians |   |  |  |
-| 934 | searches/quick_select |   |  |  |
-| 935 | searches/sentinel_linear_search |   |  |  |
-| 936 | searches/simple_binary_search |   |  |  |
-| 937 | searches/simulated_annealing |   |  |  |
-| 938 | searches/tabu_search |   |  |  |
-| 939 | searches/ternary_search |   |  |  |
-| 940 | sorts/bead_sort |   |  |  |
-| 941 | sorts/binary_insertion_sort |   |  |  |
-| 942 | sorts/bitonic_sort |   |  |  |
-| 943 | sorts/bogo_sort |   |  |  |
-| 944 | sorts/bubble_sort |   |  |  |
+| 919 | scheduling/round_robin | ✓ | 497us | 17.3 MB |
+| 920 | scheduling/shortest_job_first | ✓ | 8.36ms | 17.3 MB |
+| 921 | scripts/build_directory_md | ✓ | 3.54ms | 17.3 MB |
+| 922 | scripts/validate_filenames | ✓ | 20.61ms | 12.5 MB |
+| 923 | scripts/validate_solutions | ✓ | 83.34ms | 25.1 MB |
+| 924 | searches/binary_search | ✓ | 3.32ms | 17.3 MB |
+| 925 | searches/double_linear_search | ✓ | 2.78ms | 12.5 MB |
+| 926 | searches/double_linear_search_recursion | ✓ | 3.37ms | 12.5 MB |
+| 927 | searches/exponential_search | ✓ | 1us | 0 B |
+| 928 | searches/fibonacci_search | ✓ | 2.57ms | 17.3 MB |
+| 929 | searches/hill_climbing | error |  |  |
+| 930 | searches/interpolation_search | ✓ | 2.59ms | 12.5 MB |
+| 931 | searches/jump_search | ✓ | 4.17ms | 12.5 MB |
+| 932 | searches/linear_search | ✓ | 2.56ms | 12.5 MB |
+| 933 | searches/median_of_medians | ✓ | 2.58ms | 17.3 MB |
+| 934 | searches/quick_select | ✓ | 7.83ms | 17.3 MB |
+| 935 | searches/sentinel_linear_search | ✓ | 2.69ms | 17.3 MB |
+| 936 | searches/simple_binary_search | ✓ | 472us | 12.5 MB |
+| 937 | searches/simulated_annealing | ✓ | 15.98ms | 37.5 MB |
+| 938 | searches/tabu_search | ✓ | 5.26ms | 25.0 MB |
+| 939 | searches/ternary_search | ✓ | 3.78ms | 12.5 MB |
+| 940 | sorts/bead_sort | ✓ | 5.11ms | 12.5 MB |
+| 941 | sorts/binary_insertion_sort | ✓ | 4.99ms | 12.5 MB |
+| 942 | sorts/bitonic_sort | ✓ | 452us | 12.7 MB |
+| 943 | sorts/bogo_sort | ✓ | 5.04ms | 12.5 MB |
+| 944 | sorts/bubble_sort | ✓ | 6.57ms | 17.3 MB |
 | 945 | sorts/bucket_sort |   |  |  |
 | 946 | sorts/circle_sort |   |  |  |
 | 947 | sorts/cocktail_shaker_sort |   |  |  |

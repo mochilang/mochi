@@ -1,0 +1,8 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/scripts/validate_solutions.exs:3: Main (module)
+
+Problem 001 passed
