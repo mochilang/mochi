@@ -92,6 +92,7 @@ var (
 	needListAppendPtr       bool
 	needListAppendPtrPtr    bool
 	needListAppendStrPtr    bool
+	needConcatStr           bool
 	needConcatStrPtr        bool
 	needConcatIntPtr        bool
 	needConcatLongLong      bool
@@ -4382,6 +4383,16 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 	if b.Op == "in" {
 		if vr, ok := b.Right.(*VarRef); ok && isMapVar(vr.Name) {
 			keyT := mapKeyTypes[vr.Name]
+			if keyT == "" {
+				if t, ok2 := varTypes[vr.Name]; ok2 && strings.HasPrefix(t, "Map") && len(t) >= 4 {
+					switch t[3] {
+					case 'S':
+						keyT = "const char*"
+					case 'I':
+						keyT = "int"
+					}
+				}
+			}
 			if keyT == "const char*" {
 				needContainsStr = true
 				io.WriteString(w, "contains_str(")
@@ -4655,6 +4666,51 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		b.Right.emitExpr(w)
 		io.WriteString(w, ")")
 		return
+	}
+	if b.Op == "+" {
+		lt := inferExprType(currentEnv, b.Left)
+		rt := inferExprType(currentEnv, b.Right)
+		if lt == rt && strings.HasSuffix(lt, "[]") {
+			base := strings.TrimSuffix(lt, "[]")
+			if alit, ok := b.Left.(*ListLit); ok && len(alit.Elems) == 1 {
+				if vr, ok2 := b.Right.(*VarRef); ok2 {
+					needConcatLongLong = true
+					tmp := fmt.Sprintf("__tmp%d", tempCounter)
+					tempCounter++
+					fmt.Fprintf(w, "({%s *%s = malloc((%s_len + 1) * sizeof(%s)); %s[0] = ", base, tmp, vr.Name, base, tmp)
+					alit.Elems[0].emitExpr(w)
+					io.WriteString(w, "; if (")
+					fmt.Fprintf(w, "%s_len > 0) memcpy(%s + 1, %s, %s_len * sizeof(%s)); %s_len = %s_len + 1; concat_len = %s_len; %s;})", vr.Name, tmp, vr.Name, vr.Name, base, vr.Name, vr.Name, vr.Name, tmp)
+					return
+				}
+			}
+			switch base {
+			case "const char*":
+				needConcatStr = true
+				io.WriteString(w, "concat_str(")
+				b.Left.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, b.Left)
+				io.WriteString(w, ", ")
+				b.Right.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, b.Right)
+				io.WriteString(w, ")")
+				return
+			case "long long":
+				needConcatLongLong = true
+				io.WriteString(w, "concat_long_long(")
+				b.Left.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, b.Left)
+				io.WriteString(w, ", ")
+				b.Right.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, b.Right)
+				io.WriteString(w, ")")
+				return
+			}
+		}
 	}
 	if b.Op == "+" && (exprIsString(b.Left) || exprIsString(b.Right)) {
 		needStrConcat = true
@@ -5624,8 +5680,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return a;\n")
 		buf.WriteString("}\n\n")
 	}
-	if needConcatIntPtr {
+	if needConcatIntPtr || needConcatLongLong || needConcatStr {
 		buf.WriteString("static size_t concat_len;\n")
+	}
+	if needConcatIntPtr {
 		buf.WriteString("static size_t* concat_lens;\n")
 		buf.WriteString("static long long** concat_intptr(long long **a, size_t a_len, size_t *a_lens, long long **b, size_t b_len, size_t *b_lens) {\n")
 		buf.WriteString("    long long **res = malloc((a_len + b_len) * sizeof(long long*));\n")
@@ -5639,12 +5697,17 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needConcatLongLong {
-		if !needConcatIntPtr {
-			buf.WriteString("static size_t concat_len;\n")
-		}
 		buf.WriteString("static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {\n")
 		buf.WriteString("    long long *res = realloc(a, (a_len + b_len) * sizeof(long long));\n")
 		buf.WriteString("    if (b_len > 0) memcpy(res + a_len, b, b_len * sizeof(long long));\n")
+		buf.WriteString("    concat_len = a_len + b_len;\n")
+		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needConcatStr {
+		buf.WriteString("static const char** concat_str(const char **a, size_t a_len, const char **b, size_t b_len) {\n")
+		buf.WriteString("    const char **res = (const char**)realloc((void*)a, (a_len + b_len) * sizeof(const char*));\n")
+		buf.WriteString("    if (b_len > 0) memcpy(res + a_len, b, b_len * sizeof(const char*));\n")
 		buf.WriteString("    concat_len = a_len + b_len;\n")
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
@@ -6219,6 +6282,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendPtr = false
 	needListAppendPtrPtr = false
 	needListAppendStrPtr = false
+	needConcatStr = false
 	needConcatStrPtr = false
 	needConcatIntPtr = false
 	needListAppendDouble = false

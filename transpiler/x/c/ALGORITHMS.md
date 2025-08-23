@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (680/1077) - Last updated 2025-08-23 01:15 +0700:
+Checklist of programs that currently transpile and run (689/1077) - Last updated 2025-08-23 13:39 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -745,56 +745,56 @@ Checklist of programs that currently transpile and run (680/1077) - Last updated
 | 738 | other/alternative_list_arrange |  |  |  |
 | 739 | other/bankers_algorithm | ✓ | 431us | 1.4 MB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 803us | 1.5 MB |
-| 741 | other/doomsday |  |  |  |
-| 742 | other/fischer_yates_shuffle |  |  |  |
-| 743 | other/gauss_easter |  |  |  |
-| 744 | other/greedy |  |  |  |
-| 745 | other/guess_the_number_search |  |  |  |
-| 746 | other/h_index |  |  |  |
-| 747 | other/least_recently_used |  |  |  |
-| 748 | other/lfu_cache |  |  |  |
-| 749 | other/linear_congruential_generator |  |  |  |
-| 750 | other/lru_cache | ✓ | 323us | 1.6 MB |
-| 751 | other/magicdiamondpattern | ✓ | 125us | 1.4 MB |
-| 752 | other/majority_vote_algorithm | ✓ | 574us | 1.5 MB |
-| 753 | other/maximum_subsequence | ✓ | 401us | 1.4 MB |
-| 754 | other/nested_brackets | ✓ | 499us | 1.5 MB |
-| 755 | other/number_container_system | ✓ | 381us | 1.4 MB |
-| 756 | other/quine | ✓ | 341us | 1.6 MB |
-| 757 | other/scoring_algorithm | ✓ | 500us | 1.6 MB |
+| 741 | other/doomsday | ✓ | 234us | 1.4 MB |
+| 742 | other/fischer_yates_shuffle | ✓ | 254us | 1.5 MB |
+| 743 | other/gauss_easter | ✓ | 500us | 1.8 MB |
+| 744 | other/greedy | ✓ | 623us | 1.7 MB |
+| 745 | other/guess_the_number_search | ✓ | 815us | 1.6 MB |
+| 746 | other/h_index | ✓ | 373us | 1.4 MB |
+| 747 | other/least_recently_used | ✓ | 751us | 1.6 MB |
+| 748 | other/lfu_cache | ✓ | 281us | 1.6 MB |
+| 749 | other/linear_congruential_generator | ✓ | 569us | 1.5 MB |
+| 750 | other/lru_cache | ✓ | 639us | 1.4 MB |
+| 751 | other/magicdiamondpattern | ✓ | 236us | 1.4 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 324us | 1.6 MB |
+| 753 | other/maximum_subsequence | ✓ | 555us | 1.5 MB |
+| 754 | other/nested_brackets | ✓ | 280us | 1.5 MB |
+| 755 | other/number_container_system | ✓ | 278us | 1.5 MB |
+| 756 | other/quine | ✓ | 198us | 1.5 MB |
+| 757 | other/scoring_algorithm | ✓ | 903us | 1.7 MB |
 | 758 | other/sdes |  |  |  |
-| 759 | other/tower_of_hanoi | ✓ | 624us | 1.4 MB |
-| 760 | other/word_search | ✓ | 426us | 1.8 MB |
-| 761 | physics/altitude_pressure | ✓ | 1.11ms | 2.1 MB |
-| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 1us | 1.4 MB |
+| 759 | other/tower_of_hanoi | ✓ | 301us | 1.4 MB |
+| 760 | other/word_search | ✓ | 252us | 1.7 MB |
+| 761 | physics/altitude_pressure | ✓ | 700us | 2.2 MB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ |  |  |
 | 763 | physics/basic_orbital_capture |  |  |  |
-| 764 | physics/casimir_effect | ✓ | 1.11ms | 1.7 MB |
-| 765 | physics/center_of_mass | ✓ | 468us | 1.7 MB |
-| 766 | physics/centripetal_force | ✓ | 588us | 1.7 MB |
-| 767 | physics/coulombs_law | ✓ | 1.22ms | 1.5 MB |
-| 768 | physics/doppler_frequency | ✓ | 489us | 1.7 MB |
-| 769 | physics/escape_velocity | ✓ | 726us | 1.6 MB |
-| 770 | physics/grahams_law | ✓ | 619us | 1.5 MB |
-| 771 | physics/horizontal_projectile_motion | ✓ | 591us | 1.6 MB |
-| 772 | physics/hubble_parameter | ✓ | 619us | 1.6 MB |
-| 773 | physics/ideal_gas_law | ✓ | 587us | 1.6 MB |
-| 774 | physics/in_static_equilibrium | ✓ | 679us | 1.5 MB |
-| 775 | physics/kinetic_energy | ✓ | 410us | 1.6 MB |
-| 776 | physics/lens_formulae | ✓ | 514us | 1.7 MB |
-| 777 | physics/lorentz_transformation_four_vector | ✓ | 519us | 1.7 MB |
-| 778 | physics/malus_law | ✓ | 1.04ms | 1.9 MB |
-| 779 | physics/mass_energy_equivalence | ✓ | 520us | 1.6 MB |
-| 780 | physics/mirror_formulae | ✓ | 482us | 1.6 MB |
-| 781 | physics/n_body_simulation | ✓ | 955us | 1.5 MB |
-| 782 | physics/newtons_law_of_gravitation | ✓ | 606us | 1.6 MB |
-| 783 | physics/newtons_second_law_of_motion | ✓ | 827us | 1.7 MB |
-| 784 | physics/orbital_transfer_work | ✓ | 471us | 1.5 MB |
-| 785 | physics/period_of_pendulum | ✓ | 539us | 1.7 MB |
-| 786 | physics/photoelectric_effect | ✓ | 1.00ms | 1.7 MB |
-| 787 | physics/potential_energy | ✓ | 661us | 1.7 MB |
-| 788 | physics/rainfall_intensity | ✓ | 1.73ms | 2.1 MB |
-| 789 | physics/reynolds_number | ✓ | 563us | 1.7 MB |
-| 790 | physics/rms_speed_of_molecule | ✓ | 1.09ms | 1.7 MB |
+| 764 | physics/casimir_effect | ✓ | 542us | 1.7 MB |
+| 765 | physics/center_of_mass | ✓ | 324us | 1.5 MB |
+| 766 | physics/centripetal_force | ✓ | 370us | 1.6 MB |
+| 767 | physics/coulombs_law | ✓ | 260us | 1.6 MB |
+| 768 | physics/doppler_frequency | ✓ | 669us | 1.6 MB |
+| 769 | physics/escape_velocity | ✓ | 248us | 1.6 MB |
+| 770 | physics/grahams_law | ✓ | 406us | 1.7 MB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 374us | 1.5 MB |
+| 772 | physics/hubble_parameter | ✓ | 358us | 1.5 MB |
+| 773 | physics/ideal_gas_law | ✓ | 582us | 1.7 MB |
+| 774 | physics/in_static_equilibrium | ✓ | 325us | 1.6 MB |
+| 775 | physics/kinetic_energy | ✓ | 465us | 1.6 MB |
+| 776 | physics/lens_formulae | ✓ | 397us | 1.5 MB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 435us | 1.7 MB |
+| 778 | physics/malus_law | ✓ | 460us | 2.0 MB |
+| 779 | physics/mass_energy_equivalence | ✓ | 254us | 1.6 MB |
+| 780 | physics/mirror_formulae | ✓ | 405us | 1.5 MB |
+| 781 | physics/n_body_simulation | ✓ | 419us | 1.7 MB |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 415us | 1.5 MB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 324us | 1.7 MB |
+| 784 | physics/orbital_transfer_work | ✓ | 531us | 1.5 MB |
+| 785 | physics/period_of_pendulum | ✓ | 445us | 1.6 MB |
+| 786 | physics/photoelectric_effect | ✓ | 433us | 1.6 MB |
+| 787 | physics/potential_energy | ✓ | 460us | 1.5 MB |
+| 788 | physics/rainfall_intensity | ✓ | 845us | 2.2 MB |
+| 789 | physics/reynolds_number | ✓ | 303us | 1.7 MB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 322us | 1.6 MB |
 | 791 | physics/shear_stress | ✓ | 520us | 1.6 MB |
 | 792 | physics/speed_of_sound | ✓ | 530us | 1.6 MB |
 | 793 | physics/speeds_of_gas_molecules | ✓ | 700us | 1.6 MB |
