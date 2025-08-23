@@ -1,0 +1,22 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_042/solution42.c: In function ‘word_value’:
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_042/solution42.c:138:26: warning: implicit declaration of function ‘ord’ [-Wimplicit-function-declaration]
+  138 |         total = (total + ord(_substring(word, i, i + 1LL))) - 64LL;
+      |                          ^~~
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_042/solution42.c: In function ‘solution’:
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_042/solution42.c:155:22: warning: implicit declaration of function ‘read_file’ [-Wimplicit-function-declaration]
+  155 |     long long text = read_file("words.txt");
+      |                      ^~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_042/solution42.c:156:38: warning: passing argument 1 of ‘parse_words’ makes pointer from integer without a cast [-Wint-conversion]
+  156 |     const char* *words = parse_words(text);
+      |                                      ^~~~
+      |                                      |
+      |                                      long long int
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_042/solution42.c:107:39: note: expected ‘const char *’ but argument is of type ‘long long int’
+  107 | const char* * parse_words(const char* text) {
+      |                           ~~~~~~~~~~~~^~~~
+/usr/bin/ld: /tmp/ccfDPv59.o: in function `word_value':
+solution42.c:(.text+0x6e4): undefined reference to `ord'
+/usr/bin/ld: /tmp/ccfDPv59.o: in function `solution':
+solution42.c:(.text+0x795): undefined reference to `read_file'
+collect2: error: ld returned 1 exit status
