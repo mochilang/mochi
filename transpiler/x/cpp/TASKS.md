@@ -1,3 +1,8 @@
+## Progress (2025-08-23 13:40 +0700)
+- feat(cpp): add bigint printing
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-17 00:45 +0700)
 - swift: drop hung base_neg2_conversion
 - Generated C++ for 103/105 programs

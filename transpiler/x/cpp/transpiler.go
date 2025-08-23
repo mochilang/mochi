@@ -717,7 +717,8 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<type_traits>")
 	p.addInclude("<limits>")
 	if p.UseBigInt || p.UseBigRat {
-		fmt.Fprintln(w, "using cpp_int = __int128;")
+		fmt.Fprintln(w, "#include <boost/multiprecision/cpp_int.hpp>")
+		fmt.Fprintln(w, "using cpp_int = boost::multiprecision::cpp_int;")
 	}
 	if p.UseNow {
 		p.addInclude("<cstdlib>")
@@ -2230,6 +2231,21 @@ func (c *CastExpr) emit(w io.Writer) {
 			io.WriteString(w, "std::stoll(")
 			c.Value.emit(w)
 			io.WriteString(w, ")")
+		}
+		return
+	}
+	if c.Type == "cpp_int" && valType == "std::string" {
+		if idx, ok := c.Value.(*IndexExpr); ok && exprType(idx.Target) == "std::string" {
+			io.WriteString(w, "cpp_int(([&](const auto& __s){ auto __i = ")
+			idx.Index.emit(w)
+			io.WriteString(w, "; if (__i < 0) __i += __s.size(); return __s[static_cast<size_t>(__i)]; })(")
+			idx.Target.emit(w)
+			io.WriteString(w, ") - '0')")
+		} else {
+			usesParseIntStr = true
+			io.WriteString(w, "cpp_int(_parse_int_str(")
+			c.Value.emit(w)
+			io.WriteString(w, ", int64_t(10)))")
 		}
 		return
 	}
