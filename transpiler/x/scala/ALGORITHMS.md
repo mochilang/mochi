@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 937/1077
-Last updated: 2025-08-22 23:09 +0700
+Completed programs: 938/1077
+Last updated: 2025-08-23 13:46 +0700
 
 Checklist:
 
@@ -996,7 +996,7 @@ Checklist:
 | 987 | sorts/wiggle_sort | ✓ | 13µs | 8.7 MB |
 | 988 | strings/aho_corasick | ✓ | 9µs | 8.7 MB |
 | 989 | strings/alternative_string_arrange | ✓ | 7µs | 8.7 MB |
-| 990 | strings/anagrams | error |  |  |
+| 990 | strings/anagrams | ✓ | 183.317ms | 3.5 MB |
 | 991 | strings/autocomplete_using_trie | ✓ | 7µs | 8.7 MB |
 | 992 | strings/barcode_validator | ✓ | 10µs | 8.8 MB |
 | 993 | strings/bitap_string_match | ✓ | 26µs | 8.7 MB |
