@@ -394,6 +394,9 @@ func fsTypeFromString(s string) string {
 	case "void":
 		return "unit"
 	default:
+		if strings.Contains(s, " array") {
+			return s
+		}
 		if strings.HasPrefix(s, "list<") && strings.HasSuffix(s, ">") {
 			elem := strings.TrimSuffix(strings.TrimPrefix(s, "list<"), ">")
 			t := fsTypeFromString(elem)
@@ -617,9 +620,6 @@ func simpleListType(l *ListLit) string {
 		for _, e := range l.Elems[1:] {
 			t := inferType(e)
 			if (elemType == "int" && t == "int64") || (elemType == "int64" && t == "int") {
-				// When mixing 32-bit and 64-bit integers in a list,
-				// promote the element type to int64 so that large
-				// literals are preserved without overflow.
 				elemType = "int64"
 				continue
 			}
@@ -627,6 +627,9 @@ func simpleListType(l *ListLit) string {
 				return ""
 			}
 		}
+	}
+	if elemType == "int" {
+		elemType = "int64"
 	}
 	return elemType + " array"
 }
@@ -1081,7 +1084,7 @@ func (l *ListLit) emit(w io.Writer) {
 	}
 	io.WriteString(w, "[|")
 	for i, e := range l.Elems {
-		if hasInt64 && types[i] == "int" {
+		if hasInt64 {
 			io.WriteString(w, "int64 (")
 			e.emit(w)
 			io.WriteString(w, ")")
@@ -1974,7 +1977,15 @@ func (s *LetStmt) emit(w io.Writer) {
 				}
 			}
 		}
-		if cast {
+		if s.Type == "int64" {
+			if inferType(s.Expr) == "int" {
+				io.WriteString(w, "int64 (")
+				s.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				s.Expr.emit(w)
+			}
+		} else if cast {
 			io.WriteString(w, "int (")
 			s.Expr.emit(w)
 			io.WriteString(w, ")")
@@ -2334,14 +2345,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
-	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		// Emit as a 64-bit literal to avoid overflow when the value
-		// exceeds the range of a 32-bit int. Using the L suffix keeps
-		// the literal as int64 without an unnecessary cast.
-		fmt.Fprintf(w, "%dL", i.Value)
-	} else {
-		fmt.Fprintf(w, "%d", i.Value)
-	}
+	// Emit all integer literals with the L suffix so they are treated as
+	// 64-bit values in F#.
+	fmt.Fprintf(w, "%dL", i.Value)
 }
 
 type BoolLit struct{ Value bool }
@@ -2497,12 +2503,10 @@ func needsParen(e Expr) bool {
 func inferType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		// Values outside the 32-bit signed range must be treated as
-		// int64 to avoid overflow in generated F# code.
-		if v.Value > math.MaxInt32 || v.Value < math.MinInt32 {
-			return "int64"
-		}
-		return "int"
+		// Use 64-bit integers for all numeric literals to align with
+		// Mochi's default integer width. This prevents mismatches when
+		// arrays or variables later require int64 values.
+		return "int64"
 	case *FloatLit:
 		return "float"
 	case *StringLit:
@@ -2850,7 +2854,18 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "string (")
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
-		i.Index.emit(w)
+		if inferType(i.Index) == "int64" {
+			io.WriteString(w, "int ")
+			if needsParen(i.Index) {
+				io.WriteString(w, "(")
+				i.Index.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				i.Index.emit(w)
+			}
+		} else {
+			i.Index.emit(w)
+		}
 		io.WriteString(w, "])")
 		return
 	}
@@ -3345,7 +3360,7 @@ func (c *CastExpr) emit(w io.Writer) {
 		if t == "obj" {
 			io.WriteString(w, "unbox<int64> ")
 		} else {
-			io.WriteString(w, "int64 ")
+			io.WriteString(w, "int ")
 		}
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
@@ -4141,7 +4156,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				e = &CastExpr{Expr: e, Type: "int"}
 			} else if fsDecl == "int64" && at == "int" {
 				e = &CastExpr{Expr: e, Type: "int64"}
-			} else if at != fsDecl && at != "" && !(at == "map" && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<")) {
+			} else if at != fsDecl && at != "" && !(strings.HasSuffix(fsDecl, " array") && at == "array") && !(at == "map" && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<")) {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
 		}
@@ -4266,8 +4281,20 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if fsDecl != "" {
 			varTypes[st.Var.Name] = fsDecl
-		} else {
+		} else if declared != "" {
 			varTypes[st.Var.Name] = declared
+		} else {
+			if t := inferType(e); t != "" {
+				varTypes[st.Var.Name] = t
+				if t != "array" && t != "map" {
+					fsDecl = t
+				}
+				if t == "int64" {
+					if _, ok := e.(*IntLit); ok {
+						e = &CastExpr{Expr: e, Type: "int64"}
+					}
+				}
+			}
 		}
 		typ := fsDecl
 		if fsDecl != "" {
@@ -4276,7 +4303,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				e = &CastExpr{Expr: e, Type: "int"}
 			} else if fsDecl == "int64" && at == "int" {
 				e = &CastExpr{Expr: e, Type: "int64"}
-			} else if at != fsDecl && at != "" && !(at == "map" && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<")) {
+			} else if at != fsDecl && at != "" && !(strings.HasSuffix(fsDecl, " array") && at == "array") && !(at == "map" && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<")) {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
 		}
@@ -4299,6 +4326,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if cur == "int" && t == "int64" {
 				e = &CastExpr{Expr: e, Type: "int"}
 				t = "int"
+			} else if cur == "int64" && t == "int" {
+				e = &CastExpr{Expr: e, Type: "int64"}
+				t = "int64"
 			}
 			if t == "array" {
 				if app, ok := e.(*AppendExpr); ok {
