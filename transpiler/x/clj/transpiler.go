@@ -2309,6 +2309,17 @@ func hasRecur(n Node) bool {
 	return false
 }
 
+func isTopLevelRecur(n Node) bool {
+       if l, ok := n.(*List); ok {
+               if len(l.Elems) > 0 {
+                       if sym, ok := l.Elems[0].(Symbol); ok && sym == "recur" {
+                               return true
+                       }
+               }
+       }
+       return false
+}
+
 func isAggCall(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -3860,16 +3871,17 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	currentWhileVar = flagVar
 	defer func() { currentWhileVar = prevFlag }()
 
-	bodyNodes := []Node{}
-	for _, st := range w.Body {
-		n, err := transpileStmt(st)
-		if err != nil {
-			return nil, err
-		}
-		if n != nil {
-			bodyNodes = append(bodyNodes, flattenDo(n)...)
-		}
-	}
+       bodyNodes := []Node{}
+       for _, st := range w.Body {
+               n, err := transpileStmt(st)
+               if err != nil {
+                       return nil, err
+               }
+               if n != nil {
+                       bodyNodes = append(bodyNodes, flattenDo(n)...)
+               }
+       }
+       bodyNodes = hoistRecurIf(bodyNodes)
 
 	if len(bodyNodes) > 0 {
 		if ifList, ok := bodyNodes[len(bodyNodes)-1].(*List); ok && len(ifList.Elems) == 4 {
@@ -3907,26 +3919,26 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	condElems := []Node{}
 	other := []Node{}
 	pre := []Node{}
-	for _, n := range bodyNodes {
-		if c, b, ok := condRecur(n); ok {
-			condElems = append(condElems, c, b)
-		} else {
-			if len(condElems) == 0 {
-				pre = append(pre, n)
-			} else {
-				other = append(other, n)
-			}
-		}
-	}
+       for _, n := range bodyNodes {
+               if c, b, ok := condRecur(n); ok && len(other) == 0 {
+                       condElems = append(condElems, c, b)
+               } else {
+                       if len(condElems) == 0 {
+                               pre = append(pre, n)
+                       } else {
+                               other = append(other, n)
+                       }
+               }
+       }
 
-	elseBody := append([]Node{}, other...)
-	appendRecur := true
-	for _, n := range append([]Node{}, append(pre, other...)...) {
-		if hasRecur(n) {
-			appendRecur = false
-			break
-		}
-	}
+       elseBody := append([]Node{}, other...)
+       appendRecur := true
+       for _, n := range append([]Node{}, append(pre, other...)...) {
+               if isTopLevelRecur(n) {
+                       appendRecur = false
+                       break
+               }
+       }
 	var last Node
 	if len(other) > 0 {
 		last = other[len(other)-1]
@@ -4134,6 +4146,34 @@ func condRecur(n Node) (cond Node, recur Node, ok bool) {
 		}
 	}
 	return nil, nil, false
+}
+
+// hoistRecurIf rewrites a sequence of nodes so that any `if` or `when`
+// containing a `recur` becomes responsible for the remainder of the body.
+// This ensures the `recur` remains in tail position by moving subsequent
+// statements into the else branch of that conditional.
+func hoistRecurIf(nodes []Node) []Node {
+       out := []Node{}
+       for i := 0; i < len(nodes); i++ {
+               n := nodes[i]
+               if c, b, ok := condRecur(n); ok && i+1 < len(nodes) {
+                       rest := hoistRecurIf(nodes[i+1:])
+                       var elseNode Node
+                       switch len(rest) {
+                       case 0:
+                               elseNode = Symbol("nil")
+                       case 1:
+                               elseNode = rest[0]
+                       default:
+                               elseNode = &List{Elems: append([]Node{Symbol("do")}, rest...)}
+                       }
+                       newNode := &List{Elems: []Node{Symbol("if"), c, b, elseNode}}
+                       out = append(out, newNode)
+                       return out
+               }
+               out = append(out, n)
+       }
+       return out
 }
 
 func transpileUpdateStmt(u *parser.UpdateStmt) (Node, error) {
