@@ -1,0 +1,12 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_041/sol1.c: In function ‘remove_at’:
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_041/sol1.c:102:19: warning: implicit declaration of function ‘list_append_int_new’; did you mean ‘list_append_long_long’? [-Wimplicit-function-declaration]
+  102 |             res = list_append_int_new(res, res_len, xs[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? xs_len + _mochi_idx : _mochi_idx;})]);
+      |                   ^~~~~~~~~~~~~~~~~~~
+      |                   list_append_long_long
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_041/sol1.c:102:17: warning: assignment to ‘long long int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  102 |             res = list_append_int_new(res, res_len, xs[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? xs_len + _mochi_idx : _mochi_idx;})]);
+      |                 ^
+/usr/bin/ld: /tmp/ccCPYDsg.o: in function `remove_at':
+sol1.c:(.text+0x4ba): undefined reference to `list_append_int_new'
+collect2: error: ld returned 1 exit status

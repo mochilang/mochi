@@ -4449,25 +4449,48 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			}
 		}
 		if vr, ok := b.Right.(*VarRef); ok {
-			if t, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(t, "[]") {
-				elem := strings.TrimSuffix(t, "[]")
-				if elem == "int" {
-					needContainsInt = true
-					io.WriteString(w, "contains_int(")
-					io.WriteString(w, vr.Name+", ")
-					io.WriteString(w, vr.Name+"_len, ")
-					b.Left.emitExpr(w)
-					io.WriteString(w, ")")
-					return
-				}
-				if elem == "const char*" {
-					needContainsStr = true
-					io.WriteString(w, "contains_str(")
-					io.WriteString(w, vr.Name+", ")
-					io.WriteString(w, vr.Name+"_len, ")
-					b.Left.emitExpr(w)
-					io.WriteString(w, ")")
-					return
+			if t, ok2 := varTypes[vr.Name]; ok2 {
+				switch {
+				case strings.HasSuffix(t, "[]"):
+					elem := strings.TrimSuffix(t, "[]")
+					if elem == "int" || elem == "long long" {
+						needContainsInt = true
+						io.WriteString(w, "contains_int(")
+						io.WriteString(w, vr.Name+", ")
+						io.WriteString(w, vr.Name+"_len, ")
+						b.Left.emitExpr(w)
+						io.WriteString(w, ")")
+						return
+					}
+					if elem == "const char*" {
+						needContainsStr = true
+						io.WriteString(w, "contains_str(")
+						io.WriteString(w, vr.Name+", ")
+						io.WriteString(w, vr.Name+"_len, ")
+						b.Left.emitExpr(w)
+						io.WriteString(w, ")")
+						return
+					}
+				case strings.HasSuffix(t, "*"):
+					elem := strings.TrimSuffix(t, "*")
+					if elem == "long long" || elem == "int" {
+						needContainsInt = true
+						io.WriteString(w, "contains_int(")
+						io.WriteString(w, vr.Name+", ")
+						io.WriteString(w, vr.Name+"_len, ")
+						b.Left.emitExpr(w)
+						io.WriteString(w, ")")
+						return
+					}
+					if elem == "const char*" {
+						needContainsStr = true
+						io.WriteString(w, "contains_str(")
+						io.WriteString(w, vr.Name+", ")
+						io.WriteString(w, vr.Name+"_len, ")
+						b.Left.emitExpr(w)
+						io.WriteString(w, ")")
+						return
+					}
 				}
 			}
 		}

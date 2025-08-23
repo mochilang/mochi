@@ -1,0 +1,5 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_067/sol1.c: In function ‘max_path’:
+/workspace/mochi/tests/algorithms/x/C/project_euler/problem_067/sol1.c:192:37: error: expected expression before ‘;’ token
+  192 |             a[(int)(i)][(int)(j)] = ;
+      |                                     ^
