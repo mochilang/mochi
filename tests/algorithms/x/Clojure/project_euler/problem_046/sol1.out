@@ -1,5 +1,5 @@
-Execution error (IndexOutOfBoundsException) at main/solution (sol1.clj:61).
-null
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/project_euler/problem_046/sol1.clj:58:734).
+Can only recur from tail position
 
 Full report at:
-/tmp/clojure-10897806130483653812.edn
+/tmp/clojure-5261621747639490382.edn

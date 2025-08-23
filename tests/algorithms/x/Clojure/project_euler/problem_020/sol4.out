@@ -1,6 +1,6 @@
 Enter the Number: 
-Execution error (NumberFormatException) at jdk.internal.math.FloatingDecimal/readJavaFormatString (FloatingDecimal.java:1842).
-empty String
+Execution error (ArithmeticException) at java.lang.Math/multiplyExact (Math.java:1032).
+long overflow
 
 Full report at:
-/tmp/clojure-6939943272384699460.edn
+/tmp/clojure-3209115924704099523.edn
