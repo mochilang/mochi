@@ -5144,6 +5144,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 				val = &AssertExpr{Expr: val, Type: ret}
 			}
 		}
+		if ix, ok := val.(*IndexExpr); ok {
+			if ae, ok2 := ix.X.(*AssertExpr); ok2 && ae.Type == "[]any" && ret != "" && ret != "any" {
+				ae.Type = "[]" + ret
+			}
+		}
 	}
 	return &ReturnStmt{Value: val}, nil
 }
