@@ -1713,18 +1713,6 @@ func stmtContainsBreak(s Stmt) bool {
 		if stmtsContainBreak(st.Else) {
 			return true
 		}
-	case *WhileStmt:
-		if stmtsContainBreak(st.Body) {
-			return true
-		}
-	case *ForRangeStmt:
-		if stmtsContainBreak(st.Body) {
-			return true
-		}
-	case *ForEachStmt:
-		if stmtsContainBreak(st.Body) {
-			return true
-		}
 	}
 	return false
 }
