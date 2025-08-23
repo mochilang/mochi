@@ -685,11 +685,11 @@ func (ae *AppendExpr) emit(w io.Writer) {
 	elem = strings.TrimPrefix(elem, "const ")
 	tmp := uniqueName("_tmp")
 	lbl := newLabel()
-	fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", lbl, tmp, elem)
-	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
+	fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); ", lbl, tmp, elem)
+	fmt.Fprintf(w, "%s.appendSlice(std.heap.page_allocator, @as([]const %s, ", tmp, elem)
 	ae.List.emit(w)
 	io.WriteString(w, ")) catch |err| handleError(err); ")
-	fmt.Fprintf(w, "%s.append(", tmp)
+	fmt.Fprintf(w, "%s.append(std.heap.page_allocator, ", tmp)
 	valType := zigTypeFromExpr(ae.Value)
 	if strings.HasPrefix(elem, "[]") {
 		if ll, ok := ae.Value.(*ListLit); ok {
@@ -709,7 +709,7 @@ func (ae *AppendExpr) emit(w io.Writer) {
 		ae.Value.emit(w)
 	}
 	io.WriteString(w, ") catch |err| handleError(err); ")
-	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch |err| handleError(err)); }", lbl, tmp)
+	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice(std.heap.page_allocator) catch |err| handleError(err)); }", lbl, tmp)
 }
 
 // ConcatExpr concatenates two lists.
@@ -732,22 +732,22 @@ func (ce *ConcatExpr) emit(w io.Writer) {
 	elem = strings.TrimPrefix(elem, "const ")
 	tmp := uniqueName("_tmp")
 	lbl := newLabel()
-	fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).init(std.heap.page_allocator); ", lbl, tmp, elem)
-	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
+	fmt.Fprintf(w, "%s: { var %s = std.ArrayList(%s).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); ", lbl, tmp, elem)
+	fmt.Fprintf(w, "%s.appendSlice(std.heap.page_allocator, @as([]const %s, ", tmp, elem)
 	if ll, ok := ce.A.(*ListLit); ok {
 		ll.emit(w)
 	} else {
 		ce.A.emit(w)
 	}
 	io.WriteString(w, ")) catch |err| handleError(err); ")
-	fmt.Fprintf(w, "%s.appendSlice(@as([]const %s, ", tmp, elem)
+	fmt.Fprintf(w, "%s.appendSlice(std.heap.page_allocator, @as([]const %s, ", tmp, elem)
 	if ll, ok := ce.B.(*ListLit); ok {
 		ll.emit(w)
 	} else {
 		ce.B.emit(w)
 	}
 	io.WriteString(w, ")) catch |err| handleError(err); ")
-	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice() catch |err| handleError(err)); }", lbl, tmp)
+	fmt.Fprintf(w, "break :%s (%s.toOwnedSlice(std.heap.page_allocator) catch |err| handleError(err)); }", lbl, tmp)
 }
 
 type FieldExpr struct {
@@ -1867,7 +1867,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * @as(i64, @intCast(std.mem.page_size));\n")
+		buf.WriteString("        return pages * @as(i64, @intCast(std.heap.page_size_min));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -4184,6 +4184,13 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
+	if pf.Target != nil && pf.Target.Selector != nil && pf.Target.Selector.Root == "not" && len(pf.Target.Selector.Tail) == 0 && len(pf.Ops) == 1 && pf.Ops[0].Call != nil && len(pf.Ops[0].Call.Args) == 1 {
+		arg, err := compileExpr(pf.Ops[0].Call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &NotExpr{Expr: arg}, nil
+	}
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
 		alias := pf.Target.Selector.Root
 		method := pf.Target.Selector.Tail[0]
@@ -4490,6 +4497,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			useInput = true
 			return &CallExpr{Func: "_input"}, nil
+		case "not":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("not expects one argument")
+			}
+			return &NotExpr{Expr: args[0]}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects one argument")

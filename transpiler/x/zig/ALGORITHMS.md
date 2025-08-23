@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-22 23:09 +0700
+Last updated: 2025-08-23 13:46 +0700
 
-## Program Checklist (471/1077)
+## Program Checklist (461/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -898,21 +898,21 @@ Last updated: 2025-08-22 23:09 +0700
 | 889 | project_euler/problem_058/sol1 |   |  |  |
 | 890 | project_euler/problem_059/sol1 | ✓ | 17.330092s | 2.3 GB |
 | 891 | project_euler/problem_062/sol1 | ✓ | 5.358853s | 1.1 GB |
-| 892 | project_euler/problem_063/sol1 | ✓ | 501µs | 128.0 KB |
+| 892 | project_euler/problem_063/sol1 |   |  |  |
 | 893 | project_euler/problem_064/sol1 |   |  |  |
-| 894 | project_euler/problem_065/sol1 | ✓ | 496µs | 384.0 KB |
+| 894 | project_euler/problem_065/sol1 |   |  |  |
 | 895 | project_euler/problem_067/sol1 |   |  |  |
-| 896 | project_euler/problem_067/sol2 | ✓ | 102.514ms | 19.6 MB |
+| 896 | project_euler/problem_067/sol2 |   |  |  |
 | 897 | project_euler/problem_068/sol1 |   |  |  |
-| 898 | project_euler/problem_069/sol1 | ✓ | 394µs | 256.0 KB |
-| 899 | project_euler/problem_070/sol1 | ✓ | 3.624403s | 662.5 MB |
-| 900 | project_euler/problem_071/sol1 | ✓ | 27.315ms | 256.0 KB |
+| 898 | project_euler/problem_069/sol1 |   |  |  |
+| 899 | project_euler/problem_070/sol1 |   |  |  |
+| 900 | project_euler/problem_071/sol1 |   |  |  |
 | 901 | project_euler/problem_072/sol1 |   |  |  |
-| 902 | project_euler/problem_072/sol2 | ✓ | 38.872ms | 6.2 MB |
-| 903 | project_euler/problem_073/sol1 | ✓ | 2.210889s | 128.0 KB |
-| 904 | project_euler/problem_074/sol1 | ✓ | 51.666ms | 8.9 MB |
-| 905 | project_euler/problem_074/sol2 | ✓ | 2m33.366066s | 3.8 GB |
-| 906 | project_euler/problem_075/sol1 | ✓ | 1.414273s | 8.9 MB |
+| 902 | project_euler/problem_072/sol2 |   |  |  |
+| 903 | project_euler/problem_073/sol1 |   |  |  |
+| 904 | project_euler/problem_074/sol1 |   |  |  |
+| 905 | project_euler/problem_074/sol2 |   |  |  |
+| 906 | project_euler/problem_075/sol1 |   |  |  |
 | 907 | project_euler/problem_076/sol1 |   |  |  |
 | 908 | project_euler/problem_077/sol1 |   |  |  |
 | 909 | project_euler/problem_078/sol1 |   |  |  |
@@ -996,7 +996,7 @@ Last updated: 2025-08-22 23:09 +0700
 | 987 | sorts/wiggle_sort |   |  |  |
 | 988 | strings/aho_corasick |   |  |  |
 | 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
+| 990 | strings/anagrams | ✓ | 8.905ms | 1.6 MB |
 | 991 | strings/autocomplete_using_trie |   |  |  |
 | 992 | strings/barcode_validator |   |  |  |
 | 993 | strings/bitap_string_match |   |  |  |
