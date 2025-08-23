@@ -2042,13 +2042,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{sanitizeField(v.Name + "_" + f.Name)}}, Expr: &VarRef{Name: paramName}})
 						}
 						body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{"_tag"}}, Expr: &IntLit{Value: int64(idx)}})
-						fn := FunDecl{Name: ctorName(v.Name), Params: params, ReturnType: st.Type.Name, Body: body}
+						recName := sanitize(st.Type.Name)
+						fn := FunDecl{Name: ctorName(recName), Params: params, ReturnType: recName, Body: body}
 						pr.Funs = append([]FunDecl{fn}, pr.Funs...)
 						if funcReturns != nil {
-							funcReturns[fn.Name] = st.Type.Name
+							funcReturns[fn.Name] = recName
 						}
 					}
-					pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
+					pr.Records = append(pr.Records, RecordDef{Name: sanitize(st.Type.Name), Fields: fields})
 				} else {
 					var fields []Field
 					for _, m := range st.Type.Members {
@@ -2061,7 +2062,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 						fields = append(fields, Field{Name: sanitizeField(m.Field.Name), Type: typ})
 					}
-					pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
+					pr.Records = append(pr.Records, RecordDef{Name: sanitize(st.Type.Name), Fields: fields})
 				}
 			case st.Let != nil:
 				name := declareName(st.Let.Name)
@@ -2817,13 +2818,14 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{sanitizeField(v.Name + "_" + f.Name)}}, Expr: &VarRef{Name: paramName}})
 					}
 					body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{"_tag"}}, Expr: &IntLit{Value: int64(idx)}})
-					fn := FunDecl{Name: ctorName(v.Name), Params: params, ReturnType: st.Type.Name, Body: body}
+					recName := sanitize(st.Type.Name)
+					fn := FunDecl{Name: ctorName(recName), Params: params, ReturnType: recName, Body: body}
 					currProg.Funs = append([]FunDecl{fn}, currProg.Funs...)
 					if funcReturns != nil {
-						funcReturns[fn.Name] = st.Type.Name
+						funcReturns[fn.Name] = recName
 					}
 				}
-				currProg.Records = append(currProg.Records, RecordDef{Name: st.Type.Name, Fields: fields})
+				currProg.Records = append(currProg.Records, RecordDef{Name: sanitize(st.Type.Name), Fields: fields})
 			} else {
 				var fields []Field
 				for _, m := range st.Type.Members {
@@ -2836,7 +2838,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					}
 					fields = append(fields, Field{Name: sanitizeField(m.Field.Name), Type: typ})
 				}
-				currProg.Records = append(currProg.Records, RecordDef{Name: st.Type.Name, Fields: fields})
+				currProg.Records = append(currProg.Records, RecordDef{Name: sanitize(st.Type.Name), Fields: fields})
 			}
 		case st.Var != nil:
 			name := declareName(st.Var.Name)
@@ -4578,7 +4580,7 @@ func typeOf(e *parser.Expr, env *types.Env) string {
 		}
 		return "array of int64"
 	case types.StructType:
-		return v.Name
+		return sanitize(v.Name)
 	case types.StringType:
 		return "string"
 	case types.BoolType:
@@ -4657,7 +4659,7 @@ func typeFromRef(tr *parser.TypeRef) string {
 func typeFromSimple(s string) string {
 	switch s {
 	case "int":
-		return "integer"
+		return "int64"
 	case "string":
 		return "string"
 	case "bool":
@@ -4670,7 +4672,7 @@ func typeFromSimple(s string) string {
 		currProg.UseBigRat = true
 		return "BigRat"
 	default:
-		return s
+		return sanitize(s)
 	}
 }
 
@@ -4688,7 +4690,7 @@ func pasTypeFromType(t types.Type) string {
 		currProg.UseBigRat = true
 		return "BigRat"
 	case types.StructType:
-		return v.Name
+		return sanitize(v.Name)
 	case types.ListType:
 		elem := pasTypeFromType(v.Elem)
 		if strings.HasPrefix(elem, "array of ") {
@@ -5354,7 +5356,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			fields = append(fields, FieldExpr{Name: it.Name, Expr: val})
 		}
-		return &RecordLit{Type: p.Struct.Name, Fields: fields}, nil
+		return &RecordLit{Type: sanitize(p.Struct.Name), Fields: fields}, nil
 	case p.Map != nil:
 		if len(p.Map.Items) == 0 && expectedMapType != "" && strings.HasPrefix(expectedMapType, "specialize TFPGMap") {
 			currProg.UseFGL = true
@@ -5728,7 +5730,7 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 func inferType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		return "integer"
+		return "int64"
 	case *RealLit:
 		return "real"
 	case *StringLit:
@@ -6262,6 +6264,9 @@ func setVarType(name, typ string) {
 }
 
 func (p *Program) addArrayAlias(elem string) string {
+	if elem == "integer" {
+		elem = "int64"
+	}
 	if p.ArrayAliases == nil {
 		p.ArrayAliases = make(map[string]string)
 	}
@@ -6279,7 +6284,7 @@ func (p *Program) addArrayAlias(elem string) string {
 	}
 	alias := ""
 	switch elem {
-	case "integer":
+	case "int64":
 		alias = "IntArray"
 	case "string":
 		alias = "StrArray"
@@ -6300,7 +6305,7 @@ func (p *Program) addArrayAlias(elem string) string {
 		alias = b.String()
 	}
 	switch elem {
-	case "integer", "string", "boolean", "real", "Variant":
+	case "int64", "string", "boolean", "real", "Variant":
 		p.ArrayAliases[elem] = alias
 	default:
 		if _, ok := p.ArrayAliases[elem]; ok || (len(elem) > 0 && strings.ToUpper(elem[:1]) == elem[:1]) {

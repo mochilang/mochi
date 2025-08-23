@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-22 15:42 GMT+7
+Last updated: 2025-08-23 13:57 GMT+7
 
-## Algorithms Golden Test Checklist (547/1077)
+## Algorithms Golden Test Checklist (594/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -996,56 +996,56 @@ Last updated: 2025-08-22 15:42 GMT+7
 | 987 | sorts/wiggle_sort |   |  |  |
 | 988 | strings/aho_corasick |   |  |  |
 | 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
+| 990 | strings/anagrams | ✓ | 1.0µs | 7.56KB |
+| 991 | strings/autocomplete_using_trie | ✓ | 0ns | 2.62KB |
+| 992 | strings/barcode_validator | ✓ | 1.0µs | 384B |
+| 993 | strings/bitap_string_match | ✓ | 0ns | 0B |
+| 994 | strings/boyer_moore_search | ✓ | 1.0µs | 0B |
+| 995 | strings/camel_case_to_snake_case | ✓ | 0ns | 0B |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 0ns | 9.81KB |
+| 997 | strings/capitalize | ✓ | 0ns | 0B |
+| 998 | strings/check_anagrams | ✓ | 0ns | 13.88KB |
+| 999 | strings/count_vowels | ✓ | 0ns | 0B |
 | 1000 | strings/credit_card_validator | ✓ | 0ns | 0B |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
-| 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 0ns | 64B |
+| 1002 | strings/detecting_english_programmatically | ✓ | 0ns | 7.56KB |
+| 1003 | strings/dna | ✓ | 0ns | 0B |
+| 1004 | strings/edit_distance | ✓ | 3.0µs | 0B |
+| 1005 | strings/frequency_finder | ✓ | 1.0µs | 15.06KB |
+| 1006 | strings/hamming_distance | ✓ | 0ns | 64B |
+| 1007 | strings/indian_phone_validator | ✓ | 0ns | 128B |
+| 1008 | strings/is_contains_unique_chars | ✓ | 1.0µs | 128B |
+| 1009 | strings/is_isogram | ✓ | 0ns | 128B |
+| 1010 | strings/is_pangram | ✓ | 0ns | 128B |
+| 1011 | strings/is_polish_national_id | ✓ | 0ns | 128B |
+| 1012 | strings/is_spain_national_id | ✓ | 0ns | 0B |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 0ns | 128B |
+| 1014 | strings/is_valid_email_address | ✓ | 0ns | 4.94KB |
+| 1015 | strings/jaro_winkler | ✓ | 0ns | 64B |
+| 1016 | strings/join | ✓ | 0ns | 0B |
+| 1017 | strings/knuth_morris_pratt | ✓ | 0ns | 0B |
+| 1018 | strings/levenshtein_distance | ✓ | 0ns | 0B |
+| 1019 | strings/lower | ✓ | 0ns | 0B |
+| 1020 | strings/manacher | ✓ | 0ns | 0B |
+| 1021 | strings/min_cost_string_conversion | ✓ | 1.0µs | 0B |
+| 1022 | strings/naive_string_search | ✓ | 0ns | 64B |
+| 1023 | strings/ngram | ✓ | 0ns | 6.62KB |
+| 1024 | strings/palindrome | ✓ | 0ns | 2.12KB |
+| 1025 | strings/pig_latin | ✓ | 0ns | 0B |
+| 1026 | strings/prefix_function | ✓ | 1.0µs | 0B |
+| 1027 | strings/rabin_karp | ✓ | 0ns | 0B |
+| 1028 | strings/remove_duplicate | ✓ | 1.0µs | 0B |
+| 1029 | strings/reverse_letters | ✓ | 0ns | 0B |
+| 1030 | strings/reverse_words | ✓ | 1.0µs | 0B |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 0ns | 0B |
+| 1032 | strings/split | ✓ | 0ns | 4.53KB |
+| 1033 | strings/string_switch_case | error |  |  |
+| 1034 | strings/strip | ✓ | 0ns | 0B |
+| 1035 | strings/text_justification | ✓ | 1.0µs | 1.62KB |
+| 1036 | strings/title | ✓ | 0ns | 0B |
+| 1037 | strings/top_k_frequent_words | error |  |  |
+| 1038 | strings/upper | ✓ | 0ns | 64B |
+| 1039 | strings/wave_string | ✓ | 0ns | 2.69KB |
 | 1040 | strings/wildcard_pattern_matching |   |  |  |
 | 1041 | strings/word_occurrence |   |  |  |
 | 1042 | strings/word_patterns |   |  |  |

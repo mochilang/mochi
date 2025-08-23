@@ -1,0 +1,14 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/strings/string_switch_case.pas
+string_switch_case.pas(88,23) Error: Incompatible types: got "Char" expected "Int64"
+string_switch_case.pas(94,46) Error: Operator is not overloaded: "ShortString" + "Int64"
+string_switch_case.pas(87,7) Error: Incompatible types: got "Char" expected "Int64"
+string_switch_case.pas(115,29) Error: Incompatible type for arg no. 1: Got "Int64", expected "ShortString"
+string_switch_case.pas(116,46) Error: Operator is not overloaded: "ShortString" + "Int64"
+string_switch_case.pas(114,7) Error: Incompatible types: got "Char" expected "Int64"
+string_switch_case.pas(221) Fatal: There were 6 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
