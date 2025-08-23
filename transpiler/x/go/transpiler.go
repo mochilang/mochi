@@ -2666,7 +2666,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	mainFuncName = ""
 	fieldTypeGuess = map[string]string{}
 	varNameMap = map[string]string{}
-	varDecls = map[string]*VarDecl{}
+	varDecls = map[string]*VarDecl{"__name__": {Name: "__name__", Type: "string", Value: &StringLit{Value: "__main__"}, Global: true}}
 	fetchFuncs = map[string]bool{}
 	imports = map[string]string{}
 	precomputeFuncInfo(p, env)
@@ -2679,6 +2679,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 		}
 	}
 	gp := &Program{}
+	gp.Stmts = append(gp.Stmts, varDecls["__name__"])
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
 		if err != nil {
