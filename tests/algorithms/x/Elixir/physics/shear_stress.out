@@ -1,3 +1,10 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/shear_stress.exs:3: Main (module)
+
 "Result(name='area', value=4)"
 "Result(name='stress', value=8)"
 "Result(name='tangential_force', value=1.2e6)"

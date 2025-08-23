@@ -1,2 +1,9 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/speed_of_sound.exs:3: Main (module)
+
 1467.7563207952703
 1447.614670861731

@@ -1,10 +1,17 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:3: Main (module)
+
 ** (ArgumentError) errors were found at the given arguments:
 
   * 1st argument: not a number
 
     :erlang.trunc("7")
-    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:41: anonymous fn/5 in Main.solution/1
-    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:49: anonymous fn/4 in Main.solution/1
-    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:67: Main.solution/1
-    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:79: Main.main/0
-    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:82: (file)
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:42: anonymous fn/5 in Main.solution/1
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:50: anonymous fn/4 in Main.solution/1
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:68: Main.solution/1
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:80: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:83: (file)

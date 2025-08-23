@@ -1,36 +1,43 @@
 warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 23 │               c = try do
+ 24 │               c = try do
     │               ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:23:15: Main.solution/0
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:24:15: Main.solution/0
 
     warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 35 │           b = try do
+ 36 │           b = try do
     │           ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:35:11: Main.solution/0
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:36:11: Main.solution/0
 
     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 47 │       a = try do
+ 48 │       a = try do
     │       ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:47:7: Main.solution/0
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:48:7: Main.solution/0
 
     warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 76 │           b = try do
+ 77 │           b = try do
     │           ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:76:11: Main.solution_fast/0
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:77:11: Main.solution_fast/0
 
     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 88 │       a = try do
+ 89 │       a = try do
     │       ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:88:7: Main.solution_fast/0
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:89:7: Main.solution_fast/0
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol1.exs:3: Main (module)
 
 31875000

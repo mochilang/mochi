@@ -1,15 +1,22 @@
 warning: variable "cur_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 83 │       {cur_index, largest_product, substr} = try do
+ 84 │       {cur_index, largest_product, substr} = try do
     │        ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol3.exs:83:8: Main.solution/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol3.exs:84:8: Main.solution/1
 
     warning: variable "substr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 83 │       {cur_index, largest_product, substr} = try do
+ 84 │       {cur_index, largest_product, substr} = try do
     │                                    ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol3.exs:83:36: Main.solution/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol3.exs:84:36: Main.solution/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol3.exs:3: Main (module)
 
 solution() = 23514624000

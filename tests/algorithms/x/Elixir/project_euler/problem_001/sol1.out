@@ -1,9 +1,16 @@
 warning: variable "e" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 21 │       {e, total} = try do
+ 22 │       {e, total} = try do
     │        ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_001/sol1.exs:21:8: Main.solution/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_001/sol1.exs:22:8: Main.solution/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_001/sol1.exs:3: Main (module)
 
 0
 3

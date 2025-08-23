@@ -1,15 +1,22 @@
 warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 21 │           b = try do
+ 22 │           b = try do
     │           ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol3.exs:21:11: Main.solution/0
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol3.exs:22:11: Main.solution/0
 
     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 33 │       a = try do
+ 34 │       a = try do
     │       ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol3.exs:33:7: Main.solution/0
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol3.exs:34:7: Main.solution/0
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_009/sol3.exs:3: Main (module)
 
 31875000
