@@ -88,59 +88,71 @@ exception Continue
 
 exception Return
 
-let rec solution length =
+let rec gcd a b =
   let __ret = ref 0 in
   (try
-  let length = (Obj.magic length : int) in
-  let ways = ref (([] : (int list) list)) in
-  let i = ref (0) in
-  (try while (!i <= length) do
+  let a = (Obj.magic a : int) in
+  let b = (Obj.magic b : int) in
+  let x = ref (a) in
+  let y = ref (b) in
+  (try while (!y <> 0) do
     try
-  let row = ref (([] : (int) list)) in
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  ways := (Obj.magic ((List.append (!ways) [(Obj.magic (!row) : int list)])) : int list list);
-  i := (!i + 1);
+  let t = ((!x mod !y + !y) mod !y) in
+  x := !y;
+  y := t;
     with Continue -> ()
   done with Break -> ());
-  let row_length = ref (0) in
-  (try while (!row_length <= length) do
+  __ret := (Obj.magic (!x) : int); raise Return
+  with Return -> !__ret)
+
+and solution limit =
+  let __ret = ref 0 in
+  (try
+  let limit = (Obj.magic limit : int) in
+  let frequencies = ref ([] : (string * int) list) in
+  let m = ref (2) in
+  (try while (((2 * !m) * (!m + 1)) <= limit) do
     try
-  let tile_length = ref (2) in
-  (try while (!tile_length <= 4) do
+  let n = ref ((((!m mod 2 + 2) mod 2) + 1)) in
+  (try while (!n < !m) do
     try
-  let tile_start = ref (0) in
-  (try while (!tile_start <= (!row_length - !tile_length)) do
+  if (gcd (Obj.repr (!m)) (Obj.repr (!n)) > 1) then (
+  n := (!n + 2);
+  raise Continue;
+  );
+  let primitive_perimeter = ((2 * !m) * (!m + !n)) in
+  let perimeter = ref (primitive_perimeter) in
+  (try while (!perimeter <= limit) do
     try
-  let remaining = ((!row_length - !tile_start) - !tile_length) in
-  ways := (List.mapi (fun __i __x -> if __i = !row_length then (List.mapi (fun __i __x -> if __i = (!tile_length - 2) then (((let __l = (let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0) + (let __l = (let __l = !ways in let __i = remaining in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0)) + 1) else __x) ((let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []))) else __x) (!ways));
-  tile_start := (!tile_start + 1);
+  if not ((List.mem_assoc (__str (Obj.repr (!perimeter))) !frequencies)) then (
+  frequencies := ((__str (Obj.repr (!perimeter)), 0) :: List.remove_assoc (__str (Obj.repr (!perimeter))) (!frequencies));
+  );
+  frequencies := ((__str (Obj.repr (!perimeter)), ((match List.assoc_opt (__str (Obj.repr (!perimeter))) (!frequencies) with Some v -> (Obj.magic v : int) | None -> 0) + 1)) :: List.remove_assoc (__str (Obj.repr (!perimeter))) (!frequencies));
+  perimeter := (!perimeter + primitive_perimeter);
     with Continue -> ()
   done with Break -> ());
-  tile_length := (!tile_length + 1);
+  n := (!n + 2);
     with Continue -> ()
   done with Break -> ());
-  row_length := (!row_length + 1);
+  m := (!m + 1);
     with Continue -> ()
   done with Break -> ());
-  let total = ref (0) in
-  let j = ref (0) in
-  (try while (!j < 3) do
+  let count = ref (0) in
+  (try List.iter (fun (p, _) ->
     try
-  total := (!total + (let __l = (let __l = !ways in let __i = length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = !j in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-  __ret := (Obj.magic (!total) : int); raise Return
+  if ((match List.assoc_opt (__str (Obj.repr (p))) (!frequencies) with Some v -> (Obj.magic v : int) | None -> 0) = 1) then (
+  count := (!count + 1);
+  );
+    with Continue -> ()) (!frequencies) with Break -> ());
+  __ret := (Obj.magic (!count) : int); raise Return
   with Return -> !__ret)
 
 
+let result = solution (Obj.repr (1500000))
 let () =
   let bench_mem_start = _mem () in
   let bench_start = _now () in
-  print_endline (string_of_int (solution (Obj.repr (5))));
-  print_endline (string_of_int (solution (Obj.repr (50))));
+  print_endline (("solution() = " ^ (string_of_int (Obj.magic (result) : int))));
   let bench_finish = _now () in
   let bench_mem_end = _mem () in
   let bench_dur = (bench_finish - bench_start) / 1000 in

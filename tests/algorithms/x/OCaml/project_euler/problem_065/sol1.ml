@@ -88,59 +88,51 @@ exception Continue
 
 exception Return
 
-let rec solution length =
+let rec sum_digits num =
   let __ret = ref 0 in
   (try
-  let length = (Obj.magic length : int) in
-  let ways = ref (([] : (int list) list)) in
-  let i = ref (0) in
-  (try while (!i <= length) do
+  let num = (Obj.magic num : int) in
+  let n = ref (num) in
+  let digit_sum = ref (0) in
+  (try while (!n > 0) do
     try
-  let row = ref (([] : (int) list)) in
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  row := (Obj.magic ((List.append (!row) [(Obj.magic (0) : int)])) : int list);
-  ways := (Obj.magic ((List.append (!ways) [(Obj.magic (!row) : int list)])) : int list list);
+  digit_sum := (!digit_sum + ((!n mod 10 + 10) mod 10));
+  n := (!n / 10);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!digit_sum) : int); raise Return
+  with Return -> !__ret)
+
+and solution max_n =
+  let __ret = ref 0 in
+  (try
+  let max_n = (Obj.magic max_n : int) in
+  let pre_numerator = ref (1) in
+  let cur_numerator = ref (2) in
+  let i = ref (2) in
+  (try while (!i <= max_n) do
+    try
+  let temp = !pre_numerator in
+  let e_cont = ref (1) in
+  if (((!i mod 3 + 3) mod 3) = 0) then (
+  e_cont := ((2 * !i) / 3);
+  );
+  pre_numerator := !cur_numerator;
+  cur_numerator := ((!e_cont * !pre_numerator) + temp);
   i := (!i + 1);
     with Continue -> ()
   done with Break -> ());
-  let row_length = ref (0) in
-  (try while (!row_length <= length) do
-    try
-  let tile_length = ref (2) in
-  (try while (!tile_length <= 4) do
-    try
-  let tile_start = ref (0) in
-  (try while (!tile_start <= (!row_length - !tile_length)) do
-    try
-  let remaining = ((!row_length - !tile_start) - !tile_length) in
-  ways := (List.mapi (fun __i __x -> if __i = !row_length then (List.mapi (fun __i __x -> if __i = (!tile_length - 2) then (((let __l = (let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0) + (let __l = (let __l = !ways in let __i = remaining in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = (!tile_length - 2) in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0)) + 1) else __x) ((let __l = !ways in let __i = !row_length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []))) else __x) (!ways));
-  tile_start := (!tile_start + 1);
-    with Continue -> ()
-  done with Break -> ());
-  tile_length := (!tile_length + 1);
-    with Continue -> ()
-  done with Break -> ());
-  row_length := (!row_length + 1);
-    with Continue -> ()
-  done with Break -> ());
-  let total = ref (0) in
-  let j = ref (0) in
-  (try while (!j < 3) do
-    try
-  total := (!total + (let __l = (let __l = !ways in let __i = length in if __i < 0 then [] else match List.nth_opt __l __i with Some v -> v | None -> []) in let __i = !j in if __i < 0 then 0 else match List.nth_opt __l __i with Some v -> (Obj.magic v : int) | None -> 0));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-  __ret := (Obj.magic (!total) : int); raise Return
+  __ret := (Obj.magic (sum_digits (Obj.repr (!cur_numerator))) : int); raise Return
   with Return -> !__ret)
 
 
 let () =
   let bench_mem_start = _mem () in
   let bench_start = _now () in
-  print_endline (string_of_int (solution (Obj.repr (5))));
+  print_endline (string_of_int (solution (Obj.repr (9))));
+  print_endline (string_of_int (solution (Obj.repr (10))));
   print_endline (string_of_int (solution (Obj.repr (50))));
+  print_endline (string_of_int (solution (Obj.repr (100))));
   let bench_finish = _now () in
   let bench_mem_end = _mem () in
   let bench_dur = (bench_finish - bench_start) / 1000 in

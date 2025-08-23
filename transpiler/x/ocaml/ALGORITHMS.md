@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 915/1077
-Last updated: 2025-08-22 15:25 +0700
+Completed programs: 933/1077
+Last updated: 2025-08-22 23:09 +0700
 
 Checklist:
 
@@ -896,29 +896,29 @@ Checklist:
 | 887 | project_euler/problem_056/sol1 |   |  |  |
 | 888 | project_euler/problem_057/sol1 |   |  |  |
 | 889 | project_euler/problem_058/sol1 |   |  |  |
-| 890 | project_euler/problem_059/sol1 |   |  |  |
-| 891 | project_euler/problem_062/sol1 |   |  |  |
-| 892 | project_euler/problem_063/sol1 |   |  |  |
-| 893 | project_euler/problem_064/sol1 |   |  |  |
-| 894 | project_euler/problem_065/sol1 |   |  |  |
-| 895 | project_euler/problem_067/sol1 |   |  |  |
-| 896 | project_euler/problem_067/sol2 |   |  |  |
-| 897 | project_euler/problem_068/sol1 |   |  |  |
-| 898 | project_euler/problem_069/sol1 |   |  |  |
-| 899 | project_euler/problem_070/sol1 |   |  |  |
-| 900 | project_euler/problem_071/sol1 | ✓ | 35.0ms | 256B |
-| 901 | project_euler/problem_072/sol1 |   |  |  |
+| 890 | project_euler/problem_059/sol1 | ✓ | 3.13s | 1.11GB |
+| 891 | project_euler/problem_062/sol1 | ✓ | 2.81s | 747.58MB |
+| 892 | project_euler/problem_063/sol1 | ✓ | 174.0µs | 256B |
+| 893 | project_euler/problem_064/sol1 | ✓ | 13.0ms | 312B |
+| 894 | project_euler/problem_065/sol1 | ✓ | 110.0µs | 272B |
+| 895 | project_euler/problem_067/sol1 | ✓ | 74.0ms | 21.87MB |
+| 896 | project_euler/problem_067/sol2 | ✓ | 19.0ms | 4.38MB |
+| 897 | project_euler/problem_068/sol1 | ✓ | 65.43s | 29.74GB |
+| 898 | project_euler/problem_069/sol1 | ✓ | 82.0µs | 224B |
+| 899 | project_euler/problem_070/sol1 | ✓ | 14.73s | 6.57GB |
+| 900 | project_euler/problem_071/sol1 | ✓ | 34.0ms | 256B |
+| 901 | project_euler/problem_072/sol1 | ✓ |  |  |
 | 902 | project_euler/problem_072/sol2 |   |  |  |
-| 903 | project_euler/problem_073/sol1 |   |  |  |
-| 904 | project_euler/problem_074/sol1 |   |  |  |
-| 905 | project_euler/problem_074/sol2 |   |  |  |
-| 906 | project_euler/problem_075/sol1 |   |  |  |
-| 907 | project_euler/problem_076/sol1 |   |  |  |
-| 908 | project_euler/problem_077/sol1 |   |  |  |
-| 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 | ✓ | 22.0ms | 1.95MB |
-| 911 | project_euler/problem_092/sol1 | ✓ | 706.0µs | 288B |
-| 912 | project_euler/problem_116/sol1 | ✓ | 21.0ms | 5.19MB |
+| 903 | project_euler/problem_073/sol1 | ✓ | 2.68s | 224B |
+| 904 | project_euler/problem_074/sol1 | ✓ | 185.0ms | 37.79MB |
+| 905 | project_euler/problem_074/sol2 | ✓ |  |  |
+| 906 | project_euler/problem_075/sol1 | ✓ |  |  |
+| 907 | project_euler/problem_076/sol1 | ✓ | 185.0ms | 99.04MB |
+| 908 | project_euler/problem_077/sol1 | ✓ |  |  |
+| 909 | project_euler/problem_078/sol1 | ✓ |  |  |
+| 910 | project_euler/problem_079/sol1 | ✓ | 15.0ms | 2.61MB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 680.0µs | 288B |
+| 912 | project_euler/problem_116/sol1 | ✓ | 16.0ms | 5.46MB |
 | 913 | project_euler/problem_345/sol1 |   |  |  |
 | 914 | quantum/q_fourier_transform | ✓ | 255.0µs | 7.90KB |
 | 915 | scheduling/job_sequence_with_deadline | ✓ | 134.0µs | 6.70KB |
@@ -945,7 +945,7 @@ Checklist:
 | 936 | searches/simple_binary_search | ✓ | 33.0µs | 472B |
 | 937 | searches/simulated_annealing | ✓ | 28.0ms | 7.75MB |
 | 938 | searches/tabu_search | ✓ | 108.0µs | 440B |
-| 939 | searches/ternary_search | ✓ | 94.0µs | 944B |
+| 939 | searches/ternary_search | ✓ | 169.0µs | 1.36KB |
 | 940 | sorts/bead_sort | ✓ | 402.0µs | 32.02KB |
 | 941 | sorts/binary_insertion_sort | ✓ | 173.0µs | 6.16KB |
 | 942 | sorts/bitonic_sort | ✓ | 464.0µs | 57.17KB |

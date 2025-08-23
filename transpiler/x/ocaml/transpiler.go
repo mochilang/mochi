@@ -3653,29 +3653,34 @@ func (p *Program) Emit() []byte {
 	}
 
 	var body []Stmt
-	inBody := false
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
 		case *FunStmt:
 			funs = append(funs, st)
 		case *VarStmt:
-			if inBody {
-				body = append(body, st)
-			} else {
-				flushFuns()
-				st.emitTop(&buf)
-			}
+			flushFuns()
+			st.emitTop(&buf)
 		case *LetStmt:
-			if inBody {
-				body = append(body, st)
-			} else {
-				flushFuns()
-				st.emitTop(&buf)
+			flushFuns()
+			st.emitTop(&buf)
+		case *BenchStmt:
+			var bbody []Stmt
+			for _, bs := range st.Body {
+				switch g := bs.(type) {
+				case *VarStmt:
+					g.emitTop(&buf)
+				case *LetStmt:
+					g.emitTop(&buf)
+				default:
+					bbody = append(bbody, g)
+				}
 			}
+			flushFuns()
+			st.Body = bbody
+			body = append(body, st)
 		default:
 			flushFuns()
 			body = append(body, st)
-			inBody = true
 		}
 	}
 	flushFuns()
