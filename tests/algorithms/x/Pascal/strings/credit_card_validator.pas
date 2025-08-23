@@ -1,4 +1,4 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
 var _nowSeed: int64 = 0;
@@ -37,23 +37,43 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  s: string;
-  cc: string;
-function validate_initial_digits(cc: string): boolean; forward;
-function luhn_validation(cc: string): boolean; forward;
-function is_digit_string(s: string): boolean; forward;
-function validate_credit_card_number(cc: string): boolean; forward;
+function validate_initial_digits(validate_initial_digits_cc: string): boolean; forward;
+function luhn_validation(luhn_validation_cc: string): boolean; forward;
+function is_digit_string(is_digit_string_s: string): boolean; forward;
+function validate_credit_card_number(validate_credit_card_number_cc: string): boolean; forward;
 procedure main(); forward;
-function validate_initial_digits(cc: string): boolean;
+function validate_initial_digits(validate_initial_digits_cc: string): boolean;
 begin
-  exit((((((copy(cc, 1, 2) = '34') or (copy(cc, 1, 2) = '35')) or (copy(cc, 1, 2) = '37')) or (copy(cc, 1, 1) = '4')) or (copy(cc, 1, 1) = '5')) or (copy(cc, 1, 1) = '6'));
+  exit((((((copy(validate_initial_digits_cc, 1, 2) = '34') or (copy(validate_initial_digits_cc, 1, 2) = '35')) or (copy(validate_initial_digits_cc, 1, 2) = '37')) or (copy(validate_initial_digits_cc, 1, 1) = '4')) or (copy(validate_initial_digits_cc, 1, 1) = '5')) or (copy(validate_initial_digits_cc, 1, 1) = '6'));
 end;
-function luhn_validation(cc: string): boolean;
+function luhn_validation(luhn_validation_cc: string): boolean;
 var
   luhn_validation_sum: integer;
   luhn_validation_double_digit: boolean;
@@ -62,9 +82,9 @@ var
 begin
   luhn_validation_sum := 0;
   luhn_validation_double_digit := false;
-  luhn_validation_i := Length(cc) - 1;
+  luhn_validation_i := Length(luhn_validation_cc) - 1;
   while luhn_validation_i >= 0 do begin
-  luhn_validation_n := StrToInt(copy(cc, luhn_validation_i+1, (luhn_validation_i + 1 - (luhn_validation_i))));
+  luhn_validation_n := StrToInt(copy(luhn_validation_cc, luhn_validation_i+1, (luhn_validation_i + 1 - (luhn_validation_i))));
   if luhn_validation_double_digit then begin
   luhn_validation_n := luhn_validation_n * 2;
   if luhn_validation_n > 9 then begin
@@ -77,14 +97,14 @@ end;
 end;
   exit((luhn_validation_sum mod 10) = 0);
 end;
-function is_digit_string(s: string): boolean;
+function is_digit_string(is_digit_string_s: string): boolean;
 var
   is_digit_string_i: integer;
   is_digit_string_c: string;
 begin
   is_digit_string_i := 0;
-  while is_digit_string_i < Length(s) do begin
-  is_digit_string_c := copy(s, is_digit_string_i+1, (is_digit_string_i + 1 - (is_digit_string_i)));
+  while is_digit_string_i < Length(is_digit_string_s) do begin
+  is_digit_string_c := copy(is_digit_string_s, is_digit_string_i+1, (is_digit_string_i + 1 - (is_digit_string_i)));
   if (is_digit_string_c < '0') or (is_digit_string_c > '9') then begin
   exit(false);
 end;
@@ -92,28 +112,28 @@ end;
 end;
   exit(true);
 end;
-function validate_credit_card_number(cc: string): boolean;
+function validate_credit_card_number(validate_credit_card_number_cc: string): boolean;
 var
   validate_credit_card_number_error_message: string;
 begin
-  validate_credit_card_number_error_message := cc + ' is an invalid credit card number because';
-  if not is_digit_string(cc) then begin
+  validate_credit_card_number_error_message := validate_credit_card_number_cc + ' is an invalid credit card number because';
+  if not is_digit_string(validate_credit_card_number_cc) then begin
   writeln(validate_credit_card_number_error_message + ' it has nonnumerical characters.');
   exit(false);
 end;
-  if not ((Length(cc) >= 13) and (Length(cc) <= 16)) then begin
+  if not ((Length(validate_credit_card_number_cc) >= 13) and (Length(validate_credit_card_number_cc) <= 16)) then begin
   writeln(validate_credit_card_number_error_message + ' of its length.');
   exit(false);
 end;
-  if not validate_initial_digits(cc) then begin
+  if not validate_initial_digits(validate_credit_card_number_cc) then begin
   writeln(validate_credit_card_number_error_message + ' of its first two digits.');
   exit(false);
 end;
-  if not luhn_validation(cc) then begin
+  if not luhn_validation(validate_credit_card_number_cc) then begin
   writeln(validate_credit_card_number_error_message + ' it fails the Luhn check.');
   exit(false);
 end;
-  writeln(cc + ' is a valid credit card number.');
+  writeln(validate_credit_card_number_cc + ' is a valid credit card number.');
   exit(true);
 end;
 procedure main();
@@ -133,4 +153,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
