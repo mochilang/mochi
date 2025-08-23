@@ -2305,7 +2305,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			prelude = append(prelude, &RawStmt{Code: fmt.Sprintf(`var _nowSeed = %s;
 var _nowSeeded = true;
 function _now(): number {
-  _nowSeed = (_nowSeed * 1664525 + 1013904223) %% 2147483647;
+  _nowSeed = Number((BigInt(_nowSeed) * 1664525n + 1013904223n) %% 2147483647n);
   return _nowSeed;
 }`, seed)})
 		} else {
@@ -2335,7 +2335,7 @@ var _nowSeeded = false;
 }
 function _now(): number {
   if (_nowSeeded) {
-    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;
+    _nowSeed = Number((BigInt(_nowSeed) * 1664525n + 1013904223n) % 2147483647n);
     return _nowSeed;
   }
   if (typeof Deno !== 'undefined') {
