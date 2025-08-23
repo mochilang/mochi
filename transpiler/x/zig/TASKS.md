@@ -1,3 +1,643 @@
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-23 14:49 +0700)
+- Commit ccc5351ed8: go transpiler: support __name__
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-17 13:40 +0700)
 - Commit 121f7884fb: zig: add points_are_collinear_3d
 - Generated Zig for 98/105 programs
