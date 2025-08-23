@@ -1749,7 +1749,7 @@ func (fs *FloatStringExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, "func() string { f := float64(")
 	fs.Value.emit(w)
-	io.WriteString(w, "); if f == 0 && math.Signbit(f) { return \"-0\" }; if math.Abs(f-float64(int(f))) < 1e-9 { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
+	io.WriteString(w, "); if f == 0 && math.Signbit(f) { return \"-0\" }; if math.Abs(f-float64(int(f))) < 1e-9 { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprintf(\"%.15g\", f) }()")
 }
 
 // NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
