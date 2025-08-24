@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-24 15:42 GMT+7
+Last updated: 2025-08-24 17:09 GMT+7
 
-## Algorithms Golden Test Checklist (817/1077)
+## Algorithms Golden Test Checklist (812/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -183,11 +183,11 @@ Last updated: 2025-08-24 15:42 GMT+7
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 76µs | 2.2 MB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 30µs | 2.0 MB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 212µs | 2.0 MB |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 59µs | 2.0 MB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 25µs | 1.8 MB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 143µs | 2.1 MB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 147µs | 2.0 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | error | 147µs | 2.0 MB |
 | 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 25µs | 2.0 MB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
 | 184 | data_structures/binary_tree/is_sorted | error |  |  |
@@ -201,12 +201,12 @@ Last updated: 2025-08-24 15:42 GMT+7
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | error |  |  |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 124µs | 2.1 MB |
 | 194 | data_structures/binary_tree/red_black_tree | error |  |  |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 208µs | 2.1 MB |
+| 195 | data_structures/binary_tree/segment_tree | error | 208µs | 2.1 MB |
 | 196 | data_structures/binary_tree/segment_tree_other | error |  |  |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 60µs | 2.0 MB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 317µs | 2.1 MB |
+| 200 | data_structures/binary_tree/wavelet_tree | error | 317µs | 2.1 MB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 57µs | 2.1 MB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 67µs | 2.0 MB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 1.788ms | 2.2 MB |
@@ -216,14 +216,14 @@ Last updated: 2025-08-24 15:42 GMT+7
 | 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 122µs | 2.1 MB |
 | 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 39µs | 2.0 MB |
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 52µs | 2.1 MB |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 197µs | 2.3 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | error | 197µs | 2.3 MB |
 | 211 | data_structures/heap/binomial_heap |   |  |  |
 | 212 | data_structures/heap/heap |   |  |  |
 | 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap | ✓ | 87µs | 1.9 MB |
+| 214 | data_structures/heap/max_heap | error | 87µs | 1.9 MB |
 | 215 | data_structures/heap/min_heap | ✓ | 104µs | 2.2 MB |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree | ✓ | 135µs | 2.1 MB |
+| 217 | data_structures/kd_tree/build_kdtree | error | 135µs | 2.1 MB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 61µs | 1.9 MB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 95µs | 2.1 MB |

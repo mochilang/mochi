@@ -37,6 +37,7 @@ var structForList map[*parser.ListLiteral]string
 var structSig map[string]string
 var curEnv *types.Env
 var structTypes map[string]types.StructType
+var enumVariants map[string]string
 var cloneVars map[string]bool
 var useMath bool
 var useTime bool
@@ -2117,6 +2118,14 @@ type NameRef struct {
 }
 
 func (n *NameRef) emit(w io.Writer) {
+	if enumVariants != nil {
+		if en, ok := enumVariants[n.Name]; ok && !isLocal(n.Name) {
+			io.WriteString(w, rustIdent(en))
+			io.WriteString(w, "::")
+			io.WriteString(w, rustIdent(n.Name))
+			return
+		}
+	}
 	name := n.Name
 	if newName, ok := globalRenames[n.Name]; ok && !isLocal(n.Name) {
 		name = newName
@@ -2852,17 +2861,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
-        io.WriteString(w, "(")
-        if b.Op == "-" {
-                if nl, ok := b.Left.(*NumberLit); ok && (nl.Value == "0" || nl.Value == "0.0") {
-                        io.WriteString(w, "-")
-                        b.Right.emit(w)
-                        io.WriteString(w, ")")
-                        return
-                }
-        }
-        left := b.Left
-        right := b.Right
+	io.WriteString(w, "(")
+	if b.Op == "-" {
+		if nl, ok := b.Left.(*NumberLit); ok && (nl.Value == "0" || nl.Value == "0.0") {
+			io.WriteString(w, "-")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
+	left := b.Left
+	right := b.Right
 	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" {
 		lt := inferType(left)
 		rt := inferType(right)
@@ -3421,6 +3430,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	globalRenames = map[string]string{}
 	globalRenameBack = map[string]string{}
 	mutVars = make(map[string]bool)
+	enumVariants = map[string]string{}
 	prog := &Program{}
 	for _, st := range p.Statements {
 		if st.Import != nil {
@@ -4404,6 +4414,9 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 				fields[i] = Param{Name: name, Type: typ}
 			}
 			ed.Variants = append(ed.Variants, EnumVariant{Name: v.Name, Fields: fields})
+			if enumVariants != nil {
+				enumVariants[v.Name] = t.Name
+			}
 		}
 		typeDecls = append(typeDecls, ed)
 		structTypes[t.Name] = types.StructType{}
@@ -4483,6 +4496,14 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		for name, t := range curEnv.Types() {
 			// Always prefer the type information from the checker to avoid
 			// stale inferences from previous functions.
+			if enumVariants != nil {
+				if _, ok := enumVariants[name]; ok {
+					continue
+				}
+			}
+			if _, ok := curEnv.GetFunc(name); ok {
+				continue
+			}
 			varTypes[name] = rustTypeFromType(t)
 		}
 	}
@@ -6187,6 +6208,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		}
 	}
 	arms := make([]MatchArm, len(me.Cases))
+	needClone := false
 	for i, c := range me.Cases {
 		oldBox := boxVars
 		pat, err := compilePattern(c.Pattern)
@@ -6223,7 +6245,17 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 			}
 		}
 		arms[i] = MatchArm{Pattern: pat, Result: res}
+		if nr, ok := target.(*NameRef); ok {
+			names := map[string]bool{}
+			collectNamesExpr(names, res)
+			if names[nr.Name] {
+				needClone = true
+			}
+		}
 		boxVars = oldBox
+	}
+	if needClone {
+		target = &MethodCallExpr{Receiver: target, Name: "clone"}
 	}
 	return &MatchExpr{Target: target, Arms: arms}, nil
 }
