@@ -1925,9 +1925,11 @@ func (f *Func) emit(w io.Writer) {
 		backup[p.Name] = varTypes[p.Name]
 		varTypes[p.Name] = p.Type
 	}
+	funDepth++
 	for _, st := range f.Body {
 		st.emit(w, 1)
 	}
+	funDepth--
 	if ret != "void" {
 		if len(f.Body) == 0 {
 			writeIndent(w, 1)
@@ -2130,6 +2132,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 					if funDepth == 0 && blockDepth == 0 && allConst {
 						kw = "var"
 						v.Value = nil
+						fmt.Fprintf(w, "&[_]%s{}", elem)
 						globalInits = append(globalInits, &AssignStmt{Name: v.Name, Value: ll})
 					} else if allConst {
 						lbl := newLabel()
@@ -6473,8 +6476,20 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			walkExpr(t.Left)
 			walkExpr(t.Right)
 		case *CallExpr:
-			for _, a := range t.Args {
+			for i, a := range t.Args {
 				walkExpr(a)
+				if v, ok := a.(*VarRef); ok {
+					if params, ok2 := funcParamTypes[t.Func]; ok2 && i < len(params) {
+						ptype := params[i]
+						if strings.HasPrefix(ptype, "*") && !strings.HasPrefix(ptype, "*const ") {
+							key := scope + ":" + v.Name
+							muts[key] = true
+							if globalNames[v.Name] {
+								muts[":"+v.Name] = true
+							}
+						}
+					}
+				}
 			}
 			// Count uses of the called function name even if it
 			// isn't present in varDecls. This ensures that
@@ -6556,6 +6571,9 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 		case *IndexAssignStmt:
 			if s, ok := exprToString(t.Target); ok {
 				base := strings.SplitN(s, ".", 2)[0]
+				if i := strings.IndexByte(base, '['); i >= 0 {
+					base = base[:i]
+				}
 				key := scope + ":" + base
 				muts[key] = true
 				if globalNames[base] {

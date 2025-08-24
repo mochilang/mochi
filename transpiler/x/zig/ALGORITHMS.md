@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-24 15:35 +0700
+Last updated: 2025-08-24 16:59 +0700
 
-## Program Checklist (548/1077)
+## Program Checklist (549/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -181,21 +181,21 @@ Last updated: 2025-08-24 15:35 +0700
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 961µs | 512.0 KB |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 1.548ms | 512.0 KB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 436µs | 128.0 KB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 535µs | 256.0 KB |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 1.402ms | 572.0 KB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 467µs | 256.0 KB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 2.81ms | 384.0 KB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 1.849ms | 512.0 KB |
-| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 1.325ms | 512.0 KB |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 699µs | 384.0 KB |
-| 184 | data_structures/binary_tree/is_sorted | ✓ | 889µs | 512.0 KB |
-| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 213µs | 128.0 KB |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 3.717ms | 1.2 MB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 6.786ms | 2.4 MB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 926µs | 512.0 KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 275µs |  |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 685µs | 256.0 KB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 1.206ms | 640.0 KB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 358µs | 256.0 KB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 993µs | 512.0 KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 837µs | 512.0 KB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 1.029ms | 384.0 KB |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   | 699µs | 384.0 KB |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 1.105ms | 512.0 KB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 172µs | 128.0 KB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 3.36ms | 1.1 MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 7.295ms | 2.5 MB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 1.611471s | 401.5 MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 349µs | 256.0 KB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
