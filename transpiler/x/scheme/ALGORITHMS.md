@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-24 17:10 GMT+7
+Last updated: 2025-08-24 22:28 GMT+7
 
 ## Algorithms Golden Test Checklist (933/1077)
 | Index | Name | Status | Duration | Memory |
@@ -199,11 +199,11 @@ Last updated: 2025-08-24 17:10 GMT+7
 | 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 2ms | 12.8 MB |
 | 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 2ms | 13.3 MB |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 2ms | 13.5 MB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   | 0s | 12.2 MB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
 | 194 | data_structures/binary_tree/red_black_tree | ✓ | 1ms | 16.7 MB |
 | 195 | data_structures/binary_tree/segment_tree | ✓ | 1ms | 14.0 MB |
 | 196 | data_structures/binary_tree/segment_tree_other | ✓ | 3ms | 13.5 MB |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   | 1ms | 13.5 MB |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 0s | 12.8 MB |
 | 199 | data_structures/binary_tree/treap | ✓ | 2ms | 13.4 MB |
 | 200 | data_structures/binary_tree/wavelet_tree | ✓ | 1ms | 14.0 MB |
@@ -231,7 +231,7 @@ Last updated: 2025-08-24 17:10 GMT+7
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 1ms | 13.6 MB |
 | 223 | data_structures/linked_list/circular_linked_list | ✓ | 2ms | 13.4 MB |
 | 224 | data_structures/linked_list/deque_doubly | ✓ | 1ms | 13.5 MB |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 4ms | 13.4 MB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 1ms | 13.4 MB |
 | 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 4ms | 14.6 MB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 1ms | 12.3 MB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 1ms | 12.6 MB |
