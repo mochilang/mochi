@@ -1,3 +1,435 @@
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-24 15:35 +0700)
+- zig transpiler: handle list literals mutably (f1879c75b0)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-23 14:54 +0700)
 - erl: add shear stress algorithm output (4a6d1a2974)
 - Regenerated golden files - 103/105 vm valid programs passing

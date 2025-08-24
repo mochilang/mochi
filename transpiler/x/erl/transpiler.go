@@ -182,6 +182,21 @@ mochi_first(L) ->
     try hd(L) catch _:_ -> nil end.
 `
 
+const helperFormat = `
+mochi_format(V) when is_float(V) ->
+    I = trunc(V),
+    case V == I of
+        true -> integer_to_list(I);
+        false ->
+            S = lists:flatten(io_lib:format("~.15f", [V])),
+            re:replace(S, "\\.?0+$", "", [global, {return, list}])
+    end;
+mochi_format(V) when is_integer(V) -> integer_to_list(V);
+mochi_format(V) when is_binary(V) -> binary_to_list(V);
+mochi_format(V) when is_list(V) -> V;
+mochi_format(V) -> lists:flatten(io_lib:format("~p", [V])).
+`
+
 const helperFetch = `
 mochi_fetch(Url) ->
     mochi_fetch(Url, nil).
@@ -328,7 +343,11 @@ mochi_repeat(_, _) -> [].
 const helperStr = `
 -compile({nowarn_unused_function, [mochi_str/1]}).
 mochi_str(V) when is_float(V) ->
-    erlang:float_to_list(V, [short]);
+    I = trunc(V),
+    case V == I of
+        true -> integer_to_list(I);
+        false -> erlang:float_to_list(V, [short])
+    end;
 mochi_str(V) ->
     S = lists:flatten(io_lib:format("~p", [V])),
     S1 = lists:flatten(string:replace(S, ",", " ", all)),
@@ -360,6 +379,7 @@ var useReadFile bool
 var useOrd bool
 var useNot bool
 var useSafeMul bool
+var useFormat bool
 var useSafeDiv bool
 var useSafeFmod bool
 var useIDiv bool
@@ -401,6 +421,7 @@ type Program struct {
 	UseOrd          bool
 	UseNot          bool
 	UseSafeMul      bool
+	UseFormat       bool
 	UseSafeDiv      bool
 	UseSafeFmod     bool
 	UseIDiv         bool
@@ -1237,20 +1258,14 @@ func (p *PrintStmt) emit(w io.Writer) {
 	if len(p.Args) == 0 {
 		return
 	}
-	parts := make([]string, len(p.Args))
-	for i, a := range p.Args {
-		if isStringExpr(a) {
-			parts[i] = "~ts"
-		} else {
-			parts[i] = "~p"
-		}
-	}
-	fmt.Fprintf(w, "io:format(\"%s~n\", [", strings.Join(parts, " "))
+	fmt.Fprintf(w, "io:format(\"~s~n\", [")
 	for i, a := range p.Args {
 		if i > 0 {
-			io.WriteString(w, ", ")
+			io.WriteString(w, " ++ \" \" ++ ")
 		}
+		io.WriteString(w, "mochi_format(")
 		a.emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "])")
 }
@@ -3486,6 +3501,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useSafeFmod = false
 	useIDiv = false
 	useMod = false
+	useFormat = false
 	// mochi_nth is used for safe list indexing; include helper when needed
 	useNth = false
 	useFirst = false
@@ -3540,6 +3556,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseOrd = useOrd
 	p.UseNot = useNot
 	p.UseSafeMul = useSafeMul
+	p.UseFormat = useFormat
 	p.UseSafeDiv = useSafeDiv
 	p.UseSafeFmod = useSafeFmod
 	p.UseIDiv = useIDiv
@@ -3928,6 +3945,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		if c, ok := e.(*CallExpr); ok {
 			if c.Func == "print" {
+				useFormat = true
 				return []Stmt{&PrintStmt{Args: c.Args}}, nil
 			}
 			if c.Func == "json" && len(c.Args) == 1 {
@@ -5497,13 +5515,13 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			fmtParts := make([]string, len(ce.Args))
 			args := make([]Expr, len(ce.Args))
 			for i, a := range ce.Args {
-				fmtParts[i] = "~ts"
+				fmtParts[i] = "~s"
 				if call, ok := a.(*CallExpr); ok && call.Func == "str" {
 					useStr = true
 					args[i] = &CallExpr{Func: "mochi_str", Args: call.Args}
 				} else {
-					useStr = true
-					args[i] = &CallExpr{Func: "mochi_repr", Args: []Expr{a}}
+					useFormat = true
+					args[i] = &CallExpr{Func: "mochi_format", Args: []Expr{a}}
 				}
 			}
 			fmtStr := strings.Join(fmtParts, " ") + "~n"
@@ -6759,6 +6777,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseFirst {
 		buf.WriteString(helperFirst)
+		buf.WriteString("\n")
+	}
+	if p.UseFormat {
+		buf.WriteString(helperFormat)
 		buf.WriteString("\n")
 	}
 	if p.UseBigRat {
