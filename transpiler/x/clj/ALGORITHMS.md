@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-23 15:48 GMT+7
+Last updated: 2025-08-24 16:33 GMT+7
 
-## Algorithms Golden Test Checklist (845/1077)
+## Algorithms Golden Test Checklist (848/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -157,16 +157,16 @@ Last updated: 2025-08-23 15:48 GMT+7
 | 148 | conversions/temperature_conversions | ✓ | 62.781ms | 24.65MB |
 | 149 | conversions/time_conversions | error |  |  |
 | 150 | conversions/volume_conversions | ✓ | 55.438ms | 20.79MB |
-| 151 | conversions/weight_conversion | ✓ | 54.746ms | 30.48MB |
+| 151 | conversions/weight_conversion | ✓ | 44.516ms | 31.37MB |
 | 152 | data_compression/burrows_wheeler | ✓ | 53.116ms | 22.92MB |
 | 153 | data_compression/huffman | ✓ | 62.483ms | 24.72MB |
-| 154 | data_compression/lempel_ziv | error |  |  |
+| 154 | data_compression/lempel_ziv | ✓ | 40.049ms | 21.48MB |
 | 155 | data_compression/lempel_ziv_decompress | ✓ | 63.159ms | 21.35MB |
 | 156 | data_compression/lz77 | ✓ | 50.902ms | 24.38MB |
 | 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 45.789ms | 21.66MB |
-| 158 | data_compression/run_length_encoding | error |  |  |
+| 158 | data_compression/run_length_encoding | ✓ | 37.869ms | 21.90MB |
 | 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 53.382ms | 19.89MB |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | error |  |  |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 63.648ms | 25.80MB |
 | 161 | data_structures/arrays/index_2d_array_in_1d | error |  |  |
 | 162 | data_structures/arrays/kth_largest_element | ✓ | 54.633ms | 20.55MB |
 | 163 | data_structures/arrays/median_two_array | ✓ | 48.805ms | 21.07MB |

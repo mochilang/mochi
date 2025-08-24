@@ -4037,8 +4037,12 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 			return nil, err
 		}
 		if isZeroNode(start) {
-			useDotimes = true
-			seq = end
+			if useCtrl {
+				seq = &List{Elems: []Node{Symbol("range"), end}}
+			} else {
+				useDotimes = true
+				seq = end
+			}
 		} else {
 			seq = &List{Elems: []Node{Symbol("range"), start, end}}
 		}

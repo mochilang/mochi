@@ -1,5 +1,8 @@
-Execution error (IllegalArgumentException) at main/contains-triplet (find_triplets_with_0_sum.clj:63).
-Don't know how to create ISeq from: java.lang.Integer
-
-Full report at:
-/tmp/clojure-15858499948997077198.edn
+[[-1 0 1] [-1 -1 2]]
+[]
+[[0 0 0]]
+[[-3 1 2] [-1 0 1] [-2 0 2] [-3 0 3] [-2 -1 3]]
+[[-1 0 1] [-1 -1 2]]
+[]
+[[0 0 0]]
+[[-1 0 1] [-3 1 2] [-2 0 2] [-2 -1 3] [-3 0 3]]
