@@ -2,12 +2,12 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-24 08:43 UTC
+Last updated: 2025-08-24 10:11 UTC
 
 ## Algorithms Golden Test Checklist (940/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 38µs | 24.0 KB |
+| 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
 | 2 | backtracking/all_permutations | ✓ | 264µs | 381.7 KB |
 | 3 | backtracking/all_subsequences | ✓ | 67µs | 21.5 KB |
 | 4 | backtracking/coloring | ✓ | 149µs | 288.2 KB |
@@ -181,7 +181,7 @@ Last updated: 2025-08-24 08:43 UTC
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9m31.223891s | 37.3 KB |
 | 173 | data_structures/binary_tree/binary_search_tree | ✓ | 9m31.223891s | 52.5 KB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 9m31.223891s | 13.7 KB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 94µs | 14.5 KB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 9m31.223891s | 6.6 KB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 9m31.223891s | 43.7 KB |
