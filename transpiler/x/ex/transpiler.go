@@ -46,6 +46,7 @@ var kernelReserved = map[string]int{
 	"floor":     1,
 	"ceil":      1,
 	"to_string": 1,
+	"length":    1,
 }
 
 func kernelImportExcepts() []string {
@@ -4811,7 +4812,7 @@ func lenHelper(indent int) string {
 	buf.WriteString(pad + "  cond do\n")
 	buf.WriteString(pad + "    x == nil -> 0\n")
 	buf.WriteString(pad + "    is_binary(x) -> String.length(x)\n")
-	buf.WriteString(pad + "    true -> length(x)\n")
+	buf.WriteString(pad + "    true -> Kernel.length(x)\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
