@@ -440,6 +440,27 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if idx := strings.LastIndex(c.Func, "_"); idx >= 0 && len(c.Args) > 0 {
+		sname := c.Func[:idx]
+		fname := c.Func[idx+1:]
+		if inferType(c.Args[0]) == sname {
+			c.Args[0].emit(w)
+			io.WriteString(w, ".")
+			io.WriteString(w, rustIdent(fname))
+			io.WriteString(w, "(")
+			for i, a := range c.Args[1:] {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+			if len(temps) > 0 {
+				io.WriteString(w, "}")
+			}
+			return
+		}
+	}
 	if strings.Contains(c.Func, "::") {
 		io.WriteString(w, c.Func)
 	} else {
@@ -727,7 +748,19 @@ type StructDecl struct {
 }
 
 func (s *StructDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "#[derive(Debug, Clone, Default)]\nstruct %s {\n", rustIdent(s.Name))
+	hasFunc := false
+	for _, f := range s.Fields {
+		if strings.HasPrefix(f.Type, "fn(") {
+			hasFunc = true
+			break
+		}
+	}
+	derive := "#[derive(Debug, Clone"
+	if !hasFunc {
+		derive += ", Default"
+	}
+	derive += ")]"
+	fmt.Fprintf(w, "%s\nstruct %s {\n", derive, rustIdent(s.Name))
 	for _, f := range s.Fields {
 		fmt.Fprintf(w, "    %s: %s,\n", rustIdent(f.Name), f.Type)
 	}
@@ -744,7 +777,7 @@ func (s *StructDecl) emit(w io.Writer) {
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
 		case strings.HasPrefix(fld.Type, "Option<"):
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
-		case strings.HasPrefix(fld.Type, "Vec<") || strings.HasPrefix(fld.Type, "HashMap<"):
+		case strings.HasPrefix(fld.Type, "Vec<") || strings.HasPrefix(fld.Type, "HashMap<") || strings.HasPrefix(fld.Type, "fn("):
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
 		default:
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
@@ -1628,15 +1661,34 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		}
 	}
 	if rt := inferType(m.Receiver); rt != "" {
-		if _, ok := structTypes[rt]; ok && m.Name != "clone" {
-			fmt.Fprintf(w, "%s_%s(", rustIdent(rt), rustIdent(m.Name))
-			m.Receiver.emit(w)
-			for _, a := range m.Args {
-				io.WriteString(w, ", ")
-				a.emit(w)
+		if st, ok := structTypes[rt]; ok && m.Name != "clone" {
+			if _, ok2 := st.Methods[m.Name]; ok2 {
+				fmt.Fprintf(w, "%s_%s(", rustIdent(rt), rustIdent(m.Name))
+				m.Receiver.emit(w)
+				for _, a := range m.Args {
+					io.WriteString(w, ", ")
+					a.emit(w)
+				}
+				io.WriteString(w, ")")
+				return
 			}
-			io.WriteString(w, ")")
-			return
+			if ft, ok2 := st.Fields[m.Name]; ok2 {
+				if _, ok3 := ft.(types.FuncType); ok3 {
+					io.WriteString(w, "(")
+					m.Receiver.emit(w)
+					io.WriteString(w, ".")
+					io.WriteString(w, rustIdent(m.Name))
+					io.WriteString(w, ")(")
+					for i, a := range m.Args {
+						if i > 0 {
+							io.WriteString(w, ", ")
+						}
+						a.emit(w)
+					}
+					io.WriteString(w, ")")
+					return
+				}
+			}
 		}
 	}
 	m.Receiver.emit(w)
