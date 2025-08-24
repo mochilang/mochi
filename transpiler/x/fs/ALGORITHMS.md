@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
 Completed programs: 951/1077
-Last updated: 2025-08-23 14:49 +0700
+Last updated: 2025-08-24 08:57 +0700
 
 Checklist:
 
@@ -962,7 +962,7 @@ Checklist:
 | 953 | sorts/exchange_sort | ✓ | 571.223ms | 78.7 KB |
 | 954 | sorts/external_sort | ✓ | 571.223ms | 63.5 KB |
 | 955 | sorts/gnome_sort | ✓ | 571.223ms | 55.5 KB |
-| 956 | sorts/heap_sort | ✓ | 571.223ms | 78.3 KB |
+| 956 | sorts/heap_sort | ✓ | 571.223ms | 58.3 KB |
 | 957 | sorts/insertion_sort | ✓ | 571.223ms | 78.6 KB |
 | 958 | sorts/intro_sort | ✓ | 571.223ms | 55.3 KB |
 | 959 | sorts/iterative_merge_sort | ✓ | 571.223ms | 78.5 KB |
