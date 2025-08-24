@@ -2668,6 +2668,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 			return
 		}
+		if leftType == "f64" && rightType == "f64" {
+			if b.Op == "==" {
+				io.WriteString(w, "std.math.approxEqAbs(f64, ")
+			} else {
+				io.WriteString(w, "!std.math.approxEqAbs(f64, ")
+			}
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ", 1e-6)")
+			return
+		}
 		if sl, ok := b.Left.(*StringLit); ok && len(sl.Value) == 1 && !isStringType(rt) {
 			b.Right.emit(w)
 			fmt.Fprintf(w, " %s '%s'", b.Op, sl.Value)
@@ -3288,19 +3300,24 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			}
 		}
 	} else {
-		io.WriteString(w, "for (@as(usize, @intCast(")
+		// Use a while loop for numeric ranges. Zig's range syntax panics
+		// when the end value is less than the start value because it
+		// computes the difference between them. A while loop avoids this
+		// overflow and matches Mochi's semantics for empty ranges.
+		fmt.Fprintf(w, "var %s: i64 = @as(i64, @intCast(", tmp)
 		f.Start.emit(w)
-		io.WriteString(w, "))..@as(usize, @intCast(")
+		io.WriteString(w, "));\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "while (")
+		io.WriteString(w, tmp)
+		io.WriteString(w, " < @as(i64, @intCast(")
 		f.End.emit(w)
-		io.WriteString(w, "))) |")
+		io.WriteString(w, "))) : (")
+		io.WriteString(w, tmp)
+		io.WriteString(w, " += 1) {\n")
 		if used {
-			io.WriteString(w, tmp)
-			io.WriteString(w, "| {\n")
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "const %s: i64 = @as(i64, @intCast(%s));\n", alias, tmp)
-		} else {
-			io.WriteString(w, "_|")
-			io.WriteString(w, " {\n")
+			fmt.Fprintf(w, "const %s: i64 = %s;\n", alias, tmp)
 		}
 	}
 	// temporarily register the iteration variable's type so expressions in
