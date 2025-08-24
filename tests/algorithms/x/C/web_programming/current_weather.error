@@ -1,0 +1,46 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c: In function ‘http_get’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:119:17: error: ‘MapIL’ undeclared (first use in this function)
+  119 |         return (MapIL){0};
+      |                 ^~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:119:17: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:119:23: error: expected ‘;’ before ‘{’ token
+  119 |         return (MapIL){0};
+      |                       ^
+      |                       ;
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:121:19: error: expected ‘;’ before ‘{’ token
+  121 |     return (MapIL){0};
+      |                   ^
+      |                   ;
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c: In function ‘current_weather’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:133:74: error: ‘MapIL’ undeclared (first use in this function)
+  133 |         weather_data = list_append_int(weather_data, &weather_data_len, (MapIL){0});
+      |                                                                          ^~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:133:80: error: expected ‘)’ before ‘{’ token
+  133 |         weather_data = list_append_int(weather_data, &weather_data_len, (MapIL){0});
+      |                                       ~                                        ^
+      |                                                                                )
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:133:40: warning: passing argument 1 of ‘list_append_int’ from incompatible pointer type [-Wincompatible-pointer-types]
+  133 |         weather_data = list_append_int(weather_data, &weather_data_len, (MapIL){0});
+      |                                        ^~~~~~~~~~~~
+      |                                        |
+      |                                        int *
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:52:46: note: expected ‘long long int *’ but argument is of type ‘int *’
+   52 | static long long* list_append_int(long long *arr, size_t *len, long long val) {
+      |                                   ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:141:80: error: expected ‘)’ before ‘{’ token
+  141 |         weather_data = list_append_int(weather_data, &weather_data_len, (MapIL){0});
+      |                                       ~                                        ^
+      |                                                                                )
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:141:40: warning: passing argument 1 of ‘list_append_int’ from incompatible pointer type [-Wincompatible-pointer-types]
+  141 |         weather_data = list_append_int(weather_data, &weather_data_len, (MapIL){0});
+      |                                        ^~~~~~~~~~~~
+      |                                        |
+      |                                        int *
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:52:46: note: expected ‘long long int *’ but argument is of type ‘int *’
+   52 | static long long* list_append_int(long long *arr, size_t *len, long long val) {
+      |                                   ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/current_weather.c:150:23: warning: initialization of ‘long long int *’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+  150 |     long long *data = current_weather("New York");
+      |                       ^~~~~~~~~~~~~~~

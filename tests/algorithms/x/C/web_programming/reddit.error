@@ -1,0 +1,6 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/web_programming/reddit.c: In function ‘get_subreddit_data’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/reddit.c:186:9: error: ‘result’ undeclared (first use in this function)
+  186 |         result[(int)(idx)] = post_map;
+      |         ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/reddit.c:186:9: note: each undeclared identifier is reported only once for each function it appears in

@@ -1,0 +1,6 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/web_programming/crawl_google_scholar_citation.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/crawl_google_scholar_citation.c:129:13: error: ‘__name__’ undeclared (first use in this function)
+  129 |         if (__name__ == "__main__") {
+      |             ^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/crawl_google_scholar_citation.c:129:13: note: each undeclared identifier is reported only once for each function it appears in
