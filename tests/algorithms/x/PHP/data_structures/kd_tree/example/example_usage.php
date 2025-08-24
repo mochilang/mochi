@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,17 +42,19 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$seed = 1;
-function mochi_rand() {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $seed = 1;
+  function mochi_rand() {
   global $seed;
   $seed = ($seed * 1103515245 + 12345) % 2147483648;
   return $seed;
-}
-function random() {
+};
+  function random() {
   global $seed;
   return (1.0 * mochi_rand()) / 2147483648.0;
-}
-function hypercube_points($num_points, $cube_size, $num_dimensions) {
+};
+  function hypercube_points($num_points, $cube_size, $num_dimensions) {
   global $seed;
   $pts = [];
   $i = 0;
@@ -50,8 +69,8 @@ function hypercube_points($num_points, $cube_size, $num_dimensions) {
   $i = $i + 1;
 };
   return $pts;
-}
-function sort_points(&$points, $axis) {
+};
+  function sort_points($points, $axis) {
   global $seed;
   $n = count($points);
   $i = 1;
@@ -66,8 +85,8 @@ function sort_points(&$points, $axis) {
   $i = $i + 1;
 };
   return $points;
-}
-function sublist($arr, $start, $end) {
+};
+  function sublist($arr, $start, $end) {
   global $seed;
   $res = [];
   $i = $start;
@@ -76,8 +95,8 @@ function sublist($arr, $start, $end) {
   $i = $i + 1;
 };
   return $res;
-}
-function shift_nodes(&$nodes, $offset) {
+};
+  function shift_nodes($nodes, $offset) {
   global $seed;
   $i = 0;
   while ($i < count($nodes)) {
@@ -90,8 +109,8 @@ function shift_nodes(&$nodes, $offset) {
   $i = $i + 1;
 };
   return $nodes;
-}
-function build_kdtree($points, $depth) {
+};
+  function build_kdtree($points, $depth) {
   global $seed;
   if (count($points) == 0) {
   return ['index' => 0 - 1, 'nodes' => []];
@@ -109,12 +128,12 @@ function build_kdtree($points, $depth) {
   $nodes = $left_res['nodes'];
   $left_index = $left_res['index'];
   $right_index = ($right_res['index'] == 0 - 1 ? 0 - 1 : $right_res['index'] + $offset);
-  $nodes = _append($nodes, ['point' => $points[$median], 'left' => $left_index, 'right' => $right_index]);
+  $nodes = _append($nodes, ['left' => $left_index, 'point' => $points[$median], 'right' => $right_index]);
   $nodes = array_merge($nodes, $shifted_right);
   $root_index = _len($left_res['nodes']);
   return ['index' => $root_index, 'nodes' => $nodes];
-}
-function square_distance($a, $b) {
+};
+  function square_distance($a, $b) {
   global $seed;
   $sum = 0.0;
   $i = 0;
@@ -124,8 +143,8 @@ function square_distance($a, $b) {
   $i = $i + 1;
 };
   return $sum;
-}
-function nearest_neighbour_search($tree, $root, $query_point) {
+};
+  function nearest_neighbour_search($tree, $root, $query_point) {
   global $seed;
   $nearest_point = [];
   $nearest_dist = 0.0;
@@ -141,9 +160,9 @@ function nearest_neighbour_search($tree, $root, $query_point) {
 }
   $i = $i + 1;
 };
-  return ['point' => $nearest_point, 'dist' => $nearest_dist, 'visited' => $visited];
-}
-function list_to_string($arr) {
+  return ['dist' => $nearest_dist, 'point' => $nearest_point, 'visited' => $visited];
+};
+  function list_to_string($arr) {
   global $seed;
   $s = '[';
   $i = 0;
@@ -155,8 +174,8 @@ function list_to_string($arr) {
   $i = $i + 1;
 };
   return $s . ']';
-}
-function main() {
+};
+  function main() {
   global $seed;
   $num_points = 5000;
   $cube_size = 10.0;
@@ -176,5 +195,13 @@ function main() {
   echo rtrim('Nearest point: ' . list_to_string($res['point'])), PHP_EOL;
   echo rtrim('Distance: ' . _str($res['dist'])), PHP_EOL;
   echo rtrim('Nodes visited: ' . _str($res['visited'])), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

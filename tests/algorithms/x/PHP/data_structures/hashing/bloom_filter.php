@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,8 +36,10 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$ascii = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
-function mochi_ord($ch) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $ascii = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+  function mochi_ord($ch) {
   global $ascii;
   $i = 0;
   while ($i < strlen($ascii)) {
@@ -31,8 +49,8 @@ function mochi_ord($ch) {
   $i = $i + 1;
 };
   return 0;
-}
-function new_bloom($size) {
+};
+  function new_bloom($size) {
   global $ascii;
   $bits = [];
   $i = 0;
@@ -40,9 +58,9 @@ function new_bloom($size) {
   $bits = _append($bits, 0);
   $i = $i + 1;
 };
-  return ['size' => $size, 'bits' => $bits];
-}
-function hash1($value, $size) {
+  return ['bits' => $bits, 'size' => $size];
+};
+  function hash1($value, $size) {
   global $ascii;
   $h = 0;
   $i = 0;
@@ -51,8 +69,8 @@ function hash1($value, $size) {
   $i = $i + 1;
 };
   return $h;
-}
-function hash2($value, $size) {
+};
+  function hash2($value, $size) {
   global $ascii;
   $h = 0;
   $i = 0;
@@ -61,8 +79,8 @@ function hash2($value, $size) {
   $i = $i + 1;
 };
   return $h;
-}
-function hash_positions($value, $size) {
+};
+  function hash_positions($value, $size) {
   global $ascii;
   $h1 = hash1($value, $size);
   $h2 = hash2($value, $size);
@@ -70,8 +88,8 @@ function hash_positions($value, $size) {
   $res = _append($res, $h1);
   $res = _append($res, $h2);
   return $res;
-}
-function bloom_add($b, $value) {
+};
+  function bloom_add($b, $value) {
   global $ascii;
   $pos = hash_positions($value, $b['size']);
   $bits = $b['bits'];
@@ -81,9 +99,9 @@ function bloom_add($b, $value) {
   $bits[$idx] = 1;
   $i = $i + 1;
 };
-  return ['size' => $b['size'], 'bits' => $bits];
-}
-function bloom_exists($b, $value) {
+  return ['bits' => $bits, 'size' => $b['size']];
+};
+  function bloom_exists($b, $value) {
   global $ascii;
   $pos = hash_positions($value, $b['size']);
   $i = 0;
@@ -95,8 +113,8 @@ function bloom_exists($b, $value) {
   $i = $i + 1;
 };
   return true;
-}
-function bitstring($b) {
+};
+  function bitstring($b) {
   global $ascii;
   $res = '';
   $i = 0;
@@ -105,8 +123,8 @@ function bitstring($b) {
   $i = $i + 1;
 };
   return $res;
-}
-function format_hash($b, $value) {
+};
+  function format_hash($b, $value) {
   global $ascii;
   $pos = hash_positions($value, $b['size']);
   $bits = [];
@@ -128,8 +146,8 @@ function format_hash($b, $value) {
   $i = $i + 1;
 };
   return $res;
-}
-function estimated_error_rate($b) {
+};
+  function estimated_error_rate($b) {
   global $ascii;
   $ones = 0;
   $i = 0;
@@ -141,8 +159,8 @@ function estimated_error_rate($b) {
 };
   $frac = (floatval($ones)) / (floatval($b['size']));
   return $frac * $frac;
-}
-function any_in($b, $items) {
+};
+  function any_in($b, $items) {
   global $ascii;
   $i = 0;
   while ($i < count($items)) {
@@ -152,8 +170,8 @@ function any_in($b, $items) {
   $i = $i + 1;
 };
   return false;
-}
-function main() {
+};
+  function main() {
   global $ascii;
   $bloom = new_bloom(8);
   echo rtrim(bitstring($bloom)), PHP_EOL;
@@ -179,5 +197,13 @@ function main() {
   $bloom = bloom_add($bloom, 'The Godfather');
   echo rtrim(_str(estimated_error_rate($bloom))), PHP_EOL;
   echo rtrim(bitstring($bloom)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

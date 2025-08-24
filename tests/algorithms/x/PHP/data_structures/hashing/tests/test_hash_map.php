@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,13 +42,15 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function make_hash_map() {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function make_hash_map() {
   return ['entries' => []];
-}
-function hm_len($m) {
+};
+  function hm_len($m) {
   return _len($m['entries']);
-}
-function hm_set($m, $key, $value) {
+};
+  function hm_set($m, $key, $value) {
   $entries = $m['entries'];
   $updated = false;
   $new_entries = [];
@@ -39,7 +58,7 @@ function hm_set($m, $key, $value) {
   while ($i < count($entries)) {
   $e = $entries[$i];
   if ($e['key'] == $key) {
-  $new_entries = _append($new_entries, [$key => $key, $value => $value]);
+  $new_entries = _append($new_entries, ['key' => $key, 'value' => $value]);
   $updated = true;
 } else {
   $new_entries = _append($new_entries, $e);
@@ -47,11 +66,11 @@ function hm_set($m, $key, $value) {
   $i = $i + 1;
 };
   if (!$updated) {
-  $new_entries = _append($new_entries, [$key => $key, $value => $value]);
+  $new_entries = _append($new_entries, ['key' => $key, 'value' => $value]);
 }
   return ['entries' => $new_entries];
-}
-function hm_get($m, $key) {
+};
+  function hm_get($m, $key) {
   $i = 0;
   while ($i < _len($m['entries'])) {
   $e = $m['entries'][$i];
@@ -61,8 +80,8 @@ function hm_get($m, $key) {
   $i = $i + 1;
 };
   return ['found' => false, 'value' => ''];
-}
-function hm_del($m, $key) {
+};
+  function hm_del($m, $key) {
   $entries = $m['entries'];
   $new_entries = [];
   $removed = false;
@@ -80,23 +99,23 @@ function hm_del($m, $key) {
   return ['map' => ['entries' => $new_entries], 'ok' => true];
 }
   return ['map' => $m, 'ok' => false];
-}
-function test_add_items() {
+};
+  function test_add_items() {
   $h = make_hash_map();
   $h = hm_set($h, 'key_a', 'val_a');
   $h = hm_set($h, 'key_b', 'val_b');
   $a = hm_get($h, 'key_a');
   $b = hm_get($h, 'key_b');
   return hm_len($h) == 2 && $a['found'] && $b['found'] && $a['value'] == 'val_a' && $b['value'] == 'val_b';
-}
-function test_overwrite_items() {
+};
+  function test_overwrite_items() {
   $h = make_hash_map();
   $h = hm_set($h, 'key_a', 'val_a');
   $h = hm_set($h, 'key_a', 'val_b');
   $a = hm_get($h, 'key_a');
   return hm_len($h) == 1 && $a['found'] && $a['value'] == 'val_b';
-}
-function test_delete_items() {
+};
+  function test_delete_items() {
   $h = make_hash_map();
   $h = hm_set($h, 'key_a', 'val_a');
   $h = hm_set($h, 'key_b', 'val_b');
@@ -108,8 +127,8 @@ function test_delete_items() {
   $d3 = hm_del($h, 'key_a');
   $h = $d3['map'];
   return hm_len($h) == 0;
-}
-function test_access_absent_items() {
+};
+  function test_access_absent_items() {
   $h = make_hash_map();
   $g1 = hm_get($h, 'key_a');
   $d1 = hm_del($h, 'key_a');
@@ -121,8 +140,8 @@ function test_access_absent_items() {
   $h = $d3['map'];
   $g2 = hm_get($h, 'key_a');
   return $g1['found'] == false && $d1['ok'] == false && $d2['ok'] && $d3['ok'] == false && $g2['found'] == false && hm_len($h) == 0;
-}
-function test_add_with_resize_up() {
+};
+  function test_add_with_resize_up() {
   $h = make_hash_map();
   $i = 0;
   while ($i < 5) {
@@ -131,8 +150,8 @@ function test_add_with_resize_up() {
   $i = $i + 1;
 };
   return hm_len($h) == 5;
-}
-function test_add_with_resize_down() {
+};
+  function test_add_with_resize_down() {
   $h = make_hash_map();
   $i = 0;
   while ($i < 5) {
@@ -150,11 +169,19 @@ function test_add_with_resize_down() {
   $h = hm_set($h, 'key_a', 'val_b');
   $a = hm_get($h, 'key_a');
   return hm_len($h) == 1 && $a['found'] && $a['value'] == 'val_b';
-}
-echo rtrim(json_encode(test_add_items(), 1344)), PHP_EOL;
-echo rtrim(json_encode(test_overwrite_items(), 1344)), PHP_EOL;
-echo rtrim(json_encode(test_delete_items(), 1344)), PHP_EOL;
-echo rtrim(json_encode(test_access_absent_items(), 1344)), PHP_EOL;
-echo rtrim(json_encode(test_add_with_resize_up(), 1344)), PHP_EOL;
-echo rtrim(json_encode(test_add_with_resize_down(), 1344)), PHP_EOL;
-echo rtrim((true ? 'true' : 'false')), PHP_EOL;
+};
+  echo rtrim(json_encode(test_add_items(), 1344)), PHP_EOL;
+  echo rtrim(json_encode(test_overwrite_items(), 1344)), PHP_EOL;
+  echo rtrim(json_encode(test_delete_items(), 1344)), PHP_EOL;
+  echo rtrim(json_encode(test_access_absent_items(), 1344)), PHP_EOL;
+  echo rtrim(json_encode(test_add_with_resize_up(), 1344)), PHP_EOL;
+  echo rtrim(json_encode(test_add_with_resize_down(), 1344)), PHP_EOL;
+  echo rtrim((true ? 'true' : 'false')), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

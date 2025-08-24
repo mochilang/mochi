@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-24 15:46 GMT+7
+Last updated: 2025-08-24 17:12 GMT+7
 
 ## Algorithms Golden Test Checklist (1002/1077)
 | Index | Name | Status | Duration | Memory |
@@ -181,57 +181,57 @@ Last updated: 2025-08-24 15:46 GMT+7
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 94µs | 1.6 MB |
 | 173 | data_structures/binary_tree/binary_search_tree | ✓ | 142µs | 1.6 MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 135µs | 1.6 MB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 109µs | 1.6 MB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 117µs | 1.6 MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 53µs | 1.6 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 204µs | 1.6 MB |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 145µs | 1.6 MB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 147µs | 1.6 MB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 168µs | 1.6 MB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 88µs | 1.6 MB |
-| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 135µs | 1.6 MB |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ |  |  |
-| 184 | data_structures/binary_tree/is_sorted | ✓ | 123µs | 1.6 MB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 119µs | 1.6 MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 64µs | 1.6 MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 162µs | 1.6 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 80µs | 1.6 MB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 105µs | 1.6 MB |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 136µs | 1.6 MB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 1µs | 1.6 MB |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 186µs | 1.6 MB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 240µs | 1.6 MB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 60.285ms | 1.6 MB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 86µs | 1.6 MB |
-| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 145µs | 1.6 MB |
-| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 139µs | 1.6 MB |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 161µs | 1.6 MB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 72µs | 1.6 MB |
-| 194 | data_structures/binary_tree/red_black_tree | ✓ | 158µs | 1.6 MB |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 169µs | 1.6 MB |
-| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 170µs | 1.6 MB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 227µs | 1.6 MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 150µs | 1.6 MB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 57.234ms | 1.6 MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 150µs | 1.6 MB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 146µs | 1.6 MB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 136µs | 1.6 MB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 108µs | 1.6 MB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 62µs | 1.6 MB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 116µs | 1.6 MB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 231µs | 1.6 MB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 232µs | 1.6 MB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 75µs | 1.6 MB |
-| 199 | data_structures/binary_tree/treap | ✓ | 204µs | 1.6 MB |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 127µs | 1.6 MB |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 136µs | 36.3 KB |
-| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 128µs | 36.9 KB |
-| 203 | data_structures/hashing/bloom_filter | ✓ | 686µs | 71.2 KB |
-| 204 | data_structures/hashing/double_hash | ✓ | 101µs | 36.2 KB |
-| 205 | data_structures/hashing/hash_map | ✓ | 129µs | 71.8 KB |
-| 206 | data_structures/hashing/hash_table | ✓ | 119µs | 39.0 KB |
-| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 126µs | 37.0 KB |
-| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 118µs | 36.3 KB |
-| 209 | data_structures/hashing/quadratic_probing | ✓ | 188µs | 40.6 KB |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 187µs | 72.1 KB |
-| 211 | data_structures/heap/binomial_heap | ✓ | 121µs | 41.6 KB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 99µs | 1.6 MB |
+| 199 | data_structures/binary_tree/treap | ✓ | 207µs | 1.6 MB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 149µs | 1.6 MB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 94µs | 1.6 MB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 193µs | 1.6 MB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 671µs | 1.6 MB |
+| 204 | data_structures/hashing/double_hash | ✓ | 102µs | 1.6 MB |
+| 205 | data_structures/hashing/hash_map | ✓ | 92µs | 1.6 MB |
+| 206 | data_structures/hashing/hash_table | ✓ | 93µs | 1.6 MB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 128µs | 1.6 MB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 56µs | 1.6 MB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 114µs | 1.6 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 104µs | 1.6 MB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 110µs | 1.6 MB |
 | 212 | data_structures/heap/heap | error |  |  |
-| 213 | data_structures/heap/heap_generic | ✓ | 178µs | 72.3 KB |
-| 214 | data_structures/heap/max_heap | ✓ | 130µs | 36.4 KB |
-| 215 | data_structures/heap/min_heap | ✓ | 409µs | 72.0 KB |
-| 216 | data_structures/heap/randomized_heap | ✓ | 120µs | 37.8 KB |
-| 217 | data_structures/kd_tree/build_kdtree | ✓ | 188µs | 39.1 KB |
+| 213 | data_structures/heap/heap_generic | ✓ | 194µs | 1.6 MB |
+| 214 | data_structures/heap/max_heap | ✓ | 117µs | 1.6 MB |
+| 215 | data_structures/heap/min_heap | ✓ | 146µs | 1.6 MB |
+| 216 | data_structures/heap/randomized_heap | ✓ | 131µs | 1.6 MB |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 174µs | 1.6 MB |
 | 218 | data_structures/kd_tree/example/example_usage | error |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 212µs | 38.5 KB |
-| 220 | data_structures/kd_tree/kd_node | ✓ | 99µs | 35.5 KB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search | error |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 111µs | 38.0 KB |
-| 223 | data_structures/linked_list/circular_linked_list | ✓ | 90µs | 37.6 KB |
-| 224 | data_structures/linked_list/deque_doubly | ✓ | 85µs | 42.4 KB |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 88µs | 38.2 KB |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 84µs | 1.6 MB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 98µs | 1.6 MB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 132µs | 1.6 MB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 96µs | 1.6 MB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 94µs | 1.6 MB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 103µs | 1.6 MB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 95µs | 1.6 MB |
 | 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 181µs | 95.4 KB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 85µs | 36.7 KB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 132µs | 37.0 KB |
