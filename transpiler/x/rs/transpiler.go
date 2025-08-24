@@ -138,16 +138,19 @@ func isConstExpr(e Expr) bool {
 		}
 		return false
 	case *ListLit:
-		// List literals allocate heap memory (Vec) which cannot be
-		// created in a const/static context. Treat them as
-		// non-constant so top-level declarations are initialized at
-		// runtime instead of as `static` values.
+		// List literals allocate heap memory (Vec) which normally
+		// cannot be created in a const/static context. However an
+		// empty list can be safely initialized using `Vec::new()` at
+		// compile time. Treat empty list literals as constant so that
+		// top-level declarations like `var xs = []` can become `static`
+		// values, avoiding the need for closures capturing mutable
+		// state. Non-empty lists remain non-constant.
 		for _, el := range v.Elems {
 			if !isConstExpr(el) {
 				return false
 			}
 		}
-		return false
+		return len(v.Elems) == 0
 	case *MapLit:
 		// Similar to list literals, map literals require runtime
 		// initialization. They are never considered constant.
