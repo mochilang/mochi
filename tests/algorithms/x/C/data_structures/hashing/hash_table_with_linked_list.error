@@ -1,0 +1,6 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/data_structures/hashing/hash_table_with_linked_list.c: In function ‘set_value’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/hashing/hash_table_with_linked_list.c:205:28: error: ‘ht’ is a pointer; did you mean to use ‘->’?
+  205 |     size_t current_len = ht.values_lens[key];
+      |                            ^
+      |                            ->

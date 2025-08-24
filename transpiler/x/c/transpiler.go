@@ -1445,7 +1445,9 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		r.Expr.emitExpr(w)
 		currentVarName = save
 	} else {
-		io.WriteString(w, " 0")
+		if currentFuncReturn != "void" {
+			io.WriteString(w, " 0")
+		}
 	}
 	io.WriteString(w, ";\n")
 }
@@ -3200,6 +3202,8 @@ func (f *FieldExpr) emitExpr(w io.Writer) {
 		} else {
 			io.WriteString(w, ".")
 		}
+	} else if vr, ok := f.Target.(*VarRef); ok && funcParamPtrs != nil && funcParamPtrs[currentFuncName] != nil && funcParamPtrs[currentFuncName][vr.Name] {
+		io.WriteString(w, "->")
 	} else {
 		io.WriteString(w, ".")
 	}
@@ -9158,6 +9162,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	for k := range mutatedParams {
 		mutated[k] = true
 	}
+	needRecompile := false
 	for i := range params {
 		if mutated[params[i].Name] && !strings.HasSuffix(params[i].Type, "*") {
 			if _, ok := structTypes[params[i].Type]; ok || strings.HasPrefix(params[i].Type, "Map") {
@@ -9172,11 +9177,41 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 						funcParamPtrs[name] = make(map[string]bool)
 					}
 					funcParamPtrs[name][params[i].Name] = true
+					needRecompile = true
 				}
 			}
 		}
 	}
 	funcParamTypes[name] = paramTypes
+	if needRecompile {
+		// reset state and recompile with updated parameter types
+		varTypes = make(map[string]string)
+		for k, v := range prevVarTypes {
+			varTypes[k] = v
+		}
+		for i := range params {
+			varTypes[params[i].Name] = params[i].Type
+		}
+		mapKeyTypes = make(map[string]string)
+		for k, v := range prevMapKeyTypes {
+			mapKeyTypes[k] = v
+		}
+		mapValTypes = make(map[string]string)
+		for k, v := range prevMapValTypes {
+			mapValTypes[k] = v
+		}
+		declStmts = map[string]*DeclStmt{}
+		declAliases = map[string]bool{}
+		localFuncs = map[string]bool{}
+		currentParams = paramSet
+		mutatedParams = make(map[string]bool)
+		blockDepth = 0
+		body, err = compileStmts(localEnv, fn.BlockBody)
+		if err != nil {
+			return nil, err
+		}
+		currentParams = nil
+	}
 	if fn.ExprBody != nil {
 		expr := convertExpr(fn.ExprBody)
 		if expr == nil {
@@ -11314,7 +11349,8 @@ func inferExprType(env *types.Env, e Expr) string {
 		}
 	case *FieldExpr:
 		tname := inferExprType(env, v.Target)
-		if st, ok := env.GetStruct(tname); ok {
+		base := strings.TrimSuffix(strings.TrimPrefix(tname, "struct "), "*")
+		if st, ok := env.GetStruct(base); ok {
 			if ft, ok2 := st.Fields[v.Name]; ok2 {
 				return cTypeFromMochiType(ft)
 			}
@@ -12233,6 +12269,20 @@ func isMapVar(name string) bool {
 }
 
 func mapField(name, field string) string {
+	if strings.Contains(name, "->") {
+		return name + "_" + field
+	}
+	if strings.Contains(name, ".") {
+		parts := strings.SplitN(name, ".", 2)
+		base, rest := parts[0], parts[1]
+		if t, ok := varTypes[base]; ok && strings.HasSuffix(t, "*") {
+			return base + "->" + rest + "_" + field
+		}
+		if funcParamPtrs != nil && funcParamPtrs[currentFuncName] != nil && funcParamPtrs[currentFuncName][base] {
+			return base + "->" + rest + "_" + field
+		}
+		return name + "_" + field
+	}
 	if t, ok := varTypes[name]; ok {
 		if strings.Contains(t, "[]") {
 			return name + "_" + field
@@ -12240,6 +12290,9 @@ func mapField(name, field string) string {
 		if strings.HasSuffix(t, "*") {
 			return name + "->" + field
 		}
+	}
+	if funcParamPtrs != nil && funcParamPtrs[currentFuncName] != nil && funcParamPtrs[currentFuncName][name] {
+		return name + "->" + field
 	}
 	return name + "." + field
 }
