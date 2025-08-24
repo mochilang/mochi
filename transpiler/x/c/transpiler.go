@@ -177,6 +177,29 @@ func listTypeToC(typ string) string {
 	}
 }
 
+// cMapType returns a Mochi map type corresponding to the given C map
+// typedef name (e.g. "MapSI" -> map<string,int>). It handles only the
+// limited set of map types used in TheAlgorithms test suite.
+func cMapType(name string) types.Type {
+	name = strings.TrimSuffix(strings.TrimSpace(name), "*")
+	switch name {
+	case "MapSS":
+		return types.MapType{Key: types.StringType{}, Value: types.StringType{}}
+	case "MapSL":
+		return types.MapType{Key: types.StringType{}, Value: types.ListType{Elem: types.StringType{}}}
+	case "MapSI":
+		return types.MapType{Key: types.StringType{}, Value: types.IntType{}}
+	case "MapSD":
+		return types.MapType{Key: types.StringType{}, Value: types.FloatType{}}
+	case "MapIL":
+		return types.MapType{Key: types.IntType{}, Value: types.ListType{Elem: types.IntType{}}}
+	case "MapII":
+		return types.MapType{Key: types.IntType{}, Value: types.IntType{}}
+	default:
+		return nil
+	}
+}
+
 func emitLenExpr(w io.Writer, e Expr) {
 	switch v := e.(type) {
 	case *VarRef:
@@ -1085,7 +1108,11 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 			}
 		}
 		prevType := currentVarType
-		currentVarType = nil
+		if mt := cMapType(paramType); mt != nil {
+			currentVarType = mt
+		} else {
+			currentVarType = nil
+		}
 		a.emitExpr(w)
 		currentVarType = prevType
 		emitExtraArgs(w, paramType, a)
@@ -2983,6 +3010,15 @@ type StructLit struct {
 }
 
 func (s *StructLit) emitExpr(w io.Writer) {
+	if len(s.Fields) == 0 {
+		if mt, ok := currentVarType.(types.MapType); ok {
+			io.WriteString(w, "("+cTypeFromMochiType(mt)+"){0}")
+			return
+		}
+		// default empty struct literal maps to an empty string-int map
+		io.WriteString(w, "(MapSI){0}")
+		return
+	}
 	fmt.Fprintf(w, "(%s){", s.Name)
 	for i, f := range s.Fields {
 		if i > 0 {
@@ -5735,7 +5771,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needConcatIntPtr || needConcatLongLong || needConcatStr {
-		buf.WriteString("static size_t concat_len;\n")
+		// concat_len is a global used by concat helpers. It may already be
+		// declared when generating length tracking for the user-facing
+		// concat function, so avoid redeclaring it here.
+		buf.WriteString("size_t concat_len;\n")
 	}
 	if needConcatIntPtr {
 		buf.WriteString("static size_t* concat_lens;\n")
