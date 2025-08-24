@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 994/1077
-Last updated: 2025-08-24 16:59 +0700
+Completed programs: 992/1077
+Last updated: 2025-08-24 22:16 +0700
 
 Checklist:
 
@@ -189,7 +189,7 @@ Checklist:
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 298.0µs | 1.87KB |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 307.0µs | 1.55KB |
 | 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 480.0µs | 1.84KB |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ |  |  |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
 | 184 | data_structures/binary_tree/is_sorted | ✓ | 267.0µs | 1.82KB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 395.0µs | 1.32KB |
 | 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 421.0µs | 6.55KB |
@@ -216,13 +216,13 @@ Checklist:
 | 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 421.0µs | 1.73KB |
 | 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 569.0µs | 936B |
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 346.0µs | 1.17KB |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 419.0µs | 3.98KB |
-| 211 | data_structures/heap/binomial_heap | ✓ | 325.0µs | 1.04KB |
-| 212 | data_structures/heap/heap | ✓ |  |  |
-| 213 | data_structures/heap/heap_generic | ✓ | 473.0µs | 2.66KB |
-| 214 | data_structures/heap/max_heap | ✓ | 565.0µs | 1.22KB |
-| 215 | data_structures/heap/min_heap | ✓ | 457.0µs | 2.01KB |
-| 216 | data_structures/heap/randomized_heap | ✓ | 405.0µs | 4.75KB |
+| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
+| 211 | data_structures/heap/binomial_heap |   |  |  |
+| 212 | data_structures/heap/heap |   |  |  |
+| 213 | data_structures/heap/heap_generic |   |  |  |
+| 214 | data_structures/heap/max_heap | ✓ | 891.0µs | 3.25KB |
+| 215 | data_structures/heap/min_heap | ✓ | 777.0µs | 2.01KB |
+| 216 | data_structures/heap/randomized_heap | ✓ | 966.0µs | 6.77KB |
 | 217 | data_structures/kd_tree/build_kdtree | ✓ | 620.0µs | 2.70KB |
 | 218 | data_structures/kd_tree/example/example_usage | ✓ | 88.0ms | 1.86MB |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 492.0µs | 1.84KB |
@@ -231,7 +231,7 @@ Checklist:
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 494.0µs | 4.73KB |
 | 223 | data_structures/linked_list/circular_linked_list | ✓ | 273.0µs | 2.03KB |
 | 224 | data_structures/linked_list/deque_doubly | ✓ | 369.0µs | 1.21KB |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 422.0µs | 1.55KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 533.0µs | 1.55KB |
 | 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 295.0µs | 2.82KB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 543.0µs | 1.15KB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 645.0µs | 1.89KB |
@@ -406,10 +406,10 @@ Checklist:
 | 397 | graphs/basic_graphs | ✓ | 2.0ms | 28.06KB |
 | 398 | graphs/bellman_ford | ✓ | 463.0µs | 1.20KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 1.0ms | 2.46KB |
-| 400 | graphs/bidirectional_a_star |   |  |  |
+| 400 | graphs/bidirectional_a_star | ✓ | 3.0ms | 195.38KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 39.53KB |
-| 402 | graphs/bidirectional_search |   |  |  |
-| 403 | graphs/boruvka |   |  |  |
+| 402 | graphs/bidirectional_search | ✓ | 1.0ms | 2.56KB |
+| 403 | graphs/boruvka | ✓ | 634.0µs | 3.98KB |
 | 404 | graphs/breadth_first_search | ✓ | 824.0µs | 3.75KB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 349.0µs | 2.40KB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 541.0µs | 2.27KB |
