@@ -1,0 +1,159 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c: In function ‘create_node’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:103:24: warning: assignment to ‘const char *’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  103 |         __tmp2_data[0] = value;
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c: In function ‘insert’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:119:15: warning: comparison between pointer and integer
+  119 |     if (value < node[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})]) {
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:120:132: error: ‘node_lens’ undeclared (first use in this function); did you mean ‘node_len’?
+  120 |         node[(int)(1LL)] = insert(node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(1LL)], value);
+      |                                                                                                                                    ^~~~~~~~~
+      |                                                                                                                                    node_len
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:120:132: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:120:39: warning: passing argument 1 of ‘insert’ from incompatible pointer type [-Wincompatible-pointer-types]
+  120 |         node[(int)(1LL)] = insert(node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(1LL)], value);
+      |                                   ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                       |
+      |                                       const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:111:36: note: expected ‘const char **’ but argument is of type ‘const char *’
+  111 | const char* * insert(const char* * node, size_t node_len, long long value) {
+      |                      ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:122:19: warning: comparison between pointer and integer
+  122 |         if (value > node[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})]) {
+      |                   ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:123:43: warning: passing argument 1 of ‘insert’ from incompatible pointer type [-Wincompatible-pointer-types]
+  123 |             node[(int)(2LL)] = insert(node[(int)({long long _mochi_idx = 2LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(2LL)], value);
+      |                                       ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                           |
+      |                                           const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:111:36: note: expected ‘const char **’ but argument is of type ‘const char *’
+  111 | const char* * insert(const char* * node, size_t node_len, long long value) {
+      |                      ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c: In function ‘search’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:133:15: warning: comparison between pointer and integer
+  133 |     if (value == node[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})]) {
+      |               ^~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:136:15: warning: comparison between pointer and integer
+  136 |     if (value < node[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})]) {
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:137:120: error: ‘node_lens’ undeclared (first use in this function); did you mean ‘node_len’?
+  137 |         return search(node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(1LL)], value);
+      |                                                                                                                        ^~~~~~~~~
+      |                                                                                                                        node_len
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:137:27: warning: passing argument 1 of ‘search’ from incompatible pointer type [-Wincompatible-pointer-types]
+  137 |         return search(node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(1LL)], value);
+      |                       ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:129:32: note: expected ‘const char **’ but argument is of type ‘const char *’
+  129 | long long search(const char* * node, size_t node_len, long long value) {
+      |                  ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:139:23: warning: passing argument 1 of ‘search’ from incompatible pointer type [-Wincompatible-pointer-types]
+  139 |     return search(node[(int)({long long _mochi_idx = 2LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(2LL)], value);
+      |                   ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                       |
+      |                       const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:129:32: note: expected ‘const char **’ but argument is of type ‘const char *’
+  129 | long long search(const char* * node, size_t node_len, long long value) {
+      |                  ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c: In function ‘inorder’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:146:132: error: ‘node_lens’ undeclared (first use in this function); did you mean ‘node_len’?
+  146 |     long long *left_acc = inorder(node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(1LL)], acc, acc_len);
+      |                                                                                                                                    ^~~~~~~~~
+      |                                                                                                                                    node_len
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:146:39: warning: passing argument 1 of ‘inorder’ from incompatible pointer type [-Wincompatible-pointer-types]
+  146 |     long long *left_acc = inorder(node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(1LL)], acc, acc_len);
+      |                                   ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                       |
+      |                                       const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:142:35: note: expected ‘const char **’ but argument is of type ‘const char *’
+  142 | long long * inorder(const char* * node, size_t node_len, long long * acc, size_t acc_len) {
+      |                     ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:148:76: warning: passing argument 3 of ‘list_append_int_new’ makes integer from pointer without a cast [-Wint-conversion]
+  148 |     long long *with_node = list_append_int_new(left_acc, left_acc_len, node[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})]);
+      |                                                                        ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                            |
+      |                                                                            const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:39:83: note: expected ‘long long int’ but argument is of type ‘const char *’
+   39 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                                                         ~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:151:41: warning: passing argument 1 of ‘inorder’ from incompatible pointer type [-Wincompatible-pointer-types]
+  151 |         long long* __ret4 = inorder(node[(int)({long long _mochi_idx = 2LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(2LL)], with_node, with_node_len);
+      |                                     ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                         |
+      |                                         const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:142:35: note: expected ‘const char **’ but argument is of type ‘const char *’
+  142 | long long * inorder(const char* * node, size_t node_len, long long * acc, size_t acc_len) {
+      |                     ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c: In function ‘find_min’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:161:17: warning: assignment to ‘const char **’ from incompatible pointer type ‘const char *’ [-Wincompatible-pointer-types]
+  161 |         current = current[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? current_len + _mochi_idx : _mochi_idx;})];
+      |                 ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:163:19: warning: returning ‘const char *’ from a function with return type ‘long long int’ makes integer from pointer without a cast [-Wint-conversion]
+  163 |     return current[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? current_len + _mochi_idx : _mochi_idx;})];
+      |            ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c: In function ‘find_max’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:170:17: warning: assignment to ‘const char **’ from incompatible pointer type ‘const char *’ [-Wincompatible-pointer-types]
+  170 |         current = current[(int)({long long _mochi_idx = 2LL; _mochi_idx < 0 ? current_len + _mochi_idx : _mochi_idx;})];
+      |                 ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:172:19: warning: returning ‘const char *’ from a function with return type ‘long long int’ makes integer from pointer without a cast [-Wint-conversion]
+  172 |     return current[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? current_len + _mochi_idx : _mochi_idx;})];
+      |            ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c: In function ‘delete’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:180:15: warning: comparison between pointer and integer
+  180 |     if (value < node[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})]) {
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:181:132: error: ‘node_lens’ undeclared (first use in this function); did you mean ‘node_len’?
+  181 |         node[(int)(1LL)] = delete(node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(1LL)], value);
+      |                                                                                                                                    ^~~~~~~~~
+      |                                                                                                                                    node_len
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:181:39: warning: passing argument 1 of ‘delete’ from incompatible pointer type [-Wincompatible-pointer-types]
+  181 |         node[(int)(1LL)] = delete(node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(1LL)], value);
+      |                                   ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                       |
+      |                                       const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:175:36: note: expected ‘const char **’ but argument is of type ‘const char *’
+  175 | const char* * delete(const char* * node, size_t node_len, long long value) {
+      |                      ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:183:19: warning: comparison between pointer and integer
+  183 |         if (value > node[(int)({long long _mochi_idx = 0LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})]) {
+      |                   ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:184:43: warning: passing argument 1 of ‘delete’ from incompatible pointer type [-Wincompatible-pointer-types]
+  184 |             node[(int)(2LL)] = delete(node[(int)({long long _mochi_idx = 2LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(2LL)], value);
+      |                                       ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                           |
+      |                                           const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:175:36: note: expected ‘const char **’ but argument is of type ‘const char *’
+  175 | const char* * delete(const char* * node, size_t node_len, long long value) {
+      |                      ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:187:28: warning: returning ‘const char *’ from a function with incompatible return type ‘const char **’ [-Wincompatible-pointer-types]
+  187 |                 return node[(int)({long long _mochi_idx = 2LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})];
+      |                        ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:190:28: warning: returning ‘const char *’ from a function with incompatible return type ‘const char **’ [-Wincompatible-pointer-types]
+  190 |                 return node[(int)({long long _mochi_idx = 1LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})];
+      |                        ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:192:46: warning: passing argument 1 of ‘find_min’ from incompatible pointer type [-Wincompatible-pointer-types]
+  192 |             long long min_val = find_min(node[(int)({long long _mochi_idx = 2LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(2LL)]);
+      |                                          ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                              |
+      |                                              const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:157:34: note: expected ‘const char **’ but argument is of type ‘const char *’
+  157 | long long find_min(const char* * node, size_t node_len) {
+      |                    ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:193:30: warning: assignment to ‘const char *’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  193 |             node[(int)(0LL)] = min_val;
+      |                              ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:194:43: warning: passing argument 1 of ‘delete’ from incompatible pointer type [-Wincompatible-pointer-types]
+  194 |             node[(int)(2LL)] = delete(node[(int)({long long _mochi_idx = 2LL; _mochi_idx < 0 ? node_len + _mochi_idx : _mochi_idx;})], node_lens[(int)(2LL)], min_val);
+      |                                       ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                           |
+      |                                           const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:175:36: note: expected ‘const char **’ but argument is of type ‘const char *’
+  175 | const char* * delete(const char* * node, size_t node_len, long long value) {
+      |                      ~~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/binary_search_tree.c:218:33: error: ‘root_len’ undeclared (first use in this function)
+  218 |             root = insert(root, root_len, v);
+      |                                 ^~~~~~~~

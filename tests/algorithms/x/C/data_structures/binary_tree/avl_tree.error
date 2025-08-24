@@ -1,0 +1,86 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c: In function ‘update_height’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:121:21: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  121 |     nodes[(int)(i)][(int)("height")] = my_max(get_height(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left")), get_height(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"))) + 1LL;
+      |                     ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:121:20: error: subscripted value is neither array nor pointer nor vector
+  121 |     nodes[(int)(i)][(int)("height")] = my_max(get_height(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left")), get_height(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"))) + 1LL;
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c: In function ‘right_rotation’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:126:21: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  126 |     nodes[(int)(i)][(int)("left")] = map_get_si(nodes[(int)({long long _mochi_idx = left; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = left; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = left; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right");
+      |                     ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:126:20: error: subscripted value is neither array nor pointer nor vector
+  126 |     nodes[(int)(i)][(int)("left")] = map_get_si(nodes[(int)({long long _mochi_idx = left; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = left; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = left; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right");
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:127:24: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  127 |     nodes[(int)(left)][(int)("right")] = i;
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:127:23: error: subscripted value is neither array nor pointer nor vector
+  127 |     nodes[(int)(left)][(int)("right")] = i;
+      |                       ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c: In function ‘left_rotation’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:135:21: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  135 |     nodes[(int)(i)][(int)("right")] = map_get_si(nodes[(int)({long long _mochi_idx = right; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = right; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = right; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left");
+      |                     ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:135:20: error: subscripted value is neither array nor pointer nor vector
+  135 |     nodes[(int)(i)][(int)("right")] = map_get_si(nodes[(int)({long long _mochi_idx = right; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = right; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = right; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left");
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:136:25: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  136 |     nodes[(int)(right)][(int)("left")] = i;
+      |                         ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:136:24: error: subscripted value is neither array nor pointer nor vector
+  136 |     nodes[(int)(right)][(int)("left")] = i;
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c: In function ‘lr_rotation’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:143:21: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  143 |     nodes[(int)(i)][(int)("left")] = left_rotation(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left"));
+      |                     ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:143:20: error: subscripted value is neither array nor pointer nor vector
+  143 |     nodes[(int)(i)][(int)("left")] = left_rotation(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left"));
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c: In function ‘rl_rotation’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:148:21: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  148 |     nodes[(int)(i)][(int)("right")] = right_rotation(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"));
+      |                     ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:148:20: error: subscripted value is neither array nor pointer nor vector
+  148 |     nodes[(int)(i)][(int)("right")] = right_rotation(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"));
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c: In function ‘insert_node’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:157:25: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  157 |         nodes[(int)(i)][(int)("left")] = insert_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left"), value);
+      |                         ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:157:24: error: subscripted value is neither array nor pointer nor vector
+  157 |         nodes[(int)(i)][(int)("left")] = insert_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left"), value);
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:166:25: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  166 |         nodes[(int)(i)][(int)("right")] = insert_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"), value);
+      |                         ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:166:24: error: subscripted value is neither array nor pointer nor vector
+  166 |         nodes[(int)(i)][(int)("right")] = insert_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"), value);
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c: In function ‘del_node’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:192:25: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  192 |         nodes[(int)(i)][(int)("left")] = del_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left"), value);
+      |                         ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:192:24: error: subscripted value is neither array nor pointer nor vector
+  192 |         nodes[(int)(i)][(int)("left")] = del_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "left"), value);
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:195:29: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  195 |             nodes[(int)(i)][(int)("right")] = del_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"), value);
+      |                             ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:195:28: error: subscripted value is neither array nor pointer nor vector
+  195 |             nodes[(int)(i)][(int)("right")] = del_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"), value);
+      |                            ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:199:33: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  199 |                 nodes[(int)(i)][(int)("data")] = temp;
+      |                                 ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:199:32: error: subscripted value is neither array nor pointer nor vector
+  199 |                 nodes[(int)(i)][(int)("data")] = temp;
+      |                                ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:200:33: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  200 |                 nodes[(int)(i)][(int)("right")] = del_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"), temp);
+      |                                 ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/binary_tree/avl_tree.c:200:32: error: subscripted value is neither array nor pointer nor vector
+  200 |                 nodes[(int)(i)][(int)("right")] = del_node(map_get_si(nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].keys, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].vals, nodes[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? nodes_len + _mochi_idx : _mochi_idx;})].len, "right"), temp);
+      |                                ^

@@ -1,0 +1,37 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:50:42: warning: initialization of ‘const char *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+   50 | const char* example_init[5] = {"5", "2", (long long[]){-7LL, 1LL}, "3", (long long[]){6LL, (long long[]){-13LL, 8LL}, 4LL}};
+      |                                          ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:50:42: note: (near initialization for ‘example_init[2]’)
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:50:92: warning: initialization of ‘long long int’ from ‘long long int *’ makes integer from pointer without a cast [-Wint-conversion]
+   50 | const char* example_init[5] = {"5", "2", (long long[]){-7LL, 1LL}, "3", (long long[]){6LL, (long long[]){-13LL, 8LL}, 4LL}};
+      |                                                                                            ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:50:92: note: (near initialization for ‘(anonymous)[1]’)
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:50:73: warning: initialization of ‘const char *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+   50 | const char* example_init[5] = {"5", "2", (long long[]){-7LL, 1LL}, "3", (long long[]){6LL, (long long[]){-13LL, 8LL}, 4LL}};
+      |                                                                         ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:50:73: note: (near initialization for ‘example_init[4]’)
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c: In function ‘product_sum’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:63:13: warning: implicit declaration of function ‘exists’; did you mean ‘exit’? [-Wimplicit-function-declaration]
+   63 |         if (exists(el)) {
+      |             ^~~~~~
+      |             exit
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:64:45: error: ‘el_len’ undeclared (first use in this function)
+   64 |             total = total + product_sum(el, el_len, depth + 1LL);
+      |                                             ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:64:45: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:64:41: warning: passing argument 1 of ‘product_sum’ from incompatible pointer type [-Wincompatible-pointer-types]
+   64 |             total = total + product_sum(el, el_len, depth + 1LL);
+      |                                         ^~
+      |                                         |
+      |                                         const char *
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:58:37: note: expected ‘const char **’ but argument is of type ‘const char *’
+   58 | long long product_sum(const char* * arr, size_t arr_len, long long depth) {
+      |                       ~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/arrays/product_sum.c:81:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+   81 |         printf("%d\n", product_sum_array(example, example_len));
+      |                 ~^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
