@@ -22,10 +22,10 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
+dynamic _substr(dynamic s, num start, [num? end]) {
   int n = s.length;
   int s0 = start.toInt();
-  int e0 = end.toInt();
+  int e0 = end == null ? n : end.toInt();
   if (s0 < 0) s0 += n;
   if (e0 < 0) e0 += n;
   if (s0 < 0) s0 = 0;
@@ -39,11 +39,11 @@ dynamic _substr(dynamic s, num start, num end) {
   return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 
-Never _error(String msg) {
-  throw Exception(msg);
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 
 String octal_to_binary(String octal_number) {
@@ -54,11 +54,11 @@ String octal_to_binary(String octal_number) {
   String binary_number = "";
   int i = 0;
   while (i < octal_number.length) {
-    String digit = octal_number.substring(i, i + 1);
+    String digit = _substr(octal_number, i, i + 1);
     bool valid = false;
     int j = 0;
     while (j < octal_digits.length) {
-    if (digit == octal_digits.substring(j, j + 1)) {
+    if (digit == _substr(octal_digits, j, j + 1)) {
     valid = true;
     break;
   }
@@ -67,7 +67,7 @@ String octal_to_binary(String octal_number) {
     if (!valid) {
     _error("Non-octal value was passed to the function");
   }
-    int value = (digit).codeUnitAt(0);
+    int value = (int.tryParse(digit.toString()) ?? digit.toString().codeUnitAt(0));
     int k = 0;
     String binary_digit = "";
     while (k < 3) {

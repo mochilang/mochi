@@ -22,10 +22,10 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
+dynamic _substr(dynamic s, num start, [num? end]) {
   int n = s.length;
   int s0 = start.toInt();
-  int e0 = end.toInt();
+  int e0 = end == null ? n : end.toInt();
   if (s0 < 0) s0 += n;
   if (e0 < 0) e0 += n;
   if (s0 < 0) s0 = 0;
@@ -40,12 +40,12 @@ dynamic _substr(dynamic s, num start, num end) {
 }
 
 
-Never _error(String msg) {
-  throw Exception(msg);
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 
 String rstrip_s(String s) {
-  if (s.length > 0 && s.substring(s.length - 1, s.length - 1 + 1) == "s") {
+  if (s.length > 0 && _substr(s, s.length - 1, s.length - 1 + 1) == "s") {
     return _substr(s, 0, s.length - 1);
   }
   return s;

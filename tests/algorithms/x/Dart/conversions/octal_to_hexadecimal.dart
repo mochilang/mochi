@@ -22,10 +22,10 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
+dynamic _substr(dynamic s, num start, [num? end]) {
   int n = s.length;
   int s0 = start.toInt();
-  int e0 = end.toInt();
+  int e0 = end == null ? n : end.toInt();
   if (s0 < 0) s0 += n;
   if (e0 < 0) e0 += n;
   if (s0 < 0) s0 = 0;
@@ -40,13 +40,13 @@ dynamic _substr(dynamic s, num start, num end) {
 }
 
 
-Never _error(String msg) {
-  throw Exception(msg);
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 
 String octal_to_hex(String octal) {
   String s = octal;
-  if (s.length >= 2 && s.substring(0, 0 + 1) == "0" && s.substring(1, 1 + 1) == "o") {
+  if (s.length >= 2 && _substr(s, 0, 0 + 1) == "0" && _substr(s, 1, 1 + 1) == "o") {
     s = _substr(s, 2, s.length);
   }
   if (s.length == 0) {
@@ -54,7 +54,7 @@ String octal_to_hex(String octal) {
   }
   int j = 0;
   while (j < s.length) {
-    String c = s.substring(j, j + 1);
+    String c = _substr(s, j, j + 1);
     if (c != "0" && c != "1" && c != "2" && c != "3" && c != "4" && c != "5" && c != "6" && c != "7") {
     _error("Not a Valid Octal Number");
   }
@@ -63,7 +63,7 @@ String octal_to_hex(String octal) {
   int decimal = 0;
   int k = 0;
   while (k < s.length) {
-    int d = (s.substring(k, k + 1)).codeUnitAt(0);
+    int d = (int.tryParse(_substr(s, k, k + 1).toString()) ?? _substr(s, k, k + 1).toString().codeUnitAt(0));
     decimal = decimal * 8 + d;
     k = k + 1;
   }
@@ -74,7 +74,7 @@ String octal_to_hex(String octal) {
   String hex = "";
   while (decimal > 0) {
     int idx = decimal % 16;
-    hex = hex_chars.substring(idx, idx + 1) + hex;
+    hex = _substr(hex_chars, idx, idx + 1) + hex;
     decimal = decimal ~/ 16;
   }
   return "0x" + hex;

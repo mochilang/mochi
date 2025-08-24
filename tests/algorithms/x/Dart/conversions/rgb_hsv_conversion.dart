@@ -22,24 +22,7 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
-  int n = s.length;
-  int s0 = start.toInt();
-  int e0 = end.toInt();
-  if (s0 < 0) s0 += n;
-  if (e0 < 0) e0 += n;
-  if (s0 < 0) s0 = 0;
-  if (s0 > n) s0 = n;
-  if (e0 < 0) e0 = 0;
-  if (e0 > n) e0 = n;
-  if (s0 > e0) s0 = e0;
-  if (s is String) {
-    return s.substring(s0, e0);
-  }
-  return s.sublist(s0, e0);
-}
-
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 double absf(double x) {
   if (x < 0.0) {
@@ -49,7 +32,7 @@ double absf(double x) {
 }
 
 double fmod(double a, double b) {
-  return a - b * ((a / b).toInt());
+  return a - b * (a / b).toInt();
 }
 
 int roundf(double x) {
@@ -84,15 +67,15 @@ double minf(double a, double b, double c) {
 List<int> hsv_to_rgb(double hue, double saturation, double value) {
   if (hue < 0.0 || hue > 360.0) {
     print("hue should be between 0 and 360");
-    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    return ([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   if (saturation < 0.0 || saturation > 1.0) {
     print("saturation should be between 0 and 1");
-    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    return ([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   if (value < 0.0 || value > 1.0) {
     print("value should be between 0 and 1");
-    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    return ([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   double chroma = value * saturation;
   double hue_section = hue / 60.0;

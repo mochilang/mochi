@@ -1,4 +1,4 @@
 run: exit status 254
-../../../tests/algorithms/x/Dart/data_structures/hashing/quadratic_probing.dart:27:22: Error: The value 'null' can't be assigned to a variable of type 'int' because 'int' is not nullable.
+../../../tests/algorithms/x/Dart/data_structures/hashing/quadratic_probing.dart:53:22: Error: A value of type 'Null' can't be assigned to a variable of type 'int'.
     vals = [...vals, null];
                      ^
