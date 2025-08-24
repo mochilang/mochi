@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/rb/web_programming/get_top_hn_posts.rb:192:in `get_hackernews_story': undefined method `url' for {"by"=>"pabs3" "descendants"=>27 "id"=>44872313 "kids"=>[44872886 44873255 44872693 44872752 44873045 44872481 44873137 44872733 44872852 44872810 44872680] "score"=>100 "time"=>1754971693 "title"=>"StarDict sends X11 clipboard to remote servers" "type"=>"story" "url"=>"https://lwn.net/SubscriberLink/1032732/3334850da49689e1/"}:Hash (NoMethodError)
-
-    if _eq(story.url "")
-                ^^^^
-	from /workspace/mochi/tests/algorithms/transpiler/rb/web_programming/get_top_hn_posts.rb:204:in `hackernews_top_stories'
-	from /workspace/mochi/tests/algorithms/transpiler/rb/web_programming/get_top_hn_posts.rb:210:in `hackernews_top_stories_as_markdown'
-	from /workspace/mochi/tests/algorithms/transpiler/rb/web_programming/get_top_hn_posts.rb:227:in `<main>'

@@ -137,7 +137,7 @@ func IsFloatExprVars(e *parser.Expr, sanitize func(string) string, floatVars, fu
 		return true
 	}
 	for _, part := range e.Binary.Right {
-		if IsFloatPostfixVars(part.Right, sanitize, floatVars, funFloat) {
+		if IsFloatUnaryVars(part.Right, sanitize, floatVars, funFloat) {
 			return true
 		}
 	}

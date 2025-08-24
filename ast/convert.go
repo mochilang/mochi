@@ -354,7 +354,7 @@ func FromExpr(e *parser.Expr) *Node {
 			val += "_all"
 		}
 		reduce(prec(val))
-		operands = append(operands, FromPostfixExpr(op.Right))
+		operands = append(operands, FromUnary(op.Right))
 		ops = append(ops, opInfo{op: val, pos: op.Pos})
 	}
 	reduce(0)
