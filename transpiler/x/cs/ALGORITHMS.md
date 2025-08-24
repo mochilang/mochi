@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-24 17:09 GMT+7
+Last updated: 2025-08-24 22:30 GMT+7
 
-## Algorithms Golden Test Checklist (1036/1077)
+## Algorithms Golden Test Checklist (1041/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -231,56 +231,56 @@ Last updated: 2025-08-24 17:09 GMT+7
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 3.0ms | 25.29KB |
 | 223 | data_structures/linked_list/circular_linked_list | ✓ | 3.0ms | 23.15KB |
 | 224 | data_structures/linked_list/deque_doubly | error |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 4.0ms | 20.55KB |
-| 226 | data_structures/linked_list/doubly_linked_list_two | error |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 3.0ms | 14.95KB |
-| 228 | data_structures/linked_list/from_sequence | error |  |  |
-| 229 | data_structures/linked_list/has_loop | ✓ | 3.0ms | 14.50KB |
-| 230 | data_structures/linked_list/is_palindrome | ✓ | 3.0ms | 13.79KB |
-| 231 | data_structures/linked_list/merge_two_lists | ✓ | 4.0ms | 28.55KB |
-| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 5.0ms | 25.24KB |
-| 233 | data_structures/linked_list/print_reverse | ✓ | 3.0ms | 18.16KB |
-| 234 | data_structures/linked_list/reverse_k_group | ✓ | 3.0ms | 18.62KB |
-| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 3.0ms | 18.30KB |
-| 236 | data_structures/linked_list/singly_linked_list | ✓ | 3.0ms | 22.24KB |
-| 237 | data_structures/linked_list/skip_list | ✓ | 3.0ms | 28.02KB |
-| 238 | data_structures/linked_list/swap_nodes | ✓ | 3.0ms | 18.55KB |
-| 239 | data_structures/queues/circular_queue | error |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list | error |  |  |
-| 241 | data_structures/queues/double_ended_queue | ✓ | 4.0ms | 19.23KB |
-| 242 | data_structures/queues/linked_queue | error |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 1.0µs | 25.86KB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 1.0µs | 27.27KB |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 1.0µs | 18.16KB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 1.0µs | 21.23KB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 1.0µs | 16.13KB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 1.0µs | 14.52KB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 1.0µs | 49.12KB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 1.0µs | 42.38KB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 1.0µs | 20.06KB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 1.0µs | 21.29KB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 1.0µs | 21.31KB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 1.0µs | 30.73KB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 1.0µs | 50.32KB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 1.0µs | 19.45KB |
+| 239 | data_structures/queues/circular_queue | ✓ | 1.0µs | 18.92KB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 1.0µs | 15.37KB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 1.0µs | 23.19KB |
+| 242 | data_structures/queues/linked_queue | ✓ | 1.0µs | 14.13KB |
 | 243 | data_structures/queues/priority_queue_using_list | error |  |  |
-| 244 | data_structures/queues/queue_by_list | ✓ | 3.0ms | 19.80KB |
-| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 2.0ms | 18.27KB |
-| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 3.0ms | 19.56KB |
-| 247 | data_structures/stacks/balanced_parentheses | ✓ | 3.0ms | 17.37KB |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 3.0ms | 21.12KB |
-| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 3.0ms | 22.33KB |
-| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 464B |
-| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 3.0ms | 20.91KB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 4.0ms | 72.69KB |
-| 253 | data_structures/stacks/next_greater_element | ✓ | 5.0ms | 54.51KB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 3.0ms | 17.71KB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 4.0ms | 21.62KB |
-| 256 | data_structures/stacks/stack | ✓ | 5.0ms | 17.80KB |
-| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 4.0ms | 17.73KB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 3.0ms | 17.95KB |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 3.0ms | 13.90KB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 2.0ms | 18.09KB |
+| 244 | data_structures/queues/queue_by_list | ✓ | 1.0µs | 22.96KB |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 1.0µs | 18.49KB |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 1.0µs | 23.93KB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 1.0µs | 21.08KB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 1.0µs | 27.12KB |
+| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 1.0µs | 27.44KB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 24B |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 1.0µs | 24.84KB |
+| 252 | data_structures/stacks/lexicographical_numbers | error | 4.0ms | 72.69KB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 1.0µs | 111.84KB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 1.0µs | 22.70KB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 1.0µs | 29.32KB |
+| 256 | data_structures/stacks/stack | ✓ | 1.0µs | 19.66KB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 1.0µs | 18.95KB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 1.0µs | 19.42KB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 1.0µs | 14.63KB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 1.0µs | 17.21KB |
 | 261 | data_structures/suffix_tree/example/example_usage | error |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 2.0ms | 24.79KB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 3.0ms | 16.92KB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 2.0ms | 15.18KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1.0µs | 13.04KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 1.0µs | 17.14KB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 1.0µs | 15.03KB |
 | 265 | data_structures/trie/radix_tree | error |  |  |
-| 266 | data_structures/trie/trie | ✓ | 3.0ms | 25.62KB |
-| 267 | digital_image_processing/change_brightness | ✓ | 3.0ms | 19.35KB |
-| 268 | digital_image_processing/change_contrast | ✓ | 3.0ms | 19.46KB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 3.0ms | 19.86KB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 3.0ms | 27.19KB |
-| 271 | digital_image_processing/edge_detection/canny | ✓ | 2.0ms | 40.02KB |
-| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 2.0ms | 27.70KB |
-| 273 | digital_image_processing/filters/convolve | error |  |  |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 3.0ms | 17.09KB |
+| 266 | data_structures/trie/trie | ✓ | 1.0µs | 34.43KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 1.0µs | 21.70KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 1.0µs | 18.55KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 1.0µs | 21.56KB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 1.0µs | 43.77KB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 1.0µs | 17.98KB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 1.0µs | 13.57KB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 1.0µs | 19.61KB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 1.0µs | 15.55KB |
 | 275 | digital_image_processing/filters/gaussian_filter | ✓ | 2.0ms | 25.55KB |
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 3.0ms | 24.75KB |
 | 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 3.0ms | 25.52KB |

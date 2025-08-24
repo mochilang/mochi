@@ -1,0 +1,4 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_stacks_lexicographical_numbers484502268/001/Program.cs(142,54): error CS1503: Argument 3: cannot convert from 'System.Numerics.BigInteger' to 'long' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_stacks_lexicographical_numbers484502268/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

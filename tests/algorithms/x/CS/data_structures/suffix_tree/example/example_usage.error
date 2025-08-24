@@ -1,4 +1,6 @@
 exit status 1
-/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage1742120881/001/Program.cs(130,33): error CS1503: Argument 1: cannot convert from 'string' to 'object[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage1742120881/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage2186399082/001/Program.cs(143,66): error CS1503: Argument 1: cannot convert from 'string' to 'object[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage2186399082/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage2186399082/001/Program.cs(143,79): error CS1503: Argument 2: cannot convert from 'System.Numerics.BigInteger' to 'long' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage2186399082/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage2186399082/001/Program.cs(143,85): error CS1503: Argument 3: cannot convert from 'System.Numerics.BigInteger' to 'long' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage2186399082/001/app.csproj]
 
 The build failed. Fix the build errors and run again.

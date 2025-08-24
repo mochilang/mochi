@@ -1,8 +1,4 @@
-error[T008]: type mismatch: expected FixedPriorityQueue, got [[int]]
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/queues/priority_queue_using_list.mochi:43:16
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_queues_priority_queue_using_list377536216/001/Program.cs(136,48): error CS0266: Cannot implicitly convert type 'object[]' to 'System.Numerics.BigInteger[][]'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_queues_priority_queue_using_list377536216/001/app.csproj]
 
- 43 |   fpq.queues = qs
-    |                ^
-
-help:
-  Change the value to match the expected type.
+The build failed. Fix the build errors and run again.
