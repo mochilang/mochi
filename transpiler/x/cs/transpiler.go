@@ -3111,7 +3111,12 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 					expr = &RawExpr{Code: fmt.Sprintf("(long)(%s)", exprString(expr)), Type: "long"}
 				}
 			case "float":
-				expr = &CallExpr{Func: "Convert.ToDouble", Args: []Expr{expr}}
+				texpr := typeOfExpr(expr)
+				if texpr == "BigInteger" || texpr == "long" || texpr == "int" {
+					expr = &RawExpr{Code: fmt.Sprintf("(double)(%s)", exprString(expr)), Type: "double"}
+				} else {
+					expr = &CallExpr{Func: "Convert.ToDouble", Args: []Expr{expr}}
+				}
 			case "bigint":
 				usesBigInt = true
 				expr = &RawExpr{Code: fmt.Sprintf("new BigInteger(%s)", exprString(expr)), Type: "BigInteger"}
