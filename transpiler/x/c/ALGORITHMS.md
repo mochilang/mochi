@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (850/1077) - Last updated 2025-08-24 09:44 +0700:
+Checklist of programs that currently transpile and run (852/1077) - Last updated 2025-08-24 10:20 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -125,9 +125,9 @@ Checklist of programs that currently transpile and run (850/1077) - Last updated
 | 118 | computer_vision/mean_threshold | ✓ | 424us | 1.4 MB |
 | 119 | computer_vision/mosaic_augmentation | ✓ | 900us | 1.6 MB |
 | 120 | computer_vision/pooling_functions | ✓ | 282us | 1.6 MB |
-| 121 | conversions/astronomical_length_scale_conversion |  |  |  |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 363us | 1.6 MB |
 | 122 | conversions/binary_to_decimal |  |  |  |
-| 123 | conversions/binary_to_hexadecimal |  |  |  |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 315us | 1.4 MB |
 | 124 | conversions/binary_to_octal |  |  |  |
 | 125 | conversions/convert_number_to_words |  |  |  |
 | 126 | conversions/decimal_to_any |  |  |  |
