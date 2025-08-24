@@ -1,0 +1,10 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/quantum/q_fourier_transform.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/quantum/q_fourier_transform.c:129:89: error: incompatible type for argument 1 of ‘str_int’
+  129 |         puts(str_concat("Total count for quantum fourier transform state is: ", str_int(quantum_fourier_transform(3LL))));
+      |                                                                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                         |
+      |                                                                                         MapSI
+/workspace/mochi/tests/algorithms/x/C/quantum/q_fourier_transform.c:20:32: note: expected ‘long long int’ but argument is of type ‘MapSI’
+   20 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^

@@ -1,0 +1,14 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/scripts/validate_solutions.c: In function ‘sha256_hex’:
+/workspace/mochi/tests/algorithms/x/C/scripts/validate_solutions.c:114:39: error: ‘s_len’ undeclared (first use in this function)
+  114 |     return ({int* __tmp1 = _sha256(s, s_len); size_t __tmp1_len = _sha256_len; bytes_to_hex(__tmp1, __tmp1_len);});
+      |                                       ^~~~~
+/workspace/mochi/tests/algorithms/x/C/scripts/validate_solutions.c:114:39: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/scripts/validate_solutions.c:114:93: warning: passing argument 1 of ‘bytes_to_hex’ from incompatible pointer type [-Wincompatible-pointer-types]
+  114 |     return ({int* __tmp1 = _sha256(s, s_len); size_t __tmp1_len = _sha256_len; bytes_to_hex(__tmp1, __tmp1_len);});
+      |                                                                                             ^~~~~~
+      |                                                                                             |
+      |                                                                                             int *
+/workspace/mochi/tests/algorithms/x/C/scripts/validate_solutions.c:103:38: note: expected ‘long long int *’ but argument is of type ‘int *’
+  103 | const char* bytes_to_hex(long long * bs, size_t bs_len) {
+      |                          ~~~~~~~~~~~~^~
