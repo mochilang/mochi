@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/linked_list/doubly_linked_list_two.zig:255:46: error: expected type '*const doubly_linked_list_two.LinkedList', found 'doubly_linked_list_two.LinkedList'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/linked_list/doubly_linked_list_two.zig:14:20: note: struct declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/linked_list/doubly_linked_list_two.zig:192:19: note: parameter type declared here

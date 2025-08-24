@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/stacks/stack.zig:85:46: error: expected type '*const stack.Stack', found 'stack.Stack'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/stacks/stack.zig:8:15: note: struct declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/stacks/stack.zig:53:18: note: parameter type declared here

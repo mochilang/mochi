@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/linked_list/floyds_cycle_detection.zig:19:38: error: unused function parameter

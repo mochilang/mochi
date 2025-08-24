@@ -1,0 +1,3 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/heap/max_heap.zig:123:9: error: function parameter shadows declaration of 'len'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/heap/max_heap.zig:77:1: note: declared here
