@@ -1,0 +1,411 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:47:11
+   |
+47 |     while ((idx / 2) > 0) {
+   |           ^             ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+47 -     while ((idx / 2) > 0) {
+47 +     while (idx / 2) > 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:48:12
+   |
+48 |         if (heap[idx as usize] > heap[(idx / 2) as usize]) {
+   |            ^                                             ^
+   |
+help: remove these parentheses
+   |
+48 -         if (heap[idx as usize] > heap[(idx / 2) as usize]) {
+48 +         if heap[idx as usize] > heap[(idx / 2) as usize] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:52:15
+   |
+52 |         idx = (idx / 2);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+52 -         idx = (idx / 2);
+52 +         idx = idx / 2;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:63:36
+   |
+63 | ...   let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2...
+   |                                  ^                                           ^
+   |
+help: remove these parentheses
+   |
+63 -         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+63 +         let bigger_child: i64 = if ((2 * idx) + 1) > unsafe { g_size.clone() } { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+   |
+
+warning: unnecessary parentheses around block return value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:63:84
+   |
+63 | ...   let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2...
+   |                                                                                  ^       ^
+   |
+help: remove these parentheses
+   |
+63 -         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+63 +         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { 2 * idx } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:63:104
+   |
+63 | ...ize.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+   |                                         ^                                                         ^
+   |
+help: remove these parentheses
+   |
+63 -         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+63 +         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize] { (2 * idx) } else { ((2 * idx) + 1) };
+   |
+
+warning: unnecessary parentheses around block return value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:63:166
+   |
+63 | ...(heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+   |                                                                  ^       ^
+   |
+help: remove these parentheses
+   |
+63 -         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+63 +         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { 2 * idx } else { ((2 * idx) + 1) };
+   |
+
+warning: unnecessary parentheses around block return value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:63:185
+   |
+63 | ...ze] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+   |                                                               ^             ^
+   |
+help: remove these parentheses
+   |
+63 -         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { ((2 * idx) + 1) };
+63 +         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[((2 * idx) + 1) as usize]) { (2 * idx) } else { (2 * idx) + 1 };
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:65:12
+   |
+65 |         if (heap[idx as usize] < heap[bigger_child as usize]) {
+   |            ^                                                ^
+   |
+help: remove these parentheses
+   |
+65 -         if (heap[idx as usize] < heap[bigger_child as usize]) {
+65 +         if heap[idx as usize] < heap[bigger_child as usize] {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:75:11
+   |
+75 |     while (i <= unsafe { g_size.clone() }) {
+   |           ^                              ^
+   |
+help: remove these parentheses
+   |
+75 -     while (i <= unsafe { g_size.clone() }) {
+75 +     while i <= unsafe { g_size.clone() } {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:77:13
+   |
+77 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+77 -         i = (i + 1);
+77 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:92:11
+   |
+92 |     while (i <= unsafe { g_size.clone() }) {
+   |           ^                              ^
+   |
+help: remove these parentheses
+   |
+92 -     while (i <= unsafe { g_size.clone() }) {
+92 +     while i <= unsafe { g_size.clone() } {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:94:13
+   |
+94 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+94 -         i = (i + 1);
+94 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:110:32
+    |
+110 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+110 -         let duration_us: i64 = ((_end - _start) / 1000);
+110 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:57:5
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+57 |     unsafe { g_size = (unsafe { g_size.clone() } + 1) };
+   |     ^^^^^^ unnecessary `unsafe` block
+   |
+   = note: `#[warn(unused_unsafe)]` on by default
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:57:24
+   |
+57 |     unsafe { g_size = (unsafe { g_size.clone() } + 1) };
+   |     ------             ^^^^^^ unnecessary `unsafe` block
+   |     |
+   |     because it's nested under this `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:58:13
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+58 |     swap_up(unsafe { g_size.clone() });
+   |             ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:62:12
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+62 |     while (unsafe { g_size.clone() } >= (2 * idx)) {
+   |            ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:63:55
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+63 |         let bigger_child: i64 = if (((2 * idx) + 1) > unsafe { g_size.clone() }) { (2 * idx) } else if (heap[(2 * idx) as usize] > heap[(...
+   |                                                       ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:75:17
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+75 |     while (i <= unsafe { g_size.clone() }) {
+   |                 ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:83:29
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+83 |     heap[1 as usize] = heap[unsafe { g_size.clone() } as usize];
+   |                             ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:84:5
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+84 |     unsafe { g_size = (unsafe { g_size.clone() } - 1) };
+   |     ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:84:24
+   |
+84 |     unsafe { g_size = (unsafe { g_size.clone() } - 1) };
+   |     ------             ^^^^^^ unnecessary `unsafe` block
+   |     |
+   |     because it's nested under this `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:92:17
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+92 |     while (i <= unsafe { g_size.clone() }) {
+   |                 ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:99:12
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+99 |     return unsafe { g_size.clone() }
+   |            ^^^^^^ unnecessary `unsafe` block
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:44:28
+   |
+44 |         let mut swap_up = |mut i: i64| {
+   |                            ----^
+   |                            |
+   |                            help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:55:27
+   |
+55 |         let mut insert = |mut value: i64| {
+   |                           ----^^^^^
+   |                           |
+   |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:60:30
+   |
+60 |         let mut swap_down = |mut i: i64| {
+   |                              ----^
+   |                              |
+   |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:89:13
+   |
+89 |         let mut get_list = || -> Vec<i64> {
+   |             ----^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:98:13
+   |
+98 |         let mut len = || -> i64 {
+   |             ----^^^
+   |             |
+   |             help: remove this `mut`
+
+error[E0499]: cannot borrow `heap` as mutable more than once at a time
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:55:26
+   |
+44 |         let mut swap_up = |mut i: i64| {
+   |                           ------------ first mutable borrow occurs here
+...
+49 |             heap[idx as usize] = heap[(idx / 2) as usize];
+   |             ---- first borrow occurs due to use of `heap` in closure
+...
+55 |         let mut insert = |mut value: i64| {
+   |                          ^^^^^^^^^^^^^^^^ second mutable borrow occurs here
+56 |     heap = { let mut _v = heap.clone(); _v.push(value); _v };
+   |     ---- second borrow occurs due to use of `heap` in closure
+57 |     unsafe { g_size = (unsafe { g_size.clone() } + 1) };
+58 |     swap_up(unsafe { g_size.clone() });
+   |     ------- first borrow later captured here by closure
+
+error[E0499]: cannot borrow `heap` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:60:29
+    |
+44  |         let mut swap_up = |mut i: i64| {
+    |                           ------------ first mutable borrow occurs here
+...
+49  |             heap[idx as usize] = heap[(idx / 2) as usize];
+    |             ---- first borrow occurs due to use of `heap` in closure
+...
+60  |         let mut swap_down = |mut i: i64| {
+    |                             ^^^^^^^^^^^^ second mutable borrow occurs here
+...
+66  |             heap[idx as usize] = heap[bigger_child as usize];
+    |             ---- second borrow occurs due to use of `heap` in closure
+...
+101 |         insert(6);
+    |         ------ first borrow later used here
+
+error[E0499]: cannot borrow `heap` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:72:26
+    |
+44  |         let mut swap_up = |mut i: i64| {
+    |                           ------------ first mutable borrow occurs here
+...
+49  |             heap[idx as usize] = heap[(idx / 2) as usize];
+    |             ---- first borrow occurs due to use of `heap` in closure
+...
+72  |         let mut shrink = || {
+    |                          ^^ second mutable borrow occurs here
+...
+79  |     heap = new_heap.clone();
+    |     ---- second borrow occurs due to use of `heap` in closure
+...
+101 |         insert(6);
+    |         ------ first borrow later used here
+
+error[E0499]: cannot borrow `heap` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:81:23
+    |
+44  |         let mut swap_up = |mut i: i64| {
+    |                           ------------ first mutable borrow occurs here
+...
+49  |             heap[idx as usize] = heap[(idx / 2) as usize];
+    |             ---- first borrow occurs due to use of `heap` in closure
+...
+81  |         let mut pop = || -> i64 {
+    |                       ^^^^^^^^^ second mutable borrow occurs here
+82  |     let max_value: i64 = heap[1 as usize];
+83  |     heap[1 as usize] = heap[unsafe { g_size.clone() } as usize];
+    |     ---- second borrow occurs due to use of `heap` in closure
+...
+101 |         insert(6);
+    |         ------ first borrow later used here
+
+error[E0502]: cannot borrow `heap` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/max_heap.rs:89:28
+    |
+44  |         let mut swap_up = |mut i: i64| {
+    |                           ------------ mutable borrow occurs here
+...
+49  |             heap[idx as usize] = heap[(idx / 2) as usize];
+    |             ---- first borrow occurs due to use of `heap` in closure
+...
+89  |         let mut get_list = || -> Vec<i64> {
+    |                            ^^^^^^^^^^^^^^ immutable borrow occurs here
+...
+93  |         out = { let mut _v = out.clone(); _v.push(heap[i as usize]); _v };
+    |                                                   ---- second borrow occurs due to use of `heap` in closure
+...
+101 |         insert(6);
+    |         ------ mutable borrow later used here
+
+error: aborting due to 5 previous errors; 31 warnings emitted
+
+Some errors have detailed explanations: E0499, E0502.
+For more information about an error, try `rustc --explain E0499`.

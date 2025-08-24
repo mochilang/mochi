@@ -1,0 +1,439 @@
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:43:24
+   |
+43 |         let NIL: i64 = (-1);
+   |                        ^  ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+43 -         let NIL: i64 = (-1);
+43 +         let NIL: i64 = -1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:48:23
+   |
+48 |     unsafe { g_seed = (((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648) };
+   |                       ^                                                               ^
+   |
+help: remove these parentheses
+   |
+48 -     unsafe { g_seed = (((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648) };
+48 +     unsafe { g_seed = ((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648 };
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:49:12
+   |
+49 |     return ((unsafe { g_seed.clone() } % ((b - a) + 1)) + a)
+   |            ^                                               ^
+   |
+help: remove these parentheses
+   |
+49 -     return ((unsafe { g_seed.clone() } % ((b - a) + 1)) + a)
+49 +     return (unsafe { g_seed.clone() } % ((b - a) + 1)) + a
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:52:12
+   |
+52 |     return (randint(0, 1) == 1)
+   |            ^                  ^
+   |
+help: remove these parentheses
+   |
+52 -     return (randint(0, 1) == 1)
+52 +     return randint(0, 1) == 1
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:62:8
+   |
+62 |     if (r1 == NIL) {
+   |        ^         ^
+   |
+help: remove these parentheses
+   |
+62 -     if (r1 == NIL) {
+62 +     if r1 == NIL {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:65:8
+   |
+65 |     if (r2 == NIL) {
+   |        ^         ^
+   |
+help: remove these parentheses
+   |
+65 -     if (r2 == NIL) {
+65 +     if r2 == NIL {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:68:8
+   |
+68 |     if (nodes[r1 as usize].clone()["value"] > nodes[r2 as usize].clone()["value"]) {
+   |        ^                                                                         ^
+   |
+help: remove these parentheses
+   |
+68 -     if (nodes[r1 as usize].clone()["value"] > nodes[r2 as usize].clone()["value"]) {
+68 +     if nodes[r1 as usize].clone()["value"] > nodes[r2 as usize].clone()["value"] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:86:20
+   |
+86 |     let idx: i64 = ((nodes.len() as i64) - 1);
+   |                    ^                        ^
+   |
+help: remove these parentheses
+   |
+86 -     let idx: i64 = ((nodes.len() as i64) - 1);
+86 +     let idx: i64 = (nodes.len() as i64) - 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:90:8
+   |
+90 |     if (root == NIL) {
+   |        ^           ^
+   |
+help: remove these parentheses
+   |
+90 -     if (root == NIL) {
+90 +     if root == NIL {
+   |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:103:12
+    |
+103 |     return (root == NIL)
+    |            ^           ^
+    |
+help: remove these parentheses
+    |
+103 -     return (root == NIL)
+103 +     return root == NIL
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:136:32
+    |
+136 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+136 -         let duration_us: i64 = ((_end - _start) / 1000);
+136 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:78:67
+   |
+78 |     (*nodes)[r1 as usize].insert(String::from("left"), merge(NIL, nodes.clone(), rand_bool, nodes[r1 as usize].clone()["left"], r2));
+   |                                                        -----      ^^^^^^^^^^^^^ expected `&mut Vec<HashMap<String, i64>>`, found `Vec<HashMap<String, i64>>`
+   |                                                        |
+   |                                                        arguments to this function are incorrect
+   |
+   = note: expected mutable reference `&mut Vec<_>`
+                         found struct `Vec<_>`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:61:4
+   |
+61 | fn merge(mut NIL: i64, nodes: &mut Vec<HashMap<String, i64>>, rand_bool: &impl FnMut() -> bool, mut r1: i64, mut r2: i64) -> i64 {
+   |    ^^^^^               -------------------------------------
+help: consider mutably borrowing here
+   |
+78 |     (*nodes)[r1 as usize].insert(String::from("left"), merge(NIL, &mut nodes.clone(), rand_bool, nodes[r1 as usize].clone()["left"], r2));
+   |                                                                   ++++
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:45:5
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+45 |     unsafe { g_seed = s };
+   |     ^^^^^^ unnecessary `unsafe` block
+   |
+   = note: `#[warn(unused_unsafe)]` on by default
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:48:5
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+48 |     unsafe { g_seed = (((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648) };
+   |     ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:48:26
+   |
+48 |     unsafe { g_seed = (((unsafe { g_seed.clone() } * 1103515245) + 12345) % 2147483648) };
+   |     ------               ^^^^^^ unnecessary `unsafe` block
+   |     |
+   |     because it's nested under this `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:49:14
+   |
+40 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+49 |     return ((unsafe { g_seed.clone() } % ((b - a) + 1)) + a)
+   |              ^^^^^^ unnecessary `unsafe` block
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:44:29
+   |
+44 |         let mut set_seed = |mut s: i64| {
+   |                             ----^
+   |                             |
+   |                             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:47:28
+   |
+47 |         let mut randint = |mut a: i64, mut b: i64| -> i64 {
+   |                            ----^
+   |                            |
+   |                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:47:40
+   |
+47 |         let mut randint = |mut a: i64, mut b: i64| -> i64 {
+   |                                        ----^
+   |                                        |
+   |                                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:81:2
+   |
+81 | |mut r1: i64, mut r2: i64| -> i64 { merge(NIL, &mut nodes, &rand_bool, r1, r2) }
+   |  ----^^
+   |  |
+   |  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:81:15
+   |
+81 | |mut r1: i64, mut r2: i64| -> i64 { merge(NIL, &mut nodes, &rand_bool, r1, r2) }
+   |               ----^^
+   |               |
+   |               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:83:27
+   |
+83 |         let mut insert = |mut value: i64| {
+   |                           ----^^^^^
+   |                           |
+   |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:44:13
+   |
+44 |         let mut set_seed = |mut s: i64| {
+   |             ----^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:47:13
+   |
+47 |         let mut randint = |mut a: i64, mut b: i64| -> i64 {
+   |             ----^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:51:13
+   |
+51 |         let mut rand_bool = || -> bool {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:89:13
+   |
+89 |         let mut top = || -> i64 {
+   |             ----^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:102:13
+    |
+102 |         let mut is_empty = || -> bool {
+    |             ----^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+error[E0499]: cannot borrow `nodes` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:81:1
+    |
+56  |         let mut new_heap = || {
+    |                            -- first mutable borrow occurs here
+57  |     nodes = vec![];
+    |     ----- first borrow occurs due to use of `nodes` in closure
+...
+81  | |mut r1: i64, mut r2: i64| -> i64 { merge(NIL, &mut nodes, &rand_bool, r1, r2) }
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                   ----- second borrow occurs due to use of `nodes` in closure
+    | |
+    | second mutable borrow occurs here
+...
+113 |         new_heap();
+    |         -------- first borrow later used here
+
+error[E0499]: cannot borrow `nodes` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:83:26
+    |
+56  |         let mut new_heap = || {
+    |                            -- first mutable borrow occurs here
+57  |     nodes = vec![];
+    |     ----- first borrow occurs due to use of `nodes` in closure
+...
+83  |         let mut insert = |mut value: i64| {
+    |                          ^^^^^^^^^^^^^^^^ second mutable borrow occurs here
+84  |     let node: HashMap<String, i64> = HashMap::from([(String::from("...
+85  |     nodes = { let mut _v = nodes.clone(); _v.push(node.clone()); _v };
+    |     ----- second borrow occurs due to use of `nodes` in closure
+...
+113 |         new_heap();
+    |         -------- first borrow later used here
+
+error[E0499]: cannot borrow `root` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:83:26
+    |
+56  |         let mut new_heap = || {
+    |                            -- first mutable borrow occurs here
+57  |     nodes = vec![];
+58  |     root = NIL;
+    |     ---- first borrow occurs due to use of `root` in closure
+...
+83  |         let mut insert = |mut value: i64| {
+    |                          ^^^^^^^^^^^^^^^^ second mutable borrow occurs here
+...
+87  |     root = merge(root, idx);
+    |     ---- second borrow occurs due to use of `root` in closure
+...
+113 |         new_heap();
+    |         -------- first borrow later used here
+
+error[E0502]: cannot borrow `root` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:89:23
+    |
+56  |         let mut new_heap = || {
+    |                            -- mutable borrow occurs here
+57  |     nodes = vec![];
+58  |     root = NIL;
+    |     ---- first borrow occurs due to use of `root` in closure
+...
+89  |         let mut top = || -> i64 {
+    |                       ^^^^^^^^^ immutable borrow occurs here
+90  |     if (root == NIL) {
+    |         ---- second borrow occurs due to use of `root` in closure
+...
+113 |         new_heap();
+    |         -------- mutable borrow later used here
+
+error[E0502]: cannot borrow `nodes` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:89:23
+    |
+56  |         let mut new_heap = || {
+    |                            -- mutable borrow occurs here
+57  |     nodes = vec![];
+    |     ----- first borrow occurs due to use of `nodes` in closure
+...
+89  |         let mut top = || -> i64 {
+    |                       ^^^^^^^^^ immutable borrow occurs here
+...
+93  |     return nodes[root as usize].clone()["value"]
+    |            ----- second borrow occurs due to use of `nodes` in closure
+...
+113 |         new_heap();
+    |         -------- mutable borrow later used here
+
+error[E0502]: cannot borrow `nodes` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:95:23
+    |
+56  |         let mut new_heap = || {
+    |                            -- mutable borrow occurs here
+57  |     nodes = vec![];
+    |     ----- first borrow occurs due to use of `nodes` in closure
+...
+95  |         let mut pop = || -> i64 {
+    |                       ^^^^^^^^^ immutable borrow occurs here
+96  |     let result: i64 = top();
+97  |     let l: i64 = nodes[root as usize].clone()["left"];
+    |                  ----- second borrow occurs due to use of `nodes` in closure
+...
+113 |         new_heap();
+    |         -------- mutable borrow later used here
+
+error[E0499]: cannot borrow `root` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:95:23
+    |
+56  |         let mut new_heap = || {
+    |                            -- first mutable borrow occurs here
+57  |     nodes = vec![];
+58  |     root = NIL;
+    |     ---- first borrow occurs due to use of `root` in closure
+...
+95  |         let mut pop = || -> i64 {
+    |                       ^^^^^^^^^ second mutable borrow occurs here
+...
+99  |     root = merge(l, r);
+    |     ---- second borrow occurs due to use of `root` in closure
+...
+113 |         new_heap();
+    |         -------- first borrow later used here
+
+error[E0499]: cannot borrow `merge` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:95:23
+    |
+83  |         let mut insert = |mut value: i64| {
+    |                          ---------------- first mutable borrow occurs here
+...
+87  |     root = merge(root, idx);
+    |            ----- first borrow occurs due to use of `merge` in closure
+...
+95  |         let mut pop = || -> i64 {
+    |                       ^^^^^^^^^ second mutable borrow occurs here
+...
+99  |     root = merge(l, r);
+    |            ----- second borrow occurs due to use of `merge` in closure
+...
+114 |         insert(2);
+    |         ------ first borrow later used here
+
+error[E0502]: cannot borrow `root` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/heap/randomized_heap.rs:102:28
+    |
+56  |         let mut new_heap = || {
+    |                            -- mutable borrow occurs here
+57  |     nodes = vec![];
+58  |     root = NIL;
+    |     ---- first borrow occurs due to use of `root` in closure
+...
+102 |         let mut is_empty = || -> bool {
+    |                            ^^^^^^^^^^ immutable borrow occurs here
+103 |     return (root == NIL)
+    |             ---- second borrow occurs due to use of `root` in closure
+...
+113 |         new_heap();
+    |         -------- mutable borrow later used here
+
+error: aborting due to 10 previous errors; 26 warnings emitted
+
+Some errors have detailed explanations: E0308, E0499, E0502.
+For more information about an error, try `rustc --explain E0308`.

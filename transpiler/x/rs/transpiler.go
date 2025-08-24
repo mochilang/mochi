@@ -724,7 +724,19 @@ type StructDecl struct {
 }
 
 func (s *StructDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "#[derive(Debug, Clone, Default)]\nstruct %s {\n", rustIdent(s.Name))
+	hasFn := false
+	for _, f := range s.Fields {
+		if strings.Contains(f.Type, "fn(") || strings.HasPrefix(f.Type, "impl Fn") {
+			hasFn = true
+			break
+		}
+	}
+	derive := "#[derive(Debug, Clone"
+	if !hasFn {
+		derive += ", Default"
+	}
+	derive += ")]\n"
+	fmt.Fprintf(w, "%sstruct %s {\n", derive, rustIdent(s.Name))
 	for _, f := range s.Fields {
 		fmt.Fprintf(w, "    %s: %s,\n", rustIdent(f.Name), f.Type)
 	}
@@ -742,6 +754,8 @@ func (s *StructDecl) emit(w io.Writer) {
 		case strings.HasPrefix(fld.Type, "Option<"):
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
 		case strings.HasPrefix(fld.Type, "Vec<") || strings.HasPrefix(fld.Type, "HashMap<"):
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
+		case strings.Contains(fld.Type, "fn(") || strings.HasPrefix(fld.Type, "impl Fn"):
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
 		default:
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
@@ -1625,7 +1639,25 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		}
 	}
 	if rt := inferType(m.Receiver); rt != "" {
-		if _, ok := structTypes[rt]; ok && m.Name != "clone" {
+		if st, ok := structTypes[rt]; ok && m.Name != "clone" {
+			if ft, ok2 := st.Fields[m.Name]; ok2 {
+				typ := rustTypeFromType(ft)
+				if strings.HasPrefix(typ, "fn(") || strings.HasPrefix(typ, "impl Fn") {
+					io.WriteString(w, "(")
+					m.Receiver.emit(w)
+					io.WriteString(w, ".")
+					io.WriteString(w, rustIdent(m.Name))
+					io.WriteString(w, ")(")
+					for i, a := range m.Args {
+						if i > 0 {
+							io.WriteString(w, ", ")
+						}
+						a.emit(w)
+					}
+					io.WriteString(w, ")")
+					return
+				}
+			}
 			fmt.Fprintf(w, "%s_%s(", rustIdent(rt), rustIdent(m.Name))
 			m.Receiver.emit(w)
 			for _, a := range m.Args {

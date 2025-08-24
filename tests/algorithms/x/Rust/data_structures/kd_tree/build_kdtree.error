@@ -1,0 +1,262 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:62:11
+   |
+62 |     while (i < (arr.len() as i64)) {
+   |           ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+62 -     while (i < (arr.len() as i64)) {
+62 +     while i < (arr.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:64:15
+   |
+64 |         while (j < ((arr.len() as i64) - 1)) {
+   |               ^                            ^
+   |
+help: remove these parentheses
+   |
+64 -         while (j < ((arr.len() as i64) - 1)) {
+64 +         while j < ((arr.len() as i64) - 1) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:65:16
+   |
+65 |             if (arr[j as usize].clone()[axis as usize] > arr[(j + 1) as usize].clone()[axis as usize]) {
+   |                ^                                                                                     ^
+   |
+help: remove these parentheses
+   |
+65 -             if (arr[j as usize].clone()[axis as usize] > arr[(j + 1) as usize].clone()[axis as usize]) {
+65 +             if arr[j as usize].clone()[axis as usize] > arr[(j + 1) as usize].clone()[axis as usize] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:70:17
+   |
+70 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+70 -             j = (j + 1);
+70 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:72:13
+   |
+72 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+72 -         i = (i + 1);
+72 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:78:8
+   |
+78 |     if ((points.len() as i64) == 0) {
+   |        ^                          ^
+   |
+help: remove these parentheses
+   |
+78 -     if ((points.len() as i64) == 0) {
+78 +     if (points.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:79:16
+   |
+79 |         return (-1)
+   |                ^  ^
+   |
+help: remove these parentheses
+   |
+79 -         return (-1)
+79 +         return -1
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:81:18
+   |
+81 |     let k: i64 = (points[0 as usize].clone().len() as i64);
+   |                  ^                                       ^
+   |
+help: remove these parentheses
+   |
+81 -     let k: i64 = (points[0 as usize].clone().len() as i64);
+81 +     let k: i64 = points[0 as usize].clone().len() as i64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:82:21
+   |
+82 |     let axis: i64 = (depth % k);
+   |                     ^         ^
+   |
+help: remove these parentheses
+   |
+82 -     let axis: i64 = (depth % k);
+82 +     let axis: i64 = depth % k;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:84:27
+   |
+84 |     let median_idx: i64 = ((sorted.len() as i64) / 2);
+   |                           ^                         ^
+   |
+help: remove these parentheses
+   |
+84 -     let median_idx: i64 = ((sorted.len() as i64) / 2);
+84 +     let median_idx: i64 = (sorted.len() as i64) / 2;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:87:24
+   |
+87 |     let mut idx: i64 = (tree.len() as i64);
+   |                        ^                 ^
+   |
+help: remove these parentheses
+   |
+87 -     let mut idx: i64 = (tree.len() as i64);
+87 +     let mut idx: i64 = tree.len() as i64;
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:89:86
+   |
+89 |     let left_idx: i64 = build_kdtree(sort_points, tree.clone(), left_points.clone(), (depth + 1));
+   |                                                                                      ^         ^
+   |
+help: remove these parentheses
+   |
+89 -     let left_idx: i64 = build_kdtree(sort_points, tree.clone(), left_points.clone(), (depth + 1));
+89 +     let left_idx: i64 = build_kdtree(sort_points, tree.clone(), left_points.clone(), depth + 1);
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:90:88
+   |
+90 |     let right_idx: i64 = build_kdtree(sort_points, tree.clone(), right_points.clone(), (depth + 1));
+   |                                                                                        ^         ^
+   |
+help: remove these parentheses
+   |
+90 -     let right_idx: i64 = build_kdtree(sort_points, tree.clone(), right_points.clone(), (depth + 1));
+90 +     let right_idx: i64 = build_kdtree(sort_points, tree.clone(), right_points.clone(), depth + 1);
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:104:28
+    |
+104 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+104 -     let duration_us: i64 = ((_end - _start) / 1000);
+104 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:89:51
+   |
+89 |     let left_idx: i64 = build_kdtree(sort_points, tree.clone(), left_points.clone(), (depth + 1));
+   |                         ------------              ^^^^^^^^^^^^ expected `&mut Vec<KDNode>`, found `Vec<KDNode>`
+   |                         |
+   |                         arguments to this function are incorrect
+   |
+   = note: expected mutable reference `&mut Vec<_>`
+                         found struct `Vec<_>`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:77:4
+   |
+77 | fn build_kdtree(sort_points: &impl FnMut(Vec<Vec<f64>>, i64) -> Vec<Vec<f64>>, tree: &mut Vec<KDNode>, mut points: Vec<Vec<f64>>, mut dep...
+   |    ^^^^^^^^^^^^                                                                ----------------------
+help: consider mutably borrowing here
+   |
+89 |     let left_idx: i64 = build_kdtree(sort_points, &mut tree.clone(), left_points.clone(), (depth + 1));
+   |                                                   ++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:90:52
+   |
+90 |     let right_idx: i64 = build_kdtree(sort_points, tree.clone(), right_points.clone(), (depth + 1));
+   |                          ------------              ^^^^^^^^^^^^ expected `&mut Vec<KDNode>`, found `Vec<KDNode>`
+   |                          |
+   |                          arguments to this function are incorrect
+   |
+   = note: expected mutable reference `&mut Vec<_>`
+                         found struct `Vec<_>`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:77:4
+   |
+77 | fn build_kdtree(sort_points: &impl FnMut(Vec<Vec<f64>>, i64) -> Vec<Vec<f64>>, tree: &mut Vec<KDNode>, mut points: Vec<Vec<f64>>, mut dep...
+   |    ^^^^^^^^^^^^                                                                ----------------------
+help: consider mutably borrowing here
+   |
+90 |     let right_idx: i64 = build_kdtree(sort_points, &mut tree.clone(), right_points.clone(), (depth + 1));
+   |                                                    ++++
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:59:28
+   |
+59 |     let mut sort_points = |mut points: Vec<Vec<f64>>, mut axis: i64| -> Vec<Vec<f64>> {
+   |                            ----^^^^^^
+   |                            |
+   |                            help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:59:55
+   |
+59 |     let mut sort_points = |mut points: Vec<Vec<f64>>, mut axis: i64| -> Vec<Vec<f64>> {
+   |                                                       ----^^^^
+   |                                                       |
+   |                                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:97:2
+   |
+97 | |mut points: Vec<Vec<f64>>, mut depth: i64| -> i64 { build_kdtree(&sort_points, &mut tree, points, depth) }
+   |  ----^^^^^^
+   |  |
+   |  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:97:29
+   |
+97 | |mut points: Vec<Vec<f64>>, mut depth: i64| -> i64 { build_kdtree(&sort_points, &mut tree, points, depth) }
+   |                             ----^^^^^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/kd_tree/build_kdtree.rs:59:9
+   |
+59 |     let mut sort_points = |mut points: Vec<Vec<f64>>, mut axis: i64| -> Vec<Vec<f64>> {
+   |         ----^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+error: aborting due to 2 previous errors; 20 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
