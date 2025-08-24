@@ -2,12 +2,12 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-24 02:14 UTC
+Last updated: 2025-08-24 08:43 UTC
 
-## Algorithms Golden Test Checklist (939/1077)
+## Algorithms Golden Test Checklist (940/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations |   | 39µs | 18.9 KB |
+| 1 | backtracking/all_combinations | ✓ | 38µs | 24.0 KB |
 | 2 | backtracking/all_permutations | ✓ | 264µs | 381.7 KB |
 | 3 | backtracking/all_subsequences | ✓ | 67µs | 21.5 KB |
 | 4 | backtracking/coloring | ✓ | 149µs | 288.2 KB |
@@ -157,7 +157,7 @@ Last updated: 2025-08-24 02:14 UTC
 | 148 | conversions/temperature_conversions | ✓ | 9m31.223891s | 58.5 KB |
 | 149 | conversions/time_conversions | ✓ | 9m31.223891s | 5.8 KB |
 | 150 | conversions/volume_conversions | ✓ | 9m31.223891s | 45.7 KB |
-| 151 | conversions/weight_conversion | ✓ | 9m31.223891s | 4.8 KB |
+| 151 | conversions/weight_conversion | ✓ | 30µs | 4.9 KB |
 | 152 | data_compression/burrows_wheeler | ✓ | 9m31.223891s | 119.0 KB |
 | 153 | data_compression/huffman | ✓ | 9m31.223891s | 198.2 KB |
 | 154 | data_compression/lempel_ziv | ✓ | 9m31.223891s | 61.2 KB |
