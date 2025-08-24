@@ -1276,11 +1276,8 @@ func (p *Program) write(w io.Writer) {
 			} else if isStructType(typ) {
 				if p.ByVal {
 					// Struct parameters mutated inside the function should be
-					// passed by value to preserve Mochi's value semantics.
-					// Using a reference here causes the forward declaration to
-					// differ from the definition, leading to ambiguous
-					// overloads.
-					io.WriteString(w, typ)
+					// passed by reference so changes are visible to the caller.
+					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
@@ -1370,8 +1367,8 @@ func (f *Func) emit(w io.Writer) {
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					// Struct parameters are copied when mutated to preserve Mochi semantics.
-					io.WriteString(w, typ+" ")
+					// Mutating struct parameters should reflect in the caller.
+					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
