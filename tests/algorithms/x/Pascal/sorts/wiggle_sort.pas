@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
-uses SysUtils;
-type IntArray = array of int64;
+uses SysUtils, Math;
+type RealArray = array of real;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -64,32 +64,12 @@ procedure json(x: int64);
 begin
   writeln(x);
 end;
-procedure show_list_int64(xs: array of int64);
-var i: integer;
-begin
-  write('[');
-  for i := 0 to High(xs) do begin
-    write(xs[i]);
-    if i < High(xs) then write(' ');
-  end;
-  write(']');
-end;
-function list_int_to_str(xs: array of int64): string;
+function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
   Result := '[';
   for i := 0 to High(xs) do begin
-    Result := Result + IntToStr(xs[i]);
-    if i < High(xs) then Result := Result + ' ';
-  end;
-  Result := Result + ']';
-end;
-function list_list_int_to_str(xs: array of IntArray): string;
-var i: integer;
-begin
-  Result := '[';
-  for i := 0 to High(xs) do begin
-    Result := Result + list_int_to_str(xs[i]);
+    Result := Result + FloatToStr(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
@@ -99,40 +79,63 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function quick_sort(quick_sort_items: IntArray): IntArray; forward;
-function quick_sort(quick_sort_items: IntArray): IntArray;
+function swap(swap_xs: RealArray; swap_i: int64; swap_j: int64): RealArray; forward;
+function wiggle_sort(wiggle_sort_nums: RealArray): RealArray; forward;
+function swap(swap_xs: RealArray; swap_i: int64; swap_j: int64): RealArray;
 var
-  quick_sort_pivot: int64;
-  quick_sort_lesser: array of int64;
-  quick_sort_greater: array of int64;
-  quick_sort_i: int64;
-  quick_sort_item: int64;
+  swap_res: array of real;
+  swap_k: int64;
 begin
-  if Length(quick_sort_items) < 2 then begin
-  exit(quick_sort_items);
-end;
-  quick_sort_pivot := quick_sort_items[0];
-  quick_sort_lesser := [];
-  quick_sort_greater := [];
-  quick_sort_i := 1;
-  while quick_sort_i < Length(quick_sort_items) do begin
-  quick_sort_item := quick_sort_items[quick_sort_i];
-  if quick_sort_item <= quick_sort_pivot then begin
-  quick_sort_lesser := concat(quick_sort_lesser, IntArray([quick_sort_item]));
+  swap_res := [];
+  swap_k := 0;
+  while swap_k < Length(swap_xs) do begin
+  if swap_k = swap_i then begin
+  swap_res := concat(swap_res, [swap_xs[swap_j]]);
 end else begin
-  quick_sort_greater := concat(quick_sort_greater, IntArray([quick_sort_item]));
+  if swap_k = swap_j then begin
+  swap_res := concat(swap_res, [swap_xs[swap_i]]);
+end else begin
+  swap_res := concat(swap_res, [swap_xs[swap_k]]);
 end;
-  quick_sort_i := quick_sort_i + 1;
 end;
-  exit(concat(concat(quick_sort(quick_sort_lesser), IntArray([quick_sort_pivot])), quick_sort(quick_sort_greater)));
+  swap_k := swap_k + 1;
+end;
+  exit(swap_res);
+end;
+function wiggle_sort(wiggle_sort_nums: RealArray): RealArray;
+var
+  wiggle_sort_i: int64;
+  wiggle_sort_res: array of real;
+  wiggle_sort_j: integer;
+  wiggle_sort_prev: real;
+  wiggle_sort_curr: real;
+begin
+  wiggle_sort_i := 0;
+  wiggle_sort_res := wiggle_sort_nums;
+  while wiggle_sort_i < Length(wiggle_sort_res) do begin
+  if wiggle_sort_i = 0 then begin
+  wiggle_sort_j := Length(wiggle_sort_res) - 1;
+end else begin
+  wiggle_sort_j := wiggle_sort_i - 1;
+end;
+  wiggle_sort_prev := wiggle_sort_res[wiggle_sort_j];
+  wiggle_sort_curr := wiggle_sort_res[wiggle_sort_i];
+  if ((wiggle_sort_i mod 2) = 1) = (wiggle_sort_prev > wiggle_sort_curr) then begin
+  wiggle_sort_res := swap(wiggle_sort_res, wiggle_sort_j, wiggle_sort_i);
+end;
+  wiggle_sort_i := wiggle_sort_i + 1;
+end;
+  exit(wiggle_sort_res);
 end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln('sorted1:', ' ', list_int_to_str(quick_sort([0, 5, 3, 2, 2])));
-  writeln('sorted2:', ' ', list_int_to_str(quick_sort([])));
-  writeln('sorted3:', ' ', list_int_to_str(quick_sort([-2, 5, 0, -45])));
+  writeln(list_real_to_str(wiggle_sort([3, 5, 2, 1, 6, 4])));
+  writeln(list_real_to_str(wiggle_sort([0, 5, 3, 2, 2])));
+  writeln(list_real_to_str(wiggle_sort(RealArray([]))));
+  writeln(list_real_to_str(wiggle_sort([-2, -5, -45])));
+  writeln(list_real_to_str(wiggle_sort([-2.1, -5.68, -45.11])));
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
   writeln('{');

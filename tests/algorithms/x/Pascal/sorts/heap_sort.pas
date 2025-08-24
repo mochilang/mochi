@@ -2,6 +2,7 @@
 program Main;
 uses SysUtils;
 type IntArray = array of int64;
+type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -99,40 +100,65 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function quick_sort(quick_sort_items: IntArray): IntArray; forward;
-function quick_sort(quick_sort_items: IntArray): IntArray;
+  data: array of int64;
+  result_: IntArray;
+procedure heapify(heapify_arr: IntArray; heapify_index: int64; heapify_heap_size: int64); forward;
+function heap_sort(heap_sort_arr: IntArray): IntArray; forward;
+procedure heapify(heapify_arr: IntArray; heapify_index: int64; heapify_heap_size: int64);
 var
-  quick_sort_pivot: int64;
-  quick_sort_lesser: array of int64;
-  quick_sort_greater: array of int64;
-  quick_sort_i: int64;
-  quick_sort_item: int64;
+  heapify_largest: int64;
+  heapify_left_index: int64;
+  heapify_right_index: int64;
+  heapify_temp: int64;
 begin
-  if Length(quick_sort_items) < 2 then begin
-  exit(quick_sort_items);
+  heapify_largest := heapify_index;
+  heapify_left_index := (2 * heapify_index) + 1;
+  heapify_right_index := (2 * heapify_index) + 2;
+  if (heapify_left_index < heapify_heap_size) and (heapify_arr[heapify_left_index] > heapify_arr[heapify_largest]) then begin
+  heapify_largest := heapify_left_index;
 end;
-  quick_sort_pivot := quick_sort_items[0];
-  quick_sort_lesser := [];
-  quick_sort_greater := [];
-  quick_sort_i := 1;
-  while quick_sort_i < Length(quick_sort_items) do begin
-  quick_sort_item := quick_sort_items[quick_sort_i];
-  if quick_sort_item <= quick_sort_pivot then begin
-  quick_sort_lesser := concat(quick_sort_lesser, IntArray([quick_sort_item]));
-end else begin
-  quick_sort_greater := concat(quick_sort_greater, IntArray([quick_sort_item]));
+  if (heapify_right_index < heapify_heap_size) and (heapify_arr[heapify_right_index] > heapify_arr[heapify_largest]) then begin
+  heapify_largest := heapify_right_index;
 end;
-  quick_sort_i := quick_sort_i + 1;
+  if heapify_largest <> heapify_index then begin
+  heapify_temp := heapify_arr[heapify_largest];
+  heapify_arr[heapify_largest] := heapify_arr[heapify_index];
+  heapify_arr[heapify_index] := heapify_temp;
+  heapify(heapify_arr, heapify_largest, heapify_heap_size);
 end;
-  exit(concat(concat(quick_sort(quick_sort_lesser), IntArray([quick_sort_pivot])), quick_sort(quick_sort_greater)));
+end;
+function heap_sort(heap_sort_arr: IntArray): IntArray;
+var
+  heap_sort_n: integer;
+  heap_sort_i: integer;
+  heap_sort_temp: int64;
+begin
+  heap_sort_n := Length(heap_sort_arr);
+  heap_sort_i := (heap_sort_n div 2) - 1;
+  while heap_sort_i >= 0 do begin
+  heapify(heap_sort_arr, heap_sort_i, heap_sort_n);
+  heap_sort_i := heap_sort_i - 1;
+end;
+  heap_sort_i := heap_sort_n - 1;
+  while heap_sort_i > 0 do begin
+  heap_sort_temp := heap_sort_arr[0];
+  heap_sort_arr[0] := heap_sort_arr[heap_sort_i];
+  heap_sort_arr[heap_sort_i] := heap_sort_temp;
+  heapify(heap_sort_arr, 0, heap_sort_i);
+  heap_sort_i := heap_sort_i - 1;
+end;
+  exit(heap_sort_arr);
 end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln('sorted1:', ' ', list_int_to_str(quick_sort([0, 5, 3, 2, 2])));
-  writeln('sorted2:', ' ', list_int_to_str(quick_sort([])));
-  writeln('sorted3:', ' ', list_int_to_str(quick_sort([-2, 5, 0, -45])));
+  data := [3, 7, 9, 28, 123, -5, 8, -30, -200, 0, 4];
+  result_ := heap_sort(data);
+  show_list_int64(result_);
+  if list_int_to_str(result_) <> list_int_to_str([-200, -30, -5, 0, 3, 4, 7, 8, 9, 28, 123]) then begin
+  panic('Assertion error');
+end;
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
   writeln('{');

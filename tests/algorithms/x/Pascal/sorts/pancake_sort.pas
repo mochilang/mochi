@@ -2,6 +2,7 @@
 program Main;
 uses SysUtils;
 type IntArray = array of int64;
+type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -64,16 +65,6 @@ procedure json(x: int64);
 begin
   writeln(x);
 end;
-procedure show_list_int64(xs: array of int64);
-var i: integer;
-begin
-  write('[');
-  for i := 0 to High(xs) do begin
-    write(xs[i]);
-    if i < High(xs) then write(' ');
-  end;
-  write(']');
-end;
 function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
@@ -99,40 +90,70 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function quick_sort(quick_sort_items: IntArray): IntArray; forward;
-function quick_sort(quick_sort_items: IntArray): IntArray;
+function flip(flip_arr: IntArray; flip_k: int64): IntArray; forward;
+function find_max_index(find_max_index_arr: IntArray; find_max_index_n: int64): int64; forward;
+function pancake_sort(pancake_sort_arr: IntArray): IntArray; forward;
+procedure main(); forward;
+function flip(flip_arr: IntArray; flip_k: int64): IntArray;
 var
-  quick_sort_pivot: int64;
-  quick_sort_lesser: array of int64;
-  quick_sort_greater: array of int64;
-  quick_sort_i: int64;
-  quick_sort_item: int64;
+  flip_start: int64;
+  flip_end_: int64;
+  flip_temp: int64;
 begin
-  if Length(quick_sort_items) < 2 then begin
-  exit(quick_sort_items);
+  flip_start := 0;
+  flip_end_ := flip_k;
+  while flip_start < flip_end_ do begin
+  flip_temp := flip_arr[flip_start];
+  flip_arr[flip_start] := flip_arr[flip_end_];
+  flip_arr[flip_end_] := flip_temp;
+  flip_start := flip_start + 1;
+  flip_end_ := flip_end_ - 1;
 end;
-  quick_sort_pivot := quick_sort_items[0];
-  quick_sort_lesser := [];
-  quick_sort_greater := [];
-  quick_sort_i := 1;
-  while quick_sort_i < Length(quick_sort_items) do begin
-  quick_sort_item := quick_sort_items[quick_sort_i];
-  if quick_sort_item <= quick_sort_pivot then begin
-  quick_sort_lesser := concat(quick_sort_lesser, IntArray([quick_sort_item]));
-end else begin
-  quick_sort_greater := concat(quick_sort_greater, IntArray([quick_sort_item]));
+  exit(flip_arr);
 end;
-  quick_sort_i := quick_sort_i + 1;
+function find_max_index(find_max_index_arr: IntArray; find_max_index_n: int64): int64;
+var
+  find_max_index_mi: int64;
+  find_max_index_i: int64;
+begin
+  find_max_index_mi := 0;
+  find_max_index_i := 1;
+  while find_max_index_i < find_max_index_n do begin
+  if find_max_index_arr[find_max_index_i] > find_max_index_arr[find_max_index_mi] then begin
+  find_max_index_mi := find_max_index_i;
 end;
-  exit(concat(concat(quick_sort(quick_sort_lesser), IntArray([quick_sort_pivot])), quick_sort(quick_sort_greater)));
+  find_max_index_i := find_max_index_i + 1;
+end;
+  exit(find_max_index_mi);
+end;
+function pancake_sort(pancake_sort_arr: IntArray): IntArray;
+var
+  pancake_sort_cur: integer;
+  pancake_sort_mi: int64;
+begin
+  pancake_sort_cur := Length(pancake_sort_arr);
+  while pancake_sort_cur > 1 do begin
+  pancake_sort_mi := find_max_index(pancake_sort_arr, pancake_sort_cur);
+  pancake_sort_arr := flip(pancake_sort_arr, pancake_sort_mi);
+  pancake_sort_arr := flip(pancake_sort_arr, pancake_sort_cur - 1);
+  pancake_sort_cur := pancake_sort_cur - 1;
+end;
+  exit(pancake_sort_arr);
+end;
+procedure main();
+var
+  main_data: array of int64;
+  main_sorted: array of int64;
+begin
+  main_data := [3, 6, 1, 10, 2];
+  main_sorted := pancake_sort(main_data);
+  writeln(list_int_to_str(main_sorted));
 end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln('sorted1:', ' ', list_int_to_str(quick_sort([0, 5, 3, 2, 2])));
-  writeln('sorted2:', ' ', list_int_to_str(quick_sort([])));
-  writeln('sorted3:', ' ', list_int_to_str(quick_sort([-2, 5, 0, -45])));
+  main();
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
   writeln('{');

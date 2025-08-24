@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-23 15:39 GMT+7
+Last updated: 2025-08-24 09:11 GMT+7
 
-## Algorithms Golden Test Checklist (636/1077)
+## Algorithms Golden Test Checklist (657/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -839,27 +839,27 @@ Last updated: 2025-08-23 15:39 GMT+7
 | 830 | project_euler/problem_011/sol1 | ✓ | 0ns | 0B |
 | 831 | project_euler/problem_011/sol2 | ✓ | 0ns | 4.00KB |
 | 832 | project_euler/problem_012/sol1 | ✓ | 16.0µs | 64B |
-| 833 | project_euler/problem_012/sol2 | ✓ | 15.0µs | 0B |
-| 834 | project_euler/problem_013/sol1 | error |  |  |
-| 835 | project_euler/problem_014/sol1 | ✓ | 7.0µs | 128B |
-| 836 | project_euler/problem_014/sol2 | ✓ | 12.0µs | 4.22KB |
+| 833 | project_euler/problem_012/sol2 | ✓ | 16.0µs | 0B |
+| 834 | project_euler/problem_013/sol1 |   |  |  |
+| 835 | project_euler/problem_014/sol1 | ✓ | 8.0µs | 128B |
+| 836 | project_euler/problem_014/sol2 | ✓ | 14.0µs | 4.22KB |
 | 837 | project_euler/problem_015/sol1 | ✓ | 0ns | 64B |
 | 838 | project_euler/problem_016/sol1 | ✓ | 0ns | 64B |
-| 839 | project_euler/problem_016/sol2 | ✓ | 3.0µs | 64B |
-| 840 | project_euler/problem_017/sol1 | ✓ | 0ns | 64B |
+| 839 | project_euler/problem_016/sol2 | ✓ | 2.0µs | 64B |
+| 840 | project_euler/problem_017/sol1 | ✓ | 1.0µs | 64B |
 | 841 | project_euler/problem_018/solution | ✓ | 1.0µs | 64B |
-| 842 | project_euler/problem_019/sol1 | ✓ | 0ns | 0B |
-| 843 | project_euler/problem_020/sol1 | ✓ | 0ns | 64B |
-| 844 | project_euler/problem_020/sol2 | ✓ | 0ns | 0B |
-| 845 | project_euler/problem_020/sol3 | ✓ | 0ns | 64B |
-| 846 | project_euler/problem_020/sol4 | ✓ | 0ns | 0B |
-| 847 | project_euler/problem_021/sol1 | ✓ | 13.0µs | 0B |
+| 842 | project_euler/problem_019/sol1 |   |  |  |
+| 843 | project_euler/problem_020/sol1 |   |  |  |
+| 844 | project_euler/problem_020/sol2 |   |  |  |
+| 845 | project_euler/problem_020/sol3 |   |  |  |
+| 846 | project_euler/problem_020/sol4 |   |  |  |
+| 847 | project_euler/problem_021/sol1 |   |  |  |
 | 848 | project_euler/problem_022/sol1 | ✓ | 0ns | 0B |
 | 849 | project_euler/problem_022/sol2 | ✓ | 6.0ms | 3.78MB |
-| 850 | project_euler/problem_023/sol1 | ✓ | 9.0ms | 64B |
-| 851 | project_euler/problem_024/sol1 | ✓ | 0ns | 0B |
-| 852 | project_euler/problem_025/sol1 | error |  |  |
-| 853 | project_euler/problem_025/sol2 | error |  |  |
+| 850 | project_euler/problem_023/sol1 |   |  |  |
+| 851 | project_euler/problem_024/sol1 |   |  |  |
+| 852 | project_euler/problem_025/sol1 |   |  |  |
+| 853 | project_euler/problem_025/sol2 |   |  |  |
 | 854 | project_euler/problem_025/sol3 |   |  |  |
 | 855 | project_euler/problem_026/sol1 |   |  |  |
 | 856 | project_euler/problem_027/sol1 |   |  |  |
@@ -962,61 +962,61 @@ Last updated: 2025-08-23 15:39 GMT+7
 | 953 | sorts/exchange_sort |   |  |  |
 | 954 | sorts/external_sort |   |  |  |
 | 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
+| 956 | sorts/heap_sort | ✓ | 1.0µs | 128B |
+| 957 | sorts/insertion_sort | ✓ | 0ns | 160B |
+| 958 | sorts/intro_sort | ✓ | 1.0µs | 256B |
+| 959 | sorts/iterative_merge_sort | ✓ | 0ns | 64B |
+| 960 | sorts/merge_insertion_sort | ✓ | 0ns | 0B |
+| 961 | sorts/merge_sort | ✓ | 0ns | 192B |
+| 962 | sorts/msd_radix_sort | ✓ | 0ns | 384B |
+| 963 | sorts/natural_sort | ✓ | 1.0µs | 6.75KB |
+| 964 | sorts/odd_even_sort | ✓ | 0ns | 0B |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 0ns | 0B |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 0ns | 192B |
+| 967 | sorts/pancake_sort | ✓ | 0ns | 0B |
+| 968 | sorts/patience_sort | ✓ | 0ns | 160B |
+| 969 | sorts/pigeon_sort | ✓ | 1.0µs | 128B |
+| 970 | sorts/pigeonhole_sort | ✓ | 0ns | 288B |
 | 971 | sorts/quick_sort | ✓ | 0ns | 192B |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort | ✓ | 0ns | 416B |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
+| 972 | sorts/quick_sort_3_partition | ✓ | 0ns | 672B |
+| 973 | sorts/radix_sort | ✓ | 0ns | 288B |
+| 974 | sorts/recursive_insertion_sort | ✓ | 0ns | 0B |
+| 975 | sorts/recursive_mergesort_array | ✓ | 1.0µs | 384B |
+| 976 | sorts/recursive_quick_sort | error |  |  |
+| 977 | sorts/selection_sort | ✓ | 0ns | 128B |
+| 978 | sorts/shell_sort | ✓ | 0ns | 128B |
+| 979 | sorts/shrink_shell_sort | ✓ | 0ns | 0B |
+| 980 | sorts/slowsort | ✓ | 0ns | 640B |
+| 981 | sorts/stooge_sort | ✓ | 0ns | 96B |
+| 982 | sorts/strand_sort | ✓ | 0ns | 192B |
+| 983 | sorts/tim_sort | ✓ | 1.0µs | 384B |
+| 984 | sorts/topological_sort | error |  |  |
+| 985 | sorts/tree_sort | ✓ | 0ns | 96B |
+| 986 | sorts/unknown_sort | ✓ | 0ns | 0B |
+| 987 | sorts/wiggle_sort | ✓ | 0ns | 352B |
+| 988 | strings/aho_corasick | error |  |  |
+| 989 | strings/alternative_string_arrange | ✓ | 0ns | 0B |
 | 990 | strings/anagrams | ✓ | 1.0µs | 7.56KB |
 | 991 | strings/autocomplete_using_trie | ✓ | 0ns | 2.62KB |
-| 992 | strings/barcode_validator | ✓ | 1.0µs | 384B |
-| 993 | strings/bitap_string_match | ✓ | 0ns | 0B |
+| 992 | strings/barcode_validator | ✓ | 0ns | 384B |
+| 993 | strings/bitap_string_match | ✓ | 1.0µs | 0B |
 | 994 | strings/boyer_moore_search | ✓ | 1.0µs | 0B |
-| 995 | strings/camel_case_to_snake_case | ✓ | 0ns | 0B |
-| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 0ns | 9.81KB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 1.0µs | 0B |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 0ns | 9.88KB |
 | 997 | strings/capitalize | ✓ | 0ns | 0B |
-| 998 | strings/check_anagrams | ✓ | 0ns | 13.88KB |
+| 998 | strings/check_anagrams | ✓ | 0ns | 14.00KB |
 | 999 | strings/count_vowels | ✓ | 0ns | 0B |
 | 1000 | strings/credit_card_validator | ✓ | 0ns | 0B |
 | 1001 | strings/damerau_levenshtein_distance | ✓ | 0ns | 64B |
-| 1002 | strings/detecting_english_programmatically | ✓ | 0ns | 7.56KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 1.0µs | 7.56KB |
 | 1003 | strings/dna | ✓ | 0ns | 0B |
 | 1004 | strings/edit_distance | ✓ | 3.0µs | 0B |
-| 1005 | strings/frequency_finder | ✓ | 1.0µs | 15.06KB |
+| 1005 | strings/frequency_finder | ✓ | 1.0µs | 15.25KB |
 | 1006 | strings/hamming_distance | ✓ | 0ns | 64B |
 | 1007 | strings/indian_phone_validator | ✓ | 0ns | 128B |
-| 1008 | strings/is_contains_unique_chars | ✓ | 1.0µs | 128B |
+| 1008 | strings/is_contains_unique_chars | ✓ | 0ns | 128B |
 | 1009 | strings/is_isogram | ✓ | 0ns | 128B |
-| 1010 | strings/is_pangram | ✓ | 0ns | 128B |
+| 1010 | strings/is_pangram | ✓ | 1.0µs | 128B |
 | 1011 | strings/is_polish_national_id | ✓ | 0ns | 128B |
 | 1012 | strings/is_spain_national_id | ✓ | 0ns | 0B |
 | 1013 | strings/is_srilankan_phone_number | ✓ | 0ns | 128B |
@@ -1029,12 +1029,12 @@ Last updated: 2025-08-23 15:39 GMT+7
 | 1020 | strings/manacher | ✓ | 0ns | 0B |
 | 1021 | strings/min_cost_string_conversion | ✓ | 1.0µs | 0B |
 | 1022 | strings/naive_string_search | ✓ | 0ns | 64B |
-| 1023 | strings/ngram | ✓ | 0ns | 6.62KB |
+| 1023 | strings/ngram | ✓ | 1.0µs | 6.62KB |
 | 1024 | strings/palindrome | ✓ | 0ns | 2.12KB |
 | 1025 | strings/pig_latin | ✓ | 0ns | 0B |
-| 1026 | strings/prefix_function | ✓ | 1.0µs | 0B |
+| 1026 | strings/prefix_function | ✓ | 0ns | 0B |
 | 1027 | strings/rabin_karp | ✓ | 0ns | 0B |
-| 1028 | strings/remove_duplicate | ✓ | 1.0µs | 0B |
+| 1028 | strings/remove_duplicate | ✓ | 0ns | 0B |
 | 1029 | strings/reverse_letters | ✓ | 0ns | 0B |
 | 1030 | strings/reverse_words | ✓ | 1.0µs | 0B |
 | 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 0ns | 0B |

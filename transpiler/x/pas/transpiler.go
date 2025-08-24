@@ -27,6 +27,7 @@ var nameStack []map[string]string
 var currentFunc string
 var funcNames map[string]struct{}
 var funcReturns map[string]string
+var funcParams map[string][]string
 var varOwners = map[string]string{}
 var benchMain bool
 var expectedMapType string
@@ -1715,7 +1716,7 @@ begin
 end;
 `)
 	}
-	if p.NeedListStr2 {
+	if p.NeedListStr2 || p.NeedShowList2 || p.NeedShowListInt64 {
 		buf.WriteString(`function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
@@ -1886,6 +1887,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	nameStack = []map[string]string{{}}
 	funcNames = make(map[string]struct{})
 	funcReturns = make(map[string]string)
+	funcParams = make(map[string][]string)
 	funcReturns["_input"] = "string"
 	typeNames := map[string]struct{}{}
 	for _, st := range prog.Statements {
@@ -1976,23 +1978,44 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							needSys = true
 						} else if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
 							tt := resolveAlias(t)
-							if strings.HasPrefix(tt, "array of string") {
-								pr.NeedListStr = true
-							} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
-								pr.NeedShowList2 = true
-							} else if strings.HasPrefix(tt, "array of RealArray") {
-								pr.NeedShowListReal2 = true
-								pr.NeedShowListReal = true
-							} else if strings.HasPrefix(tt, "array of real") {
-								pr.NeedShowListReal = true
-							} else if strings.HasPrefix(tt, "array of int64") {
-								pr.NeedShowListInt64 = true
-							} else if strings.HasPrefix(tt, "array of Variant") {
-								pr.NeedListStrVariant = true
-								pr.UseVariants = true
-								needSys = true
+							if len(parts) > 1 {
+								if strings.HasPrefix(tt, "array of string") {
+									pr.NeedListStr = true
+								} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
+									pr.NeedListStr2 = true
+								} else if strings.HasPrefix(tt, "array of RealArray") {
+									pr.NeedListStrRealList = true
+									pr.NeedListStrReal = true
+								} else if strings.HasPrefix(tt, "array of real") {
+									pr.NeedListStrReal = true
+								} else if strings.HasPrefix(tt, "array of int64") {
+									pr.NeedListStr2 = true
+								} else if strings.HasPrefix(tt, "array of Variant") {
+									pr.NeedListStrVariant = true
+									pr.UseVariants = true
+									needSys = true
+								} else {
+									pr.NeedListStr2 = true
+								}
 							} else {
-								pr.NeedShowList = true
+								if strings.HasPrefix(tt, "array of string") {
+									pr.NeedListStr = true
+								} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
+									pr.NeedShowList2 = true
+								} else if strings.HasPrefix(tt, "array of RealArray") {
+									pr.NeedShowListReal2 = true
+									pr.NeedShowListReal = true
+								} else if strings.HasPrefix(tt, "array of real") {
+									pr.NeedShowListReal = true
+								} else if strings.HasPrefix(tt, "array of int64") {
+									pr.NeedShowListInt64 = true
+								} else if strings.HasPrefix(tt, "array of Variant") {
+									pr.NeedListStrVariant = true
+									pr.UseVariants = true
+									needSys = true
+								} else {
+									pr.NeedShowList = true
+								}
 							}
 						} else if strings.HasPrefix(t, "specialize TFPGMap") {
 							tt := strings.ToLower(t)
@@ -2433,6 +2456,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					funcReturns[fn.Name] = rt
 				}
 				paramNames := map[string]string{}
+				var paramTypesSlice []string
 				for _, p := range st.Fun.Params {
 					typ := "int64"
 					if p.Type != nil {
@@ -2445,6 +2469,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					name := declareName(p.Name)
 					paramNames[p.Name] = name
 					local[name] = typ
+					paramTypesSlice = append(paramTypesSlice, typ)
 				}
 				fnBody, err := convertBody(env, st.Fun.Body, local)
 				if err != nil {
@@ -2458,18 +2483,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				locals := append([]VarDecl(nil), currProg.Vars[startVarCount:]...)
 				currProg.Vars = currProg.Vars[:startVarCount]
 				var params []string
-				for _, p := range st.Fun.Params {
-					typ := "int64"
-					if p.Type != nil {
-						typ = typeFromRef(p.Type)
-					}
-					if strings.HasPrefix(typ, "array of ") {
-						elem := strings.TrimPrefix(typ, "array of ")
-						typ = currProg.addArrayAlias(elem)
-					}
+				for i, p := range st.Fun.Params {
+					typ := paramTypesSlice[i]
 					name := paramNames[p.Name]
 					params = append(params, fmt.Sprintf("%s: %s", name, pasType(typ)))
 				}
+				funcParams[fn.Name] = paramTypesSlice
 				if rt == "" {
 					for _, st := range fnBody {
 						if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
@@ -4797,8 +4816,17 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			switch t := expr.(type) {
 			case *VarRef:
 				var args []Expr
-				for _, a := range op.Call.Args {
+				var paramTypes []string
+				if pts, ok := funcParams[t.Name]; ok {
+					paramTypes = pts
+				}
+				for i, a := range op.Call.Args {
+					prevMap := expectedMapType
+					if i < len(paramTypes) {
+						expectedMapType = paramTypes[i]
+					}
 					ex, err := convertExpr(env, a)
+					expectedMapType = prevMap
 					if err != nil {
 						return nil, err
 					}
