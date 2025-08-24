@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-24 23:36 GMT+7
+Last updated: 2025-08-24 23:47 GMT+7
 
-## Algorithms Golden Test Checklist (821/1077)
+## Algorithms Golden Test Checklist (822/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -219,7 +219,7 @@ Last updated: 2025-08-24 23:36 GMT+7
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 197µs | 2.3 MB |
 | 211 | data_structures/heap/binomial_heap |   |  |  |
 | 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 104µs | 2.2 MB |
 | 214 | data_structures/heap/max_heap | ✓ | 87µs | 1.9 MB |
 | 215 | data_structures/heap/min_heap | ✓ | 104µs | 2.2 MB |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
