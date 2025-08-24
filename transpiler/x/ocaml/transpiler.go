@@ -1704,6 +1704,12 @@ func (c *ExprCall) emitPrint(w io.Writer) {
 }
 
 func (f *FuncCall) emit(w io.Writer) {
+	if f.Name == "__show" && len(f.Args) == 1 {
+		io.WriteString(w, "__show (Obj.repr (")
+		f.Args[0].emit(w)
+		io.WriteString(w, "))")
+		return
+	}
 	io.WriteString(w, f.Name)
 	if len(f.Args) == 0 {
 		io.WriteString(w, " ()")
@@ -1742,10 +1748,6 @@ func (f *FuncCall) emitPrint(w io.Writer) {
 	case f.Ret == "bigrat":
 		usesBigRat = true
 		io.WriteString(w, "Q.to_string (")
-		f.emit(w)
-		io.WriteString(w, ")")
-	case strings.HasPrefix(f.Ret, "list"):
-		io.WriteString(w, "__show_list (")
 		f.emit(w)
 		io.WriteString(w, ")")
 	default:
@@ -1968,8 +1970,9 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 			io.WriteString(w, "string_of_float ")
 			mi.emit(w)
 		default:
-			io.WriteString(w, "__show ")
+			io.WriteString(w, "__show (Obj.repr (")
 			mi.emit(w)
+			io.WriteString(w, "))")
 		}
 	} else {
 		switch mi.Typ {
@@ -1980,8 +1983,9 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 			io.WriteString(w, "string_of_float ")
 			mi.emit(w)
 		default:
-			io.WriteString(w, "__show ")
+			io.WriteString(w, "__show (Obj.repr (")
 			mi.emit(w)
+			io.WriteString(w, "))")
 		}
 	}
 }
@@ -2024,9 +2028,12 @@ func (mg *MapGetExpr) emitPrint(w io.Writer) {
 	case "float":
 		io.WriteString(w, "string_of_float ")
 	default:
-		io.WriteString(w, "__show ")
+		io.WriteString(w, "__show (Obj.repr (")
 	}
 	mg.emit(w)
+	if mg.Typ != "int" && mg.Typ != "float" {
+		io.WriteString(w, "))")
+	}
 }
 
 // IndexExpr represents list[index] or string[index].
@@ -2447,14 +2454,10 @@ func (ix *IndexExpr) emitPrint(w io.Writer) {
 			io.WriteString(w, "string_of_bool (")
 			ix.emit(w)
 			io.WriteString(w, ")")
-		case strings.HasPrefix(ix.Typ, "list"):
-			io.WriteString(w, "__show_list (")
-			ix.emit(w)
-			io.WriteString(w, ")")
 		default:
-			io.WriteString(w, "__show (")
+			io.WriteString(w, "__show (Obj.repr (")
 			ix.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 		}
 	}
 }
@@ -2691,13 +2694,13 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_float ")
 		c.Expr.emit(w)
 	case "list_to_obj":
-		io.WriteString(w, "__show_list (")
+		io.WriteString(w, "__show (Obj.repr (")
 		c.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	case "list_to_any":
-		io.WriteString(w, "__show_list (")
+		io.WriteString(w, "__show (Obj.repr (")
 		c.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	case "obj_to_int":
 		io.WriteString(w, "string_of_int (Obj.magic ")
 		c.Expr.emit(w)
@@ -2712,9 +2715,9 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, " : string)")
 	default:
 		if strings.HasPrefix(c.Type, "obj_to_") {
-			io.WriteString(w, "__show (")
+			io.WriteString(w, "__show (Obj.repr (")
 			c.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 		} else {
 			c.Expr.emitPrint(w)
 		}
@@ -2812,12 +2815,16 @@ type Name struct {
 	Ident string
 	Typ   string
 	Ref   bool
+	Boxed bool
 }
 
 func (n *Name) emit(w io.Writer) {
 	ident := sanitizeIdent(n.Ident)
 	if n.Ref {
-		fmt.Fprintf(w, "!%s", ident)
+		ident = "!" + n.Ident
+	}
+	if n.Boxed && n.Typ != "" {
+		fmt.Fprintf(w, "(Obj.magic %s : %s)", ident, ocamlType(n.Typ))
 	} else {
 		io.WriteString(w, ident)
 	}
@@ -2829,23 +2836,49 @@ func (n *Name) emitPrint(w io.Writer) {
 	}
 	switch {
 	case n.Typ == "int":
-		fmt.Fprintf(w, "string_of_int %s", ident)
+		if n.Boxed {
+			fmt.Fprintf(w, "string_of_int (Obj.magic %s : int)", ident)
+		} else {
+			fmt.Fprintf(w, "string_of_int %s", ident)
+		}
 	case n.Typ == "bool":
-		fmt.Fprintf(w, "string_of_bool %s", ident)
+		if n.Boxed {
+			fmt.Fprintf(w, "string_of_bool (Obj.magic %s : bool)", ident)
+		} else {
+			fmt.Fprintf(w, "string_of_bool %s", ident)
+		}
 	case n.Typ == "float":
-		fmt.Fprintf(w, "Printf.sprintf \"%%.15f\" (%s)", ident)
+		if n.Boxed {
+			fmt.Fprintf(w, "Printf.sprintf \"%%.15f\" (Obj.magic %s : float)", ident)
+		} else {
+			fmt.Fprintf(w, "Printf.sprintf \"%%.15f\" (%s)", ident)
+		}
 	case n.Typ == "string":
-		io.WriteString(w, ident)
+		if n.Boxed {
+			fmt.Fprintf(w, "(Obj.magic %s : string)", ident)
+		} else {
+			io.WriteString(w, ident)
+		}
 	case n.Typ == "bigint":
 		usesBigInt = true
-		fmt.Fprintf(w, "Z.to_string %s", ident)
+		if n.Boxed {
+			fmt.Fprintf(w, "Z.to_string (Obj.magic %s : Z.t)", ident)
+		} else {
+			fmt.Fprintf(w, "Z.to_string %s", ident)
+		}
 	case n.Typ == "bigrat":
 		usesBigRat = true
-		fmt.Fprintf(w, "Q.to_string %s", ident)
-	case strings.HasPrefix(n.Typ, "list"):
-		fmt.Fprintf(w, "__show_list %s", ident)
+		if n.Boxed {
+			fmt.Fprintf(w, "Q.to_string (Obj.magic %s : Q.t)", ident)
+		} else {
+			fmt.Fprintf(w, "Q.to_string %s", ident)
+		}
 	default:
-		fmt.Fprintf(w, "__show %s", ident)
+		if n.Boxed && n.Typ != "" {
+			fmt.Fprintf(w, "__show (Obj.repr (Obj.magic %s : %s))", ident, ocamlType(n.Typ))
+		} else {
+			fmt.Fprintf(w, "__show (Obj.repr %s)", ident)
+		}
 	}
 }
 
@@ -5584,10 +5617,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 				}
 				vars[p.Selector.Root] = info
 			}
-			expr := Expr(&Name{Ident: p.Selector.Root, Typ: info.typ, Ref: info.ref})
-			if info.boxed && info.typ != "" {
-				expr = &CastExpr{Expr: expr, Type: "obj_to_" + info.typ}
-			}
+			expr := Expr(&Name{Ident: p.Selector.Root, Typ: info.typ, Ref: info.ref, Boxed: info.boxed})
 			return expr, info.typ, nil
 		}
 		return convertSelector(p.Selector, env, vars)
@@ -5703,7 +5733,9 @@ func convertMatch(m *parser.MatchExpr, env *types.Env, vars map[string]VarInfo) 
 										if k, ok := it2.Key.(*StringLit); ok {
 											if nm, ok := it2.Value.(*Name); ok {
 												ft := fields[k.Value]
-												armVars[nm.Ident] = VarInfo{typ: ft, boxed: true}
+												info := VarInfo{typ: ft, boxed: true}
+												armVars[nm.Ident] = info
+												vars[nm.Ident] = info
 											}
 										}
 									}
