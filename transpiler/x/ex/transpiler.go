@@ -97,6 +97,17 @@ var methodFuncs map[string]struct{}
 // definedFuncs maps top-level function names to their arity.
 var definedFuncs map[string]int
 
+// definedFuncReturns reports whether a function returns a non-unit value.
+var definedFuncReturns map[string]bool
+
+// funcContext holds information about the currently compiled function.
+type funcContext struct {
+	firstParam string
+	returnType types.Type
+}
+
+var funcCtxStack []funcContext
+
 // dataDir holds the directory of the current program for read_file helper.
 var dataDir string
 
@@ -279,7 +290,8 @@ type ExprStmt struct{ Expr Expr }
 func (s *ExprStmt) emit(w io.Writer, indent int) {
 	if ce, ok := s.Expr.(*CallExpr); ok && len(ce.Args) > 0 {
 		if vr, ok := ce.Args[0].(*VarRef); ok {
-			if _, ok := definedFuncs[sanitizeFuncName(ce.Func)]; ok {
+			name := sanitizeFuncName(ce.Func)
+			if definedFuncReturns[name] {
 				for i := 0; i < indent; i++ {
 					io.WriteString(w, "  ")
 				}
@@ -340,7 +352,10 @@ func (c *ContinueStmt) emit(w io.Writer, indent int) {
 }
 
 // ReturnStmt returns from a function optionally with a value.
-type ReturnStmt struct{ Value Expr }
+type ReturnStmt struct {
+	Value   Expr
+	Default Expr
+}
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
@@ -355,6 +370,8 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		} else {
 			r.Value.emit(w)
 		}
+	} else if r.Default != nil {
+		r.Default.emit(w)
 	} else {
 		io.WriteString(w, "nil")
 	}
@@ -643,11 +660,11 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
-                io.WriteString(w, ":break -> nil\n")
-                for i := 0; i < indent+1; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "{:break, _} -> nil\n")
+		io.WriteString(w, ":break -> nil\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{:break, _} -> nil\n")
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -1155,14 +1172,14 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent+1; i++ {
 		io.WriteString(w, "  ")
 	}
-        io.WriteString(w, ":break -> nil\n")
-        for i := 0; i < indent+1; i++ {
-                io.WriteString(w, "  ")
-        }
-        io.WriteString(w, "{:break, _} -> nil\n")
-        for i := 0; i < indent; i++ {
-                io.WriteString(w, "  ")
-        }
+	io.WriteString(w, ":break -> nil\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "{:break, _} -> nil\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, "end")
 }
 
@@ -2244,6 +2261,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	globalVars = make(map[string]struct{})
 	methodFuncs = make(map[string]struct{})
 	definedFuncs = make(map[string]int)
+	definedFuncReturns = make(map[string]bool)
 	usedHelpers = make(map[string]bool)
 	dataDir = ""
 	moduleMode = false
@@ -2280,7 +2298,17 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		if st.Fun != nil {
 			moduleMode = true
-			definedFuncs[sanitizeFuncName(st.Fun.Name)] = len(st.Fun.Params)
+			name := sanitizeFuncName(st.Fun.Name)
+			definedFuncs[name] = len(st.Fun.Params)
+			if env != nil {
+				if t, err := env.GetVar(st.Fun.Name); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						if _, ok := ft.Return.(types.VoidType); !ok {
+							definedFuncReturns[name] = true
+						}
+					}
+				}
+			}
 		}
 		if st.Let != nil {
 			globalVars[st.Let.Name] = struct{}{}
@@ -2709,7 +2737,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				return nil, err
 			}
 		}
-		return &ReturnStmt{Value: val}, nil
+		var def Expr
+		if st.Return.Value == nil && len(funcCtxStack) > 0 {
+			ctx := funcCtxStack[len(funcCtxStack)-1]
+			if ctx.firstParam != "" {
+				if _, ok := ctx.returnType.(types.VoidType); !ok {
+					def = &VarRef{Name: ctx.firstParam}
+				}
+			}
+		}
+		return &ReturnStmt{Value: val, Default: def}, nil
 	case st.Fun != nil:
 		child := types.NewEnv(env)
 		locals := map[string]struct{}{}
@@ -2721,6 +2758,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			locals[p.Name] = struct{}{}
 		}
+		var retType types.Type = types.VoidType{}
+		if st.Fun.Return != nil {
+			retType = types.ResolveTypeRef(st.Fun.Return, env)
+		} else if t, err := env.GetVar(st.Fun.Name); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				retType = ft.Return
+			}
+		}
+		firstParam := ""
+		if len(st.Fun.Params) > 0 {
+			firstParam = st.Fun.Params[0].Name
+		}
+		funcCtxStack = append(funcCtxStack, funcContext{firstParam: firstParam, returnType: retType})
 		funcDepth++
 		body := make([]Stmt, 0, len(st.Fun.Body))
 		for _, b := range st.Fun.Body {
@@ -2732,6 +2782,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			bs, err := compileStmt(b, child)
 			if err != nil {
 				funcDepth--
+				funcCtxStack = funcCtxStack[:len(funcCtxStack)-1]
 				return nil, err
 			}
 			if bs != nil {
@@ -2739,6 +2790,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		}
 		funcDepth--
+		funcCtxStack = funcCtxStack[:len(funcCtxStack)-1]
 		params := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
@@ -3215,6 +3267,10 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 
 func compilePattern(e *parser.Expr, env *types.Env) (Expr, error) {
 	if name, ok := isSimpleIdent(e); ok {
+		tname := strings.Title(name)
+		if _, ok := env.FindUnionByVariant(tname); ok {
+			return &AtomLit{Name: ":" + strings.ToLower(name)}, nil
+		}
 		if _, err := env.GetVar(name); err != nil {
 			if _, ok := env.GetStruct(name); ok {
 				return &AtomLit{Name: ":" + name}, nil
@@ -4461,10 +4517,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		if len(p.Selector.Tail) == 0 {
 			if fn, ok := env.GetFunc(p.Selector.Root); ok {
 				expr = &FuncRef{Name: sanitizeFuncName(p.Selector.Root), Arity: len(fn.Params)}
+			} else if isZeroVariant(p.Selector.Root, env) {
+				expr = &AtomLit{Name: ":" + strings.ToLower(p.Selector.Root)}
 			} else if _, err := env.GetVar(p.Selector.Root); err == nil {
 				// variable takes precedence over zero-variants
-			} else if isZeroVariant(p.Selector.Root, env) {
-				expr = &AtomLit{Name: ":" + p.Selector.Root}
 			}
 		}
 		for _, t := range p.Selector.Tail {
@@ -4962,13 +5018,26 @@ func isSimpleCall(e *parser.Expr) (*parser.CallExpr, bool) {
 }
 
 func isZeroVariant(name string, env *types.Env) bool {
-	st, ok := env.GetStruct(name)
-	if !ok || len(st.Fields) > 0 {
-		return false
+	if st, ok := env.GetStruct(name); ok {
+		if len(st.Fields) == 0 {
+			return true
+		}
+	}
+	tname := strings.Title(name)
+	if st, ok := env.GetStruct(tname); ok {
+		if len(st.Fields) == 0 {
+			return true
+		}
 	}
 	if u, ok := env.FindUnionByVariant(name); ok {
-		_, ok = u.Variants[name]
-		return ok
+		if st, ok2 := u.Variants[name]; ok2 {
+			return len(st.Fields) == 0
+		}
+	}
+	if u, ok := env.FindUnionByVariant(tname); ok {
+		if st, ok2 := u.Variants[tname]; ok2 {
+			return len(st.Fields) == 0
+		}
 	}
 	return false
 }
