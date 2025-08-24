@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/conversions"
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -29,13 +31,13 @@ var WEIGHT_TYPE_CHART: MutableMap<String, Double> = mutableMapOf<String, Double>
 fun pow10(exp: Int): Double {
     var result: Double = 1.0
     if (exp >= 0) {
-        var i: Int = 0
+        var i: Int = (0).toInt()
         while (i < exp) {
             result = result * 10.0
             i = i + 1
         }
     } else {
-        var i: Int = 0
+        var i: Int = (0).toInt()
         while (i < (0 - exp)) {
             result = result / 10.0
             i = i + 1
@@ -45,8 +47,8 @@ fun pow10(exp: Int): Double {
 }
 
 fun weight_conversion(from_type: String, to_type: String, value: Double): Double {
-    var has_to: Boolean = to_type in KILOGRAM_CHART
-    var has_from: Boolean = from_type in WEIGHT_TYPE_CHART
+    var has_to: Boolean = KILOGRAM_CHART.containsKey(to_type)
+    var has_from: Boolean = WEIGHT_TYPE_CHART.containsKey(from_type)
     if (has_to && has_from) {
         return (value * (KILOGRAM_CHART)[to_type] as Double) * (WEIGHT_TYPE_CHART)[from_type] as Double
     }
