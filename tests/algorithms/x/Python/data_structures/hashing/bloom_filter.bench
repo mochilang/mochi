@@ -1,5 +1,25 @@
+00000000
 {
-  "duration_us": 1982,
-  "memory_bytes": 14401536,
+  "duration_us": 25,
+  "memory_bytes": 0,
   "name": "main"
 }
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/hashing/bloom_filter.py", line 202, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/hashing/bloom_filter.py", line 174, in main
+    print(("True" if bloom_exists(bloom, "Titanic") else "False"))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/hashing/bloom_filter.py", line 116, in bloom_exists
+    pos = hash_positions(value, b.size)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/hashing/bloom_filter.py", line 100, in hash_positions
+    h1 = hash1(value, size)
+         ^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/hashing/bloom_filter.py", line 89, in hash1
+    h = (h * 31 + ord(value[i:i + 1])) % size
+                  ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/hashing/bloom_filter.py", line 68, in ord
+    while i < len(ascii):
+              ^^^^^^^^^^
+TypeError: object of type 'builtin_function_or_method' has no len()
