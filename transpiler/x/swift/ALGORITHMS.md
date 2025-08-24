@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 976/1077
-Last updated: 2025-08-24 08:57 +0700
+Completed programs: 977/1077
+Last updated: 2025-08-24 15:35 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -157,8 +157,8 @@ Last updated: 2025-08-24 08:57 +0700
 | 148 | conversions/temperature_conversions |   |  |  |
 | 149 | conversions/time_conversions |   |  |  |
 | 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
+| 151 | conversions/weight_conversion | ✓ | 323µs | 3.3 MB |
+| 152 | data_compression/burrows_wheeler | ✓ | 594µs | 3.4 MB |
 | 153 | data_compression/huffman | ✓ | 470µs | 2.9 MB |
 | 154 | data_compression/lempel_ziv | ✓ | 539µs | 3.2 MB |
 | 155 | data_compression/lempel_ziv_decompress | ✓ | 739µs | 3.2 MB |
@@ -174,7 +174,7 @@ Last updated: 2025-08-24 08:57 +0700
 | 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 421µs | 3.2 MB |
 | 166 | data_structures/arrays/permutations | ✓ | 1.73ms | 3.9 MB |
 | 167 | data_structures/arrays/prefix_sum | ✓ | 326µs | 2.9 MB |
-| 168 | data_structures/arrays/product_sum | ✓ | 465µs | 3.2 MB |
+| 168 | data_structures/arrays/product_sum |   | 465µs | 3.2 MB |
 | 169 | data_structures/arrays/sparse_table | ✓ | 1.936ms | 4.0 MB |
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 1.883ms | 3.2 MB |
 | 171 | data_structures/binary_tree/avl_tree | ✓ | 408µs | 3.3 MB |
@@ -190,14 +190,14 @@ Last updated: 2025-08-24 08:57 +0700
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 353µs | 3.2 MB |
 | 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
+| 184 | data_structures/binary_tree/is_sorted |   | 906µs | 3.6 MB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 115µs | 3.0 MB |
 | 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 534µs | 3.4 MB |
 | 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 565µs | 3.4 MB |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 796.747ms | 3.4 MB |
 | 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 427µs | 3.1 MB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
-| 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
+| 191 | data_structures/binary_tree/mirror_binary_tree |   | 883µs | 3.5 MB |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 379µs | 3.3 MB |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 287µs | 3.1 MB |
 | 194 | data_structures/binary_tree/red_black_tree | ✓ | 1.149ms | 3.2 MB |

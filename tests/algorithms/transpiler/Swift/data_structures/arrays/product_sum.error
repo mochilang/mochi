@@ -1,0 +1,43 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden168_data_structures_arrays_product_sum496447070/001/main.swift:109:45: warning: expression implicitly coerced from 'Any?' to 'Any'
+107 |                 total = _int((total &+ _int(product_sum((el as! [Any?]), (depth &+ 1)))))
+108 |             } else {
+109 |                 total = _int((total &+ _int(el)))
+    |                                             |- warning: expression implicitly coerced from 'Any?' to 'Any'
+    |                                             |- note: provide a default value to avoid this warning
+    |                                             |- note: force-unwrap the value to avoid this warning
+    |                                             `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+110 |             }
+111 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden168_data_structures_arrays_product_sum496447070/001/main.swift:116:43: warning: forced cast of '[Any?]' to same type has no effect
+114 |     }
+115 |     func product_sum_array(_ array: [Any?]) -> Int {
+116 |         let res = _int(product_sum((array as! [Any?]), 1))
+    |                                           `- warning: forced cast of '[Any?]' to same type has no effect
+117 |         return res
+118 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden168_data_structures_arrays_product_sum496447070/001/main.swift:128:13: error: cannot convert value of type '[Int]' to expected argument type 'Int'
+126 |             _arr = _append(_arr, 1)
+127 |             return _arr
+128 |         }() as! [Int]))
+    |             `- error: cannot convert value of type '[Int]' to expected argument type 'Int'
+129 |         _arr = _append(_arr, 3)
+130 |         _arr = _append(_arr, {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden168_data_structures_arrays_product_sum496447070/001/main.swift:128:13: warning: forced cast of '[Int]' to same type has no effect
+126 |             _arr = _append(_arr, 1)
+127 |             return _arr
+128 |         }() as! [Int]))
+    |             `- warning: forced cast of '[Int]' to same type has no effect
+129 |         _arr = _append(_arr, 3)
+130 |         _arr = _append(_arr, {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden168_data_structures_arrays_product_sum496447070/001/main.swift:144:46: warning: forced cast of '[Any?]' to same type has no effect
+142 |         return _arr
+143 |     }()
+144 |     print(_p(_int(product_sum_array((example as! [Any?])))))
+    |                                              `- warning: forced cast of '[Any?]' to same type has no effect
+145 |     let _benchEnd = _now()
+146 |     let _benchMemEnd = _mem()
