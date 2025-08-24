@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-23 08:53 UTC
+Last updated: 2025-08-24 02:02 UTC
 
 ## Algorithms Golden Test Checklist (1064/1077)
 | Index | Name | Status | Duration | Memory |
@@ -962,13 +962,13 @@ Last updated: 2025-08-23 08:53 UTC
 | 953 | sorts/exchange_sort | ✓ | 729µs | 26.7 KB |
 | 954 | sorts/external_sort | ✓ | 1.421ms | 32.7 KB |
 | 955 | sorts/gnome_sort | ✓ | 1.642ms | 29.7 KB |
-| 956 | sorts/heap_sort | ✓ | 752µs | 529.2 KB |
+| 956 | sorts/heap_sort | ✓ | 571.223ms | 547.8 KB |
 | 957 | sorts/insertion_sort | ✓ | 687µs | 23.5 KB |
 | 958 | sorts/intro_sort | ✓ | 1.002ms | 532.3 KB |
 | 959 | sorts/iterative_merge_sort | ✓ | 1.456ms | 54.2 KB |
 | 960 | sorts/merge_insertion_sort | ✓ | 873µs | 26.3 KB |
 | 961 | sorts/merge_sort | ✓ | 1.332ms | 34.4 KB |
-| 962 | sorts/msd_radix_sort | ✓ | 1.042ms | 64.4 KB |
+| 962 | sorts/msd_radix_sort | ✓ | 571.223ms | 64.0 KB |
 | 963 | sorts/natural_sort | ✓ | 2.186ms | 44.0 KB |
 | 964 | sorts/odd_even_sort | ✓ | 1.397ms | 532.7 KB |
 | 965 | sorts/odd_even_transposition_parallel | ✓ | 1.09ms | 24.4 KB |
