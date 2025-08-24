@@ -132,7 +132,8 @@ const helperAppend = `
 def _append(lst, v):
     if lst is None:
         lst = []
-    return lst + [v]
+    lst.append(v)
+    return lst
 `
 
 const helperSetIndex = `
