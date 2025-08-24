@@ -1,0 +1,10 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/web_programming/recaptcha_verification.c:86:59: error: ‘MapIL’ undeclared here (not in a function)
+   86 | Request ok_request = (Request){.method = "POST", .post = (MapIL){0}};
+      |                                                           ^~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/recaptcha_verification.c:86:65: error: expected ‘}’ before ‘{’ token
+   86 | Request ok_request = (Request){.method = "POST", .post = (MapIL){0}};
+      |                               ~                                 ^
+/workspace/mochi/tests/algorithms/x/C/web_programming/recaptcha_verification.c:87:66: error: expected ‘}’ before ‘{’ token
+   87 | Request bad_request = (Request){.method = "POST", .post = (MapIL){0}};
+      |                                ~                                 ^

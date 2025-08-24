@@ -1,0 +1,85 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:178:27: error: incompatible types when initializing type ‘const char **’ using type ‘ANIME_DB’
+  178 | MapSS ANIME_DB_init[2] = {(ANIME_DB){.title = "Demon Slayer", .url = "/anime/kimetsu-no-yaiba"}, (ANIME_DB){.title = "Naruto", .url = "/anime/naruto"}};
+      |                           ^
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:179:8: error: ‘ANIME_DB’ redeclared as different kind of symbol
+  179 | MapSS *ANIME_DB = ANIME_DB_init;
+      |        ^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:121:25: note: previous declaration of ‘ANIME_DB’ with type ‘ANIME_DB’
+  121 | typedef struct ANIME_DB ANIME_DB;
+      |                         ^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:182:38: error: incompatible types when initializing type ‘const char **’ using type ‘EPISODE_DB’
+  182 | static MapSS EPISODE_DB_vals_0[2] = {(EPISODE_DB){.title = "Episode 1", .url = "/watch/kimetsu-no-yaiba/1"}, (EPISODE_DB){.title = "Episode 2", .url = "/watch/kimetsu-no-yaiba/2"}};
+      |                                      ^
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:183:38: error: incompatible types when initializing type ‘const char **’ using type ‘EPISODE_DB1’
+  183 | static MapSS EPISODE_DB_vals_1[1] = {(EPISODE_DB1){.title = "Episode 1", .url = "/watch/naruto/1"}};
+      |                                      ^
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:187:7: error: ‘EPISODE_DB’ redeclared as different kind of symbol
+  187 | MapSL EPISODE_DB = { EPISODE_DB_keys, EPISODE_DB_vals, EPISODE_DB_lens, 2, 18 };
+      |       ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:127:27: note: previous declaration of ‘EPISODE_DB’ with type ‘EPISODE_DB’
+  127 | typedef struct EPISODE_DB EPISODE_DB;
+      |                           ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:193:11: error: conflicting types for ‘contains_str’; have ‘long long int(const char *, const char *)’
+  193 | long long contains_str(const char* s, const char* sub);
+      |           ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:14:12: note: previous definition of ‘contains_str’ with type ‘int(const char **, size_t,  const char *)’ {aka ‘int(const char **, long unsigned int,  const char *)’}
+   14 | static int contains_str(const char *arr[], size_t len, const char *val) {
+      |            ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c: In function ‘search_anime_episode_list’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:231:32: warning: passing argument 1 of ‘contains_str’ from incompatible pointer type [-Wincompatible-pointer-types]
+  231 |     if (contains_str(EPISODE_DB.keys, EPISODE_DB.len, endpoint)) {
+      |                      ~~~~~~~~~~^~~~~
+      |                                |
+      |                                const char **
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:201:36: note: expected ‘const char *’ but argument is of type ‘const char **’
+  201 | long long contains_str(const char* s, const char* sub) {
+      |                        ~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:231:49: warning: passing argument 2 of ‘contains_str’ makes pointer from integer without a cast [-Wint-conversion]
+  231 |     if (contains_str(EPISODE_DB.keys, EPISODE_DB.len, endpoint)) {
+      |                                       ~~~~~~~~~~^~~~
+      |                                                 |
+      |                                                 size_t {aka long unsigned int}
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:201:51: note: expected ‘const char *’ but argument is of type ‘size_t’ {aka ‘long unsigned int’}
+  201 | long long contains_str(const char* s, const char* sub) {
+      |                                       ~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:231:9: error: too many arguments to function ‘contains_str’
+  231 |     if (contains_str(EPISODE_DB.keys, EPISODE_DB.len, endpoint)) {
+      |         ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:201:11: note: declared here
+  201 | long long contains_str(const char* s, const char* sub) {
+      |           ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c: In function ‘get_anime_episode’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:244:35: warning: passing argument 1 of ‘contains_str’ from incompatible pointer type [-Wincompatible-pointer-types]
+  244 |     if (contains_str(EPISODE_EMBED.keys, EPISODE_EMBED.len, endpoint)) {
+      |                      ~~~~~~~~~~~~~^~~~~
+      |                                   |
+      |                                   const char **
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:201:36: note: expected ‘const char *’ but argument is of type ‘const char **’
+  201 | long long contains_str(const char* s, const char* sub) {
+      |                        ~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:244:55: warning: passing argument 2 of ‘contains_str’ makes pointer from integer without a cast [-Wint-conversion]
+  244 |     if (contains_str(EPISODE_EMBED.keys, EPISODE_EMBED.len, endpoint)) {
+      |                                          ~~~~~~~~~~~~~^~~~
+      |                                                       |
+      |                                                       size_t {aka long unsigned int}
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:201:51: note: expected ‘const char *’ but argument is of type ‘size_t’ {aka ‘long unsigned int’}
+  201 | long long contains_str(const char* s, const char* sub) {
+      |                                       ~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:244:9: error: too many arguments to function ‘contains_str’
+  244 |     if (contains_str(EPISODE_EMBED.keys, EPISODE_EMBED.len, endpoint)) {
+      |         ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:201:11: note: declared here
+  201 | long long contains_str(const char* s, const char* sub) {
+      |           ^~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:264:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘MapSS *’ [-Wformat=]
+  264 |     printf("%d\n", animes);
+      |             ~^     ~~~~~~
+      |              |     |
+      |              int   MapSS *
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_anime_and_play.c:267:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘MapSS *’ [-Wformat=]
+  267 |     printf("%d\n", episodes);
+      |             ~^     ~~~~~~~~
+      |              |     |
+      |              int   MapSS *

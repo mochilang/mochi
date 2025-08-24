@@ -1,0 +1,10 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_well_rx_price.c: In function ‘fetch_pharmacy_and_price_list’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_well_rx_price.c:143:61: error: ‘MapIL’ undeclared (first use in this function)
+  143 |         results = list_append_MapSS(results, &results_len, (MapIL){0});
+      |                                                             ^~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_well_rx_price.c:143:61: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/web_programming/fetch_well_rx_price.c:143:67: error: expected ‘)’ before ‘{’ token
+  143 |         results = list_append_MapSS(results, &results_len, (MapIL){0});
+      |                                    ~                              ^
+      |                                                                   )

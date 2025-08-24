@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (799/1077) - Last updated 2025-08-24 09:06 +0700:
+Checklist of programs that currently transpile and run (850/1077) - Last updated 2025-08-24 09:44 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -1012,73 +1012,73 @@ Checklist of programs that currently transpile and run (799/1077) - Last updated
 | 1005 | strings/frequency_finder |  |  |  |
 | 1006 | strings/hamming_distance | ✓ | 328us | 1.5 MB |
 | 1007 | strings/indian_phone_validator | ✓ | 280us | 1.4 MB |
-| 1008 | strings/is_contains_unique_chars | ✓ | 778us | 1.6 MB |
-| 1009 | strings/is_isogram | ✓ | 391us | 1.6 MB |
-| 1010 | strings/is_pangram |  |  |  |
-| 1011 | strings/is_polish_national_id |  |  |  |
-| 1012 | strings/is_spain_national_id |  |  |  |
-| 1013 | strings/is_srilankan_phone_number |  |  |  |
-| 1014 | strings/is_valid_email_address |  |  |  |
-| 1015 | strings/jaro_winkler |  |  |  |
-| 1016 | strings/join |  |  |  |
-| 1017 | strings/knuth_morris_pratt |  |  |  |
-| 1018 | strings/levenshtein_distance |  |  |  |
-| 1019 | strings/lower |  |  |  |
-| 1020 | strings/manacher |  |  |  |
-| 1021 | strings/min_cost_string_conversion |  |  |  |
-| 1022 | strings/naive_string_search |  |  |  |
-| 1023 | strings/ngram |  |  |  |
-| 1024 | strings/palindrome |  |  |  |
-| 1025 | strings/pig_latin |  |  |  |
-| 1026 | strings/prefix_function |  |  |  |
-| 1027 | strings/rabin_karp |  |  |  |
-| 1028 | strings/remove_duplicate |  |  |  |
-| 1029 | strings/reverse_letters |  |  |  |
-| 1030 | strings/reverse_words |  |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |  |  |  |
-| 1032 | strings/split |  |  |  |
-| 1033 | strings/string_switch_case |  |  |  |
-| 1034 | strings/strip |  |  |  |
-| 1035 | strings/text_justification |  |  |  |
-| 1036 | strings/title |  |  |  |
-| 1037 | strings/top_k_frequent_words |  |  |  |
-| 1038 | strings/upper |  |  |  |
-| 1039 | strings/wave_string |  |  |  |
-| 1040 | strings/wildcard_pattern_matching |  |  |  |
-| 1041 | strings/word_occurrence |  |  |  |
-| 1042 | strings/word_patterns |  |  |  |
-| 1043 | strings/z_function |  |  |  |
+| 1008 | strings/is_contains_unique_chars | ✓ | 680us | 1.4 MB |
+| 1009 | strings/is_isogram | ✓ | 293us | 1.4 MB |
+| 1010 | strings/is_pangram | ✓ | 313us | 1.6 MB |
+| 1011 | strings/is_polish_national_id | ✓ | 377us | 1.5 MB |
+| 1012 | strings/is_spain_national_id | ✓ | 504us | 1.6 MB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 458us | 1.5 MB |
+| 1014 | strings/is_valid_email_address | ✓ | 1.75ms | 1.8 MB |
+| 1015 | strings/jaro_winkler | ✓ | 449us | 1.6 MB |
+| 1016 | strings/join | ✓ | 515us | 1.5 MB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 292us | 1.5 MB |
+| 1018 | strings/levenshtein_distance | ✓ | 236us | 1.5 MB |
+| 1019 | strings/lower | ✓ | 378us | 1.5 MB |
+| 1020 | strings/manacher | ✓ | 226us | 1.5 MB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 305us | 1.4 MB |
+| 1022 | strings/naive_string_search | ✓ | 299us | 1.5 MB |
+| 1023 | strings/ngram | ✓ | 142us | 1.6 MB |
+| 1024 | strings/palindrome | ✓ | 448us | 1.6 MB |
+| 1025 | strings/pig_latin | ✓ | 487us | 1.5 MB |
+| 1026 | strings/prefix_function | ✓ | 269us | 1.6 MB |
+| 1027 | strings/rabin_karp | ✓ | 251us | 1.4 MB |
+| 1028 | strings/remove_duplicate | ✓ | 506us | 1.4 MB |
+| 1029 | strings/reverse_letters | ✓ | 365us | 1.5 MB |
+| 1030 | strings/reverse_words | ✓ | 496us | 1.6 MB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 466us | 1.5 MB |
+| 1032 | strings/split | ✓ | 187us | 1.6 MB |
+| 1033 | strings/string_switch_case | ✓ | 15.79ms | 6.9 MB |
+| 1034 | strings/strip | ✓ | 430us | 1.5 MB |
+| 1035 | strings/text_justification | ✓ | 435us | 1.5 MB |
+| 1036 | strings/title | ✓ | 289us | 1.5 MB |
+| 1037 | strings/top_k_frequent_words | ✓ | 153us | 1.4 MB |
+| 1038 | strings/upper | ✓ | 228us | 1.7 MB |
+| 1039 | strings/wave_string | ✓ | 193us | 1.5 MB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 448us | 1.4 MB |
+| 1041 | strings/word_occurrence | ✓ | 330us | 1.6 MB |
+| 1042 | strings/word_patterns | ✓ | 402us | 1.5 MB |
+| 1043 | strings/z_function | ✓ | 258us | 1.4 MB |
 | 1044 | web_programming/co2_emission |  |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |  |  |  |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 295us | 1.6 MB |
 | 1046 | web_programming/crawl_google_results |  |  |  |
 | 1047 | web_programming/crawl_google_scholar_citation |  |  |  |
-| 1048 | web_programming/currency_converter |  |  |  |
-| 1049 | web_programming/current_stock_price |  |  |  |
+| 1048 | web_programming/currency_converter | ✓ | 493us | 1.7 MB |
+| 1049 | web_programming/current_stock_price | ✓ | 179us | 1.6 MB |
 | 1050 | web_programming/current_weather |  |  |  |
-| 1051 | web_programming/daily_horoscope |  |  |  |
+| 1051 | web_programming/daily_horoscope | ✓ | 143us | 1.5 MB |
 | 1052 | web_programming/download_images_from_google_query |  |  |  |
-| 1053 | web_programming/emails_from_url |  |  |  |
+| 1053 | web_programming/emails_from_url | ✓ | 274us | 1.5 MB |
 | 1054 | web_programming/fetch_anime_and_play |  |  |  |
 | 1055 | web_programming/fetch_bbc_news |  |  |  |
-| 1056 | web_programming/fetch_github_info |  |  |  |
-| 1057 | web_programming/fetch_jobs |  |  |  |
-| 1058 | web_programming/fetch_quotes |  |  |  |
+| 1056 | web_programming/fetch_github_info | ✓ | 574us | 1.6 MB |
+| 1057 | web_programming/fetch_jobs | ✓ | 318us | 1.6 MB |
+| 1058 | web_programming/fetch_quotes | ✓ | 204us | 1.5 MB |
 | 1059 | web_programming/fetch_well_rx_price |  |  |  |
-| 1060 | web_programming/get_amazon_product_data |  |  |  |
-| 1061 | web_programming/get_imdb_top_250_movies_csv |  |  |  |
-| 1062 | web_programming/get_ip_geolocation |  |  |  |
+| 1060 | web_programming/get_amazon_product_data | ✓ | 280us | 1.6 MB |
+| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 306us | 1.7 MB |
+| 1062 | web_programming/get_ip_geolocation | ✓ | 200us | 1.4 MB |
 | 1063 | web_programming/get_top_billionaires |  |  |  |
-| 1064 | web_programming/get_top_hn_posts |  |  |  |
+| 1064 | web_programming/get_top_hn_posts | ✓ | 392us | 1.5 MB |
 | 1065 | web_programming/giphy |  |  |  |
-| 1066 | web_programming/instagram_crawler |  |  |  |
-| 1067 | web_programming/instagram_pic |  |  |  |
+| 1066 | web_programming/instagram_crawler | ✓ | 738us | 1.7 MB |
+| 1067 | web_programming/instagram_pic | ✓ | 569us | 1.5 MB |
 | 1068 | web_programming/instagram_video |  |  |  |
 | 1069 | web_programming/nasa_data |  |  |  |
 | 1070 | web_programming/open_google_results |  |  |  |
-| 1071 | web_programming/random_anime_character |  |  |  |
+| 1071 | web_programming/random_anime_character | ✓ | 475us | 1.5 MB |
 | 1072 | web_programming/recaptcha_verification |  |  |  |
 | 1073 | web_programming/reddit |  |  |  |
 | 1074 | web_programming/search_books_by_isbn |  |  |  |
 | 1075 | web_programming/slack_message |  |  |  |
-| 1076 | web_programming/test_fetch_github_info |  |  |  |
-| 1077 | web_programming/world_covid19_stats |  |  |  |
+| 1076 | web_programming/test_fetch_github_info | ✓ | 358us | 1.5 MB |
+| 1077 | web_programming/world_covid19_stats | ✓ | 489us | 1.7 MB |

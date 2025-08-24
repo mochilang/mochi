@@ -1,0 +1,8 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/web_programming/instagram_video.c:58:13: error: ‘link’ redeclared as different kind of symbol
+   58 | const char* link = "";
+      |             ^~~~
+In file included from /workspace/mochi/tests/algorithms/x/C/web_programming/instagram_video.c:5:
+/usr/include/unistd.h:819:12: note: previous declaration of ‘link’ with type ‘int(const char *, const char *)’
+  819 | extern int link (const char *__from, const char *__to)
+      |            ^~~~

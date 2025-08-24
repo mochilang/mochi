@@ -1,0 +1,11 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/web_programming/nasa_data.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/web_programming/nasa_data.c:102:28: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
+  102 |     long long first_item = first(items);
+      |                            ^~~~~
+/workspace/mochi/tests/algorithms/x/C/web_programming/nasa_data.c:103:44: error: request for member ‘data’ in something not a structure or union
+  103 |     long long first_data = first(first_item.data);
+      |                                            ^
+/workspace/mochi/tests/algorithms/x/C/web_programming/nasa_data.c:104:30: error: request for member ‘description’ in something not a structure or union
+  104 |     printf("%d\n", first_data.description);
+      |                              ^
