@@ -86,6 +86,7 @@ var (
 	needMapSetSD            bool
 	needMapSetSMI           bool
 	needMapGetSMI           bool
+	needMapGetSStruct       map[string]bool
 	needContainsMapInt      bool
 	needListAppendInt       bool
 	needListAppendStr       bool
@@ -144,6 +145,8 @@ var (
 	mutatedParams map[string]bool
 
 	benchMain bool
+
+	blockDepth int
 
 	// track local variable declarations so they can be adjusted
 	declStmts   map[string]*DeclStmt
@@ -2092,19 +2095,19 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
-       if m, ok := a.Value.(*MapLit); ok && len(m.Items) == 0 && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-               if typ, ok2 := varTypes[a.Name]; ok2 && strings.HasPrefix(typ, "Map") {
-                       writeIndent(w, indent)
-                       fmt.Fprintf(w, "%s = (%s){0};\n", a.Name, typ)
-                       return
-               }
-       }
-       if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
-               if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-                       fromAlias := declAliases[a.Name]
-                       if ds, ok := declStmts[a.Name]; ok {
-                               ds.Value = nil
-                       }
+	if m, ok := a.Value.(*MapLit); ok && len(m.Items) == 0 && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+		if typ, ok2 := varTypes[a.Name]; ok2 && strings.HasPrefix(typ, "Map") {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s = (%s){0};\n", a.Name, typ)
+			return
+		}
+	}
+	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
+		if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+			fromAlias := declAliases[a.Name]
+			if ds, ok := declStmts[a.Name]; ok {
+				ds.Value = nil
+			}
 			if fromAlias {
 				declAliases[a.Name] = false
 			}
@@ -3314,6 +3317,21 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 				io.WriteString(w, vr.Name+"_vals, ")
 				io.WriteString(w, vr.Name+"_len, ")
 			}
+			i.Index.emitExpr(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if keyT == "const char*" && mapValTypes[vr.Name] != "" && valT != "const char*" && valT != "double" && !strings.HasSuffix(valT, "[]") && valT != "MapSI" && valT != "MapSMI" {
+			fname := "map_get_s_" + strings.ToLower(valT)
+			funcReturnTypes[fname] = valT
+			if needMapGetSStruct == nil {
+				needMapGetSStruct = make(map[string]bool)
+			}
+			needMapGetSStruct[valT] = true
+			io.WriteString(w, fname+"(")
+			io.WriteString(w, mapField(vr.Name, "keys")+", ")
+			io.WriteString(w, mapField(vr.Name, "vals")+", ")
+			io.WriteString(w, mapField(vr.Name, "len")+", ")
 			i.Index.emitExpr(w)
 			io.WriteString(w, ")")
 			return
@@ -5414,6 +5432,19 @@ func (p *Program) Emit() []byte {
 	if needMapGetSD || needMapSetSD || needJSONMapSD || needStrMapSD {
 		buf.WriteString("typedef struct { const char **keys; double *vals; size_t len; size_t cap; } MapSD;\n\n")
 	}
+	if len(needMapGetSStruct) > 0 {
+		for name := range needMapGetSStruct {
+			fmt.Fprintf(&buf, "typedef struct %s %s;\n", name, name)
+			fmt.Fprintf(&buf, "typedef struct { const char **keys; %s *vals; size_t len; size_t cap; } MapS%s;\n\n", name, name)
+			lower := strings.ToLower(name)
+			fmt.Fprintf(&buf, "static %s map_get_s_%s(const char *keys[], const %s vals[], size_t len, const char *key) {\n", name, lower, name)
+			buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+			buf.WriteString("        if (strcmp(keys[i], key) == 0) return vals[i];\n")
+			buf.WriteString("    }\n")
+			fmt.Fprintf(&buf, "    return (%s){0};\n", name)
+			buf.WriteString("}\n\n")
+		}
+	}
 	if needStrMapSD {
 		buf.WriteString("static char* str_map_sd(MapSD m) {\n")
 		buf.WriteString("    char *res = strdup(\"map[\");\n")
@@ -6337,6 +6368,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMapSetSD = false
 	needMapSetSMI = false
 	needMapGetSMI = false
+	needMapGetSStruct = map[string]bool{}
 	needContainsMapInt = false
 	needListAppendInt = false
 	needListAppendStr = false
@@ -6589,6 +6621,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 }
 
 func compileStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
+	blockDepth++
+	defer func() { blockDepth-- }()
 	var out []Stmt
 	for _, s := range list {
 		stmt, err := compileStmt(env, s)
@@ -7440,37 +7474,46 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				fmt.Fprintf(&buf, "MapII %s = { %s_keys, %s_vals, %d, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items), len(m.Items)+16)
 			} else if valT == "double" && keyT == "const char*" {
 				fmt.Fprintf(&buf, "MapSD %s = { %s_keys, %s_vals, %d, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items), len(m.Items)+16)
+			} else if keyT == "const char*" {
+				fmt.Fprintf(&buf, "%s %s = { %s_keys, %s_vals, %d, %d };\n", declType, s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items), len(m.Items)+16)
+				mapKeyTypes[s.Let.Name] = "const char*"
+				mapValTypes[s.Let.Name] = valT
+				if needMapGetSStruct == nil {
+					needMapGetSStruct = make(map[string]bool)
+				}
+				needMapGetSStruct[valT] = true
 			}
+			varTypes[s.Let.Name] = declType
 			return &RawStmt{Code: buf.String()}, nil
 		}
 		ds := &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}
-		if declStmts != nil {
+		if declStmts != nil && blockDepth == 1 {
 			declStmts[s.Let.Name] = ds
 		}
 		return ds, nil
 	case s.Var != nil:
-               currentVarName = aliasName(s.Var.Name)
-               s.Var.Name = currentVarName
-               if currentParams != nil {
-                       if _, ok := currentParams[currentVarName]; ok {
-                               valExpr := convertExpr(s.Var.Value)
-                               delete(constLists, currentVarName)
-                               delete(constStrings, currentVarName)
-                               currentVarName = ""
-                               currentVarType = nil
-                               return &AssignStmt{Name: s.Var.Name, Value: valExpr}, nil
-                       }
-               }
-               if declStmts != nil {
-                       if _, ok := declStmts[s.Var.Name]; ok {
-                               valExpr := convertExpr(s.Var.Value)
-                               delete(constLists, s.Var.Name)
-                               delete(constStrings, s.Var.Name)
-                               currentVarName = ""
-                               currentVarType = nil
-                               return &AssignStmt{Name: s.Var.Name, Value: valExpr}, nil
-                       }
-               }
+		currentVarName = aliasName(s.Var.Name)
+		s.Var.Name = currentVarName
+		if currentParams != nil {
+			if _, ok := currentParams[currentVarName]; ok {
+				valExpr := convertExpr(s.Var.Value)
+				delete(constLists, currentVarName)
+				delete(constStrings, currentVarName)
+				currentVarName = ""
+				currentVarType = nil
+				return &AssignStmt{Name: s.Var.Name, Value: valExpr}, nil
+			}
+		}
+		if declStmts != nil && blockDepth == 1 {
+			if _, ok := declStmts[s.Var.Name]; ok {
+				valExpr := convertExpr(s.Var.Value)
+				delete(constLists, s.Var.Name)
+				delete(constStrings, s.Var.Name)
+				currentVarName = ""
+				currentVarType = nil
+				return &AssignStmt{Name: s.Var.Name, Value: valExpr}, nil
+			}
+		}
 		if s.Var.Type != nil {
 			currentVarType = types.ResolveTypeRef(s.Var.Type, env)
 		} else {
@@ -7757,13 +7800,21 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			} else if valT == "double" && keyT == "const char*" {
 				fmt.Fprintf(&buf, "MapSD %s = { %s_keys, %s_vals, %d, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
 				needMapGetSD = true
+			} else if keyT == "const char*" {
+				fmt.Fprintf(&buf, "%s %s = { %s_keys, %s_vals, %d, %d };\n", declType, s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
+				mapKeyTypes[s.Var.Name] = "const char*"
+				mapValTypes[s.Var.Name] = valT
+				if needMapGetSStruct == nil {
+					needMapGetSStruct = make(map[string]bool)
+				}
+				needMapGetSStruct[valT] = true
 			}
 			return &RawStmt{Code: buf.String()}, nil
 		}
 		ds := &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}
 		// track variable type for later inference
 		varTypes[s.Var.Name] = declType
-		if declStmts != nil {
+		if declStmts != nil && blockDepth == 1 {
 			declStmts[s.Var.Name] = ds
 		}
 		return ds, nil
@@ -8978,6 +9029,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	}
 	currentParams = paramSet
 	mutatedParams = make(map[string]bool)
+	blockDepth = 0
 	body, err := compileStmts(localEnv, fn.BlockBody)
 	if err != nil {
 		return nil, err
@@ -9100,24 +9152,24 @@ func detectReturnType(stmts []Stmt, env *types.Env) string {
 }
 
 func convertExpr(e *parser.Expr) Expr {
-       if e == nil || e.Binary == nil {
-               return nil
-       }
-       if ml := mapLiteral(e); ml != nil {
-               if len(ml.Items) == 0 {
-                       return &MapLit{Items: nil}
-               }
-               var items []MapItem
-               for _, it := range ml.Items {
-                       k := convertExpr(it.Key)
-                       v := convertExpr(it.Value)
-                       items = append(items, MapItem{Key: k, Value: v})
-               }
-               return &MapLit{Items: items}
-       }
-       if q := queryExpr(e); q != nil && (matchFilteredQuery(q) || matchGroupedQuery(q)) {
-               return nil
-       }
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	if ml := mapLiteral(e); ml != nil {
+		if len(ml.Items) == 0 {
+			return &MapLit{Items: nil}
+		}
+		var items []MapItem
+		for _, it := range ml.Items {
+			k := convertExpr(it.Key)
+			v := convertExpr(it.Value)
+			items = append(items, MapItem{Key: k, Value: v})
+		}
+		return &MapLit{Items: items}
+	}
+	if q := queryExpr(e); q != nil && (matchFilteredQuery(q) || matchGroupedQuery(q)) {
+		return nil
+	}
 	// Convert left operand
 	left := convertUnary(e.Binary.Left)
 	if left == nil {
@@ -9991,6 +10043,15 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 		}
 		if call.Func == "slice" && len(call.Args) == 3 {
+			if _, ok := currentEnv.GetFunc("slice"); ok {
+				arg0 := convertExpr(call.Args[0])
+				arg1 := convertExpr(call.Args[1])
+				arg2 := convertExpr(call.Args[2])
+				if arg0 == nil || arg1 == nil || arg2 == nil {
+					return nil
+				}
+				return &CallExpr{Func: "slice", Args: []Expr{arg0, arg1, arg2}}
+			}
 			arg0 := convertExpr(call.Args[0])
 			arg1 := convertExpr(call.Args[1])
 			arg2 := convertExpr(call.Args[2])
@@ -10907,9 +10968,9 @@ func exprIsString(e Expr) bool {
 		_, ok := constStrings[v.Name]
 		return ok
 	case *CallExpr:
-               if v.Func == "str" || v.Func == "substring" || v.Func == "substr" || v.Func == "_substring" || v.Func == "json" || v.Func == "padStart" || v.Func == "_padStart" || v.Func == "repeat" || v.Func == "upper" || v.Func == "lower" || v.Func == "str_upper" || v.Func == "str_lower" {
-                       return true
-               }
+		if v.Func == "str" || v.Func == "substring" || v.Func == "substr" || v.Func == "_substring" || v.Func == "json" || v.Func == "padStart" || v.Func == "_padStart" || v.Func == "repeat" || v.Func == "upper" || v.Func == "lower" || v.Func == "str_upper" || v.Func == "str_lower" {
+			return true
+		}
 		if fn, ok := currentEnv.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
 			return *fn.Return.Simple == "string"
 		}
@@ -11344,6 +11405,9 @@ func cTypeFromMochiType(t types.Type) string {
 		return cTypeFromMochiType(tt.Elem) + "[]"
 	case types.MapType:
 		if _, ok := tt.Key.(types.StringType); ok {
+			if st, ok2 := tt.Value.(types.StructType); ok2 {
+				return "MapS" + st.Name
+			}
 			if inner, ok2 := tt.Value.(types.MapType); ok2 {
 				if _, ok3 := inner.Key.(types.StringType); ok3 {
 					if _, ok4 := inner.Value.(types.IntType); ok4 {
