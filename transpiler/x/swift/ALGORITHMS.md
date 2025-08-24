@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 975/1077
-Last updated: 2025-08-23 15:31 +0700
+Completed programs: 976/1077
+Last updated: 2025-08-24 08:57 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -962,7 +962,7 @@ Last updated: 2025-08-23 15:31 +0700
 | 953 | sorts/exchange_sort | ✓ | 878µs | 3.5 MB |
 | 954 | sorts/external_sort | ✓ | 435µs | 3.1 MB |
 | 955 | sorts/gnome_sort | ✓ | 366µs | 3.3 MB |
-| 956 | sorts/heap_sort |   |  |  |
+| 956 | sorts/heap_sort | ✓ | 695µs | 3.2 MB |
 | 957 | sorts/insertion_sort | ✓ | 960µs | 3.6 MB |
 | 958 | sorts/intro_sort | ✓ | 390µs | 3.2 MB |
 | 959 | sorts/iterative_merge_sort | ✓ | 527µs | 3.2 MB |
