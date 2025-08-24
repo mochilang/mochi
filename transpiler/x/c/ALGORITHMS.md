@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (794/1077) - Last updated 2025-08-23 21:18 +0700:
+Checklist of programs that currently transpile and run (795/1077) - Last updated 2025-08-24 09:02 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -960,7 +960,7 @@ Checklist of programs that currently transpile and run (794/1077) - Last updated
 | 953 | sorts/exchange_sort | ✓ | 314us | 1.5 MB |
 | 954 | sorts/external_sort | ✓ | 206us | 1.4 MB |
 | 955 | sorts/gnome_sort | ✓ | 259us | 1.4 MB |
-| 956 | sorts/heap_sort |  |  |  |
+| 956 | sorts/heap_sort | ✓ | 258us | 1.5 MB |
 | 957 | sorts/insertion_sort |  |  |  |
 | 958 | sorts/intro_sort |  |  |  |
 | 959 | sorts/iterative_merge_sort |  |  |  |
