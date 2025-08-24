@@ -766,6 +766,34 @@ type mutParam struct {
 
 func collectMutatedParams(f *parser.FunStmt) []mutParam {
 	mutated := map[string]bool{}
+	var checkCall func(*parser.Expr)
+	checkCall = func(e *parser.Expr) {
+		if e == nil {
+			return
+		}
+		if c := callExpr(e); c != nil {
+			if mps, ok := funcMutatedParams[c.Func]; ok {
+				for _, mp := range mps {
+					if mp.Index < len(c.Args) {
+						if name, ok := identName(c.Args[mp.Index]); ok {
+							name = originalVar(name)
+							mutated[name] = true
+						}
+					}
+				}
+			} else if mutatingCallFuncs[c.Func] {
+				if len(c.Args) > 0 {
+					if name, ok := identName(c.Args[0]); ok {
+						name = originalVar(name)
+						mutated[name] = true
+					}
+				}
+			}
+			for _, a := range c.Args {
+				checkCall(a)
+			}
+		}
+	}
 	var walk func([]*parser.Statement)
 	walk = func(stmts []*parser.Statement) {
 		for _, st := range stmts {
@@ -776,20 +804,32 @@ func collectMutatedParams(f *parser.FunStmt) []mutParam {
 					name = name[:idx]
 				}
 				mutated[name] = true
+				checkCall(st.Assign.Value)
+			case st.Expr != nil:
+				checkCall(st.Expr.Expr)
+			case st.Return != nil:
+				checkCall(st.Return.Value)
 			case st.If != nil:
+				checkCall(st.If.Cond)
 				walk(st.If.Then)
 				if st.If.Else != nil {
 					walk(st.If.Else)
 				}
 				for it := st.If.ElseIf; it != nil; it = it.ElseIf {
+					checkCall(it.Cond)
 					walk(it.Then)
 					if it.Else != nil {
 						walk(it.Else)
 					}
 				}
 			case st.While != nil:
+				checkCall(st.While.Cond)
 				walk(st.While.Body)
 			case st.For != nil:
+				checkCall(st.For.Source)
+				if st.For.RangeEnd != nil {
+					checkCall(st.For.RangeEnd)
+				}
 				walk(st.For.Body)
 			case st.Fun != nil:
 				walk(st.Fun.Body)
@@ -1560,6 +1600,34 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	renameVars = make(map[string]string)
 
 	mutated := map[string]bool{}
+	var checkCall func(*parser.Expr)
+	checkCall = func(e *parser.Expr) {
+		if e == nil {
+			return
+		}
+		if c := callExpr(e); c != nil {
+			if mps, ok := funcMutatedParams[c.Func]; ok {
+				for _, mp := range mps {
+					if mp.Index < len(c.Args) {
+						if name, ok := identName(c.Args[mp.Index]); ok {
+							name = originalVar(name)
+							mutated[name] = true
+						}
+					}
+				}
+			} else if mutatingCallFuncs[c.Func] {
+				if len(c.Args) > 0 {
+					if name, ok := identName(c.Args[0]); ok {
+						name = originalVar(name)
+						mutated[name] = true
+					}
+				}
+			}
+			for _, a := range c.Args {
+				checkCall(a)
+			}
+		}
+	}
 	var checkAssign func([]*parser.Statement)
 	checkAssign = func(stmts []*parser.Statement) {
 		for _, st := range stmts {
@@ -1570,20 +1638,32 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 					name = name[:idx]
 				}
 				mutated[name] = true
+				checkCall(st.Assign.Value)
+			case st.Expr != nil:
+				checkCall(st.Expr.Expr)
+			case st.Return != nil:
+				checkCall(st.Return.Value)
 			case st.If != nil:
+				checkCall(st.If.Cond)
 				checkAssign(st.If.Then)
 				if st.If.Else != nil {
 					checkAssign(st.If.Else)
 				}
 				for it := st.If.ElseIf; it != nil; it = it.ElseIf {
+					checkCall(it.Cond)
 					checkAssign(it.Then)
 					if it.Else != nil {
 						checkAssign(it.Else)
 					}
 				}
 			case st.While != nil:
+				checkCall(st.While.Cond)
 				checkAssign(st.While.Body)
 			case st.For != nil:
+				checkCall(st.For.Source)
+				if st.For.RangeEnd != nil {
+					checkCall(st.For.RangeEnd)
+				}
 				checkAssign(st.For.Body)
 			case st.Fun != nil:
 				checkAssign(st.Fun.Body)
@@ -1626,6 +1706,11 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	funParamsStack = append(funParamsStack, names)
 	if funcMutatedParams != nil {
 		funcMutatedParams[f.Name] = mutParams
+	}
+	if declVars != nil {
+		for _, mp := range mutParams {
+			declVars[mp.Name] = true
+		}
 	}
 	body := append([]Node{}, paramInit...)
 	hasReturn := containsReturn(f.Body)
