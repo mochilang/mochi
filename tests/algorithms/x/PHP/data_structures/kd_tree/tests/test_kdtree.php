@@ -1,17 +1,35 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$INF = 1000000000.0;
-$seed = 1;
-function rand_float() {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $INF = 1000000000.0;
+  $seed = 1;
+  function rand_float() {
   global $INF, $seed;
   $seed = ($seed * 1103515245 + 12345) % 2147483648;
   return (floatval($seed)) / 2147483648.0;
-}
-function hypercube_points($num_points, $cube_size, $num_dimensions) {
+};
+  function hypercube_points($num_points, $cube_size, $num_dimensions) {
   global $INF, $seed;
   $pts = [];
   $i = 0;
@@ -27,12 +45,12 @@ function hypercube_points($num_points, $cube_size, $num_dimensions) {
   $i = $i + 1;
 };
   return $pts;
-}
-function build_kdtree($points, $depth) {
+};
+  function build_kdtree($points, $depth) {
   global $INF, $seed;
   return $points;
-}
-function distance_sq($a, $b) {
+};
+  function distance_sq($a, $b) {
   global $INF, $seed;
   $sum = 0.0;
   $i = 0;
@@ -42,11 +60,11 @@ function distance_sq($a, $b) {
   $i = $i + 1;
 };
   return $sum;
-}
-function nearest_neighbour_search($points, $query) {
+};
+  function nearest_neighbour_search($points, $query) {
   global $INF, $seed;
   if (count($points) == 0) {
-  return ['index' => -1.0, 'dist' => $INF, 'visited' => 0.0];
+  return ['dist' => $INF, 'index' => -1.0, 'visited' => 0.0];
 }
   $nearest_idx = 0;
   $nearest_dist = $INF;
@@ -61,9 +79,9 @@ function nearest_neighbour_search($points, $query) {
 }
   $i = $i + 1;
 };
-  return ['index' => floatval($nearest_idx), 'dist' => $nearest_dist, 'visited' => floatval($visited)];
-}
-function test_build_cases() {
+  return ['dist' => $nearest_dist, 'index' => floatval($nearest_idx), 'visited' => floatval($visited)];
+};
+  function test_build_cases() {
   global $INF, $seed;
   $empty_pts = [];
   $tree0 = build_kdtree($empty_pts, 0);
@@ -86,8 +104,8 @@ function test_build_cases() {
 } else {
   echo rtrim('case3 false'), PHP_EOL;
 }
-}
-function test_search() {
+};
+  function test_search() {
   global $INF, $seed;
   $pts = hypercube_points(10, 10.0, 2);
   $tree = build_kdtree($pts, 0);
@@ -98,8 +116,8 @@ function test_search() {
 } else {
   echo rtrim('search false'), PHP_EOL;
 }
-}
-function test_edge() {
+};
+  function test_edge() {
   global $INF, $seed;
   $empty_pts = [];
   $tree = build_kdtree($empty_pts, 0);
@@ -110,12 +128,20 @@ function test_edge() {
 } else {
   echo rtrim('edge false'), PHP_EOL;
 }
-}
-function main() {
+};
+  function main() {
   global $INF, $seed;
   $seed = 1;
   test_build_cases();
   test_search();
   test_edge();
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

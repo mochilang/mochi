@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -26,27 +43,36 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-function get_parent_idx($idx) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function get_parent_idx($idx) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   return _intdiv(($idx - 1), 2);
-}
-function get_left_child_idx($idx) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function get_left_child_idx($idx) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   return $idx * 2 + 1;
-}
-function get_right_child_idx($idx) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function get_right_child_idx($idx) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   return $idx * 2 + 2;
-}
-function remove_key($m, $k) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function remove_key($m, $k) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   $out = [];
   foreach (array_keys($m) as $key) {
   if ($key != $k) {
@@ -54,9 +80,9 @@ function remove_key($m, $k) {
 }
 };
   return $out;
-}
-function slice_without_last($xs) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function slice_without_last($xs) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   $res = [];
   $i = 0;
   while ($i < count($xs) - 1) {
@@ -64,9 +90,9 @@ function slice_without_last($xs) {
   $i = $i + 1;
 };
   return $res;
-}
-function sift_down(&$mh, $idx) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function sift_down(&$mh, $idx) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   $heap = $mh['heap'];
   $idx_map = $mh['idx_of_element'];
   $i = $idx;
@@ -93,9 +119,9 @@ function sift_down(&$mh, $idx) {
 };
   $mh['heap'] = $heap;
   $mh['idx_of_element'] = $idx_map;
-}
-function sift_up(&$mh, $idx) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function sift_up(&$mh, $idx) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   $heap = $mh['heap'];
   $idx_map = $mh['idx_of_element'];
   $i = $idx;
@@ -111,9 +137,9 @@ function sift_up(&$mh, $idx) {
 };
   $mh['heap'] = $heap;
   $mh['idx_of_element'] = $idx_map;
-}
-function new_min_heap($array) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function new_min_heap($array) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   $idx_map = [];
   $val_map = [];
   $heap = $array;
@@ -124,20 +150,20 @@ function new_min_heap($array) {
   $val_map[$n['name']] = $n['val'];
   $i = $i + 1;
 };
-  $mh = ['heap' => $heap, 'idx_of_element' => $idx_map, 'heap_dict' => $val_map];
+  $mh = ['heap' => $heap, 'heap_dict' => $val_map, 'idx_of_element' => $idx_map];
   $start = get_parent_idx(count($array) - 1);
   while ($start >= 0) {
   sift_down($mh, $start);
   $start = $start - 1;
 };
   return $mh;
-}
-function peek($mh) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function peek($mh) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   return $mh['heap'][0];
-}
-function remove_min(&$mh) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function remove_min(&$mh) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   $heap = $mh['heap'];
   $idx_map = $mh['idx_of_element'];
   $val_map = $mh['heap_dict'];
@@ -156,9 +182,9 @@ function remove_min(&$mh) {
   sift_down($mh, 0);
 }
   return $top;
-}
-function insert(&$mh, $node) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function insert(&$mh, $node) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   $heap = $mh['heap'];
   $idx_map = $mh['idx_of_element'];
   $val_map = $mh['heap_dict'];
@@ -170,23 +196,23 @@ function insert(&$mh, $node) {
   $mh['idx_of_element'] = $idx_map;
   $mh['heap_dict'] = $val_map;
   sift_up($mh, $idx);
-}
-function is_empty($mh) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function is_empty($mh) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   return _len($mh['heap']) == 0;
-}
-function get_value($mh, $key) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function get_value($mh, $key) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   return $mh['heap_dict'][$key];
-}
-function decrease_key(&$mh, &$node, $new_value) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function decrease_key(&$mh, &$node, $new_value) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   $heap = $mh['heap'];
   $val_map = $mh['heap_dict'];
   $idx_map = $mh['idx_of_element'];
   $idx = $idx_map[$node['name']];
   if (!($heap[$idx]['val'] > $new_value)) {
-  $panic('newValue must be less than current value');
+  _panic('newValue must be less than current value');
 }
   $node['val'] = $new_value;
   $heap[$idx]['val'] = $new_value;
@@ -194,24 +220,32 @@ function decrease_key(&$mh, &$node, $new_value) {
   $mh['heap'] = $heap;
   $mh['heap_dict'] = $val_map;
   sift_up($mh, $idx);
-}
-function node_to_string($n) {
-  global $r, $b, $a, $x, $e, $my_min_heap;
+};
+  function node_to_string($n) {
+  global $a, $b, $e, $my_min_heap, $r, $x;
   return 'Node(' . $n['name'] . ', ' . _str($n['val']) . ')';
-}
-$r = ['name' => 'R', 'val' => -1];
-$b = ['name' => 'B', 'val' => 6];
-$a = ['name' => 'A', 'val' => 3];
-$x = ['name' => 'X', 'val' => 1];
-$e = ['name' => 'E', 'val' => 4];
-$my_min_heap = new_min_heap([$r, $b, $a, $x, $e]);
-echo rtrim('Min Heap - before decrease key'), PHP_EOL;
-foreach ($my_min_heap['heap'] as $n) {
+};
+  $r = ['name' => 'R', 'val' => -1];
+  $b = ['name' => 'B', 'val' => 6];
+  $a = ['name' => 'A', 'val' => 3];
+  $x = ['name' => 'X', 'val' => 1];
+  $e = ['name' => 'E', 'val' => 4];
+  $my_min_heap = new_min_heap([$r, $b, $a, $x, $e]);
+  echo rtrim('Min Heap - before decrease key'), PHP_EOL;
+  foreach ($my_min_heap['heap'] as $n) {
   echo rtrim(node_to_string($n)), PHP_EOL;
 }
-echo rtrim('Min Heap - After decrease key of node [B -> -17]'), PHP_EOL;
-decrease_key($my_min_heap, $b, -17);
-foreach ($my_min_heap['heap'] as $n) {
+  echo rtrim('Min Heap - After decrease key of node [B -> -17]'), PHP_EOL;
+  decrease_key($my_min_heap, $b, -17);
+  foreach ($my_min_heap['heap'] as $n) {
   echo rtrim(node_to_string($n)), PHP_EOL;
 }
-echo rtrim(_str(get_value($my_min_heap, 'B'))), PHP_EOL;
+  echo rtrim(_str(get_value($my_min_heap, 'B'))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

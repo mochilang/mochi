@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,23 +42,25 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function make_table($size_table, $charge_factor) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function make_table($size_table, $charge_factor) {
   $vals = [];
   $i = 0;
   while ($i < $size_table) {
   $vals = _append($vals, []);
   $i = $i + 1;
 };
-  return ['size_table' => $size_table, 'charge_factor' => $charge_factor, 'values' => $vals, 'keys' => []];
-}
-function hash_function($ht, $key) {
+  return ['charge_factor' => $charge_factor, 'keys' => [], 'size_table' => $size_table, 'values' => $vals];
+};
+  function hash_function($ht, $key) {
   $res = fmod($key, $ht['size_table']);
   if ($res < 0) {
   $res = $res + $ht['size_table'];
 }
   return $res;
-}
-function prepend($lst, $value) {
+};
+  function prepend($lst, $value) {
   $result = [$value];
   $i = 0;
   while ($i < count($lst)) {
@@ -49,8 +68,8 @@ function prepend($lst, $value) {
   $i = $i + 1;
 };
   return $result;
-}
-function set_value(&$ht, $key, $data) {
+};
+  function set_value(&$ht, $key, $data) {
   $current = $ht['values'][$key];
   $updated = prepend($current, $data);
   $vals = $ht['values'];
@@ -59,8 +78,8 @@ function set_value(&$ht, $key, $data) {
   $ks = $ht['keys'];
   $ks[$key] = $updated;
   $ht['keys'] = $ks;
-}
-function count_empty($ht) {
+};
+  function count_empty($ht) {
   $count = 0;
   $i = 0;
   while ($i < _len($ht['values'])) {
@@ -70,8 +89,8 @@ function count_empty($ht) {
   $i = $i + 1;
 };
   return $count;
-}
-function balanced_factor($ht) {
+};
+  function balanced_factor($ht) {
   $total = 0;
   $i = 0;
   while ($i < _len($ht['values'])) {
@@ -79,8 +98,8 @@ function balanced_factor($ht) {
   $i = $i + 1;
 };
   return (floatval($total)) / (floatval($ht['size_table'])) * (floatval($ht['charge_factor']));
-}
-function collision_resolution($ht, $key) {
+};
+  function collision_resolution($ht, $key) {
   if (!(_len($ht['values'][$key]) == $ht['charge_factor'] && count_empty($ht) == 0)) {
   return $key;
 }
@@ -94,8 +113,8 @@ function collision_resolution($ht, $key) {
   return $new_key;
 }
   return -1;
-}
-function insert(&$ht, $data) {
+};
+  function insert(&$ht, $data) {
   $key = hash_function($ht, $data);
   if (_len($ht['values'][$key]) == 0 || _len($ht['values'][$key]) < $ht['charge_factor']) {
   set_value($ht, $key, $data);
@@ -107,8 +126,8 @@ function insert(&$ht, $data) {
 } else {
   echo rtrim('table full'), PHP_EOL;
 }
-}
-function main() {
+};
+  function main() {
   $ht = make_table(3, 2);
   insert($ht, 10);
   insert($ht, 20);
@@ -117,5 +136,13 @@ function main() {
   insert($ht, 50);
   echo rtrim(_str($ht['values'])), PHP_EOL;
   echo rtrim(_str(balanced_factor($ht))), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

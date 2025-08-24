@@ -1,20 +1,41 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-$heap = [0];
-$size = 0;
-function swap_up($i) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $heap = [0];
+  $size = 0;
+  function swap_up($i) {
   global $heap, $size;
   $temp = $heap[$i];
   $idx = $i;
@@ -25,14 +46,14 @@ function swap_up($i) {
 }
   $idx = _intdiv($idx, 2);
 };
-}
-function insert($value) {
+};
+  function insert($value) {
   global $heap, $size;
   $heap = _append($heap, $value);
   $size = $size + 1;
   swap_up($size);
-}
-function swap_down($i) {
+};
+  function swap_down($i) {
   global $heap, $size;
   $idx = $i;
   while ($size >= 2 * $idx) {
@@ -44,8 +65,8 @@ function swap_down($i) {
 }
   $idx = $bigger_child;
 };
-}
-function shrink() {
+};
+  function shrink() {
   global $heap, $size;
   $new_heap = [];
   $i = 0;
@@ -54,8 +75,8 @@ function shrink() {
   $i = $i + 1;
 };
   $heap = $new_heap;
-}
-function pop() {
+};
+  function pop() {
   global $heap, $size;
   $max_value = $heap[1];
   $heap[1] = $heap[$size];
@@ -63,8 +84,8 @@ function pop() {
   shrink();
   swap_down(1);
   return $max_value;
-}
-function get_list() {
+};
+  function get_list() {
   global $heap, $size;
   $out = [];
   $i = 1;
@@ -73,16 +94,24 @@ function get_list() {
   $i = $i + 1;
 };
   return $out;
-}
-function len() {
+};
+  function mochi_len() {
   global $heap, $size;
   return $size;
-}
-insert(6);
-insert(10);
-insert(15);
-insert(12);
-echo rtrim(json_encode(pop(), 1344)), PHP_EOL;
-echo rtrim(json_encode(pop(), 1344)), PHP_EOL;
-echo rtrim(str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(get_list(), 1344))))))), PHP_EOL;
-echo rtrim(json_encode(len(), 1344)), PHP_EOL;
+};
+  insert(6);
+  insert(10);
+  insert(15);
+  insert(12);
+  echo rtrim(json_encode(pop(), 1344)), PHP_EOL;
+  echo rtrim(json_encode(pop(), 1344)), PHP_EOL;
+  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(get_list(), 1344)))))), PHP_EOL;
+  echo rtrim(json_encode(mochi_len(), 1344)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

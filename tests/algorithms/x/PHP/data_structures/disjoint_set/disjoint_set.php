@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,16 +36,22 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function make_set($ds, $x) {
-  global $i, $j, $res_i, $root_i, $res_j, $root_j, $same, $root_same, $res;
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function make_set($ds, $x) {
+  global $i, $j, $res, $res_i, $res_j, $root_i, $root_j, $root_same, $same;
   $p = $ds['parent'];
   $r = $ds['rank'];
   $p[$x] = $x;
   $r[$x] = 0;
   return ['parent' => $p, 'rank' => $r];
-}
-function find_set($ds, $x) {
-  global $i, $j, $res_i, $root_i, $res_j, $root_j, $same, $root_same;
+};
+  function find_set($ds, $x) {
+  global $i, $j, $res_i, $res_j, $root_i, $root_j, $root_same, $same;
   if ($ds['parent'][$x] == $x) {
   return ['ds' => $ds, 'root' => $x];
 }
@@ -37,9 +59,9 @@ function find_set($ds, $x) {
   $p = $res['ds']['parent'];
   $p[$x] = $res['root'];
   return ['ds' => ['parent' => $p, 'rank' => $res['ds']['rank']], 'root' => $res['root']];
-}
-function union_set($ds, $x, $y) {
-  global $i, $j, $res_i, $root_i, $res_j, $root_j, $same, $root_same, $res;
+};
+  function union_set($ds, $x, $y) {
+  global $i, $j, $res, $res_i, $res_j, $root_i, $root_j, $root_same, $same;
   $fx = find_set($ds, $x);
   $ds1 = $fx['ds'];
   $x_root = $fx['root'];
@@ -60,9 +82,9 @@ function union_set($ds, $x, $y) {
 };
 }
   return ['parent' => $p, 'rank' => $r];
-}
-function same_python_set($a, $b) {
-  global $ds, $i, $j, $res_i, $root_i, $res_j, $root_j, $same, $root_same, $res;
+};
+  function same_python_set($a, $b) {
+  global $ds, $i, $j, $res, $res_i, $res_j, $root_i, $root_j, $root_same, $same;
   if ($a < 3 && $b < 3) {
   return true;
 }
@@ -70,21 +92,21 @@ function same_python_set($a, $b) {
   return true;
 }
   return false;
-}
-$ds = ['parent' => [], 'rank' => []];
-$i = 0;
-while ($i < 6) {
+};
+  $ds = ['parent' => [], 'rank' => []];
+  $i = 0;
+  while ($i < 6) {
   $ds['parent'] = _append($ds['parent'], 0);
   $ds['rank'] = _append($ds['rank'], 0);
   $ds = make_set($ds, $i);
   $i = $i + 1;
 }
-$ds = union_set($ds, 0, 1);
-$ds = union_set($ds, 1, 2);
-$ds = union_set($ds, 3, 4);
-$ds = union_set($ds, 3, 5);
-$i = 0;
-while ($i < 6) {
+  $ds = union_set($ds, 0, 1);
+  $ds = union_set($ds, 1, 2);
+  $ds = union_set($ds, 3, 4);
+  $ds = union_set($ds, 3, 5);
+  $i = 0;
+  while ($i < 6) {
   $j = 0;
   while ($j < 6) {
   $res_i = find_set($ds, $i);
@@ -97,21 +119,29 @@ while ($i < 6) {
   $root_same = $root_i == $root_j;
   if ($same) {
   if (!$root_same) {
-  $panic('nodes should be in same set');
+  _panic('nodes should be in same set');
 };
 } else {
   if ($root_same) {
-  $panic('nodes should be in different sets');
+  _panic('nodes should be in different sets');
 };
 }
   $j = $j + 1;
 };
   $i = $i + 1;
 }
-$i = 0;
-while ($i < 6) {
+  $i = 0;
+  while ($i < 6) {
   $res = find_set($ds, $i);
   $ds = $res['ds'];
   echo rtrim(_str($res['root'])), PHP_EOL;
   $i = $i + 1;
 }
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

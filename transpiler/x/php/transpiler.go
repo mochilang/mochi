@@ -3602,9 +3602,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if ut, ok := transpileEnv.FindUnionByVariant(p.Struct.Name); ok {
 				items = append(items, MapEntry{Key: &StringLit{Value: "__tag"}, Value: &StringLit{Value: p.Struct.Name}})
 				st := ut.Variants[p.Struct.Name]
-				for idx, fname := range st.Order {
-					if idx < len(p.Struct.Fields) {
-						v, err := convertExpr(p.Struct.Fields[idx].Value)
+				fieldMap := map[string]*parser.Expr{}
+				for _, f := range p.Struct.Fields {
+					fname := strings.TrimPrefix(f.Name, "$")
+					fieldMap[fname] = f.Value
+				}
+				for _, fname := range st.Order {
+					if expr, ok := fieldMap[fname]; ok {
+						v, err := convertExpr(expr)
 						if err != nil {
 							return nil, err
 						}
@@ -3786,6 +3791,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if newName, ok := renameMap[name]; ok {
 			name = newName
+		}
+		if transpileEnv != nil {
+			if ut, ok := transpileEnv.FindUnionByVariant(name); ok {
+				st := ut.Variants[name]
+				if len(st.Order) == 0 {
+					items := []MapEntry{{Key: &StringLit{Value: "__tag"}, Value: &StringLit{Value: name}}}
+					return &MapLit{Items: items}, nil
+				}
+			}
 		}
 		return &Var{Name: name}, nil
 	case p.Group != nil:
@@ -4401,6 +4415,21 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 						copy(fields, st.Order)
 						unionCases = append(unionCases, UnionMatchCase{Tag: name, Fields: fields, Result: res})
 						continue
+					}
+				case *MapLit:
+					if len(pe.Items) == 1 {
+						if key, ok := pe.Items[0].Key.(*StringLit); ok && key.Value == "__tag" {
+							if val, ok := pe.Items[0].Value.(*StringLit); ok {
+								name := val.Value
+								if ut, ok := transpileEnv.FindUnionByVariant(name); ok {
+									st := ut.Variants[name]
+									fields := make([]string, len(st.Order))
+									copy(fields, st.Order)
+									unionCases = append(unionCases, UnionMatchCase{Tag: name, Fields: fields, Result: res})
+									continue
+								}
+							}
+						}
 					}
 				case nil:
 					// wildcard pattern

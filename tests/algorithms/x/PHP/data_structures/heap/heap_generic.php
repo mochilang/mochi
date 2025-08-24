@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -21,41 +37,46 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-function new_heap($key) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function new_heap($key) {
   global $h;
-  return ['arr' => [], 'pos_map' => [], 'size' => 0, 'key' => $key];
-}
-function parent($i) {
+  return ['arr' => [], 'key' => $key, 'pos_map' => [], 'size' => 0];
+};
+  function parent($i) {
   global $h;
   if ($i > 0) {
   return _intdiv(($i - 1), 2);
 }
   return -1;
-}
-function left($i, $size) {
+};
+  function left($i, $size) {
   global $h;
   $l = 2 * $i + 1;
   if ($l < $size) {
   return $l;
 }
   return -1;
-}
-function right($i, $size) {
+};
+  function right($i, $size) {
   global $h;
   $r = 2 * $i + 2;
   if ($r < $size) {
   return $r;
 }
   return -1;
-}
-function swap(&$h, $i, $j) {
+};
+  function swap(&$h, $i, $j) {
   $arr = $h['arr'];
   $item_i = $arr[$i][0];
   $item_j = $arr[$j][0];
@@ -67,12 +88,12 @@ function swap(&$h, $i, $j) {
   $arr[$i] = $arr[$j];
   $arr[$j] = $tmp;
   $h['arr'] = $arr;
-}
-function cmp($h, $i, $j) {
+};
+  function cmp($h, $i, $j) {
   $arr = $h['arr'];
   return $arr[$i][1] < $arr[$j][1];
-}
-function get_valid_parent($h, $i) {
+};
+  function get_valid_parent($h, $i) {
   $vp = $i;
   $l = left($i, $h['size']);
   if ($l != 0 - 1 && cmp($h, $l, $vp) == false) {
@@ -83,8 +104,8 @@ function get_valid_parent($h, $i) {
   $vp = $r;
 }
   return $vp;
-}
-function heapify_up(&$h, $index) {
+};
+  function heapify_up(&$h, $index) {
   $idx = $index;
   $p = parent($idx);
   while ($p != 0 - 1 && cmp($h, $idx, $p) == false) {
@@ -92,8 +113,8 @@ function heapify_up(&$h, $index) {
   $idx = $p;
   $p = parent($p);
 };
-}
-function heapify_down(&$h, $index) {
+};
+  function heapify_down(&$h, $index) {
   $idx = $index;
   $vp = get_valid_parent($h, $idx);
   while ($vp != $idx) {
@@ -101,8 +122,8 @@ function heapify_down(&$h, $index) {
   $idx = $vp;
   $vp = get_valid_parent($h, $idx);
 };
-}
-function update_item(&$h, $item, $item_value) {
+};
+  function update_item(&$h, $item, $item_value) {
   $pm = $h['pos_map'];
   if ($pm[$item] == 0) {
   return;
@@ -114,8 +135,8 @@ function update_item(&$h, $item, $item_value) {
   $h['pos_map'] = $pm;
   heapify_up($h, $index);
   heapify_down($h, $index);
-}
-function delete_item(&$h, $item) {
+};
+  function delete_item(&$h, $item) {
   $pm = $h['pos_map'];
   if ($pm[$item] == 0) {
   return;
@@ -136,8 +157,8 @@ function delete_item(&$h, $item) {
   heapify_up($h, $index);
   heapify_down($h, $index);
 }
-}
-function insert_item(&$h, $item, $item_value) {
+};
+  function insert_item(&$h, $item, $item_value) {
   $arr = $h['arr'];
   $arr_len = count($arr);
   if ($arr_len == $h['size']) {
@@ -151,50 +172,58 @@ function insert_item(&$h, $item, $item_value) {
   $h['arr'] = $arr;
   $h['pos_map'] = $pm;
   heapify_up($h, $h['size'] - 1);
-}
-function get_top($h) {
+};
+  function get_top($h) {
   $arr = $h['arr'];
   if ($h['size'] > 0) {
   return $arr[0];
 }
   return [];
-}
-function extract_top(&$h) {
+};
+  function extract_top(&$h) {
   $top = get_top($h);
   if (count($top) > 0) {
   delete_item($h, $top[0]);
 }
   return $top;
-}
-function identity($x) {
+};
+  function identity($x) {
   global $h;
   return $x;
-}
-function negate($x) {
+};
+  function negate($x) {
   global $h;
   return 0 - $x;
-}
-$h = new_heap('identity');
-insert_item($h, 5, 34);
-insert_item($h, 6, 31);
-insert_item($h, 7, 37);
-echo rtrim(_str(get_top($h))), PHP_EOL;
-echo rtrim(_str(extract_top($h))), PHP_EOL;
-echo rtrim(_str(extract_top($h))), PHP_EOL;
-echo rtrim(_str(extract_top($h))), PHP_EOL;
-$h = new_heap('negate');
-insert_item($h, 5, 34);
-insert_item($h, 6, 31);
-insert_item($h, 7, 37);
-echo rtrim(_str(get_top($h))), PHP_EOL;
-echo rtrim(_str(extract_top($h))), PHP_EOL;
-echo rtrim(_str(extract_top($h))), PHP_EOL;
-echo rtrim(_str(extract_top($h))), PHP_EOL;
-insert_item($h, 8, 45);
-insert_item($h, 9, 40);
-insert_item($h, 10, 50);
-echo rtrim(_str(get_top($h))), PHP_EOL;
-update_item($h, 10, 30);
-echo rtrim(_str(get_top($h))), PHP_EOL;
-delete_item($h, 10);
-echo rtrim(_str(get_top($h))), PHP_EOL;
+};
+  $h = new_heap('identity');
+  insert_item($h, 5, 34);
+  insert_item($h, 6, 31);
+  insert_item($h, 7, 37);
+  echo rtrim(_str(get_top($h))), PHP_EOL;
+  echo rtrim(_str(extract_top($h))), PHP_EOL;
+  echo rtrim(_str(extract_top($h))), PHP_EOL;
+  echo rtrim(_str(extract_top($h))), PHP_EOL;
+  $h = new_heap('negate');
+  insert_item($h, 5, 34);
+  insert_item($h, 6, 31);
+  insert_item($h, 7, 37);
+  echo rtrim(_str(get_top($h))), PHP_EOL;
+  echo rtrim(_str(extract_top($h))), PHP_EOL;
+  echo rtrim(_str(extract_top($h))), PHP_EOL;
+  echo rtrim(_str(extract_top($h))), PHP_EOL;
+  insert_item($h, 8, 45);
+  insert_item($h, 9, 40);
+  insert_item($h, 10, 50);
+  echo rtrim(_str(get_top($h))), PHP_EOL;
+  update_item($h, 10, 30);
+  echo rtrim(_str(get_top($h))), PHP_EOL;
+  delete_item($h, 10);
+  echo rtrim(_str(get_top($h))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

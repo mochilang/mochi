@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,16 +42,22 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function empty_list() {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function empty_list() {
   return ['data' => []];
-}
-function length($list) {
+};
+  function length($list) {
   return _len($list['data']);
-}
-function is_empty($list) {
+};
+  function is_empty($list) {
   return _len($list['data']) == 0;
-}
-function to_string($list) {
+};
+  function to_string($list) {
   if (_len($list['data']) == 0) {
   return '';
 }
@@ -45,10 +68,10 @@ function to_string($list) {
   $i = $i + 1;
 };
   return $s;
-}
-function insert_nth($list, $index, $value) {
+};
+  function insert_nth($list, $index, $value) {
   if ($index < 0 || $index > _len($list['data'])) {
-  $panic('index out of range');
+  _panic('index out of range');
 }
   $res = [];
   $i = 0;
@@ -62,16 +85,16 @@ function insert_nth($list, $index, $value) {
   $i = $i + 1;
 };
   return ['data' => $res];
-}
-function insert_head($list, $value) {
+};
+  function insert_head($list, $value) {
   return insert_nth($list, 0, $value);
-}
-function insert_tail($list, $value) {
+};
+  function insert_tail($list, $value) {
   return insert_nth($list, _len($list['data']), $value);
-}
-function delete_nth($list, $index) {
+};
+  function delete_nth($list, $index) {
   if ($index < 0 || $index >= _len($list['data'])) {
-  $panic('index out of range');
+  _panic('index out of range');
 }
   $res = [];
   $i = 0;
@@ -85,14 +108,14 @@ function delete_nth($list, $index) {
   $i = $i + 1;
 };
   return ['list' => ['data' => $res], 'value' => $removed];
-}
-function delete_head($list) {
+};
+  function delete_head($list) {
   return delete_nth($list, 0);
-}
-function delete_tail($list) {
+};
+  function delete_tail($list) {
   return delete_nth($list, _len($list['data']) - 1);
-}
-function delete_value($list, $value) {
+};
+  function delete_value($list, $value) {
   $idx = 0;
   $found = false;
   while ($idx < _len($list['data'])) {
@@ -103,11 +126,11 @@ function delete_value($list, $value) {
   $idx = $idx + 1;
 };
   if (!$found) {
-  $panic('value not found');
+  _panic('value not found');
 }
   return delete_nth($list, $idx);
-}
-function main() {
+};
+  function main() {
   $dll = empty_list();
   $dll = insert_tail($dll, 1);
   $dll = insert_tail($dll, 2);
@@ -129,5 +152,13 @@ function main() {
   $dll = $res['list'];
   echo rtrim(json_encode($res['value'], 1344)), PHP_EOL;
   echo rtrim(to_string($dll)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

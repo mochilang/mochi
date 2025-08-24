@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -26,22 +43,27 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-function new_heap() {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function new_heap() {
   return ['data' => []];
-}
-function swap(&$data, $i, $j) {
+};
+  function swap(&$data, $i, $j) {
   $tmp = $data[$i];
   $data[$i] = $data[$j];
   $data[$j] = $tmp;
-}
-function sift_up(&$data, $idx) {
+};
+  function sift_up(&$data, $idx) {
   $i = $idx;
   while ($i > 0) {
   $parent = _intdiv(($i - 1), 2);
@@ -51,8 +73,8 @@ function sift_up(&$data, $idx) {
   swap($data, $parent, $i);
   $i = $parent;
 };
-}
-function sift_down(&$data, $idx) {
+};
+  function sift_down(&$data, $idx) {
   $i = $idx;
   $n = count($data);
   while (true) {
@@ -71,30 +93,30 @@ function sift_down(&$data, $idx) {
   swap($data, $i, $smallest);
   $i = $smallest;
 };
-}
-function insert($heap, $v) {
+};
+  function insert($heap, $v) {
   $d = $heap['data'];
   $d = _append($d, $v);
   sift_up($d, count($d) - 1);
   return ['data' => $d];
-}
-function peek($heap) {
+};
+  function peek($heap) {
   return $heap['data'][0];
-}
-function is_empty($heap) {
+};
+  function is_empty($heap) {
   return _len($heap['data']) == 0;
-}
-function delete_min($heap) {
+};
+  function delete_min($heap) {
   $d = $heap['data'];
   $min = $d[0];
   $d[0] = $d[count($d) - 1];
-  $d = array_slice($d, 0, count($d) - 1 - 0);
+  $d = array_slice($d, 0, count($d) - 1);
   if (count($d) > 0) {
   sift_down($d, 0);
 }
   return ['heap' => ['data' => $d], 'value' => $min];
-}
-function main() {
+};
+  function main() {
   $h = new_heap();
   $h = insert($h, 10);
   $h = insert($h, 3);
@@ -109,5 +131,13 @@ function main() {
   $d3 = delete_min($h);
   $h = $d3['heap'];
   echo rtrim(_str($d3['value'])), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
