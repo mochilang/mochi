@@ -79,7 +79,11 @@ mochi_to_int(V) ->
         true -> V;
         _ -> case erlang:is_float(V) of
             true -> trunc(V);
-            _ -> list_to_integer(V)
+            _ -> case V of
+                true -> 1;
+                false -> 0;
+                _ -> list_to_integer(V)
+            end
         end
     end.
 `
@@ -3943,12 +3947,13 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 					}
 					res := ctx.newAlias(name + "_res")
 					tmp := ctx.newAlias(name + "_tmp")
+					alias := ctx.newAlias(name)
 					ctx.markMutated(name)
 					ctx.clearConst(name)
 					return []Stmt{
 						&LetStmt{Name: res, Expr: c},
 						&LetStmt{Name: tmp, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: res}}}},
-						&LetStmt{Name: nr.Name, Expr: &NameRef{Name: tmp}},
+						&LetStmt{Name: alias, Expr: &NameRef{Name: tmp}},
 					}, nil
 				}
 				if get, ok := arg.(*CallExpr); ok && get.Func == "erlang:get" && len(get.Args) == 1 {
