@@ -52,6 +52,7 @@ var (
 	needStrListListDouble   bool
 	needJoinStr             bool
 	needStrMapIL            bool
+	needStrMapII            bool
 	needStrMapSD            bool
 	needJSONListListInt     bool
 	needJSONMapSD           bool
@@ -2140,28 +2141,22 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			if fromAlias {
 				switch base {
 				case "int", "long long":
-					needListAppendIntNew = true
-					fmt.Fprintf(w, "%s = list_append_int_new(%s, %s_len, ", a.Name, a.Name, a.Name)
+					needListAppendInt = true
+					fmt.Fprintf(w, "%s = list_append_long_long(%s, &%s_len, ", a.Name, a.Name, a.Name)
 					call.Args[1].emitExpr(w)
 					io.WriteString(w, ");\n")
-					writeIndent(w, indent)
-					fmt.Fprintf(w, "%s_len++;\n", a.Name)
 					return
 				case "double":
-					needListAppendDoubleNew = true
-					fmt.Fprintf(w, "%s = list_append_double_new(%s, %s_len, ", a.Name, a.Name, a.Name)
+					needListAppendDouble = true
+					fmt.Fprintf(w, "%s = list_append_double(%s, &%s_len, ", a.Name, a.Name, a.Name)
 					call.Args[1].emitExpr(w)
 					io.WriteString(w, ");\n")
-					writeIndent(w, indent)
-					fmt.Fprintf(w, "%s_len++;\n", a.Name)
 					return
 				case "const char*":
-					needListAppendStrNew = true
-					fmt.Fprintf(w, "%s = list_append_str_new(%s, %s_len, ", a.Name, a.Name, a.Name)
+					needListAppendStr = true
+					fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", a.Name, a.Name, a.Name)
 					call.Args[1].emitExpr(w)
 					io.WriteString(w, ");\n")
-					writeIndent(w, indent)
-					fmt.Fprintf(w, "%s_len++;\n", a.Name)
 					return
 				}
 			}
@@ -2958,37 +2953,21 @@ func (l *ListLit) emitExpr(w io.Writer) {
 	}
 	dims := strings.Count(elemType, "[]")
 	base := strings.TrimSuffix(elemType, strings.Repeat("[]", dims))
-	allConst := true
-	for _, e := range l.Elems {
-		if !isConstExpr(e) {
-			allConst = false
-			break
-		}
-	}
 	// When the element type has no array suffixes (i.e. dims == 0), this
-	// literal represents a 1-D list. If all elements are constant, emit a
-	// compound literal so it can appear in global initializers. Otherwise
-	// allocate storage on the heap so the pointer remains valid after the
-	// expression finishes.
+	// literal represents a 1-D list. Using C compound literals here would
+	// allocate storage with automatic duration, leading to dangling
+	// pointers when a slice is returned from a function or stored inside a
+	// struct that outlives the expression. Instead always allocate storage
+	// on the heap so the pointer remains valid for the caller. This keeps
+	// semantics consistent with Mochi lists which have heap semantics.
 	if dims == 0 {
-		if allConst {
-			fmt.Fprintf(w, "(%s[]){", base)
-			for i, e := range l.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
-				e.emitExpr(w)
-			}
-			io.WriteString(w, "}")
-		} else {
-			fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", base, len(l.Elems), base)
-			for i, e := range l.Elems {
-				fmt.Fprintf(w, "tmp[%d] = ", i)
-				e.emitExpr(w)
-				io.WriteString(w, "; ")
-			}
-			io.WriteString(w, "tmp;})")
+		fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", base, len(l.Elems), base)
+		for i, e := range l.Elems {
+			fmt.Fprintf(w, "tmp[%d] = ", i)
+			e.emitExpr(w)
+			io.WriteString(w, "; ")
 		}
+		io.WriteString(w, "tmp;})")
 		return
 	}
 	outType := base + strings.Repeat("*", dims)
@@ -4139,6 +4118,23 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				io.WriteString(w, "; char *__res = str_map_il("+tmp+"); __res;})")
 			} else {
 				io.WriteString(w, "str_map_il(")
+				arg.emitExpr(w)
+				io.WriteString(w, ")")
+			}
+			return
+		}
+		if t == "MapII" {
+			needStrMapII = true
+			needStrInt = true
+			needStrConcat = true
+			if _, ok := arg.(*CallExpr); ok {
+				tmp := fmt.Sprintf("__tmp%d", tempCounter)
+				tempCounter++
+				io.WriteString(w, "({MapII "+tmp+" = ")
+				arg.emitExpr(w)
+				io.WriteString(w, "; char *__res = str_map_ii("+tmp+"); __res;})")
+			} else {
+				io.WriteString(w, "str_map_ii(")
 				arg.emitExpr(w)
 				io.WriteString(w, ")")
 			}
@@ -5516,6 +5512,22 @@ func (p *Program) Emit() []byte {
 			fmt.Fprintf(&buf, "typedef struct { const char **keys; %s *vals; size_t len; size_t cap; } MapS%s;\n\n", name, name)
 		}
 	}
+	if needStrMapII {
+		buf.WriteString("static char* str_map_ii(MapII m) {\n")
+		buf.WriteString("    char *res = strdup(\"map[\");\n")
+		buf.WriteString("    for (size_t i = 0; i < m.len; i++) {\n")
+		buf.WriteString("        char *k = str_int(m.keys[i]);\n")
+		buf.WriteString("        char *v = str_int(m.vals[i]);\n")
+		buf.WriteString("        char *kv = str_concat(k, \":\");\n")
+		buf.WriteString("        kv = str_concat(kv, v);\n")
+		buf.WriteString("        res = str_concat(res, kv);\n")
+		buf.WriteString("        if (i + 1 < m.len) res = str_concat(res, \" \");\n")
+		buf.WriteString("        free(k); free(v); free(kv);\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    res = str_concat(res, \"]\");\n")
+		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needStrMapSD {
 		buf.WriteString("static char* str_map_sd(MapSD m) {\n")
 		buf.WriteString("    char *res = strdup(\"map[\");\n")
@@ -6443,6 +6455,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needStrListListDouble = false
 	needJoinStr = false
 	needStrMapIL = false
+	needStrMapII = false
 	needStrMapSD = false
 	needJSONListListInt = false
 	needJSONMapSD = false
