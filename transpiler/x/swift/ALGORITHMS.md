@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 977/1077
-Last updated: 2025-08-24 15:35 +0700
+Completed programs: 978/1077
+Last updated: 2025-08-24 16:59 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -181,13 +181,13 @@ Last updated: 2025-08-24 15:35 +0700
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 553µs | 3.1 MB |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 1.197ms | 3.2 MB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 465µs | 3.3 MB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 571µs | 3.2 MB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 400µs | 3.2 MB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 552µs | 3.1 MB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 353µs | 3.2 MB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 1.052ms | 3.4 MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 383µs | 3.1 MB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 536µs | 3.2 MB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 711µs | 3.3 MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 401µs | 3.1 MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 672µs | 3.1 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 441µs | 2.9 MB |
 | 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
 | 184 | data_structures/binary_tree/is_sorted |   | 906µs | 3.6 MB |

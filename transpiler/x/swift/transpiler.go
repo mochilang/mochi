@@ -342,6 +342,10 @@ type UnionVariant struct {
 func (ud *UnionDef) emit(w io.Writer) {
 	fmt.Fprintf(w, "indirect enum %s {\n", ud.Name)
 	for _, v := range ud.Variants {
+		if len(v.Fields) == 0 {
+			fmt.Fprintf(w, "    case %s\n", v.Name)
+			continue
+		}
 		fmt.Fprintf(w, "    case %s(", v.Name)
 		for i, f := range v.Fields {
 			if i > 0 {
@@ -479,6 +483,12 @@ func (m *UnionMatchExpr) emit(w io.Writer) {
 	m.Target.emit(w)
 	fmt.Fprint(w, " {\n")
 	for _, c := range m.Cases {
+		if len(c.Bindings) == 0 {
+			fmt.Fprintf(w, "case .%s:\n    return ", c.Variant)
+			c.Body.emit(w)
+			fmt.Fprint(w, "\n")
+			continue
+		}
 		fmt.Fprintf(w, "case let .%s(", c.Variant)
 		for i, b := range c.Bindings {
 			if i > 0 {
@@ -867,6 +877,10 @@ func (si *StructInit) emit(w io.Writer) {
 }
 
 func (ui *UnionInit) emit(w io.Writer) {
+	if len(ui.Fields) == 0 {
+		fmt.Fprintf(w, "%s.%s", ui.Union, ui.Variant)
+		return
+	}
 	fmt.Fprintf(w, "%s.%s(", ui.Union, ui.Variant)
 	for i, f := range ui.Fields {
 		if i > 0 {
@@ -2333,18 +2347,18 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n")
 	}
 	if p.UseSet {
-               buf.WriteString("func _set<T>(_ xs: [T], _ idx: Int, _ v: T) -> [T] {\n")
-               buf.WriteString("    var out = xs\n")
-               buf.WriteString("    var i = idx\n")
-               buf.WriteString("    if i < 0 { i += out.count }\n")
-               buf.WriteString("    if i < out.count {\n")
-               buf.WriteString("        out[i] = v\n")
-               buf.WriteString("    } else {\n")
-               buf.WriteString("        out.append(contentsOf: Array(repeating: v, count: i - out.count + 1))\n")
-               buf.WriteString("        out[i] = v\n")
-               buf.WriteString("    }\n")
-               buf.WriteString("    return out\n")
-               buf.WriteString("}\n")
+		buf.WriteString("func _set<T>(_ xs: [T], _ idx: Int, _ v: T) -> [T] {\n")
+		buf.WriteString("    var out = xs\n")
+		buf.WriteString("    var i = idx\n")
+		buf.WriteString("    if i < 0 { i += out.count }\n")
+		buf.WriteString("    if i < out.count {\n")
+		buf.WriteString("        out[i] = v\n")
+		buf.WriteString("    } else {\n")
+		buf.WriteString("        out.append(contentsOf: Array(repeating: v, count: i - out.count + 1))\n")
+		buf.WriteString("        out[i] = v\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return out\n")
+		buf.WriteString("}\n")
 		buf.WriteString("func _set<K: Hashable, V>(_ xs: [K: V], _ key: K, _ v: V) -> [K: V] {\n")
 		buf.WriteString("    var out = xs\n")
 		buf.WriteString("    out[key] = v\n")
@@ -3165,7 +3179,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if st.Var.Type == nil {
-			typ = ""
+			if isNullLiteral(st.Var.Value) {
+				typ = "Any?"
+			} else {
+				typ = ""
+			}
 		}
 		if currentVars != nil {
 			currentVars[st.Var.Name] = true
@@ -5851,6 +5869,9 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		return expr, nil
 	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
 		if env != nil {
+			if ut, ok := env.FindUnionByVariant(pr.Selector.Root); ok {
+				return &UnionInit{Union: ut.Name, Variant: pr.Selector.Root, Fields: nil}, nil
+			}
 			if selfT, err := env.GetVar("self"); err == nil {
 				if st, ok := selfT.(types.StructType); ok {
 					if _, ok2 := st.Fields[pr.Selector.Root]; ok2 {
@@ -5897,6 +5918,18 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 	}
 	if sl.Name != "" {
 		if ut, ok := env.FindUnionByVariant(sl.Name); ok {
+			if st, ok := ut.Variants[sl.Name]; ok {
+				ordered := make([]FieldInit, 0, len(st.Order))
+				for _, name := range st.Order {
+					for _, f := range fields {
+						if f.Name == name {
+							ordered = append(ordered, f)
+							break
+						}
+					}
+				}
+				fields = ordered
+			}
 			return &UnionInit{Union: ut.Name, Variant: sl.Name, Fields: fields}, nil
 		}
 		return &StructInit{Name: sl.Name, Fields: fields}, nil
