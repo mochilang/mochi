@@ -16,12 +16,6 @@ function _now() {
     }
     return hrtime(true);
 }
-function _len($x) {
-    if ($x === null) { return 0; }
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -61,7 +55,7 @@ $__start = _now();
   $node = $nodes[$index];
   $current_point = $node['point'];
   $current_dist = square_distance($query_point, $current_point);
-  if (_len($result['point']) == 0 || $current_dist < $result['distance']) {
+  if (count($result['point']) == 0 || $current_dist < $result['distance']) {
   $result['point'] = $current_point;
   $result['distance'] = $current_dist;
 }

@@ -16,12 +16,6 @@ function _now() {
     }
     return hrtime(true);
 }
-function _len($x) {
-    if ($x === null) { return 0; }
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -199,7 +193,7 @@ $__start = _now();
 };
   function is_empty($mh) {
   global $a, $b, $e, $my_min_heap, $r, $x;
-  return _len($mh['heap']) == 0;
+  return count($mh['heap']) == 0;
 };
   function get_value($mh, $key) {
   global $a, $b, $e, $my_min_heap, $r, $x;

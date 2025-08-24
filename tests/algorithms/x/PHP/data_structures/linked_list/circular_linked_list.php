@@ -16,12 +16,6 @@ function _now() {
     }
     return hrtime(true);
 }
-function _len($x) {
-    if ($x === null) { return 0; }
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -52,25 +46,25 @@ $__start = _now();
   return ['data' => []];
 };
   function length($list) {
-  return _len($list['data']);
+  return count($list['data']);
 };
   function is_empty($list) {
-  return _len($list['data']) == 0;
+  return count($list['data']) == 0;
 };
   function to_string($list) {
-  if (_len($list['data']) == 0) {
+  if (count($list['data']) == 0) {
   return '';
 }
   $s = _str($list['data'][0]);
   $i = 1;
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   $s = $s . '->' . _str($list['data'][$i]);
   $i = $i + 1;
 };
   return $s;
 };
   function insert_nth($list, $index, $value) {
-  if ($index < 0 || $index > _len($list['data'])) {
+  if ($index < 0 || $index > count($list['data'])) {
   _panic('index out of range');
 }
   $res = [];
@@ -80,7 +74,7 @@ $__start = _now();
   $i = $i + 1;
 };
   $res = _append($res, $value);
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   $res = _append($res, $list['data'][$i]);
   $i = $i + 1;
 };
@@ -90,16 +84,16 @@ $__start = _now();
   return insert_nth($list, 0, $value);
 };
   function insert_tail($list, $value) {
-  return insert_nth($list, _len($list['data']), $value);
+  return insert_nth($list, count($list['data']), $value);
 };
   function delete_nth($list, $index) {
-  if ($index < 0 || $index >= _len($list['data'])) {
+  if ($index < 0 || $index >= count($list['data'])) {
   _panic('index out of range');
 }
   $res = [];
   $i = 0;
   $val = 0;
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   if ($i == $index) {
   $val = $list['data'][$i];
 } else {
@@ -113,7 +107,7 @@ $__start = _now();
   return delete_nth($list, 0);
 };
   function delete_tail($list) {
-  return delete_nth($list, _len($list['data']) - 1);
+  return delete_nth($list, count($list['data']) - 1);
 };
   function main() {
   $cll = empty_list();

@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,12 +36,18 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$NIL = 0 - 1;
-$nodes = [];
-function make_linked_list($elements) {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $NIL = 0 - 1;
+  $nodes = [];
+  function make_linked_list($elements) {
   global $NIL, $nodes;
   if (count($elements) == 0) {
-  $panic('The Elements List is empty');
+  _panic('The Elements List is empty');
 }
   $nodes = [];
   $nodes = _append($nodes, ['data' => $elements[0], 'next' => $NIL]);
@@ -39,8 +61,8 @@ function make_linked_list($elements) {
   $i = $i + 1;
 };
   return $head;
-}
-function node_to_string($head) {
+};
+  function node_to_string($head) {
   global $NIL, $nodes;
   $s = '';
   $index = $head;
@@ -51,8 +73,8 @@ function node_to_string($head) {
 };
   $s = $s . '<END>';
   return $s;
-}
-function main() {
+};
+  function main() {
   global $NIL, $nodes;
   $list_data = [1, 3, 5, 32, 44, 12, 43];
   echo rtrim('List: ' . _str($list_data)), PHP_EOL;
@@ -60,5 +82,13 @@ function main() {
   $head = make_linked_list($list_data);
   echo rtrim('Linked List:'), PHP_EOL;
   echo rtrim(node_to_string($head)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,6 +1,21 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -21,9 +36,11 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$arr = [-10.0, -5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, 3.0, 4.0, -21.0, -10.0, -5.0, -1.0, 0.0];
-$expected = [-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0];
-function next_greatest_element_slow($xs) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $arr = [-10.0, -5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, 3.0, 4.0, -21.0, -10.0, -5.0, -1.0, 0.0];
+  $expected = [-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0];
+  function next_greatest_element_slow($xs) {
   global $arr, $expected;
   $res = [];
   $i = 0;
@@ -41,8 +58,8 @@ function next_greatest_element_slow($xs) {
   $i = $i + 1;
 };
   return $res;
-}
-function next_greatest_element_fast($xs) {
+};
+  function next_greatest_element_fast($xs) {
   global $arr, $expected;
   $res = [];
   $i = 0;
@@ -61,8 +78,8 @@ function next_greatest_element_fast($xs) {
   $i = $i + 1;
 };
   return $res;
-}
-function set_at_float($xs, $idx, $value) {
+};
+  function set_at_float($xs, $idx, $value) {
   global $arr, $expected;
   $i = 0;
   $res = [];
@@ -75,8 +92,8 @@ function set_at_float($xs, $idx, $value) {
   $i = $i + 1;
 };
   return $res;
-}
-function next_greatest_element($xs) {
+};
+  function next_greatest_element($xs) {
   global $arr, $expected;
   $res = [];
   $k = 0;
@@ -96,7 +113,15 @@ function next_greatest_element($xs) {
   $i = $i + 1;
 };
   return $res;
-}
-echo rtrim(_str(next_greatest_element_slow($arr))), PHP_EOL;
-echo rtrim(_str(next_greatest_element_fast($arr))), PHP_EOL;
-echo rtrim(_str(next_greatest_element($arr))), PHP_EOL;
+};
+  echo rtrim(_str(next_greatest_element_slow($arr))), PHP_EOL;
+  echo rtrim(_str(next_greatest_element_fast($arr))), PHP_EOL;
+  echo rtrim(_str(next_greatest_element($arr))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
