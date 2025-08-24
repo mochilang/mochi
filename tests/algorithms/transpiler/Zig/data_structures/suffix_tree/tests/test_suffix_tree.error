@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/suffix_tree/tests/test_suffix_tree.zig:59:90: error: indexing into empty slice is not allowed

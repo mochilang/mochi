@@ -1,0 +1,16 @@
+signal: aborted
+thread 20103 panic: index out of bounds: index 0, len 0
+/workspace/mochi/tests/algorithms/transpiler/Zig/digital_image_processing/filters/convolve.zig:121:57: 0x22475f in img_convolve (convolve)
+    const width_1: i64 = @as(i64, @intCast(image_param_2[_idx(image_param_2.len, 0)].len));
+                                                        ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/digital_image_processing/filters/convolve.zig:175:34: 0x221fa2 in main (convolve)
+        result_var = img_convolve(image_var, laplace_kernel_var);
+                                 ^
+/usr/local/zig-linux-x86_64-0.11.0/lib/std/start.zig:564:22: 0x221a99 in main (convolve)
+            root.main();
+                     ^
+???:?:?: 0x7ff6a07c81c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7ff6a07c81c9` was not available, trace may be incomplete
+
+???:?:?: 0x7ff6a07c828a in ??? (libc.so.6)
+???:?:?: 0x221724 in ??? (???)

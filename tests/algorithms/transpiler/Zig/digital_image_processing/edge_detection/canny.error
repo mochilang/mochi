@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/digital_image_processing/edge_detection/canny.zig:237:31: error: expected type '[][]f64', found 'comptime_int'
