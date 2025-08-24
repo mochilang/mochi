@@ -8136,18 +8136,14 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				buf.WriteString(");\n")
 				return &RawStmt{Code: buf.String()}, nil
 			}
-			if keyT == "int" && valT == "int" {
-				needMapSetII = true
-				var buf bytes.Buffer
-				buf.WriteString("map_set_ii(&")
-				buf.WriteString(s.Assign.Name)
-				buf.WriteString(", ")
-				idxs[0].emitExpr(&buf)
-				buf.WriteString(", ")
-				valExpr.emitExpr(&buf)
-				buf.WriteString(");\n")
-				return &RawStmt{Code: buf.String()}, nil
-			}
+                       if keyT == "int" && valT == "int" {
+                               needMapSetII = true
+                               return &CallStmt{Func: "map_set_ii", Args: []Expr{
+                                       &UnaryExpr{Op: "&", Expr: &VarRef{Name: s.Assign.Name}},
+                                       idxs[0],
+                                       valExpr,
+                               }}, nil
+                       }
 			if keyT == "int" && valT == "const char*" {
 				needMapSetIS = true
 				var buf bytes.Buffer
