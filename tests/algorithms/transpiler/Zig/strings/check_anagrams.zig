@@ -5,58 +5,86 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
-
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn strip_and_remove_spaces(s: []const u8) []const u8 {
+    var start: i64 = 0;
+    start = start;
+    var end: i64 = @as(i64, @intCast(s.len)) -% 1;
+    end = end;
+    while (start < @as(i64, @intCast(s.len)) and std.mem.eql(u8, s[_idx(s.len, start).._idx(s.len, start) + 1], " ")) {
+        start = start +% 1;
+    }
+    while (end >= start and std.mem.eql(u8, s[_idx(s.len, end).._idx(s.len, end) + 1], " ")) {
+        end = end -% 1;
+    }
+    var res: []const u8 = "";
+    res = res;
+    var i: i64 = start;
+    i = i;
+    while (i <= end) {
+        const ch: []const u8 = s[_idx(s.len, i).._idx(s.len, i) + 1];
+        if (!std.mem.eql(u8, ch, " ")) {
+            res = _concat_string(res, ch);
+        }
+        i = i +% 1;
+    }
+    return res;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn check_anagrams(a: []const u8, b: []const u8) bool {
+    var s1: []const u8 = _lower(a);
+    s1 = s1;
+    var s2: []const u8 = _lower(b);
+    s2 = s2;
+    s1 = strip_and_remove_spaces(s1);
+    s2 = strip_and_remove_spaces(s2);
+    if (@as(i64, @intCast(s1.len)) != @as(i64, @intCast(s2.len))) {
+        return false;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
+    var count: std.StringHashMap(i64) = std.StringHashMap(i64).init(std.heap.page_allocator);
+    count = count;
+    var i_1: i64 = 0;
+    i_1 = i_1;
+    while (i_1 < @as(i64, @intCast(s1.len))) {
+        const c1: []const u8 = s1[_idx(s1.len, i_1).._idx(s1.len, i_1) + 1];
+        const c2: []const u8 = s2[_idx(s2.len, i_1).._idx(s2.len, i_1) + 1];
+        if (count.contains(c1)) {
+            count.put(c1, (blk0: { if (count.get(c1)) |v| { break :blk0 v; } break :blk0 0; }) +% 1) catch unreachable;
+        } else {
+            count.put(c1, 1) catch unreachable;
+        }
+        if (count.contains(c2)) {
+            count.put(c2, (blk1: { if (count.get(c2)) |v| { break :blk1 v; } break :blk1 0; }) -% 1) catch unreachable;
+        } else {
+            count.put(c2, 0 -% 1) catch unreachable;
+        }
+        i_1 = i_1 +% 1;
     }
-    slowsort_recursive(seq, start, end_index -% 1);
+    var __mapit1 = count.keyIterator();
+    while (__mapit1.next()) |__it0| {
+        const ch_1 = __it0.*;
+        if ((blk2: { if (count.get(ch_1)) |v| { break :blk2 v; } break :blk2 0; }) != 0) {
+            return false;
+        }
+    }
+    return true;
 }
 
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
+fn print_bool(b_1: bool) void {
+    if (b_1) {
+        std.debug.print("{s}\n", .{_str(true)});
+    } else {
+        std.debug.print("{s}\n", .{_str(false)});
     }
-    return seq_1;
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        print_bool(check_anagrams("Silent", "Listen"));
+        print_bool(check_anagrams("This is a string", "Is this a string"));
+        print_bool(check_anagrams("This is    a      string", "Is     this a string"));
+        print_bool(check_anagrams("There", "Their"));
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
@@ -143,6 +171,29 @@ fn _str(v: anytype) []const u8 {
     else => {},
     }
     return std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{v}) catch unreachable;
+}
+
+fn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {
+    const alloc = std.heap.page_allocator;
+    var out = alloc.alloc(u8, lhs.len + rhs.len + 1) catch unreachable;
+    std.mem.copyForwards(u8, out[0..lhs.len], lhs);
+    std.mem.copyForwards(u8, out[lhs.len..lhs.len + rhs.len], rhs);
+    out[lhs.len + rhs.len] = 0;
+    return out[0..lhs.len + rhs.len];
+}
+
+fn _upper(s: []const u8) []const u8 {
+    var out = std.heap.page_allocator.alloc(u8, s.len + 1) catch unreachable;
+    _ = std.ascii.upperString(out[0..s.len], s);
+    out[s.len] = 0;
+    return out[0..s.len];
+}
+
+fn _lower(s: []const u8) []const u8 {
+    var out = std.heap.page_allocator.alloc(u8, s.len + 1) catch unreachable;
+    _ = std.ascii.lowerString(out[0..s.len], s);
+    out[s.len] = 0;
+    return out[0..s.len];
 }
 
 fn _mem() i64 {

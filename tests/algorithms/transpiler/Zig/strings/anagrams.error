@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/strings/anagrams.zig:93:103: error: expected type '[][]const u8', found 'comptime_int'
+/workspace/mochi/tests/algorithms/transpiler/Zig/strings/anagrams.zig:103:100: error: expected type '[][]const u8', found 'comptime_int'
+/workspace/mochi/tests/algorithms/transpiler/Zig/strings/anagrams.zig:100:33: note: function return type declared here

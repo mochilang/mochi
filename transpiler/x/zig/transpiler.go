@@ -2109,10 +2109,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		if _, ok := v.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
 			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 		} else {
-			if ll, ok := v.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
+			if ll, ok := v.Value.(*ListLit); ok && strings.HasPrefix(targetType, "[]") {
 				elem := strings.TrimPrefix(targetType, "[]")
 				if strings.HasPrefix(elem, "const ") {
 					elem = elem[len("const "):]
+				}
+				if ll.ElemType == "" {
+					ll.ElemType = elem
 				}
 				if len(ll.Elems) == 0 {
 					fmt.Fprintf(w, "std.heap.page_allocator.alloc(%s, 0) catch unreachable", elem)
@@ -2124,22 +2127,16 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 							break
 						}
 					}
-					if allConst {
-						if kw == "var" {
-							if funDepth == 0 && blockDepth == 0 {
-								io.WriteString(w, "@constCast(")
-								ll.emit(w)
-								io.WriteString(w, ")")
-							} else {
-								fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, ", elem)
-								ll.emit(w)
-								io.WriteString(w, ") catch unreachable")
-							}
-						} else {
-							io.WriteString(w, "@constCast(")
-							ll.emit(w)
-							io.WriteString(w, ")")
-						}
+					if funDepth == 0 && blockDepth == 0 && allConst {
+						kw = "var"
+						v.Value = nil
+						globalInits = append(globalInits, &AssignStmt{Name: v.Name, Value: ll})
+					} else if allConst {
+						lbl := newLabel()
+						tmp := uniqueName("_tmp")
+						fmt.Fprintf(w, "%s: { var %s = ", lbl, tmp)
+						ll.emitArray(w)
+						fmt.Fprintf(w, "; break :%s %s[0..]; }", lbl, tmp)
 					} else {
 						ll.emit(w)
 					}
@@ -3021,6 +3018,30 @@ func (l *ListLit) emit(w io.Writer) {
 	}
 }
 
+// emitArray writes a mutable array literal for the list elements without
+// returning a slice. It is used when a list literal needs to be passed as a
+// mutable slice to a function; the caller will subsequently take a slice of the
+// resulting array.
+func (l *ListLit) emitArray(w io.Writer) {
+	et := l.ElemType
+	if strings.HasPrefix(et, "const ") {
+		et = et[len("const "):]
+	}
+	fmt.Fprintf(w, "[%d]%s{", len(l.Elems), et)
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if ll, ok := e.(*ListLit); ok {
+			ll.ElemType = strings.TrimPrefix(et, "[]")
+			ll.emitArray(w)
+		} else {
+			e.emit(w)
+		}
+	}
+	io.WriteString(w, "}")
+}
+
 func (i *IndexExpr) emit(w io.Writer) {
 	if i.Map {
 		elem := i.ElemType
@@ -3731,9 +3752,11 @@ func (c *CallExpr) emit(w io.Writer) {
 							fmt.Fprintf(w, "@constCast((&[_]%s{})[0..0])", elem)
 						} else {
 							lit.ElemType = elem
-							io.WriteString(w, "@constCast(")
-							lit.emit(w)
-							io.WriteString(w, ")")
+							lbl := newLabel()
+							tmp := uniqueName("_tmp")
+							fmt.Fprintf(w, "%s: { var %s = ", lbl, tmp)
+							lit.emitArray(w)
+							fmt.Fprintf(w, "; break :%s %s[0..]; }", lbl, tmp)
 						}
 						continue
 					}

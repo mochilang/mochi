@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/strings/autocomplete_using_trie.zig:8:33: error: expected expression, found ';'

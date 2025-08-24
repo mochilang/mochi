@@ -5,58 +5,85 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
+var res_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
+var x_var_1: i64 = 0;
 
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn has_alpha(s: []const u8) bool {
+    var i: i64 = 0;
+    i = i;
+    while (i < @as(i64, @intCast(s.len))) {
+        const c: []const u8 = s[_idx(s.len, i).._idx(s.len, i) + 1];
+        if (std.mem.order(u8, c, "a") != .lt and std.mem.order(u8, c, "z") != .gt or std.mem.order(u8, c, "A") != .lt and std.mem.order(u8, c, "Z") != .gt) {
+            return true;
+        }
+        i = i +% 1;
+    }
+    return false;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn parse_decimal(s_1: []const u8) i64 {
+    var value: i64 = 0;
+    value = value;
+    var i_1: i64 = 0;
+    i_1 = i_1;
+    while (i_1 < @as(i64, @intCast(s_1.len))) {
+        const c_1: []const u8 = s_1[_idx(s_1.len, i_1).._idx(s_1.len, i_1) + 1];
+        if (std.mem.order(u8, c_1, "0") == .lt or std.mem.order(u8, c_1, "9") == .gt) {
+            @panic("Non-digit character encountered");
+        }
+        value = value *% 10 +% (std.fmt.parseInt(i64, c_1, 10) catch 0);
+        i_1 = i_1 +% 1;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
-    }
-    slowsort_recursive(seq, start, end_index -% 1);
+    return value;
 }
 
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
+fn get_barcode(barcode: []const u8) i64 {
+    if (has_alpha(barcode)) {
+        @panic(_concat_string(_concat_string("Barcode '", barcode), "' has alphabetic characters."));
     }
-    return seq_1;
+    if (@as(i64, @intCast(barcode.len)) > 0 and std.mem.eql(u8, barcode[_idx(barcode.len, 0).._idx(barcode.len, 0) + 1], "-")) {
+        @panic("The entered barcode has a negative value. Try again.");
+    }
+    return parse_decimal(barcode);
+}
+
+fn get_check_digit(barcode_1: i64) i64 {
+    var num: i64 = @divTrunc(barcode_1, 10);
+    num = num;
+    var s_2: i64 = 0;
+    s_2 = s_2;
+    var position: i64 = 0;
+    position = position;
+    while (num != 0) {
+        const mult: i64 = if (@mod(position, 2) == 0) 3 else 1;
+        s_2 = s_2 +% mult *% (@mod(num, 10));
+        num = @divTrunc(num, 10);
+        position = position +% 1;
+    }
+    return @mod(10 -% @mod(s_2, 10), 10);
+}
+
+fn is_valid(barcode_2: i64) bool {
+    return @as(i64, @intCast(_str(barcode_2).len)) == 13 and get_check_digit(barcode_2) == @mod(barcode_2, 10);
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        std.debug.print("{s}\n", .{_str(get_check_digit(8718452538119))});
+        std.debug.print("{s}\n", .{_str(get_check_digit(87184523))});
+        std.debug.print("{s}\n", .{_str(get_check_digit(87193425381086))});
+        while (x_var_1 < 100) {
+            res_var_1 = blk0: { var _tmp = std.ArrayList(i64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp.appendSlice(@as([]const i64, res_var_1)) catch |err| handleError(err); _tmp.append(get_check_digit(x_var_1)) catch |err| handleError(err); break :blk0 (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+            x_var_1 = x_var_1 +% 10;
+        }
+        std.debug.print("{s}\n", .{_str(res_var_1)});
+        std.debug.print("{s}\n", .{_str(is_valid(8718452538119))});
+        std.debug.print("{s}\n", .{_str(is_valid(87184525))});
+        std.debug.print("{s}\n", .{_str(is_valid(87193425381089))});
+        std.debug.print("{s}\n", .{_str(is_valid(0))});
+        std.debug.print("{s}\n", .{_str(get_barcode("8718452538119"))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
@@ -143,6 +170,15 @@ fn _str(v: anytype) []const u8 {
     else => {},
     }
     return std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{v}) catch unreachable;
+}
+
+fn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {
+    const alloc = std.heap.page_allocator;
+    var out = alloc.alloc(u8, lhs.len + rhs.len + 1) catch unreachable;
+    std.mem.copyForwards(u8, out[0..lhs.len], lhs);
+    std.mem.copyForwards(u8, out[lhs.len..lhs.len + rhs.len], rhs);
+    out[lhs.len + rhs.len] = 0;
+    return out[0..lhs.len + rhs.len];
 }
 
 fn _mem() i64 {

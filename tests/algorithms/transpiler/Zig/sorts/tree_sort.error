@@ -1,0 +1,23 @@
+signal: aborted
+[]
+Segmentation fault at address 0x204b78
+/workspace/mochi/tests/algorithms/transpiler/Zig/sorts/tree_sort.zig:20:346: 0x259b83 in new_node (tree_sort)
+    state_param.nodes = blk0: { var _tmp = std.ArrayList(Node).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp.appendSlice(@as([]const Node, state_param.nodes)) catch |err| handleError(err); _tmp.append(.{ .value = value, .left = 0 -% 1, .right = 0 -% 1 }) catch |err| handleError(err); break :blk0 (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+                                                                                                                                                                                                                                                                                                                                                         ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/sorts/tree_sort.zig:26:38: 0x225979 in insert (tree_sort)
+        state_param_1.root = new_node(state_param_1, value_1);
+                                     ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/sorts/tree_sort.zig:87:15: 0x223265 in tree_sort (tree_sort)
+        insert(@constCast(&state_1), arr[_idx(arr.len, i_1)]);
+              ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/sorts/tree_sort.zig:101:50: 0x221b47 in main (tree_sort)
+        std.debug.print("{s}\n", .{_str(tree_sort(blk3: { var _tmp_3 = [1]i64{1}; break :blk3 _tmp_3[0..]; }))});
+                                                 ^
+/usr/local/zig/lib/std/start.zig:564:22: 0x221689 in main (tree_sort)
+            root.main();
+                     ^
+???:?:?: 0x7f28d64421c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f28d64421c9` was not available, trace may be incomplete
+
+???:?:?: 0x7f28d644228a in ??? (libc.so.6)
+???:?:?: 0x221314 in ??? (???)

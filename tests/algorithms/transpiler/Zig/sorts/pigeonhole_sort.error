@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/sorts/pigeonhole_sort.zig:8:28: error: expected expression, found ';'
