@@ -2,52 +2,88 @@ public class Main {
 
     static double[] sortFloats(double[] xs) {
         double[] arr = ((double[])(xs));
-        int i = 0;
-        while (i < arr.length) {
-            int j = 0;
-            while (j < arr.length - 1) {
-                if (arr[j] > arr[j + 1]) {
-                    double t = arr[j];
-arr[j] = arr[j + 1];
-arr[j + 1] = t;
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(arr.length))) < 0) {
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+            while (j_1.compareTo(new java.math.BigInteger(String.valueOf(arr.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
+                if ((double)(arr[(int)(((java.math.BigInteger)(j_1)).longValue())]) > (double)(arr[(int)(((java.math.BigInteger)(j_1.add(java.math.BigInteger.valueOf(1)))).longValue())])) {
+                    double t_1 = (double)(arr[(int)(((java.math.BigInteger)(j_1)).longValue())]);
+arr[(int)(((java.math.BigInteger)(j_1)).longValue())] = (double)(arr[(int)(((java.math.BigInteger)(j_1.add(java.math.BigInteger.valueOf(1)))).longValue())]);
+arr[(int)(((java.math.BigInteger)(j_1.add(java.math.BigInteger.valueOf(1)))).longValue())] = (double)(t_1);
                 }
-                j = j + 1;
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-            i = i + 1;
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
         return arr;
     }
 
     static double find_median_sorted_arrays(double[] nums1, double[] nums2) {
-        if (nums1.length == 0 && nums2.length == 0) {
+        if (new java.math.BigInteger(String.valueOf(nums1.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0 && new java.math.BigInteger(String.valueOf(nums2.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             throw new RuntimeException(String.valueOf("Both input arrays are empty."));
         }
-        double[] merged = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < nums1.length) {
-            merged = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(merged), java.util.stream.DoubleStream.of(nums1[i_1])).toArray()));
-            i_1 = i_1 + 1;
+        double[] merged_1 = ((double[])(new double[]{}));
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(nums1.length))) < 0) {
+            merged_1 = ((double[])(appendDouble(merged_1, (double)(nums1[(int)(((java.math.BigInteger)(i_3)).longValue())]))));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        int j_1 = 0;
-        while (j_1 < nums2.length) {
-            merged = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(merged), java.util.stream.DoubleStream.of(nums2[j_1])).toArray()));
-            j_1 = j_1 + 1;
+        java.math.BigInteger j_3 = java.math.BigInteger.valueOf(0);
+        while (j_3.compareTo(new java.math.BigInteger(String.valueOf(nums2.length))) < 0) {
+            merged_1 = ((double[])(appendDouble(merged_1, (double)(nums2[(int)(((java.math.BigInteger)(j_3)).longValue())]))));
+            j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
         }
-        double[] sorted = ((double[])(sortFloats(((double[])(merged)))));
-        int total = sorted.length;
-        if (Math.floorMod(total, 2) == 1) {
-            return sorted[total / 2];
+        double[] sorted_1 = ((double[])(sortFloats(((double[])(merged_1)))));
+        java.math.BigInteger total_1 = new java.math.BigInteger(String.valueOf(sorted_1.length));
+        if (total_1.remainder(java.math.BigInteger.valueOf(2)).compareTo(java.math.BigInteger.valueOf(1)) == 0) {
+            return sorted_1[(int)(((java.math.BigInteger)(total_1.divide(java.math.BigInteger.valueOf(2)))).longValue())];
         }
-        double middle1 = sorted[total / 2 - 1];
-        double middle2 = sorted[total / 2];
-        return (middle1 + middle2) / 2.0;
+        double middle1_1 = (double)(sorted_1[(int)(((java.math.BigInteger)(total_1.divide(java.math.BigInteger.valueOf(2)).subtract(java.math.BigInteger.valueOf(1)))).longValue())]);
+        double middle2_1 = (double)(sorted_1[(int)(((java.math.BigInteger)(total_1.divide(java.math.BigInteger.valueOf(2)))).longValue())]);
+        return (double)(((double)(middle1_1) + (double)(middle2_1))) / (double)(2.0);
     }
     public static void main(String[] args) {
-        System.out.println(find_median_sorted_arrays(((double[])(new double[]{1.0, 3.0})), ((double[])(new double[]{2.0}))));
-        System.out.println(find_median_sorted_arrays(((double[])(new double[]{1.0, 2.0})), ((double[])(new double[]{3.0, 4.0}))));
-        System.out.println(find_median_sorted_arrays(((double[])(new double[]{0.0, 0.0})), ((double[])(new double[]{0.0, 0.0}))));
-        System.out.println(find_median_sorted_arrays(((double[])(new double[]{})), ((double[])(new double[]{1.0}))));
-        System.out.println(find_median_sorted_arrays(((double[])(new double[]{-1000.0})), ((double[])(new double[]{1000.0}))));
-        System.out.println(find_median_sorted_arrays(((double[])(new double[]{-1.1, -2.2})), ((double[])(new double[]{-3.3, -4.4}))));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(find_median_sorted_arrays(((double[])(new double[]{(double)(1.0), (double)(3.0)})), ((double[])(new double[]{(double)(2.0)}))));
+            System.out.println(find_median_sorted_arrays(((double[])(new double[]{(double)(1.0), (double)(2.0)})), ((double[])(new double[]{(double)(3.0), (double)(4.0)}))));
+            System.out.println(find_median_sorted_arrays(((double[])(new double[]{(double)(0.0), (double)(0.0)})), ((double[])(new double[]{(double)(0.0), (double)(0.0)}))));
+            System.out.println(find_median_sorted_arrays(((double[])(new double[]{})), ((double[])(new double[]{(double)(1.0)}))));
+            System.out.println(find_median_sorted_arrays(((double[])(new double[]{(double)(-1000.0)})), ((double[])(new double[]{(double)(1000.0)}))));
+            System.out.println(find_median_sorted_arrays(((double[])(new double[]{(double)(-1.1), (double)(-2.2)})), ((double[])(new double[]{(double)(-3.3), (double)(-4.4)}))));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

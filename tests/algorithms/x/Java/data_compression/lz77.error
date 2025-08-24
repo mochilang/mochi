@@ -1,0 +1,27 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden156_lz772745462176/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            tokens_example = ((Token[])(new Token[]{new Token(0, 0, "c"), new Token(0, 0, "a"), new Token(0, 0, "b"), new Token(0, 0, "r"), new Token(3, 1, "c"), new Token(2, 1, "d"), new Token(7, 4, "r"), new Token(3, 5, "d")}));
+                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden156_lz772745462176/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            tokens_example = ((Token[])(new Token[]{new Token(0, 0, "c"), new Token(0, 0, "a"), new Token(0, 0, "b"), new Token(0, 0, "r"), new Token(3, 1, "c"), new Token(2, 1, "d"), new Token(7, 4, "r"), new Token(3, 5, "d")}));
+                                                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden156_lz772745462176/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            tokens_example = ((Token[])(new Token[]{new Token(0, 0, "c"), new Token(0, 0, "a"), new Token(0, 0, "b"), new Token(0, 0, "r"), new Token(3, 1, "c"), new Token(2, 1, "d"), new Token(7, 4, "r"), new Token(3, 5, "d")}));
+                                                                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden156_lz772745462176/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            tokens_example = ((Token[])(new Token[]{new Token(0, 0, "c"), new Token(0, 0, "a"), new Token(0, 0, "b"), new Token(0, 0, "r"), new Token(3, 1, "c"), new Token(2, 1, "d"), new Token(7, 4, "r"), new Token(3, 5, "d")}));
+                                                                                                                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden156_lz772745462176/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            tokens_example = ((Token[])(new Token[]{new Token(0, 0, "c"), new Token(0, 0, "a"), new Token(0, 0, "b"), new Token(0, 0, "r"), new Token(3, 1, "c"), new Token(2, 1, "d"), new Token(7, 4, "r"), new Token(3, 5, "d")}));
+                                                                                                                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden156_lz772745462176/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            tokens_example = ((Token[])(new Token[]{new Token(0, 0, "c"), new Token(0, 0, "a"), new Token(0, 0, "b"), new Token(0, 0, "r"), new Token(3, 1, "c"), new Token(2, 1, "d"), new Token(7, 4, "r"), new Token(3, 5, "d")}));
+                                                                                                                                                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden156_lz772745462176/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            tokens_example = ((Token[])(new Token[]{new Token(0, 0, "c"), new Token(0, 0, "a"), new Token(0, 0, "b"), new Token(0, 0, "r"), new Token(3, 1, "c"), new Token(2, 1, "d"), new Token(7, 4, "r"), new Token(3, 5, "d")}));
+                                                                                                                                                                                                  ^
+/tmp/TestJavaTranspiler_Algorithms_Golden156_lz772745462176/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            tokens_example = ((Token[])(new Token[]{new Token(0, 0, "c"), new Token(0, 0, "a"), new Token(0, 0, "b"), new Token(0, 0, "r"), new Token(3, 1, "c"), new Token(2, 1, "d"), new Token(7, 4, "r"), new Token(3, 5, "d")}));
+                                                                                                                                                                                                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+8 errors

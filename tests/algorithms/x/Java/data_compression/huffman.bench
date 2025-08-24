@@ -1,5 +1,12 @@
-{
-  "duration_us": 59873,
-  "memory_bytes": 102456,
-  "name": "main"
-}
+Exception in thread "main" java.lang.ArrayStoreException: java.lang.Integer
+	at java.base/java.util.stream.Nodes$FixedNodeBuilder.accept(Nodes.java:1231)
+	at java.base/java.util.stream.Streams$StreamBuilderImpl.forEachRemaining(Streams.java:411)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575)
+	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616)
+	at Main.count_freq(Main.java:81)
+	at Main.huffman_encode(Main.java:137)
+	at Main.main(Main.java:153)

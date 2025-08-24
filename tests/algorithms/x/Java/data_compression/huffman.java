@@ -3,8 +3,8 @@ public class Main {
 
     static class Leaf implements Huffman {
         String symbol;
-        long freq;
-        Leaf(String symbol, long freq) {
+        java.math.BigInteger freq;
+        Leaf(String symbol, java.math.BigInteger freq) {
             this.symbol = symbol;
             this.freq = freq;
         }
@@ -15,10 +15,10 @@ public class Main {
     }
 
     static class Node implements Huffman {
-        long freq;
+        java.math.BigInteger freq;
         Huffman left;
         Huffman right;
-        Node(long freq, Huffman left, Huffman right) {
+        Node(java.math.BigInteger freq, Huffman left, Huffman right) {
             this.freq = freq;
             this.left = left;
             this.right = right;
@@ -30,102 +30,102 @@ public class Main {
     }
 
 
-    static long get_freq(Huffman n) {
-        return ((long)(n instanceof Leaf ? ((Leaf)(n)).freq : ((Node)(n)).freq));
+    static java.math.BigInteger get_freq(Huffman n) {
+        return new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(n instanceof Leaf ? ((Leaf)(n)).freq : ((Node)(n)).freq))));
     }
 
     static Huffman[] sort_nodes(Huffman[] nodes) {
         Huffman[] arr = ((Huffman[])(nodes));
-        long i = 1;
-        while (i < arr.length) {
-            Huffman key = arr[(int)(i)];
-            long j = i - 1;
-            while (j >= 0 && get_freq(arr[(int)(j)]) > get_freq(key)) {
-arr[(int)(j + 1)] = arr[(int)(j)];
-                j = j - 1;
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(1);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(arr.length))) < 0) {
+            Huffman key_1 = arr[(int)(((java.math.BigInteger)(i_1)).longValue())];
+            java.math.BigInteger j_1 = new java.math.BigInteger(String.valueOf(i_1.subtract(java.math.BigInteger.valueOf(1))));
+            while (j_1.compareTo(java.math.BigInteger.valueOf(0)) >= 0 && get_freq(arr[(int)(((java.math.BigInteger)(j_1)).longValue())]).compareTo(get_freq(key_1)) > 0) {
+arr[(int)(((java.math.BigInteger)(j_1.add(java.math.BigInteger.valueOf(1)))).longValue())] = arr[(int)(((java.math.BigInteger)(j_1)).longValue())];
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.subtract(java.math.BigInteger.valueOf(1))));
             }
-arr[(int)(j + 1)] = key;
-            i = i + 1;
+arr[(int)(((java.math.BigInteger)(j_1.add(java.math.BigInteger.valueOf(1)))).longValue())] = key_1;
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return arr;
+        return ((Huffman[])(arr));
     }
 
     static Huffman[] rest(Huffman[] nodes) {
         Huffman[] res = ((Huffman[])(new Huffman[]{}));
-        long i_1 = 1;
-        while (i_1 < nodes.length) {
-            res = ((Huffman[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(nodes[(int)(i_1)])).toArray(Huffman[]::new)));
-            i_1 = i_1 + 1;
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(1);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(nodes.length))) < 0) {
+            res = ((Huffman[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(nodes[(int)(((java.math.BigInteger)(i_3)).longValue())])).toArray(Huffman[]::new)));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return res;
+        return ((Huffman[])(res));
     }
 
     static Huffman[] count_freq(String text) {
         String[] chars = ((String[])(new String[]{}));
-        long[] freqs = ((long[])(new long[]{}));
-        long i_2 = 0;
-        while (i_2 < _runeLen(text)) {
-            String c = _substr(text, (int)(i_2), (int)(i_2 + 1));
-            long j_1 = 0;
-            boolean found = false;
-            while (j_1 < chars.length) {
-                if ((chars[(int)(j_1)].equals(c))) {
-freqs[(int)(j_1)] = freqs[(int)(j_1)] + 1;
-                    found = true;
+        java.math.BigInteger[] freqs_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_5 = java.math.BigInteger.valueOf(0);
+        while (i_5.compareTo(new java.math.BigInteger(String.valueOf(_runeLen(text)))) < 0) {
+            String c_1 = _substr(text, (int)(((java.math.BigInteger)(i_5)).longValue()), (int)(((java.math.BigInteger)(i_5.add(java.math.BigInteger.valueOf(1)))).longValue()));
+            java.math.BigInteger j_3 = java.math.BigInteger.valueOf(0);
+            boolean found_1 = false;
+            while (j_3.compareTo(new java.math.BigInteger(String.valueOf(chars.length))) < 0) {
+                if ((chars[(int)(((java.math.BigInteger)(j_3)).longValue())].equals(c_1))) {
+freqs_1[(int)(((java.math.BigInteger)(j_3)).longValue())] = new java.math.BigInteger(String.valueOf(freqs_1[(int)(((java.math.BigInteger)(j_3)).longValue())].add(java.math.BigInteger.valueOf(1))));
+                    found_1 = true;
                     break;
                 }
-                j_1 = j_1 + 1;
+                j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
             }
-            if (!found) {
-                chars = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(chars), java.util.stream.Stream.of(c)).toArray(String[]::new)));
-                freqs = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(freqs), java.util.stream.LongStream.of(1)).toArray()));
+            if (!found_1) {
+                chars = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(chars), java.util.stream.Stream.of(c_1)).toArray(String[]::new)));
+                freqs_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(freqs_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(1))).toArray(java.math.BigInteger[]::new)));
             }
-            i_2 = i_2 + 1;
+            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
         }
-        Huffman[] leaves = ((Huffman[])(new Huffman[]{}));
-        long k = 0;
-        while (k < chars.length) {
-            leaves = java.util.stream.Stream.concat(java.util.Arrays.stream(leaves), java.util.stream.Stream.of(new Leaf(chars[(int)(k)], freqs[(int)(k)]))).toArray(Huffman[]::new);
-            k = k + 1;
+        Huffman[] leaves_1 = ((Huffman[])(new Huffman[]{}));
+        java.math.BigInteger k_1 = java.math.BigInteger.valueOf(0);
+        while (k_1.compareTo(new java.math.BigInteger(String.valueOf(chars.length))) < 0) {
+            leaves_1 = ((Huffman[])(java.util.stream.Stream.concat(java.util.Arrays.stream(leaves_1), java.util.stream.Stream.of(new Leaf(chars[(int)(((java.math.BigInteger)(k_1)).longValue())], freqs_1[(int)(((java.math.BigInteger)(k_1)).longValue())]))).toArray(Huffman[]::new)));
+            k_1 = new java.math.BigInteger(String.valueOf(k_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return sort_nodes(((Huffman[])(leaves)));
+        return ((Huffman[])(sort_nodes(((Huffman[])(leaves_1)))));
     }
 
     static Huffman build_tree(Huffman[] nodes) {
         Huffman[] arr_1 = ((Huffman[])(nodes));
-        while (arr_1.length > 1) {
-            Huffman left = arr_1[(int)(0)];
+        while (new java.math.BigInteger(String.valueOf(arr_1.length)).compareTo(java.math.BigInteger.valueOf(1)) > 0) {
+            Huffman left_1 = arr_1[(int)(0L)];
             arr_1 = ((Huffman[])(rest(((Huffman[])(arr_1)))));
-            Huffman right = arr_1[(int)(0)];
+            Huffman right_1 = arr_1[(int)(0L)];
             arr_1 = ((Huffman[])(rest(((Huffman[])(arr_1)))));
-            Node node = new Node(get_freq(left) + get_freq(right), left, right);
-            arr_1 = java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(node)).toArray(Huffman[]::new);
-            arr_1 = sort_nodes(((Huffman[])(arr_1)));
+            Node node_1 = new Node(get_freq(left_1).add(get_freq(right_1)), left_1, right_1);
+            arr_1 = ((Huffman[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(node_1)).toArray(Huffman[]::new)));
+            arr_1 = ((Huffman[])(sort_nodes(((Huffman[])(arr_1)))));
         }
-        return ((Huffman)(arr_1[(int)(0)]));
+        return arr_1[(int)(0L)];
     }
 
     static String[][] concat_pairs(String[][] a, String[][] b) {
         String[][] res_1 = ((String[][])(a));
-        long i_3 = 0;
-        while (i_3 < b.length) {
-            res_1 = ((String[][])(appendObj((String[][])res_1, b[(int)(i_3)])));
-            i_3 = i_3 + 1;
+        java.math.BigInteger i_7 = java.math.BigInteger.valueOf(0);
+        while (i_7.compareTo(new java.math.BigInteger(String.valueOf(b.length))) < 0) {
+            res_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new String[][]{String.valueOf(b[(int)(((java.math.BigInteger)(i_7)).longValue())])})).toArray(String[][]::new)));
+            i_7 = new java.math.BigInteger(String.valueOf(i_7.add(java.math.BigInteger.valueOf(1))));
         }
-        return res_1;
+        return ((String[][])(res_1));
     }
 
     static String[][] collect_codes(Huffman tree, String prefix) {
-        return tree instanceof Leaf ? new String[][]{new String[]{((Leaf)(tree)).symbol, prefix}} : concat_pairs(((String[][])(collect_codes(((Node)(tree)).left, prefix + "0"))), ((String[][])(collect_codes(((Node)(tree)).right, prefix + "1"))));
+        return ((String[][])(tree instanceof Leaf ? new String[][]{((String[])(new String[]{(String)(((Leaf)(tree)).symbol), prefix}))} : concat_pairs(((String[][])(collect_codes(((Node)(tree)).left, prefix + "0"))), ((String[][])(collect_codes(((Node)(tree)).right, prefix + "1"))))));
     }
 
     static String find_code(String[][] pairs, String ch) {
-        long i_4 = 0;
-        while (i_4 < pairs.length) {
-            if ((pairs[(int)(i_4)][(int)(0)].equals(ch))) {
-                return pairs[(int)(i_4)][(int)(1)];
+        java.math.BigInteger i_8 = java.math.BigInteger.valueOf(0);
+        while (i_8.compareTo(new java.math.BigInteger(String.valueOf(pairs.length))) < 0) {
+            if ((pairs[(int)(((java.math.BigInteger)(i_8)).longValue())][(int)(0L)].equals(ch))) {
+                return pairs[(int)(((java.math.BigInteger)(i_8)).longValue())][(int)(1L)];
             }
-            i_4 = i_4 + 1;
+            i_8 = new java.math.BigInteger(String.valueOf(i_8.add(java.math.BigInteger.valueOf(1))));
         }
         return "";
     }
@@ -134,26 +134,50 @@ freqs[(int)(j_1)] = freqs[(int)(j_1)] + 1;
         if ((text.equals(""))) {
             return "";
         }
-        Huffman[] leaves_1 = ((Huffman[])(count_freq(text)));
-        Huffman tree = build_tree(((Huffman[])(leaves_1)));
-        String[][] codes = ((String[][])(collect_codes(tree, "")));
-        String encoded = "";
-        long i_5 = 0;
-        while (i_5 < _runeLen(text)) {
-            String c_1 = _substr(text, (int)(i_5), (int)(i_5 + 1));
-            encoded = encoded + String.valueOf(find_code(((String[][])(codes)), c_1)) + " ";
-            i_5 = i_5 + 1;
+        Huffman[] leaves_3 = ((Huffman[])(count_freq(text)));
+        Huffman tree_1 = build_tree(((Huffman[])(leaves_3)));
+        String[][] codes_1 = ((String[][])(collect_codes(tree_1, "")));
+        String encoded_1 = "";
+        java.math.BigInteger i_10 = java.math.BigInteger.valueOf(0);
+        while (i_10.compareTo(new java.math.BigInteger(String.valueOf(_runeLen(text)))) < 0) {
+            String c_3 = _substr(text, (int)(((java.math.BigInteger)(i_10)).longValue()), (int)(((java.math.BigInteger)(i_10.add(java.math.BigInteger.valueOf(1)))).longValue()));
+            encoded_1 = encoded_1 + String.valueOf(find_code(((String[][])(codes_1)), c_3)) + " ";
+            i_10 = new java.math.BigInteger(String.valueOf(i_10.add(java.math.BigInteger.valueOf(1))));
         }
-        return encoded;
+        return encoded_1;
     }
     public static void main(String[] args) {
-        System.out.println(huffman_encode("beep boop beer!"));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(huffman_encode("beep boop beer!"));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {
@@ -161,6 +185,10 @@ freqs[(int)(j_1)] = freqs[(int)(j_1)] + 1;
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);

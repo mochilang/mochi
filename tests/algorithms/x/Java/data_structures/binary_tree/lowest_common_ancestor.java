@@ -1,130 +1,154 @@
 public class Main {
 
-    static int pow2(int exp) {
-        int res = 1;
-        int i = 0;
-        while (i < exp) {
-            res = res * 2;
-            i = i + 1;
+    static java.math.BigInteger pow2(java.math.BigInteger exp) {
+        java.math.BigInteger res = java.math.BigInteger.valueOf(1);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(exp) < 0) {
+            res = new java.math.BigInteger(String.valueOf(res.multiply(java.math.BigInteger.valueOf(2))));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
         return res;
     }
 
-    static int[][] create_sparse(int max_node, int[][] parent) {
-        int j = 1;
-        while (pow2(j) < max_node) {
-            int i_1 = 1;
-            while (i_1 <= max_node) {
-parent[j][i_1] = parent[j - 1][parent[j - 1][i_1]];
-                i_1 = i_1 + 1;
+    static java.math.BigInteger[][] create_sparse(java.math.BigInteger max_node, java.math.BigInteger[][] parent) {
+        java.math.BigInteger j = java.math.BigInteger.valueOf(1);
+        while (pow2(new java.math.BigInteger(String.valueOf(j))).compareTo(max_node) < 0) {
+            java.math.BigInteger i_3 = java.math.BigInteger.valueOf(1);
+            while (i_3.compareTo(max_node) <= 0) {
+parent[(int)(((java.math.BigInteger)(j)).longValue())][(int)(((java.math.BigInteger)(i_3)).longValue())] = new java.math.BigInteger(String.valueOf(parent[(int)(((java.math.BigInteger)(j.subtract(java.math.BigInteger.valueOf(1)))).longValue())][(int)(((java.math.BigInteger)(parent[(int)(((java.math.BigInteger)(j.subtract(java.math.BigInteger.valueOf(1)))).longValue())][(int)(((java.math.BigInteger)(i_3)).longValue())])).longValue())]));
+                i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
             }
-            j = j + 1;
+            j = new java.math.BigInteger(String.valueOf(j.add(java.math.BigInteger.valueOf(1))));
         }
         return parent;
     }
 
-    static int lowest_common_ancestor(int u, int v, int[] level, int[][] parent) {
-        if (level[u] < level[v]) {
-            int temp = u;
-            u = v;
-            v = temp;
+    static java.math.BigInteger lowest_common_ancestor(java.math.BigInteger u, java.math.BigInteger v, java.math.BigInteger[] level, java.math.BigInteger[][] parent) {
+        if (level[(int)(((java.math.BigInteger)(u)).longValue())].compareTo(level[(int)(((java.math.BigInteger)(v)).longValue())]) < 0) {
+            java.math.BigInteger temp = new java.math.BigInteger(String.valueOf(u));
+            u = new java.math.BigInteger(String.valueOf(v));
+            v = new java.math.BigInteger(String.valueOf(temp));
         }
-        int i_2 = 18;
-        while (i_2 >= 0) {
-            if (level[u] - pow2(i_2) >= level[v]) {
-                u = parent[i_2][u];
+        java.math.BigInteger i_5 = java.math.BigInteger.valueOf(18);
+        while (i_5.compareTo(java.math.BigInteger.valueOf(0)) >= 0) {
+            if (level[(int)(((java.math.BigInteger)(u)).longValue())].subtract(pow2(new java.math.BigInteger(String.valueOf(i_5)))).compareTo(level[(int)(((java.math.BigInteger)(v)).longValue())]) >= 0) {
+                u = new java.math.BigInteger(String.valueOf(parent[(int)(((java.math.BigInteger)(i_5)).longValue())][(int)(((java.math.BigInteger)(u)).longValue())]));
             }
-            i_2 = i_2 - 1;
+            i_5 = new java.math.BigInteger(String.valueOf(i_5.subtract(java.math.BigInteger.valueOf(1))));
         }
-        if (u == v) {
+        if (u.compareTo(v) == 0) {
             return u;
         }
-        i_2 = 18;
-        while (i_2 >= 0) {
-            int pu = parent[i_2][u];
-            int pv = parent[i_2][v];
-            if (pu != 0 && pu != pv) {
-                u = pu;
-                v = pv;
+        i_5 = java.math.BigInteger.valueOf(18);
+        while (i_5.compareTo(java.math.BigInteger.valueOf(0)) >= 0) {
+            java.math.BigInteger pu_1 = new java.math.BigInteger(String.valueOf(parent[(int)(((java.math.BigInteger)(i_5)).longValue())][(int)(((java.math.BigInteger)(u)).longValue())]));
+            java.math.BigInteger pv_1 = new java.math.BigInteger(String.valueOf(parent[(int)(((java.math.BigInteger)(i_5)).longValue())][(int)(((java.math.BigInteger)(v)).longValue())]));
+            if (pu_1.compareTo(java.math.BigInteger.valueOf(0)) != 0 && pu_1.compareTo(pv_1) != 0) {
+                u = new java.math.BigInteger(String.valueOf(pu_1));
+                v = new java.math.BigInteger(String.valueOf(pv_1));
             }
-            i_2 = i_2 - 1;
+            i_5 = new java.math.BigInteger(String.valueOf(i_5.subtract(java.math.BigInteger.valueOf(1))));
         }
-        return parent[0][u];
+        return parent[(int)(0L)][(int)(((java.math.BigInteger)(u)).longValue())];
     }
 
-    static void breadth_first_search(int[] level, int[][] parent, int max_node, java.util.Map<Integer,int[]> graph, int root) {
-level[root] = 0;
-        int[] q = ((int[])(new int[]{}));
-        q = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(q), java.util.stream.IntStream.of(root)).toArray()));
-        int head = 0;
-        while (head < q.length) {
-            int u = q[head];
-            head = head + 1;
-            int[] adj = (int[])(((int[])(graph).get(u)));
-            int j_1 = 0;
-            while (j_1 < adj.length) {
-                int v = adj[j_1];
-                if (level[v] == 0 - 1) {
-level[v] = level[u] + 1;
-parent[0][v] = u;
-                    q = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(q), java.util.stream.IntStream.of(v)).toArray()));
+    static void breadth_first_search(java.math.BigInteger[] level, java.math.BigInteger[][] parent, java.math.BigInteger max_node, java.util.Map<java.math.BigInteger,java.math.BigInteger[]> graph, java.math.BigInteger root) {
+level[(int)(((java.math.BigInteger)(root)).longValue())] = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger[] q_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        q_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(q_1), java.util.stream.Stream.of(root)).toArray(java.math.BigInteger[]::new)));
+        java.math.BigInteger head_1 = java.math.BigInteger.valueOf(0);
+        while (head_1.compareTo(new java.math.BigInteger(String.valueOf(q_1.length))) < 0) {
+            java.math.BigInteger u_1 = new java.math.BigInteger(String.valueOf(q_1[(int)(((java.math.BigInteger)(head_1)).longValue())]));
+            head_1 = new java.math.BigInteger(String.valueOf(head_1.add(java.math.BigInteger.valueOf(1))));
+            java.math.BigInteger[] adj_1 = (java.math.BigInteger[])(((java.math.BigInteger[])(graph).get(u_1)));
+            java.math.BigInteger j_2 = java.math.BigInteger.valueOf(0);
+            while (j_2.compareTo(new java.math.BigInteger(String.valueOf(adj_1.length))) < 0) {
+                java.math.BigInteger v_1 = new java.math.BigInteger(String.valueOf(adj_1[(int)(((java.math.BigInteger)(j_2)).longValue())]));
+                if (level[(int)(((java.math.BigInteger)(v_1)).longValue())].compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
+level[(int)(((java.math.BigInteger)(v_1)).longValue())] = new java.math.BigInteger(String.valueOf(level[(int)(((java.math.BigInteger)(u_1)).longValue())].add(java.math.BigInteger.valueOf(1))));
+parent[(int)(0L)][(int)(((java.math.BigInteger)(v_1)).longValue())] = new java.math.BigInteger(String.valueOf(u_1));
+                    q_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(q_1), java.util.stream.Stream.of(v_1)).toArray(java.math.BigInteger[]::new)));
                 }
-                j_1 = j_1 + 1;
+                j_2 = new java.math.BigInteger(String.valueOf(j_2.add(java.math.BigInteger.valueOf(1))));
             }
         }
     }
 
     static void main() {
-        int max_node = 13;
-        int[][] parent = ((int[][])(new int[][]{}));
-        int i_3 = 0;
-        while (i_3 < 20) {
-            int[] row = ((int[])(new int[]{}));
-            int j_2 = 0;
-            while (j_2 < max_node + 10) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray()));
-                j_2 = j_2 + 1;
+        java.math.BigInteger max_node = java.math.BigInteger.valueOf(13);
+        java.math.BigInteger[][] parent_1 = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{}));
+        java.math.BigInteger i_7 = java.math.BigInteger.valueOf(0);
+        while (i_7.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
+            java.math.BigInteger[] row_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+            java.math.BigInteger j_4 = java.math.BigInteger.valueOf(0);
+            while (j_4.compareTo(max_node.add(java.math.BigInteger.valueOf(10))) < 0) {
+                row_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of(0)).toArray(java.math.BigInteger[]::new)));
+                j_4 = new java.math.BigInteger(String.valueOf(j_4.add(java.math.BigInteger.valueOf(1))));
             }
-            parent = ((int[][])(appendObj(parent, row)));
-            i_3 = i_3 + 1;
+            parent_1 = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(parent_1), java.util.stream.Stream.of(new java.math.BigInteger[][]{row_1})).toArray(java.math.BigInteger[][]::new)));
+            i_7 = new java.math.BigInteger(String.valueOf(i_7.add(java.math.BigInteger.valueOf(1))));
         }
-        int[] level = ((int[])(new int[]{}));
-        i_3 = 0;
-        while (i_3 < max_node + 10) {
-            level = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(level), java.util.stream.IntStream.of(0 - 1)).toArray()));
-            i_3 = i_3 + 1;
+        java.math.BigInteger[] level_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        i_7 = java.math.BigInteger.valueOf(0);
+        while (i_7.compareTo(max_node.add(java.math.BigInteger.valueOf(10))) < 0) {
+            level_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(level_1), java.util.stream.Stream.of((java.math.BigInteger.valueOf(1)).negate())).toArray(java.math.BigInteger[]::new)));
+            i_7 = new java.math.BigInteger(String.valueOf(i_7.add(java.math.BigInteger.valueOf(1))));
         }
-        java.util.Map<Integer,int[]> graph = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>()));
-graph.put(1, ((int[])(new int[]{2, 3, 4})));
-graph.put(2, ((int[])(new int[]{5})));
-graph.put(3, ((int[])(new int[]{6, 7})));
-graph.put(4, ((int[])(new int[]{8})));
-graph.put(5, ((int[])(new int[]{9, 10})));
-graph.put(6, ((int[])(new int[]{11})));
-graph.put(7, ((int[])(new int[]{})));
-graph.put(8, ((int[])(new int[]{12, 13})));
-graph.put(9, ((int[])(new int[]{})));
-graph.put(10, ((int[])(new int[]{})));
-graph.put(11, ((int[])(new int[]{})));
-graph.put(12, ((int[])(new int[]{})));
-graph.put(13, ((int[])(new int[]{})));
-        breadth_first_search(((int[])(level)), ((int[][])(parent)), max_node, graph, 1);
-        parent = ((int[][])(create_sparse(max_node, ((int[][])(parent)))));
-        System.out.println("LCA of node 1 and 3 is: " + _p(lowest_common_ancestor(1, 3, ((int[])(level)), ((int[][])(parent)))));
-        System.out.println("LCA of node 5 and 6 is: " + _p(lowest_common_ancestor(5, 6, ((int[])(level)), ((int[][])(parent)))));
-        System.out.println("LCA of node 7 and 11 is: " + _p(lowest_common_ancestor(7, 11, ((int[])(level)), ((int[][])(parent)))));
-        System.out.println("LCA of node 6 and 7 is: " + _p(lowest_common_ancestor(6, 7, ((int[])(level)), ((int[][])(parent)))));
-        System.out.println("LCA of node 4 and 12 is: " + _p(lowest_common_ancestor(4, 12, ((int[])(level)), ((int[][])(parent)))));
-        System.out.println("LCA of node 8 and 8 is: " + _p(lowest_common_ancestor(8, 8, ((int[])(level)), ((int[][])(parent)))));
+        java.util.Map<java.math.BigInteger,java.math.BigInteger[]> graph_1 = ((java.util.Map<java.math.BigInteger,java.math.BigInteger[]>)(new java.util.LinkedHashMap<java.math.BigInteger, java.math.BigInteger[]>()));
+graph_1.put(1, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(4)})));
+graph_1.put(2, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(5)})));
+graph_1.put(3, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(7)})));
+graph_1.put(4, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(8)})));
+graph_1.put(5, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(10)})));
+graph_1.put(6, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(11)})));
+graph_1.put(7, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+graph_1.put(8, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(12), java.math.BigInteger.valueOf(13)})));
+graph_1.put(9, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+graph_1.put(10, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+graph_1.put(11, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+graph_1.put(12, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+graph_1.put(13, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+        breadth_first_search(((java.math.BigInteger[])(level_1)), ((java.math.BigInteger[][])(parent_1)), new java.math.BigInteger(String.valueOf(max_node)), graph_1, java.math.BigInteger.valueOf(1));
+        parent_1 = ((java.math.BigInteger[][])(create_sparse(new java.math.BigInteger(String.valueOf(max_node)), ((java.math.BigInteger[][])(parent_1)))));
+        System.out.println("LCA of node 1 and 3 is: " + _p(lowest_common_ancestor(java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(3), ((java.math.BigInteger[])(level_1)), ((java.math.BigInteger[][])(parent_1)))));
+        System.out.println("LCA of node 5 and 6 is: " + _p(lowest_common_ancestor(java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(6), ((java.math.BigInteger[])(level_1)), ((java.math.BigInteger[][])(parent_1)))));
+        System.out.println("LCA of node 7 and 11 is: " + _p(lowest_common_ancestor(java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(11), ((java.math.BigInteger[])(level_1)), ((java.math.BigInteger[][])(parent_1)))));
+        System.out.println("LCA of node 6 and 7 is: " + _p(lowest_common_ancestor(java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(7), ((java.math.BigInteger[])(level_1)), ((java.math.BigInteger[][])(parent_1)))));
+        System.out.println("LCA of node 4 and 12 is: " + _p(lowest_common_ancestor(java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(12), ((java.math.BigInteger[])(level_1)), ((java.math.BigInteger[][])(parent_1)))));
+        System.out.println("LCA of node 8 and 8 is: " + _p(lowest_common_ancestor(java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(8), ((java.math.BigInteger[])(level_1)), ((java.math.BigInteger[][])(parent_1)))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -139,6 +163,10 @@ graph.put(13, ((int[])(new int[]{})));
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

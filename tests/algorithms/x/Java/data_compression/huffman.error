@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden153_huffman3232416661/001/Main.java:112: error: incompatible types: String cannot be converted to String[]
+            res_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new String[][]{String.valueOf(b[(int)(((java.math.BigInteger)(i_7)).longValue())])})).toArray(String[][]::new)));
+                                                                                                                                                         ^
+1 error

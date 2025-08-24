@@ -1,0 +1,7 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden170_sudoku_solver2435877154/001/Main.java:127: error: cannot find symbol
+        int len = _runeLen(s);
+                  ^
+  symbol:   method _runeLen(String)
+  location: class Main
+1 error

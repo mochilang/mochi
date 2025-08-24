@@ -1,5 +1,24 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree4116155264/001/Main.java:7: error: constructor Empty() is already defined in class Empty
+/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree412409978/001/Main.java:7: error: constructor Empty() is already defined in class Empty
         Empty() {}
         ^
-1 error
+/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree412409978/001/Main.java:51: error: incompatible types: int cannot be converted to BigInteger
+        return 0;
+               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree412409978/001/Main.java:110: error: incompatible types: int cannot be converted to BigInteger
+        Node left_child = new Node(new Empty(), 2, new Empty());
+                                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree412409978/001/Main.java:111: error: incompatible types: int cannot be converted to BigInteger
+        Node right_left_1 = new Node(new Empty(), 4, new Empty());
+                                                  ^
+/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree412409978/001/Main.java:112: error: incompatible types: int cannot be converted to BigInteger
+        Node right_right_1 = new Node(new Empty(), 5, new Empty());
+                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree412409978/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+        Node right_child_1 = new Node(right_left_1, 3, right_right_1);
+                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree412409978/001/Main.java:114: error: incompatible types: int cannot be converted to BigInteger
+        return ((TreeNode)(new Node(left_child, 1, right_child_1)));
+                                                ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

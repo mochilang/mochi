@@ -1,40 +1,52 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:52: error: cannot find symbol
-    static unit print_preorder(Tree t) {
-           ^
-  symbol:   class unit
-  location: class Main
-/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:7: error: constructor Leaf() is already defined in class Leaf
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:7: error: constructor Leaf() is already defined in class Leaf
         Leaf() {}
         ^
-/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:33: error: cannot find symbol
         return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
                                                                                                                       ^
   symbol:   variable v1
   location: class Main
-/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:33: error: cannot find symbol
         return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
                                                                                                                                                   ^
   symbol:   variable v2
   location: class Main
-/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
-        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
-                                                                                                   ^
-  symbol:   variable l1
-  location: class Main
-/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
-        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
-                                                                                                       ^
-  symbol:   variable l2
-  location: class Main
-/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:33: error: cannot find symbol
         return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
                                                                                                                                                                                           ^
   symbol:   variable r1
   location: class Main
-/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:33: error: cannot find symbol
         return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
                                                                                                                                                                                               ^
   symbol:   variable r2
   location: class Main
-8 errors
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:33: error: cannot find symbol
+        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
+                                                                                                   ^
+  symbol:   variable l1
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:33: error: cannot find symbol
+        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
+                                                                                                       ^
+  symbol:   variable l2
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:49: error: incompatible types: bad type in conditional expression
+        return t instanceof Node ? ((Node)(t)).value : 0;
+                                                       ^
+    int cannot be converted to BigInteger
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:66: error: incompatible types: int cannot be converted to BigInteger
+            tree1 = new Node(new Node(new Node(new Leaf(), 4, new Leaf()), 2, new Leaf()), 1, new Node(new Leaf(), 3, new Leaf()));
+                                                           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:66: error: incompatible types: int cannot be converted to BigInteger
+            tree1 = new Node(new Node(new Node(new Leaf(), 4, new Leaf()), 2, new Leaf()), 1, new Node(new Leaf(), 3, new Leaf()));
+                                                                                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:67: error: incompatible types: int cannot be converted to BigInteger
+            tree2 = new Node(new Node(new Leaf(), 4, new Node(new Leaf(), 9, new Leaf())), 2, new Node(new Leaf(), 6, new Node(new Leaf(), 5, new Leaf())));
+                                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees1244923925/001/Main.java:67: error: incompatible types: int cannot be converted to BigInteger
+            tree2 = new Node(new Node(new Leaf(), 4, new Node(new Leaf(), 9, new Leaf())), 2, new Node(new Leaf(), 6, new Node(new Leaf(), 5, new Leaf())));
+                                                                                                                                           ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+12 errors

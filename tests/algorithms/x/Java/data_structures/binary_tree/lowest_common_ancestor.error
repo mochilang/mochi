@@ -1,0 +1,42 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:98: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(1, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(4)})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:99: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(2, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(5)})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:100: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(3, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(7)})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:101: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(4, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(8)})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:102: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(5, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(10)})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:103: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(6, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(11)})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:104: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(7, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:105: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(8, ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(12), java.math.BigInteger.valueOf(13)})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:106: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(9, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:107: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(10, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:108: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(11, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:109: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(12, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden187_lowest_common_ancestor98149372/001/Main.java:110: error: incompatible types: int cannot be converted to BigInteger
+graph_1.put(13, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
+            ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+13 errors

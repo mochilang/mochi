@@ -1,9 +1,9 @@
 public class Main {
     static class Node {
-        int data;
-        int left;
-        int right;
-        Node(int data, int left, int right) {
+        java.math.BigInteger data;
+        java.math.BigInteger left;
+        java.math.BigInteger right;
+        Node(java.math.BigInteger data, java.math.BigInteger left, java.math.BigInteger right) {
             this.data = data;
             this.left = left;
             this.right = right;
@@ -16,8 +16,8 @@ public class Main {
 
     static class TreeState {
         Node[] nodes;
-        int root;
-        TreeState(Node[] nodes, int root) {
+        java.math.BigInteger root;
+        TreeState(Node[] nodes, java.math.BigInteger root) {
             this.nodes = nodes;
             this.root = root;
         }
@@ -28,74 +28,104 @@ public class Main {
     }
 
 
-    static int new_node(TreeState state, int value) {
-state.nodes = java.util.stream.Stream.concat(java.util.Arrays.stream(state.nodes), java.util.stream.Stream.of(new Node(value, (-1), (-1)))).toArray(Node[]::new);
-        return state.nodes.length - 1;
+    static java.math.BigInteger new_node(TreeState state, java.math.BigInteger value) {
+state.nodes = java.util.stream.Stream.concat(java.util.Arrays.stream(state.nodes), java.util.stream.Stream.of(new Node(value, ((java.math.BigInteger.valueOf(1)).negate()), ((java.math.BigInteger.valueOf(1)).negate())))).toArray(Node[]::new);
+        return new java.math.BigInteger(String.valueOf(state.nodes.length)).subtract(java.math.BigInteger.valueOf(1));
     }
 
-    static void insert(TreeState state, int value) {
-        if (state.root == (-1)) {
-state.root = new_node(state, value);
+    static void insert(TreeState state, java.math.BigInteger value) {
+        if (state.root.compareTo(((java.math.BigInteger.valueOf(1)).negate())) == 0) {
+state.root = new_node(state, new java.math.BigInteger(String.valueOf(value)));
             return;
         }
-        int current = state.root;
-        Node[] nodes = ((Node[])(state.nodes));
+        java.math.BigInteger current_1 = new java.math.BigInteger(String.valueOf(state.root));
+        Node[] nodes_1 = ((Node[])(state.nodes));
         while (true) {
-            Node node = nodes[current];
-            if (value < node.data) {
-                if (node.left == (-1)) {
-node.left = new_node(state, value);
-nodes[current] = node;
-state.nodes = nodes;
+            Node node_1 = nodes_1[(int)(((java.math.BigInteger)(current_1)).longValue())];
+            if (value.compareTo(node_1.data) < 0) {
+                if (node_1.left.compareTo(((java.math.BigInteger.valueOf(1)).negate())) == 0) {
+node_1.left = new_node(state, new java.math.BigInteger(String.valueOf(value)));
+nodes_1[(int)(((java.math.BigInteger)(current_1)).longValue())] = node_1;
+state.nodes = nodes_1;
                     return;
                 }
-                current = node.left;
+                current_1 = new java.math.BigInteger(String.valueOf(node_1.left));
             } else {
-                if (node.right == (-1)) {
-node.right = new_node(state, value);
-nodes[current] = node;
-state.nodes = nodes;
+                if (node_1.right.compareTo(((java.math.BigInteger.valueOf(1)).negate())) == 0) {
+node_1.right = new_node(state, new java.math.BigInteger(String.valueOf(value)));
+nodes_1[(int)(((java.math.BigInteger)(current_1)).longValue())] = node_1;
+state.nodes = nodes_1;
                     return;
                 }
-                current = node.right;
+                current_1 = new java.math.BigInteger(String.valueOf(node_1.right));
             }
         }
     }
 
-    static int[] inorder(TreeState state, int idx) {
-        if (idx == (-1)) {
-            return new int[]{};
+    static java.math.BigInteger[] inorder(TreeState state, java.math.BigInteger idx) {
+        if (idx.compareTo(((java.math.BigInteger.valueOf(1)).negate())) == 0) {
+            return new java.math.BigInteger[]{};
         }
-        Node node_1 = state.nodes[idx];
-        int[] result = ((int[])(inorder(state, node_1.left)));
-        result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(node_1.data)).toArray()));
-        int[] right_part = ((int[])(inorder(state, node_1.right)));
-        int i = 0;
-        while (i < right_part.length) {
-            result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(right_part[i])).toArray()));
-            i = i + 1;
+        Node node_3 = state.nodes[(int)(((java.math.BigInteger)(idx)).longValue())];
+        java.math.BigInteger[] result_1 = ((java.math.BigInteger[])(inorder(state, new java.math.BigInteger(String.valueOf(node_3.left)))));
+        result_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(node_3.data)).toArray(java.math.BigInteger[]::new)));
+        java.math.BigInteger[] right_part_1 = ((java.math.BigInteger[])(inorder(state, new java.math.BigInteger(String.valueOf(node_3.right)))));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(right_part_1.length))) < 0) {
+            result_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(right_part_1[(int)(((java.math.BigInteger)(i_1)).longValue())])).toArray(java.math.BigInteger[]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return result_1;
     }
 
     static TreeState make_tree() {
-        TreeState state = new TreeState(new Node[]{}, (-1));
-        insert(state, 15);
-        insert(state, 10);
-        insert(state, 25);
-        insert(state, 6);
-        insert(state, 14);
-        insert(state, 20);
-        insert(state, 60);
+        TreeState state = new TreeState(new Node[]{}, ((java.math.BigInteger.valueOf(1)).negate()));
+        insert(state, java.math.BigInteger.valueOf(15));
+        insert(state, java.math.BigInteger.valueOf(10));
+        insert(state, java.math.BigInteger.valueOf(25));
+        insert(state, java.math.BigInteger.valueOf(6));
+        insert(state, java.math.BigInteger.valueOf(14));
+        insert(state, java.math.BigInteger.valueOf(20));
+        insert(state, java.math.BigInteger.valueOf(60));
         return state;
     }
 
     static void main() {
         TreeState state_1 = make_tree();
         System.out.println("Printing values of binary search tree in Inorder Traversal.");
-        System.out.println(inorder(state_1, state_1.root));
+        System.out.println(java.util.Arrays.toString(inorder(state_1, new java.math.BigInteger(String.valueOf(state_1.root)))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

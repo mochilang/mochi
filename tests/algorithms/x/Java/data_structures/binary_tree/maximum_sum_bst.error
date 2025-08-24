@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden189_maximum_sum_bst1924615211/001/Main.java:53: error: integer number too large
+            return new Info(true, 2147483647, (java.math.BigInteger.valueOf(2147483648)).negate(), 0, 0);
+                                                                            ^
+1 error

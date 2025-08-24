@@ -1,23 +1,23 @@
 public class Main {
-    static String data;
+    static String data = "01001100100111";
 
-    static String to_binary(int n) {
-        if (n == 0) {
+    static String to_binary(java.math.BigInteger n) {
+        if (n.compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             return "0";
         }
-        int num = n;
-        String res = "";
-        while (num > 0) {
-            int bit = Math.floorMod(num, 2);
-            res = _p(bit) + res;
-            num = num / 2;
+        java.math.BigInteger num_1 = new java.math.BigInteger(String.valueOf(n));
+        String res_1 = "";
+        while (num_1.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            java.math.BigInteger bit_1 = new java.math.BigInteger(String.valueOf(num_1.remainder(java.math.BigInteger.valueOf(2))));
+            res_1 = _p(bit_1) + res_1;
+            num_1 = new java.math.BigInteger(String.valueOf(num_1.divide(java.math.BigInteger.valueOf(2))));
         }
-        return res;
+        return res_1;
     }
 
-    static boolean contains_key_int(java.util.Map<String,Integer> m, String key) {
-        for (var k : new java.util.ArrayList<>(m.keySet())) {
-            if (((Number)(k)).intValue() == key) {
+    static boolean contains_key_int(java.util.Map<String,java.math.BigInteger> m, String key) {
+        for (String k : new java.util.ArrayList<>(m.keySet())) {
+            if ((k.equals(key))) {
                 return true;
             }
         }
@@ -25,32 +25,61 @@ public class Main {
     }
 
     static String lzw_compress(String bits) {
-        java.util.Map<String,Integer> dict = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1)))));
-        String current = "";
-        String result = "";
-        int index = 2;
-        int i = 0;
-        while (i < _runeLen(bits)) {
-            String ch = bits.substring(i, i+1);
-            String candidate = current + ch;
-            if (((Boolean)(contains_key_int(dict, candidate)))) {
-                current = candidate;
+        java.util.Map<String,java.math.BigInteger> dict = ((java.util.Map<String,java.math.BigInteger>)(new java.util.LinkedHashMap<String, java.math.BigInteger>(java.util.Map.ofEntries(java.util.Map.entry("0", java.math.BigInteger.valueOf(0)), java.util.Map.entry("1", java.math.BigInteger.valueOf(1))))));
+        String current_1 = "";
+        String result_1 = "";
+        java.math.BigInteger index_1 = java.math.BigInteger.valueOf(2);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(_runeLen(bits)))) < 0) {
+            String ch_1 = bits.substring((int)(((java.math.BigInteger)(i_1)).longValue()), (int)(((java.math.BigInteger)(i_1)).longValue())+1);
+            String candidate_1 = current_1 + ch_1;
+            if (contains_key_int(dict, candidate_1)) {
+                current_1 = candidate_1;
             } else {
-                result = result + String.valueOf(to_binary((int)(((int)(dict).getOrDefault(current, 0)))));
-dict.put(candidate, index);
-                index = index + 1;
-                current = ch;
+                result_1 = result_1 + String.valueOf(to_binary(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(dict).get(current_1))))));
+dict.put(candidate_1, new java.math.BigInteger(String.valueOf(index_1)));
+                index_1 = new java.math.BigInteger(String.valueOf(index_1.add(java.math.BigInteger.valueOf(1))));
+                current_1 = ch_1;
             }
-            i = i + 1;
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        if (!(current.equals(""))) {
-            result = result + String.valueOf(to_binary((int)(((int)(dict).getOrDefault(current, 0)))));
+        if (!(current_1.equals(""))) {
+            result_1 = result_1 + String.valueOf(to_binary(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(dict).get(current_1))))));
         }
-        return result;
+        return result_1;
     }
     public static void main(String[] args) {
-        data = "01001100100111";
-        System.out.println(lzw_compress(data));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(lzw_compress(data));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {
@@ -69,6 +98,10 @@ dict.put(candidate, index);
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

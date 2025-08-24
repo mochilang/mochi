@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden180_fenwick_tree2247601625/001/Main.java:85: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden180_fenwick_tree2247601625/001/Main.java:119: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+2 errors
