@@ -1,5 +1,5 @@
-Execution error (ClassCastException) at main/try-set (hash_map.clj:88).
-class clojure.lang.PersistentList cannot be cast to class clojure.lang.Associative (clojure.lang.PersistentList and clojure.lang.Associative are in unnamed module of loader 'app')
+Syntax error (IllegalArgumentException) compiling fn* at (/workspace/mochi/tests/algorithms/x/Clojure/data_structures/hashing/hash_map.clj:113:1).
+Cannot assign to non-mutable: size_up_hm
 
 Full report at:
-/tmp/clojure-9064642843776714109.edn
+/tmp/clojure-15392359823923732932.edn

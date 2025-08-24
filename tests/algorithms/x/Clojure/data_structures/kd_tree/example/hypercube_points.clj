@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare rand random hypercube_points)
+
+(declare _read_file)
 
 (def ^:dynamic hypercube_points_i nil)
 
@@ -28,7 +42,7 @@
 
 (def ^:dynamic hypercube_points_value nil)
 
-(def ^:dynamic main_seed 1)
+(def ^:dynamic main_seed nil)
 
 (defn rand []
   (try (do (alter-var-root (var main_seed) (fn [_] (mod (+ (* main_seed 1103515245) 12345) 2147483648))) (throw (ex-info "return" {:v main_seed}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -39,12 +53,14 @@
 (defn hypercube_points [hypercube_points_num_points hypercube_points_hypercube_size hypercube_points_num_dimensions]
   (binding [hypercube_points_i nil hypercube_points_j nil hypercube_points_point nil hypercube_points_points nil hypercube_points_value nil] (try (do (set! hypercube_points_points []) (set! hypercube_points_i 0) (while (< hypercube_points_i hypercube_points_num_points) (do (set! hypercube_points_point []) (set! hypercube_points_j 0) (while (< hypercube_points_j hypercube_points_num_dimensions) (do (set! hypercube_points_value (* hypercube_points_hypercube_size (random))) (set! hypercube_points_point (conj hypercube_points_point hypercube_points_value)) (set! hypercube_points_j (+ hypercube_points_j 1)))) (set! hypercube_points_points (conj hypercube_points_points hypercube_points_point)) (set! hypercube_points_i (+ hypercube_points_i 1)))) (throw (ex-info "return" {:v hypercube_points_points}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_pts (hypercube_points 3 1.0 2))
+(def ^:dynamic main_pts nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_seed) (constantly 1))
+      (alter-var-root (var main_pts) (constantly (hypercube_points 3 1.0 2)))
       (println main_pts)
       (System/gc)
       (let [end (System/nanoTime)

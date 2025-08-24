@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare count_nodes count_coins iabs dfs distribute_coins main)
+
+(declare _read_file)
 
 (def ^:dynamic count_coins_node nil)
 
@@ -32,10 +46,6 @@
 
 (def ^:dynamic dfs_right_excess nil)
 
-(def ^:dynamic dfs_total_moves nil)
-
-(def ^:dynamic distribute_coins_total_moves nil)
-
 (def ^:dynamic main_example1 nil)
 
 (def ^:dynamic main_example2 nil)
@@ -48,16 +58,16 @@
 (defn count_coins [count_coins_nodes count_coins_idx]
   (binding [count_coins_node nil] (try (do (when (= count_coins_idx 0) (throw (ex-info "return" {:v 0}))) (set! count_coins_node (nth count_coins_nodes count_coins_idx)) (throw (ex-info "return" {:v (+ (+ (count_coins count_coins_nodes (:left count_coins_node)) (count_coins count_coins_nodes (:right count_coins_node))) (:data count_coins_node))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_total_moves 0)
+(def ^:dynamic main_total_moves nil)
 
 (defn iabs [iabs_x]
   (try (if (< iabs_x 0) (- iabs_x) iabs_x) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn dfs [dfs_nodes dfs_idx]
-  (binding [dfs_abs_left nil dfs_abs_right nil dfs_left_excess nil dfs_node nil dfs_right_excess nil dfs_total_moves nil] (try (do (when (= dfs_idx 0) (throw (ex-info "return" {:v 0}))) (set! dfs_node (nth dfs_nodes dfs_idx)) (set! dfs_left_excess (dfs dfs_nodes (:left dfs_node))) (set! dfs_right_excess (dfs dfs_nodes (:right dfs_node))) (set! dfs_abs_left (iabs dfs_left_excess)) (set! dfs_abs_right (iabs dfs_right_excess)) (set! dfs_total_moves (+ (+ main_total_moves dfs_abs_left) dfs_abs_right)) (throw (ex-info "return" {:v (- (+ (+ (:data dfs_node) dfs_left_excess) dfs_right_excess) 1)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [dfs_abs_left nil dfs_abs_right nil dfs_left_excess nil dfs_node nil dfs_right_excess nil] (try (do (when (= dfs_idx 0) (throw (ex-info "return" {:v 0}))) (set! dfs_node (nth dfs_nodes dfs_idx)) (set! dfs_left_excess (dfs dfs_nodes (:left dfs_node))) (set! dfs_right_excess (dfs dfs_nodes (:right dfs_node))) (set! dfs_abs_left (iabs dfs_left_excess)) (set! dfs_abs_right (iabs dfs_right_excess)) (alter-var-root (var main_total_moves) (fn [_] (+ (+ main_total_moves dfs_abs_left) dfs_abs_right))) (throw (ex-info "return" {:v (- (+ (+ (:data dfs_node) dfs_left_excess) dfs_right_excess) 1)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn distribute_coins [distribute_coins_nodes distribute_coins_root]
-  (binding [distribute_coins_total_moves nil] (try (do (when (= distribute_coins_root 0) (throw (ex-info "return" {:v 0}))) (when (not= (count_nodes distribute_coins_nodes distribute_coins_root) (count_coins distribute_coins_nodes distribute_coins_root)) (throw (Exception. "The nodes number should be same as the number of coins"))) (set! distribute_coins_total_moves 0) (dfs distribute_coins_nodes distribute_coins_root) (throw (ex-info "return" {:v distribute_coins_total_moves}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (try (do (when (= distribute_coins_root 0) (throw (ex-info "return" {:v 0}))) (when (not= (count_nodes distribute_coins_nodes distribute_coins_root) (count_coins distribute_coins_nodes distribute_coins_root)) (throw (Exception. "The nodes number should be same as the number of coins"))) (alter-var-root (var main_total_moves) (fn [_] 0)) (dfs distribute_coins_nodes distribute_coins_root) (throw (ex-info "return" {:v main_total_moves}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
   (binding [main_example1 nil main_example2 nil main_example3 nil] (do (set! main_example1 [{:data 0 :left 0 :right 0} {:data 3 :left 2 :right 3} {:data 0 :left 0 :right 0} {:data 0 :left 0 :right 0}]) (set! main_example2 [{:data 0 :left 0 :right 0} {:data 0 :left 2 :right 3} {:data 3 :left 0 :right 0} {:data 0 :left 0 :right 0}]) (set! main_example3 [{:data 0 :left 0 :right 0} {:data 0 :left 2 :right 3} {:data 0 :left 0 :right 0} {:data 3 :left 0 :right 0}]) (println (distribute_coins main_example1 1)) (println (distribute_coins main_example2 1)) (println (distribute_coins main_example3 1)) (println (distribute_coins [{:data 0 :left 0 :right 0}] 0)))))
@@ -66,6 +76,7 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_total_moves) (constantly 0))
       (main)
       (System/gc)
       (let [end (System/nanoTime)

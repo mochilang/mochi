@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error (IllegalArgumentException) compiling fn* at (/workspace/mochi/tests/algorithms/x/Clojure/data_structures/hashing/hash_table_with_linked_list.clj:94:1).
+Cannot assign to non-mutable: insert_ht
+
+Full report at:
+/tmp/clojure-7789937213914039889.edn

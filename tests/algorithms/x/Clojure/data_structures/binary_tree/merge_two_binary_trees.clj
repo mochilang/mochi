@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare merge_two_binary_trees is_leaf get_left get_right get_value print_preorder)
+
+(declare _read_file)
 
 (def ^:dynamic print_preorder_l nil)
 
@@ -25,7 +39,7 @@
 (def ^:dynamic print_preorder_v nil)
 
 (defn merge_two_binary_trees [merge_two_binary_trees_t1 merge_two_binary_trees_t2]
-  (try (throw (ex-info "return" {:v (cond (= merge_two_binary_trees_t1 merge_two_binary_trees_Leaf) merge_two_binary_trees_t2 (and (map? merge_two_binary_trees_t1) (= (:__tag merge_two_binary_trees_t1) "Node") (contains? merge_two_binary_trees_t1 :left) (contains? merge_two_binary_trees_t1 :value) (contains? merge_two_binary_trees_t1 :right)) (let [merge_two_binary_trees_l1 (:left merge_two_binary_trees_t1) merge_two_binary_trees_v1 (:value merge_two_binary_trees_t1) merge_two_binary_trees_r1 (:right merge_two_binary_trees_t1)] (cond (= merge_two_binary_trees_t2 merge_two_binary_trees_Leaf) merge_two_binary_trees_t1 (and (map? merge_two_binary_trees_t2) (= (:__tag merge_two_binary_trees_t2) "Node") (contains? merge_two_binary_trees_t2 :left) (contains? merge_two_binary_trees_t2 :value) (contains? merge_two_binary_trees_t2 :right)) (let [merge_two_binary_trees_l2 (:left merge_two_binary_trees_t2) merge_two_binary_trees_v2 (:value merge_two_binary_trees_t2) merge_two_binary_trees_r2 (:right merge_two_binary_trees_t2)] {:__tag "Node" :left (merge_two_binary_trees merge_two_binary_trees_l1 merge_two_binary_trees_l2) :value (+ merge_two_binary_trees_v1 merge_two_binary_trees_v2) :right (merge_two_binary_trees merge_two_binary_trees_r1 merge_two_binary_trees_r2)}))))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (cond (= merge_two_binary_trees_t1 merge_two_binary_trees_Leaf) merge_two_binary_trees_t2 (and (map? merge_two_binary_trees_t1) (= (:__tag merge_two_binary_trees_t1) "Node") (contains? merge_two_binary_trees_t1 :left) (contains? merge_two_binary_trees_t1 :value) (contains? merge_two_binary_trees_t1 :right)) (let [merge_two_binary_trees_l1 (:left merge_two_binary_trees_t1) merge_two_binary_trees_v1 (:value merge_two_binary_trees_t1) merge_two_binary_trees_r1 (:right merge_two_binary_trees_t1)] (cond (= merge_two_binary_trees_t2 merge_two_binary_trees_Leaf) merge_two_binary_trees_t1 (and (map? merge_two_binary_trees_t2) (= (:__tag merge_two_binary_trees_t2) "Node") (contains? merge_two_binary_trees_t2 :left) (contains? merge_two_binary_trees_t2 :value) (contains? merge_two_binary_trees_t2 :right)) (let [merge_two_binary_trees_l2 (:left merge_two_binary_trees_t2) merge_two_binary_trees_v2 (:value merge_two_binary_trees_t2) merge_two_binary_trees_r2 (:right merge_two_binary_trees_t2)] {:__tag "Node" :left (merge_two_binary_trees merge_two_binary_trees_l1 merge_two_binary_trees_l2) :right (merge_two_binary_trees merge_two_binary_trees_r1 merge_two_binary_trees_r2) :value (+ merge_two_binary_trees_v1 merge_two_binary_trees_v2)}))))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn is_leaf [is_leaf_t]
   (try (throw (ex-info "return" {:v (cond (= is_leaf_t is_leaf_Leaf) true (= is_leaf_t is_leaf__) false)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -42,20 +56,23 @@
 (defn print_preorder [print_preorder_t]
   (binding [print_preorder_l nil print_preorder_r nil print_preorder_v nil] (when (not (is_leaf print_preorder_t)) (do (set! print_preorder_v (get_value print_preorder_t)) (set! print_preorder_l (get_left print_preorder_t)) (set! print_preorder_r (get_right print_preorder_t)) (println print_preorder_v) (print_preorder print_preorder_l) (print_preorder print_preorder_r)))))
 
-(def ^:dynamic main_tree1 {:__tag "Node" :left {:__tag "Node" :left {:__tag "Node" :left {:__tag "Leaf"} :value 4 :right {:__tag "Leaf"}} :value 2 :right {:__tag "Leaf"}} :value 1 :right {:__tag "Node" :left {:__tag "Leaf"} :value 3 :right {:__tag "Leaf"}}})
+(def ^:dynamic main_tree1 nil)
 
-(def ^:dynamic main_tree2 {:__tag "Node" :left {:__tag "Node" :left {:__tag "Leaf"} :value 4 :right {:__tag "Node" :left {:__tag "Leaf"} :value 9 :right {:__tag "Leaf"}}} :value 2 :right {:__tag "Node" :left {:__tag "Leaf"} :value 6 :right {:__tag "Node" :left {:__tag "Leaf"} :value 5 :right {:__tag "Leaf"}}}})
+(def ^:dynamic main_tree2 nil)
 
-(def ^:dynamic main_merged_tree (merge_two_binary_trees main_tree1 main_tree2))
+(def ^:dynamic main_merged_tree nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_tree1) (constantly {:__tag "Node" :left {:__tag "Node" :left {:__tag "Node" :left {:__tag "Leaf"} :right {:__tag "Leaf"} :value 4} :right {:__tag "Leaf"} :value 2} :right {:__tag "Node" :left {:__tag "Leaf"} :right {:__tag "Leaf"} :value 3} :value 1}))
+      (alter-var-root (var main_tree2) (constantly {:__tag "Node" :left {:__tag "Node" :left {:__tag "Leaf"} :right {:__tag "Node" :left {:__tag "Leaf"} :right {:__tag "Leaf"} :value 9} :value 4} :right {:__tag "Node" :left {:__tag "Leaf"} :right {:__tag "Node" :left {:__tag "Leaf"} :right {:__tag "Leaf"} :value 5} :value 6} :value 2}))
       (println "Tree1 is:")
       (print_preorder main_tree1)
       (println "Tree2 is:")
       (print_preorder main_tree2)
+      (alter-var-root (var main_merged_tree) (constantly (merge_two_binary_trees main_tree1 main_tree2)))
       (println "Merged Tree is:")
       (print_preorder main_merged_tree)
       (System/gc)

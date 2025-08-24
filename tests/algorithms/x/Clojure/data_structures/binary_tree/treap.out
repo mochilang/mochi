@@ -1,5 +1,5 @@
-Execution error (IndexOutOfBoundsException) at main/inorder (treap.clj:86).
-null
-
-Full report at:
-/tmp/clojure-7089553201639616885.edn
+[1]
+[1 2 4 16 17]
+[1 2 4 4 16 17]
+[1 2 4 4 16 17]
+[1 2 16 17]

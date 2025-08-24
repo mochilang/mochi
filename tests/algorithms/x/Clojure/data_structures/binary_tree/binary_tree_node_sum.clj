@@ -14,21 +14,36 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare node_sum)
+
+(declare _read_file)
 
 (def ^:dynamic node_sum_node nil)
 
 (defn node_sum [node_sum_tree node_sum_index]
   (binding [node_sum_node nil] (try (do (when (= node_sum_index (- 1)) (throw (ex-info "return" {:v 0}))) (set! node_sum_node (nth node_sum_tree node_sum_index)) (throw (ex-info "return" {:v (+ (+ (:value node_sum_node) (node_sum node_sum_tree (:left node_sum_node))) (node_sum node_sum_tree (:right node_sum_node)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_example [{:value 10 :left 1 :right 2} {:value 5 :left 3 :right (- 1)} {:value (- 3) :left 4 :right 5} {:value 12 :left (- 1) :right (- 1)} {:value 8 :left (- 1) :right (- 1)} {:value 0 :left (- 1) :right (- 1)}])
+(def ^:dynamic main_example nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_example) (constantly [{:left 1 :right 2 :value 10} {:left 3 :right (- 1) :value 5} {:left 4 :right 5 :value (- 3)} {:left (- 1) :right (- 1) :value 12} {:left (- 1) :right (- 1) :value 8} {:left (- 1) :right (- 1) :value 0}]))
       (println (node_sum main_example 0))
       (System/gc)
       (let [end (System/nanoTime)

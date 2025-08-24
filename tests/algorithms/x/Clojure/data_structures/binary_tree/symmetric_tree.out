@@ -1,2 +1,5 @@
-true
-false
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/data_structures/binary_tree/symmetric_tree.clj:52:745).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-10524738853080535195.edn

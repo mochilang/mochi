@@ -14,35 +14,53 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare make_kd_node)
+
+(declare _read_file)
 
 (def ^:dynamic main_nodes nil)
 
 (defn make_kd_node [make_kd_node_point make_kd_node_left make_kd_node_right]
   (try (throw (ex-info "return" {:v {:left make_kd_node_left :point make_kd_node_point :right make_kd_node_right}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def ^:dynamic main_nodes [])
+(def ^:dynamic main_nodes nil)
 
-(def ^:dynamic main_root (nth main_nodes 0))
+(def ^:dynamic main_root nil)
 
-(def ^:dynamic main_left_child (nth main_nodes 1))
+(def ^:dynamic main_left_child nil)
 
-(def ^:dynamic main_right_child (nth main_nodes 2))
+(def ^:dynamic main_right_child nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (def main_nodes (conj main_nodes (make_kd_node [2.0 3.0] 1 2)))
-      (def main_nodes (conj main_nodes (make_kd_node [1.0 5.0] (- 1) (- 1))))
-      (def main_nodes (conj main_nodes (make_kd_node [4.0 2.0] (- 1) (- 1))))
-      (println (str (:point main_root)))
-      (println (str (:left main_root)))
-      (println (str (:right main_root)))
-      (println (str (:point main_left_child)))
-      (println (str (:point main_right_child)))
+      (alter-var-root (var main_nodes) (constantly []))
+      (alter-var-root (var main_nodes) (constantly (conj main_nodes (make_kd_node [2.0 3.0] 1 2))))
+      (alter-var-root (var main_nodes) (constantly (conj main_nodes (make_kd_node [1.0 5.0] (- 1) (- 1)))))
+      (alter-var-root (var main_nodes) (constantly (conj main_nodes (make_kd_node [4.0 2.0] (- 1) (- 1)))))
+      (alter-var-root (var main_root) (constantly (nth main_nodes 0)))
+      (alter-var-root (var main_left_child) (constantly (nth main_nodes 1)))
+      (alter-var-root (var main_right_child) (constantly (nth main_nodes 2)))
+      (println (mochi_str (:point main_root)))
+      (println (mochi_str (:left main_root)))
+      (println (mochi_str (:right main_root)))
+      (println (mochi_str (:point main_left_child)))
+      (println (mochi_str (:point main_right_child)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

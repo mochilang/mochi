@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare tree_sum is_sum_node build_a_tree build_a_sum_tree)
+
+(declare _read_file)
 
 (def ^:dynamic is_sum_node_left_ok nil)
 
@@ -37,10 +51,10 @@
   (binding [is_sum_node_left_ok nil is_sum_node_left_sum nil is_sum_node_node nil is_sum_node_right_ok nil is_sum_node_right_sum nil] (try (do (set! is_sum_node_node (nth is_sum_node_nodes is_sum_node_idx)) (when (and (= (:left is_sum_node_node) (- 1)) (= (:right is_sum_node_node) (- 1))) (throw (ex-info "return" {:v true}))) (set! is_sum_node_left_sum (tree_sum is_sum_node_nodes (:left is_sum_node_node))) (set! is_sum_node_right_sum (tree_sum is_sum_node_nodes (:right is_sum_node_node))) (when (not= (:value is_sum_node_node) (+ is_sum_node_left_sum is_sum_node_right_sum)) (throw (ex-info "return" {:v false}))) (set! is_sum_node_left_ok true) (when (not= (:left is_sum_node_node) (- 1)) (set! is_sum_node_left_ok (is_sum_node is_sum_node_nodes (:left is_sum_node_node)))) (set! is_sum_node_right_ok true) (when (not= (:right is_sum_node_node) (- 1)) (set! is_sum_node_right_ok (is_sum_node is_sum_node_nodes (:right is_sum_node_node)))) (throw (ex-info "return" {:v (and is_sum_node_left_ok is_sum_node_right_ok)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn build_a_tree []
-  (try (throw (ex-info "return" {:v [{:value 11 :left 1 :right 2} {:value 2 :left 3 :right 4} {:value 29 :left 5 :right 6} {:value 1 :left (- 1) :right (- 1)} {:value 7 :left (- 1) :right (- 1)} {:value 15 :left (- 1) :right (- 1)} {:value 40 :left 7 :right (- 1)} {:value 35 :left (- 1) :right (- 1)}]})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v [{:left 1 :right 2 :value 11} {:left 3 :right 4 :value 2} {:left 5 :right 6 :value 29} {:left (- 1) :right (- 1) :value 1} {:left (- 1) :right (- 1) :value 7} {:left (- 1) :right (- 1) :value 15} {:left 7 :right (- 1) :value 40} {:left (- 1) :right (- 1) :value 35}]})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn build_a_sum_tree []
-  (try (throw (ex-info "return" {:v [{:value 26 :left 1 :right 2} {:value 10 :left 3 :right 4} {:value 3 :left (- 1) :right 5} {:value 4 :left (- 1) :right (- 1)} {:value 6 :left (- 1) :right (- 1)} {:value 3 :left (- 1) :right (- 1)}]})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v [{:left 1 :right 2 :value 26} {:left 3 :right 4 :value 10} {:left (- 1) :right 5 :value 3} {:left (- 1) :right (- 1) :value 4} {:left (- 1) :right (- 1) :value 6} {:left (- 1) :right (- 1) :value 3}]})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

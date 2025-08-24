@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare swap_up insert swap_down shrink pop get_list len)
+
+(declare _read_file)
 
 (def ^:dynamic get_list_i nil)
 
@@ -38,18 +52,18 @@
 
 (def ^:dynamic swap_up_temp nil)
 
-(def ^:dynamic main_heap [0])
+(def ^:dynamic main_heap nil)
 
-(def ^:dynamic main_size 0)
+(def ^:dynamic main_size nil)
 
 (defn swap_up [swap_up_i]
-  (binding [swap_up_idx nil swap_up_temp nil] (do (set! swap_up_temp (nth main_heap swap_up_i)) (set! swap_up_idx swap_up_i) (while (> (quot swap_up_idx 2) 0) (do (when (> (nth main_heap swap_up_idx) (nth main_heap (quot swap_up_idx 2))) (do (alter-var-root (var main_heap) (fn [_] (assoc main_heap swap_up_idx (nth main_heap (quot swap_up_idx 2))))) (alter-var-root (var main_heap) (fn [_] (assoc main_heap (quot swap_up_idx 2) swap_up_temp))))) (set! swap_up_idx (quot swap_up_idx 2)))))))
+  (binding [swap_up_idx nil swap_up_temp nil] (do (set! swap_up_temp (nth main_heap swap_up_i)) (set! swap_up_idx swap_up_i) (while (> (quot swap_up_idx 2) 0) (do (when (> (nth main_heap swap_up_idx) (nth main_heap (quot swap_up_idx 2))) (do (alter-var-root (var main_heap) (fn [_] (assoc main_heap swap_up_idx (nth main_heap (quot swap_up_idx 2))))) (alter-var-root (var main_heap) (fn [_] (assoc main_heap (quot swap_up_idx 2) swap_up_temp))))) (set! swap_up_idx (quot swap_up_idx 2)))) swap_up_i)))
 
 (defn insert [insert_value]
-  (do (alter-var-root (var main_heap) (fn [_] (conj main_heap insert_value))) (alter-var-root (var main_size) (fn [_] (+ main_size 1))) (swap_up main_size)))
+  (do (alter-var-root (var main_heap) (fn [_] (conj main_heap insert_value))) (alter-var-root (var main_size) (fn [_] (+ main_size 1))) (swap_up main_size) insert_value))
 
 (defn swap_down [swap_down_i]
-  (binding [swap_down_bigger_child nil swap_down_idx nil swap_down_temp nil] (do (set! swap_down_idx swap_down_i) (while (>= main_size (* 2 swap_down_idx)) (do (set! swap_down_bigger_child (if (> (+ (* 2 swap_down_idx) 1) main_size) (* 2 swap_down_idx) (if (> (nth main_heap (* 2 swap_down_idx)) (nth main_heap (+ (* 2 swap_down_idx) 1))) (* 2 swap_down_idx) (+ (* 2 swap_down_idx) 1)))) (set! swap_down_temp (nth main_heap swap_down_idx)) (when (< (nth main_heap swap_down_idx) (nth main_heap swap_down_bigger_child)) (do (alter-var-root (var main_heap) (fn [_] (assoc main_heap swap_down_idx (nth main_heap swap_down_bigger_child)))) (alter-var-root (var main_heap) (fn [_] (assoc main_heap swap_down_bigger_child swap_down_temp))))) (set! swap_down_idx swap_down_bigger_child))))))
+  (binding [swap_down_bigger_child nil swap_down_idx nil swap_down_temp nil] (do (set! swap_down_idx swap_down_i) (while (>= main_size (* 2 swap_down_idx)) (do (set! swap_down_bigger_child (if (> (+ (* 2 swap_down_idx) 1) main_size) (* 2 swap_down_idx) (if (> (nth main_heap (* 2 swap_down_idx)) (nth main_heap (+ (* 2 swap_down_idx) 1))) (* 2 swap_down_idx) (+ (* 2 swap_down_idx) 1)))) (set! swap_down_temp (nth main_heap swap_down_idx)) (when (< (nth main_heap swap_down_idx) (nth main_heap swap_down_bigger_child)) (do (alter-var-root (var main_heap) (fn [_] (assoc main_heap swap_down_idx (nth main_heap swap_down_bigger_child)))) (alter-var-root (var main_heap) (fn [_] (assoc main_heap swap_down_bigger_child swap_down_temp))))) (set! swap_down_idx swap_down_bigger_child))) swap_down_i)))
 
 (defn shrink []
   (binding [shrink_i nil shrink_new_heap nil] (do (set! shrink_new_heap []) (set! shrink_i 0) (while (<= shrink_i main_size) (do (set! shrink_new_heap (conj shrink_new_heap (nth main_heap shrink_i))) (set! shrink_i (+ shrink_i 1)))) (alter-var-root (var main_heap) (fn [_] shrink_new_heap)))))
@@ -67,6 +81,8 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_heap) (constantly [0]))
+      (alter-var-root (var main_size) (constantly 0))
       (insert 6)
       (insert 10)
       (insert 15)
