@@ -109,6 +109,9 @@ func sanitizeName(name string) string {
 	case "map":
 		// avoid clashing with Racket's built-in map function
 		return "map_"
+	case "sublist":
+		// avoid clashing with helper `sublist` defined in the prelude
+		return "sublist_"
 	default:
 		return name
 	}
@@ -177,9 +180,9 @@ type PrintStmt struct{ Parts []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
 	if len(p.Parts) == 1 {
-		io.WriteString(w, "(displayln ")
+		io.WriteString(w, "(displayln (to-string ")
 		p.Parts[0].emit(w)
-		io.WriteString(w, ")\n")
+		io.WriteString(w, "))\n")
 		return
 	}
 	io.WriteString(w, "(displayln (string-join (map (lambda (x) (to-string x)) (list")
@@ -315,7 +318,7 @@ func (d *DoubleListAssignStmt) emit(w io.Writer) {
 	name := sanitizeName(d.Name)
 	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
 	d.Index1.emit(w)
-	io.WriteString(w, " (list-set (list-ref ")
+	io.WriteString(w, " (list-set (safe-index ")
 	io.WriteString(w, name)
 	io.WriteString(w, " ")
 	d.Index1.emit(w)
@@ -343,9 +346,7 @@ func (d *DoubleMapAssignStmt) emit(w io.Writer) {
 
 func (l *ListMapAssignStmt) emit(w io.Writer) {
 	name := sanitizeName(l.Name)
-	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
-	l.Index.emit(w)
-	io.WriteString(w, " (hash-set (list-ref ")
+	io.WriteString(w, "(hash-set! (safe-index ")
 	io.WriteString(w, name)
 	io.WriteString(w, " ")
 	l.Index.emit(w)
@@ -353,12 +354,12 @@ func (l *ListMapAssignStmt) emit(w io.Writer) {
 	l.Key.emit(w)
 	io.WriteString(w, " ")
 	l.Expr.emit(w)
-	io.WriteString(w, ")))\n")
+	io.WriteString(w, ")\n")
 }
 
 func (l *ListFieldAssignStmt) emit(w io.Writer) {
 	name := sanitizeName(l.Name)
-	fmt.Fprintf(w, "(hash-set! (list-ref %s ", name)
+	fmt.Fprintf(w, "(hash-set! (safe-index %s ", name)
 	l.Index.emit(w)
 	io.WriteString(w, ") \"")
 	io.WriteString(w, l.Field)
@@ -1613,22 +1614,22 @@ func header() string {
 	hdr += "(define (to-string x)\n"
 	hdr += "  (cond\n"
 	hdr += "    [(number? x)\n"
-	hdr += "     (if (and (inexact? x) (integer? x))\n"
-	hdr += "         (number->string (inexact->exact x))\n"
-	hdr += "         (number->string x))]\n"
-        hdr += "    [(vector? x) (format \"~a\" (vector->list x))]\n"
-        hdr += "    [(hash? x)\n"
-        hdr += "     (format \"~a\"\n"
-        hdr += "             (for/hash ([k (in-hash-keys x)])\n"
-        hdr += "               (values k (let ([v (hash-ref x k)]) (if (vector? v) (vector->list v) v)))))]\n"
-        hdr += "    [else (format \"~a\" x)]))\n"
+	hdr += "     (cond\n"
+	hdr += "       [(and (inexact? x) (integer? x)) (format \"~a.0\" (inexact->exact x))]\n"
+	hdr += "       [else (number->string x)])]\n"
+	hdr += "    [(vector? x) (format \"~a\" (map (lambda (v) (cond [(hash? v) (read (open-input-string (to-string v)))] [(vector? v) (vector->list v)] [else v])) (vector->list x)))]\n"
+	hdr += "    [(hash? x)\n"
+	hdr += "     (format \"~a\"\n"
+	hdr += "             (for/hash ([k (in-hash-keys x)])\n"
+	hdr += "               (values k (let ([v (hash-ref x k)]) (if (vector? v) (vector->list v) v)))))]\n"
+	hdr += "    [else (format \"~a\" x)]))\n"
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (cond\n    [(string? lst) (substring lst start end)]\n    [(vector? lst) (vector->list (vector-copy lst start end))]\n    [else (take (drop lst start) (- end start))]))\n\n"
 	hdr += "(define (slice seq start end)\n  (define len (cond [(string? seq) (string-length seq)] [(vector? seq) (vector-length seq)] [else (length seq)]))\n  (define s (int start))\n  (define e (int end))\n  (when (< s 0) (set! s (+ len s)))\n  (when (< e 0) (set! e (+ len e)))\n  (set! s (max 0 (min len s)))\n  (set! e (max 0 (min len e)))\n  (when (< e s) (set! e s))\n  (cond\n    [(string? seq) (substring seq s e)]\n    [(vector? seq) (vector-copy seq s e)]\n    [else (sublist seq s e)]))\n"
 	hdr += "(define (pad-start s width ch)\n  (let ([s (to-string s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
 	hdr += "(define (index-of s ch)\n  (cond\n    [(string? s)\n     (let loop ([i 0])\n       (cond [(>= i (string-length s)) -1]\n             [(string=? (substring s i (add1 i)) ch) i]\n             [else (loop (add1 i))]))]\n    [else\n     (let loop ([i 0] [lst s])\n       (cond [(null? lst) -1]\n             [(equal? (car lst) ch) i]\n             [else (loop (add1 i) (cdr lst))]))]))\n"
-	hdr += "(define (appendv a b)\n  (cond\n    [(vector? a) (vector-append a b)]\n    [(list? a) (append a (vector->list b))]\n    [else (append a b)]))\n"
+	hdr += "(define (appendv a b)\n  (cond\n    [(vector? a) (vector-append a (cond [(vector? b) b] [(list? b) (list->vector b)] [else (vector b)]))]\n    [(list? a) (append a (cond [(list? b) b] [(vector? b) (vector->list b)] [else (list b)]))]\n    [else (append a b)]))\n"
 	hdr += "(define (safe-index lst idx) (let ([i (int idx)]) (cond [(list? lst) (if (and (>= i 0) (< i (length lst))) (list-ref lst i) '())] [(vector? lst) (if (and (>= i 0) (< i (vector-length lst))) (vector-ref lst i) '())] [(string? lst) (if (and (>= i 0) (< i (string-length lst))) (substring lst i (add1 i)) \"\")] [else 0])))\n"
 	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
 	// `_ord` implements the builtin `ord` function. It's intentionally
@@ -3388,8 +3389,16 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 2 {
 			// Ensure the receiver is a sequence before appending.
 			left := &CallExpr{Func: "or", Args: []Expr{args[0], &ListLit{}}}
-			right := &CallExpr{Func: "vector", Args: []Expr{args[1]}}
-			return &CallExpr{Func: "appendv", Args: []Expr{left, right}}, nil
+			if env != nil {
+				if lt, ok := types.TypeOfExprBasic(c.Args[0], env).(types.ListType); ok {
+					elem := lt.Elem
+					if types.EqualTypes(types.TypeOfExprBasic(c.Args[1], env), elem) {
+						right := &CallExpr{Func: "vector", Args: []Expr{args[1]}}
+						return &CallExpr{Func: "appendv", Args: []Expr{left, right}}, nil
+					}
+				}
+			}
+			return &CallExpr{Func: "appendv", Args: []Expr{left, args[1]}}, nil
 		}
 	case "concat":
 		if len(args) >= 2 {
@@ -3399,7 +3408,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 					return &CallExpr{Func: "string-append", Args: args}, nil
 				}
 			}
-			return &CallExpr{Func: "append", Args: args}, nil
+			expr := &CallExpr{Func: "appendv", Args: []Expr{args[0], args[1]}}
+			for _, a := range args[2:] {
+				expr = &CallExpr{Func: "appendv", Args: []Expr{expr, a}}
+			}
+			return expr, nil
 		}
 	case "avg":
 		if len(args) == 1 {
