@@ -1,13 +1,18 @@
 run: exit status 1
+{
+  "duration_us": 12,
+  "memory_bytes": 0,
+  "name": "main"
+}
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 91, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 131, in <module>
     main()
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 88, in main
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 121, in main
     state = make_tree()
             ^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 82, in make_tree
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 109, in make_tree
     insert(state, 6)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 50, in insert
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 77, in insert
     node = nodes[current]
            ~~~~~^^^^^^^^^
 IndexError: list index out of range

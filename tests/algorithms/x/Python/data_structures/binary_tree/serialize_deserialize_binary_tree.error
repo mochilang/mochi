@@ -1,11 +1,16 @@
 run: exit status 1
+{
+  "duration_us": 5,
+  "memory_bytes": 0,
+  "name": "main"
+}
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 94, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 143, in <module>
     main()
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 87, in main
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 129, in main
     root = five_tree()
            ^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 81, in five_tree
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 117, in five_tree
     left_child = Node(value=2, left=Empty(), right=Empty())
                                     ^^^^^^^
 TypeError: 'NoneType' object is not callable
