@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,33 +36,35 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$NIL = 0 - 1;
-$nodes = [];
-function new_node($value) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $NIL = 0 - 1;
+  $nodes = [];
+  function new_node($value) {
   global $NIL, $nodes;
-  $node = ['data' => $value, 'left' => $NIL, 'right' => $NIL, 'height' => 1];
+  $node = ['data' => $value, 'height' => 1, 'left' => $NIL, 'right' => $NIL];
   $nodes = _append($nodes, $node);
   return count($nodes) - 1;
-}
-function get_height($i) {
+};
+  function get_height($i) {
   global $NIL, $nodes;
   if ($i == $NIL) {
   return 0;
 }
   return $nodes[$i]['height'];
-}
-function my_max($a, $b) {
+};
+  function my_max($a, $b) {
   global $NIL, $nodes;
   if ($a > $b) {
   return $a;
 }
   return $b;
-}
-function update_height($i) {
+};
+  function update_height($i) {
   global $NIL, $nodes;
   $nodes[$i]['height'] = my_max(get_height($nodes[$i]['left']), get_height($nodes[$i]['right'])) + 1;
-}
-function right_rotation($i) {
+};
+  function right_rotation($i) {
   global $NIL, $nodes;
   $left = $nodes[$i]['left'];
   $nodes[$i]['left'] = $nodes[$left]['right'];
@@ -54,8 +72,8 @@ function right_rotation($i) {
   update_height($i);
   update_height($left);
   return $left;
-}
-function left_rotation($i) {
+};
+  function left_rotation($i) {
   global $NIL, $nodes;
   $right = $nodes[$i]['right'];
   $nodes[$i]['right'] = $nodes[$right]['left'];
@@ -63,18 +81,18 @@ function left_rotation($i) {
   update_height($i);
   update_height($right);
   return $right;
-}
-function lr_rotation($i) {
+};
+  function lr_rotation($i) {
   global $NIL, $nodes;
   $nodes[$i]['left'] = left_rotation($nodes[$i]['left']);
   return right_rotation($i);
-}
-function rl_rotation($i) {
+};
+  function rl_rotation($i) {
   global $NIL, $nodes;
   $nodes[$i]['right'] = right_rotation($nodes[$i]['right']);
   return left_rotation($i);
-}
-function insert_node($i, $value) {
+};
+  function insert_node($i, $value) {
   global $NIL, $nodes;
   if ($i == $NIL) {
   return new_node($value);
@@ -100,16 +118,16 @@ function insert_node($i, $value) {
 }
   update_height($i);
   return $i;
-}
-function get_left_most($i) {
+};
+  function get_left_most($i) {
   global $NIL, $nodes;
   $cur = $i;
   while ($nodes[$cur]['left'] != $NIL) {
   $cur = $nodes[$cur]['left'];
 };
   return $nodes[$cur]['data'];
-}
-function del_node($i, $value) {
+};
+  function del_node($i, $value) {
   global $NIL, $nodes;
   if ($i == $NIL) {
   return $NIL;
@@ -155,8 +173,8 @@ function del_node($i, $value) {
 }
   update_height($i);
   return $i;
-}
-function inorder($i) {
+};
+  function inorder($i) {
   global $NIL, $nodes;
   if ($i == $NIL) {
   return '';
@@ -171,8 +189,8 @@ function inorder($i) {
   $res = $res . ' ' . $right;
 }
   return $res;
-}
-function main() {
+};
+  function main() {
   global $NIL, $nodes;
   $nodes = [];
   $root = $NIL;
@@ -183,5 +201,13 @@ function main() {
   echo rtrim(_str(get_height($root))), PHP_EOL;
   $root = del_node($root, 3);
   echo rtrim(inorder($root)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

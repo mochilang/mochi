@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -51,7 +52,7 @@ $__start = _now();
   function to_int($s) {
   $i = 0;
   $sign = 1;
-  if (strlen($s) > 0 && substr($s, 0, 1 - 0) == '-') {
+  if (strlen($s) > 0 && substr($s, 0, 1) == '-') {
   $sign = -1;
   $i = 1;
 }
@@ -63,7 +64,7 @@ $__start = _now();
 };
   return $sign * $num;
 };
-  function split($s, $sep) {
+  function mochi_split($s, $sep) {
   $res = [];
   $current = '';
   $i = 0;
@@ -95,24 +96,24 @@ $__start = _now();
   function build($nodes, $idx) {
   $value = $nodes[$idx];
   if ($value == 'null') {
-  return ['node' => ['__tag' => 'Empty'], 'next' => $idx + 1];
+  return ['next' => $idx + 1, 'node' => ['__tag' => 'Empty']];
 }
   $left_res = build($nodes, $idx + 1);
   $right_res = build($nodes, $left_res['next']);
-  $node = ['__tag' => 'Node', 'left' => $left_res['node'], 'value' => to_int($value), 'right' => $right_res['node']];
-  return ['node' => $node, 'next' => $right_res['next']];
+  $node = ['__tag' => 'Node', 'left' => $left_res['node'], 'right' => $right_res['node'], 'value' => to_int($value)];
+  return ['next' => $right_res['next'], 'node' => $node];
 };
   function deserialize($data) {
-  $nodes = explode(',', $data);
+  $nodes = mochi_split($data, ',');
   $res = build($nodes, 0);
   return $res['node'];
 };
   function five_tree() {
-  $left_child = ['__tag' => 'Node', 'left' => 2, 'value' => ['__tag' => 'Empty'], 'right' => ['__tag' => 'Empty']];
-  $right_left = ['__tag' => 'Node', 'left' => 4, 'value' => ['__tag' => 'Empty'], 'right' => ['__tag' => 'Empty']];
-  $right_right = ['__tag' => 'Node', 'left' => 5, 'value' => ['__tag' => 'Empty'], 'right' => ['__tag' => 'Empty']];
-  $right_child = ['__tag' => 'Node', 'left' => 3, 'value' => $right_left, 'right' => $right_right];
-  return ['__tag' => 'Node', 'left' => 1, 'value' => $left_child, 'right' => $right_child];
+  $left_child = ['__tag' => 'Node', 'left' => 2, 'right' => ['__tag' => 'Empty'], 'value' => ['__tag' => 'Empty']];
+  $right_left = ['__tag' => 'Node', 'left' => 4, 'right' => ['__tag' => 'Empty'], 'value' => ['__tag' => 'Empty']];
+  $right_right = ['__tag' => 'Node', 'left' => 5, 'right' => ['__tag' => 'Empty'], 'value' => ['__tag' => 'Empty']];
+  $right_child = ['__tag' => 'Node', 'left' => 3, 'right' => $right_right, 'value' => $right_left];
+  return ['__tag' => 'Node', 'left' => 1, 'right' => $right_child, 'value' => $left_child];
 };
   function main() {
   $root = five_tree();
@@ -125,7 +126,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

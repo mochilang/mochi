@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,9 +36,11 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$nodes = [];
-function make_list($length, $value) {
-  global $nodes, $test_array, $root;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $nodes = [];
+  function make_list($length, $value) {
+  global $nodes, $root, $test_array;
   $lst = [];
   $i = 0;
   while ($i < $length) {
@@ -30,9 +48,9 @@ function make_list($length, $value) {
   $i = $i + 1;
 };
   return $lst;
-}
-function min_list($arr) {
-  global $nodes, $test_array, $root;
+};
+  function min_list($arr) {
+  global $nodes, $root, $test_array;
   $m = $arr[0];
   $i = 1;
   while ($i < count($arr)) {
@@ -42,9 +60,9 @@ function min_list($arr) {
   $i = $i + 1;
 };
   return $m;
-}
-function max_list($arr) {
-  global $nodes, $test_array, $root;
+};
+  function max_list($arr) {
+  global $nodes, $root, $test_array;
   $m = $arr[0];
   $i = 1;
   while ($i < count($arr)) {
@@ -54,10 +72,10 @@ function max_list($arr) {
   $i = $i + 1;
 };
   return $m;
-}
-function build_tree($arr) {
-  global $nodes, $test_array, $root;
-  $n = ['minn' => min_list($arr), 'maxx' => max_list($arr), 'map_left' => make_list(count($arr), 0), 'left' => -1, 'right' => -1];
+};
+  function build_tree($arr) {
+  global $nodes, $root, $test_array;
+  $n = ['left' => -1, 'map_left' => make_list(count($arr), 0), 'maxx' => max_list($arr), 'minn' => min_list($arr), 'right' => -1];
   if ($n['minn'] == $n['maxx']) {
   $nodes = _append($nodes, $n);
   return count($nodes) - 1;
@@ -86,9 +104,9 @@ function build_tree($arr) {
 }
   $nodes = _append($nodes, $n);
   return count($nodes) - 1;
-}
-function rank_till_index($node_idx, $num, $index) {
-  global $nodes, $test_array, $root;
+};
+  function rank_till_index($node_idx, $num, $index) {
+  global $nodes, $root, $test_array;
   if ($index < 0 || $node_idx < 0) {
   return 0;
 }
@@ -106,18 +124,18 @@ function rank_till_index($node_idx, $num, $index) {
 } else {
   return rank_till_index($node['right'], $num, $index - $node['map_left'][$index]);
 }
-}
-function rank($node_idx, $num, $start, $end) {
-  global $nodes, $test_array, $root;
+};
+  function rank($node_idx, $num, $start, $end) {
+  global $nodes, $root, $test_array;
   if ($start > $end) {
   return 0;
 }
   $rank_till_end = rank_till_index($node_idx, $num, $end);
   $rank_before_start = rank_till_index($node_idx, $num, $start - 1);
   return $rank_till_end - $rank_before_start;
-}
-function quantile($node_idx, $index, $start, $end) {
-  global $nodes, $test_array, $root;
+};
+  function quantile($node_idx, $index, $start, $end) {
+  global $nodes, $root, $test_array;
   if ($index > ($end - $start) || $start > $end || $node_idx < 0) {
   return -1;
 }
@@ -132,9 +150,9 @@ function quantile($node_idx, $index, $start, $end) {
 } else {
   return quantile($node['right'], $index - $num_left, $start - $left_start, $end - $node['map_left'][$end]);
 }
-}
-function range_counting($node_idx, $start, $end, $start_num, $end_num) {
-  global $nodes, $test_array, $root;
+};
+  function range_counting($node_idx, $start, $end, $start_num, $end_num) {
+  global $nodes, $root, $test_array;
   if ($start > $end || $node_idx < 0 || $start_num > $end_num) {
   return 0;
 }
@@ -148,10 +166,18 @@ function range_counting($node_idx, $start, $end, $start_num, $end_num) {
   $left = range_counting($node['left'], ($start == 0 ? 0 : $node['map_left'][$start - 1]), $node['map_left'][$end] - 1, $start_num, $end_num);
   $right = range_counting($node['right'], $start - (($start == 0 ? 0 : $node['map_left'][$start - 1])), $end - $node['map_left'][$end], $start_num, $end_num);
   return $left + $right;
-}
-$test_array = [2, 1, 4, 5, 6, 0, 8, 9, 1, 2, 0, 6, 4, 2, 0, 6, 5, 3, 2, 7];
-$root = build_tree($test_array);
-echo rtrim('rank_till_index 6 at 6 -> ' . _str(rank_till_index($root, 6, 6))), PHP_EOL;
-echo rtrim('rank 6 in [3,13] -> ' . _str(rank($root, 6, 3, 13))), PHP_EOL;
-echo rtrim('quantile index 2 in [2,5] -> ' . _str(quantile($root, 2, 2, 5))), PHP_EOL;
-echo rtrim('range_counting [3,7] in [1,10] -> ' . _str(range_counting($root, 1, 10, 3, 7))), PHP_EOL;
+};
+  $test_array = [2, 1, 4, 5, 6, 0, 8, 9, 1, 2, 0, 6, 4, 2, 0, 6, 5, 3, 2, 7];
+  $root = build_tree($test_array);
+  echo rtrim('rank_till_index 6 at 6 -> ' . _str(rank_till_index($root, 6, 6))), PHP_EOL;
+  echo rtrim('rank 6 in [3,13] -> ' . _str(rank($root, 6, 3, 13))), PHP_EOL;
+  echo rtrim('quantile index 2 in [2,5] -> ' . _str(quantile($root, 2, 2, 5))), PHP_EOL;
+  echo rtrim('range_counting [3,7] in [1,10] -> ' . _str(range_counting($root, 1, 10, 3, 7))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

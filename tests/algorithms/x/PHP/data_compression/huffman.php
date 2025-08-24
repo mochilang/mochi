@@ -1,10 +1,28 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function get_freq($n) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function get_freq($n) {
   return (function($__v) {
   if ($__v['__tag'] === "Leaf") {
     $f = $__v["freq"];
@@ -14,8 +32,8 @@ function get_freq($n) {
     return $f;
   }
 })($n);
-}
-function sort_nodes($nodes) {
+};
+  function sort_nodes($nodes) {
   $arr = $nodes;
   $i = 1;
   while ($i < count($arr)) {
@@ -29,8 +47,8 @@ function sort_nodes($nodes) {
   $i = $i + 1;
 };
   return $arr;
-}
-function rest($nodes) {
+};
+  function rest($nodes) {
   $res = [];
   $i = 1;
   while ($i < count($nodes)) {
@@ -38,8 +56,8 @@ function rest($nodes) {
   $i = $i + 1;
 };
   return $res;
-}
-function count_freq($text) {
+};
+  function count_freq($text) {
   $chars = [];
   $freqs = [];
   $i = 0;
@@ -64,12 +82,12 @@ function count_freq($text) {
   $leaves = [];
   $k = 0;
   while ($k < count($chars)) {
-  $leaves = _append($leaves, ['__tag' => $Leaf, 'symbol' => $chars[$k], 'freq' => $freqs[$k]]);
+  $leaves = _append($leaves, ['__tag' => $Leaf, 'freq' => $freqs[$k], 'symbol' => $chars[$k]]);
   $k = $k + 1;
 };
   return sort_nodes($leaves);
-}
-function build_tree($nodes) {
+};
+  function build_tree($nodes) {
   $arr = $nodes;
   while (count($arr) > 1) {
   $left = $arr[0];
@@ -81,8 +99,8 @@ function build_tree($nodes) {
   $arr = sort_nodes($arr);
 };
   return $arr[0];
-}
-function concat_pairs($a, $b) {
+};
+  function concat_pairs($a, $b) {
   $res = $a;
   $i = 0;
   while ($i < count($b)) {
@@ -90,8 +108,8 @@ function concat_pairs($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function collect_codes($tree, $prefix) {
+};
+  function collect_codes($tree, $prefix) {
   return (function($__v) {
   if ($__v['__tag'] === "Leaf") {
     $s = $__v["symbol"];
@@ -102,8 +120,8 @@ function collect_codes($tree, $prefix) {
     return concat_pairs(collect_codes($l, $prefix . '0'), collect_codes($r, $prefix . '1'));
   }
 })($tree);
-}
-function find_code($pairs, $ch) {
+};
+  function find_code($pairs, $ch) {
   $i = 0;
   while ($i < count($pairs)) {
   if ($pairs[$i][0] == $ch) {
@@ -112,8 +130,8 @@ function find_code($pairs, $ch) {
   $i = $i + 1;
 };
   return '';
-}
-function huffman_encode($text) {
+};
+  function huffman_encode($text) {
   if ($text == '') {
   return '';
 }
@@ -128,5 +146,13 @@ function huffman_encode($text) {
   $i = $i + 1;
 };
   return $encoded;
-}
-echo rtrim(huffman_encode('beep boop beer!')), PHP_EOL;
+};
+  echo rtrim(huffman_encode('beep boop beer!')), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

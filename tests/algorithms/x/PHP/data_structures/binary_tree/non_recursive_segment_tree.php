@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -21,15 +37,20 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-function build($arr, $combine) {
-  global $arr1, $st1, $arr2, $st2, $arr3, $st3, $arr4, $n4, $st4;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function build($arr, $combine) {
+  global $arr1, $arr2, $arr3, $arr4, $n4, $st1, $st2, $st3, $st4;
   $n = count($arr);
   $st = [];
   $i = 0;
@@ -48,18 +69,18 @@ function build($arr, $combine) {
   $i = $i - 1;
 };
   return $st;
-}
-function update(&$st, $n, $combine, $p, $v) {
-  global $arr1, $st1, $arr2, $st2, $arr3, $st3, $arr4, $n4, $st4;
+};
+  function update(&$st, $n, $combine, $p, $v) {
+  global $arr1, $arr2, $arr3, $arr4, $n4, $st1, $st2, $st3, $st4;
   $idx = $p + $n;
   $st[$idx] = $v;
   while ($idx > 1) {
   $idx = intval((_intdiv($idx, 2)));
   $st[$idx] = $combine($st[$idx * 2], $st[$idx * 2 + 1]);
 };
-}
-function query($st, $n, $combine, $left, $right) {
-  global $arr1, $st1, $arr2, $st2, $arr3, $st3, $arr4, $n4, $st4;
+};
+  function query($st, $n, $combine, $left, $right) {
+  global $arr1, $arr2, $arr3, $arr4, $n4, $st1, $st2, $st3, $st4;
   $l = $left + $n;
   $r = $right + $n;
   $res = 0;
@@ -87,42 +108,50 @@ function query($st, $n, $combine, $left, $right) {
   $r = intval((_intdiv($r, 2)));
 };
   return $res;
-}
-function add($a, $b) {
-  global $arr1, $st1, $arr2, $st2, $arr3, $st3, $arr4, $n4, $st4;
+};
+  function add($a, $b) {
+  global $arr1, $arr2, $arr3, $arr4, $n4, $st1, $st2, $st3, $st4;
   return $a + $b;
-}
-function min_int($a, $b) {
-  global $arr1, $st1, $arr2, $st2, $arr3, $st3, $arr4, $n4, $st4;
+};
+  function min_int($a, $b) {
+  global $arr1, $arr2, $arr3, $arr4, $n4, $st1, $st2, $st3, $st4;
   if ($a < $b) {
   return $a;
 } else {
   return $b;
 }
-}
-function max_int($a, $b) {
-  global $arr1, $st1, $arr2, $st2, $arr3, $st3, $arr4, $n4, $st4;
+};
+  function max_int($a, $b) {
+  global $arr1, $arr2, $arr3, $arr4, $n4, $st1, $st2, $st3, $st4;
   if ($a > $b) {
   return $a;
 } else {
   return $b;
 }
-}
-$arr1 = [1, 2, 3];
-$st1 = build($arr1, 'add');
-echo rtrim(_str(query($st1, count($arr1), 'add', 0, 2))), PHP_EOL;
-$arr2 = [3, 1, 2];
-$st2 = build($arr2, 'min_int');
-echo rtrim(_str(query($st2, count($arr2), 'min_int', 0, 2))), PHP_EOL;
-$arr3 = [2, 3, 1];
-$st3 = build($arr3, 'max_int');
-echo rtrim(_str(query($st3, count($arr3), 'max_int', 0, 2))), PHP_EOL;
-$arr4 = [1, 5, 7, -1, 6];
-$n4 = count($arr4);
-$st4 = build($arr4, 'add');
-update($st4, $n4, 'add', 1, -1);
-update($st4, $n4, 'add', 2, 3);
-echo rtrim(_str(query($st4, $n4, 'add', 1, 2))), PHP_EOL;
-echo rtrim(_str(query($st4, $n4, 'add', 1, 1))), PHP_EOL;
-update($st4, $n4, 'add', 4, 1);
-echo rtrim(_str(query($st4, $n4, 'add', 3, 4))), PHP_EOL;
+};
+  $arr1 = [1, 2, 3];
+  $st1 = build($arr1, 'add');
+  echo rtrim(_str(query($st1, count($arr1), 'add', 0, 2))), PHP_EOL;
+  $arr2 = [3, 1, 2];
+  $st2 = build($arr2, 'min_int');
+  echo rtrim(_str(query($st2, count($arr2), 'min_int', 0, 2))), PHP_EOL;
+  $arr3 = [2, 3, 1];
+  $st3 = build($arr3, 'max_int');
+  echo rtrim(_str(query($st3, count($arr3), 'max_int', 0, 2))), PHP_EOL;
+  $arr4 = [1, 5, 7, -1, 6];
+  $n4 = count($arr4);
+  $st4 = build($arr4, 'add');
+  update($st4, $n4, 'add', 1, -1);
+  update($st4, $n4, 'add', 2, 3);
+  echo rtrim(_str(query($st4, $n4, 'add', 1, 2))), PHP_EOL;
+  echo rtrim(_str(query($st4, $n4, 'add', 1, 1))), PHP_EOL;
+  update($st4, $n4, 'add', 4, 1);
+  echo rtrim(_str(query($st4, $n4, 'add', 3, 4))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +36,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function string_to_grid($s) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function string_to_grid($s) {
   global $puzzle;
   $grid = [];
   $i = 0;
@@ -40,8 +58,8 @@ function string_to_grid($s) {
   $i = $i + 1;
 };
   return $grid;
-}
-function print_grid($grid) {
+};
+  function print_grid($grid) {
   global $puzzle;
   for ($r = 0; $r < 9; $r++) {
   $line = '';
@@ -53,8 +71,8 @@ function print_grid($grid) {
 };
   echo rtrim($line), PHP_EOL;
 };
-}
-function is_safe($grid, $row, $column, $n) {
+};
+  function is_safe($grid, $row, $column, $n) {
   global $puzzle;
   for ($i = 0; $i < 9; $i++) {
   if ($grid[$row][$i] == $n || $grid[$i][$column] == $n) {
@@ -69,8 +87,8 @@ function is_safe($grid, $row, $column, $n) {
 };
 };
   return true;
-}
-function find_empty($grid) {
+};
+  function find_empty($grid) {
   global $puzzle;
   for ($i = 0; $i < 9; $i++) {
   for ($j = 0; $j < 9; $j++) {
@@ -80,8 +98,8 @@ function find_empty($grid) {
 };
 };
   return [];
-}
-function solve(&$grid) {
+};
+  function solve(&$grid) {
   global $puzzle;
   $loc = find_empty($grid);
   if (count($loc) == 0) {
@@ -99,12 +117,12 @@ function solve(&$grid) {
 }
 };
   return false;
-}
-$puzzle = '003020600900305001001806400008102900700000008006708200002609500800203009005010300';
-$grid = string_to_grid($puzzle);
-echo rtrim('Original grid:'), PHP_EOL;
-print_grid($grid);
-if (solve($grid)) {
+};
+  $puzzle = '003020600900305001001806400008102900700000008006708200002609500800203009005010300';
+  $grid = string_to_grid($puzzle);
+  echo rtrim('Original grid:'), PHP_EOL;
+  print_grid($grid);
+  if (solve($grid)) {
   echo rtrim('
 Solved grid:'), PHP_EOL;
   print_grid($grid);
@@ -112,3 +130,11 @@ Solved grid:'), PHP_EOL;
   echo rtrim('
 No solution found'), PHP_EOL;
 }
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

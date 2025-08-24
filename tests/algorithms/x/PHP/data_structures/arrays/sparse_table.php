@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -21,14 +37,23 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-function pow2($n) {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function pow2($n) {
   global $st1, $st2;
   $result = 1;
   $i = 0;
@@ -37,8 +62,8 @@ function pow2($n) {
   $i = $i + 1;
 };
   return $result;
-}
-function int_log2($n) {
+};
+  function int_log2($n) {
   global $st1, $st2;
   $v = $n;
   $res = 0;
@@ -47,11 +72,11 @@ function int_log2($n) {
   $res = $res + 1;
 };
   return $res;
-}
-function build_sparse_table($number_list) {
+};
+  function build_sparse_table($number_list) {
   global $st1, $st2;
   if (count($number_list) == 0) {
-  $panic('empty number list not allowed');
+  _panic('empty number list not allowed');
 }
   $length = count($number_list);
   $row = int_log2($length) + 1;
@@ -88,11 +113,11 @@ function build_sparse_table($number_list) {
   $j = $j + 1;
 };
   return $sparse_table;
-}
-function query($sparse_table, $left_bound, $right_bound) {
+};
+  function query($sparse_table, $left_bound, $right_bound) {
   global $st1, $st2;
   if ($left_bound < 0 || $right_bound >= count($sparse_table[0])) {
-  $panic('list index out of range');
+  _panic('list index out of range');
 }
   $interval = $right_bound - $left_bound + 1;
   $j = int_log2($interval);
@@ -102,12 +127,20 @@ function query($sparse_table, $left_bound, $right_bound) {
   return $val1;
 }
   return $val2;
-}
-$st1 = build_sparse_table([8, 1, 0, 3, 4, 9, 3]);
-echo rtrim(_str($st1)), PHP_EOL;
-$st2 = build_sparse_table([3, 1, 9]);
-echo rtrim(_str($st2)), PHP_EOL;
-echo rtrim(_str(query($st1, 0, 4))), PHP_EOL;
-echo rtrim(_str(query($st1, 4, 6))), PHP_EOL;
-echo rtrim(_str(query($st2, 2, 2))), PHP_EOL;
-echo rtrim(_str(query($st2, 0, 1))), PHP_EOL;
+};
+  $st1 = build_sparse_table([8, 1, 0, 3, 4, 9, 3]);
+  echo rtrim(_str($st1)), PHP_EOL;
+  $st2 = build_sparse_table([3, 1, 9]);
+  echo rtrim(_str($st2)), PHP_EOL;
+  echo rtrim(_str(query($st1, 0, 4))), PHP_EOL;
+  echo rtrim(_str(query($st1, 4, 6))), PHP_EOL;
+  echo rtrim(_str(query($st2, 2, 2))), PHP_EOL;
+  echo rtrim(_str(query($st2, 0, 1))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

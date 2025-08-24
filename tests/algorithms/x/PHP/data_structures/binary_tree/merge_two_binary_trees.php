@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -18,7 +19,7 @@ function _now() {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function merge_two_binary_trees($t1, $t2) {
-  global $tree1, $tree2, $merged_tree;
+  global $merged_tree, $tree1, $tree2;
   return (function($__v) {
   if ($__v['__tag'] === "Leaf") {
     return $t2;
@@ -33,14 +34,14 @@ $__start = _now();
     $l2 = $__v["left"];
     $v2 = $__v["value"];
     $r2 = $__v["right"];
-    return ['__tag' => 'Node', 'left' => merge_two_binary_trees($l1, $l2), 'value' => $v1 + $v2, 'right' => merge_two_binary_trees($r1, $r2)];
+    return ['__tag' => 'Node', 'left' => merge_two_binary_trees($l1, $l2), 'right' => merge_two_binary_trees($r1, $r2), 'value' => $v1 + $v2];
   }
 })($t2);
   }
 })($t1);
 };
   function is_leaf($t) {
-  global $tree1, $tree2, $merged_tree;
+  global $merged_tree, $tree1, $tree2;
   return (function($__v) {
   if ($__v['__tag'] === "Leaf") {
     return true;
@@ -50,7 +51,7 @@ $__start = _now();
 })($t);
 };
   function get_left($t) {
-  global $tree1, $tree2, $merged_tree;
+  global $merged_tree, $tree1, $tree2;
   return (function($__v) {
   if ($__v['__tag'] === "Node") {
     $l = $__v["left"];
@@ -61,7 +62,7 @@ $__start = _now();
 })($t);
 };
   function get_right($t) {
-  global $tree1, $tree2, $merged_tree;
+  global $merged_tree, $tree1, $tree2;
   return (function($__v) {
   if ($__v['__tag'] === "Node") {
     $r = $__v["right"];
@@ -72,7 +73,7 @@ $__start = _now();
 })($t);
 };
   function get_value($t) {
-  global $tree1, $tree2, $merged_tree;
+  global $merged_tree, $tree1, $tree2;
   return (function($__v) {
   if ($__v['__tag'] === "Node") {
     $v = $__v["value"];
@@ -83,7 +84,7 @@ $__start = _now();
 })($t);
 };
   function print_preorder($t) {
-  global $tree1, $tree2, $merged_tree;
+  global $merged_tree, $tree1, $tree2;
   if (!is_leaf($t)) {
   $v = get_value($t);
   $l = get_left($t);
@@ -93,8 +94,8 @@ $__start = _now();
   print_preorder($r);
 }
 };
-  $tree1 = ['__tag' => 'Node', 'left' => ['__tag' => 'Node', 'left' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'value' => 4, 'right' => ['__tag' => 'Leaf']], 'value' => 2, 'right' => ['__tag' => 'Leaf']], 'value' => 1, 'right' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'value' => 3, 'right' => ['__tag' => 'Leaf']]];
-  $tree2 = ['__tag' => 'Node', 'left' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'value' => 4, 'right' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'value' => 9, 'right' => ['__tag' => 'Leaf']]], 'value' => 2, 'right' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'value' => 6, 'right' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'value' => 5, 'right' => ['__tag' => 'Leaf']]]];
+  $tree1 = ['__tag' => 'Node', 'left' => ['__tag' => 'Node', 'left' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'right' => ['__tag' => 'Leaf'], 'value' => 4], 'right' => ['__tag' => 'Leaf'], 'value' => 2], 'right' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'right' => ['__tag' => 'Leaf'], 'value' => 3], 'value' => 1];
+  $tree2 = ['__tag' => 'Node', 'left' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'right' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'right' => ['__tag' => 'Leaf'], 'value' => 9], 'value' => 4], 'right' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'right' => ['__tag' => 'Node', 'left' => ['__tag' => 'Leaf'], 'right' => ['__tag' => 'Leaf'], 'value' => 5], 'value' => 6], 'value' => 2];
   echo rtrim('Tree1 is:'), PHP_EOL;
   print_preorder($tree1);
   echo rtrim('Tree2 is:'), PHP_EOL;
@@ -103,7 +104,7 @@ $__start = _now();
   echo rtrim('Merged Tree is:'), PHP_EOL;
   print_preorder($merged_tree);
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
