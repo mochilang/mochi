@@ -3585,8 +3585,9 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			}
 		case *FuncDef:
 			prevRenamed := renamedVars
+			name := safeVarName(st.Name)
 			renamedVars = st.Renamed
-			if _, err := io.WriteString(w, "def "+st.Name+"("); err != nil {
+			if _, err := io.WriteString(w, "def "+name+"("); err != nil {
 				renamedVars = prevRenamed
 				return err
 			}
@@ -4119,6 +4120,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 		case st.ExternType != nil:
 			continue
 		case st.Fun != nil:
+			name := safeVarName(st.Fun.Name)
 			oldRenamed := renamedVars
 			renamedVars = map[string]string{}
 
@@ -4150,7 +4152,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			for k, v := range renamedVars {
 				renamed[k] = v
 			}
-			p.Stmts = append(p.Stmts, &FuncDef{Name: st.Fun.Name, Params: params, Renamed: renamed, Nonlocals: nonlocals, Globals: globals, Body: body})
+			p.Stmts = append(p.Stmts, &FuncDef{Name: name, Params: params, Renamed: renamed, Nonlocals: nonlocals, Globals: globals, Body: body})
 			renamedVars = oldRenamed
 		default:
 			return nil, fmt.Errorf("unsupported statement")

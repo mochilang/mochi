@@ -1,13 +1,5 @@
-15
-12
-[10, 6]
 {
-  "duration_us": 38,
+  "duration_us": 63,
   "memory_bytes": 0,
   "name": "main"
 }
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/heap/max_heap.py", line 116, in <module>
-    print(len())
-          ^^^^^
-TypeError: len() takes exactly one argument (0 given)
