@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
 Completed programs: 980/1077
-Last updated: 2025-08-24 09:08 +0700
+Last updated: 2025-08-24 15:35 +0700
 
 Checklist:
 
@@ -157,7 +157,7 @@ Checklist:
 | 148 | conversions/temperature_conversions | ✓ | 650.0µs | 1.38KB |
 | 149 | conversions/time_conversions | ✓ | 819.0µs | 1.68KB |
 | 150 | conversions/volume_conversions | ✓ | 520.0µs | 1.38KB |
-| 151 | conversions/weight_conversion | ✓ | 529.0µs | 2.02KB |
+| 151 | conversions/weight_conversion | ✓ | 525.0µs | 2.02KB |
 | 152 | data_compression/burrows_wheeler | ✓ | 590.0µs | 1.98KB |
 | 153 | data_compression/huffman |   |  |  |
 | 154 | data_compression/lempel_ziv | ✓ | 942.0µs | 2.91KB |
@@ -174,11 +174,11 @@ Checklist:
 | 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 501.0µs | 936B |
 | 166 | data_structures/arrays/permutations | ✓ | 827.0µs | 4.29KB |
 | 167 | data_structures/arrays/prefix_sum | ✓ | 472.0µs | 1.45KB |
-| 168 | data_structures/arrays/product_sum | ✓ | 568.0µs | 1.23KB |
+| 168 | data_structures/arrays/product_sum | ✓ | 462.0µs | 1.23KB |
 | 169 | data_structures/arrays/sparse_table | ✓ | 713.0µs | 2.27KB |
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 1.0ms | 38.34KB |
 | 171 | data_structures/binary_tree/avl_tree | ✓ | 267.0µs | 1.81KB |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 908.0µs | 3.83KB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 838.0µs | 1.79KB |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 924.0µs | 2.89KB |

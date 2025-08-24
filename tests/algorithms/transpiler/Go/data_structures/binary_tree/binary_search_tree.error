@@ -1,5 +1,13 @@
 exit status 1
 # command-line-arguments
-../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:63:14: invalid operation: value > node[0] (operator > not defined on interface)
-../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:192:24: cannot use append(left_acc, node[0].(int)) (value of type []int) as []any value in variable declaration
-../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:309:14: invalid operation: value > node[0] (operator > not defined on interface)
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:89:13: invalid operation: value < _index(node, 0) (operator < not defined on interface)
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:90:22: in call to _setIndex, type []any of insert(func(v any) []any {…}(_index(node, 1)), value) does not match inferred type any for T
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:109:14: invalid operation: value > _index(node, 0) (operator > not defined on interface)
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:110:23: in call to _setIndex, type []any of insert(func(v any) []any {…}(_index(node, 2)), value) does not match inferred type any for T
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:157:13: invalid operation: value < _index(node, 0) (operator < not defined on interface)
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:238:24: cannot use append(left_acc, _index(node, 0)) (value of type []int) as []any value in variable declaration
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:238:41: cannot use _index(node, 0) (value of interface type any) as int value in argument to append: need type assertion
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:283:13: cannot use _index(current, 1) (value of interface type any) as []any value in assignment: need type assertion
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:285:9: cannot use _index(current, 0) (value of interface type any) as int value in return statement: need type assertion
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:292:13: cannot use _index(current, 2) (value of interface type any) as []any value in assignment: need type assertion
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:292:13: too many errors
