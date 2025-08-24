@@ -1,0 +1,3 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/trie/trie.zig:141:12: error: function parameter shadows declaration of 'remove_key'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/trie/trie.zig:23:1: note: declared here

@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/digital_image_processing/convert_to_negative.zig:33:70: error: array literal requires address-of operator (&) to coerce to slice type '[][]i64'
