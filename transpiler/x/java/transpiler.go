@@ -3540,18 +3540,20 @@ func (u *UnaryExpr) emit(w io.Writer) {
 			}
 			return
 		}
-		if t == "bigint" {
-			fmt.Fprint(w, "(")
-			if _, ok := u.Value.(*BinaryExpr); ok {
-				fmt.Fprint(w, "(")
-				u.Value.emit(w)
-				fmt.Fprint(w, ")")
-			} else {
-				u.Value.emit(w)
-			}
-			fmt.Fprint(w, ").negate()")
-			return
-		}
+               if t == "bigint" {
+                       fmt.Fprint(w, "(")
+                       if _, ok := u.Value.(*BinaryExpr); ok {
+                               fmt.Fprint(w, "(")
+                               u.Value.emit(w)
+                               fmt.Fprint(w, ")")
+                       } else if il, ok := u.Value.(*IntLit); ok {
+                               fmt.Fprintf(w, "java.math.BigInteger.valueOf(%d)", il.Value)
+                       } else {
+                               u.Value.emit(w)
+                       }
+                       fmt.Fprint(w, ").negate()")
+                       return
+               }
 	}
 	fmt.Fprint(w, u.Op)
 	if _, ok := u.Value.(*BinaryExpr); ok {
@@ -6271,19 +6273,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				var inner Expr
 				idxExpr := ix.Index
 				switch et {
-				case "int", "long":
-					needArrGetI = true
-					inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-				case "double":
-					needArrGetD = true
-					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-				case "boolean":
-					needArrGetB = true
-					inner = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-				default:
-					needArrGetD = true
-					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-				}
+               case "int", "long":
+                       needArrGetI = true
+                       inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
+               case "double":
+                       needArrGetD = true
+                       inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
+               case "boolean":
+                       needArrGetB = true
+                       inner = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
+               default:
+                       needArrGetO = true
+                       inner = &CallExpr{Func: "_geto", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
+               }
 				if wrap != nil {
 					inner = wrap(inner)
 				}

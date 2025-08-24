@@ -1,85 +1,115 @@
 public class Main {
 
-    static int[] merge(int[] a, int low, int mid, int high) {
-        int[] left = ((int[])(java.util.Arrays.copyOfRange(a, low, mid)));
-        int[] right = ((int[])(java.util.Arrays.copyOfRange(a, mid, high + 1)));
-        int[] result = ((int[])(new int[]{}));
-        while (left.length > 0 && right.length > 0) {
-            if (left[0] <= right[0]) {
-                result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(left[0])).toArray()));
-                left = ((int[])(java.util.Arrays.copyOfRange(left, 1, left.length)));
+    static java.math.BigInteger[] merge(java.math.BigInteger[] a, java.math.BigInteger low, java.math.BigInteger mid, java.math.BigInteger high) {
+        java.math.BigInteger[] left = ((java.math.BigInteger[])(java.util.Arrays.copyOfRange(a, (int)(((java.math.BigInteger)(low)).longValue()), (int)(((java.math.BigInteger)(mid)).longValue()))));
+        java.math.BigInteger[] right_1 = ((java.math.BigInteger[])(java.util.Arrays.copyOfRange(a, (int)(((java.math.BigInteger)(mid)).longValue()), (int)(((java.math.BigInteger)(high.add(java.math.BigInteger.valueOf(1)))).longValue()))));
+        java.math.BigInteger[] result_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        while (new java.math.BigInteger(String.valueOf(left.length)).compareTo(java.math.BigInteger.valueOf(0)) > 0 && new java.math.BigInteger(String.valueOf(right_1.length)).compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            if (left[(int)(0L)].compareTo(right_1[(int)(0L)]) <= 0) {
+                result_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(left[(int)(0L)])).toArray(java.math.BigInteger[]::new)));
+                left = ((java.math.BigInteger[])(java.util.Arrays.copyOfRange(left, (int)(1L), (int)((long)(left.length)))));
             } else {
-                result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(right[0])).toArray()));
-                right = ((int[])(java.util.Arrays.copyOfRange(right, 1, right.length)));
+                result_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(right_1[(int)(0L)])).toArray(java.math.BigInteger[]::new)));
+                right_1 = ((java.math.BigInteger[])(java.util.Arrays.copyOfRange(right_1, (int)(1L), (int)((long)(right_1.length)))));
             }
         }
-        int i = 0;
-        while (i < left.length) {
-            result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(left[i])).toArray()));
-            i = i + 1;
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(left.length))) < 0) {
+            result_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(left[(int)(((java.math.BigInteger)(i_1)).longValue())])).toArray(java.math.BigInteger[]::new)));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
-        i = 0;
-        while (i < right.length) {
-            result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(right[i])).toArray()));
-            i = i + 1;
+        i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(right_1.length))) < 0) {
+            result_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(right_1[(int)(((java.math.BigInteger)(i_1)).longValue())])).toArray(java.math.BigInteger[]::new)));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
-        i = 0;
-        while (i < result.length) {
-a[low + i] = result[i];
-            i = i + 1;
+        i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(result_1.length))) < 0) {
+a[(int)(((java.math.BigInteger)(low.add(i_1))).longValue())] = result_1[(int)(((java.math.BigInteger)(i_1)).longValue())];
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return a;
     }
 
-    static int[] iter_merge_sort(int[] items) {
-        int n = items.length;
-        if (n <= 1) {
+    static java.math.BigInteger[] iter_merge_sort(java.math.BigInteger[] items) {
+        java.math.BigInteger n = new java.math.BigInteger(String.valueOf(items.length));
+        if (n.compareTo(java.math.BigInteger.valueOf(1)) <= 0) {
             return items;
         }
-        int[] arr = ((int[])(java.util.Arrays.copyOfRange(items, 0, items.length)));
-        int p = 2;
-        while (p <= n) {
-            int i_1 = 0;
-            while (i_1 < n) {
-                int high = i_1 + p - 1;
-                if (high >= n) {
-                    high = n - 1;
+        java.math.BigInteger[] arr_1 = ((java.math.BigInteger[])(java.util.Arrays.copyOfRange(items, (int)(0L), (int)((long)(items.length)))));
+        java.math.BigInteger p_1 = java.math.BigInteger.valueOf(2);
+        while (p_1.compareTo(n) <= 0) {
+            java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+            while (i_3.compareTo(n) < 0) {
+                java.math.BigInteger high_1 = i_3.add(p_1).subtract(java.math.BigInteger.valueOf(1));
+                if (high_1.compareTo(n) >= 0) {
+                    high_1 = n.subtract(java.math.BigInteger.valueOf(1));
                 }
-                int low = i_1;
-                int mid = Math.floorDiv((low + high + 1), 2);
-                arr = ((int[])(merge(((int[])(arr)), low, mid, high)));
-                i_1 = i_1 + p;
+                java.math.BigInteger low_1 = i_3;
+                java.math.BigInteger mid_1 = (low_1.add(high_1).add(java.math.BigInteger.valueOf(1))).divide(java.math.BigInteger.valueOf(2));
+                arr_1 = ((java.math.BigInteger[])(merge(((java.math.BigInteger[])(arr_1)), low_1, mid_1, high_1)));
+                i_3 = i_3.add(p_1);
             }
-            if (p * 2 >= n) {
-                int mid2 = i_1 - p;
-                arr = ((int[])(merge(((int[])(arr)), 0, mid2, n - 1)));
+            if (p_1.multiply(java.math.BigInteger.valueOf(2)).compareTo(n) >= 0) {
+                java.math.BigInteger mid2_1 = i_3.subtract(p_1);
+                arr_1 = ((java.math.BigInteger[])(merge(((java.math.BigInteger[])(arr_1)), java.math.BigInteger.valueOf(0), mid2_1, n.subtract(java.math.BigInteger.valueOf(1)))));
                 break;
             }
-            p = p * 2;
+            p_1 = p_1.multiply(java.math.BigInteger.valueOf(2));
         }
-        return arr;
+        return arr_1;
     }
 
-    static String list_to_string(int[] arr) {
+    static String list_to_string(java.math.BigInteger[] arr) {
         String s = "[";
-        int i_2 = 0;
-        while (i_2 < arr.length) {
-            s = s + _p(_geti(arr, i_2));
-            if (i_2 < arr.length - 1) {
+        java.math.BigInteger i_5 = java.math.BigInteger.valueOf(0);
+        while (i_5.compareTo(new java.math.BigInteger(String.valueOf(arr.length))) < 0) {
+            s = s + _p(_geto(arr, ((Number)(i_5)).intValue()));
+            if (i_5.compareTo(new java.math.BigInteger(String.valueOf(arr.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
                 s = s + ", ";
             }
-            i_2 = i_2 + 1;
+            i_5 = i_5.add(java.math.BigInteger.valueOf(1));
         }
         return s + "]";
     }
     public static void main(String[] args) {
-        System.out.println(list_to_string(((int[])(iter_merge_sort(((int[])(new int[]{5, 9, 8, 7, 1, 2, 7})))))));
-        System.out.println(list_to_string(((int[])(iter_merge_sort(((int[])(new int[]{1})))))));
-        System.out.println(list_to_string(((int[])(iter_merge_sort(((int[])(new int[]{2, 1})))))));
-        System.out.println(list_to_string(((int[])(iter_merge_sort(((int[])(new int[]{4, 3, 2, 1})))))));
-        System.out.println(list_to_string(((int[])(iter_merge_sort(((int[])(new int[]{5, 4, 3, 2, 1})))))));
-        System.out.println(list_to_string(((int[])(iter_merge_sort(((int[])(new int[]{-2, -9, -1, -4})))))));
-        System.out.println(list_to_string(((int[])(iter_merge_sort(((int[])(new int[]{})))))));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(list_to_string(((java.math.BigInteger[])(iter_merge_sort(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(7)})))))));
+            System.out.println(list_to_string(((java.math.BigInteger[])(iter_merge_sort(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1)})))))));
+            System.out.println(list_to_string(((java.math.BigInteger[])(iter_merge_sort(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(1)})))))));
+            System.out.println(list_to_string(((java.math.BigInteger[])(iter_merge_sort(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(1)})))))));
+            System.out.println(list_to_string(((java.math.BigInteger[])(iter_merge_sort(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(1)})))))));
+            System.out.println(list_to_string(((java.math.BigInteger[])(iter_merge_sort(((java.math.BigInteger[])(new java.math.BigInteger[]{(java.math.BigInteger.valueOf(2)).negate(), (java.math.BigInteger.valueOf(9)).negate(), (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(4)).negate()})))))));
+            System.out.println(list_to_string(((java.math.BigInteger[])(iter_merge_sort(((java.math.BigInteger[])(new java.math.BigInteger[]{})))))));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -95,10 +125,14 @@ a[low + i] = result[i];
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Object _geto(Object[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
