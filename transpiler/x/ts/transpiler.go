@@ -2438,13 +2438,20 @@ function sha256(bs: number[]): number[] {
     if (x === -Infinity) return '-Inf';
     if (Number.isNaN(x)) return 'NaN';
   }
-  if (Array.isArray(x)) {
-    return x.map(_str).join(',');
-  }
-  if (x && typeof x === 'object') {
-    try { return JSON.stringify(x); } catch { return String(x); }
-  }
-  return String(x);
+if (Array.isArray(x)) {
+return x.map(_str).join(',');
+}
+if (x && typeof x === 'object') {
+try {
+const keys = Object.keys(x).sort();
+const obj: any = {};
+for (const k of keys) obj[k] = (x as any)[k];
+return JSON.stringify(obj);
+} catch {
+return String(x);
+}
+}
+return String(x);
 }`})
 	}
 	if useEqual {
@@ -3013,8 +3020,10 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 	// When type information is unavailable but the iterable is an index
 	// expression (e.g. `for x in m[k]`), default to iterating over keys.
 	if !keys {
-		if _, ok := iterable.(*IndexExpr); ok {
-			keys = true
+		if idx, ok := iterable.(*IndexExpr); ok {
+			if _, ok2 := idx.Index.(*StringLit); !ok2 {
+				keys = true
+			}
 		}
 	}
 	body, err := convertStmtList(f.Body)

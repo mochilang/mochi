@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-24 08:47 UTC
+Last updated: 2025-08-24 10:14 UTC
 
 ## Algorithms Golden Test Checklist (1064/1077)
 | Index | Name | Status | Duration | Memory |
@@ -210,7 +210,7 @@ Last updated: 2025-08-24 08:47 UTC
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 571.223ms | 43.5 KB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 571.223ms | 84.0 KB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 571.223ms | 378.6 KB |
-| 204 | data_structures/hashing/double_hash | ✓ | 571.223ms | 25.1 KB |
+| 204 | data_structures/hashing/double_hash | ✓ | 571.223ms | 29.0 KB |
 | 205 | data_structures/hashing/hash_map | ✓ | 571.223ms | 33.7 KB |
 | 206 | data_structures/hashing/hash_table | ✓ | 571.223ms | 536.8 KB |
 | 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 571.223ms | 26.5 KB |
@@ -221,9 +221,9 @@ Last updated: 2025-08-24 08:47 UTC
 | 212 | data_structures/heap/heap | ✓ | 571.223ms | 67.2 KB |
 | 213 | data_structures/heap/heap_generic | ✓ | 571.223ms | 589.4 KB |
 | 214 | data_structures/heap/max_heap | ✓ | 571.223ms | 35.0 KB |
-| 215 | data_structures/heap/min_heap | ✓ | 571.223ms | 70.7 KB |
+| 215 | data_structures/heap/min_heap | ✓ | 571.223ms | 838.8 KB |
 | 216 | data_structures/heap/randomized_heap | ✓ | 571.223ms | 67.4 KB |
-| 217 | data_structures/kd_tree/build_kdtree | ✓ | 571.223ms | 46.4 KB |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 571.223ms | 55.8 KB |
 | 218 | data_structures/kd_tree/example/example_usage | ✓ | 571.223ms | 2.8 MB |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 571.223ms | 17.3 KB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 571.223ms | 25.8 KB |
