@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/stacks/balanced_parentheses.zig:56:77: error: indexing into empty slice is not allowed

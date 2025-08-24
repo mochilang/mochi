@@ -1908,7 +1908,11 @@ func (f *Func) emit(w io.Writer) {
 				mut = m
 			}
 		}
-		if (!ok || u == 0) && !mut {
+		// Only rename the parameter to '_' when we are certain it is unused.
+		// Previously, missing usage information caused parameters that were
+		// actually referenced in the function body to be renamed, leading
+		// to undeclared identifier errors in generated code.
+		if ok && u == 0 && !mut {
 			name = "_"
 		}
 		fmt.Fprintf(w, "%s: %s", name, p.Type)
