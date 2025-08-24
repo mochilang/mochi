@@ -29,6 +29,7 @@ var (
 	currentEnv              *types.Env
 	funcParamTypes          map[string][]string
 	funcReturnTypes         map[string]string
+	funcParamPtrs           map[string]map[string]bool
 	varTypes                map[string]string
 	closureApply            map[string]string
 	closureFields           map[string][]string
@@ -1085,7 +1086,7 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		}
 		if vr, ok := a.(*VarRef); ok && paramType != "" {
 			if at, ok2 := varTypes[vr.Name]; ok2 && at != paramType {
-				if !(strings.HasSuffix(paramType, "*") && at == strings.TrimSuffix(paramType, "*")) {
+				if !(strings.HasSuffix(paramType, "*") && at == strings.TrimSuffix(paramType, "*")) && !(strings.HasSuffix(at, "*") && paramType == strings.TrimSuffix(at, "*")) {
 					fmt.Fprintf(w, "(%s)", paramType)
 				}
 			}
@@ -3181,6 +3182,10 @@ func (f *FieldExpr) emitExpr(w io.Writer) {
 	if vr, ok := f.Target.(*VarRef); ok {
 		if vt := varTypes[vr.Name]; vt != "" {
 			typ = vt
+		} else if funcParamPtrs != nil && funcParamPtrs[currentFuncName] != nil && funcParamPtrs[currentFuncName][vr.Name] {
+			if !strings.HasSuffix(typ, "*") {
+				typ += "*"
+			}
 		} else if mutatedParams != nil && mutatedParams[vr.Name] {
 			if _, ok := structTypes[typ]; ok && !strings.HasSuffix(typ, "*") {
 				typ += "*"
@@ -9160,6 +9165,13 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 					params[i].Type = params[i].Type + "*"
 					paramTypes[i] = params[i].Type
 					varTypes[params[i].Name] = params[i].Type
+					if funcParamPtrs == nil {
+						funcParamPtrs = make(map[string]map[string]bool)
+					}
+					if funcParamPtrs[name] == nil {
+						funcParamPtrs[name] = make(map[string]bool)
+					}
+					funcParamPtrs[name][params[i].Name] = true
 				}
 			}
 		}
