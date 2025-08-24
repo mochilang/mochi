@@ -2,12 +2,12 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-23 08:45 UTC
+Last updated: 2025-08-24 02:14 UTC
 
-## Algorithms Golden Test Checklist (911/1077)
+## Algorithms Golden Test Checklist (939/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
+| 1 | backtracking/all_combinations |   | 39µs | 18.9 KB |
 | 2 | backtracking/all_permutations | ✓ | 264µs | 381.7 KB |
 | 3 | backtracking/all_subsequences | ✓ | 67µs | 21.5 KB |
 | 4 | backtracking/coloring | ✓ | 149µs | 288.2 KB |
@@ -837,24 +837,24 @@ Last updated: 2025-08-23 08:45 UTC
 | 828 | project_euler/problem_010/sol2 | ✓ | 3.893792s | 97.7 MB |
 | 829 | project_euler/problem_010/sol3 | ✓ | 35.945894s | 2.5 MB |
 | 830 | project_euler/problem_011/sol1 | ✓ | 1.702ms | 180.0 KB |
-| 831 | project_euler/problem_011/sol2 | ✓ | 1.204ms | 540.8 KB |
-| 832 | project_euler/problem_012/sol1 | ✓ | 405.379ms | 2.8 MB |
-| 833 | project_euler/problem_012/sol2 | ✓ | 414.849ms | 3.2 MB |
-| 834 | project_euler/problem_013/sol1 | ✓ | 4.743ms |  |
-| 835 | project_euler/problem_014/sol1 | ✓ | 1m3.32972s | 3.8 MB |
-| 836 | project_euler/problem_014/sol2 | ✓ | 203µs | 453.9 KB |
-| 837 | project_euler/problem_015/sol1 | ✓ | 58µs | 131.0 KB |
-| 838 | project_euler/problem_016/sol1 | ✓ | 224µs | 618.9 KB |
-| 839 | project_euler/problem_016/sol2 | ✓ | 3.815384s |  |
-| 840 | project_euler/problem_017/sol1 | ✓ | 304µs | 409.6 KB |
-| 841 | project_euler/problem_018/solution | ✓ | 166µs | 98.2 KB |
-| 842 | project_euler/problem_019/sol1 | ✓ | 1.329ms | 4.8 MB |
-| 843 | project_euler/problem_020/sol1 | ✓ | 74µs | 112.0 KB |
-| 844 | project_euler/problem_020/sol2 | ✓ | 102µs | 181.5 KB |
-| 845 | project_euler/problem_020/sol3 | ✓ | 103µs | 123.8 KB |
-| 846 | project_euler/problem_020/sol4 | ✓ | 102µs | 119.0 KB |
-| 847 | project_euler/problem_021/sol1 | ✓ | 196.142ms |  |
-| 848 | project_euler/problem_022/sol1 | ✓ | 28µs | 5.1 KB |
+| 831 | project_euler/problem_011/sol2 | ✓ | 1.53ms | 519.6 KB |
+| 832 | project_euler/problem_012/sol1 | ✓ | 577.908ms | 2.6 MB |
+| 833 | project_euler/problem_012/sol2 | ✓ | 588.338ms | 2.1 MB |
+| 834 | project_euler/problem_013/sol1 | ✓ | 7.852ms | 3.9 MB |
+| 835 | project_euler/problem_014/sol1 | ✓ | 1.875681s | 3.2 MB |
+| 836 | project_euler/problem_014/sol2 | ✓ | 282µs | 443.2 KB |
+| 837 | project_euler/problem_015/sol1 | ✓ | 84µs | 130.6 KB |
+| 838 | project_euler/problem_016/sol1 | ✓ | 393µs | 624.1 KB |
+| 839 | project_euler/problem_016/sol2 | ✓ | 1.070164s | 5.6 MB |
+| 840 | project_euler/problem_017/sol1 | ✓ | 426µs | 393.5 KB |
+| 841 | project_euler/problem_018/solution | ✓ | 249µs | 99.9 KB |
+| 842 | project_euler/problem_019/sol1 | ✓ | 1.673ms | 4.8 MB |
+| 843 | project_euler/problem_020/sol1 | ✓ | 106µs | 111.9 KB |
+| 844 | project_euler/problem_020/sol2 | ✓ | 138µs | 181.0 KB |
+| 845 | project_euler/problem_020/sol3 | ✓ | 144µs | 127.0 KB |
+| 846 | project_euler/problem_020/sol4 | ✓ | 48µs | 3.2 KB |
+| 847 | project_euler/problem_021/sol1 | ✓ | 310.23ms | 5.0 MB |
+| 848 | project_euler/problem_022/sol1 | ✓ | 44µs | 4.8 KB |
 | 849 | project_euler/problem_022/sol2 |   |  |  |
 | 850 | project_euler/problem_023/sol1 |   |  |  |
 | 851 | project_euler/problem_024/sol1 | ✓ | 31µs | 30.4 KB |
@@ -962,56 +962,56 @@ Last updated: 2025-08-23 08:45 UTC
 | 953 | sorts/exchange_sort |   |  |  |
 | 954 | sorts/external_sort |   |  |  |
 | 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort | ✓ | 70µs | 29.0 KB |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams | ✓ | 275µs | 258.5 KB |
-| 991 | strings/autocomplete_using_trie | ✓ | 25µs | 5.6 KB |
-| 992 | strings/barcode_validator | ✓ | 52µs | 54.9 KB |
-| 993 | strings/bitap_string_match | ✓ | 190µs | 539.5 KB |
-| 994 | strings/boyer_moore_search | ✓ | 2µs | 512 B |
-| 995 | strings/camel_case_to_snake_case | ✓ | 602µs | 2.3 MB |
-| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 97µs | 244.0 KB |
-| 997 | strings/capitalize | ✓ | 23µs | 32.3 KB |
-| 998 | strings/check_anagrams | ✓ | 72µs | 87.1 KB |
-| 999 | strings/count_vowels | ✓ | 103µs | 371.0 KB |
-| 1000 | strings/credit_card_validator | ✓ | 59µs | 23.5 KB |
-| 1001 | strings/damerau_levenshtein_distance | ✓ | 340µs | 111.0 KB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 793µs | 1.4 MB |
-| 1003 | strings/dna | ✓ | 42µs | 18.3 KB |
-| 1004 | strings/edit_distance | ✓ | 35.482ms | 1.0 MB |
-| 1005 | strings/frequency_finder | ✓ | 16.283ms |  |
+| 956 | sorts/heap_sort | ✓ | 35µs | 4.8 KB |
+| 957 | sorts/insertion_sort | ✓ | 38µs | 15.0 KB |
+| 958 | sorts/intro_sort | ✓ | 60µs | 45.0 KB |
+| 959 | sorts/iterative_merge_sort | ✓ | 104µs | 139.5 KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 83µs | 32.9 KB |
+| 961 | sorts/merge_sort | ✓ | 64µs | 50.2 KB |
+| 962 | sorts/msd_radix_sort | ✓ | 209µs | 460.9 KB |
+| 963 | sorts/natural_sort | ✓ | 639µs | 1.5 MB |
+| 964 | sorts/odd_even_sort | ✓ | 66µs | 51.5 KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 56µs | 29.6 KB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 70µs | 32.9 KB |
+| 967 | sorts/pancake_sort | ✓ | 40µs | 23.2 KB |
+| 968 | sorts/patience_sort | ✓ | 80µs | 64.6 KB |
+| 969 | sorts/pigeon_sort | ✓ | 90µs | 130.5 KB |
+| 970 | sorts/pigeonhole_sort |   | 13µs | 5.3 KB |
+| 971 | sorts/quick_sort |   | 116µs | 20.2 KB |
+| 972 | sorts/quick_sort_3_partition |   | 103µs | 70.4 KB |
+| 973 | sorts/radix_sort | ✓ | 149µs | 179.1 KB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 41µs | 22.3 KB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 172µs | 196.4 KB |
+| 976 | sorts/recursive_quick_sort | ✓ | 50µs | 30.1 KB |
+| 977 | sorts/selection_sort | ✓ | 41µs | 15.6 KB |
+| 978 | sorts/shell_sort | ✓ | 57µs | 34.1 KB |
+| 979 | sorts/shrink_shell_sort | ✓ | 41µs | 10.1 KB |
+| 980 | sorts/slowsort | ✓ | 142µs | 156.9 KB |
+| 981 | sorts/stooge_sort | ✓ | 40µs | 17.3 KB |
+| 982 | sorts/strand_sort | ✓ | 60µs | 35.4 KB |
+| 983 | sorts/tim_sort | ✓ | 33µs | 37.7 KB |
+| 984 | sorts/topological_sort | ✓ | 42µs | 14.8 KB |
+| 985 | sorts/tree_sort | ✓ | 203µs | 102.2 KB |
+| 986 | sorts/unknown_sort |   | 71µs | 57.2 KB |
+| 987 | sorts/wiggle_sort | ✓ | 139µs | 46.2 KB |
+| 988 | strings/aho_corasick | ✓ | 69µs | 55.2 KB |
+| 989 | strings/alternative_string_arrange | ✓ | 21µs | 10.5 KB |
+| 990 | strings/anagrams | ✓ | 259µs | 263.2 KB |
+| 991 | strings/autocomplete_using_trie | ✓ | 33µs | 6.2 KB |
+| 992 | strings/barcode_validator | ✓ | 79µs | 56.4 KB |
+| 993 | strings/bitap_string_match | ✓ | 266µs | 539.2 KB |
+| 994 | strings/boyer_moore_search | ✓ | 2µs | 544 B |
+| 995 | strings/camel_case_to_snake_case | ✓ | 8.002ms |  |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 139µs | 244.0 KB |
+| 997 | strings/capitalize | ✓ | 34µs | 32.3 KB |
+| 998 | strings/check_anagrams | ✓ | 98µs | 87.1 KB |
+| 999 | strings/count_vowels | ✓ | 141µs | 371.1 KB |
+| 1000 | strings/credit_card_validator | ✓ | 36µs | 23.5 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 214µs | 111.2 KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 508µs | 1.4 MB |
+| 1003 | strings/dna | ✓ | 43µs | 18.3 KB |
+| 1004 | strings/edit_distance | ✓ | 26.311ms |  |
+| 1005 | strings/frequency_finder | ✓ | 1.983ms | 6.0 MB |
 | 1006 | strings/hamming_distance | ✓ | 28µs | 10.6 KB |
 | 1007 | strings/indian_phone_validator | ✓ | 41µs | 18.7 KB |
 | 1008 | strings/is_contains_unique_chars | ✓ | 678µs | 1.3 MB |
