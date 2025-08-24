@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (879/1077) - Last updated 2025-08-24 21:03 +0700:
+Checklist of programs that currently transpile and run (883/1077) - Last updated 2025-08-24 21:19 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -203,13 +203,13 @@ Checklist of programs that currently transpile and run (879/1077) - Last updated
 | 196 | data_structures/binary_tree/segment_tree_other |  |  |  |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |  |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 464us | 1.5 MB |
-| 199 | data_structures/binary_tree/treap |  |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |  |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |  |  |  |
+| 199 | data_structures/binary_tree/treap | ✓ | 348us | 1.6 MB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 288us | 1.6 MB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 317us | 1.4 MB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 436us | 1.5 MB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 4.36ms | 2.2 MB |
 | 204 | data_structures/hashing/double_hash | ✓ | 348us | 1.5 MB |
-| 205 | data_structures/hashing/hash_map |  |  |  |
+| 205 | data_structures/hashing/hash_map | ✓ | 691us | 1.6 MB |
 | 206 | data_structures/hashing/hash_table | ✓ | 538us | 1.4 MB |
 | 207 | data_structures/hashing/hash_table_with_linked_list |  |  |  |
 | 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 290us | 1.5 MB |
