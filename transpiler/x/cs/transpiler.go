@@ -450,7 +450,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "    if (__memDiff <= 0) __memDiff = __memEnd;\n")
 	fmt.Fprintf(w, "    var __bench = new Dictionary<string, object>{{\"name\", \"%s\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}};\n", b.Name)
 	fmt.Fprint(w, "    Console.WriteLine(JsonSerializer.Serialize(__bench));\n")
-	fmt.Fprint(w, "}")
+	fmt.Fprint(w, "}\n")
 }
 
 // UpdateStmt updates fields of items in a list of structs.
