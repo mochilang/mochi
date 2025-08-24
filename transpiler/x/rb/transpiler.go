@@ -3965,9 +3965,25 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	var expr Expr = &Ident{Name: "nil"}
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
-		res, err := convertExpr(c.Result)
-		if err != nil {
-			return nil, err
+		var res Expr
+		if c.Result != nil {
+			res, err = convertExpr(c.Result)
+			if err != nil {
+				return nil, err
+			}
+		} else if len(c.Block) > 0 {
+			body := make([]Stmt, len(c.Block))
+			for j, s := range c.Block {
+				st, err := convertStmt(s)
+				if err != nil {
+					return nil, err
+				}
+				body[j] = st
+			}
+			lam := &LambdaExpr{Body: body, Expr: &Ident{Name: "nil"}}
+			res = &MethodCallExpr{Target: lam, Method: "call"}
+		} else {
+			res = &Ident{Name: "nil"}
 		}
 		pat := c.Pattern
 		if pat.Binary != nil && len(pat.Binary.Right) == 0 {
@@ -4681,6 +4697,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			return &MethodCallExpr{Target: args[0], Method: "keys"}, nil
+		case "join":
+			switch len(args) {
+			case 1:
+				return &MethodCallExpr{Target: args[0], Method: "join"}, nil
+			case 2:
+				return &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{args[1]}}, nil
+			default:
+				return nil, fmt.Errorf("join expects 1 or 2 args")
+			}
 		case "exists":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("exists takes one arg")
