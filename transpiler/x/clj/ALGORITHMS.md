@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-24 17:07 GMT+7
+Last updated: 2025-08-24 22:25 GMT+7
 
 ## Algorithms Golden Test Checklist (846/1077)
 | Index | Name | Status | Duration | Memory |
@@ -231,7 +231,7 @@ Last updated: 2025-08-24 17:07 GMT+7
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 41.237ms | 24.11MB |
 | 223 | data_structures/linked_list/circular_linked_list | ✓ | 47.487ms | 24.05MB |
 | 224 | data_structures/linked_list/deque_doubly | error | 34.016ms | 23.09MB |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 41.505ms | 23.33MB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 61.075ms | 24.32MB |
 | 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 43.394ms | 27.03MB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 37.408ms | 21.01MB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 55.864ms | 20.40MB |
