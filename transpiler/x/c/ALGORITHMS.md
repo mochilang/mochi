@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (874/1077) - Last updated 2025-08-24 15:27 +0700:
+Checklist of programs that currently transpile and run (876/1077) - Last updated 2025-08-24 09:47 +0000:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -188,9 +188,9 @@ Checklist of programs that currently transpile and run (874/1077) - Last updated
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 195us | 1.5 MB |
 | 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 470us | 1.6 MB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |  |  |  |
-| 184 | data_structures/binary_tree/is_sorted |  |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree | ✓ |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |  |  |  |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 584us | 1.6 MB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 0us | 1.5 MB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 603us | 1.4 MB |
 | 187 | data_structures/binary_tree/lowest_common_ancestor |  |  |  |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree |  |  |  |
 | 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 314us | 1.4 MB |
