@@ -249,13 +249,15 @@ const helperStr = `let rec _str v =
          .Replace("|]", "]")
          .Replace("; ", " ")
          .Replace(";", "")
+         .Replace("L", "")
          .Replace("\"", "")`
 
 const helperRepr = `let _repr v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
      .Replace("|]", "]")
-     .Replace("; ", ", ")`
+     .Replace("; ", ", ")
+     .Replace("L", "")`
 
 const helperFloorDiv = `let _floordiv (a:int) (b:int) : int =
     let q = a / b
@@ -3390,6 +3392,28 @@ func (c *CastExpr) emit(w io.Writer) {
 			}
 		} else {
 			io.WriteString(w, "unbox<int array> ")
+			if needsParen(c.Expr) {
+				io.WriteString(w, "(")
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				c.Expr.emit(w)
+			}
+		}
+	case "int64 array":
+		if ll, ok := c.Expr.(*ListLit); ok && len(ll.Elems) == 0 {
+			io.WriteString(w, "Array.empty<int64>")
+		} else if valueType(c.Expr) == "int array" {
+			io.WriteString(w, "Array.map int64 ")
+			if needsParen(c.Expr) {
+				io.WriteString(w, "(")
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				c.Expr.emit(w)
+			}
+		} else {
+			io.WriteString(w, "unbox<int64 array> ")
 			if needsParen(c.Expr) {
 				io.WriteString(w, "(")
 				c.Expr.emit(w)
