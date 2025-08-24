@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 978/1077
-Last updated: 2025-08-24 16:59 +0700
+Completed programs: 981/1077
+Last updated: 2025-08-24 23:17 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -259,10 +259,10 @@ Last updated: 2025-08-24 16:59 +0700
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 901µs | 2.9 MB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 285µs | 3.4 MB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 747µs | 3.4 MB |
-| 253 | data_structures/stacks/next_greater_element |   | 1.907ms | 3.7 MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 1.407ms | 3.7 MB |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 359µs | 3.2 MB |
-| 255 | data_structures/stacks/prefix_evaluation |   | 449µs | 3.4 MB |
-| 256 | data_structures/stacks/stack |   | 823µs | 3.6 MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 733µs | 3.5 MB |
+| 256 | data_structures/stacks/stack | ✓ | 1.19ms | 3.5 MB |
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 244µs | 3.4 MB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 194µs | 3.2 MB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 264µs | 3.1 MB |
