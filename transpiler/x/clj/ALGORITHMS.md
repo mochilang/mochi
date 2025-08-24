@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-24 22:25 GMT+7
+Last updated: 2025-08-24 23:29 GMT+7
 
-## Algorithms Golden Test Checklist (846/1077)
+## Algorithms Golden Test Checklist (847/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -219,7 +219,7 @@ Last updated: 2025-08-24 22:25 GMT+7
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 39.012ms | 25.22MB |
 | 211 | data_structures/heap/binomial_heap | error | 37.39ms | 22.43MB |
 | 212 | data_structures/heap/heap | error |  |  |
-| 213 | data_structures/heap/heap_generic | error |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 86.735ms | 27.41MB |
 | 214 | data_structures/heap/max_heap | ✓ | 46.134ms | 23.17MB |
 | 215 | data_structures/heap/min_heap | error |  |  |
 | 216 | data_structures/heap/randomized_heap | error |  |  |
