@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-24 22:28 GMT+7
+Last updated: 2025-08-24 23:24 GMT+7
 
-## Algorithms Golden Test Checklist (819/1077)
+## Algorithms Golden Test Checklist (820/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -227,7 +227,7 @@ Last updated: 2025-08-24 22:28 GMT+7
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 61µs | 1.9 MB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 95µs | 2.1 MB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 110µs | 2.0 MB |
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 256µs | 2.0 MB |
 | 223 | data_structures/linked_list/circular_linked_list |   |  |  |
 | 224 | data_structures/linked_list/deque_doubly |   |  |  |
