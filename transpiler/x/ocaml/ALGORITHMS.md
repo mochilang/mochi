@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
 Completed programs: 940/1077
-Last updated: 2025-08-24 16:59 +0700
+Last updated: 2025-08-24 22:16 +0700
 
 Checklist:
 
@@ -231,7 +231,7 @@ Checklist:
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 100.0µs | 12.84KB |
 | 223 | data_structures/linked_list/circular_linked_list | ✓ | 169.0µs | 6.62KB |
 | 224 | data_structures/linked_list/deque_doubly | ✓ | 62.0µs | 4.87KB |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 141.0µs | 4.13KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 338.0µs | 9.76KB |
 | 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 402.0µs | 25.20KB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 39.0µs | 2.38KB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 123.0µs | 4.87KB |

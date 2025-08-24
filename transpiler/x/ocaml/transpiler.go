@@ -3446,12 +3446,15 @@ let _len v =
 const helperShow = `
 let rec __is_list v =
   let open Obj in
-  let r = repr v in
-  if is_int r then (magic r : int) = 0
-  else
-    match tag r with
-    | 0 -> __is_list (field r 1)
-    | _ -> false
+  let rec loop x =
+    let r = repr x in
+    if is_int r then (magic r : int) = 0
+    else
+      match tag r with
+      | 0 -> loop (field r 1)
+      | _ -> false
+  in
+  loop v
 
 let rec __show v =
   let open Obj in
