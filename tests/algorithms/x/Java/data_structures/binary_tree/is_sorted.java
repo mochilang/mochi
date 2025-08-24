@@ -1,10 +1,10 @@
 public class Main {
-    static int NONE;
+    static java.math.BigInteger NONE;
     static class Tree {
         double[] data;
-        int[] left;
-        int[] right;
-        Tree(double[] data, int[] left, int[] right) {
+        java.math.BigInteger[] left;
+        java.math.BigInteger[] right;
+        Tree(double[] data, java.math.BigInteger[] left, java.math.BigInteger[] right) {
             this.data = data;
             this.left = left;
             this.right = right;
@@ -19,60 +19,99 @@ public class Main {
     static Tree tree2;
     static Tree tree3;
 
-    static double[] inorder(Tree tree, int index) {
+    static double[] inorder(Tree tree, java.math.BigInteger index) {
         double[] res = ((double[])(new double[]{}));
-        if (index == NONE) {
+        if (index.compareTo(NONE) == 0) {
             return res;
         }
-        int left_idx = tree.left[index];
-        if (left_idx != NONE) {
-            res = ((double[])(concat(res, inorder(tree, left_idx))));
+        java.math.BigInteger left_idx_1 = new java.math.BigInteger(String.valueOf(tree.left[(int)(((java.math.BigInteger)(index)).longValue())]));
+        if (left_idx_1.compareTo(NONE) != 0) {
+            res = ((double[])(concat(res, inorder(tree, new java.math.BigInteger(String.valueOf(left_idx_1))))));
         }
-        res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.stream.DoubleStream.of(tree.data[index])).toArray()));
-        int right_idx = tree.right[index];
-        if (right_idx != NONE) {
-            res = ((double[])(concat(res, inorder(tree, right_idx))));
+        res = ((double[])(appendDouble(res, (double)(tree.data[(int)(((java.math.BigInteger)(index)).longValue())]))));
+        java.math.BigInteger right_idx_1 = new java.math.BigInteger(String.valueOf(tree.right[(int)(((java.math.BigInteger)(index)).longValue())]));
+        if (right_idx_1.compareTo(NONE) != 0) {
+            res = ((double[])(concat(res, inorder(tree, new java.math.BigInteger(String.valueOf(right_idx_1))))));
         }
         return res;
     }
 
-    static boolean is_sorted(Tree tree, int index) {
-        if (index == NONE) {
+    static boolean is_sorted(Tree tree, java.math.BigInteger index) {
+        if (index.compareTo(NONE) == 0) {
             return true;
         }
-        int left_idx_1 = tree.left[index];
-        if (left_idx_1 != NONE) {
-            if (tree.data[index] < tree.data[left_idx_1]) {
+        java.math.BigInteger left_idx_3 = new java.math.BigInteger(String.valueOf(tree.left[(int)(((java.math.BigInteger)(index)).longValue())]));
+        if (left_idx_3.compareTo(NONE) != 0) {
+            if ((double)(tree.data[(int)(((java.math.BigInteger)(index)).longValue())]) < (double)(tree.data[(int)(((java.math.BigInteger)(left_idx_3)).longValue())])) {
                 return false;
             }
-            if (!(Boolean)is_sorted(tree, left_idx_1)) {
+            if (!(Boolean)is_sorted(tree, new java.math.BigInteger(String.valueOf(left_idx_3)))) {
                 return false;
             }
         }
-        int right_idx_1 = tree.right[index];
-        if (right_idx_1 != NONE) {
-            if (tree.data[index] > tree.data[right_idx_1]) {
+        java.math.BigInteger right_idx_3 = new java.math.BigInteger(String.valueOf(tree.right[(int)(((java.math.BigInteger)(index)).longValue())]));
+        if (right_idx_3.compareTo(NONE) != 0) {
+            if ((double)(tree.data[(int)(((java.math.BigInteger)(index)).longValue())]) > (double)(tree.data[(int)(((java.math.BigInteger)(right_idx_3)).longValue())])) {
                 return false;
             }
-            if (!(Boolean)is_sorted(tree, right_idx_1)) {
+            if (!(Boolean)is_sorted(tree, new java.math.BigInteger(String.valueOf(right_idx_3)))) {
                 return false;
             }
         }
         return true;
     }
     public static void main(String[] args) {
-        NONE = 0 - 1;
-        tree1 = new Tree(new double[]{2.1, 2.0, 2.2}, new int[]{1, NONE, NONE}, new int[]{2, NONE, NONE});
-        System.out.println("Tree " + _p(inorder(tree1, 0)) + " is sorted: " + _p(is_sorted(tree1, 0)));
-        tree2 = new Tree(new double[]{2.1, 2.0, 2.0}, new int[]{1, NONE, NONE}, new int[]{2, NONE, NONE});
-        System.out.println("Tree " + _p(inorder(tree2, 0)) + " is sorted: " + _p(is_sorted(tree2, 0)));
-        tree3 = new Tree(new double[]{2.1, 2.0, 2.1}, new int[]{1, NONE, NONE}, new int[]{2, NONE, NONE});
-        System.out.println("Tree " + _p(inorder(tree3, 0)) + " is sorted: " + _p(is_sorted(tree3, 0)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            NONE = new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
+            tree1 = new Tree(new double[]{(double)(2.1), (double)(2.0), (double)(2.2)}, new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), new java.math.BigInteger(String.valueOf(NONE)), new java.math.BigInteger(String.valueOf(NONE))}, new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), new java.math.BigInteger(String.valueOf(NONE)), new java.math.BigInteger(String.valueOf(NONE))});
+            System.out.println("Tree " + _p(inorder(tree1, java.math.BigInteger.valueOf(0))) + " is sorted: " + _p(is_sorted(tree1, java.math.BigInteger.valueOf(0))));
+            tree2 = new Tree(new double[]{(double)(2.1), (double)(2.0), (double)(2.0)}, new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), new java.math.BigInteger(String.valueOf(NONE)), new java.math.BigInteger(String.valueOf(NONE))}, new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), new java.math.BigInteger(String.valueOf(NONE)), new java.math.BigInteger(String.valueOf(NONE))});
+            System.out.println("Tree " + _p(inorder(tree2, java.math.BigInteger.valueOf(0))) + " is sorted: " + _p(is_sorted(tree2, java.math.BigInteger.valueOf(0))));
+            tree3 = new Tree(new double[]{(double)(2.1), (double)(2.0), (double)(2.1)}, new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), new java.math.BigInteger(String.valueOf(NONE)), new java.math.BigInteger(String.valueOf(NONE))}, new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), new java.math.BigInteger(String.valueOf(NONE)), new java.math.BigInteger(String.valueOf(NONE))});
+            System.out.println("Tree " + _p(inorder(tree3, java.math.BigInteger.valueOf(0))) + " is sorted: " + _p(is_sorted(tree3, java.math.BigInteger.valueOf(0))));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
     }
 
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
+    static Object concat(Object a, Object b) {
+        int len1 = java.lang.reflect.Array.getLength(a);
+        int len2 = java.lang.reflect.Array.getLength(b);
+        Object out = java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), len1 + len2);
+        System.arraycopy(a, 0, out, 0, len1);
+        System.arraycopy(b, 0, out, len1, len2);
         return out;
     }
 
@@ -88,6 +127,10 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

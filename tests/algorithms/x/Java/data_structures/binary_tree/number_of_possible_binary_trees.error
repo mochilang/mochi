@@ -1,7 +1,15 @@
-run: exit status 1
-Enter the number of nodes:
-Exception in thread "main" java.lang.NumberFormatException: For input string: ""
-	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
-	at java.base/java.lang.Integer.parseInt(Integer.java:672)
-	at java.base/java.lang.Integer.parseInt(Integer.java:778)
-	at Main.main(Main.java:42)
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden193_number_of_possible_binary_trees3233458216/001/Main.java:13: error: bad operand types for binary operator '<'
+        for (int i = 0; i < kk_1; i++) {
+                          ^
+  first type:  int
+  second type: BigInteger
+/tmp/TestJavaTranspiler_Algorithms_Golden193_number_of_possible_binary_trees3233458216/001/Main.java:27: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden193_number_of_possible_binary_trees3233458216/001/Main.java:30: error: bad operand types for binary operator '<'
+        for (int i = 1; i < (n.add(java.math.BigInteger.valueOf(1))); i++) {
+                          ^
+  first type:  int
+  second type: BigInteger
+3 errors

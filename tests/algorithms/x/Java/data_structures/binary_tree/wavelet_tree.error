@@ -1,0 +1,22 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden200_wavelet_tree3422472977/001/Main.java:93: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden200_wavelet_tree3422472977/001/Main.java:100: error: incompatible types: int cannot be converted to BigInteger
+                return 0;
+                       ^
+/tmp/TestJavaTranspiler_Algorithms_Golden200_wavelet_tree3422472977/001/Main.java:113: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden200_wavelet_tree3422472977/001/Main.java:139: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden200_wavelet_tree3422472977/001/Main.java:143: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden200_wavelet_tree3422472977/001/Main.java:149: error: incompatible types: bad type in conditional expression
+        java.math.BigInteger right_1 = new java.math.BigInteger(String.valueOf(range_counting(new java.math.BigInteger(String.valueOf(node_5.right)), new java.math.BigInteger(String.valueOf(start.subtract((start.compareTo(java.math.BigInteger.valueOf(0)) == 0 ? 0 : node_5.map_left[(int)(((java.math.BigInteger)(start.subtract(java.math.BigInteger.valueOf(1)))).longValue())])))), new java.math.BigInteger(String.valueOf(end.subtract(node_5.map_left[(int)(((java.math.BigInteger)(end)).longValue())]))), new java.math.BigInteger(String.valueOf(start_num)), new java.math.BigInteger(String.valueOf(end_num)))));
+                                                                                                                                                                                                                                                                      ^
+    int cannot be converted to BigInteger
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

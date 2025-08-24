@@ -1,0 +1,54 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:21: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:29: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:44: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:57: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:68: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(3, 2, 3), new TreeNode(0, 0, 0), new TreeNode(0, 0, 0)}));
+                                                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:68: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(3, 2, 3), new TreeNode(0, 0, 0), new TreeNode(0, 0, 0)}));
+                                                                                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:68: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(3, 2, 3), new TreeNode(0, 0, 0), new TreeNode(0, 0, 0)}));
+                                                                                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:68: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(3, 2, 3), new TreeNode(0, 0, 0), new TreeNode(0, 0, 0)}));
+                                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:69: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example2_1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(0, 2, 3), new TreeNode(3, 0, 0), new TreeNode(0, 0, 0)}));
+                                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:69: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example2_1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(0, 2, 3), new TreeNode(3, 0, 0), new TreeNode(0, 0, 0)}));
+                                                                                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:69: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example2_1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(0, 2, 3), new TreeNode(3, 0, 0), new TreeNode(0, 0, 0)}));
+                                                                                                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:69: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example2_1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(0, 2, 3), new TreeNode(3, 0, 0), new TreeNode(0, 0, 0)}));
+                                                                                                                                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:70: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example3_1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(0, 2, 3), new TreeNode(0, 0, 0), new TreeNode(3, 0, 0)}));
+                                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:70: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example3_1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(0, 2, 3), new TreeNode(0, 0, 0), new TreeNode(3, 0, 0)}));
+                                                                                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:70: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example3_1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(0, 2, 3), new TreeNode(0, 0, 0), new TreeNode(3, 0, 0)}));
+                                                                                                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:70: error: incompatible types: int cannot be converted to BigInteger
+        TreeNode[] example3_1 = ((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0), new TreeNode(0, 2, 3), new TreeNode(0, 0, 0), new TreeNode(3, 0, 0)}));
+                                                                                                                                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden179_distribute_coins159723888/001/Main.java:74: error: incompatible types: int cannot be converted to BigInteger
+        System.out.println(distribute_coins(((TreeNode[])(new TreeNode[]{new TreeNode(0, 0, 0)})), java.math.BigInteger.valueOf(0)));
+                                                                                      ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+17 errors

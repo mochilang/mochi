@@ -1,0 +1,39 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:33: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:41: error: incompatible types: int cannot be converted to BigInteger
+            return 0;
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:68: error: incompatible types: int cannot be converted to BigInteger
+        arr = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new Node(2, 1, 2))).toArray(Node[]::new)));
+                                                                                                                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:69: error: incompatible types: int cannot be converted to BigInteger
+        arr = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new Node(1, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
+                                                                                                                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:70: error: incompatible types: int cannot be converted to BigInteger
+        arr = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new Node(3, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
+                                                                                                                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:76: error: incompatible types: int cannot be converted to BigInteger
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(4, 1, 4))).toArray(Node[]::new)));
+                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:77: error: incompatible types: int cannot be converted to BigInteger
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(2, 2, 3))).toArray(Node[]::new)));
+                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:78: error: incompatible types: int cannot be converted to BigInteger
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(1, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
+                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:79: error: incompatible types: int cannot be converted to BigInteger
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(3, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
+                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:80: error: incompatible types: int cannot be converted to BigInteger
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(5, (java.math.BigInteger.valueOf(1)).negate(), 5))).toArray(Node[]::new)));
+                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:81: error: incompatible types: int cannot be converted to BigInteger
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(6, (java.math.BigInteger.valueOf(1)).negate(), 6))).toArray(Node[]::new)));
+                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden172_basic_binary_tree1460934639/001/Main.java:82: error: incompatible types: int cannot be converted to BigInteger
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(7, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
+                                                                                                                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+12 errors

@@ -1,40 +1,70 @@
 public class Main {
 
-    static void binary_tree_mirror_dict(java.util.Map<Integer,int[]> tree, int root) {
-        if ((root == 0) || (!(Boolean)(tree.containsKey(root)))) {
+    static void binary_tree_mirror_dict(java.util.Map<java.math.BigInteger,java.math.BigInteger[]> tree, java.math.BigInteger root) {
+        if ((root.compareTo(java.math.BigInteger.valueOf(0)) == 0) || (!(tree.containsKey(root)))) {
             return;
         }
-        int[] children = (int[])(((int[])(tree).get(root)));
-        int left = children[0];
-        int right = children[1];
-tree.put(root, ((int[])(new int[]{right, left})));
-        binary_tree_mirror_dict(tree, left);
-        binary_tree_mirror_dict(tree, right);
+        java.math.BigInteger[] children_1 = (java.math.BigInteger[])(((java.math.BigInteger[])(tree).get(root)));
+        java.math.BigInteger left_1 = new java.math.BigInteger(String.valueOf(children_1[(int)(0L)]));
+        java.math.BigInteger right_1 = new java.math.BigInteger(String.valueOf(children_1[(int)(1L)]));
+tree.put(root, ((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(right_1)), new java.math.BigInteger(String.valueOf(left_1))})));
+        binary_tree_mirror_dict(tree, new java.math.BigInteger(String.valueOf(left_1)));
+        binary_tree_mirror_dict(tree, new java.math.BigInteger(String.valueOf(right_1)));
     }
 
-    static java.util.Map<Integer,int[]> binary_tree_mirror(java.util.Map<Integer,int[]> binary_tree, int root) {
-        if (binary_tree.size() == 0) {
+    static java.util.Map<java.math.BigInteger,java.math.BigInteger[]> binary_tree_mirror(java.util.Map<java.math.BigInteger,java.math.BigInteger[]> binary_tree, java.math.BigInteger root) {
+        if (new java.math.BigInteger(String.valueOf(binary_tree.size())).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             throw new RuntimeException(String.valueOf("binary tree cannot be empty"));
         }
-        if (!(Boolean)(binary_tree.containsKey(root))) {
+        if (!(binary_tree.containsKey(root))) {
             throw new RuntimeException(String.valueOf("root " + _p(root) + " is not present in the binary_tree"));
         }
-        java.util.Map<Integer,int[]> tree_copy = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>()));
-        for (int k : binary_tree.keySet()) {
-tree_copy.put(k, (int[])(((int[])(binary_tree).get(k))));
+        java.util.Map<java.math.BigInteger,java.math.BigInteger[]> tree_copy_1 = ((java.util.Map<java.math.BigInteger,java.math.BigInteger[]>)(new java.util.LinkedHashMap<java.math.BigInteger, java.math.BigInteger[]>()));
+        for (java.math.BigInteger k : binary_tree.keySet()) {
+tree_copy_1.put(k, (java.math.BigInteger[])(((java.math.BigInteger[])(binary_tree).get(k))));
         }
-        binary_tree_mirror_dict(tree_copy, root);
-        return tree_copy;
+        binary_tree_mirror_dict(tree_copy_1, new java.math.BigInteger(String.valueOf(root)));
+        return tree_copy_1;
     }
 
     static void main() {
-        java.util.Map<Integer,int[]> binary_tree = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>(java.util.Map.ofEntries(java.util.Map.entry(1, ((int[])(new int[]{2, 3}))), java.util.Map.entry(2, ((int[])(new int[]{4, 5}))), java.util.Map.entry(3, ((int[])(new int[]{6, 7}))), java.util.Map.entry(7, ((int[])(new int[]{8, 9})))))));
+        java.util.Map<java.math.BigInteger,java.math.BigInteger[]> binary_tree = ((java.util.Map<java.math.BigInteger,java.math.BigInteger[]>)(new java.util.LinkedHashMap<java.math.BigInteger, java.math.BigInteger[]>(java.util.Map.ofEntries(java.util.Map.entry(java.math.BigInteger.valueOf(1), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3)}))), java.util.Map.entry(java.math.BigInteger.valueOf(2), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(5)}))), java.util.Map.entry(java.math.BigInteger.valueOf(3), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(7)}))), java.util.Map.entry(java.math.BigInteger.valueOf(7), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(9)})))))));
         System.out.println("Binary tree: " + _p(binary_tree));
-        java.util.Map<Integer,int[]> mirrored = binary_tree_mirror(binary_tree, 1);
-        System.out.println("Binary tree mirror: " + _p(mirrored));
+        java.util.Map<java.math.BigInteger,java.math.BigInteger[]> mirrored_1 = binary_tree_mirror(binary_tree, java.math.BigInteger.valueOf(1));
+        System.out.println("Binary tree mirror: " + _p(mirrored_1));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -49,6 +79,10 @@ tree_copy.put(k, (int[])(((int[])(binary_tree).get(k))));
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

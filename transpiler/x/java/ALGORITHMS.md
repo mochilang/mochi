@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-24 09:12 GMT+7
+Last updated: 2025-08-24 15:55 GMT+7
 
-## Algorithms Golden Test Checklist (978/1077)
+## Algorithms Golden Test Checklist (961/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -157,56 +157,56 @@ Last updated: 2025-08-24 09:12 GMT+7
 | 148 | conversions/temperature_conversions | ✓ | 28.0ms | 10.25KB |
 | 149 | conversions/time_conversions | ✓ | 28.0ms | 13.68KB |
 | 150 | conversions/volume_conversions | ✓ | 25.0ms | 11.00KB |
-| 151 | conversions/weight_conversion | ✓ | 21.0ms | 12.88KB |
-| 152 | data_compression/burrows_wheeler | ✓ | 50.0ms | 52.35KB |
-| 153 | data_compression/huffman | ✓ | 59.0ms | 100.05KB |
-| 154 | data_compression/lempel_ziv | error |  |  |
-| 155 | data_compression/lempel_ziv_decompress | ✓ | 39.0ms | 56.23KB |
-| 156 | data_compression/lz77 | ✓ | 62.0ms | 104.41KB |
-| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 22.0ms | 0B |
-| 158 | data_compression/run_length_encoding | ✓ | 49.0ms | 86.59KB |
-| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 22.0ms | 552B |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 44.0ms | 46.25KB |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 28.0ms | 46.24KB |
-| 162 | data_structures/arrays/kth_largest_element | ✓ | 21.0ms | 576B |
-| 163 | data_structures/arrays/median_two_array | ✓ | 29.0ms | 56.82KB |
-| 164 | data_structures/arrays/monotonic_array | ✓ | 13.0ms | 664B |
-| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 13.0ms | 448B |
-| 166 | data_structures/arrays/permutations | ✓ | 24.0ms | 46.14KB |
-| 167 | data_structures/arrays/prefix_sum | ✓ | 28.0ms | 46.79KB |
-| 168 | data_structures/arrays/product_sum | ✓ | 24.0ms | 46.91KB |
-| 169 | data_structures/arrays/sparse_table | ✓ | 29.0ms | 46.51KB |
-| 170 | data_structures/arrays/sudoku_solver | ✓ | 35.0ms | 55.52KB |
+| 151 | conversions/weight_conversion | ✓ | 18.0ms | 21.66KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 33.0ms | 61.26KB |
+| 153 | data_compression/huffman | error |  |  |
+| 154 | data_compression/lempel_ziv | ✓ | 37.0ms | 42.81KB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 33.0ms | 65.06KB |
+| 156 | data_compression/lz77 | error | 62.0ms | 104.41KB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 16.0ms | 0B |
+| 158 | data_compression/run_length_encoding | ✓ | 45.0ms | 95.52KB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 18.0ms | 824B |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | error | 44.0ms | 46.25KB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 35.0ms | 54.42KB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 25.0ms | 1.77KB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 18.0ms | 19.24KB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 19.0ms | 9.74KB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 22.0ms | 9.33KB |
+| 166 | data_structures/arrays/permutations | ✓ | 35.0ms | 59.45KB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 31.0ms | 55.99KB |
+| 168 | data_structures/arrays/product_sum | ✓ | 18.0ms | 10.09KB |
+| 169 | data_structures/arrays/sparse_table | error |  |  |
+| 170 | data_structures/arrays/sudoku_solver | error | 35.0ms | 55.52KB |
 | 171 | data_structures/binary_tree/avl_tree | error |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 38.0ms | 53.06KB |
+| 172 | data_structures/binary_tree/basic_binary_tree | error | 38.0ms | 53.06KB |
 | 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 20.0ms | 38.58KB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 13.0ms | 1.06KB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 24.0ms | 47.47KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | error | 13.0ms | 1.06KB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 27.0ms | 46.57KB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 14.0ms | 904B |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 26.0ms | 46.77KB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 35.0ms | 93.03KB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | error | 27.0ms | 46.57KB |
+| 179 | data_structures/binary_tree/distribute_coins | error | 14.0ms | 904B |
+| 180 | data_structures/binary_tree/fenwick_tree | error | 26.0ms | 46.77KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | error |  |  |
 | 182 | data_structures/binary_tree/floor_and_ceiling | error |  |  |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
-| 184 | data_structures/binary_tree/is_sorted | error |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 13.0ms | 0B |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 31.0ms | 55.52KB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 29.0ms | 55.39KB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 246.0ms | 46.05KB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 14.0ms | 1.23KB |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 37.0ms | 99.04KB |
+| 185 | data_structures/binary_tree/is_sum_tree | error | 13.0ms | 0B |
+| 186 | data_structures/binary_tree/lazy_segment_tree | error |  |  |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | error | 29.0ms | 55.39KB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | error |  |  |
+| 189 | data_structures/binary_tree/maximum_sum_bst | error | 14.0ms | 1.23KB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees | error |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree | error |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 30.0ms | 54.07KB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | error |  |  |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees | error |  |  |
-| 194 | data_structures/binary_tree/red_black_tree | ✓ | 24.0ms | 46.48KB |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 26.0ms | 46.34KB |
-| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 41.0ms | 102.48KB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 30.0ms | 46.78KB |
+| 195 | data_structures/binary_tree/segment_tree | error |  |  |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 52.0ms | 102.11KB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 26.0ms | 46.78KB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 29.0ms | 57.84KB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 48.0ms | 58.14KB |
+| 200 | data_structures/binary_tree/wavelet_tree | error | 48.0ms | 58.14KB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 39.0ms | 46.50KB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 45.0ms | 47.12KB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 70.0ms | 104.87KB |

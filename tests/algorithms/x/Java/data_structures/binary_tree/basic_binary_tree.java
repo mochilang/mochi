@@ -1,9 +1,9 @@
 public class Main {
     static class Node {
-        int data;
-        int left;
-        int right;
-        Node(int data, int left, int right) {
+        java.math.BigInteger data;
+        java.math.BigInteger left;
+        java.math.BigInteger right;
+        Node(java.math.BigInteger data, java.math.BigInteger left, java.math.BigInteger right) {
             this.data = data;
             this.left = left;
             this.right = right;
@@ -17,48 +17,48 @@ public class Main {
     static Node[] small;
     static Node[] medium;
 
-    static int[] inorder(Node[] nodes, int index, int[] acc) {
-        if (index == 0 - 1) {
+    static java.math.BigInteger[] inorder(Node[] nodes, java.math.BigInteger index, java.math.BigInteger[] acc) {
+        if (index.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
             return acc;
         }
-        Node node = nodes[index];
-        int[] res = ((int[])(inorder(((Node[])(nodes)), node.left, ((int[])(acc)))));
-        res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(node.data)).toArray()));
-        res = ((int[])(inorder(((Node[])(nodes)), node.right, ((int[])(res)))));
-        return res;
+        Node node_1 = nodes[(int)(((java.math.BigInteger)(index)).longValue())];
+        java.math.BigInteger[] res_1 = ((java.math.BigInteger[])(inorder(((Node[])(nodes)), new java.math.BigInteger(String.valueOf(node_1.left)), ((java.math.BigInteger[])(acc)))));
+        res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(node_1.data)).toArray(java.math.BigInteger[]::new)));
+        res_1 = ((java.math.BigInteger[])(inorder(((Node[])(nodes)), new java.math.BigInteger(String.valueOf(node_1.right)), ((java.math.BigInteger[])(res_1)))));
+        return res_1;
     }
 
-    static int size(Node[] nodes, int index) {
-        if (index == 0 - 1) {
+    static java.math.BigInteger size(Node[] nodes, java.math.BigInteger index) {
+        if (index.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
             return 0;
         }
-        Node node_1 = nodes[index];
-        return 1 + size(((Node[])(nodes)), node_1.left) + size(((Node[])(nodes)), node_1.right);
+        Node node_3 = nodes[(int)(((java.math.BigInteger)(index)).longValue())];
+        return java.math.BigInteger.valueOf(1).add(size(((Node[])(nodes)), new java.math.BigInteger(String.valueOf(node_3.left)))).add(size(((Node[])(nodes)), new java.math.BigInteger(String.valueOf(node_3.right))));
     }
 
-    static int depth(Node[] nodes, int index) {
-        if (index == 0 - 1) {
+    static java.math.BigInteger depth(Node[] nodes, java.math.BigInteger index) {
+        if (index.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
             return 0;
         }
-        Node node_2 = nodes[index];
-        int left_depth = depth(((Node[])(nodes)), node_2.left);
-        int right_depth = depth(((Node[])(nodes)), node_2.right);
-        if (left_depth > right_depth) {
-            return left_depth + 1;
+        Node node_5 = nodes[(int)(((java.math.BigInteger)(index)).longValue())];
+        java.math.BigInteger left_depth_1 = new java.math.BigInteger(String.valueOf(depth(((Node[])(nodes)), new java.math.BigInteger(String.valueOf(node_5.left)))));
+        java.math.BigInteger right_depth_1 = new java.math.BigInteger(String.valueOf(depth(((Node[])(nodes)), new java.math.BigInteger(String.valueOf(node_5.right)))));
+        if (left_depth_1.compareTo(right_depth_1) > 0) {
+            return left_depth_1.add(java.math.BigInteger.valueOf(1));
         }
-        return right_depth + 1;
+        return right_depth_1.add(java.math.BigInteger.valueOf(1));
     }
 
-    static boolean is_full(Node[] nodes, int index) {
-        if (index == 0 - 1) {
+    static boolean is_full(Node[] nodes, java.math.BigInteger index) {
+        if (index.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
             return true;
         }
-        Node node_3 = nodes[index];
-        if (node_3.left == 0 - 1 && node_3.right == 0 - 1) {
+        Node node_7 = nodes[(int)(((java.math.BigInteger)(index)).longValue())];
+        if (node_7.left.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0 && node_7.right.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
             return true;
         }
-        if (node_3.left != 0 - 1 && node_3.right != 0 - 1) {
-            return ((Boolean)(is_full(((Node[])(nodes)), node_3.left))) && ((Boolean)(is_full(((Node[])(nodes)), node_3.right)));
+        if (node_7.left.compareTo((java.math.BigInteger.valueOf(1)).negate()) != 0 && node_7.right.compareTo((java.math.BigInteger.valueOf(1)).negate()) != 0) {
+            return is_full(((Node[])(nodes)), new java.math.BigInteger(String.valueOf(node_7.left))) && is_full(((Node[])(nodes)), new java.math.BigInteger(String.valueOf(node_7.right)));
         }
         return false;
     }
@@ -66,8 +66,8 @@ public class Main {
     static Node[] small_tree() {
         Node[] arr = ((Node[])(new Node[]{}));
         arr = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new Node(2, 1, 2))).toArray(Node[]::new)));
-        arr = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new Node(1, 0 - 1, 0 - 1))).toArray(Node[]::new)));
-        arr = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new Node(3, 0 - 1, 0 - 1))).toArray(Node[]::new)));
+        arr = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new Node(1, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
+        arr = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new Node(3, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
         return arr;
     }
 
@@ -75,23 +75,53 @@ public class Main {
         Node[] arr_1 = ((Node[])(new Node[]{}));
         arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(4, 1, 4))).toArray(Node[]::new)));
         arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(2, 2, 3))).toArray(Node[]::new)));
-        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(1, 0 - 1, 0 - 1))).toArray(Node[]::new)));
-        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(3, 0 - 1, 0 - 1))).toArray(Node[]::new)));
-        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(5, 0 - 1, 5))).toArray(Node[]::new)));
-        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(6, 0 - 1, 6))).toArray(Node[]::new)));
-        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(7, 0 - 1, 0 - 1))).toArray(Node[]::new)));
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(1, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(3, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(5, (java.math.BigInteger.valueOf(1)).negate(), 5))).toArray(Node[]::new)));
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(6, (java.math.BigInteger.valueOf(1)).negate(), 6))).toArray(Node[]::new)));
+        arr_1 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(new Node(7, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()))).toArray(Node[]::new)));
         return arr_1;
     }
     public static void main(String[] args) {
-        small = ((Node[])(small_tree()));
-        System.out.println(size(((Node[])(small)), 0));
-        System.out.println(inorder(((Node[])(small)), 0, ((int[])(new int[]{}))));
-        System.out.println(depth(((Node[])(small)), 0));
-        System.out.println(is_full(((Node[])(small)), 0));
-        medium = ((Node[])(medium_tree()));
-        System.out.println(size(((Node[])(medium)), 0));
-        System.out.println(inorder(((Node[])(medium)), 0, ((int[])(new int[]{}))));
-        System.out.println(depth(((Node[])(medium)), 0));
-        System.out.println(is_full(((Node[])(medium)), 0));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            small = ((Node[])(small_tree()));
+            System.out.println(size(((Node[])(small)), java.math.BigInteger.valueOf(0)));
+            System.out.println(java.util.Arrays.toString(inorder(((Node[])(small)), java.math.BigInteger.valueOf(0), ((java.math.BigInteger[])(new java.math.BigInteger[]{})))));
+            System.out.println(depth(((Node[])(small)), java.math.BigInteger.valueOf(0)));
+            System.out.println(is_full(((Node[])(small)), java.math.BigInteger.valueOf(0)));
+            medium = ((Node[])(medium_tree()));
+            System.out.println(size(((Node[])(medium)), java.math.BigInteger.valueOf(0)));
+            System.out.println(java.util.Arrays.toString(inorder(((Node[])(medium)), java.math.BigInteger.valueOf(0), ((java.math.BigInteger[])(new java.math.BigInteger[]{})))));
+            System.out.println(depth(((Node[])(medium)), java.math.BigInteger.valueOf(0)));
+            System.out.println(is_full(((Node[])(medium)), java.math.BigInteger.valueOf(0)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

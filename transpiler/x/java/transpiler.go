@@ -518,6 +518,19 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		}
 		return
 	}
+	if typ == "java.math.BigInteger" {
+		switch ex := e.(type) {
+		case *IntLit:
+			fmt.Fprintf(w, "java.math.BigInteger.valueOf(%d)", ex.Value)
+		case *LongLit:
+			fmt.Fprintf(w, "java.math.BigInteger.valueOf(%dL)", ex.Value)
+		default:
+			fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
+			e.emit(w)
+			fmt.Fprint(w, "))")
+		}
+		return
+	}
 	if typ == "Object[]" {
 		if ll, ok := e.(*ListLit); ok {
 			// Force list literals to use Object[] directly instead of
@@ -989,11 +1002,16 @@ func inferType(e Expr) string {
 		}
 		return jt + "[]"
 	case *AppendExpr:
-		t := inferType(ex.Value)
-		if t == "" || t == "void" {
-			t = arrayElemType(ex.List)
+		t := arrayElemType(ex.List)
+		if t == "" || t == "Object" {
+			if ex.ElemType != "" {
+				t = ex.ElemType
+			}
 		}
-		if t == "" {
+		if t == "" || t == "Object" {
+			t = inferType(ex.Value)
+		}
+		if t == "" || t == "void" {
 			t = "Object"
 		}
 		jt := javaType(t)
@@ -1202,13 +1220,16 @@ type Function struct {
 	Body   []Stmt
 }
 
-type ReturnStmt struct{ Expr Expr }
+type ReturnStmt struct {
+	Expr Expr
+	Type string
+}
 
 func (r *ReturnStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, indent+"return")
 	if r.Expr != nil {
 		fmt.Fprint(w, " ")
-		r.Expr.emit(w)
+		emitCastExpr(w, r.Expr, r.Type)
 	}
 	fmt.Fprint(w, ";\n")
 }
@@ -2615,7 +2636,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if rt == "" && guessIntExpr(b.Right) {
 			rt = "int"
 		}
-		big := lt == "bigint" || lt == "java.math.BigInteger" || rt == "bigint" || rt == "java.math.BigInteger"
+		big := lt == "bigint" || lt == "java.math.BigInteger" || lt == "int" || rt == "bigint" || rt == "java.math.BigInteger" || rt == "int"
 		if lt == "bigrat" || rt == "bigrat" {
 			needBigRat = true
 			switch b.Op {
@@ -3044,12 +3065,9 @@ func (k *KeysExpr) emit(w io.Writer) {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	elem := a.ElemType
-	if elem == "" || elem == "Object" {
-		if t := arrayElemType(a.List); t != "" {
-			elem = t
-		}
-	}
-	if elem == "" || elem == "Object" {
+	if t := arrayElemType(a.List); t != "" && t != "Object" {
+		elem = t
+	} else if elem == "" || elem == "Object" {
 		if t := inferType(a.Value); t != "" {
 			elem = t
 		}
@@ -3174,10 +3192,10 @@ func (a *AppendExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "), java.util.stream.Stream.of(")
 	if strings.HasSuffix(jt, "[]") {
 		fmt.Fprintf(w, "new %s[]{", jt)
-		a.Value.emit(w)
+		emitCastExpr(w, a.Value, strings.TrimSuffix(jt, "[]"))
 		fmt.Fprint(w, "}")
 	} else {
-		a.Value.emit(w)
+		emitCastExpr(w, a.Value, elem)
 	}
 	fmt.Fprint(w, ")).toArray(")
 	switch elem {
@@ -3540,20 +3558,20 @@ func (u *UnaryExpr) emit(w io.Writer) {
 			}
 			return
 		}
-               if t == "bigint" {
-                       fmt.Fprint(w, "(")
-                       if _, ok := u.Value.(*BinaryExpr); ok {
-                               fmt.Fprint(w, "(")
-                               u.Value.emit(w)
-                               fmt.Fprint(w, ")")
-                       } else if il, ok := u.Value.(*IntLit); ok {
-                               fmt.Fprintf(w, "java.math.BigInteger.valueOf(%d)", il.Value)
-                       } else {
-                               u.Value.emit(w)
-                       }
-                       fmt.Fprint(w, ").negate()")
-                       return
-               }
+		if t == "bigint" {
+			fmt.Fprint(w, "(")
+			if _, ok := u.Value.(*BinaryExpr); ok {
+				fmt.Fprint(w, "(")
+				u.Value.emit(w)
+				fmt.Fprint(w, ")")
+			} else if il, ok := u.Value.(*IntLit); ok {
+				fmt.Fprintf(w, "java.math.BigInteger.valueOf(%d)", il.Value)
+			} else {
+				u.Value.emit(w)
+			}
+			fmt.Fprint(w, ").negate()")
+			return
+		}
 	}
 	fmt.Fprint(w, u.Op)
 	if _, ok := u.Value.(*BinaryExpr); ok {
@@ -4045,6 +4063,13 @@ func arrayElemType(e Expr) string {
 		}
 	case *AppendExpr:
 		return arrayElemType(ex.List)
+	case *KeysExpr:
+		if t := inferType(ex.Map); t != "" {
+			if kt := mapKeyType(t); kt != "" {
+				return javaType(kt)
+			}
+		}
+		return ""
 	case *UnionExpr:
 		t := arrayElemType(ex.Left)
 		if t == "" {
@@ -5018,6 +5043,14 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				} else {
 					curJ, tJ := javaType(cur), javaType(t)
+					if strings.HasSuffix(curJ, "[]") && strings.HasSuffix(tJ, "[]") {
+						curElem := strings.TrimSuffix(curJ, "[]")
+						tElem := strings.TrimSuffix(tJ, "[]")
+						if sd, ok := structDecls[tElem]; ok && sd.Extends == curElem {
+							tJ = curJ
+							t = cur
+						}
+					}
 					if tJ == "Object" && curJ != "Object" && !strings.HasSuffix(curJ, "[]") {
 						varTypes[alias] = "Object"
 						if vdecl != nil {
@@ -5233,7 +5266,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		return &ReturnStmt{Expr: e}, nil
+		return &ReturnStmt{Expr: e, Type: currentFuncReturn}, nil
 	case s.While != nil:
 		cond, err := compileExpr(s.While.Cond)
 		if err != nil {
@@ -6273,19 +6306,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				var inner Expr
 				idxExpr := ix.Index
 				switch et {
-               case "int", "long":
-                       needArrGetI = true
-                       inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-               case "double":
-                       needArrGetD = true
-                       inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-               case "boolean":
-                       needArrGetB = true
-                       inner = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-               default:
-                       needArrGetO = true
-                       inner = &CallExpr{Func: "_geto", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-               }
+				case "int", "long":
+					needArrGetI = true
+					inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
+				case "double":
+					needArrGetD = true
+					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
+				case "boolean":
+					needArrGetB = true
+					inner = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
+				default:
+					needArrGetO = true
+					inner = &CallExpr{Func: "_geto", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
+				}
 				if wrap != nil {
 					inner = wrap(inner)
 				}

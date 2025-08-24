@@ -1,102 +1,129 @@
 public class Main {
-    static int[] A = new int[0];
-    static int N = 0;
-    static int[] st = new int[0];
-    static int NEG_INF;
+    static java.math.BigInteger[] A = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+    static java.math.BigInteger N = java.math.BigInteger.valueOf(0);
+    static java.math.BigInteger[] st = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+    static java.math.BigInteger NEG_INF;
 
-    static int left_child(int idx) {
-        return idx * 2;
+    static java.math.BigInteger left_child(java.math.BigInteger idx) {
+        return idx.multiply(java.math.BigInteger.valueOf(2));
     }
 
-    static int right_child(int idx) {
-        return idx * 2 + 1;
+    static java.math.BigInteger right_child(java.math.BigInteger idx) {
+        return idx.multiply(java.math.BigInteger.valueOf(2)).add(java.math.BigInteger.valueOf(1));
     }
 
-    static void build(int idx, int left, int right) {
-        if (left == right) {
-st[idx] = A[left];
+    static void build(java.math.BigInteger idx, java.math.BigInteger left, java.math.BigInteger right) {
+        if (left.compareTo(right) == 0) {
+st[(int)(((java.math.BigInteger)(idx)).longValue())] = new java.math.BigInteger(String.valueOf(A[(int)(((java.math.BigInteger)(left)).longValue())]));
         } else {
-            int mid = (left + right) / 2;
-            build(left_child(idx), left, mid);
-            build(right_child(idx), mid + 1, right);
-            int left_val = st[left_child(idx)];
-            int right_val = st[right_child(idx)];
-st[idx] = left_val > right_val ? left_val : right_val;
+            java.math.BigInteger mid = new java.math.BigInteger(String.valueOf((left.add(right)).divide(java.math.BigInteger.valueOf(2))));
+            build(new java.math.BigInteger(String.valueOf(left_child(new java.math.BigInteger(String.valueOf(idx))))), new java.math.BigInteger(String.valueOf(left)), new java.math.BigInteger(String.valueOf(mid)));
+            build(new java.math.BigInteger(String.valueOf(right_child(new java.math.BigInteger(String.valueOf(idx))))), new java.math.BigInteger(String.valueOf(mid.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(right)));
+            java.math.BigInteger left_val = new java.math.BigInteger(String.valueOf(st[(int)(((java.math.BigInteger)(left_child(new java.math.BigInteger(String.valueOf(idx))))).longValue())]));
+            java.math.BigInteger right_val = new java.math.BigInteger(String.valueOf(st[(int)(((java.math.BigInteger)(right_child(new java.math.BigInteger(String.valueOf(idx))))).longValue())]));
+st[(int)(((java.math.BigInteger)(idx)).longValue())] = new java.math.BigInteger(String.valueOf(left_val.compareTo(right_val) > 0 ? left_val : right_val));
         }
     }
 
-    static boolean update_recursive(int idx, int left, int right, int a, int b, int val) {
-        if (right < a || left > b) {
+    static boolean update_recursive(java.math.BigInteger idx, java.math.BigInteger left, java.math.BigInteger right, java.math.BigInteger a, java.math.BigInteger b, java.math.BigInteger val) {
+        if (right.compareTo(a) < 0 || left.compareTo(b) > 0) {
             return true;
         }
-        if (left == right) {
-st[idx] = val;
+        if (left.compareTo(right) == 0) {
+st[(int)(((java.math.BigInteger)(idx)).longValue())] = new java.math.BigInteger(String.valueOf(val));
             return true;
         }
-        int mid_1 = (left + right) / 2;
-        update_recursive(left_child(idx), left, mid_1, a, b, val);
-        update_recursive(right_child(idx), mid_1 + 1, right, a, b, val);
-        int left_val_1 = st[left_child(idx)];
-        int right_val_1 = st[right_child(idx)];
-st[idx] = left_val_1 > right_val_1 ? left_val_1 : right_val_1;
+        java.math.BigInteger mid_2 = new java.math.BigInteger(String.valueOf((left.add(right)).divide(java.math.BigInteger.valueOf(2))));
+        update_recursive(new java.math.BigInteger(String.valueOf(left_child(new java.math.BigInteger(String.valueOf(idx))))), new java.math.BigInteger(String.valueOf(left)), new java.math.BigInteger(String.valueOf(mid_2)), new java.math.BigInteger(String.valueOf(a)), new java.math.BigInteger(String.valueOf(b)), new java.math.BigInteger(String.valueOf(val)));
+        update_recursive(new java.math.BigInteger(String.valueOf(right_child(new java.math.BigInteger(String.valueOf(idx))))), new java.math.BigInteger(String.valueOf(mid_2.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(right)), new java.math.BigInteger(String.valueOf(a)), new java.math.BigInteger(String.valueOf(b)), new java.math.BigInteger(String.valueOf(val)));
+        java.math.BigInteger left_val_2 = new java.math.BigInteger(String.valueOf(st[(int)(((java.math.BigInteger)(left_child(new java.math.BigInteger(String.valueOf(idx))))).longValue())]));
+        java.math.BigInteger right_val_2 = new java.math.BigInteger(String.valueOf(st[(int)(((java.math.BigInteger)(right_child(new java.math.BigInteger(String.valueOf(idx))))).longValue())]));
+st[(int)(((java.math.BigInteger)(idx)).longValue())] = new java.math.BigInteger(String.valueOf(left_val_2.compareTo(right_val_2) > 0 ? left_val_2 : right_val_2));
         return true;
     }
 
-    static boolean update(int a, int b, int val) {
-        return update_recursive(1, 0, N - 1, a - 1, b - 1, val);
+    static boolean update(java.math.BigInteger a, java.math.BigInteger b, java.math.BigInteger val) {
+        return update_recursive(java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(N.subtract(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(a.subtract(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(b.subtract(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(val)));
     }
 
-    static int query_recursive(int idx, int left, int right, int a, int b) {
-        if (right < a || left > b) {
+    static java.math.BigInteger query_recursive(java.math.BigInteger idx, java.math.BigInteger left, java.math.BigInteger right, java.math.BigInteger a, java.math.BigInteger b) {
+        if (right.compareTo(a) < 0 || left.compareTo(b) > 0) {
             return NEG_INF;
         }
-        if (left >= a && right <= b) {
-            return st[idx];
+        if (left.compareTo(a) >= 0 && right.compareTo(b) <= 0) {
+            return st[(int)(((java.math.BigInteger)(idx)).longValue())];
         }
-        int mid_2 = (left + right) / 2;
-        int q1 = query_recursive(left_child(idx), left, mid_2, a, b);
-        int q2 = query_recursive(right_child(idx), mid_2 + 1, right, a, b);
-        return q1 > q2 ? q1 : q2;
+        java.math.BigInteger mid_4 = new java.math.BigInteger(String.valueOf((left.add(right)).divide(java.math.BigInteger.valueOf(2))));
+        java.math.BigInteger q1_1 = new java.math.BigInteger(String.valueOf(query_recursive(new java.math.BigInteger(String.valueOf(left_child(new java.math.BigInteger(String.valueOf(idx))))), new java.math.BigInteger(String.valueOf(left)), new java.math.BigInteger(String.valueOf(mid_4)), new java.math.BigInteger(String.valueOf(a)), new java.math.BigInteger(String.valueOf(b)))));
+        java.math.BigInteger q2_1 = new java.math.BigInteger(String.valueOf(query_recursive(new java.math.BigInteger(String.valueOf(right_child(new java.math.BigInteger(String.valueOf(idx))))), new java.math.BigInteger(String.valueOf(mid_4.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(right)), new java.math.BigInteger(String.valueOf(a)), new java.math.BigInteger(String.valueOf(b)))));
+        return q1_1.compareTo(q2_1) > 0 ? q1_1 : q2_1;
     }
 
-    static int query(int a, int b) {
-        return query_recursive(1, 0, N - 1, a - 1, b - 1);
+    static java.math.BigInteger query(java.math.BigInteger a, java.math.BigInteger b) {
+        return query_recursive(java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(N.subtract(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(a.subtract(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(b.subtract(java.math.BigInteger.valueOf(1)))));
     }
 
     static void show_data() {
-        int i = 0;
-        int[] show_list = ((int[])(new int[]{}));
-        while (i < N) {
-            show_list = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(show_list), java.util.stream.IntStream.of(query(i + 1, i + 1))).toArray()));
-            i = i + 1;
+        java.math.BigInteger i = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger[] show_list_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        while (i.compareTo(N) < 0) {
+            show_list_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(show_list_1), java.util.stream.Stream.of(query(new java.math.BigInteger(String.valueOf(i.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(i.add(java.math.BigInteger.valueOf(1))))))).toArray(java.math.BigInteger[]::new)));
+            i = new java.math.BigInteger(String.valueOf(i.add(java.math.BigInteger.valueOf(1))));
         }
-        System.out.println(java.util.Arrays.toString(show_list));
+        System.out.println(java.util.Arrays.toString(show_list_1));
     }
 
     static void main() {
-        A = ((int[])(new int[]{1, 2, -4, 7, 3, -5, 6, 11, -20, 9, 14, 15, 5, 2, -8}));
-        N = A.length;
-        int i_1 = 0;
-        while (i_1 < 4 * N) {
-            st = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(st), java.util.stream.IntStream.of(0)).toArray()));
-            i_1 = i_1 + 1;
+        A = ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(4)).negate())), java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(3), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(5)).negate())), java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(11), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(20)).negate())), java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(14), java.math.BigInteger.valueOf(15), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(2), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(8)).negate()))}));
+        N = new java.math.BigInteger(String.valueOf(A.length));
+        java.math.BigInteger i_2 = java.math.BigInteger.valueOf(0);
+        while (i_2.compareTo(java.math.BigInteger.valueOf(4).multiply(N)) < 0) {
+            st = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(st), java.util.stream.Stream.of(0)).toArray(java.math.BigInteger[]::new)));
+            i_2 = new java.math.BigInteger(String.valueOf(i_2.add(java.math.BigInteger.valueOf(1))));
         }
-        if (N > 0) {
-            build(1, 0, N - 1);
+        if (N.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            build(java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(N.subtract(java.math.BigInteger.valueOf(1)))));
         }
-        System.out.println(query(4, 6));
-        System.out.println(query(7, 11));
-        System.out.println(query(7, 12));
-        update(1, 3, 111);
-        System.out.println(query(1, 15));
-        update(7, 8, 235);
+        System.out.println(query(java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(6)));
+        System.out.println(query(java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(11)));
+        System.out.println(query(java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(12)));
+        update(java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(111));
+        System.out.println(query(java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(15)));
+        update(java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(235));
         show_data();
     }
     public static void main(String[] args) {
-        A = ((int[])(new int[]{}));
-        N = 0;
-        st = ((int[])(new int[]{}));
-        NEG_INF = -1000000000;
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            NEG_INF = new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1000000000)).negate()));
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

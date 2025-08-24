@@ -1,164 +1,193 @@
 public class Main {
-    static int NIL;
-    static java.util.Map<String,Integer>[] nodes = new java.util.Map<String,Integer>[0];
+    static java.math.BigInteger NIL;
+    static java.util.Map<String,java.math.BigInteger>[] nodes = ((java.util.Map<String,java.math.BigInteger>[])((java.util.Map<String,java.math.BigInteger>[])new java.util.Map[]{}));
 
-    static int new_node(int value) {
-        java.util.Map<String,Integer> node = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("data", value), java.util.Map.entry("left", NIL), java.util.Map.entry("right", NIL), java.util.Map.entry("height", 1)))));
-        nodes = ((java.util.Map<String,Integer>[])(appendObj(nodes, node)));
-        return nodes.length - 1;
+    static java.math.BigInteger new_node(java.math.BigInteger value) {
+        java.util.Map<String,java.math.BigInteger> node = ((java.util.Map<String,java.math.BigInteger>)(new java.util.LinkedHashMap<String, java.math.BigInteger>(java.util.Map.ofEntries(java.util.Map.entry("data", new java.math.BigInteger(String.valueOf(value))), java.util.Map.entry("left", new java.math.BigInteger(String.valueOf(NIL))), java.util.Map.entry("right", new java.math.BigInteger(String.valueOf(NIL))), java.util.Map.entry("height", java.math.BigInteger.valueOf(1))))));
+        nodes = ((java.util.Map<String,java.math.BigInteger>[])(appendObj((java.util.Map<String,java.math.BigInteger>[])nodes, node)));
+        return new java.math.BigInteger(String.valueOf(nodes.length)).subtract(java.math.BigInteger.valueOf(1));
     }
 
-    static int get_height(int i) {
-        if (i == NIL) {
+    static java.math.BigInteger get_height(java.math.BigInteger i) {
+        if (i.compareTo(NIL) == 0) {
             return 0;
         }
-        return ((int)(((java.util.Map)nodes[i])).getOrDefault("height", 0));
+        return ((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("height"));
     }
 
-    static int my_max(int a, int b) {
-        if (a > b) {
+    static java.math.BigInteger my_max(java.math.BigInteger a, java.math.BigInteger b) {
+        if (a.compareTo(b) > 0) {
             return a;
         }
         return b;
     }
 
-    static void update_height(int i) {
-nodes[i]["height"] = my_max(get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0)))), get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))))) + 1;
+    static void update_height(java.math.BigInteger i) {
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("height"))] = my_max(new java.math.BigInteger(String.valueOf(get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left"))))))), new java.math.BigInteger(String.valueOf(get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))))))).add(java.math.BigInteger.valueOf(1));
     }
 
-    static int right_rotation(int i) {
-        int left = (int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0)));
-nodes[i]["left"] = ((int)(((java.util.Map)nodes[left])).getOrDefault("right", 0));
-nodes[left]["right"] = i;
-        update_height(i);
-        update_height(left);
+    static java.math.BigInteger right_rotation(java.math.BigInteger i) {
+        java.math.BigInteger left = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left"))));
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("left"))] = ((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(left)).longValue())])).get("right"));
+nodes[(int)(((java.math.BigInteger)(left)).longValue())][(int)((long)("right"))] = i;
+        update_height(new java.math.BigInteger(String.valueOf(i)));
+        update_height(new java.math.BigInteger(String.valueOf(left)));
         return left;
     }
 
-    static int left_rotation(int i) {
-        int right = (int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0)));
-nodes[i]["right"] = ((int)(((java.util.Map)nodes[right])).getOrDefault("left", 0));
-nodes[right]["left"] = i;
-        update_height(i);
-        update_height(right);
+    static java.math.BigInteger left_rotation(java.math.BigInteger i) {
+        java.math.BigInteger right = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right"))));
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("right"))] = ((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(right)).longValue())])).get("left"));
+nodes[(int)(((java.math.BigInteger)(right)).longValue())][(int)((long)("left"))] = i;
+        update_height(new java.math.BigInteger(String.valueOf(i)));
+        update_height(new java.math.BigInteger(String.valueOf(right)));
         return right;
     }
 
-    static int lr_rotation(int i) {
-nodes[i]["left"] = left_rotation((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))));
-        return right_rotation(i);
+    static java.math.BigInteger lr_rotation(java.math.BigInteger i) {
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("left"))] = left_rotation(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")))));
+        return right_rotation(new java.math.BigInteger(String.valueOf(i)));
     }
 
-    static int rl_rotation(int i) {
-nodes[i]["right"] = right_rotation((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))));
-        return left_rotation(i);
+    static java.math.BigInteger rl_rotation(java.math.BigInteger i) {
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("right"))] = right_rotation(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))));
+        return left_rotation(new java.math.BigInteger(String.valueOf(i)));
     }
 
-    static int insert_node(int i, int value) {
-        if (i == NIL) {
-            return new_node(value);
+    static java.math.BigInteger insert_node(java.math.BigInteger i, java.math.BigInteger value) {
+        if (i.compareTo(NIL) == 0) {
+            return new_node(new java.math.BigInteger(String.valueOf(value)));
         }
-        if (value < (int)(((int)(((java.util.Map)nodes[i])).getOrDefault("data", 0)))) {
-nodes[i]["left"] = insert_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))), value);
-            if (get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0)))) - get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0)))) == 2) {
-                if (value < (int)(((int)(((java.util.Map)nodes[((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))])).getOrDefault("data", 0)))) {
-                    i = right_rotation(i);
+        if (value.compareTo(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("data"))) < 0) {
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("left"))] = insert_node(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")))), new java.math.BigInteger(String.valueOf(value)));
+            if (get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left"))))).subtract(get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))))).compareTo(java.math.BigInteger.valueOf(2)) == 0) {
+                if (value.compareTo(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")))).longValue())])).get("data"))) < 0) {
+                    i = new java.math.BigInteger(String.valueOf(right_rotation(new java.math.BigInteger(String.valueOf(i)))));
                 } else {
-                    i = lr_rotation(i);
+                    i = new java.math.BigInteger(String.valueOf(lr_rotation(new java.math.BigInteger(String.valueOf(i)))));
                 }
             }
         } else {
-nodes[i]["right"] = insert_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), value);
-            if (get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0)))) - get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0)))) == 2) {
-                if (value < (int)(((int)(((java.util.Map)nodes[((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))])).getOrDefault("data", 0)))) {
-                    i = rl_rotation(i);
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("right"))] = insert_node(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))), new java.math.BigInteger(String.valueOf(value)));
+            if (get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right"))))).subtract(get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")))))).compareTo(java.math.BigInteger.valueOf(2)) == 0) {
+                if (value.compareTo(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))).longValue())])).get("data"))) < 0) {
+                    i = new java.math.BigInteger(String.valueOf(rl_rotation(new java.math.BigInteger(String.valueOf(i)))));
                 } else {
-                    i = left_rotation(i);
+                    i = new java.math.BigInteger(String.valueOf(left_rotation(new java.math.BigInteger(String.valueOf(i)))));
                 }
             }
         }
-        update_height(i);
+        update_height(new java.math.BigInteger(String.valueOf(i)));
         return i;
     }
 
-    static int get_left_most(int i) {
-        int cur = i;
-        while ((int)(((int)(((java.util.Map)nodes[cur])).getOrDefault("left", 0))) != NIL) {
-            cur = (int)(((int)(((java.util.Map)nodes[cur])).getOrDefault("left", 0)));
+    static java.math.BigInteger get_left_most(java.math.BigInteger i) {
+        java.math.BigInteger cur = new java.math.BigInteger(String.valueOf(i));
+        while (((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(cur)).longValue())])).get("left")).compareTo(NIL) != 0) {
+            cur = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(cur)).longValue())])).get("left"))));
         }
-        return ((int)(((java.util.Map)nodes[cur])).getOrDefault("data", 0));
+        return ((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(cur)).longValue())])).get("data"));
     }
 
-    static int del_node(int i, int value) {
-        if (i == NIL) {
+    static java.math.BigInteger del_node(java.math.BigInteger i, java.math.BigInteger value) {
+        if (i.compareTo(NIL) == 0) {
             return NIL;
         }
-        if (value < (int)(((int)(((java.util.Map)nodes[i])).getOrDefault("data", 0)))) {
-nodes[i]["left"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))), value);
-        } else         if (value > (int)(((int)(((java.util.Map)nodes[i])).getOrDefault("data", 0)))) {
-nodes[i]["right"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), value);
-        } else         if ((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))) != NIL && (int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))) != NIL) {
-            int temp = get_left_most((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))));
-nodes[i]["data"] = temp;
-nodes[i]["right"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), temp);
-        } else         if ((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))) != NIL) {
-            i = (int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0)));
+        if (value.compareTo(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("data"))) < 0) {
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("left"))] = del_node(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")))), new java.math.BigInteger(String.valueOf(value)));
+        } else         if (value.compareTo(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("data"))) > 0) {
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("right"))] = del_node(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))), new java.math.BigInteger(String.valueOf(value)));
+        } else         if (((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")).compareTo(NIL) != 0 && ((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")).compareTo(NIL) != 0) {
+            java.math.BigInteger temp_1 = new java.math.BigInteger(String.valueOf(get_left_most(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))))));
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("data"))] = temp_1;
+nodes[(int)(((java.math.BigInteger)(i)).longValue())][(int)((long)("right"))] = del_node(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))), new java.math.BigInteger(String.valueOf(temp_1)));
+        } else         if (((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")).compareTo(NIL) != 0) {
+            i = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left"))));
         } else {
-            i = (int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0)));
+            i = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right"))));
         }
-        if (i == NIL) {
+        if (i.compareTo(NIL) == 0) {
             return NIL;
         }
-        int lh = get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))));
-        int rh = get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))));
-        if (rh - lh == 2) {
-            if (get_height((int)(((int)(((java.util.Map)nodes[((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))])).getOrDefault("right", 0)))) > get_height((int)(((int)(((java.util.Map)nodes[((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))])).getOrDefault("left", 0))))) {
-                i = left_rotation(i);
+        java.math.BigInteger lh_1 = new java.math.BigInteger(String.valueOf(get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")))))));
+        java.math.BigInteger rh_1 = new java.math.BigInteger(String.valueOf(get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))))));
+        if (rh_1.subtract(lh_1).compareTo(java.math.BigInteger.valueOf(2)) == 0) {
+            if (get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))).longValue())])).get("right"))))).compareTo(get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right")))).longValue())])).get("left")))))) > 0) {
+                i = new java.math.BigInteger(String.valueOf(left_rotation(new java.math.BigInteger(String.valueOf(i)))));
             } else {
-                i = rl_rotation(i);
+                i = new java.math.BigInteger(String.valueOf(rl_rotation(new java.math.BigInteger(String.valueOf(i)))));
             }
-        } else         if (lh - rh == 2) {
-            if (get_height((int)(((int)(((java.util.Map)nodes[((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))])).getOrDefault("left", 0)))) > get_height((int)(((int)(((java.util.Map)nodes[((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))])).getOrDefault("right", 0))))) {
-                i = right_rotation(i);
+        } else         if (lh_1.subtract(rh_1).compareTo(java.math.BigInteger.valueOf(2)) == 0) {
+            if (get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")))).longValue())])).get("left"))))).compareTo(get_height(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left")))).longValue())])).get("right")))))) > 0) {
+                i = new java.math.BigInteger(String.valueOf(right_rotation(new java.math.BigInteger(String.valueOf(i)))));
             } else {
-                i = lr_rotation(i);
+                i = new java.math.BigInteger(String.valueOf(lr_rotation(new java.math.BigInteger(String.valueOf(i)))));
             }
         }
-        update_height(i);
+        update_height(new java.math.BigInteger(String.valueOf(i)));
         return i;
     }
 
-    static String inorder(int i) {
-        if (i == NIL) {
+    static String inorder(java.math.BigInteger i) {
+        if (i.compareTo(NIL) == 0) {
             return "";
         }
-        String left_1 = String.valueOf(inorder((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0)))));
-        String right_1 = String.valueOf(inorder((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0)))));
-        String res = _p(((int)(((java.util.Map)nodes[i])).getOrDefault("data", 0)));
-        if (!(left_1.equals(""))) {
-            res = left_1 + " " + res;
+        String left_2 = String.valueOf(inorder(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("left"))))));
+        String right_2 = String.valueOf(inorder(new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("right"))))));
+        String res_1 = _p(((java.math.BigInteger)(((java.util.Map)nodes[(int)(((java.math.BigInteger)(i)).longValue())])).get("data")));
+        if (!(left_2.equals(""))) {
+            res_1 = left_2 + " " + res_1;
         }
-        if (!(right_1.equals(""))) {
-            res = res + " " + right_1;
+        if (!(right_2.equals(""))) {
+            res_1 = res_1 + " " + right_2;
         }
-        return res;
+        return res_1;
     }
 
     static void main() {
-        nodes = ((java.util.Map<String,Integer>[])((java.util.Map<String,Integer>[])new java.util.Map[]{}));
-        int root = NIL;
-        root = insert_node(root, 4);
-        root = insert_node(root, 2);
-        root = insert_node(root, 3);
-        System.out.println(inorder(root));
-        System.out.println(_p(get_height(root)));
-        root = del_node(root, 3);
-        System.out.println(inorder(root));
+        nodes = ((java.util.Map<String,java.math.BigInteger>[])((java.util.Map<String,java.math.BigInteger>[])new java.util.Map[]{}));
+        java.math.BigInteger root_1 = new java.math.BigInteger(String.valueOf(NIL));
+        root_1 = new java.math.BigInteger(String.valueOf(insert_node(new java.math.BigInteger(String.valueOf(root_1)), java.math.BigInteger.valueOf(4))));
+        root_1 = new java.math.BigInteger(String.valueOf(insert_node(new java.math.BigInteger(String.valueOf(root_1)), java.math.BigInteger.valueOf(2))));
+        root_1 = new java.math.BigInteger(String.valueOf(insert_node(new java.math.BigInteger(String.valueOf(root_1)), java.math.BigInteger.valueOf(3))));
+        System.out.println(inorder(new java.math.BigInteger(String.valueOf(root_1))));
+        System.out.println(_p(get_height(new java.math.BigInteger(String.valueOf(root_1)))));
+        root_1 = new java.math.BigInteger(String.valueOf(del_node(new java.math.BigInteger(String.valueOf(root_1)), java.math.BigInteger.valueOf(3))));
+        System.out.println(inorder(new java.math.BigInteger(String.valueOf(root_1))));
     }
     public static void main(String[] args) {
-        NIL = 0 - 1;
-        nodes = ((java.util.Map<String,Integer>[])((java.util.Map<String,Integer>[])new java.util.Map[]{}));
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            NIL = new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
@@ -179,6 +208,10 @@ nodes[i]["right"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefaul
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

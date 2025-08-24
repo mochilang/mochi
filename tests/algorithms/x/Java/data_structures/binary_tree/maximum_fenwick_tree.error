@@ -1,0 +1,18 @@
+run: exit status 1
+0
+100
+20
+20
+20
+10
+Exception in thread "main" java.lang.ArrayStoreException: java.lang.Integer
+	at java.base/java.util.stream.Nodes$FixedNodeBuilder.accept(Nodes.java:1231)
+	at java.base/java.util.stream.Streams$StreamBuilderImpl.forEachRemaining(Streams.java:411)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575)
+	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616)
+	at Main.zeros(Main.java:8)
+	at Main.main(Main.java:44)

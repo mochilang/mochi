@@ -12,9 +12,9 @@ public class Main {
 
     static class Node implements Tree {
         Tree left;
-        int value;
+        java.math.BigInteger value;
         Tree right;
-        Node(Tree left, int value, Tree right) {
+        Node(Tree left, java.math.BigInteger value, Tree right) {
             this.left = left;
             this.value = value;
             this.right = right;
@@ -26,30 +26,60 @@ public class Main {
     }
 
 
-    static int dfs(Tree node, int target, int current) {
-        return node instanceof Empty ? 0 : (current + ((Number)(v)).intValue() == target ? 1 : 0) + dfs(((Node)(node)).left, target, current + ((Number)(((Node)(node)).value)).intValue()) + dfs(((Node)(node)).right, target, current + ((Number)(((Node)(node)).value)).intValue());
+    static java.math.BigInteger dfs(Tree node, java.math.BigInteger target, java.math.BigInteger current) {
+        return node instanceof Empty ? 0 : (current.add(new java.math.BigInteger(String.valueOf(v))).compareTo(target) == 0 ? 1 : 0).add(dfs(((Node)(node)).left, new java.math.BigInteger(String.valueOf(target)), new java.math.BigInteger(String.valueOf(current.add(new java.math.BigInteger(String.valueOf(((Node)(node)).value))))))).add(dfs(((Node)(node)).right, new java.math.BigInteger(String.valueOf(target)), new java.math.BigInteger(String.valueOf(current.add(new java.math.BigInteger(String.valueOf(((Node)(node)).value)))))));
     }
 
-    static int path_sum(Tree node, int target) {
-        return node instanceof Empty ? 0 : dfs(node, target, 0) + path_sum(((Node)(node)).left, target) + path_sum(((Node)(node)).right, target);
+    static java.math.BigInteger path_sum(Tree node, java.math.BigInteger target) {
+        return node instanceof Empty ? 0 : dfs(node, new java.math.BigInteger(String.valueOf(target)), java.math.BigInteger.valueOf(0)).add(path_sum(((Node)(node)).left, new java.math.BigInteger(String.valueOf(target)))).add(path_sum(((Node)(node)).right, new java.math.BigInteger(String.valueOf(target))));
     }
 
     static Tree sample_tree_one() {
-        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+        return ((Tree)(new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, (java.math.BigInteger.valueOf(2)).negate(), Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, (java.math.BigInteger.valueOf(3)).negate(), new Node(Empty, 11, Empty)))));
     }
 
     static Tree sample_tree_two() {
-        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+        return ((Tree)(new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, (java.math.BigInteger.valueOf(2)).negate(), Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, (java.math.BigInteger.valueOf(3)).negate(), new Node(Empty, 10, Empty)))));
     }
 
     static void main() {
         Tree tree1 = sample_tree_one();
-        System.out.println(path_sum(tree1, 8));
-        System.out.println(path_sum(tree1, 7));
-        Tree tree2 = sample_tree_two();
-        System.out.println(path_sum(tree2, 8));
+        System.out.println(path_sum(tree1, java.math.BigInteger.valueOf(8)));
+        System.out.println(path_sum(tree1, java.math.BigInteger.valueOf(7)));
+        Tree tree2_1 = sample_tree_two();
+        System.out.println(path_sum(tree2_1, java.math.BigInteger.valueOf(8)));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

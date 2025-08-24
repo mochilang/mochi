@@ -1,73 +1,103 @@
 public class Main {
-    static int[] node_data = new int[0];
-    static int[] left_child = new int[0];
-    static int[] right_child = new int[0];
-    static int root_1;
-    static int[] vals;
+    static java.math.BigInteger[] node_data = new java.math.BigInteger[0];
+    static java.math.BigInteger[] left_child = new java.math.BigInteger[0];
+    static java.math.BigInteger[] right_child = new java.math.BigInteger[0];
+    static java.math.BigInteger root_1;
+    static java.math.BigInteger[] vals;
 
-    static int new_node(int value) {
-        node_data = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(node_data), java.util.stream.IntStream.of(value)).toArray()));
-        left_child = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(left_child), java.util.stream.IntStream.of(0)).toArray()));
-        right_child = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(right_child), java.util.stream.IntStream.of(0)).toArray()));
-        return node_data.length - 1;
+    static java.math.BigInteger new_node(java.math.BigInteger value) {
+        node_data = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(node_data), java.util.stream.Stream.of(value)).toArray(java.math.BigInteger[]::new)));
+        left_child = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(left_child), java.util.stream.Stream.of(0)).toArray(java.math.BigInteger[]::new)));
+        right_child = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(right_child), java.util.stream.Stream.of(0)).toArray(java.math.BigInteger[]::new)));
+        return new java.math.BigInteger(String.valueOf(node_data.length)).subtract(java.math.BigInteger.valueOf(1));
     }
 
-    static int build_tree() {
-        int root = new_node(1);
-        int n2 = new_node(2);
-        int n5 = new_node(5);
-        int n3 = new_node(3);
-        int n4 = new_node(4);
-        int n6 = new_node(6);
-left_child[root] = n2;
-right_child[root] = n5;
-left_child[n2] = n3;
-right_child[n2] = n4;
-right_child[n5] = n6;
+    static java.math.BigInteger build_tree() {
+        java.math.BigInteger root = new java.math.BigInteger(String.valueOf(new_node(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger n2_1 = new java.math.BigInteger(String.valueOf(new_node(java.math.BigInteger.valueOf(2))));
+        java.math.BigInteger n5_1 = new java.math.BigInteger(String.valueOf(new_node(java.math.BigInteger.valueOf(5))));
+        java.math.BigInteger n3_1 = new java.math.BigInteger(String.valueOf(new_node(java.math.BigInteger.valueOf(3))));
+        java.math.BigInteger n4_1 = new java.math.BigInteger(String.valueOf(new_node(java.math.BigInteger.valueOf(4))));
+        java.math.BigInteger n6_1 = new java.math.BigInteger(String.valueOf(new_node(java.math.BigInteger.valueOf(6))));
+left_child[(int)(((java.math.BigInteger)(root)).longValue())] = new java.math.BigInteger(String.valueOf(n2_1));
+right_child[(int)(((java.math.BigInteger)(root)).longValue())] = new java.math.BigInteger(String.valueOf(n5_1));
+left_child[(int)(((java.math.BigInteger)(n2_1)).longValue())] = new java.math.BigInteger(String.valueOf(n3_1));
+right_child[(int)(((java.math.BigInteger)(n2_1)).longValue())] = new java.math.BigInteger(String.valueOf(n4_1));
+right_child[(int)(((java.math.BigInteger)(n5_1)).longValue())] = new java.math.BigInteger(String.valueOf(n6_1));
         return root;
     }
 
-    static int[] flatten(int root) {
-        if (root == 0) {
-            return new int[]{};
+    static java.math.BigInteger[] flatten(java.math.BigInteger root) {
+        if (root.compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+            return new java.math.BigInteger[]{};
         }
-        int[] res = ((int[])(((int[])(new int[]{node_data[root]}))));
-        int[] left_vals = ((int[])(flatten(left_child[root])));
-        int[] right_vals = ((int[])(flatten(right_child[root])));
-        int i = 0;
-        while (i < left_vals.length) {
-            res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(left_vals[i])).toArray()));
-            i = i + 1;
+        java.math.BigInteger[] res_1 = ((java.math.BigInteger[])(((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(node_data[(int)(((java.math.BigInteger)(root)).longValue())]))}))));
+        java.math.BigInteger[] left_vals_1 = ((java.math.BigInteger[])(flatten(new java.math.BigInteger(String.valueOf(left_child[(int)(((java.math.BigInteger)(root)).longValue())])))));
+        java.math.BigInteger[] right_vals_1 = ((java.math.BigInteger[])(flatten(new java.math.BigInteger(String.valueOf(right_child[(int)(((java.math.BigInteger)(root)).longValue())])))));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(left_vals_1.length))) < 0) {
+            res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(left_vals_1[(int)(((java.math.BigInteger)(i_1)).longValue())])).toArray(java.math.BigInteger[]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        i = 0;
-        while (i < right_vals.length) {
-            res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(right_vals[i])).toArray()));
-            i = i + 1;
+        i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(right_vals_1.length))) < 0) {
+            res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(right_vals_1[(int)(((java.math.BigInteger)(i_1)).longValue())])).toArray(java.math.BigInteger[]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return res;
+        return res_1;
     }
 
-    static void display(int[] values) {
+    static void display(java.math.BigInteger[] values) {
         String s = "";
-        int i_1 = 0;
-        while (i_1 < values.length) {
-            if (i_1 == 0) {
-                s = _p(_geti(values, i_1));
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(values.length))) < 0) {
+            if (i_3.compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+                s = _p(_geto(values, ((Number)(i_3)).intValue()));
             } else {
-                s = s + " " + _p(_geti(values, i_1));
+                s = s + " " + _p(_geto(values, ((Number)(i_3)).intValue()));
             }
-            i_1 = i_1 + 1;
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
         System.out.println(s);
     }
     public static void main(String[] args) {
-        node_data = ((int[])(((int[])(new int[]{0}))));
-        left_child = ((int[])(((int[])(new int[]{0}))));
-        right_child = ((int[])(((int[])(new int[]{0}))));
-        System.out.println("Flattened Linked List:");
-        root_1 = build_tree();
-        vals = ((int[])(flatten(root_1)));
-        display(((int[])(vals)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            node_data = ((java.math.BigInteger[])(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0)}))));
+            left_child = ((java.math.BigInteger[])(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0)}))));
+            right_child = ((java.math.BigInteger[])(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0)}))));
+            System.out.println("Flattened Linked List:");
+            root_1 = new java.math.BigInteger(String.valueOf(build_tree()));
+            vals = ((java.math.BigInteger[])(flatten(new java.math.BigInteger(String.valueOf(root_1)))));
+            display(((java.math.BigInteger[])(vals)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -83,10 +113,14 @@ right_child[n5] = n6;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Object _geto(Object[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
