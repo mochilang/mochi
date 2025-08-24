@@ -1,0 +1,85 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:163:1: error: expected '}' at end of brace statement
+121 |     }
+122 | }
+123 | do {
+    |    `- note: to match this opening '{'
+124 |     let _benchMemStart = _mem()
+125 |     let _benchStart = _now()
+    :
+161 |         return arr
+162 |     }
+163 | 
+    | `- error: expected '}' at end of brace statement
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:141:94: warning: forced cast of 'String' to same type has no effect
+139 |         var i = 0
+140 |         while ((i < _int(((name).count)))) {
+141 |             total = _int((total &+ _int(ord_letter((String(_slice(Array(name), i, (i &+ 1))) as! String)))))
+    |                                                                                              `- warning: forced cast of 'String' to same type has no effect
+142 |             i = _int((i &+ 1))
+143 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:152:36: warning: forced cast of 'String' to same type has no effect
+150 |             var j = 0
+151 |             while ((j < ((n &- i) &- 1))) {
+152 |                 if (((_idx(arr, j) as! String) > (_idx(arr, (j &+ 1)) as! String))) {
+    |                                    `- warning: forced cast of 'String' to same type has no effect
+153 |                     let temp = (_idx(arr, j) as! String)
+154 |                     arr = _set(arr, j, { let _tmp0 = (_idx(arr, (j &+ 1)) as! String); return _tmp0 }())
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:152:71: warning: forced cast of 'String' to same type has no effect
+150 |             var j = 0
+151 |             while ((j < ((n &- i) &- 1))) {
+152 |                 if (((_idx(arr, j) as! String) > (_idx(arr, (j &+ 1)) as! String))) {
+    |                                                                       `- warning: forced cast of 'String' to same type has no effect
+153 |                     let temp = (_idx(arr, j) as! String)
+154 |                     arr = _set(arr, j, { let _tmp0 = (_idx(arr, (j &+ 1)) as! String); return _tmp0 }())
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:153:46: warning: forced cast of 'String' to same type has no effect
+151 |             while ((j < ((n &- i) &- 1))) {
+152 |                 if (((_idx(arr, j) as! String) > (_idx(arr, (j &+ 1)) as! String))) {
+153 |                     let temp = (_idx(arr, j) as! String)
+    |                                              `- warning: forced cast of 'String' to same type has no effect
+154 |                     arr = _set(arr, j, { let _tmp0 = (_idx(arr, (j &+ 1)) as! String); return _tmp0 }())
+155 |                     arr = _set(arr, (j &+ 1), { let _tmp1 = (temp as! String); return _tmp1 }())
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:154:75: warning: forced cast of 'String' to same type has no effect
+152 |                 if (((_idx(arr, j) as! String) > (_idx(arr, (j &+ 1)) as! String))) {
+153 |                     let temp = (_idx(arr, j) as! String)
+154 |                     arr = _set(arr, j, { let _tmp0 = (_idx(arr, (j &+ 1)) as! String); return _tmp0 }())
+    |                                                                           `- warning: forced cast of 'String' to same type has no effect
+155 |                     arr = _set(arr, (j &+ 1), { let _tmp1 = (temp as! String); return _tmp1 }())
+156 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:155:67: warning: forced cast of 'String' to same type has no effect
+153 |                     let temp = (_idx(arr, j) as! String)
+154 |                     arr = _set(arr, j, { let _tmp0 = (_idx(arr, (j &+ 1)) as! String); return _tmp0 }())
+155 |                     arr = _set(arr, (j &+ 1), { let _tmp1 = (temp as! String); return _tmp1 }())
+    |                                                                   `- warning: forced cast of 'String' to same type has no effect
+156 |                 }
+157 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:124:9: warning: initialization of immutable value '_benchMemStart' was never used; consider replacing with assignment to '_' or removing it
+122 | }
+123 | do {
+124 |     let _benchMemStart = _mem()
+    |         `- warning: initialization of immutable value '_benchMemStart' was never used; consider replacing with assignment to '_' or removing it
+125 |     let _benchStart = _now()
+126 |     func ord_letter(_ ch: String) -> Int {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:125:9: warning: initialization of immutable value '_benchStart' was never used; consider replacing with assignment to '_' or removing it
+123 | do {
+124 |     let _benchMemStart = _mem()
+125 |     let _benchStart = _now()
+    |         `- warning: initialization of immutable value '_benchStart' was never used; consider replacing with assignment to '_' or removing it
+126 |     func ord_letter(_ ch: String) -> Int {
+127 |         let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden849_project_euler_problem_022_sol22862354654/001/main.swift:147:13: warning: variable 'n' was never mutated; consider changing to 'let' constant
+145 |     }
+146 |     func bubble_sort(_ arr: inout [String]) -> [String] {
+147 |         var n = _int(((arr).count))
+    |             `- warning: variable 'n' was never mutated; consider changing to 'let' constant
+148 |         var i = 0
+149 |         while ((i < n)) {
