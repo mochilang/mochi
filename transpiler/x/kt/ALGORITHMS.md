@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-24 15:46 GMT+7
+Last updated: 2025-08-24 17:03 GMT+7
 
 ## Algorithms Golden Test Checklist (677/1077)
 | Index | Name | Status | Duration | Memory |
@@ -181,7 +181,7 @@ Last updated: 2025-08-24 15:46 GMT+7
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9.61ms | 133.72KiB |
 | 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 28.59ms | 120.59KiB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 21.38ms | 121.50KiB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 8.43ms | 134.14KiB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | error |  |  |

@@ -1606,7 +1606,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	if b.Op == "in" {
 		rType := guessType(b.Right)
-		if strings.HasPrefix(rType, "Map<") || strings.HasPrefix(rType, "MutableMap<") {
+		if strings.Contains(rType, "Map<") {
 			if _, ok := b.Right.(*BinaryExpr); ok {
 				io.WriteString(w, "(")
 				emitOperand(b.Right, b.Left)
