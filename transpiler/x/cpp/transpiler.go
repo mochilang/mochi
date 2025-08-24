@@ -716,9 +716,12 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<any>")
 	p.addInclude("<type_traits>")
 	p.addInclude("<limits>")
-	if p.UseBigInt || p.UseBigRat {
+	if p.UseBigInt || p.UseBigRat || p.UseParseIntStr {
 		// Big integer support relies on Boost.Multiprecision headers.
-		// Ensure the build environment provides <boost/multiprecision/cpp_int.hpp>.
+		// Some programs only require string-to-integer parsing via
+		// `_parse_int_str` which also uses `cpp_int` internally. In that
+		// case `UseBigInt` remains false, so include the header whenever
+		// `UseParseIntStr` is enabled as well.
 		fmt.Fprintln(w, "#include <boost/multiprecision/cpp_int.hpp>")
 		fmt.Fprintln(w, "using cpp_int = boost::multiprecision::cpp_int;")
 	}
@@ -3560,7 +3563,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 
 func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 	ind := strings.Repeat("    ", indent)
-	// collect index chain
+	// Collect index chain for nested indexing like a[i]["key"].
 	var idxs []Expr
 	target := a.Target
 	for {
@@ -3571,94 +3574,48 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 			break
 		}
 	}
-	if len(idxs) == 0 {
-		io.WriteString(w, ind)
-		baseType := exprType(a.Target)
-		if baseType == "std::any" {
-			if currentProgram != nil {
-				currentProgram.addInclude("<any>")
-			}
-			fmt.Fprintf(w, "std::any_cast<std::map<std::string, std::any>&>(")
-			a.Target.emit(w)
-			io.WriteString(w, ")[")
-			a.Index.emit(w)
-			io.WriteString(w, "] = ")
-			a.Value.emit(w)
-			io.WriteString(w, ";\n")
-			return
-		}
-		if strings.HasPrefix(baseType, "std::map<") && strings.HasSuffix(baseType, ">") {
-			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(baseType, "std::map<"), ">"), ",", 2)
-			if len(parts) == 2 && strings.TrimSpace(parts[0]) == "std::string" {
-				a.Target.emit(w)
-				io.WriteString(w, "[")
-				a.Index.emit(w)
-				io.WriteString(w, "] = ")
-				a.Value.emit(w)
-				io.WriteString(w, ";\n")
-				return
-			}
-		}
-		a.Target.emit(w)
-		io.WriteString(w, "[")
-		emitIndex(w, a.Index)
-		io.WriteString(w, "] = ")
-		a.Value.emit(w)
-		io.WriteString(w, ";\n")
-		return
-	}
-
 	idxs = append(idxs, a.Index)
-	baseType := exprType(target)
-	valType := exprType(a.Value)
-	if valType == "" {
-		valType = "auto"
-	}
-	cont := valType
-	for i := 1; i < len(idxs); i++ {
-		cont = fmt.Sprintf("std::vector<%s>", cont)
-	}
 
-	io.WriteString(w, ind)
-	if baseType == "std::any" {
-		if currentProgram != nil {
-			currentProgram.addInclude("<any>")
+	exprStr := func(e Expr) string {
+		var b bytes.Buffer
+		e.emit(&b)
+		return b.String()
+	}
+	cur := exprStr(target)
+	curType := exprType(target)
+	for _, ix := range idxs {
+		if strings.HasPrefix(curType, "std::vector<") && strings.HasSuffix(curType, ">") && exprType(ix) == "int64_t" {
+			elem := strings.TrimSuffix(strings.TrimPrefix(curType, "std::vector<"), ">")
+			cur = fmt.Sprintf("_index(%s, %s)", cur, exprStr(ix))
+			curType = elem
+			continue
 		}
-		fmt.Fprintf(w, "std::any_cast<%s&>(", cont)
-		target.emit(w)
-		io.WriteString(w, "[")
-		emitIndex(w, idxs[0])
-		io.WriteString(w, "])")
-	} else if strings.HasPrefix(baseType, "std::map<") && strings.HasSuffix(baseType, ">") {
-		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(baseType, "std::map<"), ">"), ",", 2)
-		if len(parts) == 2 {
-			keyType := strings.TrimSpace(parts[0])
-			target.emit(w)
-			io.WriteString(w, "[")
-			if keyType == "std::string" {
-				idxs[0].emit(w)
-			} else {
-				emitIndex(w, idxs[0])
+		if strings.HasPrefix(curType, "std::map<") && strings.HasSuffix(curType, ">") {
+			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(curType, "std::map<"), ">"), ",", 2)
+			keyType, valType := parts[0], ""
+			if len(parts) == 2 {
+				keyType = strings.TrimSpace(parts[0])
+				valType = strings.TrimSpace(parts[1])
 			}
-			io.WriteString(w, "]")
-		} else {
-			target.emit(w)
-			io.WriteString(w, "[")
-			emitIndex(w, idxs[0])
-			io.WriteString(w, "]")
+			key := exprStr(ix)
+			if keyType != "std::string" {
+				var kb bytes.Buffer
+				emitIndex(&kb, ix)
+				key = kb.String()
+			}
+			cur = fmt.Sprintf("%s[%s]", cur, key)
+			curType = valType
+			continue
 		}
-	} else {
-		target.emit(w)
-		io.WriteString(w, "[")
-		emitIndex(w, idxs[0])
-		io.WriteString(w, "]")
+		var kb bytes.Buffer
+		emitIndex(&kb, ix)
+		cur = fmt.Sprintf("%s[%s]", cur, kb.String())
+		curType = ""
 	}
-	for _, ix := range idxs[1:] {
-		io.WriteString(w, "[")
-		emitIndex(w, ix)
-		io.WriteString(w, "]")
-	}
+	io.WriteString(w, ind)
+	io.WriteString(w, cur)
 	io.WriteString(w, " = ")
+	valType := exprType(a.Value)
 	if strings.HasPrefix(valType, "std::shared_ptr<") {
 		if sl, ok := a.Value.(*StructLit); ok {
 			fmt.Fprintf(w, "std::make_shared<%s>(", sl.Name)
@@ -5973,9 +5930,10 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	defer func() { currentReturnType = prevRet }()
 	paramNames = prevParams
 	mutatedParams = prevMut
-	name := fn.Name
-	if name == "exp" || name == "ln" {
-		name = "_" + name
+	name := safeName(fn.Name)
+	if fn.Name == "exp" || fn.Name == "ln" {
+		// avoid collision with math library functions
+		name = "_" + fn.Name
 	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body}
 	if currentReceiver != "" {
@@ -6407,8 +6365,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				if exprType(arg) == "std::string" {
-					usesParseIntStr = true
-					return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
+					if useBigInt {
+						usesParseIntStr = true
+						return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
+					}
+					// When big integers are not in use we can
+					// rely on the standard library to parse
+					// into a 64-bit integer.
+					return &CallExpr{Name: "std::stoll", Args: []Expr{arg}}, nil
 				}
 				return newCastExpr(arg, "int64_t"), nil
 			}
