@@ -1,169 +1,163 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
 warning: unnecessary trailing semicolon
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:54:2
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:55:2
    |
-54 | };
+55 | };
    |  ^ help: remove this semicolon
    |
    = note: `#[warn(redundant_semicolons)]` on by default
 
-warning: unnecessary trailing semicolon
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:58:2
-   |
-58 | };
-   |  ^ help: remove this semicolon
-
 warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:40:8
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:41:8
    |
-40 |     if (i >= h) {
+41 |     if (i >= h) {
    |        ^      ^
    |
    = note: `#[warn(unused_parens)]` on by default
 help: remove these parentheses
    |
-40 -     if (i >= h) {
-40 +     if i >= h {
+41 -     if (i >= h) {
+41 +     if i >= h {
    |
 
 warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:43:8
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:44:8
    |
-43 |     if (arr[i as usize] > arr[h as usize]) {
+44 |     if (arr[i as usize] > arr[h as usize]) {
    |        ^                                 ^
    |
 help: remove these parentheses
    |
-43 -     if (arr[i as usize] > arr[h as usize]) {
-43 +     if arr[i as usize] > arr[h as usize] {
+44 -     if (arr[i as usize] > arr[h as usize]) {
+44 +     if arr[i as usize] > arr[h as usize] {
    |
 
 warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:48:8
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:49:8
    |
-48 |     if (((h - i) + 1) > 2) {
+49 |     if (((h - i) + 1) > 2) {
    |        ^                 ^
    |
 help: remove these parentheses
    |
-48 -     if (((h - i) + 1) > 2) {
-48 +     if ((h - i) + 1) > 2 {
+49 -     if (((h - i) + 1) > 2) {
+49 +     if ((h - i) + 1) > 2 {
    |
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:49:26
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:50:22
    |
-49 |         let mut t: i64 = (((h - i) + 1) / 3);
-   |                          ^                 ^
+50 |         let t: i64 = (((h - i) + 1) / 3);
+   |                      ^                 ^
    |
 help: remove these parentheses
    |
-49 -         let mut t: i64 = (((h - i) + 1) / 3);
-49 +         let mut t: i64 = ((h - i) + 1) / 3;
+50 -         let t: i64 = (((h - i) + 1) / 3);
+50 +         let t: i64 = ((h - i) + 1) / 3;
    |
 
 warning: unnecessary parentheses around function argument
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:50:24
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:51:24
    |
-50 |         stooge(arr, i, (h - t));
+51 |         stooge(arr, i, (h - t));
    |                        ^     ^
    |
 help: remove these parentheses
    |
-50 -         stooge(arr, i, (h - t));
-50 +         stooge(arr, i, h - t);
+51 -         stooge(arr, i, (h - t));
+51 +         stooge(arr, i, h - t);
    |
 
 warning: unnecessary parentheses around function argument
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:51:21
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:52:21
    |
-51 |         stooge(arr, (i + t), h);
+52 |         stooge(arr, (i + t), h);
    |                     ^     ^
    |
 help: remove these parentheses
    |
-51 -         stooge(arr, (i + t), h);
-51 +         stooge(arr, i + t, h);
+52 -         stooge(arr, (i + t), h);
+52 +         stooge(arr, i + t, h);
    |
 
 warning: unnecessary parentheses around function argument
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:52:24
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:53:24
    |
-52 |         stooge(arr, i, (h - t));
+53 |         stooge(arr, i, (h - t));
    |                        ^     ^
    |
 help: remove these parentheses
    |
-52 -         stooge(arr, i, (h - t));
-52 +         stooge(arr, i, h - t);
+53 -         stooge(arr, i, (h - t));
+53 +         stooge(arr, i, h - t);
    |
 
 warning: unnecessary parentheses around function argument
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:56:25
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:57:25
    |
-56 |     stooge(&mut arr, 0, ((arr.clone().len() as i64) - 1));
+57 |     stooge(&mut arr, 0, ((arr.clone().len() as i64) - 1));
    |                         ^                              ^
    |
 help: remove these parentheses
    |
-56 -     stooge(&mut arr, 0, ((arr.clone().len() as i64) - 1));
-56 +     stooge(&mut arr, 0, (arr.clone().len() as i64) - 1);
+57 -     stooge(&mut arr, 0, ((arr.clone().len() as i64) - 1));
+57 +     stooge(&mut arr, 0, (arr.clone().len() as i64) - 1);
    |
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:61:28
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:62:28
    |
-61 |     let duration_us: i64 = ((_end - _start) / 1000);
+62 |     let duration_us: i64 = ((_end - _start) / 1000);
    |                            ^                      ^
    |
 help: remove these parentheses
    |
-61 -     let duration_us: i64 = ((_end - _start) / 1000);
-61 +     let duration_us: i64 = (_end - _start) / 1000;
+62 -     let duration_us: i64 = ((_end - _start) / 1000);
+62 +     let duration_us: i64 = (_end - _start) / 1000;
    |
-
-warning: variable does not need to be mutable
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:39:35
-   |
-39 |     fn stooge(arr: &mut Vec<i64>, mut i: i64, mut h: i64) {
-   |                                   ----^
-   |                                   |
-   |                                   help: remove this `mut`
-   |
-   = note: `#[warn(unused_mut)]` on by default
-
-warning: variable does not need to be mutable
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:39:47
-   |
-39 |     fn stooge(arr: &mut Vec<i64>, mut i: i64, mut h: i64) {
-   |                                               ----^
-   |                                               |
-   |                                               help: remove this `mut`
-
-warning: variable does not need to be mutable
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:44:13
-   |
-44 |         let mut tmp: i64 = arr[i as usize];
-   |             ----^^^
-   |             |
-   |             help: remove this `mut`
-
-warning: variable does not need to be mutable
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:49:13
-   |
-49 |         let mut t: i64 = (((h - i) + 1) / 3);
-   |             ----^
-   |             |
-   |             help: remove this `mut`
 
 error[E0502]: cannot borrow `arr` as immutable because it is also borrowed as mutable
-  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:56:27
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:57:27
    |
-56 |     stooge(&mut arr, 0, ((arr.clone().len() as i64) - 1));
+57 |     stooge(&mut arr, 0, ((arr.clone().len() as i64) - 1));
    |     ------ --------       ^^^ immutable borrow occurs here
    |     |      |
    |     |      mutable borrow occurs here
    |     mutable borrow later used by call
 
-error: aborting due to 1 previous error; 15 warnings emitted
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:56:9
+   |
+56 |     let mut stooge_sort = |mut arr: Vec<i64>| -> Vec<i64> {
+   |         ----^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:40:35
+   |
+40 |     fn stooge(arr: &mut Vec<i64>, mut i: i64, mut h: i64) {
+   |                                   ----^
+   |                                   |
+   |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/stooge_sort.rs:40:47
+   |
+40 |     fn stooge(arr: &mut Vec<i64>, mut i: i64, mut h: i64) {
+   |                                               ----^
+   |                                               |
+   |                                               help: remove this `mut`
+
+error: aborting due to 1 previous error; 14 warnings emitted
 
 For more information about this error, try `rustc --explain E0502`.

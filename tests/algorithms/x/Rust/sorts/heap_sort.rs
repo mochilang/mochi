@@ -37,40 +37,46 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn concat(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
-    let mut result: Vec<i64> = vec![];
-    for x in a.iter().cloned() {
-        result = { let mut _v = result.clone(); _v.push(x); _v };
+    fn heapify(arr: &mut Vec<i64>, mut index: i64, mut heap_size: i64) {
+    let mut largest: i64 = index;
+    let left_index: i64 = ((2 * index) + 1);
+    let right_index: i64 = ((2 * index) + 2);
+    if ((left_index < heap_size) && (arr[left_index as usize] > arr[largest as usize])) {
+        largest = left_index;
     }
-    for x in b.iter().cloned() {
-        result = { let mut _v = result.clone(); _v.push(x); _v };
+    if ((right_index < heap_size) && (arr[right_index as usize] > arr[largest as usize])) {
+        largest = right_index;
     }
-    return result
+    if (largest != index) {
+        let temp: i64 = arr[largest as usize];
+        (*arr)[largest as usize] = arr[index as usize];
+        (*arr)[index as usize] = temp;
+        heapify(arr, largest, heap_size);
+    }
 };
-    fn quick_sort(mut data: Vec<i64>) -> Vec<i64> {
-    if ((data.len() as i64) <= 1) {
-        return data
+    let mut heap_sort = |mut arr: Vec<i64>| -> Vec<i64> {
+    let n: i64 = (arr.len() as i64);
+    let mut i: i64 = ((n / 2) - 1);
+    while (i >= 0) {
+        heapify(&mut arr, i, n);
+        i = (i - 1);
     }
-    let pivot: i64 = data[0 as usize];
-    let mut left: Vec<i64> = vec![];
-    let mut right: Vec<i64> = vec![];
-    let mut i: i64 = 1;
-    while (i < (data.len() as i64)) {
-        let e: i64 = data[i as usize];
-        if (e <= pivot) {
-            left = { let mut _v = left.clone(); _v.push(e); _v };
-        } else {
-            right = { let mut _v = right.clone(); _v.push(e); _v };
-        }
-        i = (i + 1);
+    i = (n - 1);
+    while (i > 0) {
+        let temp: i64 = arr[0 as usize];
+        arr[0 as usize] = arr[i as usize];
+        arr[i as usize] = temp;
+        heapify(&mut arr, 0, i);
+        i = (i - 1);
     }
-    let sorted_left: Vec<i64> = quick_sort(left.clone());
-    let sorted_right: Vec<i64> = quick_sort(right.clone());
-    let left_pivot: Vec<i64> = { let mut _v = sorted_left.clone(); _v.push(pivot); _v };
-    return vec![left_pivot.clone(), sorted_right.clone()].concat()
+    return arr
 };
-    println!("{}", format!("{:?}", quick_sort(vec![2, 1, 0])));
-    println!("{}", format!("{:?}", quick_sort(vec![3, 5, 2, 4, 1])));
+    let mut data: Vec<i64> = vec![3, 7, 9, 28, 123, -5, 8, -30, -200, 0, 4];
+    let mut result: Vec<i64> = heap_sort(data.clone());
+    println!("{:?}", format!("{:?}", result));
+    if (format!("{:?}", result).as_str() != format!("{:?}", vec![-200, -30, -5, 0, 3, 4, 7, 8, 9, 28, 123]).as_str()) {
+        panic!("Assertion error");
+    }
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

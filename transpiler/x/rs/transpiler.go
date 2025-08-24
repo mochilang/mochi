@@ -3608,7 +3608,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				varTypes[stmt.Let.Name] = "fn"
 			}
 		}
-		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
+		if typ == "fn" || strings.HasPrefix(typ, "fn(") || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
 			varTypes[stmt.Let.Name] = typ
 			typ = ""
 		}
@@ -3805,7 +3805,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 		}
-		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
+		if typ == "fn" || strings.HasPrefix(typ, "fn(") || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
 			varTypes[stmt.Var.Name] = typ
 			typ = ""
 		}
@@ -4532,8 +4532,14 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 					rt = r
 				}
 			}
-			typ = fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(pts, ", "), rt)
-			sigType = "&mut dyn FnMut(" + strings.Join(pts, ", ") + ")"
+			mut := paramMutated(fn.Body, p.Name) || paramAssigned(fn.Body, p.Name)
+			if mut {
+				typ = fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(pts, ", "), rt)
+				sigType = "&mut dyn FnMut(" + strings.Join(pts, ", ") + ")"
+			} else {
+				typ = fmt.Sprintf("fn(%s) -> %s", strings.Join(pts, ", "), rt)
+				sigType = "fn(" + strings.Join(pts, ", ") + ")"
+			}
 			if rt != "" && rt != "()" {
 				sigType += " -> " + rt
 			}
@@ -4645,7 +4651,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			ret = fmt.Sprintf("impl %s(%s) -> %s", kw, strings.Join(pts, ", "), rt)
 		}
 	}
-	if (strings.HasPrefix(ret, "impl Fn(") || strings.HasPrefix(ret, "impl FnMut(")) && strings.HasSuffix(ret, "-> ()") {
+	if (strings.HasPrefix(ret, "impl Fn(") || strings.HasPrefix(ret, "impl FnMut(") || strings.HasPrefix(ret, "fn(")) && strings.HasSuffix(ret, "-> ()") {
 		var t string
 		for _, st := range body {
 			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
@@ -4777,13 +4783,57 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 				if t, ok := currentParamTypes[c]; ok && t != "" {
 					ct = t
 				}
+				if ct == "" {
+					if fs, ok := curEnv.GetFunc(c); ok {
+						pts := make([]string, len(fs.Params))
+						for pi, pa := range fs.Params {
+							t := "i64"
+							if pa.Type != nil {
+								t = rustTypeRef(pa.Type)
+							}
+							pts[pi] = t
+						}
+						rt := "()"
+						if fs.Return != nil {
+							if fs.Return.Simple != nil || fs.Return.Generic != nil {
+								rt = rustTypeRef(fs.Return)
+							}
+						}
+						funParamTypes[c] = pts
+						funReturns[c] = rt
+						ct = fmt.Sprintf("fn(%s) -> %s", strings.Join(pts, ", "), rt)
+					}
+				} else if ct == "fn" && len(funParamTypes[c]) == 0 {
+					if fs, ok := curEnv.GetFunc(c); ok {
+						pts := make([]string, len(fs.Params))
+						for pi, pa := range fs.Params {
+							t := "i64"
+							if pa.Type != nil {
+								t = rustTypeRef(pa.Type)
+							}
+							pts[pi] = t
+						}
+						rt := "()"
+						if fs.Return != nil {
+							if fs.Return.Simple != nil || fs.Return.Generic != nil {
+								rt = rustTypeRef(fs.Return)
+							}
+						}
+						funParamTypes[c] = pts
+						funReturns[c] = rt
+					}
+				}
 				paramType := ct
 				if ct == "" {
 					paramType = "i64"
 				} else if ct == "fn" || strings.HasPrefix(ct, "fn(") {
 					pts := funParamTypes[c]
 					r := funReturns[c]
-					paramType = "&mut dyn FnMut(" + strings.Join(pts, ", ") + ")"
+					if isVarMutated(body, c) {
+						paramType = "&mut dyn FnMut(" + strings.Join(pts, ", ") + ")"
+					} else {
+						paramType = "fn(" + strings.Join(pts, ", ") + ")"
+					}
 					if r != "" && r != "()" {
 						paramType += " -> " + r
 					}
@@ -5522,7 +5572,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		} else {
 			if vt, vok := varTypes[name]; vok {
 				base := strings.TrimPrefix(strings.TrimPrefix(vt, "&mut "), "&")
-				if strings.HasPrefix(base, "impl Fn") {
+				if strings.HasPrefix(base, "impl Fn") || strings.HasPrefix(base, "fn(") {
 					start := strings.Index(base, "(")
 					end := strings.Index(base, ")")
 					if start >= 0 && end > start {
@@ -6773,7 +6823,7 @@ func isFunctionExpr(e Expr) bool {
 		if typ == "" {
 			typ = varTypes[ex.Name]
 		}
-		if typ == "fn" || strings.HasPrefix(typ, "impl Fn") {
+		if typ == "fn" || strings.HasPrefix(typ, "fn(") || strings.HasPrefix(typ, "impl Fn") {
 			return true
 		}
 		if _, ok := funReturns[ex.Name]; ok {

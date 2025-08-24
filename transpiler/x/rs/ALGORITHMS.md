@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-23 15:36 GMT+7
+Last updated: 2025-08-24 09:07 GMT+7
 
-## Algorithms Golden Test Checklist (814/1077)
+## Algorithms Golden Test Checklist (817/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -962,31 +962,31 @@ Last updated: 2025-08-23 15:36 GMT+7
 | 953 | sorts/exchange_sort |   |  |  |
 | 954 | sorts/external_sort |   |  |  |
 | 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort | ✓ | 45µs | 2.1 MB |
-| 961 | sorts/merge_sort | ✓ | 25µs | 2.1 MB |
-| 962 | sorts/msd_radix_sort | ✓ | 51µs | 2.1 MB |
-| 963 | sorts/natural_sort | ✓ | 247µs | 2.1 MB |
-| 964 | sorts/odd_even_sort | ✓ | 35µs | 2.0 MB |
+| 956 | sorts/heap_sort | ✓ | 66µs | 2.0 MB |
+| 957 | sorts/insertion_sort | ✓ | 32µs | 2.0 MB |
+| 958 | sorts/intro_sort | ✓ | 72µs | 2.0 MB |
+| 959 | sorts/iterative_merge_sort | ✓ | 96µs | 1.9 MB |
+| 960 | sorts/merge_insertion_sort | ✓ | 101µs | 2.1 MB |
+| 961 | sorts/merge_sort | ✓ | 63µs | 2.1 MB |
+| 962 | sorts/msd_radix_sort | ✓ | 394µs | 2.1 MB |
+| 963 | sorts/natural_sort | ✓ | 433µs | 2.1 MB |
+| 964 | sorts/odd_even_sort | ✓ | 84µs | 2.0 MB |
 | 965 | sorts/odd_even_transposition_parallel | ✓ | 39µs | 1.9 MB |
-| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 50µs | 1.9 MB |
-| 967 | sorts/pancake_sort | ✓ | 18µs | 2.0 MB |
-| 968 | sorts/patience_sort | ✓ | 86µs | 2.0 MB |
-| 969 | sorts/pigeon_sort | ✓ | 301µs | 2.1 MB |
-| 970 | sorts/pigeonhole_sort | ✓ | 54µs | 2.1 MB |
-| 971 | sorts/quick_sort | ✓ | 55µs | 2.0 MB |
-| 972 | sorts/quick_sort_3_partition | ✓ | 76µs | 2.1 MB |
-| 973 | sorts/radix_sort | ✓ | 119µs | 1.9 MB |
-| 974 | sorts/recursive_insertion_sort | ✓ | 37µs | 2.1 MB |
-| 975 | sorts/recursive_mergesort_array | ✓ | 46µs | 2.0 MB |
-| 976 | sorts/recursive_quick_sort | ✓ | 30µs | 2.1 MB |
-| 977 | sorts/selection_sort | ✓ | 25µs | 2.0 MB |
-| 978 | sorts/shell_sort | ✓ | 53µs | 2.0 MB |
-| 979 | sorts/shrink_shell_sort | ✓ | 28µs | 1.8 MB |
-| 980 | sorts/slowsort | ✓ | 78µs | 2.1 MB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 84µs | 2.0 MB |
+| 967 | sorts/pancake_sort | ✓ | 61µs | 1.9 MB |
+| 968 | sorts/patience_sort | ✓ | 121µs | 2.1 MB |
+| 969 | sorts/pigeon_sort | ✓ | 223µs | 2.2 MB |
+| 970 | sorts/pigeonhole_sort | ✓ | 129µs | 2.0 MB |
+| 971 | sorts/quick_sort | ✓ | 80µs | 2.1 MB |
+| 972 | sorts/quick_sort_3_partition | error | 76µs | 2.1 MB |
+| 973 | sorts/radix_sort | ✓ | 165µs | 2.2 MB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 75µs | 2.2 MB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 70µs | 2.0 MB |
+| 976 | sorts/recursive_quick_sort | ✓ | 51µs | 2.1 MB |
+| 977 | sorts/selection_sort | ✓ | 33µs | 2.0 MB |
+| 978 | sorts/shell_sort | ✓ | 66µs | 2.0 MB |
+| 979 | sorts/shrink_shell_sort | ✓ | 94µs | 2.1 MB |
+| 980 | sorts/slowsort | ✓ | 97µs | 2.1 MB |
 | 981 | sorts/stooge_sort | error |  |  |
 | 982 | sorts/strand_sort | ✓ | 58µs | 2.1 MB |
 | 983 | sorts/tim_sort | ✓ | 134µs | 2.2 MB |
