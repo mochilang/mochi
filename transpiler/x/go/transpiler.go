@@ -413,12 +413,15 @@ func (v *VarDecl) emit(w io.Writer) {
 		return
 	}
 	switch {
-	case v.Value != nil && v.Type != "":
-		fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
-		v.Value.emit(w)
-		if !v.Global {
-			fmt.Fprintf(w, "; _ = %s", v.Name)
-		}
+       case v.Value != nil && v.Type != "":
+               fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
+               v.Value.emit(w)
+               if strings.HasPrefix(v.Type, "map[") {
+                       fmt.Fprintf(w, "; if %s == nil { %s = %s{} }", v.Name, v.Name, v.Type)
+               }
+               if !v.Global {
+                       fmt.Fprintf(w, "; _ = %s", v.Name)
+               }
 	case v.Value != nil:
 		if v.Global {
 			fmt.Fprintf(w, "var %s = ", v.Name)
