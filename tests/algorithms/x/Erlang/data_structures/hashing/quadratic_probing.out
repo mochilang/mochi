@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/hashing/quadratic_probing.erl:271:5: Warning: variable 'Neg_3' exported from 'case' (line 251, column 18)
+%  271| {N, Neg_3, Num_4, Res_2} = Fun_4(N, Neg_3, Num_3, Res),
+%     |     ^
+
+[123 48 58 32 48 44 32 51 58 32 49 49 49 44 32 55 58 32 57 57 57 125]

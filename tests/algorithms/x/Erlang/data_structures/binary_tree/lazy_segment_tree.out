@@ -1,0 +1,25 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/lazy_segment_tree.erl:156:69: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  156|         true -> Segment_tree_2 = lists:sublist(Segment_tree, Idx_3) ++ [(case erlang:is_map(A) of true -> maps:get((L - 1), A, nil); _ -> case (L - 1) < 0 of true -> mochi_nth(erlang:length(A) + (L - 1) + 1, A); _ -> mochi_nth((L - 1) + 1, A) end end)] ++ lists:nthtail(Idx_3 + 1, Segment_tree),
+%     |                                                                     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/lazy_segment_tree.erl:167:69: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  167|         true -> Segment_tree_3 = lists:sublist(Segment_tree, Idx_3) ++ [Lv] ++ lists:nthtail(Idx_3 + 1, Segment_tree),
+%     |                                                                     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/lazy_segment_tree.erl:169:66: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  169|         _ -> Segment_tree_4 = lists:sublist(Segment_tree, Idx_3) ++ [Rv] ++ lists:nthtail(Idx_3 + 1, Segment_tree),
+%     |                                                                  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/lazy_segment_tree.erl:232:73: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  232|         true -> Segment_tree_12 = lists:sublist(Segment_tree_11, Idx_4) ++ [Lv_3] ++ lists:nthtail(Idx_4 + 1, Segment_tree_11),
+%     |                                                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/lazy_segment_tree.erl:234:70: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  234|         _ -> Segment_tree_13 = lists:sublist(Segment_tree_11, Idx_4) ++ [Rv_3] ++ lists:nthtail(Idx_4 + 1, Segment_tree_11),
+%     |                                                                      ^
+
+0
+0
+0
+0
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

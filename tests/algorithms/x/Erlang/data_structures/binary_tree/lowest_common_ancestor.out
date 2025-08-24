@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/lowest_common_ancestor.erl:170:24: Warning: variable 'Temp_2' exported from 'case' (line 145, column 16)
+%  170| {I_6, Level, Parent_3, Temp_2, U_5, V_3} = Fun_4(I_5, Level, Parent_3, Temp_2, U_3, V_3),
+%     |                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/lowest_common_ancestor.erl:194:24: Warning: variable 'Temp_2' exported from 'case' (line 145, column 16)
+%  194| {I_8, Level, Parent_3, Temp_2, U_7, V_5} = Fun_5(I_7, Level, Parent_3, Temp_2, U_5, V_3),
+%     |                        ^
