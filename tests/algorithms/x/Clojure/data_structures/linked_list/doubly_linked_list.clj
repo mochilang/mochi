@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare empty_list length is_empty to_string insert_nth insert_head insert_tail delete_nth delete_head delete_tail delete_value main)
+
+(declare _read_file)
 
 (def ^:dynamic delete_nth_i nil)
 
@@ -50,7 +64,7 @@
   (try (throw (ex-info "return" {:v (= (count (:data is_empty_list)) 0)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn to_string [to_string_list]
-  (binding [to_string_i nil to_string_s nil] (try (do (when (= (count (:data to_string_list)) 0) (throw (ex-info "return" {:v ""}))) (set! to_string_s (str (get (:data to_string_list) 0))) (set! to_string_i 1) (while (< to_string_i (count (:data to_string_list))) (do (set! to_string_s (str (str to_string_s "->") (str (get (:data to_string_list) to_string_i)))) (set! to_string_i (+ to_string_i 1)))) (throw (ex-info "return" {:v to_string_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [to_string_i nil to_string_s nil] (try (do (when (= (count (:data to_string_list)) 0) (throw (ex-info "return" {:v ""}))) (set! to_string_s (mochi_str (get (:data to_string_list) 0))) (set! to_string_i 1) (while (< to_string_i (count (:data to_string_list))) (do (set! to_string_s (str (str to_string_s "->") (mochi_str (get (:data to_string_list) to_string_i)))) (set! to_string_i (+ to_string_i 1)))) (throw (ex-info "return" {:v to_string_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn insert_nth [insert_nth_list insert_nth_index insert_nth_value]
   (binding [insert_nth_i nil insert_nth_res nil] (try (do (when (or (< insert_nth_index 0) (> insert_nth_index (count (:data insert_nth_list)))) (throw (Exception. "index out of range"))) (set! insert_nth_res []) (set! insert_nth_i 0) (while (< insert_nth_i insert_nth_index) (do (set! insert_nth_res (conj insert_nth_res (get (:data insert_nth_list) insert_nth_i))) (set! insert_nth_i (+ insert_nth_i 1)))) (set! insert_nth_res (conj insert_nth_res insert_nth_value)) (while (< insert_nth_i (count (:data insert_nth_list))) (do (set! insert_nth_res (conj insert_nth_res (get (:data insert_nth_list) insert_nth_i))) (set! insert_nth_i (+ insert_nth_i 1)))) (throw (ex-info "return" {:v {:data insert_nth_res}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -71,7 +85,7 @@
   (try (throw (ex-info "return" {:v (delete_nth delete_tail_list (- (count (:data delete_tail_list)) 1))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn delete_value [delete_value_list delete_value_value]
-  (binding [delete_value_found nil delete_value_idx nil] (try (do (set! delete_value_idx 0) (set! delete_value_found false) (loop [while_flag_1 true] (when (and while_flag_1 (< delete_value_idx (count (:data delete_value_list)))) (cond (= (get (:data delete_value_list) delete_value_idx) delete_value_value) (do (set! delete_value_found true) (recur false)) :else (do (set! delete_value_idx (+ delete_value_idx 1)) (recur while_flag_1))))) (when (not delete_value_found) (throw (Exception. "value not found"))) (throw (ex-info "return" {:v (delete_nth delete_value_list delete_value_idx)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [delete_value_found nil delete_value_idx nil] (try (do (set! delete_value_idx 0) (set! delete_value_found false) (loop [while_flag_1 true] (when (and while_flag_1 (< delete_value_idx (count (:data delete_value_list)))) (do (if (= (get (:data delete_value_list) delete_value_idx) delete_value_value) (do (set! delete_value_found true) (recur false)) (do (set! delete_value_idx (+ delete_value_idx 1)) (recur while_flag_1)))))) (when (not delete_value_found) (throw (Exception. "value not found"))) (throw (ex-info "return" {:v (delete_nth delete_value_list delete_value_idx)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (binding [main_dll nil main_res nil] (do (set! main_dll (empty_list)) (set! main_dll (insert_tail main_dll 1)) (set! main_dll (insert_tail main_dll 2)) (set! main_dll (insert_tail main_dll 3)) (println (to_string main_dll)) (set! main_dll (insert_head main_dll 0)) (println (to_string main_dll)) (set! main_dll (insert_nth main_dll 2 9)) (println (to_string main_dll)) (set! main_res (delete_nth main_dll 2)) (set! main_dll (:list main_res)) (println (:value main_res)) (println (to_string main_dll)) (set! main_res (delete_tail main_dll)) (set! main_dll (:list main_res)) (println (:value main_res)) (println (to_string main_dll)) (set! main_res (delete_value main_dll 1)) (set! main_dll (:list main_res)) (println (:value main_res)) (println (to_string main_dll)))))

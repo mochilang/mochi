@@ -2330,6 +2330,51 @@ func isTopLevelRecur(n Node) bool {
 	return false
 }
 
+func containsRecur(n Node) bool {
+	switch x := n.(type) {
+	case *List:
+		if len(x.Elems) > 0 {
+			if sym, ok := x.Elems[0].(Symbol); ok && sym == "recur" {
+				return true
+			}
+		}
+		for _, e := range x.Elems {
+			if containsRecur(e) {
+				return true
+			}
+		}
+	case *Vector:
+		for _, e := range x.Elems {
+			if containsRecur(e) {
+				return true
+			}
+		}
+	case *Set:
+		for _, e := range x.Elems {
+			if containsRecur(e) {
+				return true
+			}
+		}
+	case *Map:
+		for _, kv := range x.Pairs {
+			if containsRecur(kv[0]) || containsRecur(kv[1]) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func appendRecurBranch(branch Node, flag string) Node {
+	if l, ok := branch.(*List); ok && len(l.Elems) > 0 {
+		if sym, ok := l.Elems[0].(Symbol); ok && sym == "do" {
+			l.Elems = append(l.Elems, &List{Elems: []Node{Symbol("recur"), Symbol(flag)}})
+			return l
+		}
+	}
+	return &List{Elems: []Node{Symbol("do"), branch, &List{Elems: []Node{Symbol("recur"), Symbol(flag)}}}}
+}
+
 func isAggCall(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -3896,6 +3941,7 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	if len(bodyNodes) > 0 {
 		if ifList, ok := bodyNodes[len(bodyNodes)-1].(*List); ok && len(ifList.Elems) == 4 {
 			if sym, ok := ifList.Elems[0].(Symbol); ok && sym == "if" {
+				// handle recur in else branch
 				if recurList, ok := ifList.Elems[3].(*List); ok && len(recurList.Elems) == 2 {
 					if rsym, ok := recurList.Elems[0].(Symbol); ok && rsym == "recur" {
 						recurThen := &List{Elems: []Node{Symbol("recur"), Symbol(flagVar)}}
@@ -3921,6 +3967,18 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 						binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
 						return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
 					}
+				}
+				// handle recur in then branch
+				if containsRecur(ifList.Elems[2]) && !containsRecur(ifList.Elems[3]) {
+					ifList.Elems[3] = appendRecurBranch(ifList.Elems[3], flagVar)
+					body := &List{Elems: append([]Node{Symbol("do")}, bodyNodes...)}
+					condExpr := Node(&List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}})
+					if bl, ok := cond.(BoolLit); (ok && bool(bl)) || boolSym(cond) {
+						condExpr = Symbol(flagVar)
+					}
+					loopBody := &List{Elems: []Node{Symbol("when"), condExpr, body}}
+					binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
+					return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
 				}
 			}
 		}
