@@ -669,6 +669,10 @@ func zeroValue(t string) string {
 		return "false"
 	case t == "string":
 		return "\"\""
+	case strings.HasPrefix(t, "func-"):
+		return "fun _ -> " + zeroValue(strings.TrimPrefix(t, "func-"))
+	case t == "func":
+		return "fun _ -> Obj.repr 0"
 	case strings.HasPrefix(t, "list") || t == "list":
 		return "[]"
 	case strings.HasPrefix(t, "map") || t == "map":
@@ -1923,7 +1927,7 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		mi.Key.emit(w)
 		io.WriteString(w, "))) (")
 		mi.Map.emit(w)
-		io.WriteString(w, ") with Some v -> (Obj.obj (v : Obj.t) : ")
+		io.WriteString(w, ") with Some v -> (Obj.magic v : ")
 		if strings.HasPrefix(mi.Typ, "map-") {
 			inner := strings.TrimPrefix(mi.Typ, "map-")
 			keyTyp := "string"
@@ -6275,8 +6279,11 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if !strings.HasPrefix(ltyp, "list") || ltyp != rtyp {
-			return nil, "", fmt.Errorf("concat expects lists of same type")
+		if !strings.HasPrefix(ltyp, "list") || !strings.HasPrefix(rtyp, "list") {
+			return nil, "", fmt.Errorf("concat expects list arguments")
+		}
+		if ltyp == "list" {
+			ltyp = rtyp
 		}
 		return &BinaryExpr{Left: leftArg, Op: "@", Right: rightArg, Typ: ltyp, Ltyp: ltyp, Rtyp: rtyp}, ltyp, nil
 	}
