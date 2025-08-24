@@ -737,6 +737,16 @@ func (f *FieldExpr) emit(w io.Writer) error {
 	}
 	if useIndex {
 		if f.MapGet {
+			if currentEnv != nil {
+				if mt, ok := inferPyType(f.Target, currentEnv).(types.MapType); ok {
+					var buf bytes.Buffer
+					if err := emitExpr(&buf, zeroValueExpr(mt.Value)); err != nil {
+						return err
+					}
+					_, err := fmt.Fprintf(w, ".get(%q, %s)", f.Name, buf.String())
+					return err
+				}
+			}
 			_, err := fmt.Fprintf(w, ".get(%q)", f.Name)
 			return err
 		}
