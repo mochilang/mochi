@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
 Completed programs: 956/1077
-Last updated: 2025-08-24 15:35 +0700
+Last updated: 2025-08-24 16:59 +0700
 
 Checklist:
 
@@ -181,7 +181,7 @@ Checklist:
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 11µs | 8.7 MB |
 | 173 | data_structures/binary_tree/binary_search_tree | ✓ | 183.317ms | 8.7 MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 14µs | 8.7 MB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 183.317ms | 8.7 MB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 5µs | 8.7 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 10µs | 8.7 MB |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 9µs | 8.8 MB |
