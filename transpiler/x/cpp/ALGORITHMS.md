@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 1027/1077
-Last updated: 2025-08-24 16:25 +0700
+Completed programs: 1028/1077
+Last updated: 2025-08-24 16:56 +0700
 
 Checklist:
 
@@ -160,7 +160,7 @@ Checklist:
 | 151 | conversions/weight_conversion | ✓ | 430.0µs | 3.81MB |
 | 152 | data_compression/burrows_wheeler | ✓ | 187.0µs | 3.59MB |
 | 153 | data_compression/huffman | ✓ | 344.0µs | 3.54MB |
-| 154 | data_compression/lempel_ziv | ✓ | 269.0µs | 3.51MB |
+| 154 | data_compression/lempel_ziv |   |  |  |
 | 155 | data_compression/lempel_ziv_decompress | ✓ | 94.0µs | 3.58MB |
 | 156 | data_compression/lz77 | ✓ | 250.0µs | 3.63MB |
 | 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 9.0µs | 3.60MB |
@@ -181,18 +181,18 @@ Checklist:
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 195.0µs | 3.50MB |
 | 173 | data_structures/binary_tree/binary_search_tree | ✓ | 215.0µs | 3.61MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 298.0µs | 3.64MB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 408.0µs | 3.65MB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 141.0µs | 3.44MB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 202.0µs | 3.71MB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 244.0µs | 3.54MB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 308.0µs | 3.60MB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 178.0µs | 3.48MB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 145.0µs | 3.48MB |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 287.0µs | 3.56MB |
-| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 391.0µs | 3.65MB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 154.0µs | 3.59MB |
 | 184 | data_structures/binary_tree/is_sorted |   |  |  |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 19.0µs | 3.39MB |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 420.0µs | 3.73MB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 673.0µs | 3.55MB |
 | 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 534.0µs | 3.56MB |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 209.0ms | 3.81MB |
 | 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 130.0µs | 3.57MB |
