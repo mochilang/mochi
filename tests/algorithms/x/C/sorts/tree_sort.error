@@ -1,1 +1,2 @@
-run: signal: segmentation fault
+run: signal: aborted
+realloc(): invalid pointer
