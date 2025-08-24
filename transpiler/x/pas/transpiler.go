@@ -5,6 +5,7 @@ package pas
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -1606,9 +1607,9 @@ func (p *Program) Emit() []byte {
 	if _, ok := funcNames["to_float"]; !ok {
 		buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := _to_float(x);\nend;\n")
 	}
-       buf.WriteString("procedure json(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
-       buf.WriteString("procedure json(x: int64);\nbegin\n  writeln(x);\nend;\n")
-        if p.NeedJSON {
+	buf.WriteString("procedure json(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
+	buf.WriteString("procedure json(x: int64);\nbegin\n  writeln(x);\nend;\n")
+	if p.NeedJSON {
 		buf.WriteString("procedure json_intarray(xs: IntArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
 		if p.NeedJSONReal {
 			buf.WriteString("procedure json_realarray(xs: RealArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
@@ -4658,25 +4659,25 @@ func typeFromRef(tr *parser.TypeRef) string {
 }
 
 func typeFromSimple(s string) string {
-        switch s {
-       case "void", "unit", "":
-               return ""
-       case "int":
-               return "int64"
-       case "string":
-               return "string"
-       case "bool":
-               return "boolean"
-       case "float":
-               return "real"
-       case "bigint":
-               return "int64"
-       case "bigrat":
-               currProg.UseBigRat = true
-               return "BigRat"
-       default:
-               return sanitize(s)
-       }
+	switch s {
+	case "void", "unit", "":
+		return ""
+	case "int":
+		return "int64"
+	case "string":
+		return "string"
+	case "bool":
+		return "boolean"
+	case "float":
+		return "real"
+	case "bigint":
+		return "int64"
+	case "bigrat":
+		currProg.UseBigRat = true
+		return "BigRat"
+	default:
+		return sanitize(s)
+	}
 }
 
 func pasTypeFromType(t types.Type) string {
@@ -5380,15 +5381,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-                       kType := inferType(keyExpr)
-                       if kType != "string" && kType != "integer" && kType != "int64" {
-                               return nil, fmt.Errorf("unsupported map key")
-                       }
-                       if kType == "integer" || kType == "int64" {
-                               keyType = "int64"
-                       } else {
-                               keyType = "string"
-                       }
+			kType := inferType(keyExpr)
+			if kType != "string" && kType != "integer" && kType != "int64" {
+				return nil, fmt.Errorf("unsupported map key")
+			}
+			if kType == "integer" || kType == "int64" {
+				keyType = "int64"
+			} else {
+				keyType = "string"
+			}
 			vType := inferType(val)
 			items = append(items, MapItem{Key: keyExpr, Value: val, Type: vType})
 			collectVarNames(val, varsSet)
@@ -5452,7 +5453,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			return nil, fmt.Errorf("unsupported load")
 		}
 		format := parseFormat(p.Load.With)
-		if format != "yaml" {
+		if format != "yaml" && format != "jsonl" {
 			return nil, fmt.Errorf("unsupported load format")
 		}
 		root := repoRoot()
@@ -5468,7 +5469,13 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		records, err := parseYAMLRecords(data)
+		var records []map[string]string
+		switch format {
+		case "yaml":
+			records, err = parseYAMLRecords(data)
+		case "jsonl":
+			records, err = parseJSONLRecords(data)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -6243,6 +6250,23 @@ func parseYAMLRecords(data []byte) ([]map[string]string, error) {
 	}
 	if len(cur) > 0 {
 		res = append(res, cur)
+	}
+	return res, scanner.Err()
+}
+
+func parseJSONLRecords(data []byte) ([]map[string]string, error) {
+	var res []map[string]string
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+		var m map[string]string
+		if err := json.Unmarshal([]byte(line), &m); err != nil {
+			return nil, err
+		}
+		res = append(res, m)
 	}
 	return res, scanner.Err()
 }
