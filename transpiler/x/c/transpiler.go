@@ -50,6 +50,7 @@ var (
 	needStrListListInt      bool
 	needStrListDouble       bool
 	needStrListListDouble   bool
+	needJoinStr             bool
 	needStrMapIL            bool
 	needStrMapSD            bool
 	needJSONListListInt     bool
@@ -5272,6 +5273,24 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return buf;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needJoinStr {
+		buf.WriteString("static char* _join_str(const char **arr, size_t len, const char *sep) {\n")
+		buf.WriteString("    if (len == 0) return strdup(\"\");\n")
+		buf.WriteString("    size_t seplen = strlen(sep);\n")
+		buf.WriteString("    size_t cap = 1;\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) cap += strlen(arr[i]) + (i + 1 < len ? seplen : 0);\n")
+		buf.WriteString("    char *buf = malloc(cap);\n")
+		buf.WriteString("    size_t pos = 0;\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        size_t n = strlen(arr[i]);\n")
+		buf.WriteString("        memcpy(buf + pos, arr[i], n);\n")
+		buf.WriteString("        pos += n;\n")
+		buf.WriteString("        if (i + 1 < len) { memcpy(buf + pos, sep, seplen); pos += seplen; }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    buf[pos] = 0;\n")
+		buf.WriteString("    return buf;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needStrListDouble {
 		buf.WriteString("static char* str_list_double(const double *arr, size_t len) {\n")
 		buf.WriteString("    size_t cap = len * 32 + 2;\n")
@@ -5433,16 +5452,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("typedef struct { const char **keys; double *vals; size_t len; size_t cap; } MapSD;\n\n")
 	}
 	if len(needMapGetSStruct) > 0 {
+		var names []string
 		for name := range needMapGetSStruct {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
 			fmt.Fprintf(&buf, "typedef struct %s %s;\n", name, name)
 			fmt.Fprintf(&buf, "typedef struct { const char **keys; %s *vals; size_t len; size_t cap; } MapS%s;\n\n", name, name)
-			lower := strings.ToLower(name)
-			fmt.Fprintf(&buf, "static %s map_get_s_%s(const char *keys[], const %s vals[], size_t len, const char *key) {\n", name, lower, name)
-			buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
-			buf.WriteString("        if (strcmp(keys[i], key) == 0) return vals[i];\n")
-			buf.WriteString("    }\n")
-			fmt.Fprintf(&buf, "    return (%s){0};\n", name)
-			buf.WriteString("}\n\n")
 		}
 	}
 	if needStrMapSD {
@@ -6055,7 +6072,9 @@ func (p *Program) Emit() []byte {
 		}
 	}
 	for _, name := range ordered {
-		fmt.Fprintf(&buf, "typedef struct %s %s;\n", name, name)
+		if !needMapGetSStruct[name] {
+			fmt.Fprintf(&buf, "typedef struct %s %s;\n", name, name)
+		}
 	}
 	if len(ordered) > 0 {
 		buf.WriteString("\n")
@@ -6109,6 +6128,22 @@ func (p *Program) Emit() []byte {
 			fmt.Fprintf(&buf, "    int %s;\n", field)
 		}
 		fmt.Fprintf(&buf, "};\n\n")
+	}
+	if len(needMapGetSStruct) > 0 {
+		var names []string
+		for name := range needMapGetSStruct {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			lower := strings.ToLower(name)
+			fmt.Fprintf(&buf, "static %s map_get_s_%s(const char *keys[], const %s vals[], size_t len, const char *key) {\n", name, lower, name)
+			buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+			buf.WriteString("        if (strcmp(keys[i], key) == 0) return vals[i];\n")
+			buf.WriteString("    }\n")
+			fmt.Fprintf(&buf, "    return (%s){0};\n", name)
+			buf.WriteString("}\n\n")
+		}
 	}
 	if len(needSliceStruct) > 0 {
 		for typ := range needSliceStruct {
@@ -6344,6 +6379,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needStrListListInt = false
 	needStrListDouble = false
 	needStrListListDouble = false
+	needJoinStr = false
 	needStrMapIL = false
 	needStrMapSD = false
 	needJSONListListInt = false
@@ -9449,6 +9485,28 @@ func convertUnary(u *parser.Unary) Expr {
 			return &StructLit{Name: name, Fields: fields}
 		}
 		return &MapLit{Items: items}
+	}
+	if sel := u.Value.Target.Selector; sel != nil && sel.Root == "Object" && len(sel.Tail) == 1 && sel.Tail[0] == "keys" && len(u.Value.Ops) == 3 {
+		if u.Value.Ops[0].Call != nil && len(u.Value.Ops[0].Call.Args) == 1 &&
+			u.Value.Ops[1].Field != nil && u.Value.Ops[1].Field.Name == "join" &&
+			u.Value.Ops[2].Call != nil && len(u.Value.Ops[2].Call.Args) == 1 {
+			arg := convertExpr(u.Value.Ops[0].Call.Args[0])
+			sepExpr := convertExpr(u.Value.Ops[2].Call.Args[0])
+			if arg != nil {
+				if keys, ok := evalMapKeys(arg); ok {
+					if s, ok2 := evalString(sepExpr); ok2 {
+						var parts []string
+						for _, e := range keys.Elems {
+							if ks, ok3 := evalString(e); ok3 {
+								parts = append(parts, ks)
+							}
+						}
+						return &StringLit{Value: strings.Join(parts, s)}
+					}
+				}
+			}
+			return &StringLit{Value: ""}
+		}
 	}
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 1 && sel.Tail[0] == "contains" && len(u.Value.Ops) == 1 && u.Value.Ops[0].Call != nil && len(u.Ops) == 0 {
 		base := &VarRef{Name: sel.Root}

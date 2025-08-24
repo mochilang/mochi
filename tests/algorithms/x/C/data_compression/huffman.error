@@ -1,0 +1,27 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c: In function ‘get_freq’:
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c:143:18: error: expected expression before ‘Leaf’
+  143 |     return (n == Leaf(_, f) ? f : f);
+      |                  ^~~~
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c: In function ‘count_freq’:
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c:202:61: error: incompatible type for argument 3 of ‘list_append_str’
+  202 |         leaves = list_append_str(leaves, &leaves_len, (Leaf){.symbol = chars[(int)({long long _mochi_idx = k; _mochi_idx < 0 ? chars_len + _mochi_idx : _mochi_idx;})], .freq = freqs[(int)({long long _mochi_idx = k; _mochi_idx < 0 ? freqs_len + _mochi_idx : _mochi_idx;})]});
+      |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                             |
+      |                                                             Leaf
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c:27:80: note: expected ‘const char *’ but argument is of type ‘Leaf’
+   27 | static const char** list_append_str(const char **arr, size_t *len, const char *val) {
+      |                                                                    ~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c: In function ‘build_tree’:
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c:223:49: error: incompatible type for argument 3 of ‘list_append_str_new’
+  223 |         arr = list_append_str_new(arr, arr_len, node);
+      |                                                 ^~~~
+      |                                                 |
+      |                                                 Node
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c:48:83: note: expected ‘const char *’ but argument is of type ‘Node’
+   48 | static const char** list_append_str_new(const char **arr, size_t len, const char *val) {
+      |                                                                       ~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c: In function ‘collect_codes’:
+/workspace/mochi/tests/algorithms/x/C/data_compression/huffman.c:246:21: error: expected expression before ‘Leaf’
+  246 |     return (tree == Leaf(s, _) ? ({int** tmp = malloc(1 * sizeof(int*)); tmp[0] = ({const char* *tmp = malloc(2 * sizeof(const char*)); tmp[0] = s; tmp[1] = prefix; tmp;}); tmp;}) : ({const char*** __tmp3 = collect_codes(l, str_concat(prefix, "0")); size_t __tmp3_len = collect_codes_len; size_t* __tmp3_lens = collect_codes_lens; const char*** __tmp4 = collect_codes(r, str_concat(prefix, "1")); size_t __tmp4_len = collect_codes_len; size_t* __tmp4_lens = collect_codes_lens; concat_pairs(__tmp3, __tmp3_len, __tmp3_lens, __tmp3_len, __tmp4, __tmp4_len, __tmp4_lens, __tmp4_len);}));
+      |                     ^~~~

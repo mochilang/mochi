@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (852/1077) - Last updated 2025-08-24 10:20 +0700:
+Checklist of programs that currently transpile and run (872/1077) - Last updated 2025-08-24 14:55 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -128,63 +128,63 @@ Checklist of programs that currently transpile and run (852/1077) - Last updated
 | 121 | conversions/astronomical_length_scale_conversion | ✓ | 363us | 1.6 MB |
 | 122 | conversions/binary_to_decimal |  |  |  |
 | 123 | conversions/binary_to_hexadecimal | ✓ | 315us | 1.4 MB |
-| 124 | conversions/binary_to_octal |  |  |  |
-| 125 | conversions/convert_number_to_words |  |  |  |
-| 126 | conversions/decimal_to_any |  |  |  |
-| 127 | conversions/decimal_to_binary |  |  |  |
-| 128 | conversions/decimal_to_hexadecimal |  |  |  |
-| 129 | conversions/decimal_to_octal |  |  |  |
-| 130 | conversions/energy_conversions |  |  |  |
-| 131 | conversions/excel_title_to_column |  |  |  |
-| 132 | conversions/hex_to_bin |  |  |  |
-| 133 | conversions/hexadecimal_to_decimal |  |  |  |
-| 134 | conversions/ipv4_conversion |  |  |  |
-| 135 | conversions/length_conversion |  |  |  |
-| 136 | conversions/molecular_chemistry |  |  |  |
-| 137 | conversions/octal_to_binary |  |  |  |
-| 138 | conversions/octal_to_decimal |  |  |  |
-| 139 | conversions/octal_to_hexadecimal |  |  |  |
-| 140 | conversions/prefix_conversions |  |  |  |
-| 141 | conversions/prefix_conversions_string | ✓ | 521us | 1.6 MB |
-| 142 | conversions/pressure_conversions |  |  |  |
-| 143 | conversions/rectangular_to_polar | ✓ | 561us | 1.6 MB |
-| 144 | conversions/rgb_cmyk_conversion | ✓ | 466us | 1.6 MB |
-| 145 | conversions/rgb_hsv_conversion | ✓ | 938us | 1.7 MB |
+| 124 | conversions/binary_to_octal | ✓ | 403us | 1.5 MB |
+| 125 | conversions/convert_number_to_words | ✓ | 322us | 1.4 MB |
+| 126 | conversions/decimal_to_any | ✓ | 235us | 1.4 MB |
+| 127 | conversions/decimal_to_binary | ✓ | 363us | 1.6 MB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 467us | 1.4 MB |
+| 129 | conversions/decimal_to_octal | ✓ | 550us | 1.6 MB |
+| 130 | conversions/energy_conversions | ✓ | 425us | 1.6 MB |
+| 131 | conversions/excel_title_to_column | ✓ | 300us | 1.6 MB |
+| 132 | conversions/hex_to_bin | ✓ | 388us | 1.7 MB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 380us | 1.5 MB |
+| 134 | conversions/ipv4_conversion | ✓ | 344us | 1.5 MB |
+| 135 | conversions/length_conversion | ✓ | 396us | 1.7 MB |
+| 136 | conversions/molecular_chemistry | ✓ | 635us | 1.5 MB |
+| 137 | conversions/octal_to_binary | ✓ | 388us | 1.6 MB |
+| 138 | conversions/octal_to_decimal | ✓ | 607us | 1.6 MB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 227us | 1.4 MB |
+| 140 | conversions/prefix_conversions | ✓ | 429us | 1.5 MB |
+| 141 | conversions/prefix_conversions_string | ✓ | 325us | 1.6 MB |
+| 142 | conversions/pressure_conversions | ✓ | 469us | 1.6 MB |
+| 143 | conversions/rectangular_to_polar | ✓ | 415us | 1.6 MB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 418us | 1.5 MB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 436us | 1.6 MB |
 | 146 | conversions/roman_numerals | ✓ |  |  |
-| 147 | conversions/speed_conversions | ✓ | 873us | 1.7 MB |
-| 148 | conversions/temperature_conversions | ✓ | 468us | 1.7 MB |
-| 149 | conversions/time_conversions | ✓ | 436us | 1.6 MB |
-| 150 | conversions/volume_conversions | ✓ | 500us | 1.5 MB |
-| 151 | conversions/weight_conversion | ✓ | 230us | 1.6 MB |
-| 152 | data_compression/burrows_wheeler |  |  |  |
+| 147 | conversions/speed_conversions | ✓ | 547us | 1.5 MB |
+| 148 | conversions/temperature_conversions | ✓ | 645us | 1.7 MB |
+| 149 | conversions/time_conversions | ✓ | 397us | 1.6 MB |
+| 150 | conversions/volume_conversions | ✓ | 759us | 1.7 MB |
+| 151 | conversions/weight_conversion | ✓ | 316us | 1.6 MB |
+| 152 | data_compression/burrows_wheeler | ✓ | 446us | 1.6 MB |
 | 153 | data_compression/huffman |  |  |  |
-| 154 | data_compression/lempel_ziv | ✓ | 641us | 1.4 MB |
-| 155 | data_compression/lempel_ziv_decompress | ✓ | 436us | 1.5 MB |
-| 156 | data_compression/lz77 | ✓ | 723us | 1.4 MB |
-| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 4us | 1.4 MB |
-| 158 | data_compression/run_length_encoding | ✓ | 902us | 1.5 MB |
-| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 326us | 1.4 MB |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 262us | 1.5 MB |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 399us | 1.6 MB |
-| 162 | data_structures/arrays/kth_largest_element | ✓ | 684us | 1.6 MB |
-| 163 | data_structures/arrays/median_two_array | ✓ | 442us | 1.6 MB |
-| 164 | data_structures/arrays/monotonic_array | ✓ | 275us | 1.5 MB |
-| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 248us | 1.6 MB |
-| 166 | data_structures/arrays/permutations | ✓ | 707us | 1.5 MB |
-| 167 | data_structures/arrays/prefix_sum | ✓ | 459us | 1.6 MB |
+| 154 | data_compression/lempel_ziv | ✓ | 344us | 1.5 MB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 411us | 1.4 MB |
+| 156 | data_compression/lz77 | ✓ | 455us | 1.5 MB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ |  |  |
+| 158 | data_compression/run_length_encoding | ✓ | 486us | 1.5 MB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 312us | 1.6 MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 422us | 1.5 MB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 345us | 1.6 MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 486us | 1.5 MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 436us | 1.7 MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 414us | 1.4 MB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 259us | 1.5 MB |
+| 166 | data_structures/arrays/permutations | ✓ | 471us | 1.4 MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 1.05ms | 1.5 MB |
 | 168 | data_structures/arrays/product_sum |  |  |  |
-| 169 | data_structures/arrays/sparse_table | ✓ | 316us | 1.5 MB |
-| 170 | data_structures/arrays/sudoku_solver | ✓ | 589us | 1.5 MB |
+| 169 | data_structures/arrays/sparse_table | ✓ | 266us | 1.4 MB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 637us | 1.7 MB |
 | 171 | data_structures/binary_tree/avl_tree |  |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 334us | 1.5 MB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 369us | 1.6 MB |
 | 173 | data_structures/binary_tree/binary_search_tree |  |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |  |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |  |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 288us | 1.5 MB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 414us | 1.5 MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 589us | 1.6 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |  |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 447us | 1.5 MB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 491us | 1.6 MB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 492us | 1.6 MB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 343us | 1.6 MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 715us | 1.6 MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 373us | 1.6 MB |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |  |  |  |
 | 182 | data_structures/binary_tree/floor_and_ceiling |  |  |  |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |  |  |  |
