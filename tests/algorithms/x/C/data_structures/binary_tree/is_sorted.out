@@ -1,0 +1,3 @@
+Tree [2.1 2.2] is sorted: 1
+Tree [2 0 2.1 2] is sorted: 0
+Tree [2 0 0 2.42092e-322 2.1 2.1] is sorted: 1
