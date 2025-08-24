@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-24 22:29 GMT+7
+Last updated: 2025-08-24 23:31 GMT+7
 
 ## Algorithms Golden Test Checklist (963/1077)
 | Index | Name | Status | Duration | Memory |
@@ -219,12 +219,12 @@ Last updated: 2025-08-24 22:29 GMT+7
 | 210 | data_structures/hashing/tests/test_hash_map | error |  |  |
 | 211 | data_structures/heap/binomial_heap | ✓ | 39.0ms | 47.06KB |
 | 212 | data_structures/heap/heap | ✓ | 36.0ms | 48.34KB |
-| 213 | data_structures/heap/heap_generic | error |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 33.0ms | 57.71KB |
 | 214 | data_structures/heap/max_heap | ✓ | 43.0ms | 46.20KB |
 | 215 | data_structures/heap/min_heap | ✓ | 52.0ms | 79.74KB |
 | 216 | data_structures/heap/randomized_heap | error |  |  |
 | 217 | data_structures/kd_tree/build_kdtree | ✓ | 47.0ms | 70.20KB |
-| 218 | data_structures/kd_tree/example/example_usage | ✓ | 475.0ms | 70.32KB |
+| 218 | data_structures/kd_tree/example/example_usage | error | 475.0ms | 70.32KB |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 43.0ms | 57.05KB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 38.0ms | 56.56KB |
 | 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 61.0ms | 95.67KB |

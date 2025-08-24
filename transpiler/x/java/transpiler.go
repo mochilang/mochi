@@ -498,6 +498,15 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	if jt := javaType(typ); jt != "" {
 		typ = jt
 	}
+	if ll, ok := e.(*ListLit); ok && strings.HasSuffix(typ, "[]") {
+		elem := strings.TrimSuffix(typ, "[]")
+		if strings.HasSuffix(elem, "[]") {
+			elem = strings.TrimSuffix(elem, "[]")
+		}
+		if ll.ElemType == "" || ll.ElemType == "Object" {
+			ll.ElemType = elem
+		}
+	}
 	if ml, ok := e.(*MapLit); ok {
 		if strings.HasPrefix(typ, "java.util.Map<") {
 			if ml.KeyType == "" {
