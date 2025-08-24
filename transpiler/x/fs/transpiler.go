@@ -4782,7 +4782,7 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	if be, ok := res.(*BinaryExpr); ok && (be.Op == "+" || be.Op == "-") {
 		if idx, ok2 := be.Left.(*IndexExpr); ok2 {
 			t := inferType(idx)
-			if t != "int" && t != "float" && t != "string" && t != "bool" {
+			if t != "int" && t != "int64" && t != "float" && t != "string" && t != "bool" {
 				idx.Index = &BinaryExpr{Left: idx.Index, Op: be.Op, Right: be.Right}
 				res = idx
 			}
