@@ -1,10 +1,10 @@
 public class Main {
     static class Heap {
-        int[][] arr;
-        java.util.Map<Integer,Integer> pos_map;
-        int size;
-        java.util.function.Function<Integer,Integer> key;
-        Heap(int[][] arr, java.util.Map<Integer,Integer> pos_map, int size, java.util.function.Function<Integer,Integer> key) {
+        java.math.BigInteger[][] arr;
+        java.util.Map<java.math.BigInteger,java.math.BigInteger> pos_map;
+        java.math.BigInteger size;
+        java.util.function.Function<java.math.BigInteger,java.math.BigInteger> key;
+        Heap(java.math.BigInteger[][] arr, java.util.Map<java.math.BigInteger,java.math.BigInteger> pos_map, java.math.BigInteger size, java.util.function.Function<java.math.BigInteger,java.math.BigInteger> key) {
             this.arr = arr;
             this.pos_map = pos_map;
             this.size = size;
@@ -18,226 +18,186 @@ public class Main {
 
     static Heap h = null;
 
-    static Heap new_heap(java.util.function.Function<Integer,Integer> key) {
-        return new Heap(new int[][]{}, new java.util.LinkedHashMap<Integer, Integer>(), 0, key);
+    static Heap new_heap(java.util.function.Function<java.math.BigInteger,java.math.BigInteger> key) {
+        return new Heap(((java.math.BigInteger[][])(new java.math.BigInteger[][]{})), ((java.util.Map<java.math.BigInteger,java.math.BigInteger>)(new java.util.LinkedHashMap<java.math.BigInteger, java.math.BigInteger>())), java.math.BigInteger.valueOf(0), key);
     }
 
-    static int parent(int i) {
-        if (i > 0) {
-            return ((int)(Math.floorDiv((i - 1), 2)));
+    static java.math.BigInteger parent(java.math.BigInteger i) {
+        if (i.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            return new java.math.BigInteger(String.valueOf((i.subtract(java.math.BigInteger.valueOf(1))).divide(java.math.BigInteger.valueOf(2))));
         }
-        return -1;
+        return new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
     }
 
-    static int left(int i, int size) {
-        int l = 2 * i + 1;
-        if (l < size) {
-            return l;
+    static java.math.BigInteger left(java.math.BigInteger i, java.math.BigInteger size) {
+        java.math.BigInteger l = new java.math.BigInteger(String.valueOf(java.math.BigInteger.valueOf(2).multiply(i).add(java.math.BigInteger.valueOf(1))));
+        if (l.compareTo(size) < 0) {
+            return new java.math.BigInteger(String.valueOf(l));
         }
-        return -1;
+        return new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
     }
 
-    static int right(int i, int size) {
-        int r = 2 * i + 2;
-        if (r < size) {
-            return r;
+    static java.math.BigInteger right(java.math.BigInteger i, java.math.BigInteger size) {
+        java.math.BigInteger r = new java.math.BigInteger(String.valueOf(java.math.BigInteger.valueOf(2).multiply(i).add(java.math.BigInteger.valueOf(2))));
+        if (r.compareTo(size) < 0) {
+            return new java.math.BigInteger(String.valueOf(r));
         }
-        return -1;
+        return new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
     }
 
-    static void swap(Heap h, int i, int j) {
-        int[][] arr = ((int[][])(h.arr));
-        int item_i = arr[i][0];
-        int item_j = arr[j][0];
-        java.util.Map<Integer,Integer> pm = h.pos_map;
-pm.put(item_i, j + 1);
-pm.put(item_j, i + 1);
-h.pos_map = pm;
-        int[] tmp = ((int[])(arr[i]));
-arr[i] = ((int[])(arr[j]));
-arr[j] = ((int[])(tmp));
+    static void swap(Heap h, java.math.BigInteger i, java.math.BigInteger j) {
+        java.math.BigInteger[][] arr = ((java.math.BigInteger[][])(h.arr));
+        java.math.BigInteger item_i_1 = new java.math.BigInteger(String.valueOf(arr[_idx((arr).length, ((java.math.BigInteger)(i)).longValue())][_idx((arr[_idx((arr).length, ((java.math.BigInteger)(i)).longValue())]).length, 0L)]));
+        java.math.BigInteger item_j_1 = new java.math.BigInteger(String.valueOf(arr[_idx((arr).length, ((java.math.BigInteger)(j)).longValue())][_idx((arr[_idx((arr).length, ((java.math.BigInteger)(j)).longValue())]).length, 0L)]));
+        java.util.Map<java.math.BigInteger,java.math.BigInteger> pm_1 = h.pos_map;
+pm_1.put(item_i_1, new java.math.BigInteger(String.valueOf(j.add(java.math.BigInteger.valueOf(1)))));
+pm_1.put(item_j_1, new java.math.BigInteger(String.valueOf(i.add(java.math.BigInteger.valueOf(1)))));
+h.pos_map = pm_1;
+        java.math.BigInteger[] tmp_1 = ((java.math.BigInteger[])(arr[_idx((arr).length, ((java.math.BigInteger)(i)).longValue())]));
+arr[(int)(((java.math.BigInteger)(i)).longValue())] = ((java.math.BigInteger[])(arr[_idx((arr).length, ((java.math.BigInteger)(j)).longValue())]));
+arr[(int)(((java.math.BigInteger)(j)).longValue())] = ((java.math.BigInteger[])(tmp_1));
 h.arr = arr;
     }
 
-    static boolean cmp(Heap h, int i, int j) {
-        int[][] arr_1 = ((int[][])(h.arr));
-        return arr_1[i][1] < arr_1[j][1];
+    static boolean cmp(Heap h, java.math.BigInteger i, java.math.BigInteger j) {
+        java.math.BigInteger[][] arr_1 = ((java.math.BigInteger[][])(h.arr));
+        return arr_1[_idx((arr_1).length, ((java.math.BigInteger)(i)).longValue())][_idx((arr_1[_idx((arr_1).length, ((java.math.BigInteger)(i)).longValue())]).length, 1L)].compareTo(arr_1[_idx((arr_1).length, ((java.math.BigInteger)(j)).longValue())][_idx((arr_1[_idx((arr_1).length, ((java.math.BigInteger)(j)).longValue())]).length, 1L)]) < 0;
     }
 
-    static int get_valid_parent(Heap h, int i) {
-        int vp = i;
-        int l_1 = left(i, h.size);
-        if (l_1 != 0 - 1 && ((Boolean)(cmp(h, l_1, vp))) == false) {
-            vp = l_1;
+    static java.math.BigInteger get_valid_parent(Heap h, java.math.BigInteger i) {
+        java.math.BigInteger vp = new java.math.BigInteger(String.valueOf(i));
+        java.math.BigInteger l_2 = new java.math.BigInteger(String.valueOf(left(new java.math.BigInteger(String.valueOf(i)), new java.math.BigInteger(String.valueOf(h.size)))));
+        if (l_2.compareTo((java.math.BigInteger.valueOf(1)).negate()) != 0 && (cmp(h, new java.math.BigInteger(String.valueOf(l_2)), new java.math.BigInteger(String.valueOf(vp))) == false)) {
+            vp = new java.math.BigInteger(String.valueOf(l_2));
         }
-        int r_1 = right(i, h.size);
-        if (r_1 != 0 - 1 && ((Boolean)(cmp(h, r_1, vp))) == false) {
-            vp = r_1;
+        java.math.BigInteger r_2 = new java.math.BigInteger(String.valueOf(right(new java.math.BigInteger(String.valueOf(i)), new java.math.BigInteger(String.valueOf(h.size)))));
+        if (r_2.compareTo((java.math.BigInteger.valueOf(1)).negate()) != 0 && (cmp(h, new java.math.BigInteger(String.valueOf(r_2)), new java.math.BigInteger(String.valueOf(vp))) == false)) {
+            vp = new java.math.BigInteger(String.valueOf(r_2));
         }
-        return vp;
+        return new java.math.BigInteger(String.valueOf(vp));
     }
 
-    static void heapify_up(Heap h, int index) {
-        int idx = index;
-        int p = parent(idx);
-        while (p != 0 - 1 && ((Boolean)(cmp(h, idx, p))) == false) {
-            swap(h, idx, p);
-            idx = p;
-            p = parent(p);
-        }
-    }
-
-    static void heapify_down(Heap h, int index) {
-        int idx_1 = index;
-        int vp_1 = get_valid_parent(h, idx_1);
-        while (vp_1 != idx_1) {
-            swap(h, idx_1, vp_1);
-            idx_1 = vp_1;
-            vp_1 = get_valid_parent(h, idx_1);
+    static void heapify_up(Heap h, java.math.BigInteger index) {
+        java.math.BigInteger idx = new java.math.BigInteger(String.valueOf(index));
+        java.math.BigInteger p_1 = new java.math.BigInteger(String.valueOf(parent(new java.math.BigInteger(String.valueOf(idx)))));
+        while (p_1.compareTo((java.math.BigInteger.valueOf(1)).negate()) != 0 && (cmp(h, new java.math.BigInteger(String.valueOf(idx)), new java.math.BigInteger(String.valueOf(p_1))) == false)) {
+            swap(h, new java.math.BigInteger(String.valueOf(idx)), new java.math.BigInteger(String.valueOf(p_1)));
+            idx = new java.math.BigInteger(String.valueOf(p_1));
+            p_1 = new java.math.BigInteger(String.valueOf(parent(new java.math.BigInteger(String.valueOf(p_1)))));
         }
     }
 
-    static void update_item(Heap h, int item, int item_value) {
-        java.util.Map<Integer,Integer> pm_1 = h.pos_map;
-        if ((int)(((int)(pm_1).getOrDefault(item, 0))) == 0) {
+    static void heapify_down(Heap h, java.math.BigInteger index) {
+        java.math.BigInteger idx_1 = new java.math.BigInteger(String.valueOf(index));
+        java.math.BigInteger vp_2 = new java.math.BigInteger(String.valueOf(get_valid_parent(h, new java.math.BigInteger(String.valueOf(idx_1)))));
+        while (vp_2.compareTo(idx_1) != 0) {
+            swap(h, new java.math.BigInteger(String.valueOf(idx_1)), new java.math.BigInteger(String.valueOf(vp_2)));
+            idx_1 = new java.math.BigInteger(String.valueOf(vp_2));
+            vp_2 = new java.math.BigInteger(String.valueOf(get_valid_parent(h, new java.math.BigInteger(String.valueOf(idx_1)))));
+        }
+    }
+
+    static void update_item(Heap h, java.math.BigInteger item, java.math.BigInteger item_value) {
+        java.util.Map<java.math.BigInteger,java.math.BigInteger> pm_2 = h.pos_map;
+        if (((java.math.BigInteger)(pm_2).get(item)).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             return;
         }
-        int index = (int)(((int)(pm_1).getOrDefault(item, 0))) - 1;
-        int[][] arr_2 = ((int[][])(h.arr));
-arr_2[index] = ((int[])(new Object[]{item, h.key.apply(item_value)}));
-h.arr = arr_2;
-h.pos_map = pm_1;
-        heapify_up(h, index);
-        heapify_down(h, index);
-    }
-
-    static void delete_item(Heap h, int item) {
-        java.util.Map<Integer,Integer> pm_2 = h.pos_map;
-        if ((int)(((int)(pm_2).getOrDefault(item, 0))) == 0) {
-            return;
-        }
-        int index_1 = (int)(((int)(pm_2).getOrDefault(item, 0))) - 1;
-pm_2.put(item, 0);
-        int[][] arr_3 = ((int[][])(h.arr));
-        int last_index = h.size - 1;
-        if (index_1 != last_index) {
-arr_3[index_1] = ((int[])(arr_3[last_index]));
-            int moved = arr_3[index_1][0];
-pm_2.put(moved, index_1 + 1);
-        }
-h.size = h.size - 1;
+        java.math.BigInteger index_1 = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(pm_2).get(item)).subtract(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger[][] arr_3 = ((java.math.BigInteger[][])(h.arr));
+arr_3[(int)(((java.math.BigInteger)(index_1)).longValue())] = ((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(item)), new java.math.BigInteger(String.valueOf(h.key.apply(new java.math.BigInteger(String.valueOf(item_value)))))}));
 h.arr = arr_3;
 h.pos_map = pm_2;
-        if (h.size > index_1) {
-            heapify_up(h, index_1);
-            heapify_down(h, index_1);
-        }
+        heapify_up(h, new java.math.BigInteger(String.valueOf(index_1)));
+        heapify_down(h, new java.math.BigInteger(String.valueOf(index_1)));
     }
 
-    static void insert_item(Heap h, int item, int item_value) {
-        Object arr_4 = h.arr;
-        int arr_len = arr_4.length;
-        if (arr_len == h.size) {
-            arr_4 = appendObj((int[][])arr_4, new int[]{item, h.key.apply(item_value)});
-        } else {
-arr_4[h.size] = new Object[]{item, h.key.apply(item_value)};
-        }
-        java.util.Map<Integer,Integer> pm_3 = h.pos_map;
-pm_3.put(item, h.size + 1);
-h.size = h.size + 1;
-h.arr = arr_4;
-h.pos_map = pm_3;
-        heapify_up(h, h.size - 1);
-    }
-
-    static int[] get_top(Heap h) {
-        int[][] arr_5 = ((int[][])(h.arr));
-        if (h.size > 0) {
-            return arr_5[0];
-        }
-        return new int[]{};
-    }
-
-    static int[] extract_top(Heap h) {
-        int[] top = ((int[])(get_top(h)));
-        if (top.length > 0) {
-            delete_item(h, top[0]);
-        }
-        return top;
-    }
-
-    static int identity(int x) {
-        return x;
-    }
-
-    static int negate(int x) {
-        return 0 - x;
-    }
-    public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            h = new_heap(Main::identity);
-            insert_item(h, 5, 34);
-            insert_item(h, 6, 31);
-            insert_item(h, 7, 37);
-            System.out.println(_p(get_top(h)));
-            System.out.println(_p(extract_top(h)));
-            System.out.println(_p(extract_top(h)));
-            System.out.println(_p(extract_top(h)));
-            h = new_heap(Main::negate);
-            insert_item(h, 5, 34);
-            insert_item(h, 6, 31);
-            insert_item(h, 7, 37);
-            System.out.println(_p(get_top(h)));
-            System.out.println(_p(extract_top(h)));
-            System.out.println(_p(extract_top(h)));
-            System.out.println(_p(extract_top(h)));
-            insert_item(h, 8, 45);
-            insert_item(h, 9, 40);
-            insert_item(h, 10, 50);
-            System.out.println(_p(get_top(h)));
-            update_item(h, 10, 30);
-            System.out.println(_p(get_top(h)));
-            delete_item(h, 10);
-            System.out.println(_p(get_top(h)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+    static void delete_item(Heap h, java.math.BigInteger item) {
+        java.util.Map<java.math.BigInteger,java.math.BigInteger> pm_3 = h.pos_map;
+        if (((java.math.BigInteger)(pm_3).get(item)).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             return;
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
+        java.math.BigInteger index_3 = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(pm_3).get(item)).subtract(java.math.BigInteger.valueOf(1))));
+pm_3.put(item, java.math.BigInteger.valueOf(0));
+        java.math.BigInteger[][] arr_5 = ((java.math.BigInteger[][])(h.arr));
+        java.math.BigInteger last_index_1 = new java.math.BigInteger(String.valueOf(h.size.subtract(java.math.BigInteger.valueOf(1))));
+        if (index_3.compareTo(last_index_1) != 0) {
+arr_5[(int)(((java.math.BigInteger)(index_3)).longValue())] = ((java.math.BigInteger[])(arr_5[_idx((arr_5).length, ((java.math.BigInteger)(last_index_1)).longValue())]));
+            java.math.BigInteger moved_1 = new java.math.BigInteger(String.valueOf(arr_5[_idx((arr_5).length, ((java.math.BigInteger)(index_3)).longValue())][_idx((arr_5[_idx((arr_5).length, ((java.math.BigInteger)(index_3)).longValue())]).length, 0L)]));
+pm_3.put(moved_1, new java.math.BigInteger(String.valueOf(index_3.add(java.math.BigInteger.valueOf(1)))));
         }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
+h.size = h.size.subtract(java.math.BigInteger.valueOf(1));
+h.arr = arr_5;
+h.pos_map = pm_3;
+        if (h.size.compareTo(index_3) > 0) {
+            heapify_up(h, new java.math.BigInteger(String.valueOf(index_3)));
+            heapify_down(h, new java.math.BigInteger(String.valueOf(index_3)));
         }
-        return (int)(System.nanoTime() / 1000);
     }
 
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static void insert_item(Heap h, java.math.BigInteger item, java.math.BigInteger item_value) {
+        java.math.BigInteger[][] arr_6 = ((java.math.BigInteger[][])(h.arr));
+        java.math.BigInteger arr_len_1 = new java.math.BigInteger(String.valueOf(arr_6.length));
+        if (arr_len_1.compareTo(h.size) == 0) {
+            arr_6 = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr_6), java.util.stream.Stream.of(new java.math.BigInteger[][]{((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(item)), new java.math.BigInteger(String.valueOf(h.key.apply(new java.math.BigInteger(String.valueOf(item_value)))))}))})).toArray(java.math.BigInteger[][]::new)));
+        } else {
+arr_6[(int)(((java.math.BigInteger)(h.size)).longValue())] = ((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(item)), new java.math.BigInteger(String.valueOf(h.key.apply(new java.math.BigInteger(String.valueOf(item_value)))))}));
+        }
+        java.util.Map<java.math.BigInteger,java.math.BigInteger> pm_5 = h.pos_map;
+pm_5.put(item, new java.math.BigInteger(String.valueOf(h.size.add(java.math.BigInteger.valueOf(1)))));
+h.size = h.size.add(java.math.BigInteger.valueOf(1));
+h.arr = arr_6;
+h.pos_map = pm_5;
+        heapify_up(h, new java.math.BigInteger(String.valueOf(h.size.subtract(java.math.BigInteger.valueOf(1)))));
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+    static java.math.BigInteger[] get_top(Heap h) {
+        java.math.BigInteger[][] arr_7 = ((java.math.BigInteger[][])(h.arr));
+        if (h.size.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            return ((java.math.BigInteger[])(arr_7[_idx((arr_7).length, 0L)]));
+        }
+        return ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+    }
+
+    static java.math.BigInteger[] extract_top(Heap h) {
+        java.math.BigInteger[] top = ((java.math.BigInteger[])(get_top(h)));
+        if (new java.math.BigInteger(String.valueOf(top.length)).compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            delete_item(h, new java.math.BigInteger(String.valueOf(top[_idx((top).length, 0L)])));
+        }
+        return ((java.math.BigInteger[])(top));
+    }
+
+    static java.math.BigInteger identity(java.math.BigInteger x) {
+        return new java.math.BigInteger(String.valueOf(x));
+    }
+
+    static java.math.BigInteger negate(java.math.BigInteger x) {
+        return new java.math.BigInteger(String.valueOf((x).negate()));
+    }
+    public static void main(String[] args) {
+        h = new_heap(Main::identity);
+        insert_item(h, java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(34));
+        insert_item(h, java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(31));
+        insert_item(h, java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(37));
+        System.out.println(_p(get_top(h)));
+        System.out.println(_p(extract_top(h)));
+        System.out.println(_p(extract_top(h)));
+        System.out.println(_p(extract_top(h)));
+        h = new_heap(Main::negate);
+        insert_item(h, java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(34));
+        insert_item(h, java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(31));
+        insert_item(h, java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(37));
+        System.out.println(_p(get_top(h)));
+        System.out.println(_p(extract_top(h)));
+        System.out.println(_p(extract_top(h)));
+        System.out.println(_p(extract_top(h)));
+        insert_item(h, java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(45));
+        insert_item(h, java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(40));
+        insert_item(h, java.math.BigInteger.valueOf(10), java.math.BigInteger.valueOf(50));
+        System.out.println(_p(get_top(h)));
+        update_item(h, java.math.BigInteger.valueOf(10), java.math.BigInteger.valueOf(30));
+        System.out.println(_p(get_top(h)));
+        delete_item(h, java.math.BigInteger.valueOf(10));
+        System.out.println(_p(get_top(h)));
     }
 
     static String _p(Object v) {
@@ -253,6 +213,38 @@ h.pos_map = pm_3;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }
