@@ -2761,6 +2761,9 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseRuntime = usesRuntime
 	gp.Imports = imports
 	gp.BenchMain = benchMain
+	if benchMain {
+		gp.enableBench()
+	}
 	if len(fetchFuncs) > 0 {
 		for name := range fetchFuncs {
 			gp.FetchStructs = append(gp.FetchStructs, name)
