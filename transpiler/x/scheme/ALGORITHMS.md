@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-23 13:54 GMT+7
+Last updated: 2025-08-24 09:04 GMT+7
 
-## Algorithms Golden Test Checklist (928/1077)
+## Algorithms Golden Test Checklist (932/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -962,10 +962,10 @@ Last updated: 2025-08-23 13:54 GMT+7
 | 953 | sorts/exchange_sort |   |  |  |
 | 954 | sorts/external_sort |   |  |  |
 | 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
+| 956 | sorts/heap_sort | ✓ | 0s | 12.5 MB |
+| 957 | sorts/insertion_sort | ✓ | 0s | 12.2 MB |
+| 958 | sorts/intro_sort | ✓ | 1ms | 13.6 MB |
+| 959 | sorts/iterative_merge_sort | ✓ | 1ms | 13.7 MB |
 | 960 | sorts/merge_insertion_sort | ✓ | 0s | 13.8 MB |
 | 961 | sorts/merge_sort | ✓ | 0s | 12.5 MB |
 | 962 | sorts/msd_radix_sort | ✓ | 1ms | 13.4 MB |
