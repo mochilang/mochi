@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-24 09:05 GMT+7
+Last updated: 2025-08-24 15:44 GMT+7
 
 ## Algorithms Golden Test Checklist (1002/1077)
 | Index | Name | Status | Duration | Memory |
@@ -157,7 +157,7 @@ Last updated: 2025-08-24 09:05 GMT+7
 | 148 | conversions/temperature_conversions | ✓ | 65.0µs | 13.77MB |
 | 149 | conversions/time_conversions | ✓ | 26.0µs | 12.82MB |
 | 150 | conversions/volume_conversions | ✓ | 34.0µs | 12.52MB |
-| 151 | conversions/weight_conversion | ✓ | 29.0µs | 13.27MB |
+| 151 | conversions/weight_conversion | ✓ | 23.0µs | 0B |
 | 152 | data_compression/burrows_wheeler | ✓ | 701.0µs | 13.34MB |
 | 153 | data_compression/huffman | ✓ | 1.0ms | 13.55MB |
 | 154 | data_compression/lempel_ziv | ✓ | 35.0µs | 12.55MB |
