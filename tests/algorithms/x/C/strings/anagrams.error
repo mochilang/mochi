@@ -1,8 +1,22 @@
-parse error: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/anagrams.mochi:75:19: unexpected token "!" (expected PostfixExpr)
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/anagrams.mochi:75:19
-
- 75 |     if w != "" && !(w in seen) {
-    |                   ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/strings/anagrams.c: In function ‘unique_sorted’:
+/workspace/mochi/tests/algorithms/x/C/strings/anagrams.c:202:37: warning: implicit declaration of function ‘not’ [-Wimplicit-function-declaration]
+  202 |         if ((strcmp(w, "") != 0) && not(contains_str(seen.keys, seen.len, w))) {
+      |                                     ^~~
+/workspace/mochi/tests/algorithms/x/C/strings/anagrams.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/strings/anagrams.c:239:22: warning: implicit declaration of function ‘read_file’ [-Wimplicit-function-declaration]
+  239 |     long long text = read_file("words.txt");
+      |                      ^~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/strings/anagrams.c:240:32: warning: passing argument 1 of ‘split’ makes pointer from integer without a cast [-Wint-conversion]
+  240 |     const char* *lines = split(text, "\n");
+      |                                ^~~~
+      |                                |
+      |                                long long int
+/workspace/mochi/tests/algorithms/x/C/strings/anagrams.c:138:33: note: expected ‘const char *’ but argument is of type ‘long long int’
+  138 | const char* * split(const char* s, const char* sep) {
+      |                     ~~~~~~~~~~~~^
+/usr/bin/ld: /tmp/ccqiG0Mf.o: in function `unique_sorted':
+anagrams.c:(.text+0xc14): undefined reference to `not'
+/usr/bin/ld: /tmp/ccqiG0Mf.o: in function `user_main':
+anagrams.c:(.text+0xe9d): undefined reference to `read_file'
+collect2: error: ld returned 1 exit status

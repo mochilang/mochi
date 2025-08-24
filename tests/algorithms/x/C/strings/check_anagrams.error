@@ -1,0 +1,23 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/strings/check_anagrams.c: In function ‘check_anagrams’:
+/workspace/mochi/tests/algorithms/x/C/strings/check_anagrams.c:127:15: error: expected ‘)’ before ‘in’
+  127 |         if (c1 in count_) {
+      |            ~  ^~~
+      |               )
+/workspace/mochi/tests/algorithms/x/C/strings/check_anagrams.c:132:15: error: expected ‘)’ before ‘in’
+  132 |         if (c2 in count_) {
+      |            ~  ^~~
+      |               )
+/workspace/mochi/tests/algorithms/x/C/strings/check_anagrams.c: In function ‘print_bool’:
+/workspace/mochi/tests/algorithms/x/C/strings/check_anagrams.c:151:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  151 |         printf("%d\n", 1LL);
+      |                 ~^     ~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
+/workspace/mochi/tests/algorithms/x/C/strings/check_anagrams.c:153:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  153 |         printf("%d\n", 0LL);
+      |                 ~^     ~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld

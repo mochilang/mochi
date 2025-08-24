@@ -6495,6 +6495,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_repeat"
 				name = "user_repeat"
 			}
+			if name == "concat" { // avoid conflict with builtin helper
+				funcAliases[name] = "user_concat"
+				name = "user_concat"
+			}
 			if name == "panic" {
 				funcAliases[name] = "user_panic"
 				name = "user_panic"
