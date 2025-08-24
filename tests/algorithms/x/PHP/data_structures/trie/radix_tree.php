@@ -1,6 +1,8 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,8 +27,12 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 function new_node($prefix, $is_leaf) {
-  return ['prefix' => $prefix, 'is_leaf' => $is_leaf, 'children' => []];
+  return ['children' => [], 'is_leaf' => $is_leaf, 'prefix' => $prefix];
 }
 function new_tree() {
   $nodes = [new_node('', false)];
@@ -46,7 +52,7 @@ function match_prefix($node, $word) {
 }
   $x = $x + 1;
 };
-  $common = substr($p, 0, $x - 0);
+  $common = substr($p, 0, $x);
   $rem_prefix = substr($p, $x, strlen($p) - $x);
   $rem_word = substr($w, $x, strlen($w) - $x);
   return ['common' => $common, 'rem_prefix' => $rem_prefix, 'rem_word' => $rem_word];
@@ -65,7 +71,7 @@ function insert(&$tree, $idx, $word) {
   $tree['nodes'] = $nodes;
   return;
 }
-  $first = substr($word, 0, 1 - 0);
+  $first = substr($word, 0, 1);
   $children = $node['children'];
   if (!has_key($children, $first)) {
   $new_idx = count($nodes);
@@ -86,7 +92,7 @@ function insert(&$tree, $idx, $word) {
   $child['prefix'] = $res['rem_prefix'];
   $nodes[$child_idx] = $child;
   $new_children = [];
-  $new_children[substr($res['rem_prefix'], 0, 1 - 0)] = $child_idx;
+  $new_children[substr($res['rem_prefix'], 0, 1)] = $child_idx;
   $new_idx = count($nodes);
   $nodes = _append($nodes, new_node($res['common'], false));
   $nodes[$new_idx]['children'] = $new_children;
@@ -103,7 +109,7 @@ function insert(&$tree, $idx, $word) {
 function find($tree, $idx, $word) {
   $nodes = $tree['nodes'];
   $node = $nodes[$idx];
-  $first = substr($word, 0, 1 - 0);
+  $first = substr($word, 0, 1);
   $children = $node['children'];
   if (!has_key($children, $first)) {
   return false;
@@ -139,7 +145,7 @@ function has_key($m, $k) {
 function delete(&$tree, $idx, $word) {
   $nodes = $tree['nodes'];
   $node = $nodes[$idx];
-  $first = substr($word, 0, 1 - 0);
+  $first = substr($word, 0, 1);
   $children = $node['children'];
   if (!has_key($children, $first)) {
   return false;
@@ -253,7 +259,7 @@ function test_trie() {
 }
 function pytests() {
   if (!test_trie()) {
-  $panic('test failed');
+  _panic('test failed');
 }
 }
 function main() {

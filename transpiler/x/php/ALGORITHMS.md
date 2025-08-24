@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-24 17:12 GMT+7
+Last updated: 2025-08-24 22:24 GMT+7
 
-## Algorithms Golden Test Checklist (1002/1077)
+## Algorithms Golden Test Checklist (1004/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -259,7 +259,7 @@ Last updated: 2025-08-24 17:12 GMT+7
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1µs | 36.8 KB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 90µs | 39.2 KB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 132µs | 35.4 KB |
-| 253 | data_structures/stacks/next_greater_element | error |  |  |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 260µs | 1.6 MB |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 114µs | 36.2 KB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 150µs | 40.3 KB |
 | 256 | data_structures/stacks/stack | ✓ | 117µs | 37.7 KB |
@@ -267,7 +267,7 @@ Last updated: 2025-08-24 17:12 GMT+7
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 166µs | 41.4 KB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 80µs | 36.7 KB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 124µs | 38.8 KB |
-| 261 | data_structures/suffix_tree/example/example_usage | error |  |  |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 211µs | 1.6 MB |
 | 262 | data_structures/suffix_tree/suffix_tree | ✓ | 112µs | 40.2 KB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 86µs | 35.7 KB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 93µs | 36.1 KB |
