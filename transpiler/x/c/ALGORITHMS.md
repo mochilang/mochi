@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (878/1077) - Last updated 2025-08-24 16:59 +0700:
+Checklist of programs that currently transpile and run (879/1077) - Last updated 2025-08-24 21:03 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -196,7 +196,7 @@ Checklist of programs that currently transpile and run (878/1077) - Last updated
 | 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 314us | 1.4 MB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |  |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 169us | 1.6 MB |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |  |  |  |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 773us | 1.4 MB |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 511us | 1.6 MB |
 | 194 | data_structures/binary_tree/red_black_tree |  |  |  |
 | 195 | data_structures/binary_tree/segment_tree | ✓ | 490us | 1.6 MB |
