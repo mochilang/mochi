@@ -1,0 +1,18 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/searches/hill_climbing.c: In function ‘score’:
+/workspace/mochi/tests/algorithms/x/C/searches/hill_climbing.c:80:14: error: incompatible types when returning type ‘double (*)(double,  double)’ but ‘double’ was expected
+   80 |     return sp.f;
+      |            ~~^~
+/workspace/mochi/tests/algorithms/x/C/searches/hill_climbing.c: In function ‘hill_climbing’:
+/workspace/mochi/tests/algorithms/x/C/searches/hill_climbing.c:129:26: error: incompatible types when initializing type ‘long long int’ using type ‘SearchProblem’
+  129 |         long long next = current;
+      |                          ^~~~~~~
+/workspace/mochi/tests/algorithms/x/C/searches/hill_climbing.c:145:28: error: incompatible types when assigning to type ‘long long int’ from type ‘SearchProblem’
+  145 |                     next = n;
+      |                            ^
+/workspace/mochi/tests/algorithms/x/C/searches/hill_climbing.c:151:28: error: incompatible types when assigning to type ‘long long int’ from type ‘SearchProblem’
+  151 |                     next = n;
+      |                            ^
+/workspace/mochi/tests/algorithms/x/C/searches/hill_climbing.c:157:23: error: incompatible types when assigning to type ‘SearchProblem’ from type ‘long long int’
+  157 |             current = next;
+      |                       ^~~~

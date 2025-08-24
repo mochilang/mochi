@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (754/1077) - Last updated 2025-08-23 20:18 +0700:
+Checklist of programs that currently transpile and run (794/1077) - Last updated 2025-08-23 21:18 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -911,55 +911,55 @@ Checklist of programs that currently transpile and run (754/1077) - Last updated
 | 904 | project_euler/problem_074/sol1 | ✓ | 13.49ms | 1.7 MB |
 | 905 | project_euler/problem_074/sol2 | ✓ | 7.51s | 664.3 MB |
 | 906 | project_euler/problem_075/sol1 |  |  |  |
-| 907 | project_euler/problem_076/sol1 |  |  |  |
+| 907 | project_euler/problem_076/sol1 | ✓ | 1.02ms | 1.7 MB |
 | 908 | project_euler/problem_077/sol1 |  |  |  |
-| 909 | project_euler/problem_078/sol1 |  |  |  |
-| 910 | project_euler/problem_079/sol1 |  |  |  |
-| 911 | project_euler/problem_092/sol1 |  |  |  |
-| 912 | project_euler/problem_116/sol1 |  |  |  |
-| 913 | project_euler/problem_345/sol1 |  |  |  |
+| 909 | project_euler/problem_078/sol1 | ✓ | 128.16ms | 2.1 MB |
+| 910 | project_euler/problem_079/sol1 | ✓ | 264us | 1.5 MB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 407us | 1.6 MB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 395us | 1.6 MB |
+| 913 | project_euler/problem_345/sol1 | ✓ | 11.97ms | 2.1 MB |
 | 914 | quantum/q_fourier_transform |  |  |  |
-| 915 | scheduling/job_sequence_with_deadline |  |  |  |
-| 916 | scheduling/job_sequencing_with_deadline |  |  |  |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 238us | 1.5 MB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 266us | 1.5 MB |
 | 917 | scheduling/multi_level_feedback_queue |  |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first |  |  |  |
-| 919 | scheduling/round_robin |  |  |  |
-| 920 | scheduling/shortest_job_first |  |  |  |
-| 921 | scripts/build_directory_md |  |  |  |
-| 922 | scripts/validate_filenames |  |  |  |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 546us | 1.6 MB |
+| 919 | scheduling/round_robin | ✓ | 451us | 1.6 MB |
+| 920 | scheduling/shortest_job_first | ✓ | 427us | 1.5 MB |
+| 921 | scripts/build_directory_md | ✓ | 463us | 1.7 MB |
+| 922 | scripts/validate_filenames | ✓ | 308us | 1.5 MB |
 | 923 | scripts/validate_solutions |  |  |  |
-| 924 | searches/binary_search |  |  |  |
-| 925 | searches/double_linear_search |  |  |  |
-| 926 | searches/double_linear_search_recursion |  |  |  |
-| 927 | searches/exponential_search |  |  |  |
-| 928 | searches/fibonacci_search |  |  |  |
+| 924 | searches/binary_search | ✓ | 275us | 1.6 MB |
+| 925 | searches/double_linear_search | ✓ | 635us | 1.4 MB |
+| 926 | searches/double_linear_search_recursion | ✓ | 305us | 1.6 MB |
+| 927 | searches/exponential_search | ✓ |  |  |
+| 928 | searches/fibonacci_search | ✓ | 267us | 1.5 MB |
 | 929 | searches/hill_climbing |  |  |  |
-| 930 | searches/interpolation_search |  |  |  |
-| 931 | searches/jump_search |  |  |  |
-| 932 | searches/linear_search |  |  |  |
+| 930 | searches/interpolation_search | ✓ | 274us | 1.6 MB |
+| 931 | searches/jump_search | ✓ | 253us | 1.4 MB |
+| 932 | searches/linear_search | ✓ | 397us | 1.6 MB |
 | 933 | searches/median_of_medians |  |  |  |
-| 934 | searches/quick_select |  |  |  |
-| 935 | searches/sentinel_linear_search |  |  |  |
-| 936 | searches/simple_binary_search |  |  |  |
-| 937 | searches/simulated_annealing |  |  |  |
-| 938 | searches/tabu_search |  |  |  |
-| 939 | searches/ternary_search |  |  |  |
-| 940 | sorts/bead_sort |  |  |  |
-| 941 | sorts/binary_insertion_sort |  |  |  |
+| 934 | searches/quick_select | ✓ | 732us | 1.6 MB |
+| 935 | searches/sentinel_linear_search | ✓ | 449us | 1.5 MB |
+| 936 | searches/simple_binary_search | ✓ | 333us | 1.5 MB |
+| 937 | searches/simulated_annealing | ✓ | 3.42ms | 2.4 MB |
+| 938 | searches/tabu_search | ✓ | 796us | 1.6 MB |
+| 939 | searches/ternary_search | ✓ | 424us | 1.5 MB |
+| 940 | sorts/bead_sort | ✓ | 292us | 1.6 MB |
+| 941 | sorts/binary_insertion_sort | ✓ | 432us | 1.5 MB |
 | 942 | sorts/bitonic_sort |  |  |  |
-| 943 | sorts/bogo_sort |  |  |  |
+| 943 | sorts/bogo_sort | ✓ | 252us | 1.5 MB |
 | 944 | sorts/bubble_sort |  |  |  |
 | 945 | sorts/bucket_sort |  |  |  |
-| 946 | sorts/circle_sort |  |  |  |
-| 947 | sorts/cocktail_shaker_sort |  |  |  |
-| 948 | sorts/comb_sort |  |  |  |
-| 949 | sorts/counting_sort |  |  |  |
-| 950 | sorts/cycle_sort |  |  |  |
-| 951 | sorts/double_sort |  |  |  |
-| 952 | sorts/dutch_national_flag_sort |  |  |  |
-| 953 | sorts/exchange_sort |  |  |  |
-| 954 | sorts/external_sort |  |  |  |
-| 955 | sorts/gnome_sort |  |  |  |
+| 946 | sorts/circle_sort | ✓ | 421us | 1.6 MB |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 407us | 1.5 MB |
+| 948 | sorts/comb_sort | ✓ | 316us | 1.6 MB |
+| 949 | sorts/counting_sort | ✓ |  |  |
+| 950 | sorts/cycle_sort | ✓ | 313us | 1.5 MB |
+| 951 | sorts/double_sort | ✓ | 408us | 1.5 MB |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 293us | 1.5 MB |
+| 953 | sorts/exchange_sort | ✓ | 314us | 1.5 MB |
+| 954 | sorts/external_sort | ✓ | 206us | 1.4 MB |
+| 955 | sorts/gnome_sort | ✓ | 259us | 1.4 MB |
 | 956 | sorts/heap_sort |  |  |  |
 | 957 | sorts/insertion_sort |  |  |  |
 | 958 | sorts/intro_sort |  |  |  |

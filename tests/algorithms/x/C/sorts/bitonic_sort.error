@@ -1,0 +1,12 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/sorts/bitonic_sort.c: In function ‘set_at_int’:
+/workspace/mochi/tests/algorithms/x/C/sorts/bitonic_sort.c:95:19: warning: implicit declaration of function ‘list_append_int_new’; did you mean ‘list_append_long_long’? [-Wimplicit-function-declaration]
+   95 |             res = list_append_int_new(res, res_len, value);
+      |                   ^~~~~~~~~~~~~~~~~~~
+      |                   list_append_long_long
+/workspace/mochi/tests/algorithms/x/C/sorts/bitonic_sort.c:95:17: warning: assignment to ‘long long int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   95 |             res = list_append_int_new(res, res_len, value);
+      |                 ^
+/usr/bin/ld: /tmp/ccdTn2ik.o: in function `set_at_int':
+bitonic_sort.c:(.text+0x4ca): undefined reference to `list_append_int_new'
+collect2: error: ld returned 1 exit status

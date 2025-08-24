@@ -1,0 +1,53 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c: In function ‘first_come_first_served’:
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:272:14: error: expected expression before ‘;’ token
+  272 |         rq = ;
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:276:9: error: conversion to non-scalar type requested
+  276 |         update_waiting_time(*(MLFQ)mlfq, cp);
+      |         ^~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:283:47: warning: passing argument 1 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  283 |     mlfq->finish_queue = concat_long_long(mlfq->finish_queue, mlfq->finish_queue_len, finished, finished_len);
+      |                                           ~~~~^~~~~~~~~~~~~~
+      |                                               |
+      |                                               Process *
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:77:47: note: expected ‘long long int *’ but argument is of type ‘Process *’
+   77 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                    ~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:283:87: warning: passing argument 3 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  283 |     mlfq->finish_queue = concat_long_long(mlfq->finish_queue, mlfq->finish_queue_len, finished, finished_len);
+      |                                                                                       ^~~~~~~~
+      |                                                                                       |
+      |                                                                                       Process *
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:77:81: note: expected ‘const long long int *’ but argument is of type ‘Process *’
+   77 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                                                ~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:283:24: warning: assignment to ‘Process *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  283 |     mlfq->finish_queue = concat_long_long(mlfq->finish_queue, mlfq->finish_queue_len, finished, finished_len);
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c: In function ‘round_robin’:
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:297:14: error: expected expression before ‘;’ token
+  297 |         rq = ;
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:301:9: error: conversion to non-scalar type requested
+  301 |         update_waiting_time(*(MLFQ)mlfq, cp);
+      |         ^~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:316:47: warning: passing argument 1 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  316 |     mlfq->finish_queue = concat_long_long(mlfq->finish_queue, mlfq->finish_queue_len, finished, finished_len);
+      |                                           ~~~~^~~~~~~~~~~~~~
+      |                                               |
+      |                                               Process *
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:77:47: note: expected ‘long long int *’ but argument is of type ‘Process *’
+   77 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                    ~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:316:87: warning: passing argument 3 of ‘concat_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  316 |     mlfq->finish_queue = concat_long_long(mlfq->finish_queue, mlfq->finish_queue_len, finished, finished_len);
+      |                                                                                       ^~~~~~~~
+      |                                                                                       |
+      |                                                                                       Process *
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:77:81: note: expected ‘const long long int *’ but argument is of type ‘Process *’
+   77 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                                                ~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/scheduling/multi_level_feedback_queue.c:316:24: warning: assignment to ‘Process *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  316 |     mlfq->finish_queue = concat_long_long(mlfq->finish_queue, mlfq->finish_queue_len, finished, finished_len);
+      |                        ^

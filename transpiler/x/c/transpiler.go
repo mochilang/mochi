@@ -1179,6 +1179,16 @@ func (j *JSONListDoubleCall) emit(w io.Writer, indent int) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
+	if call, ok := r.Expr.(*CallExpr); ok && strings.HasPrefix(call.Func, "map_get_") && strings.HasSuffix(currentFuncReturn, "*") {
+		save := currentVarName
+		currentVarName = currentFuncName
+		writeIndent(w, indent)
+		io.WriteString(w, "return ")
+		call.emitExpr(w)
+		io.WriteString(w, ";\n")
+		currentVarName = save
+		return
+	}
 	if call, ok := r.Expr.(*CallExpr); ok && strings.HasSuffix(currentFuncReturn, "[]") && !(call.Func == "append" && len(call.Args) == 2) {
 		tmp := fmt.Sprintf("__ret%d", tempCounter)
 		tempCounter++
@@ -1383,6 +1393,10 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "return")
 	if r.Expr != nil {
 		io.WriteString(w, " ")
+		save := currentVarName
+		if strings.HasSuffix(currentFuncReturn, "*") {
+			currentVarName = currentFuncName
+		}
 		if strings.HasSuffix(currentFuncReturn, "[]") {
 			switch v := r.Expr.(type) {
 			case *VarRef:
@@ -1422,6 +1436,7 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 			}
 		}
 		r.Expr.emitExpr(w)
+		currentVarName = save
 	} else {
 		io.WriteString(w, " 0")
 	}
@@ -3305,7 +3320,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, vr.Name+".lens, ")
 			io.WriteString(w, vr.Name+".len, ")
 			i.Index.emitExpr(w)
-			if currentVarName != "" && strings.HasSuffix(varTypes[currentVarName], "*") {
+			if currentVarName != "" && (strings.HasSuffix(varTypes[currentVarName], "*") || strings.HasSuffix(varTypes[currentVarName], "[]") || currentVarName == currentFuncName) {
 				io.WriteString(w, ", &")
 				io.WriteString(w, currentVarName)
 				io.WriteString(w, "_len)")
@@ -3334,7 +3349,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 				io.WriteString(w, vr.Name+"_len, ")
 			}
 			i.Index.emitExpr(w)
-			if currentVarName != "" && (strings.HasSuffix(varTypes[currentVarName], "*") || strings.HasSuffix(varTypes[currentVarName], "[]")) {
+			if currentVarName != "" && (strings.HasSuffix(varTypes[currentVarName], "*") || strings.HasSuffix(varTypes[currentVarName], "[]") || currentVarName == currentFuncName) {
 				io.WriteString(w, ", &")
 				io.WriteString(w, currentVarName)
 				io.WriteString(w, "_len)")
@@ -3421,7 +3436,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 		i.Target.emitExpr(w)
 		io.WriteString(w, ".len, ")
 		i.Index.emitExpr(w)
-		if currentVarName != "" && (strings.HasSuffix(varTypes[currentVarName], "*") || strings.HasSuffix(varTypes[currentVarName], "[]")) {
+		if currentVarName != "" && (strings.HasSuffix(varTypes[currentVarName], "*") || strings.HasSuffix(varTypes[currentVarName], "[]") || currentVarName == currentFuncName) {
 			io.WriteString(w, ", &")
 			io.WriteString(w, currentVarName)
 			io.WriteString(w, "_len)")

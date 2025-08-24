@@ -1,0 +1,12 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/sorts/bucket_sort.c: In function ‘set_at_float’:
+/workspace/mochi/tests/algorithms/x/C/sorts/bucket_sort.c:133:19: warning: implicit declaration of function ‘list_append_double_new’; did you mean ‘list_append_doubleptr’? [-Wimplicit-function-declaration]
+  133 |             res = list_append_double_new(res, res_len, value);
+      |                   ^~~~~~~~~~~~~~~~~~~~~~
+      |                   list_append_doubleptr
+/workspace/mochi/tests/algorithms/x/C/sorts/bucket_sort.c:133:17: warning: assignment to ‘double *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  133 |             res = list_append_double_new(res, res_len, value);
+      |                 ^
+/usr/bin/ld: /tmp/ccQonoVE.o: in function `set_at_float':
+bucket_sort.c:(.text+0x69c): undefined reference to `list_append_double_new'
+collect2: error: ld returned 1 exit status
