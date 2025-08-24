@@ -1,5 +1,29 @@
 # 📦 CHANGELOG.md
 
+## [0.10.72] – 2025-08-24T15:35:26+07:00
+
+### Added
+
+- Zig transpiler supports mutable list literals, dynamic ranges, float equality and arraylist APIs.
+- C transpiler adds runtime list allocation for top-level literals, map helpers, slice functions, map growth and user-defined concatenation, plus `while` loop pointer membership.
+- Scala introduces an `export` keyword and custom `contains` handling.
+- Pascal supports list-to-string conversion and JSONL loading.
+- Racket gains vector support.
+- Java handles BigInteger and object arrays; Go initializes maps on declaration and allows typed slice indices.
+
+### Changed
+
+- Algorithm outputs refreshed across TypeScript, Python, Ruby, Scala, Pascal, Clojure, C++ and more.
+- TypeScript and Go refine float equality and formatting.
+- Rust treats collection literals as non-const.
+
+### Fixed
+
+- C transpiler handles redeclarations, map resets and unary minus with ints.
+- File system maps int arrays to int64 arrays.
+- Erlang avoids variable reuse in mutated calls.
+- Python division heuristics corrected.
+
 ## [0.10.71] – 2025-08-23T14:49:16+07:00
 
 ### Added
