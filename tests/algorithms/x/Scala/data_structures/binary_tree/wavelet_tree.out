@@ -1,0 +1,4 @@
+rank_till_index 6 at 6 -> 1
+rank 6 in [313] -> 2
+quantile index 2 in [25] -> 5
+range_counting [37] in [110] -> 3
