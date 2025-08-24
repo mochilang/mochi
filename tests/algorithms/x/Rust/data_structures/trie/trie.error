@@ -1,0 +1,533 @@
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:132:17
+    |
+132 |     if (pos == (word.len() as i64)) {
+    |                 ^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:143:22
+    |
+143 |     let ch: String = word.chars().nth(pos as usize).unwrap().to_string().clone();
+    |                      ^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:69:2
+   |
+69 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:78:2
+   |
+78 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:106:2
+    |
+106 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:111:2
+    |
+111 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:127:2
+    |
+127 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:163:2
+    |
+163 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:178:2
+    |
+178 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:202:2
+    |
+202 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:209:2
+    |
+209 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:73:12
+   |
+73 |         if (key.as_str() != k.as_str()) {
+   |            ^                          ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+73 -         if (key.as_str() != k.as_str()) {
+73 +         if key.as_str() != k.as_str() {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:83:11
+   |
+83 |     while (i < (word.len() as i64)) {
+   |           ^                       ^
+   |
+help: remove these parentheses
+   |
+83 -     while (i < (word.len() as i64)) {
+83 +     while i < (word.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:92:25
+   |
+92 |             child_idx = ((nodes.len() as i64) - 1);
+   |                         ^                        ^
+   |
+help: remove these parentheses
+   |
+92 -             child_idx = ((nodes.len() as i64) - 1);
+92 +             child_idx = (nodes.len() as i64) - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:100:13
+    |
+100 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+100 -         i = (i + 1);
+100 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:116:11
+    |
+116 |     while (i < (word.len() as i64)) {
+    |           ^                       ^
+    |
+help: remove these parentheses
+    |
+116 -     while (i < (word.len() as i64)) {
+116 +     while i < (word.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:123:13
+    |
+123 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+123 -         i = (i + 1);
+123 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:132:8
+    |
+132 |     if (pos == (word.len() as i64)) {
+    |        ^                          ^
+    |
+help: remove these parentheses
+    |
+132 -     if (pos == (word.len() as i64)) {
+132 +     if pos == (word.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:134:12
+    |
+134 |         if (node.is_leaf == false) {
+    |            ^                     ^
+    |
+help: remove these parentheses
+    |
+134 -         if (node.is_leaf == false) {
+134 +         if node.is_leaf == false {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:139:16
+    |
+139 |         return ((node.children.clone().len() as i64) == 0)
+    |                ^                                         ^
+    |
+help: remove these parentheses
+    |
+139 -         return ((node.children.clone().len() as i64) == 0)
+139 +         return (node.children.clone().len() as i64) == 0
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:148:65
+    |
+148 |     let should_delete: bool = _delete(nodes.clone(), child_idx, (pos + 1));
+    |                                                                 ^       ^
+    |
+help: remove these parentheses
+    |
+148 -     let should_delete: bool = _delete(nodes.clone(), child_idx, (pos + 1));
+148 +     let should_delete: bool = _delete(nodes.clone(), child_idx, pos + 1);
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:154:16
+    |
+154 |         return (((new_children.len() as i64) == 0) && (node.is_leaf == false))
+    |                ^                                                             ^
+    |
+help: remove these parentheses
+    |
+154 -         return (((new_children.len() as i64) == 0) && (node.is_leaf == false))
+154 +         return ((new_children.len() as i64) == 0) && (node.is_leaf == false)
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:185:14
+    |
+185 |         ok = (ok && find(trie.clone(), w.clone()));
+    |              ^                                   ^
+    |
+help: remove these parentheses
+    |
+185 -         ok = (ok && find(trie.clone(), w.clone()));
+185 +         ok = ok && find(trie.clone(), w.clone());
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:187:10
+    |
+187 |     ok = (ok && find(trie.clone(), String::from("banana")));
+    |          ^                                                ^
+    |
+help: remove these parentheses
+    |
+187 -     ok = (ok && find(trie.clone(), String::from("banana")));
+187 +     ok = ok && find(trie.clone(), String::from("banana"));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:189:10
+    |
+189 |     ok = (ok && (t == false));
+    |          ^                  ^
+    |
+help: remove these parentheses
+    |
+189 -     ok = (ok && (t == false));
+189 +     ok = ok && (t == false);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:191:10
+    |
+191 |     ok = (ok && (t2 == false));
+    |          ^                   ^
+    |
+help: remove these parentheses
+    |
+191 -     ok = (ok && (t2 == false));
+191 +     ok = ok && (t2 == false);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:192:10
+    |
+192 |     ok = (ok && find(trie.clone(), String::from("apple")));
+    |          ^                                               ^
+    |
+help: remove these parentheses
+    |
+192 -     ok = (ok && find(trie.clone(), String::from("apple")));
+192 +     ok = ok && find(trie.clone(), String::from("apple"));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:193:10
+    |
+193 |     ok = (ok && find(trie.clone(), String::from("all")));
+    |          ^                                             ^
+    |
+help: remove these parentheses
+    |
+193 -     ok = (ok && find(trie.clone(), String::from("all")));
+193 +     ok = ok && find(trie.clone(), String::from("all"));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:196:10
+    |
+196 |     ok = (ok && (t3 == false));
+    |          ^                   ^
+    |
+help: remove these parentheses
+    |
+196 -     ok = (ok && (t3 == false));
+196 +     ok = ok && (t3 == false);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:199:10
+    |
+199 |     ok = (ok && (t4 == false));
+    |          ^                   ^
+    |
+help: remove these parentheses
+    |
+199 -     ok = (ok && (t4 == false));
+199 +     ok = ok && (t4 == false);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:200:10
+    |
+200 |     ok = (ok && find(trie.clone(), String::from("bananas")));
+    |          ^                                                 ^
+    |
+help: remove these parentheses
+    |
+200 -     ok = (ok && find(trie.clone(), String::from("bananas")));
+200 +     ok = ok && find(trie.clone(), String::from("bananas"));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:213:28
+    |
+213 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+213 -     let duration_us: i64 = ((_end - _start) / 1000);
+213 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:148:39
+    |
+148 |     let should_delete: bool = _delete(nodes.clone(), child_idx, (pos + 1));
+    |                               ------- ^^^^^^^^^^^^^ expected `&mut Vec<Node>`, found `Vec<Node>`
+    |                               |
+    |                               arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut Vec<_>`
+                          found struct `Vec<_>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:131:4
+    |
+131 | fn _delete(nodes: &mut Vec<Node>, mut idx: i64, mut pos: i64) -> bool {
+    |    ^^^^^^^ ---------------------
+help: consider mutably borrowing here
+    |
+148 |     let should_delete: bool = _delete(&mut nodes.clone(), child_idx, (pos + 1));
+    |                                       ++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:177:12
+    |
+177 |     dfs(0, "");
+    |     ---    ^^- help: try using a conversion method: `.to_string()`
+    |     |      |
+    |     |      expected `String`, found `&str`
+    |     arguments to this function are incorrect
+    |
+note: closure parameter defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:175:16
+    |
+175 | |mut idx: i64, mut word: String| { dfs(&trie, idx, word) }
+    |                ^^^^^^^^^^^^^^^^
+
+warning: unused variable: `trie`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:210:13
+    |
+210 |     let mut trie: Trie = new_trie();
+    |             ^^^^ help: if this is intentional, prefix it with an underscore: `_trie`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:210:9
+    |
+210 |     let mut trie: Trie = new_trie();
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:70:19
+   |
+70 |     fn remove_key(mut m: HashMap<String, i64>, mut k: String) -> HashMap<String, i64> {
+   |                   ----^
+   |                   |
+   |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:70:48
+   |
+70 |     fn remove_key(mut m: HashMap<String, i64>, mut k: String) -> HashMap<String, i64> {
+   |                                                ----^
+   |                                                |
+   |                                                help: remove this `mut`
+
+warning: value assigned to `child_idx` is never read
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:85:17
+   |
+85 |         let mut child_idx: i64 = -1;
+   |                 ^^^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:79:32
+   |
+79 |     fn insert(trie: &mut Trie, mut word: String) {
+   |                                ----^^^^
+   |                                |
+   |                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:107:36
+    |
+107 |     fn insert_many(mut trie: Trie, mut words: Vec<String>) {
+    |                                    ----^^^^^
+    |                                    |
+    |                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:112:13
+    |
+112 |     fn find(mut trie: Trie, mut word: String) -> bool {
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:112:29
+    |
+112 |     fn find(mut trie: Trie, mut word: String) -> bool {
+    |                             ----^^^^
+    |                             |
+    |                             help: remove this `mut`
+
+warning: unused variable: `word`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:128:36
+    |
+128 |     fn delete(trie: &mut Trie, mut word: String) {
+    |                                    ^^^^ help: if this is intentional, prefix it with an underscore: `_word`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:159:2
+    |
+159 | |mut idx: i64, mut pos: i64| -> bool { _delete(&mut nodes, idx, pos) }
+    |  ----^^^
+    |  |
+    |  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:159:16
+    |
+159 | |mut idx: i64, mut pos: i64| -> bool { _delete(&mut nodes, idx, pos) }
+    |                ----^^^
+    |                |
+    |                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:128:32
+    |
+128 |     fn delete(trie: &mut Trie, mut word: String) {
+    |                                ----^^^^
+    |                                |
+    |                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:166:21
+    |
+166 | fn dfs(trie: &Trie, mut idx: i64, mut word: String) {
+    |                     ----^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:166:35
+    |
+166 | fn dfs(trie: &Trie, mut idx: i64, mut word: String) {
+    |                                   ----^^^^
+    |                                   |
+    |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:188:9
+    |
+188 |     let mut t: bool = find(trie.clone(), String::from("bandanas"));
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:190:9
+    |
+190 |     let mut t2: bool = find(trie.clone(), String::from("apps"));
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:195:9
+    |
+195 |     let mut t3: bool = find(trie.clone(), String::from("all"));
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:198:9
+    |
+198 |     let mut t4: bool = find(trie.clone(), String::from("banana"));
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:203:22
+    |
+203 |     fn print_results(mut msg: String, mut passes: bool) {
+    |                      ----^^^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/trie/trie.rs:203:39
+    |
+203 |     fn print_results(mut msg: String, mut passes: bool) {
+    |                                       ----^^^^^^
+    |                                       |
+    |                                       help: remove this `mut`
+
+error: aborting due to 4 previous errors; 51 warnings emitted
+
+Some errors have detailed explanations: E0308, E0434.
+For more information about an error, try `rustc --explain E0308`.

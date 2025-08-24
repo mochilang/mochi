@@ -1,0 +1,160 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:55:20
+   |
+55 |     let NIL: i64 = (-1);
+   |                    ^  ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+55 -     let NIL: i64 = (-1);
+55 +     let NIL: i64 = -1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:58:8
+   |
+58 |     if ((elements.len() as i64) == 0) {
+   |        ^                            ^
+   |
+help: remove these parentheses
+   |
+58 -     if ((elements.len() as i64) == 0) {
+58 +     if (elements.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:66:11
+   |
+66 |     while (i < (elements.len() as i64)) {
+   |           ^                           ^
+   |
+help: remove these parentheses
+   |
+66 -     while (i < (elements.len() as i64)) {
+66 +     while i < (elements.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:68:40
+   |
+68 |         nodes[current as usize].next = ((nodes.len() as i64) - 1);
+   |                                        ^                        ^
+   |
+help: remove these parentheses
+   |
+68 -         nodes[current as usize].next = ((nodes.len() as i64) - 1);
+68 +         nodes[current as usize].next = (nodes.len() as i64) - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:69:19
+   |
+69 |         current = ((nodes.len() as i64) - 1);
+   |                   ^                        ^
+   |
+help: remove these parentheses
+   |
+69 -         current = ((nodes.len() as i64) - 1);
+69 +         current = (nodes.len() as i64) - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:70:13
+   |
+70 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+70 -         i = (i + 1);
+70 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:77:11
+   |
+77 |     while (index != NIL) {
+   |           ^            ^
+   |
+help: remove these parentheses
+   |
+77 -     while (index != NIL) {
+77 +     while index != NIL {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:95:28
+   |
+95 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+95 -     let duration_us: i64 = ((_end - _start) / 1000);
+95 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:57:33
+   |
+57 |     let mut make_linked_list = |mut elements: Vec<i64>| -> i64 {
+   |                                 ----^^^^^^^^
+   |                                 |
+   |                                 help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:63:9
+   |
+63 |     let mut head: i64 = 0;
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:74:31
+   |
+74 |     let mut node_to_string = |mut head: i64| -> String {
+   |                               ----^^^^
+   |                               |
+   |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:74:9
+   |
+74 |     let mut node_to_string = |mut head: i64| -> String {
+   |         ----^^^^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+error[E0502]: cannot borrow `nodes` as immutable because it is also borrowed as mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/from_sequence.rs:74:30
+   |
+57 |     let mut make_linked_list = |mut elements: Vec<i64>| -> i64 {
+   |                                ------------------------------- mutable borrow occurs here
+...
+61 |     nodes = vec![];
+   |     ----- first borrow occurs due to use of `nodes` in closure
+...
+74 |     let mut node_to_string = |mut head: i64| -> String {
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^ immutable borrow occurs here
+...
+78 |         let node: Node = nodes[index as usize].clone();
+   |                          ----- second borrow occurs due to use of `nodes` in closure
+...
+89 |     let head: i64 = make_linked_list(list_data.clone());
+   |                     ---------------- mutable borrow later captured here by closure
+
+error: aborting due to 1 previous error; 13 warnings emitted
+
+For more information about this error, try `rustc --explain E0502`.

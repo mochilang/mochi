@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-24 17:09 GMT+7
+Last updated: 2025-08-24 22:28 GMT+7
 
-## Algorithms Golden Test Checklist (812/1077)
+## Algorithms Golden Test Checklist (819/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -187,7 +187,7 @@ Last updated: 2025-08-24 17:09 GMT+7
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 59µs | 2.0 MB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 25µs | 1.8 MB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 143µs | 2.1 MB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | error | 147µs | 2.0 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 147µs | 2.0 MB |
 | 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 25µs | 2.0 MB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
 | 184 | data_structures/binary_tree/is_sorted | error |  |  |
@@ -201,12 +201,12 @@ Last updated: 2025-08-24 17:09 GMT+7
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | error |  |  |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 124µs | 2.1 MB |
 | 194 | data_structures/binary_tree/red_black_tree | error |  |  |
-| 195 | data_structures/binary_tree/segment_tree | error | 208µs | 2.1 MB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 208µs | 2.1 MB |
 | 196 | data_structures/binary_tree/segment_tree_other | error |  |  |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 60µs | 2.0 MB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | error | 317µs | 2.1 MB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 317µs | 2.1 MB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 57µs | 2.1 MB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 67µs | 2.0 MB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 1.788ms | 2.2 MB |
@@ -216,14 +216,14 @@ Last updated: 2025-08-24 17:09 GMT+7
 | 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 122µs | 2.1 MB |
 | 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 39µs | 2.0 MB |
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 52µs | 2.1 MB |
-| 210 | data_structures/hashing/tests/test_hash_map | error | 197µs | 2.3 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 197µs | 2.3 MB |
 | 211 | data_structures/heap/binomial_heap |   |  |  |
 | 212 | data_structures/heap/heap |   |  |  |
 | 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap | error | 87µs | 1.9 MB |
+| 214 | data_structures/heap/max_heap | ✓ | 87µs | 1.9 MB |
 | 215 | data_structures/heap/min_heap | ✓ | 104µs | 2.2 MB |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree | error | 135µs | 2.1 MB |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 135µs | 2.1 MB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 61µs | 1.9 MB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 95µs | 2.1 MB |
@@ -231,10 +231,10 @@ Last updated: 2025-08-24 17:09 GMT+7
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 256µs | 2.0 MB |
 | 223 | data_structures/linked_list/circular_linked_list |   |  |  |
 | 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 114µs | 2.0 MB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 180µs | 2.1 MB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 95µs | 2.2 MB |
-| 228 | data_structures/linked_list/from_sequence | ✓ | 61µs | 2.1 MB |
+| 228 | data_structures/linked_list/from_sequence | error | 61µs | 2.1 MB |
 | 229 | data_structures/linked_list/has_loop | ✓ | 99µs | 2.1 MB |
 | 230 | data_structures/linked_list/is_palindrome | ✓ | 61µs | 2.0 MB |
 | 231 | data_structures/linked_list/merge_two_lists | ✓ | 83µs | 2.1 MB |
@@ -243,13 +243,13 @@ Last updated: 2025-08-24 17:09 GMT+7
 | 234 | data_structures/linked_list/reverse_k_group | ✓ | 48µs | 2.0 MB |
 | 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 28µs | 2.1 MB |
 | 236 | data_structures/linked_list/singly_linked_list | ✓ | 123µs | 1.9 MB |
-| 237 | data_structures/linked_list/skip_list | ✓ | 98µs | 2.1 MB |
+| 237 | data_structures/linked_list/skip_list | error | 98µs | 2.1 MB |
 | 238 | data_structures/linked_list/swap_nodes | ✓ | 48µs | 2.0 MB |
 | 239 | data_structures/queues/circular_queue | ✓ | 49µs | 2.1 MB |
 | 240 | data_structures/queues/circular_queue_linked_list | ✓ | 47µs | 2.1 MB |
 | 241 | data_structures/queues/double_ended_queue | ✓ | 35µs | 2.0 MB |
 | 242 | data_structures/queues/linked_queue | ✓ | 133µs | 1.9 MB |
-| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
+| 243 | data_structures/queues/priority_queue_using_list | error |  |  |
 | 244 | data_structures/queues/queue_by_list | ✓ | 24µs | 2.2 MB |
 | 245 | data_structures/queues/queue_by_two_stacks | ✓ | 42µs | 2.0 MB |
 | 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 36µs | 1.9 MB |
@@ -271,15 +271,15 @@ Last updated: 2025-08-24 17:09 GMT+7
 | 262 | data_structures/suffix_tree/suffix_tree | ✓ | 193µs | 2.1 MB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 41µs | 2.0 MB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 43µs | 2.0 MB |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
+| 265 | data_structures/trie/radix_tree | ✓ | 144µs | 2.2 MB |
+| 266 | data_structures/trie/trie | error |  |  |
 | 267 | digital_image_processing/change_brightness | ✓ | 23µs | 2.2 MB |
 | 268 | digital_image_processing/change_contrast | ✓ | 78µs | 2.1 MB |
 | 269 | digital_image_processing/convert_to_negative | ✓ | 38µs | 2.0 MB |
 | 270 | digital_image_processing/dithering/burkes | ✓ | 87µs | 2.1 MB |
 | 271 | digital_image_processing/edge_detection/canny | ✓ | 114µs | 2.2 MB |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 116µs | 2.1 MB |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
+| 273 | digital_image_processing/filters/convolve | error |  |  |
 | 274 | digital_image_processing/filters/gabor_filter | ✓ | 58µs | 2.1 MB |
 | 275 | digital_image_processing/filters/gaussian_filter | ✓ | 58µs | 2.1 MB |
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 78µs | 2.1 MB |
