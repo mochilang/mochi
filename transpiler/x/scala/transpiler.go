@@ -115,6 +115,7 @@ var scalaKeywords = map[string]bool{
 	"opaque":    true,
 	"open":      true,
 	"extension": true,
+	"export":    true,
 	// Future Scala keywords
 	"enum":  true,
 	"given": true,
@@ -3876,16 +3877,16 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "floor"}, Args: args}, nil
 		}
 	case "input":
-                if len(args) == 0 {
-                        call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: nil}
-                        opt := &CallExpr{Fn: &Name{Name: "Option"}, Args: []Expr{call}}
-                        return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: ""}}}, nil
-                }
-                if len(args) == 1 {
-                        call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: args}
-                        opt := &CallExpr{Fn: &Name{Name: "Option"}, Args: []Expr{call}}
-                        return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: ""}}}, nil
-                }
+		if len(args) == 0 {
+			call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: nil}
+			opt := &CallExpr{Fn: &Name{Name: "Option"}, Args: []Expr{call}}
+			return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: ""}}}, nil
+		}
+		if len(args) == 1 {
+			call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: args}
+			opt := &CallExpr{Fn: &Name{Name: "Option"}, Args: []Expr{call}}
+			return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: ""}}}, nil
+		}
 	case "append":
 		if len(args) == 2 {
 			if be, ok := args[1].(*BinaryExpr); ok && be.Op == "-" {
