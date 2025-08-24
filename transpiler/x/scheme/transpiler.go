@@ -1902,6 +1902,16 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			return voidSym(), nil
 		}
 		if currentEnv != nil {
+			if ut, ok := currentEnv.FindUnionByVariant(p.Selector.Root); ok {
+				st := ut.Variants[p.Selector.Root]
+				if len(st.Order) == 0 {
+					needHash = true
+					pairs := []Node{Symbol("_list"),
+						&List{Elems: []Node{Symbol("cons"), StringLit(tagKey), ensureUnionConst(p.Selector.Root)}},
+					}
+					return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+				}
+			}
 			if _, err := currentEnv.GetVar(p.Selector.Root); err == nil {
 				return Symbol(p.Selector.Root), nil
 			}
@@ -1989,7 +1999,14 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 				if err != nil {
 					return nil, err
 				}
-				pair := &List{Elems: []Node{Symbol("cons"), StringLit(st.Order[i]), v}}
+				fname := f.Name
+				if fname == "" {
+					if i >= len(st.Order) {
+						return nil, fmt.Errorf("invalid field %d for %s", i, p.Struct.Name)
+					}
+					fname = st.Order[i]
+				}
+				pair := &List{Elems: []Node{Symbol("cons"), StringLit(fname), v}}
 				pairs = append(pairs, pair)
 			}
 			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil

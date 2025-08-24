@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-24 09:04 GMT+7
+Last updated: 2025-08-24 17:10 GMT+7
 
-## Algorithms Golden Test Checklist (932/1077)
+## Algorithms Golden Test Checklist (933/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -183,7 +183,7 @@ Last updated: 2025-08-24 09:04 GMT+7
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 2ms | 12.7 MB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 0s | 12.1 MB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 1ms | 12.7 MB |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 3ms | 14.0 MB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 1ms | 13.1 MB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 4ms | 14.0 MB |
@@ -199,11 +199,11 @@ Last updated: 2025-08-24 09:04 GMT+7
 | 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 2ms | 12.8 MB |
 | 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 2ms | 13.3 MB |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 2ms | 13.5 MB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   | 0s | 12.2 MB |
 | 194 | data_structures/binary_tree/red_black_tree | ✓ | 1ms | 16.7 MB |
 | 195 | data_structures/binary_tree/segment_tree | ✓ | 1ms | 14.0 MB |
 | 196 | data_structures/binary_tree/segment_tree_other | ✓ | 3ms | 13.5 MB |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   | 1ms | 13.5 MB |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 0s | 12.8 MB |
 | 199 | data_structures/binary_tree/treap | ✓ | 2ms | 13.4 MB |
 | 200 | data_structures/binary_tree/wavelet_tree | ✓ | 1ms | 14.0 MB |
