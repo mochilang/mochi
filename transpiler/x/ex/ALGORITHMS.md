@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-24 17:09 GMT+7
+Last updated: 2025-08-24 22:36 GMT+7
 
-## Algorithms Golden Test Checklist (913/1077)
+## Algorithms Golden Test Checklist (914/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -231,7 +231,7 @@ Last updated: 2025-08-24 17:09 GMT+7
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 555us | 26.9 MB |
 | 223 | data_structures/linked_list/circular_linked_list | error |  |  |
 | 224 | data_structures/linked_list/deque_doubly | ✓ | 10.23ms | 17.3 MB |
-| 225 | data_structures/linked_list/doubly_linked_list | error |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 745us | 12.5 MB |
 | 226 | data_structures/linked_list/doubly_linked_list_two | error |  |  |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 7.32ms | 17.3 MB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 9.10ms | 17.3 MB |

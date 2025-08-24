@@ -1,36 +1,16 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: module attribute @data_dir was set but never used
     │
- 47 │       {i, s} = try do
-    │        ~
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list.exs:47:8: Main.to_string/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list.exs:3: Main (module)
 
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 90 │       {i, res} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list.exs:90:8: Main.insert_nth/3
-
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 138 │       {i, removed, res} = try do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list.exs:138:8: Main.delete_nth/2
-
-    error: imported Kernel.to_string/1 conflicts with local function
-    │
- 31 │   def to_string(list) do
-    │       ^
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list.exs:31:7: Main (module)
-
-    error: imported Kernel.length/1 conflicts with local function
-    │
- 17 │   def length(list) do
-    │       ^
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list.exs:17:7: Main (module)
-
-** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list.exs: cannot compile module Main (errors have been logged)
+1
+0
+0
+9
+0
+1
+0
+0
+1
