@@ -108,13 +108,9 @@ end
 const helperStr = `
 def _str(x)
   if x.is_a?(Array)
-    x.map { |e| _str(e) }.join(' ')
+    "[" + x.map { |e| _str(e) }.join(' ') + "]"
   elsif x.is_a?(Float)
-    if x == x.to_i
-      x.to_i.to_s
-    else
-      x.to_s
-    end
+    x.to_s
   else
     x.to_s
   end
