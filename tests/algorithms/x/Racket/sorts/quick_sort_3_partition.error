@@ -1,0 +1,18 @@
+run: exit status 1
+append: contract violation
+  expected: list?
+  given: '#(0)
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/sorts/quick_sort_3_partition.rkt:181:2
+   [repeats 2 more times]
+   /workspace/mochi/tests/algorithms/x/Racket/sorts/quick_sort_3_partition.rkt:220:2
+   /workspace/mochi/tests/algorithms/x/Racket/sorts/quick_sort_3_partition.rkt:219:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/sorts/quick_sort_3_partition.rkt"
+(-1 -1 0 5 5 5 24)
+(0 2 6 9)
+()
+(0 1 2 3 5)
+()
+(-4 -2 0 5)
+()
+(1)

@@ -1,0 +1,11 @@
+run: exit status 1
+append: contract violation
+  expected: list?
+  given: '#(0 2)
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/sorts/unknown_sort.rkt:178:2
+   /workspace/mochi/tests/algorithms/x/Racket/sorts/unknown_sort.rkt:198:2
+   /workspace/mochi/tests/algorithms/x/Racket/sorts/unknown_sort.rkt:211:2
+   /workspace/mochi/tests/algorithms/x/Racket/sorts/unknown_sort.rkt:217:2
+   /workspace/mochi/tests/algorithms/x/Racket/sorts/unknown_sort.rkt:216:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/sorts/unknown_sort.rkt"
