@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 1066/1077
-Last updated: 2025-08-23 15:31 +0700
+Completed programs: 1070/1077
+Last updated: 2025-08-24 16:59 +0700
 
 Checklist:
 
@@ -181,56 +181,56 @@ Checklist:
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 1ms | 19.8 KB |
 | 173 | data_structures/binary_tree/binary_search_tree | ✓ | 1ms | 13.6 KB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 1ms | 11.7 KB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 1ms | 12.1 KB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 1ms | 52.7 KB |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 1ms | 23.1 KB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 1ms | 16.5 KB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 1ms | 22.2 KB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 1ms | 13.1 KB |
-| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 1ms | 17.8 KB |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 1ms | 25.0 KB |
-| 184 | data_structures/binary_tree/is_sorted | ✓ | 1ms | 16.1 KB |
-| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 1ms | 8.1 KB |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 1ms | 15.5 KB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 1ms | 18.8 KB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 1ms | 97.5 KB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 1ms | 32.9 KB |
-| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 1ms | 22.1 KB |
-| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 1ms | 27.7 KB |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 1ms | 11.3 KB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 1ms | 16.9 KB |
-| 194 | data_structures/binary_tree/red_black_tree | ✓ | 1ms | 15.4 KB |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 1ms | 12.0 KB |
-| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 1ms | 84.2 KB |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 1ms | 30.0 KB |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 1ms | 10.9 KB |
-| 199 | data_structures/binary_tree/treap | ✓ | 1ms | 30.1 KB |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 1ms | 28.4 KB |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 1ms | 11.6 KB |
-| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 1ms | 53.6 KB |
-| 203 | data_structures/hashing/bloom_filter | ✓ | 1ms | 229.7 KB |
-| 204 | data_structures/hashing/double_hash | ✓ | 1ms | 10.8 KB |
-| 205 | data_structures/hashing/hash_map | ✓ | 1ms | 17.7 KB |
-| 206 | data_structures/hashing/hash_table | ✓ | 1ms | 13.4 KB |
-| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 1ms | 13.0 KB |
-| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 1ms | 9.3 KB |
-| 209 | data_structures/hashing/quadratic_probing | ✓ | 1ms | 13.2 KB |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 1ms | 32.5 KB |
-| 211 | data_structures/heap/binomial_heap | ✓ | 1ms | 13.9 KB |
-| 212 | data_structures/heap/heap | ✓ | 1ms | 20.2 KB |
-| 213 | data_structures/heap/heap_generic | ✓ | 1ms | 20.0 KB |
-| 214 | data_structures/heap/max_heap | ✓ | 1ms | 10.2 KB |
-| 215 | data_structures/heap/min_heap | ✓ | 1ms | 17.6 KB |
-| 216 | data_structures/heap/randomized_heap | ✓ | 1ms | 13.7 KB |
-| 217 | data_structures/kd_tree/build_kdtree | ✓ | 1ms | 17.8 KB |
-| 218 | data_structures/kd_tree/example/example_usage | ✓ | 1ms | 1.4 MB |
-| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 1ms | 10.6 KB |
-| 220 | data_structures/kd_tree/kd_node | ✓ | 1ms | 11.1 KB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 1ms | 12.0 KB |
-| 223 | data_structures/linked_list/circular_linked_list | ✓ | 1ms | 19.2 KB |
-| 224 | data_structures/linked_list/deque_doubly | ✓ | 1ms | 15.9 KB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 99µs | 12.8 KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 96µs | 12.3 KB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 397µs | 41.1 KB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 283µs | 22.8 KB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 141µs | 14.6 KB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 283µs | 20.2 KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 91µs | 14.3 KB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 109µs | 16.3 KB |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   | 1ms | 25.0 KB |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 189µs | 16.0 KB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 87µs | 6.0 KB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 464µs | 97.6 KB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 941µs | 119.0 KB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 605.883ms | 11.1 MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 176µs | 25.1 KB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 169µs | 20.2 KB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 186µs | 24.4 KB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 151µs | 14.9 KB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 81µs | 19.0 KB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 195µs | 18.0 KB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 297µs | 38.7 KB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 578µs | 91.4 KB |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 312µs | 32.1 KB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 77µs | 13.0 KB |
+| 199 | data_structures/binary_tree/treap | ✓ | 282µs | 41.3 KB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 468µs | 45.6 KB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 179µs | 13.1 KB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 335µs | 55.3 KB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 870µs | 51.4 KB |
+| 204 | data_structures/hashing/double_hash | ✓ | 88µs | 12.0 KB |
+| 205 | data_structures/hashing/hash_map | ✓ | 154µs | 19.2 KB |
+| 206 | data_structures/hashing/hash_table | ✓ | 160µs | 17.8 KB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 163µs | 14.4 KB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 79µs | 10.0 KB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 130µs | 15.1 KB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 266µs | 38.4 KB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 123µs | 15.2 KB |
+| 212 | data_structures/heap/heap | ✓ | 231µs | 19.8 KB |
+| 213 | data_structures/heap/heap_generic | ✓ | 266µs | 20.6 KB |
+| 214 | data_structures/heap/max_heap | ✓ | 83µs | 12.3 KB |
+| 215 | data_structures/heap/min_heap | ✓ | 222µs | 19.5 KB |
+| 216 | data_structures/heap/randomized_heap | ✓ | 175µs | 18.0 KB |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 291µs | 19.5 KB |
+| 218 | data_structures/kd_tree/example/example_usage | ✓ | 12.541131s | 1.1 MB |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 92µs | 12.2 KB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 153µs | 13.0 KB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 300µs | 18.4 KB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 198µs | 23.2 KB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 295µs | 24.1 KB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 124µs | 18.0 KB |
 | 225 | data_structures/linked_list/doubly_linked_list | ✓ | 1ms | 17.6 KB |
 | 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 1ms | 25.2 KB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 1ms | 12.0 KB |
@@ -259,7 +259,7 @@ Checklist:
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1ms | 37.3 KB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 1ms | 10.7 KB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 1ms | 35.2 KB |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 332µs | 49.8 KB |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 1ms | 18.6 KB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 1ms | 22.8 KB |
 | 256 | data_structures/stacks/stack | ✓ | 1ms | 12.0 KB |
@@ -294,7 +294,7 @@ Checklist:
 | 285 | digital_image_processing/rotation/rotation | ✓ | 1ms | 11.8 KB |
 | 286 | digital_image_processing/sepia | ✓ | 1ms | 11.1 KB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 1ms | 23.1 KB |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 224µs | 12.1 KB |
 | 289 | divide_and_conquer/convex_hull | ✓ | 1ms | 7.3 KB |
 | 290 | divide_and_conquer/heaps_algorithm | ✓ | 1ms | 11.2 KB |
 | 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 1ms | 11.1 KB |
@@ -418,7 +418,7 @@ Checklist:
 | 409 | graphs/check_bipatrite | ✓ | 70µs | 11.0 KB |
 | 410 | graphs/check_cycle | ✓ | 92µs | 12.2 KB |
 | 411 | graphs/connected_components | ✓ | 94µs | 16.3 KB |
-| 412 | graphs/deep_clone_graph |   |  |  |
+| 412 | graphs/deep_clone_graph | ✓ | 198µs | 20.3 KB |
 | 413 | graphs/depth_first_search | ✓ | 110µs | 14.2 KB |
 | 414 | graphs/depth_first_search_2 | ✓ | 139µs | 16.0 KB |
 | 415 | graphs/dijkstra | ✓ | 160µs | 22.9 KB |
@@ -881,7 +881,7 @@ Checklist:
 | 872 | project_euler/problem_042/solution42 | ✓ | 57.975ms | 309.4 KB |
 | 873 | project_euler/problem_043/sol1 | ✓ | 22.060749s | 461.6 KB |
 | 874 | project_euler/problem_044/sol1 | ✓ | 6.594716s | 10.9 MB |
-| 875 | project_euler/problem_045/sol1 |   | 1ms | 10.0 KB |
+| 875 | project_euler/problem_045/sol1 | ✓ | 1ms | 10.0 KB |
 | 876 | project_euler/problem_046/sol1 | ✓ | 284.648ms | 10.0 KB |
 | 877 | project_euler/problem_047/sol1 | ✓ | 484.312ms | 8.0 MB |
 | 878 | project_euler/problem_048/sol1 | ✓ | 3.136ms | 7.4 KB |
