@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-24 09:07 GMT+7
+Last updated: 2025-08-24 15:42 GMT+7
 
 ## Algorithms Golden Test Checklist (817/1077)
 | Index | Name | Status | Duration | Memory |
@@ -157,7 +157,7 @@ Last updated: 2025-08-24 09:07 GMT+7
 | 148 | conversions/temperature_conversions | ✓ | 61µs | 1.9 MB |
 | 149 | conversions/time_conversions | ✓ | 100µs | 2.1 MB |
 | 150 | conversions/volume_conversions | ✓ | 71µs | 2.1 MB |
-| 151 | conversions/weight_conversion | ✓ | 105µs | 2.1 MB |
+| 151 | conversions/weight_conversion | ✓ | 68µs | 2.2 MB |
 | 152 | data_compression/burrows_wheeler | ✓ | 117µs | 2.1 MB |
 | 153 | data_compression/huffman | ✓ | 170µs | 2.3 MB |
 | 154 | data_compression/lempel_ziv | ✓ | 146µs | 2.1 MB |
