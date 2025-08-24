@@ -413,15 +413,15 @@ func (v *VarDecl) emit(w io.Writer) {
 		return
 	}
 	switch {
-       case v.Value != nil && v.Type != "":
-               fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
-               v.Value.emit(w)
-               if strings.HasPrefix(v.Type, "map[") {
-                       fmt.Fprintf(w, "; if %s == nil { %s = %s{} }", v.Name, v.Name, v.Type)
-               }
-               if !v.Global {
-                       fmt.Fprintf(w, "; _ = %s", v.Name)
-               }
+	case v.Value != nil && v.Type != "":
+		fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
+		v.Value.emit(w)
+		if strings.HasPrefix(v.Type, "map[") {
+			fmt.Fprintf(w, "; if %s == nil { %s = %s{} }", v.Name, v.Name, v.Type)
+		}
+		if !v.Global {
+			fmt.Fprintf(w, "; _ = %s", v.Name)
+		}
 	case v.Value != nil:
 		if v.Global {
 			fmt.Fprintf(w, "var %s = ", v.Name)
@@ -1807,6 +1807,32 @@ func (ic *IntCastExpr) emit(w io.Writer) {
 		io.WriteString(w, ".Int64())")
 		return
 	}
+	if vr, ok := ic.Expr.(*VarRef); ok {
+		if assignAnyVars[vr.Name] {
+			ic.Expr.emit(w)
+			io.WriteString(w, ".(int)")
+			return
+		}
+		if vd, ok2 := varDecls[vr.Name]; ok2 && vd.Type == "any" {
+			ic.Expr.emit(w)
+			io.WriteString(w, ".(int)")
+			return
+		}
+	}
+	if ix, ok := ic.Expr.(*IndexExpr); ok {
+		if vr, ok2 := ix.X.(*VarRef); ok2 {
+			if assignAnyVars[vr.Name] {
+				ic.Expr.emit(w)
+				io.WriteString(w, ".(int)")
+				return
+			}
+			if vd, ok3 := varDecls[vr.Name]; ok3 && vd.Type == "any" {
+				ic.Expr.emit(w)
+				io.WriteString(w, ".(int)")
+				return
+			}
+		}
+	}
 	io.WriteString(w, "int(")
 	ic.Expr.emit(w)
 	io.WriteString(w, ")")
@@ -2400,6 +2426,9 @@ func (a *AssertExpr) emit(w io.Writer) {
 			if assignAnyVars[ex.Name] {
 				a.Expr.emit(w)
 				io.WriteString(w, ".(int)")
+			} else if vd, ok := varDecls[ex.Name]; ok && vd.Type == "any" {
+				a.Expr.emit(w)
+				io.WriteString(w, ".(int)")
 			} else {
 				a.Expr.emit(w)
 			}
@@ -2409,6 +2438,9 @@ func (a *AssertExpr) emit(w io.Writer) {
 		case *IndexExpr:
 			if vr, ok := ex.X.(*VarRef); ok {
 				if assignAnyVars[vr.Name] {
+					a.Expr.emit(w)
+					io.WriteString(w, ".(int)")
+				} else if vd, ok2 := varDecls[vr.Name]; ok2 && vd.Type == "any" {
 					a.Expr.emit(w)
 					io.WriteString(w, ".(int)")
 				} else {
@@ -3172,6 +3204,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					e = ensureBigIntExpr(e, valType)
 				}
 			}
+			if typ == "" || typ == "any" {
+				if valType == nil || types.IsAnyType(valType) {
+					assignAnyVars[st.Let.Name] = true
+				}
+			}
 			if declaredType != nil {
 				if env == topEnv {
 					env.SetVarDeep(st.Let.Name, declaredType, false)
@@ -3214,6 +3251,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			varDecls[st.Let.Name] = vd
+			if vd.Type == "any" {
+				assignAnyVars[st.Let.Name] = true
+			}
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
 				vd.Value = nil
