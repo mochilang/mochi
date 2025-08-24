@@ -1,0 +1,20 @@
+run: exit status 101
+Priority 0: [10, 100, 128]
+Priority 1: [70, 7, 64]
+Priority 2: [1, 5, 4]
+10
+100
+128
+70
+7
+Priority 0: []
+Priority 1: [64]
+Priority 2: [1, 5, 4]
+64
+1
+5
+4
+
+thread 'main' panicked at /workspace/mochi/tests/algorithms/x/Rust/data_structures/queues/priority_queue_using_list.rs:133:5:
+All queues are empty
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

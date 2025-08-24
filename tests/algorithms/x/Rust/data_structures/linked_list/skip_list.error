@@ -1,0 +1,886 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:47:24
+   |
+47 |         let NIL: i64 = (-1);
+   |                        ^  ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+47 -         let NIL: i64 = (-1);
+47 +         let NIL: i64 = -1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:49:23
+   |
+49 |     unsafe { g_seed = (((unsafe { g_seed.clone() } * 13) + 7) % 100) };
+   |                       ^                                            ^
+   |
+help: remove these parentheses
+   |
+49 -     unsafe { g_seed = (((unsafe { g_seed.clone() } * 13) + 7) % 100) };
+49 +     unsafe { g_seed = ((unsafe { g_seed.clone() } * 13) + 7) % 100 };
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:50:12
+   |
+50 |     return ((unsafe { g_seed.clone() } as f64) / 100.0)
+   |            ^                                          ^
+   |
+help: remove these parentheses
+   |
+50 -     return ((unsafe { g_seed.clone() } as f64) / 100.0)
+50 +     return (unsafe { g_seed.clone() } as f64) / 100.0
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:54:11
+   |
+54 |     while ((random() < unsafe { g_P.clone() }) && (lvl < unsafe { g_MAX_LEVEL.clone() })) {
+   |           ^                                                                             ^
+   |
+help: remove these parentheses
+   |
+54 -     while ((random() < unsafe { g_P.clone() }) && (lvl < unsafe { g_MAX_LEVEL.clone() })) {
+54 +     while (random() < unsafe { g_P.clone() }) && (lvl < unsafe { g_MAX_LEVEL.clone() }) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:55:15
+   |
+55 |         lvl = (lvl + 1);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+55 -         lvl = (lvl + 1);
+55 +         lvl = lvl + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:62:11
+   |
+62 |     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+   |           ^                                  ^
+   |
+help: remove these parentheses
+   |
+62 -     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+62 +     while i < unsafe { g_MAX_LEVEL.clone() } {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:64:13
+   |
+64 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+64 -         i = (i + 1);
+64 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:80:11
+   |
+80 |     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+   |           ^                                  ^
+   |
+help: remove these parentheses
+   |
+80 -     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+80 +     while i < unsafe { g_MAX_LEVEL.clone() } {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:82:13
+   |
+82 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+82 -         i = (i + 1);
+82 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:86:11
+   |
+86 |     while (i >= 0) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+86 -     while (i >= 0) {
+86 +     while i >= 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:87:15
+   |
+87 | ...le ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key)) {
+   |       ^                                                                                                                                   ^
+   |
+help: remove these parentheses
+   |
+87 -         while ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key)) {
+87 +         while (node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:91:13
+   |
+91 |         i = (i - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+91 -         i = (i - 1);
+91 +         i = i - 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:94:8
+   |
+94 |     if ((x != NIL) && (node_keys[x as usize] == key)) {
+   |        ^                                            ^
+   |
+help: remove these parentheses
+   |
+94 -     if ((x != NIL) && (node_keys[x as usize] == key)) {
+94 +     if (x != NIL) && (node_keys[x as usize] == key) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:99:8
+   |
+99 |     if (lvl > unsafe { g_level.clone() }) {
+   |        ^                                ^
+   |
+help: remove these parentheses
+   |
+99 -     if (lvl > unsafe { g_level.clone() }) {
+99 +     if lvl > unsafe { g_level.clone() } {
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:101:15
+    |
+101 |         while (j < lvl) {
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+101 -         while (j < lvl) {
+101 +         while j < lvl {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:103:17
+    |
+103 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+103 -             j = (j + 1);
+103 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:110:20
+    |
+110 |     let idx: i64 = ((node_keys.len() as i64) - 1);
+    |                    ^                            ^
+    |
+help: remove these parentheses
+    |
+110 -     let idx: i64 = ((node_keys.len() as i64) - 1);
+110 +     let idx: i64 = (node_keys.len() as i64) - 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:112:11
+    |
+112 |     while (i < lvl) {
+    |           ^       ^
+    |
+help: remove these parentheses
+    |
+112 -     while (i < lvl) {
+112 +     while i < lvl {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:115:13
+    |
+115 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+115 -         i = (i + 1);
+115 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:122:11
+    |
+122 |     while (i >= 0) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+122 -     while (i >= 0) {
+122 +     while i >= 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:123:15
+    |
+123 | ...le ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key)) {
+    |       ^                                                                                                                                   ^
+    |
+help: remove these parentheses
+    |
+123 -         while ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key)) {
+123 +         while (node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:126:13
+    |
+126 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+126 -         i = (i - 1);
+126 +         i = i - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:129:8
+    |
+129 |     if ((x != NIL) && (node_keys[x as usize] == key)) {
+    |        ^                                            ^
+    |
+help: remove these parentheses
+    |
+129 -     if ((x != NIL) && (node_keys[x as usize] == key)) {
+129 +     if (x != NIL) && (node_keys[x as usize] == key) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:137:11
+    |
+137 |     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+    |           ^                                  ^
+    |
+help: remove these parentheses
+    |
+137 -     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+137 +     while i < unsafe { g_MAX_LEVEL.clone() } {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:139:13
+    |
+139 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+139 -         i = (i + 1);
+139 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:143:11
+    |
+143 |     while (i >= 0) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+143 -     while (i >= 0) {
+143 +     while i >= 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:144:15
+    |
+144 | ...le ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key)) {
+    |       ^                                                                                                                                   ^
+    |
+help: remove these parentheses
+    |
+144 -         while ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key)) {
+144 +         while (node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usize] < key) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:148:13
+    |
+148 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+148 -         i = (i - 1);
+148 +         i = i - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:151:8
+    |
+151 |     if ((x == NIL) || (node_keys[x as usize] != key)) {
+    |        ^                                            ^
+    |
+help: remove these parentheses
+    |
+151 -     if ((x == NIL) || (node_keys[x as usize] != key)) {
+151 +     if (x == NIL) || (node_keys[x as usize] != key) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:155:11
+    |
+155 |     while (i < unsafe { g_level.clone() }) {
+    |           ^                              ^
+    |
+help: remove these parentheses
+    |
+155 -     while (i < unsafe { g_level.clone() }) {
+155 +     while i < unsafe { g_level.clone() } {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:156:12
+    |
+156 |         if (node_forwards[update[i as usize] as usize].clone()[i as usize] == x) {
+    |            ^                                                                   ^
+    |
+help: remove these parentheses
+    |
+156 -         if (node_forwards[update[i as usize] as usize].clone()[i as usize] == x) {
+156 +         if node_forwards[update[i as usize] as usize].clone()[i as usize] == x {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:159:13
+    |
+159 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+159 -         i = (i + 1);
+159 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:161:11
+    |
+161 |     while ((unsafe { g_level.clone() } > 1) && (node_forwards[0 as usize].clone()[(unsafe { g_level.clone() } - 1) as usize] == NIL)) {
+    |           ^                                                                                                                         ^
+    |
+help: remove these parentheses
+    |
+161 -     while ((unsafe { g_level.clone() } > 1) && (node_forwards[0 as usize].clone()[(unsafe { g_level.clone() } - 1) as usize] == NIL)) {
+161 +     while (unsafe { g_level.clone() } > 1) && (node_forwards[0 as usize].clone()[(unsafe { g_level.clone() } - 1) as usize] == NIL) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:168:11
+    |
+168 |     while (x != NIL) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+168 -     while (x != NIL) {
+168 +     while x != NIL {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:169:12
+    |
+169 |         if (s.as_str() != "") {
+    |            ^                ^
+    |
+help: remove these parentheses
+    |
+169 -         if (s.as_str() != "") {
+169 +         if s.as_str() != "" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:190:32
+    |
+190 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+190 -         let duration_us: i64 = ((_end - _start) / 1000);
+190 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unused variable: `find`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:119:17
+    |
+119 |         let mut find = |mut key: i64| -> i64 {
+    |                 ^^^^ help: if this is intentional, prefix it with an underscore: `_find`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:49:5
+   |
+43 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+49 |     unsafe { g_seed = (((unsafe { g_seed.clone() } * 13) + 7) % 100) };
+   |     ^^^^^^ unnecessary `unsafe` block
+   |
+   = note: `#[warn(unused_unsafe)]` on by default
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:49:26
+   |
+49 |     unsafe { g_seed = (((unsafe { g_seed.clone() } * 13) + 7) % 100) };
+   |     ------               ^^^^^^ unnecessary `unsafe` block
+   |     |
+   |     because it's nested under this `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:50:14
+   |
+43 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+50 |     return ((unsafe { g_seed.clone() } as f64) / 100.0)
+   |              ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:54:24
+   |
+54 |     while ((random() < unsafe { g_P.clone() }) && (lvl < unsafe { g_MAX_LEVEL.clone() })) {
+   |                        ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:54:58
+   |
+54 |     while ((random() < unsafe { g_P.clone() }) && (lvl < unsafe { g_MAX_LEVEL.clone() })) {
+   |                                                          ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:62:16
+   |
+62 |     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+   |                ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:75:5
+   |
+43 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+75 |     unsafe { g_level = 1 };
+   |     ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:80:16
+   |
+80 |     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+   |                ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:85:10
+   |
+43 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+85 |     i = (unsafe { g_level.clone() } - 1);
+   |          ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:99:15
+   |
+43 |     unsafe {
+   |     ------ because it's nested under this `unsafe` block
+...
+99 |     if (lvl > unsafe { g_level.clone() }) {
+   |               ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:100:26
+    |
+43  |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+100 |         let mut j: i64 = unsafe { g_level.clone() };
+    |                          ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:105:9
+    |
+43  |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+105 |         unsafe { g_level = lvl };
+    |         ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:121:23
+    |
+43  |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+121 |     let mut i: i64 = (unsafe { g_level.clone() } - 1);
+    |                       ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:137:16
+    |
+137 |     while (i < unsafe { g_MAX_LEVEL.clone() }) {
+    |                ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:142:10
+    |
+43  |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+142 |     i = (unsafe { g_level.clone() } - 1);
+    |          ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:155:16
+    |
+43  |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+155 |     while (i < unsafe { g_level.clone() }) {
+    |                ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:161:13
+    |
+43  |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+161 |     while ((unsafe { g_level.clone() } > 1) && (node_forwards[0 as usize].clone()[(unsafe { g_level.clone() } - 1) as usize] == NIL)) {
+    |             ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:161:84
+    |
+43  |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+161 |     while ((unsafe { g_level.clone() } > 1) && (node_forwards[0 as usize].clone()[(unsafe { g_level.clone() } - 1) as usize] == NIL)) {
+    |                                                                                    ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:162:9
+    |
+43  |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+162 |         unsafe { g_level = (unsafe { g_level.clone() } - 1) };
+    |         ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:162:29
+    |
+162 |         unsafe { g_level = (unsafe { g_level.clone() } - 1) };
+    |         ------              ^^^^^^ unnecessary `unsafe` block
+    |         |
+    |         because it's nested under this `unsafe` block
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:77:27
+   |
+77 |         let mut insert = |mut key: i64, mut value: i64| {
+   |                           ----^^^
+   |                           |
+   |                           help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:77:41
+   |
+77 |         let mut insert = |mut key: i64, mut value: i64| {
+   |                                         ----^^^^^
+   |                                         |
+   |                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:119:25
+    |
+119 |         let mut find = |mut key: i64| -> i64 {
+    |                         ----^^^
+    |                         |
+    |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:134:27
+    |
+134 |         let mut delete = |mut key: i64| {
+    |                           ----^^^
+    |                           |
+    |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:48:13
+   |
+48 |         let mut random = || -> f64 {
+   |             ----^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:52:13
+   |
+52 |         let mut random_level = || -> i64 {
+   |             ----^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:59:13
+   |
+59 |         let mut empty_forward = || -> Vec<i64> {
+   |             ----^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:119:13
+    |
+119 |         let mut find = |mut key: i64| -> i64 {
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:165:13
+    |
+165 |         let mut to_string = || -> String {
+    |             ----^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+error[E0499]: cannot borrow `node_forwards` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:77:26
+    |
+71  |         let mut init = || {
+    |                        -- first mutable borrow occurs here
+...
+74  |     node_forwards = vec![empty_forward().clone()];
+    |     ------------- first borrow occurs due to use of `node_forwards` in closure
+...
+77  |         let mut insert = |mut key: i64, mut value: i64| {
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ second mutable borrow occurs here
+...
+114 |         node_forwards[update[i as usize] as usize][i as usize] = idx;
+    |         ------------- second borrow occurs due to use of `node_forwards` in closure
+...
+178 |     init();
+    |     ---- first borrow later captured here by closure
+
+error[E0499]: cannot borrow `node_keys` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:77:26
+    |
+71  |         let mut init = || {
+    |                        -- first mutable borrow occurs here
+72  |     node_keys = vec![-1];
+    |     --------- first borrow occurs due to use of `node_keys` in closure
+...
+77  |         let mut insert = |mut key: i64, mut value: i64| {
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ second mutable borrow occurs here
+...
+107 |     node_keys = { let mut _v = node_keys.clone(); _v.push(key); _v };
+    |     --------- second borrow occurs due to use of `node_keys` in closure
+...
+178 |     init();
+    |     ---- first borrow later captured here by closure
+
+error[E0499]: cannot borrow `node_vals` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:77:26
+    |
+71  |         let mut init = || {
+    |                        -- first mutable borrow occurs here
+72  |     node_keys = vec![-1];
+73  |     node_vals = vec![0];
+    |     --------- first borrow occurs due to use of `node_vals` in closure
+...
+77  |         let mut insert = |mut key: i64, mut value: i64| {
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ second mutable borrow occurs here
+...
+95  |         node_vals[x as usize] = value;
+    |         --------- second borrow occurs due to use of `node_vals` in closure
+...
+178 |     init();
+    |     ---- first borrow later captured here by closure
+
+error[E0502]: cannot borrow `node_forwards` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:119:24
+    |
+71  |         let mut init = || {
+    |                        -- mutable borrow occurs here
+...
+74  |     node_forwards = vec![empty_forward().clone()];
+    |     ------------- first borrow occurs due to use of `node_forwards` in closure
+...
+119 |         let mut find = |mut key: i64| -> i64 {
+    |                        ^^^^^^^^^^^^^^^^^^^^^ immutable borrow occurs here
+...
+123 |         while ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usiz...
+    |                 ------------- second borrow occurs due to use of `node_forwards` in closure
+...
+178 |     init();
+    |     ---- mutable borrow later captured here by closure
+
+error[E0502]: cannot borrow `node_keys` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:119:24
+    |
+71  |         let mut init = || {
+    |                        -- mutable borrow occurs here
+72  |     node_keys = vec![-1];
+    |     --------- first borrow occurs due to use of `node_keys` in closure
+...
+119 |         let mut find = |mut key: i64| -> i64 {
+    |                        ^^^^^^^^^^^^^^^^^^^^^ immutable borrow occurs here
+...
+123 |         while ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usiz...
+    |                                                                           --------- second borrow occurs due to use of `node_keys` in closure
+...
+178 |     init();
+    |     ---- mutable borrow later captured here by closure
+
+error[E0502]: cannot borrow `node_vals` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:119:24
+    |
+71  |         let mut init = || {
+    |                        -- mutable borrow occurs here
+72  |     node_keys = vec![-1];
+73  |     node_vals = vec![0];
+    |     --------- first borrow occurs due to use of `node_vals` in closure
+...
+119 |         let mut find = |mut key: i64| -> i64 {
+    |                        ^^^^^^^^^^^^^^^^^^^^^ immutable borrow occurs here
+...
+130 |         return node_vals[x as usize]
+    |                --------- second borrow occurs due to use of `node_vals` in closure
+...
+178 |     init();
+    |     ---- mutable borrow later captured here by closure
+
+error[E0499]: cannot borrow `node_forwards` as mutable more than once at a time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:134:26
+    |
+71  |         let mut init = || {
+    |                        -- first mutable borrow occurs here
+...
+74  |     node_forwards = vec![empty_forward().clone()];
+    |     ------------- first borrow occurs due to use of `node_forwards` in closure
+...
+134 |         let mut delete = |mut key: i64| {
+    |                          ^^^^^^^^^^^^^^ second mutable borrow occurs here
+...
+157 |             node_forwards[update[i as usize] as usize][i as usize] = node_forwards[x as usize].clone()[i as usize];
+    |             ------------- second borrow occurs due to use of `node_forwards` in closure
+...
+178 |     init();
+    |     ---- first borrow later captured here by closure
+
+error[E0502]: cannot borrow `node_keys` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:134:26
+    |
+71  |         let mut init = || {
+    |                        -- mutable borrow occurs here
+72  |     node_keys = vec![-1];
+    |     --------- first borrow occurs due to use of `node_keys` in closure
+...
+134 |         let mut delete = |mut key: i64| {
+    |                          ^^^^^^^^^^^^^^ immutable borrow occurs here
+...
+144 |         while ((node_forwards[x as usize].clone()[i as usize] != NIL) && (node_keys[node_forwards[x as usize].clone()[i as usize] as usiz...
+    |                                                                           --------- second borrow occurs due to use of `node_keys` in closure
+...
+178 |     init();
+    |     ---- mutable borrow later captured here by closure
+
+error[E0502]: cannot borrow `node_forwards` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:165:29
+    |
+71  |         let mut init = || {
+    |                        -- mutable borrow occurs here
+...
+74  |     node_forwards = vec![empty_forward().clone()];
+    |     ------------- first borrow occurs due to use of `node_forwards` in closure
+...
+165 |         let mut to_string = || -> String {
+    |                             ^^^^^^^^^^^^ immutable borrow occurs here
+166 |     let mut s: String = String::new();
+167 |     let mut x: i64 = node_forwards[0 as usize].clone()[0 as usize];
+    |                      ------------- second borrow occurs due to use of `node_forwards` in closure
+...
+178 |     init();
+    |     ---- mutable borrow later captured here by closure
+
+error[E0502]: cannot borrow `node_keys` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:165:29
+    |
+71  |         let mut init = || {
+    |                        -- mutable borrow occurs here
+72  |     node_keys = vec![-1];
+    |     --------- first borrow occurs due to use of `node_keys` in closure
+...
+165 |         let mut to_string = || -> String {
+    |                             ^^^^^^^^^^^^ immutable borrow occurs here
+...
+172 |         s = format!("{}{}", format!("{}{}", format!("{}{}", s, node_keys[x as usize].to_string()), ":"), node_vals[x as usize].to_string());
+    |                                                                --------- second borrow occurs due to use of `node_keys` in closure
+...
+178 |     init();
+    |     ---- mutable borrow later captured here by closure
+
+error[E0502]: cannot borrow `node_vals` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/linked_list/skip_list.rs:165:29
+    |
+71  |         let mut init = || {
+    |                        -- mutable borrow occurs here
+72  |     node_keys = vec![-1];
+73  |     node_vals = vec![0];
+    |     --------- first borrow occurs due to use of `node_vals` in closure
+...
+165 |         let mut to_string = || -> String {
+    |                             ^^^^^^^^^^^^ immutable borrow occurs here
+...
+172 |         s = format!("{}{}", format!("{}{}", format!("{}{}", s, node_keys[x as usize].to_string()), ":"), node_vals[x as usize].to_string());
+    |                                                                                                          --------- second borrow occurs due to use of `node_vals` in closure
+...
+178 |     init();
+    |     ---- mutable borrow later captured here by closure
+
+error: aborting due to 11 previous errors; 67 warnings emitted
+
+Some errors have detailed explanations: E0499, E0502.
+For more information about an error, try `rustc --explain E0499`.
