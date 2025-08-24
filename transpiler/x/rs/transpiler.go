@@ -137,26 +137,32 @@ func isConstExpr(e Expr) bool {
 		}
 		return false
 	case *ListLit:
+		// List literals allocate heap memory (Vec) which cannot be
+		// created in a const/static context. Treat them as
+		// non-constant so top-level declarations are initialized at
+		// runtime instead of as `static` values.
 		for _, el := range v.Elems {
 			if !isConstExpr(el) {
 				return false
 			}
 		}
-		return true
+		return false
 	case *MapLit:
+		// Similar to list literals, map literals require runtime
+		// initialization. They are never considered constant.
 		for _, it := range v.Items {
 			if !isConstExpr(it.Key) || !isConstExpr(it.Value) {
 				return false
 			}
 		}
-		return true
+		return false
 	case *StructLit:
 		for _, f := range v.Fields {
 			if !isConstExpr(f) {
 				return false
 			}
 		}
-		return true
+		return false
 	}
 	return false
 }
