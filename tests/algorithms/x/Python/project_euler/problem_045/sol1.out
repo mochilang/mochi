@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/project_euler/problem_045/sol1.py", line 76, in <module>
+    test_is_pentagonal()
+  File "/workspace/mochi/tests/algorithms/x/Python/project_euler/problem_045/sol1.py", line 67, in test_is_pentagonal
+    panic("330 should be pentagonal")
+  File "/workspace/mochi/tests/algorithms/x/Python/project_euler/problem_045/sol1.py", line 16, in panic
+    raise RuntimeError(msg)
+RuntimeError: 330 should be pentagonal

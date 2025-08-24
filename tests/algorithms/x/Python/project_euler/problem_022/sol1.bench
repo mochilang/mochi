@@ -1,0 +1,12 @@
+{
+  "duration_us": 57,
+  "memory_bytes": 0,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/project_euler/problem_022/sol1.py", line 125, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/project_euler/problem_022/sol1.py", line 110, in main
+    line = input()
+           ^^^^^^^
+EOFError: EOF when reading a line

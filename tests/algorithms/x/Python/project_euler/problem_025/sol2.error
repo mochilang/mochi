@@ -1,0 +1,8 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/project_euler/problem_025/sol2.py", line 35, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/project_euler/problem_025/sol2.py", line 32, in main
+    n = int(input())
+            ^^^^^^^
+EOFError: EOF when reading a line

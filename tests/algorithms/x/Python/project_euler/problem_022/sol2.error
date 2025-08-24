@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/project_euler/problem_022/sol2.py", line 77, in <module>
+    names = _append(names, r.name)
+                           ^^^^^^
+AttributeError: 'dict' object has no attribute 'name'
