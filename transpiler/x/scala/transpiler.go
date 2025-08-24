@@ -54,6 +54,7 @@ var builtinAliases map[string]string
 var localVarTypes map[string]string
 var fieldStructs map[string]string
 var varDecls map[string]*VarStmt
+var aliasVars map[string]*FieldExpr
 var returnTypeStack []string
 var funCtxStack []bool
 var assignedVars map[string]bool
@@ -1217,10 +1218,53 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(")
-	a.List.emit(w)
-	fmt.Fprint(w, " :+ (")
-	elem := a.Elem
+       if n, ok := a.List.(*Name); ok {
+               if aliasVars != nil {
+                       if _, ok2 := aliasVars[n.Name]; ok2 {
+                               fmt.Fprint(w, "({")
+                               a.List.emit(w)
+                               fmt.Fprint(w, " += (")
+                               elem := a.Elem
+                               if ie, ok := elem.(*IfExpr); ok {
+                                       t1 := inferTypeWithEnv(ie.Then, nil)
+                                       t2 := inferTypeWithEnv(ie.Else, nil)
+                                       if t1 == "BigInt" || t2 == "BigInt" {
+                                               needsBigInt = true
+                                               elem = &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{elem}}
+                                       }
+                               }
+                               if be, ok := elem.(*BinaryExpr); ok {
+                                       if il, ok2 := be.Left.(*IntLit); ok2 && il.Value == 0 && be.Op == "-" {
+                                               if _, ok3 := be.Right.(*IntLit); ok3 {
+                                                       needsBigInt = true
+                                                       elem = &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{elem}}
+                                               }
+                                       }
+                               }
+                               if ce, ok := elem.(*CastExpr); ok && ce.Type == "Any" {
+                                       if lt := inferTypeWithEnv(a.List, nil); strings.HasPrefix(lt, "ArrayBuffer[") {
+                                               et := strings.TrimSuffix(strings.TrimPrefix(lt, "ArrayBuffer["), "]")
+                                               if et != "" && et != "Any" {
+                                                       elem = &CastExpr{Value: ce.Value, Type: et}
+                                               } else {
+                                                       elem = ce.Value
+                                               }
+                                       } else {
+                                               elem = ce.Value
+                                       }
+                               }
+                               elem.emit(w)
+                               fmt.Fprint(w, "); ")
+                               a.List.emit(w)
+                               fmt.Fprint(w, "})")
+                               return
+                       }
+               }
+       }
+       fmt.Fprint(w, "(")
+       a.List.emit(w)
+       fmt.Fprint(w, " :+ (")
+       elem := a.Elem
 	if ie, ok := elem.(*IfExpr); ok {
 		t1 := inferTypeWithEnv(ie.Then, nil)
 		t2 := inferTypeWithEnv(ie.Else, nil)
@@ -2288,8 +2332,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	mapEntryTypes = make(map[string]map[string]string)
 	builtinAliases = map[string]string{"Object": "js_object"}
 	localVarTypes = make(map[string]string)
-	fieldStructs = make(map[string]string)
-	varDecls = make(map[string]*VarStmt)
+       fieldStructs = make(map[string]string)
+       varDecls = make(map[string]*VarStmt)
+       aliasVars = make(map[string]*FieldExpr)
 	returnTypeStack = nil
 	funCtxStack = nil
 	assignedVars = make(map[string]bool)
@@ -2692,11 +2737,16 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			mapEntryTypes[st.Var.Name] = mt
 		}
 		// Variables default to local; a later pass may mark them global if safe.
-		vs := &VarStmt{Name: st.Var.Name, Type: typ, Value: e, Global: false}
-		if varDecls != nil {
-			varDecls[st.Var.Name] = vs
-		}
-		return vs, nil
+               vs := &VarStmt{Name: st.Var.Name, Type: typ, Value: e, Global: false}
+               if varDecls != nil {
+                       varDecls[st.Var.Name] = vs
+               }
+               if fe, ok := e.(*FieldExpr); ok {
+                       if aliasVars != nil {
+                               aliasVars[st.Var.Name] = fe
+                       }
+               }
+               return vs, nil
 	case st.Type != nil:
 		if len(st.Type.Variants) > 0 {
 			if len(st.Type.Variants) == 1 && st.Type.Variants[0].Name == "int" && len(st.Type.Variants[0].Fields) == 0 {
@@ -3978,6 +4028,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "contains":
 		if len(args) == 2 {
+			if env != nil {
+				if _, ok := env.GetFunc("contains"); ok {
+					break
+				}
+			}
 			recv := args[0]
 			if inferTypeWithEnv(recv, env) == "Any" {
 				recv = &CastExpr{Value: recv, Type: "Any"}
