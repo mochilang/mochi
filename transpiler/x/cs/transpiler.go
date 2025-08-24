@@ -3743,7 +3743,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 						}
 						if vt != ct {
 							usesLinq = true
-							val = &RawExpr{Code: fmt.Sprintf("%s.Cast<%s>().ToArray()", exprString(val), elem), Type: ct}
+							if l, ok := val.(*ListLit); ok {
+								l.ElemType = "object[]"
+							}
+							val = &RawExpr{Code: fmt.Sprintf("Enumerable.Select(%s, x => x is %s v ? v : default(%s)).ToArray()", exprString(val), elem, elem), Type: ct}
 						}
 					} else {
 						code := exprString(val)

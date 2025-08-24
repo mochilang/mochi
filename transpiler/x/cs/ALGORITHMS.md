@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-24 16:32 GMT+7
+Last updated: 2025-08-24 17:09 GMT+7
 
-## Algorithms Golden Test Checklist (1034/1077)
+## Algorithms Golden Test Checklist (1036/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -181,37 +181,37 @@ Last updated: 2025-08-24 16:32 GMT+7
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 2.0ms | 20.16KB |
 | 173 | data_structures/binary_tree/binary_search_tree | ✓ | 15.0ms | 2.63MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 2.0ms | 19.66KB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 1.0ms | 16.66KB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 12.0ms | 1.39MB |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 3.0ms | 25.28KB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 2.0ms | 17.16KB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 1.0ms | 22.91KB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 2.0ms | 20.29KB |
-| 182 | data_structures/binary_tree/floor_and_ceiling | error |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 1.0µs | 20.54KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 1.0µs | 16.99KB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 1.0µs | 2.37MB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 1.0µs | 33.01KB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 1.0µs | 18.13KB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 1.0µs | 21.96KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 1.0µs | 17.45KB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 1.0µs | 23.39KB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
-| 184 | data_structures/binary_tree/is_sorted | ✓ | 2.0ms | 17.83KB |
-| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 1.0µs | 43.83KB |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 2.0ms | 73.04KB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 2.0ms | 111.00KB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 13.0ms | 382.36MB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 2.0ms | 19.18KB |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 1.0µs | 18.11KB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 1.0µs | 24B |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 1.0µs | 20.59KB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 1.0µs | 457.44KB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 1.0µs | 2.98GB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 1.0µs | 21.46KB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees | error |  |  |
-| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 2.0ms | 33.14KB |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 2.0ms | 21.58KB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | error |  |  |
-| 194 | data_structures/binary_tree/red_black_tree | ✓ | 2.0ms | 19.75KB |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 2.0ms | 40.58KB |
-| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 2.0ms | 44.34KB |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 2.0ms | 17.30KB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 1.0µs | 36.05KB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 1.0µs | 17.45KB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 1.0µs | 4.45KB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 1.0µs | 24.05KB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 1.0µs | 145.95KB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 1.0µs | 64.84KB |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 1.0µs | 26.79KB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 1.0µs | 18.82KB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 2.0ms | 41.45KB |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 2.0ms | 17.30KB |
-| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 2.0ms | 24.23KB |
-| 203 | data_structures/hashing/bloom_filter | ✓ | 3.0ms | 468.06KB |
-| 204 | data_structures/hashing/double_hash | ✓ | 2.0ms | 19.43KB |
-| 205 | data_structures/hashing/hash_map | ✓ | 1.0ms | 18.34KB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 1.0µs | 17.47KB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 1.0µs | 17.14KB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 1.0µs | 28.07KB |
+| 203 | data_structures/hashing/bloom_filter | error | 3.0ms | 468.06KB |
+| 204 | data_structures/hashing/double_hash | ✓ | 1.0µs | 21.25KB |
+| 205 | data_structures/hashing/hash_map | ✓ | 1.0µs | 18.34KB |
 | 206 | data_structures/hashing/hash_table | error |  |  |
 | 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 2.0ms | 19.42KB |
 | 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 2.0ms | 16.62KB |

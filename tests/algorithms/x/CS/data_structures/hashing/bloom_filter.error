@@ -1,0 +1,20 @@
+exit status 134
+00000000
+false
+01000100
+true
+true
+00100010
+01100110
+The Godfather:00000010
+Interstellar:00000010
+Parasite:10001000
+Pulp Fiction:00100000
+true
+true
+00000100
+Unhandled exception. System.InvalidCastException: Unable to cast object of type 'System.Numerics.BigInteger' to type 'System.IConvertible'.
+   at System.Convert.ToDouble(Object value)
+   at Program.estimated_error_rate(Bloom b_40) in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_bloom_filter1003228814/001/Program.cs:line 262
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_bloom_filter1003228814/001/Program.cs:line 298
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_bloom_filter1003228814/001/Program.cs:line 309

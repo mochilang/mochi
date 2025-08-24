@@ -2,11 +2,26 @@
 #pragma warning disable 0169, 0649
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Numerics;
 using System.Collections;
 using System.Globalization;
 
+class BuildResult {
+    public object node;
+    public BigInteger next;
+    public override string ToString() => $"BuildResult {{node = {node}, next = {next}}}";
+}
+class Node {
+    public object left;
+    public BigInteger value;
+    public object right;
+    public override string ToString() => $"Node {{left = {left}, value = {value}, right = {right}}}";
+}
+class Empty {
+    public override string ToString() => $"Empty {{}}";
+}
 #pragma warning disable CS0162
 class Program {
     static bool seededNow = false;
@@ -109,38 +124,89 @@ class Program {
         return _fmt(v);
     }
     static string __name__ = "__main__";
-    public static void binary_tree_mirror_dict(Dictionary<BigInteger, BigInteger[]> tree_0, BigInteger root_1) {
-        if (((root_1 == 0) || (!(tree_0.ContainsKey(root_1))))) {
-            return;
+    public static BigInteger digit(string ch_0) {
+        string digits_1 = "0123456789";
+        BigInteger i_2 = 0;
+        while ((i_2 < digits_1.Length)) {
+            if ((_substr(digits_1, (long)(i_2), (long)((i_2 + 1))) == ch_0)) {
+                return i_2;
+            }
+            i_2 = (i_2 + 1);
         };
-        BigInteger[] children_2 = (tree_0.ContainsKey(root_1) ? tree_0[root_1] : null);
-        BigInteger left_3 = _idx(children_2, (long)(0));
-        BigInteger right_4 = _idx(children_2, (long)(1));
-        tree_0[root_1] = new BigInteger[]{right_4, left_3};
-        Program.binary_tree_mirror_dict(tree_0, left_3);
-        Program.binary_tree_mirror_dict(tree_0, right_4);
+        return 0;
     }
 
-    public static Dictionary<BigInteger, BigInteger[]> binary_tree_mirror(Dictionary<BigInteger, BigInteger[]> binary_tree_5, BigInteger root_6) {
-        if ((binary_tree_5.Count == 0)) {
-            throw new Exception("binary tree cannot be empty");
+    public static BigInteger to_int(string s_3) {
+        BigInteger i_4 = 0;
+        BigInteger sign_5 = 1;
+        if (((s_3.Length > 0) && (_substr(s_3, (long)(0), (long)(1)) == "-"))) {
+            sign_5 = -1;
+            i_4 = 1;
         };
-        if ((!(binary_tree_5.ContainsKey(root_6)))) {
-            throw new Exception((("root " + _fmtStr(root_6)) + " is not present in the binary_tree"));
+        BigInteger num_6 = 0;
+        while ((i_4 < s_3.Length)) {
+            string ch_7 = _substr(s_3, (long)(i_4), (long)((i_4 + 1)));
+            num_6 = ((num_6 * 10) + Program.digit(ch_7));
+            i_4 = (i_4 + 1);
         };
-        Dictionary<BigInteger, BigInteger[]> tree_copy_7 = new Dictionary<BigInteger, BigInteger[]>{};
-        foreach (BigInteger k_8 in binary_tree_5.Keys) {
-            tree_copy_7[k_8] = (binary_tree_5.ContainsKey(k_8) ? binary_tree_5[k_8] : null);
+        return (sign_5 * num_6);
+    }
+
+    public static string[] split(string s_8, string sep_9) {
+        string[] res_10 = new string[]{};
+        string current_11 = "";
+        BigInteger i_12 = 0;
+        while ((i_12 < s_8.Length)) {
+            string ch_13 = _substr(s_8, (long)(i_12), (long)((i_12 + 1)));
+            if ((ch_13 == sep_9)) {
+                res_10 = ((Func<string[]>)(() => { var _tmp = res_10.Cast<string>().ToList(); _tmp.Add(current_11); return _tmp.ToArray(); }))();
+                current_11 = "";
+            } else {
+                current_11 = (current_11 + ch_13);
+            }
+            i_12 = (i_12 + 1);
         };
-        Program.binary_tree_mirror_dict(tree_copy_7, root_6);
-        return tree_copy_7;
+        res_10 = ((Func<string[]>)(() => { var _tmp = res_10.Cast<string>().ToList(); _tmp.Add(current_11); return _tmp.ToArray(); }))();
+        return res_10;
+    }
+
+    public static string serialize(object node_14) {
+        return ((Func<string>)(() => { var __t = node_14; if (__t is Empty) { return "null"; } else if (__t is Node _p1) { var l = _p1.left; var v = _p1.value; var r = _p1.right; return ((((_fmtStr(v) + ",") + serialize((object)l)) + ",") + serialize((object)r)); } return default(string); }))();
+    }
+
+    public static BuildResult build(string[] nodes_15, BigInteger idx_16) {
+        string value_17 = _idx(nodes_15, (long)(idx_16));
+        if ((value_17 == "null")) {
+            return new BuildResult{node = new Empty{}, next = (idx_16 + 1)};
+        };
+        BuildResult left_res_18 = Program.build(nodes_15, (idx_16 + 1));
+        BuildResult right_res_19 = Program.build(nodes_15, left_res_18.next);
+        Node node_20 = new Node{left = left_res_18.node, value = Program.to_int(value_17), right = right_res_19.node};
+        return new BuildResult{node = node_20, next = right_res_19.next};
+    }
+
+    public static object deserialize(string data_21) {
+        string[] nodes_22 = Program.split(data_21, ",");
+        BuildResult res_23 = Program.build(nodes_22, 0);
+        return res_23.node;
+    }
+
+    public static object five_tree() {
+        Node left_child_24 = new Node{value = 2, left = new Empty{}, right = new Empty{}};
+        Node right_left_25 = new Node{value = 4, left = new Empty{}, right = new Empty{}};
+        Node right_right_26 = new Node{value = 5, left = new Empty{}, right = new Empty{}};
+        Node right_child_27 = new Node{value = 3, left = right_left_25, right = right_right_26};
+        return (object)new Node{value = 1, left = left_child_24, right = right_child_27};
     }
 
     public static void main() {
-        Dictionary<BigInteger, BigInteger[]> binary_tree_9 = new Dictionary<BigInteger, BigInteger[]>{{1, new BigInteger[]{2, 3}}, {2, new BigInteger[]{4, 5}}, {3, new BigInteger[]{6, 7}}, {7, new BigInteger[]{8, 9}}};
-        Console.WriteLine(Program._fmtTop(("Binary tree: " + _fmtStr(binary_tree_9))));
-        Dictionary<BigInteger, BigInteger[]> mirrored_10 = Program.binary_tree_mirror(binary_tree_9, 1);
-        Console.WriteLine(Program._fmtTop(("Binary tree mirror: " + _fmtStr(mirrored_10))));
+        object root_28 = Program.five_tree();
+        string serial_29 = Program.serialize((object)root_28);
+        Console.WriteLine(Program._fmtTop(serial_29));
+        object rebuilt_30 = Program.deserialize(serial_29);
+        string serial2_31 = Program.serialize((object)rebuilt_30);
+        Console.WriteLine(Program._fmtTop(serial2_31));
+        Console.WriteLine(Program._fmtTop((serial_29 == serial2_31)));
     }
 
     static void Main() {
