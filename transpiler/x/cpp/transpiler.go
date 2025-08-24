@@ -991,9 +991,14 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseIndex {
-		fmt.Fprintln(w, "template<typename V> auto _index(const V& v, int64_t i) {")
+		fmt.Fprintln(w, "template<typename V> auto _index(V& v, int64_t i) -> decltype(v[static_cast<size_t>(0)]) {")
 		fmt.Fprintln(w, "    if (i < 0) i += v.size();")
-		fmt.Fprintln(w, "    if (i < 0 || i >= (int64_t)v.size()) return typename V::value_type{};")
+		fmt.Fprintln(w, "    if (i < 0 || i >= (int64_t)v.size()) { static std::remove_reference_t<decltype(v[0])> dummy{}; return dummy; }")
+		fmt.Fprintln(w, "    return v[static_cast<size_t>(i)];")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "template<typename V> auto _index(const V& v, int64_t i) -> std::remove_reference_t<decltype(v[static_cast<size_t>(0)])> {")
+		fmt.Fprintln(w, "    if (i < 0) i += v.size();")
+		fmt.Fprintln(w, "    if (i < 0 || i >= (int64_t)v.size()) return std::remove_reference_t<decltype(v[0])>{};")
 		fmt.Fprintln(w, "    return v[static_cast<size_t>(i)];")
 		fmt.Fprintln(w, "}")
 	}
@@ -1758,6 +1763,22 @@ func (n *NullLit) emit(w io.Writer) {
 }
 
 func (s *StructLit) emit(w io.Writer) {
+	if def := findStructDef(s.Name); def != nil {
+		vals := map[string]Expr{}
+		for _, f := range s.Fields {
+			vals[f.Name] = f.Value
+		}
+		io.WriteString(w, safeName(s.Name))
+		io.WriteString(w, "{")
+		for i, f := range def.Fields {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			emitStructFieldValue(w, f.Type, vals[f.Name])
+		}
+		io.WriteString(w, "}")
+		return
+	}
 	io.WriteString(w, safeName(s.Name))
 	io.WriteString(w, "{")
 	for i, f := range s.Fields {
@@ -1770,6 +1791,76 @@ func (s *StructLit) emit(w io.Writer) {
 		f.Value.emit(w)
 	}
 	io.WriteString(w, "}")
+}
+
+func findStructDef(name string) *StructDef {
+	if currentProgram == nil {
+		return nil
+	}
+	for i := range currentProgram.Structs {
+		if currentProgram.Structs[i].Name == name {
+			return &currentProgram.Structs[i]
+		}
+	}
+	return nil
+}
+
+func emitStructFieldValue(w io.Writer, typ string, val Expr) {
+	if sl, ok := val.(*StructLit); ok {
+		if strings.HasPrefix(typ, "std::shared_ptr<") || strings.HasPrefix(typ, "std::unique_ptr<") {
+			maker := "std::make_shared"
+			if strings.HasPrefix(typ, "std::unique_ptr<") {
+				maker = "std::make_unique"
+			}
+			target := strings.TrimSuffix(strings.TrimPrefix(typ, "std::shared_ptr<"), ">")
+			if strings.HasPrefix(typ, "std::unique_ptr<") {
+				target = strings.TrimSuffix(strings.TrimPrefix(typ, "std::unique_ptr<"), ">")
+			}
+			def := findStructDef(sl.Name)
+			vals := map[string]Expr{}
+			for _, f := range sl.Fields {
+				vals[f.Name] = f.Value
+			}
+			if strings.HasPrefix(typ, "std::shared_ptr<") && target != sl.Name {
+				fmt.Fprintf(w, "std::static_pointer_cast<%s>(%s<%s>(", target, maker, sl.Name)
+				for i, f := range def.Fields {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					emitStructFieldValue(w, f.Type, vals[f.Name])
+				}
+				io.WriteString(w, ")")
+				io.WriteString(w, ")")
+			} else {
+				fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
+				for i, f := range def.Fields {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					emitStructFieldValue(w, f.Type, vals[f.Name])
+				}
+				io.WriteString(w, ")")
+			}
+			return
+		}
+		if def := findStructDef(sl.Name); def != nil {
+			vals := map[string]Expr{}
+			for _, f := range sl.Fields {
+				vals[f.Name] = f.Value
+			}
+			io.WriteString(w, safeName(sl.Name))
+			io.WriteString(w, "{")
+			for i, f := range def.Fields {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				emitStructFieldValue(w, f.Type, vals[f.Name])
+			}
+			io.WriteString(w, "}")
+			return
+		}
+	}
+	val.emit(w)
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
@@ -3718,30 +3809,58 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 				if strings.HasPrefix(r.Type, "std::unique_ptr<") {
 					inner = strings.TrimSuffix(strings.TrimPrefix(r.Type, "std::unique_ptr<"), ">")
 				}
-				if strings.HasPrefix(r.Type, "std::shared_ptr<") && r.Type != fmt.Sprintf("std::shared_ptr<%s>", sl.Name) {
-					fmt.Fprintf(w, "std::static_pointer_cast<%s>(%s<%s>(", inner, maker, sl.Name)
-					for i, f := range sl.Fields {
+				emitStruct := func() {
+					def := findStructDef(sl.Name)
+					vals := map[string]Expr{}
+					for _, f := range sl.Fields {
+						vals[f.Name] = f.Value
+					}
+					for i, f := range def.Fields {
 						if i > 0 {
 							io.WriteString(w, ", ")
 						}
-						f.Value.emit(w)
+						emitStructFieldValue(w, f.Type, vals[f.Name])
 					}
+				}
+				if strings.HasPrefix(r.Type, "std::shared_ptr<") && r.Type != fmt.Sprintf("std::shared_ptr<%s>", sl.Name) {
+					fmt.Fprintf(w, "std::static_pointer_cast<%s>(%s<%s>(", inner, maker, sl.Name)
+					emitStruct()
 					io.WriteString(w, "))")
 				} else {
 					fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
-					for i, f := range sl.Fields {
-						if i > 0 {
-							io.WriteString(w, ", ")
-						}
-						f.Value.emit(w)
-					}
+					emitStruct()
 					io.WriteString(w, ")")
 				}
 				io.WriteString(w, ";\n")
 				return
 			}
 		}
-		if ll, ok := r.Value.(*ListLit); ok && ll.ElemType == "" && strings.HasPrefix(currentReturnType, "std::vector<") {
+		if ll, ok := r.Value.(*ListLit); ok && strings.HasPrefix(r.Type, "std::vector<") {
+			elem := elementTypeFromListType(r.Type)
+			fmt.Fprintf(w, "std::vector<%s>{", elem)
+			for i, e := range ll.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				et := exprType(e)
+				if et != elem {
+					if et == "std::any" {
+						fmt.Fprintf(w, "({ auto __p = std::any_cast<%s>(&", elem)
+						e.emit(w)
+						fmt.Fprintf(w, "); __p ? *__p : %s(0); })", elem)
+					} else {
+						io.WriteString(w, elem+"(")
+						e.emit(w)
+						io.WriteString(w, ")")
+					}
+				} else {
+					e.emit(w)
+				}
+			}
+			io.WriteString(w, "};\n")
+			return
+		}
+		if ll, ok := r.Value.(*ListLit); ok && strings.HasPrefix(currentReturnType, "std::vector<") {
 			ll.ElemType = elementTypeFromListType(currentReturnType)
 		}
 		r.Value.emit(w)
