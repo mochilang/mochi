@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-24 02:02 UTC
+Last updated: 2025-08-24 08:47 UTC
 
 ## Algorithms Golden Test Checklist (1064/1077)
 | Index | Name | Status | Duration | Memory |
@@ -157,7 +157,7 @@ Last updated: 2025-08-24 02:02 UTC
 | 148 | conversions/temperature_conversions | ✓ | 4.8ms | 330.0 KB |
 | 149 | conversions/time_conversions | ✓ | 947µs | 23.3 KB |
 | 150 | conversions/volume_conversions | ✓ | 1.501ms | 32.6 KB |
-| 151 | conversions/weight_conversion | ✓ | 956µs | 27.0 KB |
+| 151 | conversions/weight_conversion | ✓ | 571.223ms | 26.2 KB |
 | 152 | data_compression/burrows_wheeler | ✓ | 1.201ms | 24.9 KB |
 | 153 | data_compression/huffman | ✓ | 1.731ms | 35.5 KB |
 | 154 | data_compression/lempel_ziv | ✓ | 1.77ms | 290.4 KB |
@@ -181,14 +181,14 @@ Last updated: 2025-08-24 02:02 UTC
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 1.439ms | 38.7 KB |
 | 173 | data_structures/binary_tree/binary_search_tree |   | 1.294ms | 44.9 KB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 946µs | 19.8 KB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 571.223ms | 23.6 KB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 830µs | 15.2 KB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 1.548ms | 30.0 KB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 571.223ms | 27.4 KB |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 1.704ms | 32.5 KB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 1.06ms | 26.8 KB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 571.223ms | 580.2 KB |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 571.223ms | 28.0 KB |
-| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 571.223ms | 32.0 KB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 571.223ms | 33.2 KB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 571.223ms | 26.3 KB |
 | 184 | data_structures/binary_tree/is_sorted | ✓ | 571.223ms | 289.2 KB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 571.223ms | 2.7 KB |

@@ -579,6 +579,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if b.Op == "in" {
+		io.WriteString(w, "Object.prototype.hasOwnProperty.call(")
+		b.Right.emit(w)
+		io.WriteString(w, ", ")
+		b.Left.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	io.WriteString(w, "(")
 	b.Left.emit(w)
 	io.WriteString(w, " ")
