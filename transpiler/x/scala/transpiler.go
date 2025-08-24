@@ -4032,16 +4032,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "contains":
 		if len(args) == 2 {
-			if env != nil {
-				if _, ok := env.GetFunc("contains"); ok {
-					break
+			recvType := inferTypeWithEnv(args[0], env)
+			if strings.HasPrefix(recvType, "ArrayBuffer[") || strings.HasPrefix(recvType, "Map[") || recvType == "String" {
+				recv := args[0]
+				if recvType == "Any" {
+					recv = &CastExpr{Value: recv, Type: "Any"}
 				}
+				return &CallExpr{Fn: &FieldExpr{Receiver: recv, Name: "contains"}, Args: []Expr{args[1]}}, nil
 			}
-			recv := args[0]
-			if inferTypeWithEnv(recv, env) == "Any" {
-				recv = &CastExpr{Value: recv, Type: "Any"}
-			}
-			return &CallExpr{Fn: &FieldExpr{Receiver: recv, Name: "contains"}, Args: []Expr{args[1]}}, nil
 		}
 	case "sha256":
 		if len(args) == 1 {
