@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (884/1077) - Last updated 2025-08-24 22:33 +0700:
+Checklist of programs that currently transpile and run (885/1077) - Last updated 2025-08-24 23:41 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -216,9 +216,9 @@ Checklist of programs that currently transpile and run (884/1077) - Last updated
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 253us | 1.4 MB |
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 483us | 1.4 MB |
 | 211 | data_structures/heap/binomial_heap | ✓ | 471us | 1.6 MB |
-| 212 | data_structures/heap/heap | ✓ |  |  |
-| 213 | data_structures/heap/heap_generic |  |  |  |
-| 214 | data_structures/heap/max_heap |  |  |  |
+| 212 | data_structures/heap/heap |  |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 261us | 1.4 MB |
+| 214 | data_structures/heap/max_heap | ✓ | 407us | 1.4 MB |
 | 215 | data_structures/heap/min_heap |  |  |  |
 | 216 | data_structures/heap/randomized_heap |  |  |  |
 | 217 | data_structures/kd_tree/build_kdtree |  |  |  |

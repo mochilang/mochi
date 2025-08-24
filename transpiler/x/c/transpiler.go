@@ -1647,7 +1647,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_lens_len = ", d.Name)
-			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_lens_len"}).emitExpr(w)
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t **%s_lens_lens = ", d.Name)
@@ -1655,7 +1655,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_lens_lens_len = ", d.Name)
-			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_lens_lens_len"}).emitExpr(w)
 			io.WriteString(w, ";\n")
 			return
 		} else if vr, ok := d.Value.(*VarRef); ok {
@@ -1665,11 +1665,11 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", d.Name, vr.Name)
 			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, vr.Name)
+			fmt.Fprintf(w, "size_t %s_lens_len = %s_lens_len;\n", d.Name, vr.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t **%s_lens_lens = %s_lens_lens;\n", d.Name, vr.Name)
 			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_lens_lens_len = %s_len;\n", d.Name, vr.Name)
+			fmt.Fprintf(w, "size_t %s_lens_lens_len = %s_lens_len;\n", d.Name, vr.Name)
 			if declAliases == nil {
 				declAliases = make(map[string]bool)
 			}
@@ -2389,6 +2389,23 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "%s%s%s_len = ", a.Name, sep, a.Fields[0])
 			emitLenExpr(w, a.Value)
 			io.WriteString(w, ";\n")
+			if strings.HasSuffix(ft, "[][]") && !strings.Contains(ft, "char[][]") {
+				writeIndent(w, indent)
+				switch v := a.Value.(type) {
+				case *VarRef:
+					fmt.Fprintf(w, "%s%s%s_lens = %s_lens;\n", a.Name, sep, a.Fields[0], v.Name)
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s%s%s_lens_len = %s_lens_len;\n", a.Name, sep, a.Fields[0], v.Name)
+				case *FieldExpr:
+					fmt.Fprintf(w, "%s%s%s_lens = ", a.Name, sep, a.Fields[0])
+					(&FieldExpr{Target: v.Target, Name: v.Name + "_lens"}).emitExpr(w)
+					io.WriteString(w, ";\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s%s%s_lens_len = ", a.Name, sep, a.Fields[0])
+					(&FieldExpr{Target: v.Target, Name: v.Name + "_lens_len"}).emitExpr(w)
+					io.WriteString(w, ";\n")
+				}
+			}
 		}
 	}
 
@@ -8040,7 +8057,24 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				buf.WriteString("map_set_si(&")
 				buf.WriteString(s.Assign.Name)
 				buf.WriteString(", ")
-				idxs[0].emitExpr(&buf)
+				if fe, ok := idxs[0].(*FieldExpr); ok {
+					if vr, ok2 := fe.Target.(*VarRef); ok2 {
+						name := aliasName(vr.Name)
+						t := varTypes[name]
+						if t == "" && funcParamPtrs != nil && funcParamPtrs[currentFuncName] != nil && funcParamPtrs[currentFuncName][name] {
+							t = "*"
+						}
+						if strings.HasSuffix(t, "*") || mutatedParams[name] {
+							fmt.Fprintf(&buf, "%s->%s", name, fe.Name)
+						} else {
+							fmt.Fprintf(&buf, "%s.%s", name, fe.Name)
+						}
+					} else {
+						fe.emitExpr(&buf)
+					}
+				} else {
+					idxs[0].emitExpr(&buf)
+				}
 				buf.WriteString(", ")
 				if valT == "const char*" {
 					emitMapStringValue(&buf, valExpr)
@@ -8136,14 +8170,14 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				buf.WriteString(");\n")
 				return &RawStmt{Code: buf.String()}, nil
 			}
-                       if keyT == "int" && valT == "int" {
-                               needMapSetII = true
-                               return &CallStmt{Func: "map_set_ii", Args: []Expr{
-                                       &UnaryExpr{Op: "&", Expr: &VarRef{Name: s.Assign.Name}},
-                                       idxs[0],
-                                       valExpr,
-                               }}, nil
-                       }
+			if keyT == "int" && valT == "int" {
+				needMapSetII = true
+				return &CallStmt{Func: "map_set_ii", Args: []Expr{
+					&UnaryExpr{Op: "&", Expr: &VarRef{Name: s.Assign.Name}},
+					idxs[0],
+					valExpr,
+				}}, nil
+			}
 			if keyT == "int" && valT == "const char*" {
 				needMapSetIS = true
 				var buf bytes.Buffer
