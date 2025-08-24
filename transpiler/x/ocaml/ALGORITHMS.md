@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 939/1077
-Last updated: 2025-08-23 14:49 +0700
+Completed programs: 940/1077
+Last updated: 2025-08-24 16:59 +0700
 
 Checklist:
 
@@ -181,8 +181,8 @@ Checklist:
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 207.0µs | 4.10KB |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 190.0µs | 368B |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 161.0µs | 7.30KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 95.0µs | 752B |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 363.0µs | 15.57KB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 171.0µs | 3.03KB |
@@ -835,7 +835,7 @@ Checklist:
 | 826 | project_euler/problem_009/sol3 | ✓ | 4.0ms | 232B |
 | 827 | project_euler/problem_010/sol1 | ✓ | 90.0µs | 256B |
 | 828 | project_euler/problem_010/sol2 |   |  |  |
-| 829 | project_euler/problem_010/sol3 |   | 46.36s | 20.34GB |
+| 829 | project_euler/problem_010/sol3 |   |  |  |
 | 830 | project_euler/problem_011/sol1 | ✓ | 2.0ms | 393.39KB |
 | 831 | project_euler/problem_011/sol2 | ✓ | 2.0ms | 393.35KB |
 | 832 | project_euler/problem_012/sol1 | ✓ | 124.0ms | 232B |

@@ -1,9 +1,6 @@
 exit status 2
-File "/workspace/mochi/tests/algorithms/x/OCaml/data_structures/binary_tree/binary_tree_path_sum.ml", line 94, characters 64-65:
-94 |   __ret := (Obj.magic ((match node with | _empty -> 0 | [(__str ("tag"), "Node"); (__str ("left"), l); (__str ("value"), v); (__str ("right"), r)] -> ((if ((_dyn_add (current) (v)) = target) then 1 else 0 + dfs ((Obj.magic l : Obj.t)) (Obj.repr (target)) ((Obj.magic (_dyn_add (current) (v)) : int))
-                                                                     ^
-Error: Syntax error: ')' expected
-File "/workspace/mochi/tests/algorithms/x/OCaml/data_structures/binary_tree/binary_tree_path_sum.ml", line 94, characters 57-58:
-94 |   __ret := (Obj.magic ((match node with | _empty -> 0 | [(__str ("tag"), "Node"); (__str ("left"), l); (__str ("value"), v); (__str ("right"), r)] -> ((if ((_dyn_add (current) (v)) = target) then 1 else 0 + dfs ((Obj.magic l : Obj.t)) (Obj.repr (target)) ((Obj.magic (_dyn_add (current) (v)) : int))
-                                                              ^
-  This '(' might be unmatched
+File "/workspace/mochi/tests/algorithms/x/OCaml/data_structures/binary_tree/binary_tree_path_sum.ml", line 94, characters 291-292:
+94 |   __ret := (Obj.magic ((match node with | [("tag", (__tag0 : Obj.t))] when (__str (__tag0) = "Empty") -> (Obj.magic (0) : int) | [("tag", (__tag1 : Obj.t)); ("left", (l : Obj.t)); ("value", (v : Obj.t)); ("right", (r : Obj.t))] when (__str (__tag1) = "Node") -> (Obj.magic (((if ((current + v) = target) then 1 else 0 + dfs (l) (Obj.repr (target)) (Obj.repr ((current + v)))) + dfs (r) (Obj.repr (target)) (Obj.repr ((current + v))))) : int))) : int); raise Return
+                                                                                                                                                                                                                                                                                                        ^
+Error: This expression has type Obj.t but an expression was expected of type
+         int
