@@ -448,9 +448,16 @@ func (v *VarDecl) emit(w io.Writer) {
 type AssignStmt struct {
 	Name  string
 	Value Expr
+	Deref bool
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
+	if a.Deref {
+		fmt.Fprintf(w, "*%s = ", a.Name)
+		a.Value.emit(w)
+		return
+	}
+	deref := false
 	if vd, ok := varDecls[a.Name]; ok && vd.Type != "" && vd.Type != "any" {
 		val := a.Value
 		if ae, ok2 := val.(*AssertExpr); ok2 {
@@ -465,8 +472,23 @@ func (a *AssignStmt) emit(w io.Writer) {
 				}
 			}
 		}
+		if strings.HasPrefix(vd.Type, "*") {
+			_, isAddr := a.Value.(*AddrExpr)
+			if ae, ok := a.Value.(*AssertExpr); ok {
+				if _, ok2 := ae.Expr.(*AddrExpr); ok2 {
+					isAddr = true
+				}
+			}
+			if !isAddr {
+				deref = true
+			}
+		}
 	}
-	fmt.Fprintf(w, "%s = ", a.Name)
+	if deref {
+		fmt.Fprintf(w, "*%s = ", a.Name)
+	} else {
+		fmt.Fprintf(w, "%s = ", a.Name)
+	}
 	a.Value.emit(w)
 }
 
@@ -3290,7 +3312,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					if rn, ok := varNameMap[name]; ok {
 						name = rn
 					}
-					return &AssignStmt{Name: name, Value: e}, nil
+					deref := false
+					if strings.HasPrefix(vd.Type, "*") {
+						if _, ok := e.(*AddrExpr); !ok {
+							if ae, ok2 := e.(*AssertExpr); ok2 {
+								if _, ok3 := ae.Expr.(*AddrExpr); !ok3 {
+									deref = true
+								}
+							} else {
+								deref = true
+							}
+						}
+					}
+					return &AssignStmt{Name: name, Value: e, Deref: deref}, nil
 				}
 				return nil, nil
 			}
@@ -3690,7 +3724,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if rn, ok := varNameMap[name]; ok {
 				name = rn
 			}
-			return &AssignStmt{Name: name, Value: e}, nil
+			deref := false
+			if vd, ok := varDecls[name]; ok && strings.HasPrefix(vd.Type, "*") {
+				if _, ok := e.(*AddrExpr); !ok {
+					if ae, ok2 := e.(*AssertExpr); ok2 {
+						if _, ok3 := ae.Expr.(*AddrExpr); !ok3 {
+							deref = true
+						}
+					} else {
+						deref = true
+					}
+				}
+			}
+			return &AssignStmt{Name: name, Value: e, Deref: deref}, nil
 		}
 		// build postfix expression for complex target
 		pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: st.Assign.Name}}}

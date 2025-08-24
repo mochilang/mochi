@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:103:28: cannot use dy (variable of type int) as float64 value in argument to math.Abs
-../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:103:43: cannot use dx (variable of type int) as float64 value in argument to math.Abs
