@@ -1831,11 +1831,12 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
 			if indent == 0 && len(lst.Elems) > 0 {
-				fmt.Fprintf(w, "%s %s_init[%d] = {", base, d.Name, len(lst.Elems))
+				fmt.Fprintf(w, "%s *%s = malloc(%d * sizeof(%s));\n", base, d.Name, len(lst.Elems), base)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 				for i, e := range lst.Elems {
-					if i > 0 {
-						io.WriteString(w, ", ")
-					}
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s[%d] = ", d.Name, i)
 					if base == "const char*" {
 						if inferExprType(currentEnv, e) == "const char*" {
 							e.emitExpr(w)
@@ -1847,12 +1848,8 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					} else {
 						e.emitExpr(w)
 					}
+					io.WriteString(w, ";\n")
 				}
-				io.WriteString(w, "};\n")
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "%s *%s = %s_init;\n", base, d.Name, d.Name)
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 			} else {
 				if base == "long long" {
 					if lst, ok := d.Value.(*ListLit); ok && len(lst.Elems) > 0 && exprIsFloat(lst.Elems[0]) {
@@ -2442,9 +2439,31 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	}
 
 	if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-		if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
+		base := varBaseType(a.Name)
+		if base == "" {
+			base = "long long"
+		}
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "%s = malloc(%d * sizeof(%s));\n", a.Name, len(lst.Elems), base)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
+		for i, e := range lst.Elems {
 			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
+			fmt.Fprintf(w, "%s[%d] = ", a.Name, i)
+			if base == "const char*" {
+				if inferExprType(currentEnv, e) == "const char*" {
+					e.emitExpr(w)
+				} else if lit, ok2 := e.(*IntLit); ok2 {
+					fmt.Fprintf(w, "\"%d\"", lit.Value)
+				} else {
+					e.emitExpr(w)
+				}
+			} else {
+				e.emitExpr(w)
+			}
+			io.WriteString(w, ";\n")
+		}
+		if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_lens = ({size_t *tmp = malloc(%d * sizeof(size_t)); ", a.Name, len(lst.Elems))
 			for i, e := range lst.Elems {
@@ -2459,10 +2478,8 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "tmp;});\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_lens_len = %d;\n", a.Name, len(lst.Elems))
-		} else if ok {
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
 		}
+		return
 	}
 
 	if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
@@ -6630,7 +6647,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				} else if st.Var != nil {
 					val = convertExpr(st.Var.Value)
 				}
-				if val == nil || isConstExpr(val) {
+				if val == nil || (isConstExpr(val) && !isListLit(val)) {
 					globals = append(globals, stmt)
 				} else {
 					if ds, ok := stmt.(*DeclStmt); ok {
@@ -11013,6 +11030,11 @@ func isConstExpr(e Expr) bool {
 		return true
 	}
 	return false
+}
+
+func isListLit(e Expr) bool {
+	_, ok := e.(*ListLit)
+	return ok
 }
 
 func exprIsString(e Expr) bool {
