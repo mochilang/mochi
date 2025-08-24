@@ -1,10 +1,6 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -25,7 +21,7 @@ function new_suffix_tree($text) {
   return ['text' => $text];
 }
 function search($tree, $pattern) {
-  $n = _len($tree['text']);
+  $n = strlen($tree['text']);
   $m = strlen($pattern);
   if ($m == 0) {
   return true;
@@ -35,7 +31,7 @@ function search($tree, $pattern) {
 }
   $i = 0;
   while ($i <= $n - $m) {
-  if (array_slice($tree['text'], $i, $i + $m - $i) == $pattern) {
+  if (substr($tree['text'], $i, $i + $m - $i) == $pattern) {
   return true;
 }
   $i = $i + 1;
