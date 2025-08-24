@@ -1,0 +1,17 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/linked_list/doubly_linked_list_two.erl:207:21: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  207|             Ll_14 = element(2, Ll_res),
+%     |                     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/linked_list/doubly_linked_list_two.erl:222:21: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  222|             Ll_19 = element(2, Ll_res_3),
+%     |                     ^
+
+-1
+-1
+true
+10
+10
+{badmatch,#{"head_idx" => 0,
+            "nodes" =>
+                [#{"data" => 10,"next_index" => 1,"prev_index" => -1},
+                 #

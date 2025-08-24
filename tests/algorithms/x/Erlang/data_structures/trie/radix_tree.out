@@ -1,30 +1,18 @@
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:89:2: Warning: variable 'Min_len_3' exported from 'case' (line 67, column 9)
-%   89| {Min_len_3, Node, P, W, Word, X_2} = Fun(Min_len_3, Node, P, W, Word, X),
-%     |  ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:293:36: Warning: variable 'Deleted_2' exported from 'case' (line 255, column 9)
-%  293| {Child_4, Child_idx_3, Children_7, Deleted_2, First_3, Idx_3, Node_13, Nodes_19, Only_key_2, Res_3, Tree_10, Word_4} = Fun_5(maps:keys(Children_7), Child_4, Child_idx_3, Children_7, Deleted_2, First_3, Idx_3, Node_13, Nodes_19, Only_key, Res_3, Tree_10, Word_4),
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:355:36: Warning: variable 'Deleted_2' exported from 'case' (line 317, column 21)
+%  355| {Child_4, Child_idx_3, Children_7, Deleted_2, First_3, Idx_3, Node_13, Nodes_19, Only_key_2, Res_3, Tree_10, Word_4} = Fun_5(maps:keys(Children_7), Child_4, Child_idx_3, Children_7, Deleted_2, First_3, Idx_3, Node_13, Nodes_19, Only_key, Res_3, Tree_10, Word_4),
 %     |                                    ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:346:36: Warning: variable 'Deleted_2' exported from 'case' (line 255, column 9)
-%  346| {Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_5, Res_3, Tree_9, Word_4} = Fun_7(maps:keys(maps:get("children", Child_4, nil)), Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_4, Res_3, Tree_9, Word_4),
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:408:36: Warning: variable 'Deleted_2' exported from 'case' (line 317, column 21)
+%  408| {Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_5, Res_3, Tree_9, Word_4} = Fun_7(maps:keys(maps:get("children", Child_4, nil)), Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_4, Res_3, Tree_9, Word_4),
 %     |                                    ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:346:63: Warning: variable 'Node_12' exported from 'case' (line 255, column 9)
-%  346| {Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_5, Res_3, Tree_9, Word_4} = Fun_7(maps:keys(maps:get("children", Child_4, nil)), Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_4, Res_3, Tree_9, Word_4),
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:408:63: Warning: variable 'Node_12' exported from 'case' (line 317, column 21)
+%  408| {Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_5, Res_3, Tree_9, Word_4} = Fun_7(maps:keys(maps:get("children", Child_4, nil)), Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_4, Res_3, Tree_9, Word_4),
 %     |                                                               ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:346:72: Warning: variable 'Nodes_18' exported from 'case' (line 255, column 9)
-%  346| {Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_5, Res_3, Tree_9, Word_4} = Fun_7(maps:keys(maps:get("children", Child_4, nil)), Child_4, Child_idx_3, Children_6, Deleted_2, First_3, Idx_3, Node_12, Nodes_18, Only_key_4, Res_3, Tree_9, Word_4),
-%     |                                                                        ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:417:22: Warning: variable 'I_3' exported from 'case' (line 379, column 9)
-%  417| {Children_9, Height, I_3, Idx_4, Line_6, Node_19, Nodes_26, Tree_17} = Fun_12(maps:keys(Children_9), Children_9, Height, I_3, Idx_4, Line_6, Node_19, Nodes_26, Tree_17),
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:479:22: Warning: variable 'I_3' exported from 'case' (line 441, column 19)
+%  479| {Children_9, Height, I_3, Idx_4, Line_6, Node_19, Nodes_26, Tree_17} = Fun_12(maps:keys(Children_9), Children_9, Height, I_3, Idx_4, Line_6, Node_19, Nodes_26, Tree_17),
 %     |                      ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/trie/radix_tree.erl:417:34: Warning: variable 'Line_6' exported from 'case' (line 379, column 9)
-%  417| {Children_9, Height, I_3, Idx_4, Line_6, Node_19, Nodes_26, Tree_17} = Fun_12(maps:keys(Children_9), Children_9, Height, I_3, Idx_4, Line_6, Node_19, Nodes_26, Tree_17),
-%     |                                  ^
-
-"Words: [banana bananas bandanas bandana band apple all beast]"
-"Tree:"
+Words: [banana bananas bandanas bandana band apple all beast]
+Tree:
