@@ -18,43 +18,13 @@ public class Main {
 
     static java.math.BigInteger node_sum(Node[] tree, java.math.BigInteger index) {
         if (index.compareTo(((java.math.BigInteger.valueOf(1)).negate())) == 0) {
-            return 0;
+            return java.math.BigInteger.valueOf(0);
         }
         Node node_1 = tree[(int)(((java.math.BigInteger)(index)).longValue())];
-        return node_1.value.add(node_sum(((Node[])(tree)), new java.math.BigInteger(String.valueOf(node_1.left)))).add(node_sum(((Node[])(tree)), new java.math.BigInteger(String.valueOf(node_1.right))));
+        return new java.math.BigInteger(String.valueOf(node_1.value.add(node_sum(((Node[])(tree)), new java.math.BigInteger(String.valueOf(node_1.left)))).add(node_sum(((Node[])(tree)), new java.math.BigInteger(String.valueOf(node_1.right))))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            example = ((Node[])(new Node[]{new Node(10, 1, 2), new Node(5, 3, (java.math.BigInteger.valueOf(1)).negate()), new Node((java.math.BigInteger.valueOf(3)).negate(), 4, 5), new Node(12, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()), new Node(8, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate()), new Node(0, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate())}));
-            System.out.println(node_sum(((Node[])(example)), java.math.BigInteger.valueOf(0)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        example = ((Node[])(new Node[]{new Node(java.math.BigInteger.valueOf(10), java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2)), new Node(java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(3), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()))), new Node(new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(3)).negate())), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(5)), new Node(java.math.BigInteger.valueOf(12), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()))), new Node(java.math.BigInteger.valueOf(8), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()))), new Node(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())))}));
+        System.out.println(node_sum(((Node[])(example)), java.math.BigInteger.valueOf(0)));
     }
 }

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-24 15:55 GMT+7
+Last updated: 2025-08-24 17:10 GMT+7
 
-## Algorithms Golden Test Checklist (961/1077)
+## Algorithms Golden Test Checklist (962/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -181,8 +181,8 @@ Last updated: 2025-08-24 15:55 GMT+7
 | 172 | data_structures/binary_tree/basic_binary_tree | error | 38.0ms | 53.06KB |
 | 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 24.0ms | 47.47KB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | error | 13.0ms | 1.06KB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 35.0ms | 48.06KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 23.0ms | 10.45KB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | error | 27.0ms | 46.57KB |
 | 179 | data_structures/binary_tree/distribute_coins | error | 14.0ms | 904B |
