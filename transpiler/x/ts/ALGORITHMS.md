@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-24 15:22 UTC
+Last updated: 2025-08-24 16:30 UTC
 
 ## Algorithms Golden Test Checklist (1064/1077)
 | Index | Name | Status | Duration | Memory |
@@ -219,56 +219,56 @@ Last updated: 2025-08-24 15:22 UTC
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 571.223ms | 562.3 KB |
 | 211 | data_structures/heap/binomial_heap | ✓ | 571.223ms | 32.9 KB |
 | 212 | data_structures/heap/heap | ✓ | 571.223ms | 67.2 KB |
-| 213 | data_structures/heap/heap_generic | ✓ | 571.223ms | 589.4 KB |
-| 214 | data_structures/heap/max_heap | ✓ | 571.223ms | 35.0 KB |
+| 213 | data_structures/heap/heap_generic | ✓ | 571.223ms | 589.1 KB |
+| 214 | data_structures/heap/max_heap | ✓ | 571.223ms | 35.7 KB |
 | 215 | data_structures/heap/min_heap | ✓ | 571.223ms | 838.8 KB |
-| 216 | data_structures/heap/randomized_heap | ✓ | 571.223ms | 67.4 KB |
+| 216 | data_structures/heap/randomized_heap | ✓ | 571.223ms | 68.2 KB |
 | 217 | data_structures/kd_tree/build_kdtree | ✓ | 571.223ms | 55.8 KB |
-| 218 | data_structures/kd_tree/example/example_usage | ✓ | 571.223ms | 2.8 MB |
-| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 571.223ms | 17.3 KB |
-| 220 | data_structures/kd_tree/kd_node | ✓ | 571.223ms | 25.8 KB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 571.223ms | 35.3 KB |
-| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 571.223ms | 54.7 KB |
-| 223 | data_structures/linked_list/circular_linked_list | ✓ | 571.223ms | 557.4 KB |
-| 224 | data_structures/linked_list/deque_doubly | ✓ | 571.223ms | 39.1 KB |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 571.223ms | 819.6 KB |
-| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 571.223ms | 168.9 KB |
+| 218 | data_structures/kd_tree/example/example_usage | ✓ | 571.223ms | 3.9 MB |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 571.223ms | 18.0 KB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 571.223ms | 27.1 KB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 571.223ms | 36.7 KB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 571.223ms | 312.1 KB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 571.223ms | 302.4 KB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 571.223ms | 39.8 KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 571.223ms | 563.6 KB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 571.223ms | 911.0 KB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 571.223ms | 23.2 KB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 571.223ms | 37.5 KB |
 | 229 | data_structures/linked_list/has_loop | ✓ | 571.223ms | 30.7 KB |
 | 230 | data_structures/linked_list/is_palindrome | ✓ | 571.223ms | 29.9 KB |
 | 231 | data_structures/linked_list/merge_two_lists | ✓ | 571.223ms | 832.9 KB |
-| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 571.223ms | 58.8 KB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 571.223ms | 314.8 KB |
 | 233 | data_structures/linked_list/print_reverse | ✓ | 571.223ms | 24.7 KB |
 | 234 | data_structures/linked_list/reverse_k_group | ✓ | 571.223ms | 25.1 KB |
 | 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 571.223ms | 23.6 KB |
-| 236 | data_structures/linked_list/singly_linked_list | ✓ | 571.223ms | 815.7 KB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 571.223ms | 559.7 KB |
 | 237 | data_structures/linked_list/skip_list | ✓ | 571.223ms | 90.2 KB |
 | 238 | data_structures/linked_list/swap_nodes | ✓ | 571.223ms | 27.2 KB |
 | 239 | data_structures/queues/circular_queue | ✓ | 571.223ms | 33.8 KB |
 | 240 | data_structures/queues/circular_queue_linked_list | ✓ | 571.223ms | 34.3 KB |
 | 241 | data_structures/queues/double_ended_queue | ✓ | 571.223ms | 37.9 KB |
 | 242 | data_structures/queues/linked_queue | ✓ | 571.223ms | 34.6 KB |
-| 243 | data_structures/queues/priority_queue_using_list | ✓ | 571.223ms | 118.0 KB |
+| 243 | data_structures/queues/priority_queue_using_list | ✓ | 571.223ms | 149.4 KB |
 | 244 | data_structures/queues/queue_by_list | ✓ | 571.223ms | 40.8 KB |
 | 245 | data_structures/queues/queue_by_two_stacks | ✓ | 571.223ms | 32.2 KB |
 | 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 571.223ms | 41.5 KB |
 | 247 | data_structures/stacks/balanced_parentheses | ✓ | 571.223ms | 35.9 KB |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 571.223ms | 792.7 KB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 571.223ms | 33.9 KB |
 | 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 571.223ms | 30.1 KB |
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 571.223ms | 3.0 KB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 571.223ms | 805.8 KB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 571.223ms | 79.3 KB |
 | 253 | data_structures/stacks/next_greater_element | ✓ | 571.223ms | 335.1 KB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 571.223ms | 1.0 MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 571.223ms | 308.8 KB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 571.223ms | 548.9 KB |
 | 256 | data_structures/stacks/stack | ✓ | 571.223ms | 46.7 KB |
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 571.223ms | 32.7 KB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 571.223ms | 302.5 KB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 571.223ms | 46.5 KB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 571.223ms | 35.0 KB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 571.223ms | 802.9 KB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 571.223ms | 43.8 KB |
 | 261 | data_structures/suffix_tree/example/example_usage | ✓ | 571.223ms | 29.9 KB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 571.223ms | 48.1 KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 571.223ms | 805.3 KB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 571.223ms | 26.8 KB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 571.223ms | 566.9 KB |
 | 265 | data_structures/trie/radix_tree | ✓ | 571.223ms | 94.0 KB |
