@@ -766,6 +766,8 @@ func (p *Program) write(w io.Writer) {
 	if usesAny {
 		p.addInclude("<map>")
 		p.addInclude("<type_traits>")
+		p.addInclude("<sstream>")
+		p.addInclude("<iomanip>")
 	}
 	for _, inc := range p.Includes {
 		fmt.Fprintf(w, "#include %s\n", inc)
@@ -1020,13 +1022,25 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if usesAny {
+		fmt.Fprintln(w, "static std::string _format_double(double v) {")
+		fmt.Fprintln(w, "    std::ostringstream ss;")
+		fmt.Fprintln(w, "    ss << std::defaultfloat << std::setprecision(6) << v;")
+		fmt.Fprintln(w, "    auto s = ss.str();")
+		fmt.Fprintln(w, "    auto epos = s.find('e');")
+		fmt.Fprintln(w, "    if(epos == std::string::npos) epos = s.find('E');")
+		fmt.Fprintln(w, "    std::string exp;")
+		fmt.Fprintln(w, "    if(epos != std::string::npos){ exp = s.substr(epos); s = s.substr(0, epos); }")
+		fmt.Fprintln(w, "    auto pos = s.find('.');")
+		fmt.Fprintln(w, "    if(pos != std::string::npos){ while(!s.empty() && s.back() == '0') s.pop_back(); if(!s.empty() && s.back() == '.') s.pop_back(); }")
+		fmt.Fprintln(w, "    return s + exp;")
+		fmt.Fprintln(w, "}")
 		fmt.Fprintln(w, "static void any_to_stream(std::ostream& os, const std::any& val) {")
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(int64_t)) os << std::any_cast<int64_t>(val);")
 		if p.UseBigInt {
 			fmt.Fprintln(w, "    else if(val.type() == typeid(cpp_int)) os << _cpp_int_to_string(std::any_cast<cpp_int>(val));")
 		}
-		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << std::any_cast<double>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << _format_double(std::any_cast<double>(val));")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << std::any_cast<std::string>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; os << v[i]; } os << ']'; }")
@@ -1052,18 +1066,7 @@ func (p *Program) write(w io.Writer) {
 		if p.UseBigInt {
 			fmt.Fprintln(w, "    if(v.type() == typeid(cpp_int)) return _cpp_int_to_string(std::any_cast<cpp_int>(v));")
 		}
-		fmt.Fprintln(w, "    if(v.type() == typeid(double)) {")
-		fmt.Fprintln(w, "        std::ostringstream ss;")
-		fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(17) << std::any_cast<double>(v);")
-		fmt.Fprintln(w, "        auto s = ss.str();")
-		fmt.Fprintln(w, "        auto epos = s.find('e');")
-		fmt.Fprintln(w, "        if(epos == std::string::npos) epos = s.find('E');")
-		fmt.Fprintln(w, "        std::string exp;")
-		fmt.Fprintln(w, "        if(epos != std::string::npos){ exp = s.substr(epos); s = s.substr(0, epos); }")
-		fmt.Fprintln(w, "        auto pos = s.find('.');")
-		fmt.Fprintln(w, "        if(pos != std::string::npos){ while(!s.empty() && s.back() == '0') s.pop_back(); if(!s.empty() && s.back() == '.') s.pop_back(); }")
-		fmt.Fprintln(w, "        return s + exp;")
-		fmt.Fprintln(w, "    }")
+		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return _format_double(std::any_cast<double>(v));")
 		fmt.Fprintln(w, "    if(v.type() == typeid(bool)) return std::any_cast<bool>(v) ? \"true\" : \"false\";")
 		fmt.Fprintln(w, "    return std::string();")
 		fmt.Fprintln(w, "}")
@@ -1073,7 +1076,7 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(int64_t)) os << std::any_cast<int64_t>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(cpp_int)) os << _cpp_int_to_string(std::any_cast<cpp_int>(val));")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << std::any_cast<double>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << _format_double(std::any_cast<double>(val));")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << '\"' << std::any_cast<std::string>(val) << '\"';")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
@@ -1107,22 +1110,7 @@ func (p *Program) write(w io.Writer) {
 	} else {
 		fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, double>) {")
 	}
-	fmt.Fprintln(w, "        std::ostringstream ss;")
-	// match Mochi's default string conversion for floating point numbers
-	// using high precision to preserve significant digits and avoid
-	// rounding differences.
-	fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(17) << v;")
-	fmt.Fprintln(w, "        auto s = ss.str();")
-	fmt.Fprintln(w, "        auto epos = s.find('e');")
-	fmt.Fprintln(w, "        if(epos == std::string::npos) epos = s.find('E');")
-	fmt.Fprintln(w, "        std::string exp;")
-	fmt.Fprintln(w, "        if(epos != std::string::npos){ exp = s.substr(epos); s = s.substr(0, epos); }")
-	fmt.Fprintln(w, "        auto pos = s.find('.');")
-	fmt.Fprintln(w, "        if(pos != std::string::npos){")
-	fmt.Fprintln(w, "            while(!s.empty() && s.back() == '0') s.pop_back();")
-	fmt.Fprintln(w, "            if(!s.empty() && s.back() == '.') s.pop_back();")
-	fmt.Fprintln(w, "        }")
-	fmt.Fprintln(w, "        return s + exp;")
+	fmt.Fprintln(w, "        return _format_double(v);")
 	fmt.Fprintln(w, "    } else {")
 	fmt.Fprintln(w, "        std::ostringstream ss;")
 	fmt.Fprintln(w, "        ss << std::boolalpha << v;")
@@ -1526,7 +1514,7 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 			io.WriteString(w, ind+"{")
 			io.WriteString(w, " std::ostringstream __ss; double __dv = ")
 			e.emit(w)
-			io.WriteString(w, "; if(__dv == 0) __dv = 0; if(std::floor(__dv) == __dv) { __ss<<std::fixed<<std::setprecision(1)<<__dv; } else { __ss<<std::defaultfloat<<std::setprecision(17)<<__dv; } "+stream+" << __ss.str(); }\n")
+			io.WriteString(w, "; if(__dv == 0) __dv = 0; if(std::floor(__dv) == __dv) { __ss<<std::fixed<<std::setprecision(1)<<__dv; } else { __ss<<std::defaultfloat<<std::setprecision(6)<<__dv; } "+stream+" << __ss.str(); }\n")
 		} else {
 			io.WriteString(w, ind+stream+" << ")
 			e.emit(w)
