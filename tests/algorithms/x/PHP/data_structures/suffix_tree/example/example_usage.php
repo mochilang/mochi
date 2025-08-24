@@ -1,9 +1,20 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
 function _str($x) {
     if (is_array($x)) {
@@ -21,11 +32,13 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function new_suffix_tree($text) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function new_suffix_tree($text) {
   return ['text' => $text];
-}
-function search($tree, $pattern) {
-  $n = _len($tree['text']);
+};
+  function search($tree, $pattern) {
+  $n = strlen($tree['text']);
   $m = strlen($pattern);
   if ($m == 0) {
   return true;
@@ -35,14 +48,14 @@ function search($tree, $pattern) {
 }
   $i = 0;
   while ($i <= $n - $m) {
-  if (array_slice($tree['text'], $i, $i + $m - $i) == $pattern) {
+  if (substr($tree['text'], $i, $i + $m - $i) == $pattern) {
   return true;
 }
   $i = $i + 1;
 };
   return false;
-}
-function main() {
+};
+  function main() {
   $text = 'monkey banana';
   $suffix_tree = new_suffix_tree($text);
   $patterns = ['ana', 'ban', 'na', 'xyz', 'mon'];
@@ -53,5 +66,13 @@ function main() {
   echo rtrim('Pattern \'' . $pattern . '\' found: ' . _str($found)), PHP_EOL;
   $i = $i + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

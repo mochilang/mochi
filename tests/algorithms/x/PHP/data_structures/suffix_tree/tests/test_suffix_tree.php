@@ -1,9 +1,20 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
 function _str($x) {
     if (is_array($x)) {
@@ -21,23 +32,25 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function suffix_tree_new($text) {
-  global $st, $patterns_exist, $i, $patterns_none, $substrings;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function suffix_tree_new($text) {
+  global $i, $patterns_exist, $patterns_none, $st, $substrings;
   return ['text' => $text];
-}
-function suffix_tree_search($st, $pattern) {
-  global $text, $patterns_exist, $patterns_none, $substrings;
+};
+  function suffix_tree_search($st, $pattern) {
+  global $patterns_exist, $patterns_none, $substrings, $text;
   if (strlen($pattern) == 0) {
   return true;
 }
   $i = 0;
-  $n = _len($st['text']);
+  $n = strlen($st['text']);
   $m = strlen($pattern);
   while ($i <= $n - $m) {
   $j = 0;
   $found = true;
   while ($j < $m) {
-  if ($st['text'][$i + $j] != substr($pattern, $j, $j + 1 - $j)) {
+  if (substr($st['text'], $i + $j, $i + $j + 1 - ($i + $j)) != substr($pattern, $j, $j + 1 - $j)) {
   $found = false;
   break;
 }
@@ -49,26 +62,34 @@ function suffix_tree_search($st, $pattern) {
   $i = $i + 1;
 };
   return false;
-}
-$text = 'banana';
-$st = suffix_tree_new($text);
-$patterns_exist = ['ana', 'ban', 'na'];
-$i = 0;
-while ($i < count($patterns_exist)) {
+};
+  $text = 'banana';
+  $st = suffix_tree_new($text);
+  $patterns_exist = ['ana', 'ban', 'na'];
+  $i = 0;
+  while ($i < count($patterns_exist)) {
   echo rtrim(_str(suffix_tree_search($st, $patterns_exist[$i]))), PHP_EOL;
   $i = $i + 1;
 }
-$patterns_none = ['xyz', 'apple', 'cat'];
-$i = 0;
-while ($i < count($patterns_none)) {
+  $patterns_none = ['xyz', 'apple', 'cat'];
+  $i = 0;
+  while ($i < count($patterns_none)) {
   echo rtrim(_str(suffix_tree_search($st, $patterns_none[$i]))), PHP_EOL;
   $i = $i + 1;
 }
-echo rtrim(_str(suffix_tree_search($st, ''))), PHP_EOL;
-echo rtrim(_str(suffix_tree_search($st, $text))), PHP_EOL;
-$substrings = ['ban', 'ana', 'a', 'na'];
-$i = 0;
-while ($i < count($substrings)) {
+  echo rtrim(_str(suffix_tree_search($st, ''))), PHP_EOL;
+  echo rtrim(_str(suffix_tree_search($st, $text))), PHP_EOL;
+  $substrings = ['ban', 'ana', 'a', 'na'];
+  $i = 0;
+  while ($i < count($substrings)) {
   echo rtrim(_str(suffix_tree_search($st, $substrings[$i]))), PHP_EOL;
   $i = $i + 1;
 }
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,22 +1,43 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-$PI = 3.141592653589793;
-function mochi_abs($x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $PI = 3.141592653589793;
+  function mochi_abs($x) {
   global $PI, $img, $result;
   if ($x < 0.0) {
   return -$x;
 }
   return $x;
-}
-function sqrtApprox($x) {
+};
+  function sqrtApprox($x) {
   global $PI, $img, $result;
   if ($x <= 0.0) {
   return 0.0;
@@ -28,8 +49,8 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function expApprox($x) {
+};
+  function expApprox($x) {
   global $PI, $img, $result;
   $term = 1.0;
   $sum = 1.0;
@@ -40,8 +61,8 @@ function expApprox($x) {
   $n = $n + 1;
 };
   return $sum;
-}
-function vec_gaussian($mat, $variance) {
+};
+  function vec_gaussian($mat, $variance) {
   global $PI, $img, $result;
   $i = 0;
   $out = [];
@@ -58,8 +79,8 @@ function vec_gaussian($mat, $variance) {
   $i = $i + 1;
 };
   return $out;
-}
-function get_slice($img, $x, $y, $kernel_size) {
+};
+  function get_slice($img, $x, $y, $kernel_size) {
   global $PI, $result;
   $half = _intdiv($kernel_size, 2);
   $i = $x - $half;
@@ -75,8 +96,8 @@ function get_slice($img, $x, $y, $kernel_size) {
   $i = $i + 1;
 };
   return $slice;
-}
-function get_gauss_kernel($kernel_size, $spatial_variance) {
+};
+  function get_gauss_kernel($kernel_size, $spatial_variance) {
   global $PI, $img, $result;
   $arr = [];
   $i = 0;
@@ -94,8 +115,8 @@ function get_gauss_kernel($kernel_size, $spatial_variance) {
   $i = $i + 1;
 };
   return vec_gaussian($arr, $spatial_variance);
-}
-function elementwise_sub($mat, $value) {
+};
+  function elementwise_sub($mat, $value) {
   global $PI, $img, $result;
   $res = [];
   $i = 0;
@@ -110,8 +131,8 @@ function elementwise_sub($mat, $value) {
   $i = $i + 1;
 };
   return $res;
-}
-function elementwise_mul($a, $b) {
+};
+  function elementwise_mul($a, $b) {
   global $PI, $img, $result;
   $res = [];
   $i = 0;
@@ -126,8 +147,8 @@ function elementwise_mul($a, $b) {
   $i = $i + 1;
 };
   return $res;
-}
-function matrix_sum($mat) {
+};
+  function matrix_sum($mat) {
   global $PI, $img, $result;
   $total = 0.0;
   $i = 0;
@@ -140,8 +161,8 @@ function matrix_sum($mat) {
   $i = $i + 1;
 };
   return $total;
-}
-function bilateral_filter($img, $spatial_variance, $intensity_variance, $kernel_size) {
+};
+  function bilateral_filter($img, $spatial_variance, $intensity_variance, $kernel_size) {
   global $PI, $result;
   $gauss_ker = get_gauss_kernel($kernel_size, $spatial_variance);
   $img_s = $img;
@@ -156,7 +177,15 @@ function bilateral_filter($img, $spatial_variance, $intensity_variance, $kernel_
   $val = matrix_sum($vals) / $sum_weights;
 }
   return $val;
-}
-$img = [[0.2, 0.3, 0.4], [0.3, 0.4, 0.5], [0.4, 0.5, 0.6]];
-$result = bilateral_filter($img, 1.0, 1.0, 3);
-echo rtrim(json_encode($result, 1344)), PHP_EOL;
+};
+  $img = [[0.2, 0.3, 0.4], [0.3, 0.4, 0.5], [0.4, 0.5, 0.6]];
+  $result = bilateral_filter($img, 1.0, 1.0, 3);
+  echo rtrim(json_encode($result, 1344)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

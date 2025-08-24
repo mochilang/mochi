@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,7 +42,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function sort_list($nums) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function sort_list($nums) {
   $arr = [];
   $i = 0;
   while ($i < count($nums)) {
@@ -46,14 +65,14 @@ function sort_list($nums) {
   $j = $j + 1;
 };
   return $arr;
-}
-function make_sorted_linked_list($ints) {
+};
+  function make_sorted_linked_list($ints) {
   return ['values' => sort_list($ints)];
-}
-function len_sll($sll) {
+};
+  function len_sll($sll) {
   return _len($sll['values']);
-}
-function str_sll($sll) {
+};
+  function str_sll($sll) {
   $res = '';
   $i = 0;
   while ($i < _len($sll['values'])) {
@@ -64,22 +83,22 @@ function str_sll($sll) {
   $i = $i + 1;
 };
   return $res;
-}
-function merge_lists($a, $b) {
+};
+  function merge_lists($a, $b) {
   $combined = [];
   $i = 0;
   while ($i < _len($a['values'])) {
-  $combined = _append($combined, $a[$values][$i]);
+  $combined = _append($combined, $a['values'][$i]);
   $i = $i + 1;
 };
   $i = 0;
   while ($i < _len($b['values'])) {
-  $combined = _append($combined, $b[$values][$i]);
+  $combined = _append($combined, $b['values'][$i]);
   $i = $i + 1;
 };
   return make_sorted_linked_list($combined);
-}
-function main() {
+};
+  function main() {
   $test_data_odd = [3, 9, -11, 0, 7, 5, 1, -1];
   $test_data_even = [4, 6, 2, 0, 8, 10, 3, -2];
   $sll_one = make_sorted_linked_list($test_data_odd);
@@ -87,5 +106,13 @@ function main() {
   $merged = merge_lists($sll_one, $sll_two);
   echo rtrim(_str(len_sll($merged))), PHP_EOL;
   echo rtrim(str_sll($merged)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

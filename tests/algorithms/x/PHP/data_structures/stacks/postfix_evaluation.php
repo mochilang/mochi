@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +36,13 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function slice_without_last($xs) {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function slice_without_last($xs) {
   $res = [];
   $i = 0;
   while ($i < count($xs) - 1) {
@@ -28,12 +50,12 @@ function slice_without_last($xs) {
   $i = $i + 1;
 };
   return $res;
-}
-function parse_float($token) {
+};
+  function parse_float($token) {
   $sign = 1.0;
   $idx = 0;
   if (strlen($token) > 0) {
-  $first = substr($token, 0, 1 - 0);
+  $first = substr($token, 0, 1);
   if ($first == '-') {
   $sign = -1.0;
   $idx = 1;
@@ -60,8 +82,8 @@ function parse_float($token) {
 };
 }
   return $sign * $result;
-}
-function pow_float($base, $exp) {
+};
+  function pow_float($base, $exp) {
   $result = 1.0;
   $i = 0;
   $e = intval($exp);
@@ -70,8 +92,8 @@ function pow_float($base, $exp) {
   $i = $i + 1;
 };
   return $result;
-}
-function apply_op($a, $b, $op) {
+};
+  function apply_op($a, $b, $op) {
   if ($op == '+') {
   return $a + $b;
 }
@@ -88,8 +110,8 @@ function apply_op($a, $b, $op) {
   return pow_float($a, $b);
 }
   return 0.0;
-}
-function evaluate($tokens) {
+};
+  function evaluate($tokens) {
   if (count($tokens) == 0) {
   return 0.0;
 }
@@ -117,12 +139,20 @@ function evaluate($tokens) {
 }
 };
   if (count($stack) != 1) {
-  $panic('Invalid postfix expression');
+  _panic('Invalid postfix expression');
 }
   return $stack[0];
-}
-echo rtrim(_str(evaluate(['2', '1', '+', '3', '*']))), PHP_EOL;
-echo rtrim(_str(evaluate(['4', '13', '5', '/', '+']))), PHP_EOL;
-echo rtrim(_str(evaluate(['5', '6', '9', '*', '+']))), PHP_EOL;
-echo rtrim(_str(evaluate(['2', '-', '3', '+']))), PHP_EOL;
-echo rtrim(_str(evaluate([]))), PHP_EOL;
+};
+  echo rtrim(_str(evaluate(['2', '1', '+', '3', '*']))), PHP_EOL;
+  echo rtrim(_str(evaluate(['4', '13', '5', '/', '+']))), PHP_EOL;
+  echo rtrim(_str(evaluate(['5', '6', '9', '*', '+']))), PHP_EOL;
+  echo rtrim(_str(evaluate(['2', '-', '3', '+']))), PHP_EOL;
+  echo rtrim(_str(evaluate([]))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

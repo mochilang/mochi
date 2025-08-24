@@ -4871,6 +4871,12 @@ func exprType(e Expr) types.Type {
 			return tt.Value
 		case types.StringType:
 			return types.StringType{}
+		case types.StructType:
+			if lit, ok := v.Index.(*StringLit); ok {
+				if field, ok := tt.Fields[lit.Value]; ok {
+					return field
+				}
+			}
 		}
 	case *SubstringExpr:
 		return types.StringType{}

@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,15 +42,21 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function new_queue($items) {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function new_queue($items) {
   global $q, $r1, $r2, $r3, $r4;
   return ['stack1' => $items, 'stack2' => []];
-}
-function len_queue($q) {
+};
+  function len_queue($q) {
   global $r1, $r2, $r3, $r4;
   return _len($q['stack1']) + _len($q['stack2']);
-}
-function str_queue($q) {
+};
+  function str_queue($q) {
   global $r1, $r2, $r3, $r4;
   $items = [];
   $i = _len($q['stack2']) - 1;
@@ -57,14 +80,14 @@ function str_queue($q) {
 };
   $s = $s . '))';
   return $s;
-}
-function put($q, $item) {
+};
+  function put($q, $item) {
   global $r1, $r2, $r3, $r4;
   $s1 = $q['stack1'];
   $s1 = _append($s1, $item);
   return ['stack1' => $s1, 'stack2' => $q['stack2']];
-}
-function get($q) {
+};
+  function get($q) {
   global $r1, $r2, $r3, $r4;
   $s1 = $q['stack1'];
   $s2 = $q['stack2'];
@@ -83,7 +106,7 @@ function get($q) {
 };
 }
   if (count($s2) == 0) {
-  $panic('Queue is empty');
+  _panic('Queue is empty');
 }
   $idx2 = count($s2) - 1;
   $value = $s2[$idx2];
@@ -95,19 +118,27 @@ function get($q) {
 };
   $s2 = $new_s2;
   return ['queue' => ['stack1' => $s1, 'stack2' => $s2], 'value' => $value];
-}
-$q = new_queue([10, 20, 30]);
-$r1 = get($q);
-$q = $r1['queue'];
-echo rtrim(json_encode($r1['value'], 1344)), PHP_EOL;
-$q = put($q, 40);
-$r2 = get($q);
-$q = $r2['queue'];
-echo rtrim(json_encode($r2['value'], 1344)), PHP_EOL;
-$r3 = get($q);
-$q = $r3['queue'];
-echo rtrim(json_encode($r3['value'], 1344)), PHP_EOL;
-echo rtrim(json_encode(len_queue($q), 1344)), PHP_EOL;
-$r4 = get($q);
-$q = $r4['queue'];
-echo rtrim(json_encode($r4['value'], 1344)), PHP_EOL;
+};
+  $q = new_queue([10, 20, 30]);
+  $r1 = get($q);
+  $q = $r1['queue'];
+  echo rtrim(json_encode($r1['value'], 1344)), PHP_EOL;
+  $q = put($q, 40);
+  $r2 = get($q);
+  $q = $r2['queue'];
+  echo rtrim(json_encode($r2['value'], 1344)), PHP_EOL;
+  $r3 = get($q);
+  $q = $r3['queue'];
+  echo rtrim(json_encode($r3['value'], 1344)), PHP_EOL;
+  echo rtrim(json_encode(len_queue($q), 1344)), PHP_EOL;
+  $r4 = get($q);
+  $q = $r4['queue'];
+  echo rtrim(json_encode($r4['value'], 1344)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

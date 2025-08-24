@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,27 +42,29 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function panic($msg) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_panic($msg) {
   echo rtrim($msg), PHP_EOL;
-}
-function fpq_new() {
+};
+  function fpq_new() {
   return ['queues' => [[], [], []]];
-}
-function fpq_enqueue(&$fpq, $priority, $data) {
+};
+  function fpq_enqueue($fpq, $priority, $data) {
   if ($priority < 0 || $priority >= _len($fpq['queues'])) {
-  panic('Valid priorities are 0, 1, and 2');
+  mochi_panic('Valid priorities are 0, 1, and 2');
   return $fpq;
 }
   if (_len($fpq['queues'][$priority]) >= 100) {
-  panic('Maximum queue size is 100');
+  mochi_panic('Maximum queue size is 100');
   return $fpq;
 }
   $qs = $fpq['queues'];
   $qs[$priority] = _append($qs[$priority], $data);
   $fpq['queues'] = $qs;
   return $fpq;
-}
-function fpq_dequeue(&$fpq) {
+};
+  function fpq_dequeue(&$fpq) {
   $qs = $fpq['queues'];
   $i = 0;
   while ($i < count($qs)) {
@@ -64,10 +83,10 @@ function fpq_dequeue(&$fpq) {
 }
   $i = $i + 1;
 };
-  panic('All queues are empty');
+  mochi_panic('All queues are empty');
   return ['queue' => $fpq, 'value' => 0];
-}
-function fpq_to_string($fpq) {
+};
+  function fpq_to_string($fpq) {
   $lines = [];
   $i = 0;
   while ($i < _len($fpq['queues'])) {
@@ -96,21 +115,21 @@ function fpq_to_string($fpq) {
   $i = $i + 1;
 };
   return $res;
-}
-function epq_new() {
+};
+  function epq_new() {
   return ['queue' => []];
-}
-function epq_enqueue(&$epq, $data) {
+};
+  function epq_enqueue($epq, $data) {
   if (_len($epq['queue']) >= 100) {
-  panic('Maximum queue size is 100');
+  mochi_panic('Maximum queue size is 100');
   return $epq;
 }
   $epq['queue'] = _append($epq['queue'], $data);
   return $epq;
-}
-function epq_dequeue(&$epq) {
+};
+  function epq_dequeue(&$epq) {
   if (_len($epq['queue']) == 0) {
-  panic('The queue is empty');
+  mochi_panic('The queue is empty');
   return ['queue' => $epq, 'value' => 0];
 }
   $min_val = $epq['queue'][0];
@@ -134,11 +153,11 @@ function epq_dequeue(&$epq) {
 };
   $epq['queue'] = $new_q;
   return ['queue' => $epq, 'value' => $min_val];
-}
-function epq_to_string($epq) {
+};
+  function epq_to_string($epq) {
   return _str($epq['queue']);
-}
-function fixed_priority_queue() {
+};
+  function fixed_priority_queue() {
   $fpq = fpq_new();
   $fpq = fpq_enqueue($fpq, 0, 10);
   $fpq = fpq_enqueue($fpq, 1, 70);
@@ -181,8 +200,8 @@ function fixed_priority_queue() {
   $res = fpq_dequeue($fpq);
   $fpq = $res['queue'];
   echo rtrim(json_encode($res['value'], 1344)), PHP_EOL;
-}
-function element_priority_queue() {
+};
+  function element_priority_queue() {
   $epq = epq_new();
   $epq = epq_enqueue($epq, 10);
   $epq = epq_enqueue($epq, 70);
@@ -225,9 +244,17 @@ function element_priority_queue() {
   $res = epq_dequeue($epq);
   $epq = $res['queue'];
   echo rtrim(json_encode($res['value'], 1344)), PHP_EOL;
-}
-function main() {
+};
+  function main() {
   fixed_priority_queue();
   element_priority_queue();
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

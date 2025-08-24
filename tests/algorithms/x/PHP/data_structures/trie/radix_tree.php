@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -25,14 +42,20 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function new_node($prefix, $is_leaf) {
-  return ['prefix' => $prefix, 'is_leaf' => $is_leaf, 'children' => []];
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
-function new_tree() {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function new_node($prefix, $is_leaf) {
+  return ['children' => [], 'is_leaf' => $is_leaf, 'prefix' => $prefix];
+};
+  function new_tree() {
   $nodes = [new_node('', false)];
   return ['nodes' => $nodes];
-}
-function match_prefix($node, $word) {
+};
+  function match_prefix($node, $word) {
   $x = 0;
   $p = $node['prefix'];
   $w = $word;
@@ -46,17 +69,17 @@ function match_prefix($node, $word) {
 }
   $x = $x + 1;
 };
-  $common = substr($p, 0, $x - 0);
+  $common = substr($p, 0, $x);
   $rem_prefix = substr($p, $x, strlen($p) - $x);
   $rem_word = substr($w, $x, strlen($w) - $x);
   return ['common' => $common, 'rem_prefix' => $rem_prefix, 'rem_word' => $rem_word];
-}
-function insert_many($tree, $words) {
+};
+  function insert_many($tree, $words) {
   foreach ($words as $w) {
   insert($tree, 0, $w);
 };
-}
-function insert(&$tree, $idx, $word) {
+};
+  function insert(&$tree, $idx, $word) {
   $nodes = $tree['nodes'];
   $node = $nodes[$idx];
   if (($node['prefix'] == $word) && (!$node['is_leaf'])) {
@@ -65,7 +88,7 @@ function insert(&$tree, $idx, $word) {
   $tree['nodes'] = $nodes;
   return;
 }
-  $first = substr($word, 0, 1 - 0);
+  $first = substr($word, 0, 1);
   $children = $node['children'];
   if (!has_key($children, $first)) {
   $new_idx = count($nodes);
@@ -86,7 +109,7 @@ function insert(&$tree, $idx, $word) {
   $child['prefix'] = $res['rem_prefix'];
   $nodes[$child_idx] = $child;
   $new_children = [];
-  $new_children[substr($res['rem_prefix'], 0, 1 - 0)] = $child_idx;
+  $new_children[substr($res['rem_prefix'], 0, 1)] = $child_idx;
   $new_idx = count($nodes);
   $nodes = _append($nodes, new_node($res['common'], false));
   $nodes[$new_idx]['children'] = $new_children;
@@ -99,11 +122,11 @@ function insert(&$tree, $idx, $word) {
   $node['children'] = $children;
   $nodes[$idx] = $node;
   $tree['nodes'] = $nodes;
-}
-function find($tree, $idx, $word) {
+};
+  function find($tree, $idx, $word) {
   $nodes = $tree['nodes'];
   $node = $nodes[$idx];
-  $first = substr($word, 0, 1 - 0);
+  $first = substr($word, 0, 1);
   $children = $node['children'];
   if (!has_key($children, $first)) {
   return false;
@@ -118,8 +141,8 @@ function find($tree, $idx, $word) {
   return $child['is_leaf'];
 }
   return find($tree, $child_idx, $res['rem_word']);
-}
-function remove_key($m, $k) {
+};
+  function remove_key($m, $k) {
   $out = [];
   foreach (array_keys($m) as $key) {
   if ($key != $k) {
@@ -127,19 +150,19 @@ function remove_key($m, $k) {
 }
 };
   return $out;
-}
-function has_key($m, $k) {
+};
+  function has_key($m, $k) {
   foreach (array_keys($m) as $key) {
   if ($key == $k) {
   return true;
 }
 };
   return false;
-}
-function delete(&$tree, $idx, $word) {
+};
+  function delete(&$tree, $idx, $word) {
   $nodes = $tree['nodes'];
   $node = $nodes[$idx];
-  $first = substr($word, 0, 1 - 0);
+  $first = substr($word, 0, 1);
   $children = $node['children'];
   if (!has_key($children, $first)) {
   return false;
@@ -199,8 +222,8 @@ function delete(&$tree, $idx, $word) {
 };
 }
   return true;
-}
-function print_tree($tree, $idx, $height) {
+};
+  function print_tree($tree, $idx, $height) {
   $nodes = $tree['nodes'];
   $node = $nodes[$idx];
   if ($node['prefix'] != '') {
@@ -221,8 +244,8 @@ function print_tree($tree, $idx, $height) {
   $child_idx = $children[$k];
   print_tree($tree, $child_idx, $height + 1);
 };
-}
-function test_trie() {
+};
+  function test_trie() {
   $words = ['banana', 'bananas', 'bandana', 'band', 'apple', 'all', 'beast'];
   $tree = new_tree();
   insert_many($tree, $words);
@@ -250,18 +273,26 @@ function test_trie() {
   $ok = false;
 }
   return $ok;
-}
-function pytests() {
+};
+  function pytests() {
   if (!test_trie()) {
-  $panic('test failed');
+  _panic('test failed');
 }
-}
-function main() {
+};
+  function main() {
   $tree = new_tree();
   $words = ['banana', 'bananas', 'bandanas', 'bandana', 'band', 'apple', 'all', 'beast'];
   insert_many($tree, $words);
   echo rtrim('Words: ' . _str($words)), PHP_EOL;
   echo rtrim('Tree:'), PHP_EOL;
   print_tree($tree, 0, 0);
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

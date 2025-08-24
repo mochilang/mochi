@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +36,13 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function create_queue($capacity) {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function create_queue($capacity) {
   $data = [];
   $next = [];
   $prev = [];
@@ -31,26 +53,26 @@ function create_queue($capacity) {
   $prev = _append($prev, ($i - 1 + $capacity) % $capacity);
   $i = $i + 1;
 };
-  return ['data' => $data, 'next' => $next, 'prev' => $prev, 'front' => 0, 'rear' => 0];
-}
-function is_empty($q) {
+  return ['data' => $data, 'front' => 0, 'next' => $next, 'prev' => $prev, 'rear' => 0];
+};
+  function is_empty($q) {
   return $q['front'] == $q['rear'] && $q['data'][$q['front']] == '';
-}
-function check_can_perform($q) {
+};
+  function check_can_perform($q) {
   if (is_empty($q)) {
-  $panic('Empty Queue');
+  _panic('Empty Queue');
 }
-}
-function check_is_full($q) {
+};
+  function check_is_full($q) {
   if ($q['next'][$q['rear']] == $q['front']) {
-  $panic('Full Queue');
+  _panic('Full Queue');
 }
-}
-function peek($q) {
+};
+  function peek($q) {
   check_can_perform($q);
   return $q['data'][$q['front']];
-}
-function enqueue(&$q, $value) {
+};
+  function enqueue($q, $value) {
   check_is_full($q);
   if (!is_empty($q)) {
   $q['rear'] = $q['next'][$q['rear']];
@@ -59,8 +81,8 @@ function enqueue(&$q, $value) {
   $data[$q['rear']] = $value;
   $q['data'] = $data;
   return $q;
-}
-function dequeue(&$q) {
+};
+  function dequeue(&$q) {
   check_can_perform($q);
   $data = $q['data'];
   $val = $data[$q['front']];
@@ -70,8 +92,8 @@ function dequeue(&$q) {
   $q['front'] = $q['next'][$q['front']];
 }
   return ['queue' => $q, 'value' => $val];
-}
-function main() {
+};
+  function main() {
   $q = create_queue(3);
   echo rtrim(_str(is_empty($q))), PHP_EOL;
   $q = enqueue($q, 'a');
@@ -84,5 +106,13 @@ function main() {
   $q = $res['queue'];
   echo rtrim(json_encode($res['value'], 1344)), PHP_EOL;
   echo rtrim(_str(is_empty($q))), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
