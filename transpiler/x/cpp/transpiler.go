@@ -935,24 +935,45 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseParseIntStr {
-		fmt.Fprintln(w, "static cpp_int _parse_int_str(const std::string& s, cpp_int base) {")
-		fmt.Fprintln(w, "    if(s.empty()) return 0;")
-		fmt.Fprintln(w, "    long b = base.convert_to<long>();")
-		fmt.Fprintln(w, "    cpp_int r = 0;")
-		fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
-		fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
-		fmt.Fprintln(w, "    for(; i < s.size(); ++i){")
-		fmt.Fprintln(w, "        char c = s[i];")
-		fmt.Fprintln(w, "        int digit = 0;")
-		fmt.Fprintln(w, "        if(c >= '0' && c <= '9') digit = c - '0';")
-		fmt.Fprintln(w, "        else if(c >= 'a' && c <= 'z') digit = c - 'a' + 10;")
-		fmt.Fprintln(w, "        else if(c >= 'A' && c <= 'Z') digit = c - 'A' + 10;")
-		fmt.Fprintln(w, "        else continue;")
-		fmt.Fprintln(w, "        r *= b;")
-		fmt.Fprintln(w, "        r += digit;")
-		fmt.Fprintln(w, "    }")
-		fmt.Fprintln(w, "    return neg ? -r : r;")
-		fmt.Fprintln(w, "}")
+		if p.UseBigInt {
+			fmt.Fprintln(w, "static cpp_int _parse_int_str(const std::string& s, cpp_int base) {")
+			fmt.Fprintln(w, "    if(s.empty()) return 0;")
+			fmt.Fprintln(w, "    long b = base.convert_to<long>();")
+			fmt.Fprintln(w, "    cpp_int r = 0;")
+			fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
+			fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
+			fmt.Fprintln(w, "    for(; i < s.size(); ++i){")
+			fmt.Fprintln(w, "        char c = s[i];")
+			fmt.Fprintln(w, "        int digit = 0;")
+			fmt.Fprintln(w, "        if(c >= '0' && c <= '9') digit = c - '0';")
+			fmt.Fprintln(w, "        else if(c >= 'a' && c <= 'z') digit = c - 'a' + 10;")
+			fmt.Fprintln(w, "        else if(c >= 'A' && c <= 'Z') digit = c - 'A' + 10;")
+			fmt.Fprintln(w, "        else continue;")
+			fmt.Fprintln(w, "        r *= b;")
+			fmt.Fprintln(w, "        r += digit;")
+			fmt.Fprintln(w, "    }")
+			fmt.Fprintln(w, "    return neg ? -r : r;")
+			fmt.Fprintln(w, "}")
+		} else {
+			fmt.Fprintln(w, "static int64_t _parse_int_str(const std::string& s, int64_t base) {")
+			fmt.Fprintln(w, "    if(s.empty()) return 0;")
+			fmt.Fprintln(w, "    int64_t b = base;")
+			fmt.Fprintln(w, "    int64_t r = 0;")
+			fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
+			fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
+			fmt.Fprintln(w, "    for(; i < s.size(); ++i){")
+			fmt.Fprintln(w, "        char c = s[i];")
+			fmt.Fprintln(w, "        int digit = 0;")
+			fmt.Fprintln(w, "        if(c >= '0' && c <= '9') digit = c - '0';")
+			fmt.Fprintln(w, "        else if(c >= 'a' && c <= 'z') digit = c - 'a' + 10;")
+			fmt.Fprintln(w, "        else if(c >= 'A' && c <= 'Z') digit = c - 'A' + 10;")
+			fmt.Fprintln(w, "        else continue;")
+			fmt.Fprintln(w, "        r *= b;")
+			fmt.Fprintln(w, "        r += digit;")
+			fmt.Fprintln(w, "    }")
+			fmt.Fprintln(w, "    return neg ? -r : r;")
+			fmt.Fprintln(w, "}")
+		}
 	}
 	if p.UseBigRat {
 		fmt.Fprintln(w, "struct BigRat {")
@@ -6482,7 +6503,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					v1 = newCastExpr(v1, "int64_t")
 				}
 				usesParseIntStr = true
-				useBigInt = true
 				return &CallExpr{Name: "_parse_int_str", Args: []Expr{v0, v1}}, nil
 			}
 		case "toi":
@@ -6492,7 +6512,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				usesParseIntStr = true
-				useBigInt = true
 				return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, newCastExpr(&IntLit{Value: 10}, "int64_t")}}, nil
 			}
 		case "input":
@@ -7789,14 +7808,11 @@ func funcReturnType(ft string) string {
 func cppType(t string) string {
 	switch t {
 	case "int":
-		// Mochi `int` values are arbitrary precision.  Previously the
-		// transpiler mapped them to 64-bit integers which caused
-		// overflow for programs that relied on large values (for
-		// example, many Project Euler solutions).  Map all `int`
-		// values to Boost.Multiprecision's `cpp_int` so code behaves
-		// consistently with the reference implementation.
-		useBigInt = true
-		return "cpp_int"
+		// Map Mochi `int` to a 64-bit signed integer.  This avoids the
+		// dependency on Boost's multiprecision library for typical
+		// programs while keeping explicit `bigint` usage available when
+		// required.
+		return "int64_t"
 	case "float":
 		return "double"
 	case "bool":
@@ -7890,11 +7906,10 @@ func cppType(t string) string {
 func cppTypeFrom(tp types.Type) string {
 	switch t := tp.(type) {
 	case types.IntType:
-		// Default Mochi integers are arbitrary precision.  Use
-		// Boost.Multiprecision's `cpp_int` so translated code matches
-		// the semantics of the source language.
-		useBigInt = true
-		return "cpp_int"
+		// Default Mochi integers map to 64-bit signed integers.  This
+		// keeps generated code lightweight while supporting typical
+		// algorithmic ranges.
+		return "int64_t"
 	case types.Int64Type:
 		return "int64_t"
 	case types.BigIntType:
@@ -8388,7 +8403,10 @@ func exprType(e Expr) string {
 		case "_num", "_denom":
 			return "cpp_int"
 		case "_parse_int_str":
-			return "cpp_int"
+			if useBigInt {
+				return "cpp_int"
+			}
+			return "int64_t"
 		case "_index_of":
 			return "int64_t"
 		case "_repeat":
