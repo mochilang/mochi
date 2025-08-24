@@ -2186,6 +2186,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useConcat = false
 	useParseIntStr = false
 	useStdout = false
+	useBench = false
 	useHas = false
 	useFetch = false
 	useLookupHost = false
@@ -2211,6 +2212,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useConcat = false
 		useParseIntStr = false
 		useStdout = false
+		useBench = false
 		useHas = false
 		useFetch = false
 		useLookupHost = false
