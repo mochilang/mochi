@@ -4999,7 +4999,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				switch t {
 				case "bool":
 					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
-				case "int":
+				case "int", "int64":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
 					usesStr = true
@@ -5021,7 +5021,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				switch inferType(a) {
 				case "bool":
 					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
-				case "int":
+				case "int", "int64":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
 					usesStr = true
@@ -5044,7 +5044,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "bool":
 					b := &IfExpr{Cond: args[0], Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{b}}, nil
-				case "int":
+				case "int", "int64":
 					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
 					usesStr = true
@@ -5066,7 +5066,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				switch inferType(a) {
 				case "bool":
 					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
-				case "int":
+				case "int", "int64":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
 					elems[i] = &CallExpr{Func: "sprintf \"%g\"", Args: []Expr{a}}

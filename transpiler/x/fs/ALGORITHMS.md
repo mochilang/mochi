@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
 Completed programs: 951/1077
-Last updated: 2025-08-24 08:57 +0700
+Last updated: 2025-08-24 22:16 +0700
 
 Checklist:
 
@@ -231,7 +231,7 @@ Checklist:
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 571.223ms | 32.8 KB |
 | 223 | data_structures/linked_list/circular_linked_list | ✓ | 571.223ms | 57.8 KB |
 | 224 | data_structures/linked_list/deque_doubly | ✓ | 571.223ms | 59.4 KB |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 571.223ms | 73.4 KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 571.223ms | 37.7 KB |
 | 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 571.223ms | 63.0 KB |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 571.223ms | 31.0 KB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 571.223ms | 60.6 KB |
