@@ -1,5 +1,80 @@
-{
-  "duration_us": 5734,
-  "memory_bytes": 59064,
-  "name": "main"
-}
+warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 131 │       {_, u, v} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:131:14: Main.lowest_common_ancestor/4
+
+     warning: variable "head" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {head, level, parent, _} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:182:8: Main.breadth_first_search/5
+
+     warning: variable "level" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {head, level, parent, _} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:182:14: Main.breadth_first_search/5
+
+     warning: variable "parent" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {head, level, parent, _} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:182:21: Main.breadth_first_search/5
+
+     warning: variable "max_node" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 142 │   def breadth_first_search(level, parent, max_node, graph, root) do
+     │                                           ~~~~~~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:142:43: Main.breadth_first_search/5
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:3: Main (module)
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Tuple
+
+Got value:
+
+    {1,
+     [-1, 0, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, -1, -1],
+     [
+       [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+     ], [1]}
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:81: Main.lowest_common_ancestor/4
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:262: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:276: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lowest_common_ancestor.exs:284: (file)

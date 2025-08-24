@@ -1,5 +1,25 @@
-{
-  "duration_us": 9734,
-  "memory_bytes": 26024,
-  "name": "main"
-}
+warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {count, encoded, _} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:41:8: Main.run_length_encode/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:3: Main (module)
+
+A4B3C2D1A2
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length(:ok)
+    /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:14: Main._len/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:57: anonymous fn/4 in Main.run_length_decode/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:99: Main.run_length_decode/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:118: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:132: (file)

@@ -1,5 +1,45 @@
-{
-  "duration_us": 5486,
-  "memory_bytes": 17768,
-  "name": "main"
-}
+warning: variable "st" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {_, st} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/non_recursive_segment_tree.exs:87:11: Main.update/5
+
+     warning: variable "has" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 140 │       {has, _, _, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/non_recursive_segment_tree.exs:140:8: Main.query/5
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/non_recursive_segment_tree.exs:3: Main (module)
+
+6
+1
+3
+** (FunctionClauseError) no function clause matching in List.replace_at/3    
+    
+    The following arguments were given to List.replace_at/3:
+    
+        # 1
+        {1, [0, 12, 6, 6, 5, 1, -1, 7, -1, 6]}
+    
+        # 2
+        7
+    
+        # 3
+        3
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def replace_at(+list+, +index+, +value+) when -is_list(list)- and +is_integer(index)+
+    
+    (elixir 1.18.3) lib/list.ex:814: List.replace_at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/non_recursive_segment_tree.exs:77: Main.update/5
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/non_recursive_segment_tree.exs:197: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/non_recursive_segment_tree.exs:209: (file)
