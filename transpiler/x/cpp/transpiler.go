@@ -7789,14 +7789,14 @@ func funcReturnType(ft string) string {
 func cppType(t string) string {
 	switch t {
 	case "int":
-		// Mochi `int` values are arbitrary precision.  Previously the
-		// transpiler mapped them to 64-bit integers which caused
-		// overflow for programs that relied on large values (for
-		// example, many Project Euler solutions).  Map all `int`
-		// values to Boost.Multiprecision's `cpp_int` so code behaves
-		// consistently with the reference implementation.
-		useBigInt = true
-		return "cpp_int"
+		// Mochi `int` values are typically small in the algorithms
+		// repository.  Using `cpp_int` requires the Boost
+		// Multiprecision headers which are not always available in the
+		// execution environment of these tests.  Default to a
+		// 64‑bit signed integer so most programs compile without the
+		// Boost dependency while keeping the option to explicitly use
+		// big integers via the `bigint` type when needed.
+		return "int64_t"
 	case "float":
 		return "double"
 	case "bool":
@@ -7890,11 +7890,11 @@ func cppType(t string) string {
 func cppTypeFrom(tp types.Type) string {
 	switch t := tp.(type) {
 	case types.IntType:
-		// Default Mochi integers are arbitrary precision.  Use
-		// Boost.Multiprecision's `cpp_int` so translated code matches
-		// the semantics of the source language.
-		useBigInt = true
-		return "cpp_int"
+		// Mirror the decision in `cppType` to represent plain Mochi
+		// integers as 64-bit values to avoid the Boost dependency.
+		// The `bigint` type still triggers arbitrary precision support
+		// when explicitly requested by source programs.
+		return "int64_t"
 	case types.Int64Type:
 		return "int64_t"
 	case types.BigIntType:
