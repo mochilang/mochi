@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare sort_points build_kdtree)
+
+(declare _read_file)
 
 (def ^:dynamic build_kdtree_axis nil)
 
@@ -46,23 +60,26 @@
 
 (def ^:dynamic sort_points_tmp nil)
 
-(def ^:dynamic main_tree [])
+(def ^:dynamic main_tree nil)
 
 (defn sort_points [sort_points_points sort_points_axis]
   (binding [sort_points_arr nil sort_points_i nil sort_points_j nil sort_points_tmp nil] (try (do (set! sort_points_arr sort_points_points) (set! sort_points_i 0) (while (< sort_points_i (count sort_points_arr)) (do (set! sort_points_j 0) (while (< sort_points_j (- (count sort_points_arr) 1)) (do (when (> (nth (nth sort_points_arr sort_points_j) sort_points_axis) (nth (nth sort_points_arr (+ sort_points_j 1)) sort_points_axis)) (do (set! sort_points_tmp (nth sort_points_arr sort_points_j)) (set! sort_points_arr (assoc sort_points_arr sort_points_j (nth sort_points_arr (+ sort_points_j 1)))) (set! sort_points_arr (assoc sort_points_arr (+ sort_points_j 1) sort_points_tmp)))) (set! sort_points_j (+ sort_points_j 1)))) (set! sort_points_i (+ sort_points_i 1)))) (throw (ex-info "return" {:v sort_points_arr}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn build_kdtree [build_kdtree_points build_kdtree_depth]
-  (binding [build_kdtree_axis nil build_kdtree_idx nil build_kdtree_k nil build_kdtree_left_idx nil build_kdtree_left_points nil build_kdtree_median_idx nil build_kdtree_node nil build_kdtree_right_idx nil build_kdtree_right_points nil build_kdtree_sorted nil] (try (do (when (= (count build_kdtree_points) 0) (throw (ex-info "return" {:v (- 0 1)}))) (set! build_kdtree_k (count (nth build_kdtree_points 0))) (set! build_kdtree_axis (mod build_kdtree_depth build_kdtree_k)) (set! build_kdtree_sorted (sort_points build_kdtree_points build_kdtree_axis)) (set! build_kdtree_median_idx (quot (count build_kdtree_sorted) 2)) (set! build_kdtree_left_points (subvec build_kdtree_sorted 0 build_kdtree_median_idx)) (set! build_kdtree_right_points (subvec build_kdtree_sorted (+ build_kdtree_median_idx 1) (count build_kdtree_sorted))) (set! build_kdtree_idx (count main_tree)) (alter-var-root (var main_tree) (fn [_] (conj main_tree {:left (- 0 1) :point (nth build_kdtree_sorted build_kdtree_median_idx) :right (- 0 1)}))) (set! build_kdtree_left_idx (build_kdtree build_kdtree_left_points (+ build_kdtree_depth 1))) (set! build_kdtree_right_idx (build_kdtree build_kdtree_right_points (+ build_kdtree_depth 1))) (set! build_kdtree_node (nth main_tree build_kdtree_idx)) (set! build_kdtree_node (assoc build_kdtree_node :left build_kdtree_left_idx)) (set! build_kdtree_node (assoc build_kdtree_node :right build_kdtree_right_idx)) (alter-var-root (var main_tree) (fn [_] (assoc main_tree build_kdtree_idx build_kdtree_node))) (throw (ex-info "return" {:v build_kdtree_idx}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [build_kdtree_axis nil build_kdtree_idx nil build_kdtree_k nil build_kdtree_left_idx nil build_kdtree_left_points nil build_kdtree_median_idx nil build_kdtree_node nil build_kdtree_right_idx nil build_kdtree_right_points nil build_kdtree_sorted nil] (try (do (when (= (count build_kdtree_points) 0) (throw (ex-info "return" {:v -1}))) (set! build_kdtree_k (count (nth build_kdtree_points 0))) (set! build_kdtree_axis (mod build_kdtree_depth build_kdtree_k)) (set! build_kdtree_sorted (sort_points build_kdtree_points build_kdtree_axis)) (set! build_kdtree_median_idx (quot (count build_kdtree_sorted) 2)) (set! build_kdtree_left_points (subvec build_kdtree_sorted 0 build_kdtree_median_idx)) (set! build_kdtree_right_points (subvec build_kdtree_sorted (+ build_kdtree_median_idx 1) (count build_kdtree_sorted))) (set! build_kdtree_idx (count main_tree)) (alter-var-root (var main_tree) (fn [_] (conj main_tree {:left -1 :point (nth build_kdtree_sorted build_kdtree_median_idx) :right -1}))) (set! build_kdtree_left_idx (build_kdtree build_kdtree_left_points (+ build_kdtree_depth 1))) (set! build_kdtree_right_idx (build_kdtree build_kdtree_right_points (+ build_kdtree_depth 1))) (set! build_kdtree_node (nth main_tree build_kdtree_idx)) (set! build_kdtree_node (assoc build_kdtree_node :left build_kdtree_left_idx)) (set! build_kdtree_node (assoc build_kdtree_node :right build_kdtree_right_idx)) (alter-var-root (var main_tree) (fn [_] (assoc main_tree build_kdtree_idx build_kdtree_node))) (throw (ex-info "return" {:v build_kdtree_idx}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_pts [[2.0 3.0] [5.0 4.0] [9.0 6.0] [4.0 7.0] [8.0 1.0] [7.0 2.0]])
+(def ^:dynamic main_pts nil)
 
-(def ^:dynamic main_root (build_kdtree main_pts 0))
+(def ^:dynamic main_root nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str main_tree))
+      (alter-var-root (var main_tree) (constantly []))
+      (alter-var-root (var main_pts) (constantly [[2.0 3.0] [5.0 4.0] [9.0 6.0] [4.0 7.0] [8.0 1.0] [7.0 2.0]]))
+      (alter-var-root (var main_root) (constantly (build_kdtree main_pts 0)))
+      (println (mochi_str main_tree))
       (println main_root)
       (System/gc)
       (let [end (System/nanoTime)

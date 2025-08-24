@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare combine build_tree new_segment_tree update query_range traverse node_to_string print_traverse)
+
+(declare _read_file)
 
 (def ^:dynamic build_tree_left_node nil)
 
@@ -35,6 +49,8 @@
 (def ^:dynamic build_tree_right_res nil)
 
 (def ^:dynamic build_tree_val nil)
+
+(def ^:dynamic main_op nil)
 
 (def ^:dynamic main_tree nil)
 
@@ -56,7 +72,7 @@
   (try (do (when (= combine_op 0) (throw (ex-info "return" {:v (+ combine_a combine_b)}))) (when (= combine_op 1) (do (when (> combine_a combine_b) (throw (ex-info "return" {:v combine_a}))) (throw (ex-info "return" {:v combine_b})))) (if (< combine_a combine_b) combine_a combine_b)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn build_tree [build_tree_nodes build_tree_arr build_tree_start build_tree_end build_tree_op]
-  (binding [build_tree_left_node nil build_tree_left_res nil build_tree_mid nil build_tree_new_nodes nil build_tree_node nil build_tree_parent nil build_tree_right_node nil build_tree_right_res nil build_tree_val nil] (try (do (when (= build_tree_start build_tree_end) (do (set! build_tree_node {:start build_tree_start :end build_tree_end :val (nth build_tree_arr build_tree_start) :mid build_tree_start :left (- 1) :right (- 1)}) (set! build_tree_new_nodes (conj build_tree_nodes build_tree_node)) (throw (ex-info "return" {:v {:nodes build_tree_new_nodes :idx (- (count build_tree_new_nodes) 1)}})))) (set! build_tree_mid (quot (+ build_tree_start build_tree_end) 2)) (set! build_tree_left_res (build_tree build_tree_nodes build_tree_arr build_tree_start build_tree_mid build_tree_op)) (set! build_tree_right_res (build_tree (:nodes build_tree_left_res) build_tree_arr (+ build_tree_mid 1) build_tree_end build_tree_op)) (set! build_tree_left_node (get (:nodes build_tree_right_res) (:idx build_tree_left_res))) (set! build_tree_right_node (get (:nodes build_tree_right_res) (:idx build_tree_right_res))) (set! build_tree_val (combine (:val build_tree_left_node) (:val build_tree_right_node) build_tree_op)) (set! build_tree_parent {:start build_tree_start :end build_tree_end :val build_tree_val :mid build_tree_mid :left (:idx build_tree_left_res) :right (:idx build_tree_right_res)}) (set! build_tree_new_nodes (conj (:nodes build_tree_right_res) build_tree_parent)) (throw (ex-info "return" {:v {:nodes build_tree_new_nodes :idx (- (count build_tree_new_nodes) 1)}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [build_tree_left_node nil build_tree_left_res nil build_tree_mid nil build_tree_new_nodes nil build_tree_node nil build_tree_parent nil build_tree_right_node nil build_tree_right_res nil build_tree_val nil] (try (do (when (= build_tree_start build_tree_end) (do (set! build_tree_node {:end build_tree_end :left (- 1) :mid build_tree_start :right (- 1) :start build_tree_start :val (nth build_tree_arr build_tree_start)}) (set! build_tree_new_nodes (conj build_tree_nodes build_tree_node)) (throw (ex-info "return" {:v {:idx (- (count build_tree_new_nodes) 1) :nodes build_tree_new_nodes}})))) (set! build_tree_mid (quot (+ build_tree_start build_tree_end) 2)) (set! build_tree_left_res (build_tree build_tree_nodes build_tree_arr build_tree_start build_tree_mid build_tree_op)) (set! build_tree_right_res (build_tree (:nodes build_tree_left_res) build_tree_arr (+ build_tree_mid 1) build_tree_end build_tree_op)) (set! build_tree_left_node (get (:nodes build_tree_right_res) (:idx build_tree_left_res))) (set! build_tree_right_node (get (:nodes build_tree_right_res) (:idx build_tree_right_res))) (set! build_tree_val (combine (:val build_tree_left_node) (:val build_tree_right_node) build_tree_op)) (set! build_tree_parent {:end build_tree_end :left (:idx build_tree_left_res) :mid build_tree_mid :right (:idx build_tree_right_res) :start build_tree_start :val build_tree_val}) (set! build_tree_new_nodes (conj (:nodes build_tree_right_res) build_tree_parent)) (throw (ex-info "return" {:v {:idx (- (count build_tree_new_nodes) 1) :nodes build_tree_new_nodes}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn new_segment_tree [new_segment_tree_collection new_segment_tree_op]
   (try (throw (ex-info "return" {:v {:arr new_segment_tree_collection :op new_segment_tree_op}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -71,18 +87,19 @@
   (binding [traverse_res nil] (try (do (when (= (count (:arr traverse_tree)) 0) (throw (ex-info "return" {:v []}))) (set! traverse_res (build_tree [] (:arr traverse_tree) 0 (- (count (:arr traverse_tree)) 1) (:op traverse_tree))) (throw (ex-info "return" {:v (:nodes traverse_res)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn node_to_string [node_to_string_node]
-  (try (throw (ex-info "return" {:v (str (str (str (str (str (str "SegmentTreeNode(start=" (str (:start node_to_string_node))) ", end=") (str (:end node_to_string_node))) ", val=") (str (:val node_to_string_node))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (str (str (str (str "SegmentTreeNode(start=" (mochi_str (:start node_to_string_node))) ", end=") (mochi_str (:end node_to_string_node))) ", val=") (mochi_str (:val node_to_string_node))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn print_traverse [print_traverse_tree]
-  (binding [print_traverse_i nil print_traverse_nodes nil] (do (set! print_traverse_nodes (traverse print_traverse_tree)) (set! print_traverse_i 0) (while (< print_traverse_i (count print_traverse_nodes)) (do (println (node_to_string (nth print_traverse_nodes print_traverse_i))) (set! print_traverse_i (+ print_traverse_i 1)))) (println ""))))
+  (binding [print_traverse_i nil print_traverse_nodes nil] (do (set! print_traverse_nodes (traverse print_traverse_tree)) (set! print_traverse_i 0) (while (< print_traverse_i (count print_traverse_nodes)) (do (println (node_to_string (nth print_traverse_nodes print_traverse_i))) (set! print_traverse_i (+ print_traverse_i 1)))) (println "") print_traverse_tree)))
 
-(def ^:dynamic main_arr [2 1 5 3 4])
+(def ^:dynamic main_arr nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (doseq [op [0 1 2]] (do (println "**************************************************") (def ^:dynamic main_tree (new_segment_tree main_arr op)) (print_traverse main_tree) (def main_tree (update main_tree 1 5)) (print_traverse main_tree) (println (query_range main_tree 3 4)) (println (query_range main_tree 2 2)) (println (query_range main_tree 1 3)) (println "")))
+      (alter-var-root (var main_arr) (constantly [2 1 5 3 4]))
+      (doseq [main_op [0 1 2]] (do (println "**************************************************") (def ^:dynamic main_tree (new_segment_tree main_arr main_op)) (print_traverse main_tree) (alter-var-root (var main_tree) (constantly (update main_tree 1 5))) (print_traverse main_tree) (println (query_range main_tree 3 4)) (println (query_range main_tree 2 2)) (println (query_range main_tree 1 3)) (println "")))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

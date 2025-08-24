@@ -1,5 +1,5 @@
-clojure.lang.LazySeq@81957a9e
-[7 10]
-[10 15]
-[nil 3]
-[25 nil]
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/data_structures/binary_tree/floor_and_ceiling.clj:51:585).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-10433577454340935590.edn

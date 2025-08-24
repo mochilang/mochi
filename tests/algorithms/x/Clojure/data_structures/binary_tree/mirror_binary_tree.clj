@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare mirror_node mirror inorder make_tree_zero make_tree_seven make_tree_nine main)
+
+(declare _read_file)
 
 (def ^:dynamic inorder_left_vals nil)
 
@@ -39,25 +53,25 @@
 (def ^:dynamic mirror_node_temp nil)
 
 (defn mirror_node [mirror_node_left_p mirror_node_right_p mirror_node_idx]
-  (binding [mirror_node_left nil mirror_node_right nil mirror_node_temp nil] (try (do (set! mirror_node_left mirror_node_left_p) (set! mirror_node_right mirror_node_right_p) (when (= mirror_node_idx (- 1)) (throw (ex-info "return" {:v nil}))) (set! mirror_node_temp (nth mirror_node_left mirror_node_idx)) (set! mirror_node_left (assoc mirror_node_left mirror_node_idx (nth mirror_node_right mirror_node_idx))) (set! mirror_node_right (assoc mirror_node_right mirror_node_idx mirror_node_temp)) (mirror_node mirror_node_left mirror_node_right (nth mirror_node_left mirror_node_idx)) (mirror_node mirror_node_left mirror_node_right (nth mirror_node_right mirror_node_idx))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [mirror_node_left mirror_node_left_p mirror_node_right mirror_node_right_p mirror_node_temp nil] (try (do (when (= mirror_node_idx (- 1)) (throw (ex-info "return" {:v nil}))) (set! mirror_node_temp (nth mirror_node_left mirror_node_idx)) (set! mirror_node_left (assoc mirror_node_left mirror_node_idx (nth mirror_node_right mirror_node_idx))) (set! mirror_node_right (assoc mirror_node_right mirror_node_idx mirror_node_temp)) (let [__res (mirror_node mirror_node_left mirror_node_right (nth mirror_node_left mirror_node_idx))] (do (set! mirror_node_left mirror_node_left) (set! mirror_node_right mirror_node_right) __res)) (let [__res (mirror_node mirror_node_left mirror_node_right (nth mirror_node_right mirror_node_idx))] (do (set! mirror_node_left mirror_node_left) (set! mirror_node_right mirror_node_right) __res))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var mirror_node_left) (constantly mirror_node_left)) (alter-var-root (var mirror_node_right) (constantly mirror_node_right))))))
 
 (defn mirror [mirror_tree]
-  (try (do (mirror_node (:left mirror_tree) (:right mirror_tree) (:root mirror_tree)) (throw (ex-info "return" {:v mirror_tree}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (let [__res (mirror_node (:left mirror_tree) (:right mirror_tree) (:root mirror_tree))] (do __res)) (throw (ex-info "return" {:v mirror_tree}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn inorder [inorder_tree inorder_idx]
   (binding [inorder_left_vals nil inorder_right_vals nil] (try (do (when (= inorder_idx (- 1)) (throw (ex-info "return" {:v []}))) (set! inorder_left_vals (inorder inorder_tree (get (:left inorder_tree) inorder_idx))) (set! inorder_right_vals (inorder inorder_tree (get (:right inorder_tree) inorder_idx))) (throw (ex-info "return" {:v (concat (concat inorder_left_vals [(get (:values inorder_tree) inorder_idx)]) inorder_right_vals)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn make_tree_zero []
-  (try (throw (ex-info "return" {:v {:values [0] :left [(- 1)] :right [(- 1)] :root 0}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v {:left [(- 1)] :right [(- 1)] :root 0 :values [0]}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn make_tree_seven []
-  (try (throw (ex-info "return" {:v {:values [1 2 3 4 5 6 7] :left [1 3 5 (- 1) (- 1) (- 1) (- 1)] :right [2 4 6 (- 1) (- 1) (- 1) (- 1)] :root 0}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v {:left [1 3 5 (- 1) (- 1) (- 1) (- 1)] :right [2 4 6 (- 1) (- 1) (- 1) (- 1)] :root 0 :values [1 2 3 4 5 6 7]}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn make_tree_nine []
-  (try (throw (ex-info "return" {:v {:values [1 2 3 4 5 6 7 8 9] :left [1 3 (- 1) 6 (- 1) (- 1) (- 1) (- 1) (- 1)] :right [2 4 5 7 8 (- 1) (- 1) (- 1) (- 1)] :root 0}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v {:left [1 3 (- 1) 6 (- 1) (- 1) (- 1) (- 1) (- 1)] :right [2 4 5 7 8 (- 1) (- 1) (- 1) (- 1)] :root 0 :values [1 2 3 4 5 6 7 8 9]}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
-  (binding [main_i nil main_mirrored nil main_names nil main_tree nil main_trees nil] (do (set! main_names ["zero" "seven" "nine"]) (set! main_trees [(make_tree_zero) (make_tree_seven) (make_tree_nine)]) (set! main_i 0) (while (< main_i (count main_trees)) (do (set! main_tree (nth main_trees main_i)) (println (str (str (str "      The " (nth main_names main_i)) " tree: ") (str (inorder main_tree (:root main_tree))))) (set! main_mirrored (mirror main_tree)) (println (str (str (str "Mirror of " (nth main_names main_i)) " tree: ") (str (inorder main_mirrored (:root main_mirrored))))) (set! main_i (+ main_i 1)))))))
+  (binding [main_i nil main_mirrored nil main_names nil main_tree nil main_trees nil] (do (set! main_names ["zero" "seven" "nine"]) (set! main_trees [(make_tree_zero) (make_tree_seven) (make_tree_nine)]) (set! main_i 0) (while (< main_i (count main_trees)) (do (set! main_tree (nth main_trees main_i)) (println (str (str (str "      The " (nth main_names main_i)) " tree: ") (mochi_str (inorder main_tree (:root main_tree))))) (set! main_mirrored (mirror main_tree)) (println (str (str (str "Mirror of " (nth main_names main_i)) " tree: ") (mochi_str (inorder main_mirrored (:root main_mirrored))))) (set! main_i (+ main_i 1)))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare fenwick_from_list fenwick_empty fenwick_get_array bit_and low_bit fenwick_next fenwick_prev fenwick_add fenwick_update fenwick_prefix fenwick_query fenwick_get fenwick_rank_query)
+
+(declare _read_file)
 
 (def ^:dynamic bit_and_bit nil)
 
@@ -86,7 +100,7 @@
   (try (throw (ex-info "return" {:v (- fenwick_prev_index (low_bit fenwick_prev_index))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn fenwick_add [fenwick_add_f fenwick_add_index fenwick_add_value]
-  (binding [fenwick_add_i nil fenwick_add_tree nil] (try (do (set! fenwick_add_tree (:tree fenwick_add_f)) (when (= fenwick_add_index 0) (do (set! fenwick_add_tree (assoc fenwick_add_tree 0 (+ (nth fenwick_add_tree 0) fenwick_add_value))) (throw (ex-info "return" {:v {:size (:size fenwick_add_f) :tree fenwick_add_tree}})))) (set! fenwick_add_i fenwick_add_index) (while (< fenwick_add_i (:size fenwick_add_f)) (do (set! fenwick_add_tree (assoc fenwick_add_tree fenwick_add_i (+ (nth fenwick_add_tree fenwick_add_i) fenwick_add_value))) (set! fenwick_add_i (fenwick_next fenwick_add_i)))) (throw (ex-info "return" {:v {:size (:size fenwick_add_f) :tree fenwick_add_tree}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [fenwick_add_i nil fenwick_add_tree nil] (try (do (set! fenwick_add_tree (:tree fenwick_add_f)) (when (= fenwick_add_index 0) (do (set! fenwick_add_tree (assoc fenwick_add_tree 0 (+ (get fenwick_add_tree 0) fenwick_add_value))) (throw (ex-info "return" {:v {:size (:size fenwick_add_f) :tree fenwick_add_tree}})))) (set! fenwick_add_i fenwick_add_index) (while (< fenwick_add_i (:size fenwick_add_f)) (do (set! fenwick_add_tree (assoc fenwick_add_tree fenwick_add_i (+ (get fenwick_add_tree fenwick_add_i) fenwick_add_value))) (set! fenwick_add_i (fenwick_next fenwick_add_i)))) (throw (ex-info "return" {:v {:size (:size fenwick_add_f) :tree fenwick_add_tree}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn fenwick_update [fenwick_update_f fenwick_update_index fenwick_update_value]
   (binding [fenwick_update_current nil] (try (do (set! fenwick_update_current (fenwick_get fenwick_update_f fenwick_update_index)) (throw (ex-info "return" {:v (fenwick_add fenwick_update_f fenwick_update_index (- fenwick_update_value fenwick_update_current))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
@@ -103,27 +117,31 @@
 (defn fenwick_rank_query [fenwick_rank_query_f fenwick_rank_query_value]
   (binding [fenwick_rank_query_i nil fenwick_rank_query_j nil fenwick_rank_query_jj nil fenwick_rank_query_v nil] (try (do (set! fenwick_rank_query_v (- fenwick_rank_query_value (get (:tree fenwick_rank_query_f) 0))) (when (< fenwick_rank_query_v 0) (throw (ex-info "return" {:v (- 1)}))) (set! fenwick_rank_query_j 1) (while (< (* fenwick_rank_query_j 2) (:size fenwick_rank_query_f)) (set! fenwick_rank_query_j (* fenwick_rank_query_j 2))) (set! fenwick_rank_query_i 0) (set! fenwick_rank_query_jj fenwick_rank_query_j) (while (> fenwick_rank_query_jj 0) (do (when (and (< (+ fenwick_rank_query_i fenwick_rank_query_jj) (:size fenwick_rank_query_f)) (<= (get (:tree fenwick_rank_query_f) (+ fenwick_rank_query_i fenwick_rank_query_jj)) fenwick_rank_query_v)) (do (set! fenwick_rank_query_v (- fenwick_rank_query_v (get (:tree fenwick_rank_query_f) (+ fenwick_rank_query_i fenwick_rank_query_jj)))) (set! fenwick_rank_query_i (+ fenwick_rank_query_i fenwick_rank_query_jj)))) (set! fenwick_rank_query_jj (quot fenwick_rank_query_jj 2)))) (throw (ex-info "return" {:v fenwick_rank_query_i}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_f_base (fenwick_from_list [1 2 3 4 5]))
+(def ^:dynamic main_f_base nil)
 
-(def ^:dynamic main_f (fenwick_from_list [1 2 3 4 5]))
+(def ^:dynamic main_f nil)
 
-(def ^:dynamic main_f2 (fenwick_from_list [1 2 3 4 5]))
+(def ^:dynamic main_f2 nil)
 
-(def ^:dynamic main_f3 (fenwick_from_list [1 2 0 3 0 5]))
+(def ^:dynamic main_f3 nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_f_base) (constantly (fenwick_from_list [1 2 3 4 5])))
       (println (fenwick_get_array main_f_base))
-      (def main_f (fenwick_add main_f 0 1))
-      (def main_f (fenwick_add main_f 1 2))
-      (def main_f (fenwick_add main_f 2 3))
-      (def main_f (fenwick_add main_f 3 4))
-      (def main_f (fenwick_add main_f 4 5))
+      (alter-var-root (var main_f) (constantly (fenwick_from_list [1 2 3 4 5])))
+      (alter-var-root (var main_f) (constantly (fenwick_add main_f 0 1)))
+      (alter-var-root (var main_f) (constantly (fenwick_add main_f 1 2)))
+      (alter-var-root (var main_f) (constantly (fenwick_add main_f 2 3)))
+      (alter-var-root (var main_f) (constantly (fenwick_add main_f 3 4)))
+      (alter-var-root (var main_f) (constantly (fenwick_add main_f 4 5)))
       (println (fenwick_get_array main_f))
+      (alter-var-root (var main_f2) (constantly (fenwick_from_list [1 2 3 4 5])))
       (println (fenwick_prefix main_f2 3))
       (println (fenwick_query main_f2 1 4))
+      (alter-var-root (var main_f3) (constantly (fenwick_from_list [1 2 0 3 0 5])))
       (println (fenwick_rank_query main_f3 0))
       (println (fenwick_rank_query main_f3 2))
       (println (fenwick_rank_query main_f3 1))

@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare rand_float hypercube_points build_kdtree distance_sq nearest_neighbour_search test_build_cases test_search test_edge main)
+
+(declare _read_file)
 
 (def ^:dynamic distance_sq_d nil)
 
@@ -72,9 +86,9 @@
 
 (def ^:dynamic test_search_tree nil)
 
-(def ^:dynamic main_INF 1000000000.0)
+(def ^:dynamic main_INF nil)
 
-(def ^:dynamic main_seed 1)
+(def ^:dynamic main_seed nil)
 
 (defn rand_float []
   (try (do (alter-var-root (var main_seed) (fn [_] (mod (+ (* main_seed 1103515245) 12345) 2147483648))) (throw (ex-info "return" {:v (/ (double main_seed) 2147483648.0)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -107,6 +121,8 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_INF) (constantly 1000000000.0))
+      (alter-var-root (var main_seed) (constantly 1))
       (main)
       (System/gc)
       (let [end (System/nanoTime)

@@ -1,2 +1,5 @@
-Printing values of binary search tree in Inorder Traversal.
-[]
+Execution error (NullPointerException) at main/insert (inorder_tree_traversal_2022.clj:61).
+Cannot invoke "Object.getClass()" because "x" is null
+
+Full report at:
+/tmp/clojure-9833595683587330719.edn

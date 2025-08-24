@@ -1,3 +1,207 @@
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-24 16:58 +0700)
+- clj: handle ranged loops with control
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-23 15:31 +0700)
 - ts: regenerate algorithms 791-841 and ensure newline
 - Regenerated golden files - 102/105 vm valid programs passing

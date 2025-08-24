@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error (IllegalArgumentException) compiling fn* at (/workspace/mochi/tests/algorithms/x/Clojure/data_structures/linked_list/deque_doubly.clj:113:1).
+Cannot assign to non-mutable: add_first_d
+
+Full report at:
+/tmp/clojure-17397876926405864389.edn

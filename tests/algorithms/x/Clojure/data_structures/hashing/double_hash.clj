@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare is_prime prev_prime create_table hash1 hash2 insert_double_hash table_keys run_example)
+
+(declare _read_file)
 
 (def ^:dynamic count_v nil)
 
@@ -66,7 +80,7 @@
   (binding [table_keys_i nil table_keys_res nil] (try (do (set! table_keys_res {}) (set! table_keys_i 0) (while (< table_keys_i (count table_keys_values)) (do (when (not= (nth table_keys_values table_keys_i) (- 1)) (set! table_keys_res (assoc table_keys_res table_keys_i (nth table_keys_values table_keys_i)))) (set! table_keys_i (+ table_keys_i 1)))) (throw (ex-info "return" {:v table_keys_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn run_example [run_example_size run_example_data]
-  (binding [run_example_i nil run_example_prime nil run_example_table nil] (do (set! run_example_prime (prev_prime run_example_size)) (set! run_example_table (create_table run_example_size)) (set! run_example_i 0) (while (< run_example_i (count run_example_data)) (do (set! run_example_table (insert_double_hash run_example_table run_example_size run_example_prime (nth run_example_data run_example_i))) (set! run_example_i (+ run_example_i 1)))) (println (str (table_keys run_example_table))))))
+  (binding [run_example_i nil run_example_prime nil run_example_table nil] (do (set! run_example_prime (prev_prime run_example_size)) (set! run_example_table (create_table run_example_size)) (set! run_example_i 0) (while (< run_example_i (count run_example_data)) (do (set! run_example_table (insert_double_hash run_example_table run_example_size run_example_prime (nth run_example_data run_example_i))) (set! run_example_i (+ run_example_i 1)))) (println (mochi_str (table_keys run_example_table))) run_example_size)))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare dfs path_sum sample_tree_one sample_tree_two main)
+
+(declare _read_file)
 
 (def ^:dynamic main_tree1 nil)
 
@@ -29,10 +43,10 @@
   (try (throw (ex-info "return" {:v (cond (= path_sum_node path_sum_Empty) 0 (and (map? path_sum_node) (= (:__tag path_sum_node) "Node") (contains? path_sum_node :left) (contains? path_sum_node :value) (contains? path_sum_node :right)) (let [path_sum_l (:left path_sum_node) path_sum_v (:value path_sum_node) path_sum_r (:right path_sum_node)] (+ (+ (dfs path_sum_node path_sum_target 0) (path_sum path_sum_l path_sum_target)) (path_sum path_sum_r path_sum_target))))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sample_tree_one []
-  (try (throw (ex-info "return" {:v {:__tag "Node" :left 10 :value {:__tag "Node" :left 5 :value {:__tag "Node" :left 3 :value {:__tag "Node" :left 3 :value {:__tag "Empty"} :right {:__tag "Empty"}} :right {:__tag "Node" :left (- 2) :value {:__tag "Empty"} :right {:__tag "Empty"}}} :right {:__tag "Node" :left 2 :value {:__tag "Empty"} :right {:__tag "Node" :left 1 :value {:__tag "Empty"} :right {:__tag "Empty"}}}} :right {:__tag "Node" :left (- 3) :value {:__tag "Empty"} :right {:__tag "Node" :left 11 :value {:__tag "Empty"} :right {:__tag "Empty"}}}}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v {:__tag "Node" :left 10 :right {:__tag "Node" :left (- 3) :right {:__tag "Node" :left 11 :right {:__tag "Empty"} :value {:__tag "Empty"}} :value {:__tag "Empty"}} :value {:__tag "Node" :left 5 :right {:__tag "Node" :left 2 :right {:__tag "Node" :left 1 :right {:__tag "Empty"} :value {:__tag "Empty"}} :value {:__tag "Empty"}} :value {:__tag "Node" :left 3 :right {:__tag "Node" :left (- 2) :right {:__tag "Empty"} :value {:__tag "Empty"}} :value {:__tag "Node" :left 3 :right {:__tag "Empty"} :value {:__tag "Empty"}}}}}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn sample_tree_two []
-  (try (throw (ex-info "return" {:v {:__tag "Node" :left 10 :value {:__tag "Node" :left 5 :value {:__tag "Node" :left 3 :value {:__tag "Node" :left 3 :value {:__tag "Empty"} :right {:__tag "Empty"}} :right {:__tag "Node" :left (- 2) :value {:__tag "Empty"} :right {:__tag "Empty"}}} :right {:__tag "Node" :left 2 :value {:__tag "Empty"} :right {:__tag "Node" :left 1 :value {:__tag "Empty"} :right {:__tag "Empty"}}}} :right {:__tag "Node" :left (- 3) :value {:__tag "Empty"} :right {:__tag "Node" :left 10 :value {:__tag "Empty"} :right {:__tag "Empty"}}}}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v {:__tag "Node" :left 10 :right {:__tag "Node" :left (- 3) :right {:__tag "Node" :left 10 :right {:__tag "Empty"} :value {:__tag "Empty"}} :value {:__tag "Empty"}} :value {:__tag "Node" :left 5 :right {:__tag "Node" :left 2 :right {:__tag "Node" :left 1 :right {:__tag "Empty"} :value {:__tag "Empty"}} :value {:__tag "Empty"}} :value {:__tag "Node" :left 3 :right {:__tag "Node" :left (- 2) :right {:__tag "Empty"} :value {:__tag "Empty"}} :value {:__tag "Node" :left 3 :right {:__tag "Empty"} :value {:__tag "Empty"}}}}}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
   (binding [main_tree1 nil main_tree2 nil] (do (set! main_tree1 (sample_tree_one)) (println (path_sum main_tree1 8)) (println (path_sum main_tree1 7)) (set! main_tree2 (sample_tree_two)) (println (path_sum main_tree2 8)))))
