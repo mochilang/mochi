@@ -2054,6 +2054,17 @@ func (f *FloatLit) emit(w io.Writer) error {
 	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
 	if f.Value != 0 && (math.Abs(f.Value) >= 1e6 || math.Abs(f.Value) < 1e-6) {
 		s = strconv.FormatFloat(f.Value, 'e', -1, 64)
+		if idx := strings.IndexByte(s, 'e'); idx >= 0 {
+			exp := s[idx+1:]
+			if strings.HasPrefix(exp, "+") {
+				exp = exp[1:]
+			}
+			exp = strings.TrimLeft(exp, "0")
+			if exp == "" || exp == "-" || exp == "+" {
+				exp = "0"
+			}
+			s = s[:idx+1] + exp
+		}
 	}
 	if !strings.ContainsAny(s, ".eE") {
 		s += ".0"

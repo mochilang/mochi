@@ -1,9 +1,11 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:46:49: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
- - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart'.
-    while (nodes.length <= current) { nodes.add(null); } nodes[current] = node;
-                                                ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:54:49: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
- - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart'.
-    while (nodes.length <= current) { nodes.add(null); } nodes[current] = node;
-                                                ^
+run: exit status 255
+Unhandled exception:
+RangeError (length): Invalid value: Only valid value is 0: 1
+#0      List.[] (dart:core-patch/growable_array.dart)
+#1      insert (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:28:22)
+#2      make_tree (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:70:3)
+#3      _main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:78:21)
+#4      _start (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:84:3)
+#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:87:16)
+#6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
