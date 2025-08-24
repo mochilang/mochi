@@ -59,6 +59,7 @@ var returnTypeStack []string
 var funCtxStack []bool
 var assignedVars map[string]bool
 var benchMain bool
+var userFuncs map[string]bool
 
 // SetBenchMain configures whether Transpile should wrap the main function
 // in a benchmark block when emitting code.
@@ -265,9 +266,6 @@ func gatherAssigned(stmts []*parser.Statement, m map[string]bool) {
 		if st.Assign != nil {
 			m[st.Assign.Name] = true
 		}
-		if st.Let != nil {
-			m[st.Let.Name] = true
-		}
 		if st.Var != nil {
 			m[st.Var.Name] = true
 		}
@@ -326,7 +324,7 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) {
 	if call, ok := s.Expr.(*CallExpr); ok {
-		if n, ok2 := call.Fn.(*Name); ok2 && (n.Name == "panic" || n.Name == "error") && len(call.Args) == 1 {
+		if n, ok2 := call.Fn.(*Name); ok2 && (n.Name == "panic" || n.Name == "error") && len(call.Args) == 1 && !userFuncs[n.Name] {
 			fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
 			call.Args[0].emit(w)
 			fmt.Fprint(w, "))")
@@ -1061,7 +1059,7 @@ func (l *LenExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	if n, ok := c.Fn.(*Name); ok && (n.Name == "panic" || n.Name == "error") && len(c.Args) == 1 {
+	if n, ok := c.Fn.(*Name); ok && (n.Name == "panic" || n.Name == "error") && len(c.Args) == 1 && !userFuncs[n.Name] {
 		fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
 		c.Args[0].emit(w)
 		fmt.Fprint(w, "))")
@@ -2343,6 +2341,12 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	funCtxStack = nil
 	assignedVars = make(map[string]bool)
 	gatherAssigned(prog.Statements, assignedVars)
+	userFuncs = make(map[string]bool)
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			userFuncs[st.Fun.Name] = true
+		}
+	}
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
