@@ -117,6 +117,9 @@ func safeName(n string) string {
 	if reserved[n] {
 		return "_" + n
 	}
+	if len(n) > 0 && n[0] >= '0' && n[0] <= '9' {
+		return "_" + n
+	}
 	return n
 }
 
