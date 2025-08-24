@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-24 17:10 GMT+7
+Last updated: 2025-08-24 22:29 GMT+7
 
-## Algorithms Golden Test Checklist (962/1077)
+## Algorithms Golden Test Checklist (963/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -1046,7 +1046,7 @@ Last updated: 2025-08-24 17:10 GMT+7
 | 1037 | strings/top_k_frequent_words | error |  |  |
 | 1038 | strings/upper | ✓ | 16.0ms | 2.29KB |
 | 1039 | strings/wave_string | ✓ | 41.0ms | 98.71KB |
-| 1040 | strings/wildcard_pattern_matching | error |  |  |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 57.0ms | 55.39KB |
 | 1041 | strings/word_occurrence | ✓ | 34.0ms | 79.03KB |
 | 1042 | strings/word_patterns | ✓ | 29.0ms | 56.09KB |
 | 1043 | strings/z_function | ✓ | 28.0ms | 51.91KB |

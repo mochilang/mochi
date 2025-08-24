@@ -63,6 +63,7 @@ var needArrGetI bool
 var needArrGetD bool
 var needArrGetB bool
 var needArrGetO bool
+var needIdx bool
 var needP bool
 var needJSON bool
 var needBigRat bool
@@ -2152,6 +2153,26 @@ type ForRangeStmt struct {
 
 func (fr *ForRangeStmt) emit(w io.Writer, indent string) {
 	name := sanitize(fr.Name)
+	endType := inferType(fr.End)
+	if endType == "bigint" || endType == "java.math.BigInteger" {
+		fmt.Fprintf(w, indent+"for (java.math.BigInteger %s = ", name)
+		if fr.Start != nil {
+			fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
+			fr.Start.emit(w)
+			fmt.Fprint(w, "))")
+		} else {
+			fmt.Fprint(w, "java.math.BigInteger.ZERO")
+		}
+		fmt.Fprint(w, "; ")
+		fmt.Fprintf(w, "%s.compareTo(", name)
+		fr.End.emit(w)
+		fmt.Fprint(w, ") < 0; ")
+		fmt.Fprintf(w, "%s = %s.add(java.math.BigInteger.ONE)", name, name)
+		fmt.Fprint(w, ") {\n")
+		emitBlock(w, indent+"    ", fr.Body)
+		fmt.Fprint(w, indent+"}\n")
+		return
+	}
 	fmt.Fprint(w, indent+"for (int "+name+" = ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
@@ -3171,7 +3192,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "), java.util.stream.Stream.of(")
 	if strings.HasSuffix(jt, "[]") {
 		fmt.Fprintf(w, "new %s[]{", jt)
-		emitCastExpr(w, a.Value, strings.TrimSuffix(jt, "[]"))
+		emitCastExpr(w, a.Value, elem)
 		fmt.Fprint(w, "}")
 	} else {
 		emitCastExpr(w, a.Value, elem)
@@ -3756,13 +3777,16 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		}
 	} else if isArrayExpr(ix.Target) {
 		needCast := ix.ResultType != "" && ix.ResultType != arrayElemType(ix.Target)
+		var buf bytes.Buffer
+		ix.Target.emit(&buf)
+		target := buf.String()
 		if needCast {
 			fmt.Fprintf(w, "((%s)(", javaType(ix.ResultType))
 		}
-		ix.Target.emit(w)
-		fmt.Fprint(w, "[")
-		emitIndex(w, ix.Index)
-		fmt.Fprint(w, "]")
+		needIdx = true
+		fmt.Fprintf(w, "%s[_idx((%s).length, ", target, target)
+		emitCastExpr(w, ix.Index, "long")
+		fmt.Fprint(w, ")]")
 		if needCast {
 			fmt.Fprint(w, "))")
 		}
@@ -7895,6 +7919,11 @@ func Emit(prog *Program) []byte {
 	if needArrGetO {
 		buf.WriteString("\n    static Object _geto(Object[] a, int i) {\n")
 		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
+		buf.WriteString("    }\n")
+	}
+	if needIdx {
+		buf.WriteString("\n    static int _idx(int len, long i) {\n")
+		buf.WriteString("        return (int)(i < 0 ? len + i : i);\n")
 		buf.WriteString("    }\n")
 	}
 	buf.WriteString("}\n")

@@ -1,88 +1,88 @@
 public class Main {
 
-    static boolean[][] make_matrix_bool(int rows, int cols, boolean init) {
+    static boolean[][] make_matrix_bool(java.math.BigInteger rows, java.math.BigInteger cols, boolean init) {
         boolean[][] matrix = ((boolean[][])(new boolean[][]{}));
-        for (int _v = 0; _v < rows; _v++) {
-            boolean[] row = ((boolean[])(new boolean[]{}));
-            for (int _2 = 0; _2 < cols; _2++) {
-                row = ((boolean[])(appendBool(row, ((Boolean)(init)))));
+        for (java.math.BigInteger _v = new java.math.BigInteger(String.valueOf(0)); _v.compareTo(rows) < 0; _v = _v.add(java.math.BigInteger.ONE)) {
+            boolean[] row_1 = ((boolean[])(new boolean[]{}));
+            for (java.math.BigInteger _2 = new java.math.BigInteger(String.valueOf(0)); _2.compareTo(cols) < 0; _2 = _2.add(java.math.BigInteger.ONE)) {
+                row_1 = ((boolean[])(appendBool(row_1, init)));
             }
-            matrix = ((boolean[][])(appendObj(matrix, row)));
+            matrix = ((boolean[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(matrix), java.util.stream.Stream.of(new boolean[][]{((boolean[])(row_1))})).toArray(boolean[][]::new)));
         }
-        return matrix;
+        return ((boolean[][])(matrix));
     }
 
     static boolean match_pattern(String input_string, String pattern) {
-        int len_string = _runeLen(input_string) + 1;
-        int len_pattern = _runeLen(pattern) + 1;
-        boolean[][] dp = ((boolean[][])(make_matrix_bool(len_string, len_pattern, false)));
-        boolean[] row0 = ((boolean[])(dp[0]));
-row0[0] = true;
-dp[0] = ((boolean[])(row0));
-        int j = 1;
-        while (j < len_pattern) {
-            row0 = ((boolean[])(dp[0]));
-            if ((_substr(pattern, j - 1, j).equals("*"))) {
-row0[j] = row0[j - 2];
+        java.math.BigInteger len_string = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(_runeLen(input_string))).add(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger len_pattern_1 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(_runeLen(pattern))).add(java.math.BigInteger.valueOf(1))));
+        boolean[][] dp_1 = ((boolean[][])(make_matrix_bool(new java.math.BigInteger(String.valueOf(len_string)), new java.math.BigInteger(String.valueOf(len_pattern_1)), false)));
+        boolean[] row0_1 = ((boolean[])(dp_1[_idx((dp_1).length, 0L)]));
+row0_1[(int)(0L)] = true;
+dp_1[(int)(0L)] = ((boolean[])(row0_1));
+        java.math.BigInteger j_1 = java.math.BigInteger.valueOf(1);
+        while (j_1.compareTo(len_pattern_1) < 0) {
+            row0_1 = ((boolean[])(dp_1[_idx((dp_1).length, 0L)]));
+            if ((_substr(pattern, (int)(((java.math.BigInteger)(j_1.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(j_1)).longValue())).equals("*"))) {
+row0_1[(int)(((java.math.BigInteger)(j_1)).longValue())] = row0_1[_idx((row0_1).length, ((java.math.BigInteger)(j_1.subtract(java.math.BigInteger.valueOf(2)))).longValue())];
             } else {
-row0[j] = false;
+row0_1[(int)(((java.math.BigInteger)(j_1)).longValue())] = false;
             }
-dp[0] = ((boolean[])(row0));
-            j = j + 1;
+dp_1[(int)(0L)] = ((boolean[])(row0_1));
+            j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
         }
-        int i = 1;
-        while (i < len_string) {
-            boolean[] row_1 = ((boolean[])(dp[i]));
-            int j2 = 1;
-            while (j2 < len_pattern) {
-                String s_char = _substr(input_string, i - 1, i);
-                String p_char = _substr(pattern, j2 - 1, j2);
-                if ((s_char.equals(p_char)) || (p_char.equals("."))) {
-row_1[j2] = dp[i - 1][j2 - 1];
-                } else                 if ((p_char.equals("*"))) {
-                    boolean val = dp[i][j2 - 2];
-                    String prev_p = _substr(pattern, j2 - 2, j2 - 1);
-                    if (!val && ((prev_p.equals(s_char)) || (prev_p.equals(".")))) {
-                        val = dp[i - 1][j2];
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(1);
+        while (i_1.compareTo(len_string) < 0) {
+            boolean[] row_3 = ((boolean[])(dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_1)).longValue())]));
+            java.math.BigInteger j2_1 = java.math.BigInteger.valueOf(1);
+            while (j2_1.compareTo(len_pattern_1) < 0) {
+                String s_char_1 = _substr(input_string, (int)(((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(i_1)).longValue()));
+                String p_char_1 = _substr(pattern, (int)(((java.math.BigInteger)(j2_1.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(j2_1)).longValue()));
+                if ((s_char_1.equals(p_char_1)) || (p_char_1.equals("."))) {
+row_3[(int)(((java.math.BigInteger)(j2_1)).longValue())] = dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(j2_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())];
+                } else                 if ((p_char_1.equals("*"))) {
+                    boolean val_1 = dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_1)).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_1)).longValue())]).length, ((java.math.BigInteger)(j2_1.subtract(java.math.BigInteger.valueOf(2)))).longValue())];
+                    String prev_p_1 = _substr(pattern, (int)(((java.math.BigInteger)(j2_1.subtract(java.math.BigInteger.valueOf(2)))).longValue()), (int)(((java.math.BigInteger)(j2_1.subtract(java.math.BigInteger.valueOf(1)))).longValue()));
+                    if (!val_1 && ((prev_p_1.equals(s_char_1)) || (prev_p_1.equals(".")))) {
+                        val_1 = dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(j2_1)).longValue())];
                     }
-row_1[j2] = val;
+row_3[(int)(((java.math.BigInteger)(j2_1)).longValue())] = val_1;
                 } else {
-row_1[j2] = false;
+row_3[(int)(((java.math.BigInteger)(j2_1)).longValue())] = false;
                 }
-                j2 = j2 + 1;
+                j2_1 = new java.math.BigInteger(String.valueOf(j2_1.add(java.math.BigInteger.valueOf(1))));
             }
-dp[i] = ((boolean[])(row_1));
-            i = i + 1;
+dp_1[(int)(((java.math.BigInteger)(i_1)).longValue())] = ((boolean[])(row_3));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return dp[len_string - 1][len_pattern - 1];
+        return dp_1[_idx((dp_1).length, ((java.math.BigInteger)(len_string.subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(len_string.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(len_pattern_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())];
     }
 
     static void main() {
         if (!(Boolean)match_pattern("aab", "c*a*b")) {
             throw new RuntimeException(String.valueOf("case1 failed"));
         }
-        if (((Boolean)(match_pattern("dabc", "*abc")))) {
+        if (match_pattern("dabc", "*abc")) {
             throw new RuntimeException(String.valueOf("case2 failed"));
         }
-        if (((Boolean)(match_pattern("aaa", "aa")))) {
+        if (match_pattern("aaa", "aa")) {
             throw new RuntimeException(String.valueOf("case3 failed"));
         }
         if (!(Boolean)match_pattern("aaa", "a.a")) {
             throw new RuntimeException(String.valueOf("case4 failed"));
         }
-        if (((Boolean)(match_pattern("aaab", "aa*")))) {
+        if (match_pattern("aaab", "aa*")) {
             throw new RuntimeException(String.valueOf("case5 failed"));
         }
         if (!(Boolean)match_pattern("aaab", ".*")) {
             throw new RuntimeException(String.valueOf("case6 failed"));
         }
-        if (((Boolean)(match_pattern("a", "bbbb")))) {
+        if (match_pattern("a", "bbbb")) {
             throw new RuntimeException(String.valueOf("case7 failed"));
         }
-        if (((Boolean)(match_pattern("", "bbbb")))) {
+        if (match_pattern("", "bbbb")) {
             throw new RuntimeException(String.valueOf("case8 failed"));
         }
-        if (((Boolean)(match_pattern("a", "")))) {
+        if (match_pattern("a", "")) {
             throw new RuntimeException(String.valueOf("case9 failed"));
         }
         if (!(Boolean)match_pattern("", "")) {
@@ -109,17 +109,15 @@ dp[i] = ((boolean[])(row_1));
         return out;
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
@@ -138,6 +136,38 @@ dp[i] = ((boolean[])(row_1));
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }
