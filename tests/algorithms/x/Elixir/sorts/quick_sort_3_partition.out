@@ -1,30 +1,16 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 46 │       {a, arr, b, i} = try do
-    │                   ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/quick_sort_3_partition.exs:46:19: Main.quick_sort_3partition/3
-
-     warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 104 │       arr = List.replace_at(arr, store_index, temp)
+ 105 │       arr = List.replace_at(arr, store_index, temp)
      │       ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/quick_sort_3_partition.exs:104:7: Main.lomuto_partition/3
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/quick_sort_3_partition.exs:105:7: Main.lomuto_partition/3
 
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    warning: module attribute @data_dir was set but never used
     │
- 96 │       {arr, i, store_index} = try do
-    │             ~
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/quick_sort_3_partition.exs:96:13: Main.lomuto_partition/3
-
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 142 │       {equal, greater, i, less} = try do
-     │                        ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/quick_sort_3_partition.exs:142:24: Main.three_way_radix_quicksort/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/quick_sort_3_partition.exs:3: Main (module)
 
 [-1 -1 0 5 5 5 24]
 [0 2 6 9]

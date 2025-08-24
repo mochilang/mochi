@@ -147,10 +147,10 @@ func uniqueWhileName() string {
 // counter that is typically not used after the loop ends.
 func isLoopCounter(name string) bool {
 	switch name {
-       case "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "idx", "term", "chk_map":
-               // treat common loop variables and temporary maps as throwaway
-               // values to avoid unused variable warnings
-               return true
+	case "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "idx", "term", "chk_map":
+		// treat common loop variables and temporary maps as throwaway
+		// values to avoid unused variable warnings
+		return true
 	default:
 		return false
 	}
@@ -277,6 +277,18 @@ type Expr interface{ emit(io.Writer) }
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer, indent int) {
+	if ce, ok := s.Expr.(*CallExpr); ok && len(ce.Args) > 0 {
+		if vr, ok := ce.Args[0].(*VarRef); ok {
+			if _, ok := definedFuncs[sanitizeFuncName(ce.Func)]; ok {
+				for i := 0; i < indent; i++ {
+					io.WriteString(w, "  ")
+				}
+				io.WriteString(w, sanitizeIdent(vr.Name)+" = ")
+				ce.emit(w)
+				return
+			}
+		}
+	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -2307,6 +2319,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		if ce, ok := e.(*CallExpr); ok && len(ce.Args) > 0 {
+			if vr, ok := ce.Args[0].(*VarRef); ok {
+				if _, ok := isSimpleCall(st.Expr.Expr); ok {
+					if _, err := env.IsMutable(vr.Name); err == nil {
+						return &AssignStmt{Name: vr.Name, Value: ce}, nil
+					}
+					return &LetStmt{Name: vr.Name, Value: ce}, nil
+				}
+			}
+		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
 		var val Expr
@@ -4232,7 +4254,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "str":
 			if len(args) == 1 {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
-				switch tt := t.(type) {
+				switch t.(type) {
 				case types.FloatType:
 					inner := &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}
 					trim := &CallExpr{Func: "String.trim_trailing", Args: []Expr{inner, &StringLit{Value: ".0"}}}
@@ -4240,12 +4262,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				case types.StringType, types.IntType, types.BoolType:
 					return &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}, nil
 				case types.ListType:
-					if _, ok := tt.Elem.(types.IntType); ok {
-						fmt := &CallExpr{Func: ":io_lib.format", Args: []Expr{&StringLit{Value: "~w"}, &ListLit{Elems: []Expr{args[0]}}}}
-						bin := &CallExpr{Func: "IO.iodata_to_binary", Args: []Expr{fmt}}
-						repl := &CallExpr{Func: "String.replace", Args: []Expr{bin, &StringLit{Value: ","}, &StringLit{Value: " "}}}
-						return repl, nil
-					}
+					fmt := &CallExpr{Func: ":io_lib.format", Args: []Expr{&StringLit{Value: "~w"}, &ListLit{Elems: []Expr{args[0]}}}}
+					bin := &CallExpr{Func: "IO.iodata_to_binary", Args: []Expr{fmt}}
+					repl := &CallExpr{Func: "String.replace", Args: []Expr{bin, &StringLit{Value: ","}, &StringLit{Value: " "}}}
+					return repl, nil
 				default:
 					return &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}, nil
 				}

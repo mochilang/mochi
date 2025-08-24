@@ -1,0 +1,22 @@
+warning: variable "seen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 170 │       {res, seen} = Enum.reduce(words, {res, seen}, fn w, {res, seen} ->
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/anagrams.exs:170:13: Main.unique_sorted/1
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 247 │           line = IO.puts(line)
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/anagrams.exs:247:11: Main.main/0
+
+     error: undefined function not_/1 (expected Main to define such a function or for it to be imported, but none are available)
+     │
+ 171 │         {res, seen} = if w != "" && not_(Map.has_key?(seen, w)) do
+     │                                     ^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/anagrams.exs:171:37: Main.unique_sorted/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/strings/anagrams.exs: cannot compile module Main (errors have been logged)

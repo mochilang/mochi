@@ -1,30 +1,16 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 60 │       {i, result} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/strand_sort.exs:60:8: Main.merge/3
-
-    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 75 │       {j, result} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/strand_sort.exs:75:8: Main.merge/3
-
-     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "last" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 126 │       {k, last, remaining, sublist} = try do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/strand_sort.exs:126:8: Main.strand_sort_rec/3
-
-     warning: variable "last" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 126 │       {k, last, remaining, sublist} = try do
+ 127 │       {_, last, remaining, sublist} = try do
      │           ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/strand_sort.exs:126:11: Main.strand_sort_rec/3
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/strand_sort.exs:127:11: Main.strand_sort_rec/3
 
-[1, 2, 3, 4, 5]
-[5, 4, 3, 2, 1]
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/strand_sort.exs:3: Main (module)
+
+[1, 2, 3, 4, 5, 3, 1, 2]
+[5, 4, 3, 2, 4, 3, 1, 5, 2]

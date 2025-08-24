@@ -1,9 +1,9 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: module attribute @data_dir was set but never used
     │
- 51 │       {i, left, right} = try do
-    │        ~
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/recursive_quick_sort.exs:51:8: Main.quick_sort/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/recursive_quick_sort.exs:3: Main (module)
 
 [0, 1, 2]
 [1, 2, 3, 4, 5]

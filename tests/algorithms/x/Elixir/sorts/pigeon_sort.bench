@@ -1,5 +1,34 @@
-{
-  "duration_us": 8999,
-  "memory_bytes": 25576,
-  "name": "main"
-}
+warning: variable "array_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       {array, array_index, h, holes_repeat} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:153:15: Main.pigeon_sort/1
+
+     warning: variable "h" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       {array, array_index, h, holes_repeat} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:153:28: Main.pigeon_sort/1
+
+     warning: variable "holes_repeat" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       {array, array_index, h, holes_repeat} = try do
+     │                               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:153:31: Main.pigeon_sort/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:3: Main (module)
+
+** (ArithmeticError) bad argument in arithmetic expression: [] + 1
+    :erlang.+([], 1)
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:114: anonymous fn/6 in Main.pigeon_sort/1
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:122: Main.pigeon_sort/1
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:168: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:178: (file)

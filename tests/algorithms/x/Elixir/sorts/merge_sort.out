@@ -1,24 +1,10 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: module attribute @data_dir was set but never used
     │
- 23 │       {i, result} = try do
-    │        ~
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/merge_sort.exs:23:8: Main.subarray/3
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/merge_sort.exs:3: Main (module)
 
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 70 │       {i, result} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/merge_sort.exs:70:8: Main.merge/2
-
-    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 85 │       {j, result} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/merge_sort.exs:85:8: Main.merge/2
-
-[0, 2, 2, 3, 5]
+[0, 0, 2, 2, 2, 3, 2, 2, 2, 0, 0, 5, 2, 2, 2, 3, 2, 2, 2]
 []
-[-45, -5, -2]
+[-45, -5, -45, -2, -45, -5, -45]

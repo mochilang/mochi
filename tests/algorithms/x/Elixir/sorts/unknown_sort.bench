@@ -1,5 +1,19 @@
-{
-  "duration_us": 9490,
-  "memory_bytes": 17672,
-  "name": "main"
-}
+warning: variable "removed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 95 │       {_, removed, res} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:95:11: Main.remove_once/2
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:3: Main (module)
+
+** (RuntimeError) case1 failed
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:163: Main.test_merge_sort/0
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:177: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:187: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:195: (file)

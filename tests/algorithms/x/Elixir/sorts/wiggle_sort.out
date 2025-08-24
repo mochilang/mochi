@@ -1,16 +1,9 @@
-warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: module attribute @data_dir was set but never used
     │
- 35 │       {k, res} = try do
-    │        ~
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/wiggle_sort.exs:35:8: Main.swap/3
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 67 │       {i, res} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/wiggle_sort.exs:67:8: Main.wiggle_sort/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/wiggle_sort.exs:3: Main (module)
 
 [3.0, 5.0, 1.0, 6.0, 2.0, 4.0]
 [0.0, 5.0, 2.0, 3.0, 2.0]
