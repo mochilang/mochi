@@ -2304,6 +2304,20 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					return nil, err
 				}
 				pf := assignTargetToPostfix(st.Assign)
+				// Direct handling for assignments like arr[idx].field = val
+				if len(st.Assign.Index) == 1 && len(st.Assign.Field) > 0 {
+					idxExpr, err := convertExpr(env, st.Assign.Index[0].Start)
+					if err != nil {
+						return nil, err
+					}
+					var buf bytes.Buffer
+					idxExpr.emit(&buf)
+					name := sanitize(st.Assign.Name)
+					fieldName := sanitizeField(st.Assign.Field[len(st.Assign.Field)-1].Name)
+					assignName := fmt.Sprintf("%s[%s].%s", name, buf.String(), fieldName)
+					pr.Stmts = append(pr.Stmts, &AssignStmt{Name: assignName, Expr: val})
+					continue
+				}
 				target, err := convertPostfix(env, pf)
 				if err != nil {
 					return nil, err
@@ -2328,11 +2342,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				case *IndexExpr:
 					if inner, ok := t.Target.(*VarRef); ok {
 						name := sanitize(inner.Name)
-						if t.Field != "" {
+						fieldName := t.Field
+						if fieldName == "" && len(st.Assign.Field) > 0 {
+							fieldName = sanitizeField(st.Assign.Field[len(st.Assign.Field)-1].Name)
+						}
+						if fieldName != "" {
 							var buf bytes.Buffer
 							t.Index.emit(&buf)
 							idxStr := buf.String()
-							assignName := fmt.Sprintf("%s[%s].%s", name, idxStr, sanitizeField(t.Field))
+							assignName := fmt.Sprintf("%s[%s].%s", name, idxStr, fieldName)
 							pr.Stmts = append(pr.Stmts, &AssignStmt{Name: assignName, Expr: val})
 						} else {
 							pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
@@ -3127,7 +3145,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			fn := st.Fun
 			name := fn.Name
 			switch name {
-			case "xor", "and", "or", "div", "mod", "type", "set", "label", "repeat", "panic", "ln", "exp":
+			case "xor", "and", "or", "div", "mod", "type", "set", "label", "repeat", "panic", "ln", "exp", "length":
 				name = name + "_"
 			}
 			funcNames[strings.ToLower(name)] = struct{}{}

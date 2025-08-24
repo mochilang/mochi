@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-24 15:44 GMT+7
+Last updated: 2025-08-24 22:27 GMT+7
 
-## Algorithms Golden Test Checklist (657/1077)
+## Algorithms Golden Test Checklist (658/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -231,7 +231,7 @@ Last updated: 2025-08-24 15:44 GMT+7
 | 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
 | 223 | data_structures/linked_list/circular_linked_list |   |  |  |
 | 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 0ns | 0B |
 | 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
 | 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
 | 228 | data_structures/linked_list/from_sequence |   |  |  |
@@ -280,7 +280,7 @@ Last updated: 2025-08-24 15:44 GMT+7
 | 271 | digital_image_processing/edge_detection/canny | error |  |  |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 0ns | 256B |
 | 273 | digital_image_processing/filters/convolve | error |  |  |
-| 274 | digital_image_processing/filters/gabor_filter | error |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | error | 0ns | 256B |
 | 275 | digital_image_processing/filters/gaussian_filter | ✓ | 0ns | 704B |
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 0ns | 960B |
 | 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 0ns | 576B |
