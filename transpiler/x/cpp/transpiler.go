@@ -935,8 +935,9 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseParseIntStr {
-		fmt.Fprintln(w, "static cpp_int _parse_int_str(const std::string& s, long base) {")
+		fmt.Fprintln(w, "static cpp_int _parse_int_str(const std::string& s, cpp_int base) {")
 		fmt.Fprintln(w, "    if(s.empty()) return 0;")
+		fmt.Fprintln(w, "    long b = base.convert_to<long>();")
 		fmt.Fprintln(w, "    cpp_int r = 0;")
 		fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
 		fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
@@ -947,7 +948,7 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "        else if(c >= 'a' && c <= 'z') digit = c - 'a' + 10;")
 		fmt.Fprintln(w, "        else if(c >= 'A' && c <= 'Z') digit = c - 'A' + 10;")
 		fmt.Fprintln(w, "        else continue;")
-		fmt.Fprintln(w, "        r *= base;")
+		fmt.Fprintln(w, "        r *= b;")
 		fmt.Fprintln(w, "        r += digit;")
 		fmt.Fprintln(w, "    }")
 		fmt.Fprintln(w, "    return neg ? -r : r;")
@@ -1599,6 +1600,9 @@ func (l *ListLit) emit(w io.Writer) {
 			}
 		}
 	}
+	if useBigInt && elemTyp == "int64_t" {
+		elemTyp = "cpp_int"
+	}
 	io.WriteString(w, "std::vector<"+elemTyp+">{")
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -1723,7 +1727,11 @@ func (s *StringLit) emit(w io.Writer) {
 }
 
 func (i *IntLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "int64_t(%d)", i.Value)
+	if useBigInt {
+		fmt.Fprintf(w, "cpp_int(%d)", i.Value)
+	} else {
+		fmt.Fprintf(w, "int64_t(%d)", i.Value)
+	}
 }
 
 func (f *FloatLit) emit(w io.Writer) {
@@ -3958,7 +3966,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			t = exprType(f.End)
 		}
 		switch t {
-		case "int64_t", "double", "size_t":
+		case "int64_t", "double", "size_t", "cpp_int":
 			loopType = t
 		}
 		io.WriteString(w, "for (")
@@ -6465,12 +6473,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				var v1 Expr = &IntLit{Value: 10}
+				var v1 Expr = newCastExpr(&IntLit{Value: 10}, "int64_t")
 				if len(p.Call.Args) == 2 {
 					v1, err = convertExpr(p.Call.Args[1])
 					if err != nil {
 						return nil, err
 					}
+					v1 = newCastExpr(v1, "int64_t")
 				}
 				usesParseIntStr = true
 				useBigInt = true
@@ -6484,7 +6493,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				usesParseIntStr = true
 				useBigInt = true
-				return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
+				return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, newCastExpr(&IntLit{Value: 10}, "int64_t")}}, nil
 			}
 		case "input":
 			if len(p.Call.Args) == 0 {
@@ -7780,11 +7789,14 @@ func funcReturnType(ft string) string {
 func cppType(t string) string {
 	switch t {
 	case "int":
-		// use 64-bit signed integers for standard int to avoid requiring
-		// external big integer libraries.  Large integers can still be
-		// handled explicitly via the `bigint` type which enables
-		// Boost.Multiprecision support.
-		return "int64_t"
+		// Mochi `int` values are arbitrary precision.  Previously the
+		// transpiler mapped them to 64-bit integers which caused
+		// overflow for programs that relied on large values (for
+		// example, many Project Euler solutions).  Map all `int`
+		// values to Boost.Multiprecision's `cpp_int` so code behaves
+		// consistently with the reference implementation.
+		useBigInt = true
+		return "cpp_int"
 	case "float":
 		return "double"
 	case "bool":
@@ -7878,10 +7890,11 @@ func cppType(t string) string {
 func cppTypeFrom(tp types.Type) string {
 	switch t := tp.(type) {
 	case types.IntType:
-		// Treat generic integers as 64-bit signed values.  Programs that
-		// require arbitrary precision should employ the explicit
-		// `bigint` type instead.
-		return "int64_t"
+		// Default Mochi integers are arbitrary precision.  Use
+		// Boost.Multiprecision's `cpp_int` so translated code matches
+		// the semantics of the source language.
+		useBigInt = true
+		return "cpp_int"
 	case types.Int64Type:
 		return "int64_t"
 	case types.BigIntType:
@@ -8214,9 +8227,13 @@ func defaultValueForType(t string) string {
 func exprType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		// default integer literals to 64-bit signed integers. Programs
-		// requiring larger precision should use the `bigint` type which
-		// triggers big integer support separately.
+		// Integer literals follow the semantics of Mochi's `int`
+		// type.  When big integers are enabled we treat literals as
+		// `cpp_int` values, otherwise they default to 64-bit signed
+		// integers.
+		if useBigInt {
+			return "cpp_int"
+		}
 		return "int64_t"
 	case *FloatLit:
 		return "double"
