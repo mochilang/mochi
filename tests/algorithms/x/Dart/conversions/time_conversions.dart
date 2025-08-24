@@ -22,30 +22,13 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
-  int n = s.length;
-  int s0 = start.toInt();
-  int e0 = end.toInt();
-  if (s0 < 0) s0 += n;
-  if (e0 < 0) e0 += n;
-  if (s0 < 0) s0 = 0;
-  if (s0 > n) s0 = n;
-  if (e0 < 0) e0 = 0;
-  if (e0 > n) e0 = n;
-  if (s0 > e0) s0 = e0;
-  if (s is String) {
-    return s.substring(s0, e0);
-  }
-  return s.sublist(s0, e0);
+
+Never _error(dynamic msg) {
+  throw Exception(msg.toString());
 }
 
-
-Never _error(String msg) {
-  throw Exception(msg);
-}
-
-Map<String, double> time_chart = {"seconds": 1.0, "minutes": 60.0, "hours": 3600.0, "days": 86400.0, "weeks": 604800.0, "months": 2629800.0, "years": 31557600.0};
-Map<String, double> time_chart_inverse = {"seconds": 1.0, "minutes": 1.0 / 60.0, "hours": 1.0 / 3600.0, "days": 1.0 / 86400.0, "weeks": 1.0 / 604800.0, "months": 1.0 / 2629800.0, "years": 1.0 / 31557600.0};
+Map<String, double> time_chart = {"seconds": 1.0, "minutes": 60.0, "hours": 3600.0, "days": 86400.0, "weeks": 604800.0, "months": 2.6298e6, "years": 3.15576e7};
+Map<String, double> time_chart_inverse = {"seconds": 1.0, "minutes": 1.0 / 60.0, "hours": 1.0 / 3600.0, "days": 1.0 / 86400.0, "weeks": 1.0 / 604800.0, "months": 1.0 / 2.6298e6, "years": 1.0 / 3.15576e7};
 List<String> units = ["seconds", "minutes", "hours", "days", "weeks", "months", "years"];
 String units_str = "seconds, minutes, hours, days, weeks, months, years";
 bool contains(List<String> arr, String t) {
@@ -65,9 +48,9 @@ double convert_time(double time_value, String unit_from, String unit_to) {
   }
   String from = unit_from.toLowerCase();
   String to = unit_to.toLowerCase();
-  if (!units.contains(from) || !units.contains(to)) {
+  if (!contains(units, from) || !contains(units, to)) {
     String invalid_unit = from;
-    if (units.contains(from)) {
+    if (contains(units, from)) {
     invalid_unit = to;
   };
     _error("Invalid unit " + invalid_unit + " is not in " + units_str + ".");

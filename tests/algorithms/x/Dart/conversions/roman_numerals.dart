@@ -22,10 +22,10 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
+dynamic _substr(dynamic s, num start, [num? end]) {
   int n = s.length;
   int s0 = start.toInt();
-  int e0 = end.toInt();
+  int e0 = end == null ? n : end.toInt();
   if (s0 < 0) s0 += n;
   if (e0 < 0) e0 += n;
   if (s0 < 0) s0 = 0;
@@ -70,11 +70,11 @@ int roman_to_int(String roman) {
   int total = 0;
   int i = 0;
   while (i < roman.length) {
-    if (i + 1 < roman.length && char_value(roman.substring(i, i + 1)) < char_value(roman.substring(i + 1, i + 1 + 1))) {
-    total = total + char_value(roman.substring(i + 1, i + 1 + 1)) - char_value(roman.substring(i, i + 1));
+    if (i + 1 < roman.length && char_value(_substr(roman, i, i + 1)) < char_value(_substr(roman, i + 1, i + 1 + 1))) {
+    total = total + char_value(_substr(roman, i + 1, i + 1 + 1)) - char_value(_substr(roman, i, i + 1));
     i = i + 2;
   } else {
-    total = total + char_value(roman.substring(i, i + 1));
+    total = total + char_value(_substr(roman, i, i + 1));
     i = i + 1;
   }
   }

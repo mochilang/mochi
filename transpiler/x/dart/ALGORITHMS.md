@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-24 15:46 GMT+7
+Last updated: 2025-08-24 16:40 GMT+7
 
-## Algorithms Golden Test Checklist (1001/1077)
+## Algorithms Golden Test Checklist (1005/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -140,83 +140,83 @@ Last updated: 2025-08-24 15:46 GMT+7
 | 131 | conversions/excel_title_to_column | ✓ | 25.24ms | 10.6 MB |
 | 132 | conversions/hex_to_bin | ✓ | 19.182ms | 2.0 MB |
 | 133 | conversions/hexadecimal_to_decimal | ✓ | 14.505ms | 3.5 MB |
-| 134 | conversions/ipv4_conversion | error |  |  |
-| 135 | conversions/length_conversion | ✓ | 12.375ms | 3.4 MB |
-| 136 | conversions/molecular_chemistry | ✓ | 19.427ms | 10.3 MB |
-| 137 | conversions/octal_to_binary | ✓ | 12.124ms | 2.1 MB |
-| 138 | conversions/octal_to_decimal | ✓ | 27.033ms | 10.5 MB |
-| 139 | conversions/octal_to_hexadecimal | ✓ | 31.984ms | 11.3 MB |
-| 140 | conversions/prefix_conversions | ✓ | 22.063ms | 9.7 MB |
-| 141 | conversions/prefix_conversions_string | ✓ | 13.383ms | 3.5 MB |
+| 134 | conversions/ipv4_conversion | ✓ | 10.2ms | 3.2 MB |
+| 135 | conversions/length_conversion | ✓ | 10.094ms | 3.9 MB |
+| 136 | conversions/molecular_chemistry | ✓ | 7.615ms | 1.9 MB |
+| 137 | conversions/octal_to_binary | ✓ | 8.588ms | 2.6 MB |
+| 138 | conversions/octal_to_decimal | ✓ | 8.277ms | 3.2 MB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 8.53ms | 2.9 MB |
+| 140 | conversions/prefix_conversions | ✓ | 9.533ms | 3.9 MB |
+| 141 | conversions/prefix_conversions_string | ✓ | 9.574ms | 3.1 MB |
 | 142 | conversions/pressure_conversions | error |  |  |
-| 143 | conversions/rectangular_to_polar | ✓ | 20.258ms | 2.3 MB |
-| 144 | conversions/rgb_cmyk_conversion | ✓ | 22.32ms | 9.2 MB |
-| 145 | conversions/rgb_hsv_conversion | ✓ | 15.114ms | 3.2 MB |
-| 146 | conversions/roman_numerals | ✓ | 17.764ms | 1.5 MB |
-| 147 | conversions/speed_conversions | ✓ | 13.208ms | 3.5 MB |
-| 148 | conversions/temperature_conversions | ✓ | 15.041ms | 3.8 MB |
-| 149 | conversions/time_conversions | ✓ | 23.367ms | 9.7 MB |
-| 150 | conversions/volume_conversions | ✓ | 17.161ms | 9.4 MB |
-| 151 | conversions/weight_conversion | ✓ | 11.673ms | 3.0 MB |
-| 152 | data_compression/burrows_wheeler | ✓ | 9.449ms | 3.4 MB |
-| 153 | data_compression/huffman | ✓ | 12.538ms | 4.4 MB |
-| 154 | data_compression/lempel_ziv | ✓ | 10.613ms | 3.5 MB |
-| 155 | data_compression/lempel_ziv_decompress | ✓ | 9.454ms | 3.2 MB |
-| 156 | data_compression/lz77 | ✓ | 10.672ms | 4.0 MB |
-| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 18.589ms | 11.1 MB |
-| 158 | data_compression/run_length_encoding | ✓ | 14.54ms | 1008.0 KB |
-| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 9.185ms | 2.8 MB |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 11.216ms | 3.8 MB |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 15.774ms | 2.1 MB |
-| 162 | data_structures/arrays/kth_largest_element | ✓ | 13.133ms | 2.2 MB |
-| 163 | data_structures/arrays/median_two_array | ✓ | 10.272ms | 3.4 MB |
-| 164 | data_structures/arrays/monotonic_array | ✓ | 15.557ms | 10.2 MB |
-| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 17.81ms | 10.6 MB |
-| 166 | data_structures/arrays/permutations | ✓ | 19.614ms | 9.1 MB |
-| 167 | data_structures/arrays/prefix_sum | ✓ | 9.506ms | 3.4 MB |
+| 143 | conversions/rectangular_to_polar | ✓ | 20.554ms | 10.3 MB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 9.342ms | 3.1 MB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 20.316ms | 9.8 MB |
+| 146 | conversions/roman_numerals | ✓ | 6.654ms | 2.6 MB |
+| 147 | conversions/speed_conversions | ✓ | 9.426ms | 2.6 MB |
+| 148 | conversions/temperature_conversions | ✓ | 8.885ms | 2.8 MB |
+| 149 | conversions/time_conversions | ✓ | 9.528ms | 3.6 MB |
+| 150 | conversions/volume_conversions | ✓ | 8.52ms | 2.8 MB |
+| 151 | conversions/weight_conversion | ✓ | 9.456ms | 3.4 MB |
+| 152 | data_compression/burrows_wheeler | ✓ | 19.489ms | 10.5 MB |
+| 153 | data_compression/huffman | ✓ | 22.65ms | 9.6 MB |
+| 154 | data_compression/lempel_ziv | ✓ | 9.33ms | 3.4 MB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 18.879ms | 10.1 MB |
+| 156 | data_compression/lz77 | ✓ | 16.125ms | 8.9 MB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 6.851ms | 2.1 MB |
+| 158 | data_compression/run_length_encoding | ✓ | 9.16ms | 3.1 MB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 8.45ms | 2.6 MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 17.523ms | 9.0 MB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 10.54ms | 3.2 MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 7.52ms | 2.6 MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 9.235ms | 3.0 MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 13.518ms | 2.3 MB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 8.269ms | 2.5 MB |
+| 166 | data_structures/arrays/permutations | ✓ | 10.912ms | 3.1 MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 8.214ms | 2.6 MB |
 | 168 | data_structures/arrays/product_sum | error |  |  |
-| 169 | data_structures/arrays/sparse_table | ✓ | 12.29ms | 4.4 MB |
-| 170 | data_structures/arrays/sudoku_solver | ✓ | 15.276ms | 4.8 MB |
-| 171 | data_structures/binary_tree/avl_tree | ✓ |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9.441ms | 2.8 MB |
+| 169 | data_structures/arrays/sparse_table | ✓ | 12.136ms | 3.5 MB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 18.01ms | 8.4 MB |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 19.62ms | 8.1 MB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9.299ms | 3.0 MB |
 | 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 16.971ms | 3.2 MB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 8.315ms | 3.0 MB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 9.964ms | 3.2 MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 7.265ms | 2.6 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | error |  |  |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 14.061ms | 7.6 MB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 10.501ms | 3.6 MB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 8.915ms | 3.4 MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 7.703ms | 2.4 MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 16.64ms | 8.9 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 8.564ms | 2.9 MB |
 | 182 | data_structures/binary_tree/floor_and_ceiling | error |  |  |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
 | 184 | data_structures/binary_tree/is_sorted | error |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 16.106ms | 10.3 MB |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 22.078ms | 9.2 MB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 15.219ms | 5.4 MB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 185.915ms | 4.0 MB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 12.909ms | 2.1 MB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 8.539ms | 2.5 MB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 10.761ms | 3.5 MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 19.621ms | 4.0 MB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 162.318ms | 2.2 MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 8.468ms | 2.5 MB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees | error |  |  |
-| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 13.783ms | 4.4 MB |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 22.667ms | 10.5 MB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ |  |  |
-| 194 | data_structures/binary_tree/red_black_tree | ✓ | 15.622ms | 5.4 MB |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 11.941ms | 3.9 MB |
-| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 12.469ms | 4.1 MB |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 12.318ms | 2.2 MB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 22.024ms | 9.4 MB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 9.361ms | 2.6 MB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 18.54ms | 6.2 MB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 17.971ms | 4.4 MB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 9.912ms | 3.0 MB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 10.455ms | 3.1 MB |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 9.954ms | 3.0 MB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 16.259ms | 9.0 MB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 21.263ms | 9.3 MB |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 9.625ms | 3.4 MB |
-| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 13.095ms | 2.1 MB |
-| 203 | data_structures/hashing/bloom_filter | error |  |  |
-| 204 | data_structures/hashing/double_hash | ✓ | 9.545ms | 3.5 MB |
-| 205 | data_structures/hashing/hash_map | error |  |  |
-| 206 | data_structures/hashing/hash_table | ✓ | 18.128ms | 6.0 MB |
-| 207 | data_structures/hashing/hash_table_with_linked_list | error |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 17.291ms | 10.5 MB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 10.282ms | 3.1 MB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 8.499ms | 2.9 MB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 8.324ms | 2.8 MB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 21.302ms | 9.9 MB |
+| 204 | data_structures/hashing/double_hash | ✓ | 9.176ms | 2.8 MB |
+| 205 | data_structures/hashing/hash_map | ✓ | 15.929ms | 9.1 MB |
+| 206 | data_structures/hashing/hash_table | ✓ | 14.289ms | 4.0 MB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 17.262ms | 8.6 MB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 7.319ms | 2.4 MB |
 | 209 | data_structures/hashing/quadratic_probing | error |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 11.857ms | 3.8 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 16.584ms | 8.9 MB |
 | 211 | data_structures/heap/binomial_heap | ✓ | 12.554ms | 2.6 MB |
 | 212 | data_structures/heap/heap | ✓ |  |  |
 | 213 | data_structures/heap/heap_generic | ✓ | 15.359ms | 3.8 MB |

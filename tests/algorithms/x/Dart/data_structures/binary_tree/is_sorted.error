@@ -1,49 +1,49 @@
 run: exit status 254
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:54:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:77:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree1 = Tree(data: [2.1, 2.0, 2.2], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                    ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:54:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:77:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree1 = Tree(data: [2.1, 2.0, 2.2], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                          ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:54:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:77:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree1 = Tree(data: [2.1, 2.0, 2.2], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                                            ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:54:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:77:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree1 = Tree(data: [2.1, 2.0, 2.2], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                                                  ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:55:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:78:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree2 = Tree(data: [2.1, 2.0, 2.0], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                    ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:55:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:78:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree2 = Tree(data: [2.1, 2.0, 2.0], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                          ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:55:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:78:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree2 = Tree(data: [2.1, 2.0, 2.0], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                                            ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:55:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:78:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree2 = Tree(data: [2.1, 2.0, 2.0], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                                                  ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:56:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:79:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree3 = Tree(data: [2.1, 2.0, 2.1], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                    ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:56:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:79:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree3 = Tree(data: [2.1, 2.0, 2.1], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                          ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:56:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:79:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree3 = Tree(data: [2.1, 2.0, 2.1], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                                            ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:56:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:79:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
  - 'BigInt' is from 'dart:core'.
 Tree tree3 = Tree(data: [2.1, 2.0, 2.1], left: [1, NONE, NONE], right: [2, NONE, NONE]);
                                                                                  ^

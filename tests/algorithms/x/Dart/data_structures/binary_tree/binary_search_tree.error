@@ -1,29 +1,29 @@
 run: exit status 254
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:88:19: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:111:19: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
     root = insert(root, v);
                   ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:90:22: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:113:22: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
   print(_str(inorder(root, <int>[])));
                      ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:91:16: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:114:16: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
   print(search(root, 6));
                ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:92:16: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:115:16: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
   print(search(root, 20));
                ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:93:18: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:116:18: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
   print(find_min(root));
                  ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:94:18: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:117:18: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
   print(find_max(root));
                  ^
-../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:95:36: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:118:36: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
   root = List<dynamic>.from(delete(root, 6)!);
                                    ^

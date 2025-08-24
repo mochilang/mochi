@@ -22,24 +22,7 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic _substr(dynamic s, num start, num end) {
-  int n = s.length;
-  int s0 = start.toInt();
-  int e0 = end.toInt();
-  if (s0 < 0) s0 += n;
-  if (e0 < 0) e0 += n;
-  if (s0 < 0) s0 = 0;
-  if (s0 > n) s0 = n;
-  if (e0 < 0) e0 = 0;
-  if (e0 > n) e0 = n;
-  if (s0 > e0) s0 = e0;
-  if (s is String) {
-    return s.substring(s0, e0);
-  }
-  return s.sublist(s0, e0);
-}
-
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+String _str(dynamic v) => v.toString();
 
 double PI = 3.141592653589793;
 double sqrtApprox(double x) {
@@ -88,7 +71,7 @@ double deg(double rad) {
 
 double floor(double x) {
   int i = (x).toInt();
-  if ((i.toDouble()) > x) {
+  if (i.toDouble() > x) {
     i = i - 1;
   }
   return i.toDouble();
@@ -130,8 +113,8 @@ void main() {
   show(5.0, -5.0);
   show(-1.0, 1.0);
   show(-1.0, -1.0);
-  show(0.0000000001, 0.0000000001);
-  show(-0.0000000001, 0.0000000001);
+  show(1e-10, 1e-10);
+  show(-1e-10, 1e-10);
   show(9.75, 5.93);
   show(10000.0, 99999.0);
   _benchSw.stop();
