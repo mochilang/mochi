@@ -1,3 +1,8 @@
+## Progress (2025-08-24 16:25 +0700)
+- cpp: fallback to int64 without boost
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-23 15:31 +0700)
 - ts: regenerate algorithms 791-841 and ensure newline
 - Generated C++ for 103/105 programs
