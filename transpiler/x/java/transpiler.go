@@ -1358,6 +1358,16 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
+		if structDefs != nil {
+			if fields, ok := structDefs[s.Name]; ok {
+				if i < len(s.Names) {
+					if t, ok2 := fields[s.Names[i]]; ok2 {
+						emitCastExpr(w, f, t)
+						continue
+					}
+				}
+			}
+		}
 		f.emit(w)
 	}
 	fmt.Fprint(w, ")")
@@ -2445,65 +2455,34 @@ func (m *MapLit) emit(w io.Writer) {
 		keyType = javaBoxType(m.KeyType)
 	}
 	if len(m.Keys) > 0 {
-		useEntries := true
-		for _, v := range m.Values {
-			if _, ok := v.(*NullLit); ok {
-				useEntries = false
-				break
+		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>() {{", keyType, valType)
+		for i := range m.Keys {
+			fmt.Fprint(w, " put(")
+			if m.KeyType != "" {
+				emitCastExpr(w, m.Keys[i], javaType(m.KeyType))
+			} else if keyType != "String" {
+				emitCastExpr(w, m.Keys[i], strings.ToLower(keyType))
+			} else {
+				m.Keys[i].emit(w)
 			}
-		}
-		if useEntries {
-			fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>(java.util.Map.ofEntries(", keyType, valType)
-			for i := range m.Keys {
-				if i > 0 {
-					fmt.Fprint(w, ", ")
-				}
-				fmt.Fprint(w, "java.util.Map.entry(")
-				if m.KeyType != "" {
-					emitCastExpr(w, m.Keys[i], javaType(m.KeyType))
-				} else if keyType != "String" {
-					emitCastExpr(w, m.Keys[i], strings.ToLower(keyType))
-				} else {
-					m.Keys[i].emit(w)
-				}
-				fmt.Fprint(w, ", ")
-				if m.ValueType != "" {
-					if ll, ok := m.Values[i].(*ListLit); ok && ll.ElemType == "" {
-						if et := listElemType(m.ValueType); et != "" {
-							ll.ElemType = et
-						}
+			fmt.Fprint(w, ", ")
+			if m.ValueType != "" {
+				if ll, ok := m.Values[i].(*ListLit); ok && ll.ElemType == "" {
+					if et := listElemType(m.ValueType); et != "" {
+						ll.ElemType = et
 					}
-					emitCastExpr(w, m.Values[i], m.ValueType)
-				} else if valType != "Object" {
-					emitCastExpr(w, m.Values[i], strings.ToLower(valType))
-				} else {
-					fmt.Fprint(w, "(Object)(")
-					m.Values[i].emit(w)
-					fmt.Fprint(w, ")")
 				}
+				emitCastExpr(w, m.Values[i], m.ValueType)
+			} else if valType != "Object" {
+				emitCastExpr(w, m.Values[i], strings.ToLower(valType))
+			} else {
+				fmt.Fprint(w, "(Object)(")
+				m.Values[i].emit(w)
 				fmt.Fprint(w, ")")
 			}
-			fmt.Fprint(w, "))")
-		} else {
-			fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>() {{", keyType, valType)
-			for i := range m.Keys {
-				fmt.Fprint(w, " put(")
-				m.Keys[i].emit(w)
-				fmt.Fprint(w, ", ")
-				if m.ValueType != "" {
-					if ll, ok := m.Values[i].(*ListLit); ok && ll.ElemType == "" {
-						if et := listElemType(m.ValueType); et != "" {
-							ll.ElemType = et
-						}
-					}
-					emitCastExpr(w, m.Values[i], m.ValueType)
-				} else {
-					m.Values[i].emit(w)
-				}
-				fmt.Fprint(w, ");")
-			}
-			fmt.Fprint(w, " }}")
+			fmt.Fprint(w, ");")
 		}
+		fmt.Fprint(w, " }}")
 	} else {
 		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>()", keyType, valType)
 	}
@@ -7866,6 +7845,30 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("            if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);\n")
 		buf.WriteString("            if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);\n")
 		buf.WriteString("            return java.util.Arrays.deepToString((Object[]) v);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (v instanceof java.util.Map<?, ?>) {\n")
+		buf.WriteString("            StringBuilder sb = new StringBuilder(\"{\");\n")
+		buf.WriteString("            boolean first = true;\n")
+		buf.WriteString("            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {\n")
+		buf.WriteString("                if (!first) sb.append(\", \");\n")
+		buf.WriteString("                sb.append(_p(e.getKey()));\n")
+		buf.WriteString("                sb.append(\"=\");\n")
+		buf.WriteString("                sb.append(_p(e.getValue()));\n")
+		buf.WriteString("                first = false;\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            sb.append(\"}\");\n")
+		buf.WriteString("            return sb.toString();\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (v instanceof java.util.List<?>) {\n")
+		buf.WriteString("            StringBuilder sb = new StringBuilder(\"[\");\n")
+		buf.WriteString("            boolean first = true;\n")
+		buf.WriteString("            for (Object e : (java.util.List<?>) v) {\n")
+		buf.WriteString("                if (!first) sb.append(\", \");\n")
+		buf.WriteString("                sb.append(_p(e));\n")
+		buf.WriteString("                first = false;\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            sb.append(\"]\");\n")
+		buf.WriteString("            return sb.toString();\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("        if (v instanceof Double || v instanceof Float) {\n")
 		buf.WriteString("            double d = ((Number) v).doubleValue();\n")
