@@ -1,22 +1,22 @@
 signal: aborted
-Segmentation fault at address 0x20bd20
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/priority_queue_using_list.zig:45:314: 0x25a44b in fpq_enqueue (priority_queue_using_list)
+Segmentation fault at address 0x10068d8
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/priority_queue_using_list.zig:45:340: 0x106d26d in fpq_enqueue (priority_queue_using_list)
     qs[_idx(qs.len, priority)] = blk0: { var _tmp = std.ArrayList(i64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp.appendSlice(@as([]const i64, qs[_idx(qs.len, priority)])) catch |err| handleError(err); _tmp.append(data) catch |err| handleError(err); break :blk0 (_tmp.toOwnedSlice() catch |err| handleError(err)); };
-                                                                                                                                                                                                                                                                                                                         ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/priority_queue_using_list.zig:164:24: 0x2257fd in fixed_priority_queue (priority_queue_using_list)
+                                                                                                                                                                                                                                                                                                                                                   ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/priority_queue_using_list.zig:164:24: 0x103804d in fixed_priority_queue (priority_queue_using_list)
     fpq_1 = fpq_enqueue(&fpq_1, 0, 10);
                        ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/priority_queue_using_list.zig:256:25: 0x2235f8 in mochi_main (priority_queue_using_list)
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/priority_queue_using_list.zig:256:25: 0x1035988 in mochi_main (priority_queue_using_list)
     fixed_priority_queue();
                         ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/priority_queue_using_list.zig:264:19: 0x222136 in main (priority_queue_using_list)
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/priority_queue_using_list.zig:264:19: 0x10340a6 in main (priority_queue_using_list)
         mochi_main();
                   ^
-/usr/local/zig-linux-x86_64-0.11.0/lib/std/start.zig:564:22: 0x221cd9 in main (priority_queue_using_list)
+/opt/zig/lib/std/start.zig:514:22: 0x1033cb9 in main (priority_queue_using_list)
             root.main();
                      ^
-???:?:?: 0x7feeb4fc91c9 in ??? (libc.so.6)
-Unwind information for `libc.so.6:0x7feeb4fc91c9` was not available, trace may be incomplete
+???:?:?: 0x7ff9c6b371c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7ff9c6b371c9` was not available, trace may be incomplete
 
-???:?:?: 0x7feeb4fc928a in ??? (libc.so.6)
-???:?:?: 0x221964 in ??? (???)
+???:?:?: 0x7ff9c6b3728a in ??? (libc.so.6)
+???:?:?: 0x1033964 in ??? (???)

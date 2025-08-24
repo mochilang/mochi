@@ -389,8 +389,12 @@ type IfExpr struct {
 
 // CallExpr represents a simple function call.
 type CallExpr struct {
-	Func string
-	Args []Expr
+	// Target holds the expression being called when invoking a function
+	// stored in a variable or struct field. When Target is non-nil, Func
+	// is ignored and the call is emitted using Target directly.
+	Target Expr
+	Func   string
+	Args   []Expr
 }
 
 func exprToString(e Expr) (string, bool) {
@@ -1623,18 +1627,28 @@ func (p *Program) Emit() []byte {
 				key := fn.Name + ":" + prm.Name
 				if varMut[key] {
 					t := strings.TrimPrefix(prm.Type, "*")
-					if strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+					switch {
+					case strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap("):
 						fn.Params[i].Type = "*" + t
 						varTypes[prm.Name] = fn.Params[i].Type
 						params[i] = fn.Params[i].Type
-					} else if strings.HasPrefix(t, "[]const ") {
+					case strings.HasPrefix(t, "[]const "):
 						fn.Params[i].Type = "[]" + strings.TrimPrefix(t, "[]const ")
+						varTypes[prm.Name] = fn.Params[i].Type
+						params[i] = fn.Params[i].Type
+					case structDefs[t] != nil:
+						fn.Params[i].Type = "*" + t
 						varTypes[prm.Name] = fn.Params[i].Type
 						params[i] = fn.Params[i].Type
 					}
 				} else {
 					t := strings.TrimPrefix(prm.Type, "*")
-					if strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+					switch {
+					case strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap("):
+						fn.Params[i].Type = "*const " + t
+						varTypes[prm.Name] = fn.Params[i].Type
+						params[i] = fn.Params[i].Type
+					case structDefs[t] != nil:
 						fn.Params[i].Type = "*const " + t
 						varTypes[prm.Name] = fn.Params[i].Type
 						params[i] = fn.Params[i].Type
@@ -2325,15 +2339,9 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 	} else {
 		if strings.HasPrefix(targetType, "[]") {
 			if ll, ok := a.Value.(*ListLit); ok {
-				if len(ll.Elems) == 0 {
-					io.WriteString(w, "@constCast(")
-					ll.emit(w)
-					io.WriteString(w, ")[0..]")
-				} else {
-					io.WriteString(w, "@constCast(&")
-					ll.emit(w)
-					io.WriteString(w, ")[0..]")
-				}
+				// List literals already emit slices, so no additional
+				// casting is required here.
+				ll.emit(w)
 			} else {
 				a.Value.emit(w)
 			}
@@ -3510,6 +3518,18 @@ func (i *IfExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Target != nil {
+		c.Target.emit(w)
+		io.WriteString(w, "(")
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	switch c.Func {
 	case "len", "count":
 		if len(c.Args) > 0 {
@@ -4400,7 +4420,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				args[i] = ex
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
-				expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
+				if globalNames[fe.Name] {
+					expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
+				} else {
+					expr = &CallExpr{Target: fe, Args: args}
+				}
 				continue
 			}
 			if name, ok := exprToString(expr); ok {

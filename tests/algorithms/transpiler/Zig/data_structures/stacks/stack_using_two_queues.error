@@ -1,16 +1,16 @@
 signal: aborted
-thread 18948 panic: peek from empty stack
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/stacks/stack_using_two_queues.zig:40:9: 0x2239c5 in peek (stack_using_two_queues)
+thread 18323 panic: peek from empty stack
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/stacks/stack_using_two_queues.zig:40:9: 0x1035a1c in peek (stack_using_two_queues)
         @panic("peek from empty stack");
         ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/stacks/stack_using_two_queues.zig:57:45: 0x221d58 in main (stack_using_two_queues)
-        std.debug.print("{s}\n", .{_str(peek(stack_var_1))});
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/stacks/stack_using_two_queues.zig:57:45: 0x1033938 in main (stack_using_two_queues)
+        std.debug.print("{s}\n", .{_str(peek(&stack_var_1))});
                                             ^
-/usr/local/zig-linux-x86_64-0.11.0/lib/std/start.zig:564:22: 0x221889 in main (stack_using_two_queues)
+/opt/zig/lib/std/start.zig:514:22: 0x10334d9 in main (stack_using_two_queues)
             root.main();
                      ^
-???:?:?: 0x7fe99afef1c9 in ??? (libc.so.6)
-Unwind information for `libc.so.6:0x7fe99afef1c9` was not available, trace may be incomplete
+???:?:?: 0x7f53f40f81c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f53f40f81c9` was not available, trace may be incomplete
 
-???:?:?: 0x7fe99afef28a in ??? (libc.so.6)
-???:?:?: 0x221514 in ??? (???)
+???:?:?: 0x7f53f40f828a in ??? (libc.so.6)
+???:?:?: 0x1033184 in ??? (???)

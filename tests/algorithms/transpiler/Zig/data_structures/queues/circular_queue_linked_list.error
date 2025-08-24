@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/circular_queue_linked_list.zig:57:20: error: expected type '[]const u8', found '[][]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/circular_queue_linked_list.zig:57:20: note: pointer type child '[]const u8' cannot cast into pointer type child 'u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/queues/circular_queue_linked_list.zig:55:36: note: function return type declared here
