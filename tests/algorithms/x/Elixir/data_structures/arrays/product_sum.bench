@@ -1,0 +1,21 @@
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/product_sum.exs:3: Main (module)
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Integer
+
+Got value:
+
+    5
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:166: Enumerable.reduce/3
+    (elixir 1.18.3) lib/enum.ex:412: Enum.any?/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/product_sum.exs:24: anonymous fn/5 in Main.product_sum/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/product_sum.exs:32: Main.product_sum/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/product_sum.exs:44: Main.product_sum_array/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/product_sum.exs:55: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/product_sum.exs:63: (file)

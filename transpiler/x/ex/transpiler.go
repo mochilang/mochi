@@ -643,7 +643,11 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, ":break -> nil\n")
+                io.WriteString(w, ":break -> nil\n")
+                for i := 0; i < indent+1; i++ {
+                        io.WriteString(w, "  ")
+                }
+                io.WriteString(w, "{:break, _} -> nil\n")
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -1151,10 +1155,14 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent+1; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, ":break -> nil\n")
-	for i := 0; i < indent; i++ {
-		io.WriteString(w, "  ")
-	}
+        io.WriteString(w, ":break -> nil\n")
+        for i := 0; i < indent+1; i++ {
+                io.WriteString(w, "  ")
+        }
+        io.WriteString(w, "{:break, _} -> nil\n")
+        for i := 0; i < indent; i++ {
+                io.WriteString(w, "  ")
+        }
 	io.WriteString(w, "end")
 }
 

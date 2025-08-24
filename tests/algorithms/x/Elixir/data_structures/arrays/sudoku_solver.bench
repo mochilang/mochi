@@ -1,5 +1,52 @@
-{
-  "duration_us": 7564,
-  "memory_bytes": 113248,
-  "name": "main"
-}
+warning: variable "grid" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │           grid = (grid ++ [row])
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/sudoku_solver.exs:69:11: Main.string_to_grid/1
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 101 │         line = IO.puts(line)
+     │         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/sudoku_solver.exs:101:9: Main.print_grid/1
+
+     warning: variable "grid" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │           grid = List.replace_at(grid, row, List.replace_at(Enum.at(grid, row), column, 0))
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/sudoku_solver.exs:154:11: Main.solve/1
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/sudoku_solver.exs:3: Main (module)
+
+Original grid:
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
+
+Got value:
+
+    :ok
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/sudoku_solver.exs:130: anonymous fn/3 in Main.find_empty/1
+    (elixir 1.18.3) lib/enum.ex:992: anonymous fn/3 in Enum.each/2
+    (elixir 1.18.3) lib/enum.ex:4507: Enum.reduce_range/5
+    (elixir 1.18.3) lib/enum.ex:2550: Enum.each/2

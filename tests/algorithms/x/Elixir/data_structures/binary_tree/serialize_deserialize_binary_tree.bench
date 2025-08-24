@@ -1,5 +1,34 @@
-{
-  "duration_us": 2433,
-  "memory_bytes": 17696,
-  "name": "main"
-}
+warning: variable "empty" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 134 │   empty -> "null"
+     │   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:134:3: Main.serialize/1
+
+     warning: this clause cannot match because a previous clause at line 134 always matches
+     │
+ 135 │   %{left: l, value: v, right: r} -> ((((Kernel.inspect(v) <> ",") <> serialize(l)) <> ",") <> serialize(r))
+     │                                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:135:34
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:3: Main (module)
+
+null
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length(:ok)
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:35: Main._len/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:103: anonymous fn/6 in Main.split/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:120: Main.split/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:157: Main.deserialize/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:180: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:192: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/serialize_deserialize_binary_tree.exs:200: (file)

@@ -1,0 +1,57 @@
+warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │       x = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs:80:7: Main.is_power_of_two/1
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │       {res, x} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs:108:13: Main.bin_string/1
+
+     error: invalid use of _. _ can only be used inside patterns to ignore values and cannot be used in expressions. Make sure you are inside a pattern or change it accordingly
+     │
+ 174 │             {curr_string, _, index, keys, lexicon, result}
+     │                           ^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs:174:27: Main.decompress_data/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 173 │             i = i + 1
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs:173:13: Main.decompress_data/1
+
+     warning: variable "curr_string" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 183 │       {curr_string, _, index, keys, lexicon, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs:183:8: Main.decompress_data/1
+
+     warning: variable "index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 183 │       {curr_string, _, index, keys, lexicon, result} = try do
+     │                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs:183:24: Main.decompress_data/1
+
+     warning: variable "keys" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 183 │       {curr_string, _, index, keys, lexicon, result} = try do
+     │                               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs:183:31: Main.decompress_data/1
+
+     warning: variable "lexicon" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 183 │       {curr_string, _, index, keys, lexicon, result} = try do
+     │                                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs:183:37: Main.decompress_data/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lempel_ziv_decompress.exs: cannot compile module Main (errors have been logged)

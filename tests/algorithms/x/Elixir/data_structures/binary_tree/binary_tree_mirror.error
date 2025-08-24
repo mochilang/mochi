@@ -1,0 +1,32 @@
+run: exit status 1
+    warning: variable "tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │       tree = binary_tree_mirror_dict(tree, right)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:27:7: Main.binary_tree_mirror_dict/2
+
+    warning: function _len/1 is unused
+    │
+ 10 │   defp _len(x) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:10:8: Main (module)
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:3: Main (module)
+
+Binary tree: %{1 => [2, 3], 2 => [4, 5], 3 => [6, 7], 7 => ~c"\b\t"}
+** (BadMapError) expected a map, got: nil
+    :erlang.is_map_key(5, nil)
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:19: Main.binary_tree_mirror_dict/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:27: Main.binary_tree_mirror_dict/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:26: Main.binary_tree_mirror_dict/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:45: Main.binary_tree_mirror/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:55: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:65: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:73: (file)

@@ -1,0 +1,32 @@
+run: exit status 1
+    warning: variable "left" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       left = mirror_node(left, right, Enum.at(right, idx, []))
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/mirror_binary_tree.exs:26:7: Main.mirror_node/3
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/mirror_binary_tree.exs:3: Main (module)
+
+      The zero tree: [0]
+Mirror of zero tree: [0]
+      The seven tree: [4, 2, 5, 1, 6, 3, 7]
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
+
+Got value:
+
+    nil
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/mirror_binary_tree.exs:22: Main.mirror_node/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/mirror_binary_tree.exs:26: Main.mirror_node/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/mirror_binary_tree.exs:25: Main.mirror_node/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/mirror_binary_tree.exs:33: Main.mirror/1

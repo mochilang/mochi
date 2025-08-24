@@ -1,5 +1,26 @@
-{
-  "duration_us": 12462,
-  "memory_bytes": 25576,
-  "name": "main"
-}
+warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:3: Main (module)
+
+**************************************************
+"SegmentTreeNode(start=0, end=0, val=2)"
+"SegmentTreeNode(start=1, end=1, val=1)"
+"SegmentTreeNode(start=0, end=1, val=3)"
+"SegmentTreeNode(start=2, end=2, val=5)"
+"SegmentTreeNode(start=0, end=2, val=8)"
+"SegmentTreeNode(start=3, end=3, val=3)"
+"SegmentTreeNode(start=4, end=4, val=4)"
+"SegmentTreeNode(start=3, end=4, val=7)"
+"SegmentTreeNode(start=0, end=4, val=15)"
+
+** (BadMapError) expected a map, got: :ok
+    (elixir 1.18.3) lib/map.ex:535: Map.get(:ok, :arr, [])
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:68: anonymous fn/6 in Main.update/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:77: Main.update/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:162: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:987: Enum."-each/2-lists^foreach/1-0-"/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:158: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:176: (file)

@@ -1,0 +1,119 @@
+run: exit status 1
+    warning: variable "segment_tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │         segment_tree = List.replace_at(segment_tree, idx, ((if lv > rv, do: lv, else: rv)))
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:82:9: Main.build/5
+
+    warning: variable "segment_tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │         segment_tree = List.replace_at(segment_tree, idx, Enum.at(a, l - 1, []))
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:75:9: Main.build/5
+
+    warning: variable "flag" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │           flag = List.replace_at(flag, right(idx), true)
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:97:11: Main.update/9
+
+    warning: variable "lazy" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 95 │           lazy = List.replace_at(lazy, right(idx), Enum.at(lazy, idx, []))
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:95:11: Main.update/9
+
+    warning: variable "segment_tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │         segment_tree = List.replace_at(segment_tree, idx, Enum.at(lazy, idx, []))
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:91:9: Main.update/9
+
+     warning: variable "flag" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │           flag = List.replace_at(flag, right(idx), true)
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:109:11: Main.update/9
+
+     warning: variable "lazy" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │           lazy = List.replace_at(lazy, right(idx), val)
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:107:11: Main.update/9
+
+     warning: variable "segment_tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 104 │         segment_tree = List.replace_at(segment_tree, idx, val)
+     │         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:104:9: Main.update/9
+
+     warning: variable "segment_tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 118 │       segment_tree = List.replace_at(segment_tree, idx, ((if lv > rv, do: lv, else: rv)))
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:118:7: Main.update/9
+
+     warning: variable "flag" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 132 │           flag = List.replace_at(flag, right(idx), true)
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:132:11: Main.query/8
+
+     warning: variable "lazy" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │           lazy = List.replace_at(lazy, right(idx), Enum.at(lazy, idx, []))
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:130:11: Main.query/8
+
+     warning: variable "segment_tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 126 │         segment_tree = List.replace_at(segment_tree, idx, Enum.at(lazy, idx, []))
+     │         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:126:9: Main.query/8
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:3: Main (module)
+
+7
+14
+15
+** (FunctionClauseError) no function clause matching in List.replace_at/3    
+    
+    The following arguments were given to List.replace_at/3:
+    
+        # 1
+        nil
+    
+        # 2
+        18
+    
+        # 3
+        111
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def replace_at(+list+, +index+, +value+) when -is_list(list)- and +is_integer(index)+
+    
+    (elixir 1.18.3) lib/list.ex:814: List.replace_at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:104: Main.update/9
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:114: Main.update/9
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:115: Main.update/9
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:114: Main.update/9
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:199: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/lazy_segment_tree.exs:210: (file)

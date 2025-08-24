@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-24 09:17 GMT+7
+Last updated: 2025-08-24 15:51 GMT+7
 
-## Algorithms Golden Test Checklist (907/1077)
+## Algorithms Golden Test Checklist (911/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -157,56 +157,56 @@ Last updated: 2025-08-24 09:17 GMT+7
 | 148 | conversions/temperature_conversions | error |  |  |
 | 149 | conversions/time_conversions | ✓ | 17.59ms | 17.4 MB |
 | 150 | conversions/volume_conversions | ✓ | 6.12ms | 17.4 MB |
-| 151 | conversions/weight_conversion | ✓ | 9.95ms | 12.5 MB |
-| 152 | data_compression/burrows_wheeler | ✓ | 8.57ms | 12.5 MB |
-| 153 | data_compression/huffman | ✓ | 6.79ms | 9.5 MB |
-| 154 | data_compression/lempel_ziv | ✓ | 8.91ms | 25.2 MB |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 | ✓ | 8.27ms | 9.5 MB |
+| 151 | conversions/weight_conversion | ✓ | 4.66ms | 12.6 MB |
+| 152 | data_compression/burrows_wheeler | ✓ | 2.38ms | 25.0 MB |
+| 153 | data_compression/huffman | ✓ | 2.08ms | 9.5 MB |
+| 154 | data_compression/lempel_ziv | ✓ | 3.62ms | 17.3 MB |
+| 155 | data_compression/lempel_ziv_decompress | error |  |  |
+| 156 | data_compression/lz77 | ✓ | 4.55ms | 25.0 MB |
 | 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 1us | 0 B |
-| 158 | data_compression/run_length_encoding | ✓ | 9.73ms | 25.4 MB |
-| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 7.19ms | 17.3 MB |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | error |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 7.93ms | 25.0 MB |
-| 162 | data_structures/arrays/kth_largest_element | ✓ | 6.89ms | 25.0 MB |
-| 163 | data_structures/arrays/median_two_array | ✓ | 9.13ms | 17.3 MB |
-| 164 | data_structures/arrays/monotonic_array | ✓ | 6.67ms | 25.0 MB |
-| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 7.05ms | 12.5 MB |
-| 166 | data_structures/arrays/permutations | ✓ | 9.74ms | 25.0 MB |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver | ✓ | 7.56ms | 110.6 MB |
+| 158 | data_compression/run_length_encoding | error |  |  |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 1.67ms | 12.5 MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 11.20ms | 20.2 MB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 4.12ms | 12.5 MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 2.06ms | 12.5 MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 2.08ms | 17.4 MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 177us | 0 B |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 2.46ms | 17.3 MB |
+| 166 | data_structures/arrays/permutations | ✓ | 4.49ms | 17.3 MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 5.20ms | 25.0 MB |
+| 168 | data_structures/arrays/product_sum | error |  |  |
+| 169 | data_structures/arrays/sparse_table | ✓ | 3.70ms | 25.4 MB |
+| 170 | data_structures/arrays/sudoku_solver | error |  |  |
 | 171 | data_structures/binary_tree/avl_tree | error |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9.66ms | 17.3 MB |
-| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 8.26ms | 12.5 MB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 7.22ms | 17.3 MB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 4.62ms | 7.7 MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 4.60ms | 32.7 MB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 7.38ms | 17.3 MB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | error |  |  |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 4.24ms | 17.3 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 9.02ms | 17.3 MB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 5.08ms | 32.7 MB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 11.25ms | 25.0 MB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 176us | 17.3 MB |
-| 182 | data_structures/binary_tree/floor_and_ceiling | error |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 5.67ms | 25.0 MB |
-| 184 | data_structures/binary_tree/is_sorted | error |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 5.62ms | 17.3 MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 1.96ms | 17.3 MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 7.65ms | 25.0 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 192us | 12.5 MB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 6.80ms | 17.3 MB |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 7.59ms | 12.5 MB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 1us | 0 B |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 7.14ms | 32.7 MB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 5.73ms | 57.7 MB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 306.28ms | 1.5 GB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 5.60ms | 25.0 MB |
-| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 129us | 0 B |
-| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 6.17ms | 25.0 MB |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 5.49ms | 17.4 MB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 19.12ms | 25.0 MB |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 9.21ms | 17.3 MB |
-| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 12.46ms | 25.0 MB |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 2.43ms | 17.3 MB |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
-| 199 | data_structures/binary_tree/treap | ✓ | 10.71ms | 17.3 MB |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 8.47ms | 17.3 MB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | error |  |  |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | error |  |  |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 426.97ms | 1.1 GB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 2.13ms | 32.7 MB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 258us | 0 B |
+| 191 | data_structures/binary_tree/mirror_binary_tree | error |  |  |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | error |  |  |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 9.09ms | 17.3 MB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 483us | 17.4 MB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 4.73ms | 25.0 MB |
+| 196 | data_structures/binary_tree/segment_tree_other | error |  |  |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 2.76ms | 17.3 MB |
+| 199 | data_structures/binary_tree/treap | ✓ | 5.75ms | 17.3 MB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 2.81ms | 17.3 MB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 11.66ms | 17.3 MB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 387us | 25.0 MB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 173.84ms | 37.5 MB |
@@ -975,7 +975,7 @@ Last updated: 2025-08-24 09:17 GMT+7
 | 966 | sorts/odd_even_transposition_single_threaded | ✓ | 5.24ms | 12.5 MB |
 | 967 | sorts/pancake_sort | ✓ | 211us | 12.6 MB |
 | 968 | sorts/patience_sort | ✓ | 4.51ms | 25.0 MB |
-| 969 | sorts/pigeon_sort | error |  |  |
+| 969 | sorts/pigeon_sort | ✓ |  |  |
 | 970 | sorts/pigeonhole_sort | ✓ | 446us | 0 B |
 | 971 | sorts/quick_sort | ✓ | 4.23ms | 12.5 MB |
 | 972 | sorts/quick_sort_3_partition | ✓ | 4.33ms | 9.6 MB |
@@ -986,17 +986,17 @@ Last updated: 2025-08-24 09:17 GMT+7
 | 977 | sorts/selection_sort | ✓ | 4.93ms | 12.5 MB |
 | 978 | sorts/shell_sort | ✓ | 3.85ms | 12.5 MB |
 | 979 | sorts/shrink_shell_sort | ✓ | 5.20ms | 12.5 MB |
-| 980 | sorts/slowsort | error |  |  |
+| 980 | sorts/slowsort | ✓ |  |  |
 | 981 | sorts/stooge_sort | ✓ | 3.51ms | 12.5 MB |
 | 982 | sorts/strand_sort | ✓ | 4.25ms | 17.3 MB |
 | 983 | sorts/tim_sort | ✓ | 3.46ms | 12.5 MB |
 | 984 | sorts/topological_sort | ✓ | 585us | 130.8 MB |
-| 985 | sorts/tree_sort | error |  |  |
-| 986 | sorts/unknown_sort | error |  |  |
+| 985 | sorts/tree_sort | ✓ |  |  |
+| 986 | sorts/unknown_sort | ✓ |  |  |
 | 987 | sorts/wiggle_sort | ✓ | 7.32ms | 17.3 MB |
 | 988 | strings/aho_corasick | ✓ | 8.91ms | 17.3 MB |
 | 989 | strings/alternative_string_arrange | ✓ | 2.40ms | 25.0 MB |
-| 990 | strings/anagrams | error |  |  |
+| 990 | strings/anagrams | ✓ |  |  |
 | 991 | strings/autocomplete_using_trie | ✓ | 5.34ms | 25.0 MB |
 | 992 | strings/barcode_validator | ✓ | 7.29ms | 25.8 MB |
 | 993 | strings/bitap_string_match | ✓ | 3.08ms | 9.6 MB |
@@ -1004,14 +1004,14 @@ Last updated: 2025-08-24 09:17 GMT+7
 | 995 | strings/camel_case_to_snake_case | ✓ | 8.78ms | 25.3 MB |
 | 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 2.86ms | 17.3 MB |
 | 997 | strings/capitalize | ✓ | 3.19ms | 12.5 MB |
-| 998 | strings/check_anagrams | error |  |  |
+| 998 | strings/check_anagrams | ✓ |  |  |
 | 999 | strings/count_vowels | ✓ | 4.17ms | 12.7 MB |
 | 1000 | strings/credit_card_validator | ✓ | 371us | 17.3 MB |
 | 1001 | strings/damerau_levenshtein_distance | ✓ | 5.75ms | 12.5 MB |
 | 1002 | strings/detecting_english_programmatically | ✓ | 7.02ms | 25.1 MB |
 | 1003 | strings/dna | ✓ | 2.81ms | 7.7 MB |
 | 1004 | strings/edit_distance | ✓ | 127.80ms | 9.5 MB |
-| 1005 | strings/frequency_finder | error |  |  |
+| 1005 | strings/frequency_finder | ✓ |  |  |
 | 1006 | strings/hamming_distance | ✓ | 6.51ms | 7.7 MB |
 | 1007 | strings/indian_phone_validator | ✓ | 7.36ms | 12.6 MB |
 | 1008 | strings/is_contains_unique_chars | error |  |  |
