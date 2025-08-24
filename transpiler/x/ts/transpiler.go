@@ -60,7 +60,7 @@ const maxSafeMul = 94906265 // sqrt(2^53 - 1)
 
 const helperEqual = `function _equal(a: unknown, b: unknown): boolean {
   if (typeof a === 'number' && typeof b === 'number') {
-    return Math.abs(a - b) < 1e-9;
+    return Math.abs(a - b) < 1e-6;
   }
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
@@ -1998,13 +1998,13 @@ func Emit(p *Program) []byte {
 	for _, s := range p.Stmts {
 		emitStmt(iw, s, 0)
 	}
-       code := b.Bytes()
-       re := regexp.MustCompile(`= ([0-9]+);\n\s+e([0-9]+);`)
-       code = re.ReplaceAll(code, []byte(`= ${1}e${2};`))
-       if len(code) > 0 && code[len(code)-1] != '\n' {
-               code = append(code, '\n')
-       }
-       return code
+	code := b.Bytes()
+	re := regexp.MustCompile(`= ([0-9]+);\n\s+e([0-9]+);`)
+	code = re.ReplaceAll(code, []byte(`= ${1}e${2};`))
+	if len(code) > 0 && code[len(code)-1] != '\n' {
+		code = append(code, '\n')
+	}
+	return code
 }
 
 func emitStmt(w *indentWriter, s Stmt, level int) {
@@ -5010,7 +5010,7 @@ func isListType(t types.Type) bool {
 
 func needsDeepEqual(t types.Type) bool {
 	switch tt := t.(type) {
-	case types.ListType, types.MapType, types.StructType:
+	case types.ListType, types.MapType, types.StructType, types.FloatType:
 		return true
 	case types.OptionType:
 		return needsDeepEqual(tt.Elem)
