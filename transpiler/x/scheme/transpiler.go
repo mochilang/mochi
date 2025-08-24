@@ -854,8 +854,10 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 		}
 		if list, ok := iter.(*List); ok {
 			if sym, ok := list.Elems[0].(Symbol); ok && sym == "hash-table-ref" {
-				needHash = true
-				iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+				if _, ok := srcType.(types.MapType); ok {
+					needHash = true
+					iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+				}
 			}
 		}
 	}

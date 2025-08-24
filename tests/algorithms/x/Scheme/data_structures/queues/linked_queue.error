@@ -1,1 +1,11 @@
-transpile: unsupported postfix
+run: exit status 70
+ERROR: dequeue from empty queue
+  called from get on line 263 of file /workspace/mochi/tests/algorithms/x/Scheme/data_structures/queues/linked_queue.scm
+  called from <anonymous> on line 544 of file /workspace/mochi/tests/algorithms/x/Scheme/data_structures/queues/linked_queue.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+true
+false
+9
+algorithms
