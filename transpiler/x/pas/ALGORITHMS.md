@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-23 15:04 GMT+7
+Last updated: 2025-08-23 15:39 GMT+7
 
-## Algorithms Golden Test Checklist (626/1077)
+## Algorithms Golden Test Checklist (636/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -839,27 +839,27 @@ Last updated: 2025-08-23 15:04 GMT+7
 | 830 | project_euler/problem_011/sol1 | ✓ | 0ns | 0B |
 | 831 | project_euler/problem_011/sol2 | ✓ | 0ns | 4.00KB |
 | 832 | project_euler/problem_012/sol1 | ✓ | 16.0µs | 64B |
-| 833 | project_euler/problem_012/sol2 | ✓ | 16.0µs | 0B |
+| 833 | project_euler/problem_012/sol2 | ✓ | 15.0µs | 0B |
 | 834 | project_euler/problem_013/sol1 | error |  |  |
-| 835 | project_euler/problem_014/sol1 | ✓ | 8.0µs | 128B |
-| 836 | project_euler/problem_014/sol2 | ✓ | 14.0µs | 4.22KB |
+| 835 | project_euler/problem_014/sol1 | ✓ | 7.0µs | 128B |
+| 836 | project_euler/problem_014/sol2 | ✓ | 12.0µs | 4.22KB |
 | 837 | project_euler/problem_015/sol1 | ✓ | 0ns | 64B |
 | 838 | project_euler/problem_016/sol1 | ✓ | 0ns | 64B |
-| 839 | project_euler/problem_016/sol2 | ✓ | 2.0µs | 64B |
-| 840 | project_euler/problem_017/sol1 | ✓ | 1.0µs | 64B |
+| 839 | project_euler/problem_016/sol2 | ✓ | 3.0µs | 64B |
+| 840 | project_euler/problem_017/sol1 | ✓ | 0ns | 64B |
 | 841 | project_euler/problem_018/solution | ✓ | 1.0µs | 64B |
-| 842 | project_euler/problem_019/sol1 |   |  |  |
-| 843 | project_euler/problem_020/sol1 |   |  |  |
-| 844 | project_euler/problem_020/sol2 |   |  |  |
-| 845 | project_euler/problem_020/sol3 |   |  |  |
-| 846 | project_euler/problem_020/sol4 |   |  |  |
-| 847 | project_euler/problem_021/sol1 |   |  |  |
-| 848 | project_euler/problem_022/sol1 |   |  |  |
-| 849 | project_euler/problem_022/sol2 |   |  |  |
-| 850 | project_euler/problem_023/sol1 |   |  |  |
-| 851 | project_euler/problem_024/sol1 |   |  |  |
-| 852 | project_euler/problem_025/sol1 |   |  |  |
-| 853 | project_euler/problem_025/sol2 |   |  |  |
+| 842 | project_euler/problem_019/sol1 | ✓ | 0ns | 0B |
+| 843 | project_euler/problem_020/sol1 | ✓ | 0ns | 64B |
+| 844 | project_euler/problem_020/sol2 | ✓ | 0ns | 0B |
+| 845 | project_euler/problem_020/sol3 | ✓ | 0ns | 64B |
+| 846 | project_euler/problem_020/sol4 | ✓ | 0ns | 0B |
+| 847 | project_euler/problem_021/sol1 | ✓ | 13.0µs | 0B |
+| 848 | project_euler/problem_022/sol1 | ✓ | 0ns | 0B |
+| 849 | project_euler/problem_022/sol2 | ✓ | 6.0ms | 3.78MB |
+| 850 | project_euler/problem_023/sol1 | ✓ | 9.0ms | 64B |
+| 851 | project_euler/problem_024/sol1 | ✓ | 0ns | 0B |
+| 852 | project_euler/problem_025/sol1 | error |  |  |
+| 853 | project_euler/problem_025/sol2 | error |  |  |
 | 854 | project_euler/problem_025/sol3 |   |  |  |
 | 855 | project_euler/problem_026/sol1 |   |  |  |
 | 856 | project_euler/problem_027/sol1 |   |  |  |
