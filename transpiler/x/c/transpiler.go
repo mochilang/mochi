@@ -4379,23 +4379,40 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
 			paramType = types[i]
 		}
-		if strings.HasSuffix(paramType, "*") {
-			base := strings.TrimSuffix(paramType, "*")
-			if _, ok := structTypes[base]; ok || strings.HasPrefix(base, "Map") {
-				io.WriteString(w, "&")
-			}
-		} else if _, ok := structTypes[paramType]; ok {
-			if vr, ok := a.(*VarRef); ok {
-				if at, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(at, "*") && strings.TrimSuffix(at, "*") == paramType {
-					io.WriteString(w, "*")
-				}
-			}
-		}
-		if paramType == "MapSD" {
-			if sl, ok := a.(*StructLit); ok && len(sl.Fields) == 0 {
-				io.WriteString(w, "(MapSD){0}")
-				first = false
-				continue
+               if strings.HasSuffix(paramType, "*") {
+                       base := strings.TrimSuffix(paramType, "*")
+                       if _, ok := structTypes[base]; ok || strings.HasPrefix(base, "Map") {
+                               var at string
+                               if ue, ok := a.(*UnaryExpr); ok && ue.Op == "&" {
+                                       if _, ok2 := ue.Expr.(*VarRef); ok2 {
+                                               a = ue.Expr
+                                               at = paramType
+                                       }
+                               }
+                               if at == "" {
+                                       at = inferExprType(currentEnv, a)
+                                       if vr, ok := a.(*VarRef); ok {
+                                               if vt := varTypes[vr.Name]; vt != "" {
+                                                       at = vt
+                                               }
+                                       }
+                               }
+                               if !strings.HasSuffix(at, "*") {
+                                       io.WriteString(w, "&")
+                               }
+                       }
+               } else if _, ok := structTypes[paramType]; ok {
+                       if vr, ok := a.(*VarRef); ok {
+                               if at, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(at, "*") && strings.TrimSuffix(at, "*") == paramType {
+                                       io.WriteString(w, "*")
+                               }
+                       }
+               }
+               if paramType == "MapSD" {
+                       if sl, ok := a.(*StructLit); ok && len(sl.Fields) == 0 {
+                               io.WriteString(w, "(MapSD){0}")
+                               first = false
+                               continue
 			}
 		}
 		a.emitExpr(w)
