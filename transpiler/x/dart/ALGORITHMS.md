@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-22 23:26 GMT+7
+Last updated: 2025-08-24 15:46 GMT+7
 
-## Algorithms Golden Test Checklist (998/1077)
+## Algorithms Golden Test Checklist (1001/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -157,7 +157,7 @@ Last updated: 2025-08-22 23:26 GMT+7
 | 148 | conversions/temperature_conversions | ✓ | 15.041ms | 3.8 MB |
 | 149 | conversions/time_conversions | ✓ | 23.367ms | 9.7 MB |
 | 150 | conversions/volume_conversions | ✓ | 17.161ms | 9.4 MB |
-| 151 | conversions/weight_conversion | ✓ | 10.026ms | 3.4 MB |
+| 151 | conversions/weight_conversion | ✓ | 11.673ms | 3.0 MB |
 | 152 | data_compression/burrows_wheeler | ✓ | 9.449ms | 3.4 MB |
 | 153 | data_compression/huffman | ✓ | 12.538ms | 4.4 MB |
 | 154 | data_compression/lempel_ziv | ✓ | 10.613ms | 3.5 MB |
@@ -177,7 +177,7 @@ Last updated: 2025-08-22 23:26 GMT+7
 | 168 | data_structures/arrays/product_sum | error |  |  |
 | 169 | data_structures/arrays/sparse_table | ✓ | 12.29ms | 4.4 MB |
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 15.276ms | 4.8 MB |
-| 171 | data_structures/binary_tree/avl_tree | error |  |  |
+| 171 | data_structures/binary_tree/avl_tree | ✓ |  |  |
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9.441ms | 2.8 MB |
 | 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
@@ -199,11 +199,11 @@ Last updated: 2025-08-22 23:26 GMT+7
 | 190 | data_structures/binary_tree/merge_two_binary_trees | error |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 13.783ms | 4.4 MB |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 22.667ms | 10.5 MB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | error |  |  |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ |  |  |
 | 194 | data_structures/binary_tree/red_black_tree | ✓ | 15.622ms | 5.4 MB |
 | 195 | data_structures/binary_tree/segment_tree | ✓ | 11.941ms | 3.9 MB |
 | 196 | data_structures/binary_tree/segment_tree_other | ✓ | 12.469ms | 4.1 MB |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 12.318ms | 2.2 MB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
 | 200 | data_structures/binary_tree/wavelet_tree | ✓ | 21.263ms | 9.3 MB |
