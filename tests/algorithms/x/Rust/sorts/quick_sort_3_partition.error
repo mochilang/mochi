@@ -1,0 +1,462 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:67:2
+   |
+67 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:96:2
+   |
+96 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:122:2
+    |
+122 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:41:8
+   |
+41 |     if (right <= left) {
+   |        ^             ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+41 -     if (right <= left) {
+41 +     if right <= left {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:48:11
+   |
+48 |     while (i <= b) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+48 -     while (i <= b) {
+48 +     while i <= b {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:49:12
+   |
+49 |         if (arr[i as usize] < pivot) {
+   |            ^                       ^
+   |
+help: remove these parentheses
+   |
+49 -         if (arr[i as usize] < pivot) {
+49 +         if arr[i as usize] < pivot {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:53:17
+   |
+53 |             a = (a + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+53 -             a = (a + 1);
+53 +             a = a + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:54:17
+   |
+54 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+54 -             i = (i + 1);
+54 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:55:19
+   |
+55 |         } else if (arr[i as usize] > pivot) {
+   |                   ^                       ^
+   |
+help: remove these parentheses
+   |
+55 -         } else if (arr[i as usize] > pivot) {
+55 +         } else if arr[i as usize] > pivot {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:59:17
+   |
+59 |             b = (b - 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+59 -             b = (b - 1);
+59 +             b = b - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:61:17
+   |
+61 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+61 -             i = (i + 1);
+61 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:64:52
+   |
+64 |     arr = quick_sort_3partition(arr.clone(), left, (a - 1));
+   |                                                    ^     ^
+   |
+help: remove these parentheses
+   |
+64 -     arr = quick_sort_3partition(arr.clone(), left, (a - 1));
+64 +     arr = quick_sort_3partition(arr.clone(), left, a - 1);
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:65:46
+   |
+65 |     arr = quick_sort_3partition(arr.clone(), (b + 1), right);
+   |                                              ^     ^
+   |
+help: remove these parentheses
+   |
+65 -     arr = quick_sort_3partition(arr.clone(), (b + 1), right);
+65 +     arr = quick_sort_3partition(arr.clone(), b + 1, right);
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:70:8
+   |
+70 |     if (left < right) {
+   |        ^            ^
+   |
+help: remove these parentheses
+   |
+70 -     if (left < right) {
+70 +     if left < right {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:72:80
+   |
+72 |         arr = quick_sort_lomuto_partition(lomuto_partition, arr.clone(), left, (pivot_index - 1));
+   |                                                                                ^               ^
+   |
+help: remove these parentheses
+   |
+72 -         arr = quick_sort_lomuto_partition(lomuto_partition, arr.clone(), left, (pivot_index - 1));
+72 +         arr = quick_sort_lomuto_partition(lomuto_partition, arr.clone(), left, pivot_index - 1);
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:73:74
+   |
+73 |         arr = quick_sort_lomuto_partition(lomuto_partition, arr.clone(), (pivot_index + 1), right);
+   |                                                                          ^               ^
+   |
+help: remove these parentheses
+   |
+73 -         arr = quick_sort_lomuto_partition(lomuto_partition, arr.clone(), (pivot_index + 1), right);
+73 +         arr = quick_sort_lomuto_partition(lomuto_partition, arr.clone(), pivot_index + 1, right);
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:83:11
+   |
+83 |     while (i < right) {
+   |           ^         ^
+   |
+help: remove these parentheses
+   |
+83 -     while (i < right) {
+83 +     while i < right {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:84:12
+   |
+84 |         if (arr[i as usize] < pivot) {
+   |            ^                       ^
+   |
+help: remove these parentheses
+   |
+84 -         if (arr[i as usize] < pivot) {
+84 +         if arr[i as usize] < pivot {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:88:27
+   |
+88 |             store_index = (store_index + 1);
+   |                           ^               ^
+   |
+help: remove these parentheses
+   |
+88 -             store_index = (store_index + 1);
+88 +             store_index = store_index + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:90:13
+   |
+90 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         i = (i + 1);
+90 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:98:8
+   |
+98 |     if ((arr.len() as i64) <= 1) {
+   |        ^                       ^
+   |
+help: remove these parentheses
+   |
+98 -     if ((arr.len() as i64) <= 1) {
+98 +     if (arr.len() as i64) <= 1 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:106:11
+    |
+106 |     while (i < (arr.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+106 -     while (i < (arr.len() as i64)) {
+106 +     while i < (arr.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:108:12
+    |
+108 |         if (val < pivot) {
+    |            ^           ^
+    |
+help: remove these parentheses
+    |
+108 -         if (val < pivot) {
+108 +         if val < pivot {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:110:19
+    |
+110 |         } else if (val > pivot) {
+    |                   ^           ^
+    |
+help: remove these parentheses
+    |
+110 -         } else if (val > pivot) {
+110 +         } else if val > pivot {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:115:13
+    |
+115 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+115 -         i = (i + 1);
+115 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:124:55
+    |
+124 |     array1 = quick_sort_3partition(array1.clone(), 0, ((array1.len() as i64) - 1));
+    |                                                       ^                         ^
+    |
+help: remove these parentheses
+    |
+124 -     array1 = quick_sort_3partition(array1.clone(), 0, ((array1.len() as i64) - 1));
+124 +     array1 = quick_sort_3partition(array1.clone(), 0, (array1.len() as i64) - 1);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:127:55
+    |
+127 |     array2 = quick_sort_3partition(array2.clone(), 0, ((array2.len() as i64) - 1));
+    |                                                       ^                         ^
+    |
+help: remove these parentheses
+    |
+127 -     array2 = quick_sort_3partition(array2.clone(), 0, ((array2.len() as i64) - 1));
+127 +     array2 = quick_sort_3partition(array2.clone(), 0, (array2.len() as i64) - 1);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:130:55
+    |
+130 |     array3 = quick_sort_3partition(array3.clone(), 0, ((array3.len() as i64) - 1));
+    |                                                       ^                         ^
+    |
+help: remove these parentheses
+    |
+130 -     array3 = quick_sort_3partition(array3.clone(), 0, ((array3.len() as i64) - 1));
+130 +     array3 = quick_sort_3partition(array3.clone(), 0, (array3.len() as i64) - 1);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:133:59
+    |
+133 |     nums1 = quick_sort_lomuto_partition(nums1.clone(), 0, ((nums1.len() as i64) - 1));
+    |                                                           ^                        ^
+    |
+help: remove these parentheses
+    |
+133 -     nums1 = quick_sort_lomuto_partition(nums1.clone(), 0, ((nums1.len() as i64) - 1));
+133 +     nums1 = quick_sort_lomuto_partition(nums1.clone(), 0, (nums1.len() as i64) - 1);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:136:59
+    |
+136 |     nums2 = quick_sort_lomuto_partition(nums2.clone(), 0, ((nums2.len() as i64) - 1));
+    |                                                           ^                        ^
+    |
+help: remove these parentheses
+    |
+136 -     nums2 = quick_sort_lomuto_partition(nums2.clone(), 0, ((nums2.len() as i64) - 1));
+136 +     nums2 = quick_sort_lomuto_partition(nums2.clone(), 0, (nums2.len() as i64) - 1);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:139:59
+    |
+139 |     nums3 = quick_sort_lomuto_partition(nums3.clone(), 0, ((nums3.len() as i64) - 1));
+    |                                                           ^                        ^
+    |
+help: remove these parentheses
+    |
+139 -     nums3 = quick_sort_lomuto_partition(nums3.clone(), 0, ((nums3.len() as i64) - 1));
+139 +     nums3 = quick_sort_lomuto_partition(nums3.clone(), 0, (nums3.len() as i64) - 1);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:146:28
+    |
+146 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+146 -     let duration_us: i64 = ((_end - _start) / 1000);
+146 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:77:94
+   |
+77 | |mut arr: Vec<i64>, mut left: i64, mut right: i64| -> Vec<i64> { quick_sort_lomuto_partition(lomuto_partition, arr, left, right) }
+   |                                                                  --------------------------- ^^^^^^^^^^^^^^^^ incorrect number of function parameters
+   |                                                                  |
+   |                                                                  arguments to this function are incorrect
+   |
+   = note: expected fn pointer `fn() -> ()`
+                 found fn item `for<'a> fn(&'a mut Vec<i64>, i64, i64) -> i64 {lomuto_partition}`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:69:4
+   |
+69 | fn quick_sort_lomuto_partition(mut lomuto_partition: fn(), mut arr: Vec<i64>, mut left: i64, mut right: i64) -> Vec<i64> {
+   |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^ --------------------------
+
+error[E0061]: this function takes 0 arguments but 3 arguments were supplied
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:71:32
+   |
+71 |         let pivot_index: i64 = lomuto_partition(&mut arr.clone(), left, right);
+   |                                ^^^^^^^^^^^^^^^^ ----------------  ----  ----- unexpected argument #3 of type `i64`
+   |                                                 |                 |
+   |                                                 |                 unexpected argument #2 of type `i64`
+   |                                                 unexpected argument #1 of type `&mut Vec<i64>`
+   |
+help: remove the extra arguments
+   |
+71 -         let pivot_index: i64 = lomuto_partition(&mut arr.clone(), left, right);
+71 +         let pivot_index: i64 = lomuto_partition();
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:71:32
+   |
+71 |         let pivot_index: i64 = lomuto_partition(&mut arr.clone(), left, right);
+   |                          ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `()`
+   |                          |
+   |                          expected due to this
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:40:49
+   |
+40 |     fn quick_sort_3partition(mut arr: Vec<i64>, mut left: i64, mut right: i64) -> Vec<i64> {
+   |                                                 ----^^^^
+   |                                                 |
+   |                                                 help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:40:64
+   |
+40 |     fn quick_sort_3partition(mut arr: Vec<i64>, mut left: i64, mut right: i64) -> Vec<i64> {
+   |                                                                ----^^^^^
+   |                                                                |
+   |                                                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:79:45
+   |
+79 |     fn lomuto_partition(arr: &mut Vec<i64>, mut left: i64, mut right: i64) -> i64 {
+   |                                             ----^^^^
+   |                                             |
+   |                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:79:60
+   |
+79 |     fn lomuto_partition(arr: &mut Vec<i64>, mut left: i64, mut right: i64) -> i64 {
+   |                                                            ----^^^^^
+   |                                                            |
+   |                                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/quick_sort_3_partition.rs:97:34
+   |
+97 |     fn three_way_radix_quicksort(mut arr: Vec<i64>) -> Vec<i64> {
+   |                                  ----^^^
+   |                                  |
+   |                                  help: remove this `mut`
+
+error: aborting due to 3 previous errors; 38 warnings emitted
+
+Some errors have detailed explanations: E0061, E0308.
+For more information about an error, try `rustc --explain E0061`.

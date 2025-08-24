@@ -37,40 +37,24 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn concat(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
-    let mut result: Vec<i64> = vec![];
-    for x in a.iter().cloned() {
-        result = { let mut _v = result.clone(); _v.push(x); _v };
-    }
-    for x in b.iter().cloned() {
-        result = { let mut _v = result.clone(); _v.push(x); _v };
-    }
-    return result
-};
-    fn quick_sort(mut data: Vec<i64>) -> Vec<i64> {
-    if ((data.len() as i64) <= 1) {
-        return data
-    }
-    let pivot: i64 = data[0 as usize];
-    let mut left: Vec<i64> = vec![];
-    let mut right: Vec<i64> = vec![];
+    fn insertion_sort(mut xs: Vec<i64>) -> Vec<i64> {
     let mut i: i64 = 1;
-    while (i < (data.len() as i64)) {
-        let e: i64 = data[i as usize];
-        if (e <= pivot) {
-            left = { let mut _v = left.clone(); _v.push(e); _v };
-        } else {
-            right = { let mut _v = right.clone(); _v.push(e); _v };
+    while (i < (xs.len() as i64)) {
+        let value: i64 = xs[i as usize];
+        let mut j: i64 = (i - 1);
+        while ((j >= 0) && (xs[j as usize] > value)) {
+            xs[(j + 1) as usize] = xs[j as usize];
+            j = (j - 1);
         }
+        xs[(j + 1) as usize] = value;
         i = (i + 1);
     }
-    let sorted_left: Vec<i64> = quick_sort(left.clone());
-    let sorted_right: Vec<i64> = quick_sort(right.clone());
-    let left_pivot: Vec<i64> = { let mut _v = sorted_left.clone(); _v.push(pivot); _v };
-    return vec![left_pivot.clone(), sorted_right.clone()].concat()
+    return xs
 };
-    println!("{}", format!("{:?}", quick_sort(vec![2, 1, 0])));
-    println!("{}", format!("{:?}", quick_sort(vec![3, 5, 2, 4, 1])));
+    println!("{}", format!("{:?}", insertion_sort(vec![0, 5, 3, 2, 2])));
+    println!("{}", format!("{:?}", insertion_sort(vec![])));
+    println!("{}", format!("{:?}", insertion_sort(vec![-2, -5, -45])));
+    println!("{}", format!("{:?}", insertion_sort(vec![3])));
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();
