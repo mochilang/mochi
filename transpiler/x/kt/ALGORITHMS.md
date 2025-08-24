@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-22 15:35 GMT+7
+Last updated: 2025-08-24 15:46 GMT+7
 
 ## Algorithms Golden Test Checklist (677/1077)
 | Index | Name | Status | Duration | Memory |
@@ -157,7 +157,7 @@ Last updated: 2025-08-22 15:35 GMT+7
 | 148 | conversions/temperature_conversions | ✓ | 9.52ms | 124.38KiB |
 | 149 | conversions/time_conversions | ✓ | 7.61ms | 124.20KiB |
 | 150 | conversions/volume_conversions | ✓ | 9.14ms | 124.12KiB |
-| 151 | conversions/weight_conversion | ✓ | 11.94ms | 124.27KiB |
+| 151 | conversions/weight_conversion | ✓ | 6.62ms | 125.09KiB |
 | 152 | data_compression/burrows_wheeler | ✓ | 8.98ms | 134.08KiB |
 | 153 | data_compression/huffman |   |  |  |
 | 154 | data_compression/lempel_ziv | ✓ | 27.27ms | 120.68KiB |
