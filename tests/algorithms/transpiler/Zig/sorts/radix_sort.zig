@@ -5,58 +5,77 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
+const RADIX_var: i64 = 10;
 
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn make_buckets() [][]i64 {
+    var buckets: [][]i64 = std.heap.page_allocator.alloc([]i64, 0) catch unreachable;
+    buckets = buckets;
+    var i: i64 = 0;
+    i = i;
+    while (i < RADIX_var) {
+        buckets = blk0: { var _tmp = std.ArrayList([]i64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp.appendSlice(@as([]const []i64, buckets)) catch |err| handleError(err); _tmp.append(@constCast((&[_]i64{})[0..0])) catch |err| handleError(err); break :blk0 (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+        i = i +% 1;
+    }
+    return buckets;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn max_value(xs: []i64) i64 {
+    var max_val: i64 = xs[_idx(xs.len, 0)];
+    max_val = max_val;
+    var i_1: i64 = 1;
+    i_1 = i_1;
+    while (i_1 < @as(i64, @intCast(xs.len))) {
+        if (xs[_idx(xs.len, i_1)] > max_val) {
+            max_val = xs[_idx(xs.len, i_1)];
+        }
+        i_1 = i_1 +% 1;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
-    }
-    slowsort_recursive(seq, start, end_index -% 1);
+    return max_val;
 }
 
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
+fn radix_sort(list_of_ints_param: []i64) []i64 {
+    var list_of_ints_var: []i64 = list_of_ints_param;
+    list_of_ints_var = list_of_ints_var;
+    var placement: i64 = 1;
+    placement = placement;
+    const max_digit: i64 = max_value(list_of_ints_var);
+    while (placement <= max_digit) {
+        const buckets_1: [][]i64 = make_buckets();
+        var i_2: i64 = 0;
+        i_2 = i_2;
+        while (i_2 < @as(i64, @intCast(list_of_ints_var.len))) {
+            const value: i64 = list_of_ints_var[_idx(list_of_ints_var.len, i_2)];
+            const tmp: i64 = @mod(@divTrunc(value, placement), RADIX_var);
+            buckets_1[_idx(buckets_1.len, tmp)] = blk1: { var _tmp_1 = std.ArrayList(i64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp_1.appendSlice(@as([]const i64, buckets_1[_idx(buckets_1.len, tmp)])) catch |err| handleError(err); _tmp_1.append(value) catch |err| handleError(err); break :blk1 (_tmp_1.toOwnedSlice() catch |err| handleError(err)); };
+            i_2 = i_2 +% 1;
+        }
+        var a: i64 = 0;
+        a = a;
+        var b: i64 = 0;
+        b = b;
+        while (b < RADIX_var) {
+            const bucket: []i64 = buckets_1[_idx(buckets_1.len, b)];
+            var j: i64 = 0;
+            j = j;
+            while (j < @as(i64, @intCast(bucket.len))) {
+                list_of_ints_var[_idx(list_of_ints_var.len, a)] = bucket[_idx(bucket.len, j)];
+                a = a +% 1;
+                j = j +% 1;
+            }
+            b = b +% 1;
+        }
+        placement = placement *% RADIX_var;
     }
-    return seq_1;
+    return list_of_ints_var;
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        std.debug.print("{s}\n", .{_str(radix_sort(blk2: { var _tmp_2 = [5]i64{0, 5, 3, 2, 2}; break :blk2 _tmp_2[0..]; }))});
+        std.debug.print("{s}\n", .{_str(radix_sort(blk3: { var _tmp_3 = [4]i64{1, 100, 10, 1000}; break :blk3 _tmp_3[0..]; }))});
+        std.debug.print("{s}\n", .{_str(radix_sort(blk4: { var _tmp_4 = [16]i64{15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}; break :blk4 _tmp_4[0..]; }))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);

@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-23 15:31 +0700
+Last updated: 2025-08-24 08:57 +0700
 
-## Program Checklist (514/1077)
+## Program Checklist (548/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -962,55 +962,55 @@ Last updated: 2025-08-23 15:31 +0700
 | 953 | sorts/exchange_sort |   |  |  |
 | 954 | sorts/external_sort |   |  |  |
 | 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
+| 956 | sorts/heap_sort | ✓ | 819µs | 512.0 KB |
+| 957 | sorts/insertion_sort | ✓ | 440µs | 384.0 KB |
+| 958 | sorts/intro_sort | ✓ | 715µs | 256.0 KB |
+| 959 | sorts/iterative_merge_sort | ✓ | 1.876ms | 768.0 KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 1.025ms | 512.0 KB |
+| 961 | sorts/merge_sort | ✓ | 845µs | 512.0 KB |
+| 962 | sorts/msd_radix_sort | ✓ | 2.255ms | 896.0 KB |
+| 963 | sorts/natural_sort | ✓ | 5.177ms | 1.7 MB |
+| 964 | sorts/odd_even_sort | ✓ | 705µs | 384.0 KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 599µs | 384.0 KB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 637µs | 384.0 KB |
+| 967 | sorts/pancake_sort | ✓ | 374µs | 384.0 KB |
+| 968 | sorts/patience_sort | ✓ | 926µs | 512.0 KB |
+| 969 | sorts/pigeon_sort | ✓ | 1.755ms | 768.0 KB |
 | 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
+| 971 | sorts/quick_sort | ✓ | 875µs | 512.0 KB |
 | 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
+| 973 | sorts/radix_sort | ✓ | 2.449ms | 1.0 MB |
 | 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
+| 975 | sorts/recursive_mergesort_array | ✓ | 2.102ms | 768.0 KB |
+| 976 | sorts/recursive_quick_sort | ✓ | 744µs | 512.0 KB |
+| 977 | sorts/selection_sort | ✓ | 440µs | 256.0 KB |
 | 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort | ✓ | 1.245ms | 512.0 KB |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
+| 979 | sorts/shrink_shell_sort | ✓ | 346µs | 384.0 KB |
+| 980 | sorts/slowsort |   | 1.245ms | 512.0 KB |
+| 981 | sorts/stooge_sort | ✓ | 349µs | 256.0 KB |
+| 982 | sorts/strand_sort | ✓ | 934µs | 384.0 KB |
 | 983 | sorts/tim_sort |   |  |  |
 | 984 | sorts/topological_sort |   |  |  |
 | 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
+| 986 | sorts/unknown_sort | ✓ | 1.036ms | 384.0 KB |
 | 987 | sorts/wiggle_sort |   |  |  |
 | 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams | ✓ | 8.905ms | 1.6 MB |
+| 989 | strings/alternative_string_arrange | ✓ | 704µs | 384.0 KB |
+| 990 | strings/anagrams |   | 8.905ms | 1.6 MB |
 | 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
+| 992 | strings/barcode_validator | ✓ | 827µs | 444.0 KB |
+| 993 | strings/bitap_string_match | ✓ | 1.646ms | 640.0 KB |
+| 994 | strings/boyer_moore_search | ✓ | 190µs | 128.0 KB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 1.216ms | 512.0 KB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 701µs | 384.0 KB |
+| 997 | strings/capitalize | ✓ | 357µs | 384.0 KB |
+| 998 | strings/check_anagrams | ✓ | 1.655ms | 640.0 KB |
+| 999 | strings/count_vowels | ✓ | 458µs | 256.0 KB |
+| 1000 | strings/credit_card_validator | ✓ | 585µs | 384.0 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 4.29ms | 1.5 MB |
 | 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
+| 1003 | strings/dna | ✓ | 593µs | 384.0 KB |
+| 1004 | strings/edit_distance | ✓ | 1.639ms | 256.0 KB |
 | 1005 | strings/frequency_finder |   |  |  |
 | 1006 | strings/hamming_distance |   |  |  |
 | 1007 | strings/indian_phone_validator |   |  |  |

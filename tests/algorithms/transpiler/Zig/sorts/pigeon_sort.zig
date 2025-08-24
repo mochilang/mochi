@@ -5,58 +5,87 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
-
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn make_list(n: i64, value: i64) []i64 {
+    var result: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
+    result = result;
+    var i: i64 = 0;
+    i = i;
+    while (i < n) {
+        result = blk0: { var _tmp = std.ArrayList(i64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp.appendSlice(@as([]const i64, result)) catch |err| handleError(err); _tmp.append(value) catch |err| handleError(err); break :blk0 (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+        i = i +% 1;
+    }
+    return result;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn min_value(arr: []i64) i64 {
+    var m: i64 = arr[_idx(arr.len, 0)];
+    m = m;
+    var i_1: i64 = 1;
+    i_1 = i_1;
+    while (i_1 < @as(i64, @intCast(arr.len))) {
+        if (arr[_idx(arr.len, i_1)] < m) {
+            m = arr[_idx(arr.len, i_1)];
+        }
+        i_1 = i_1 +% 1;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
-    }
-    slowsort_recursive(seq, start, end_index -% 1);
+    return m;
 }
 
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
+fn max_value(arr_1: []i64) i64 {
+    var m_1: i64 = arr_1[_idx(arr_1.len, 0)];
+    m_1 = m_1;
+    var i_2: i64 = 1;
+    i_2 = i_2;
+    while (i_2 < @as(i64, @intCast(arr_1.len))) {
+        if (arr_1[_idx(arr_1.len, i_2)] > m_1) {
+            m_1 = arr_1[_idx(arr_1.len, i_2)];
+        }
+        i_2 = i_2 +% 1;
     }
-    return seq_1;
+    return m_1;
+}
+
+fn pigeon_sort(array_param: []i64) []i64 {
+    var array_var: []i64 = array_param;
+    array_var = array_var;
+    if (@as(i64, @intCast(array_var.len)) == 0) {
+        return array_var;
+    }
+    const mn: i64 = min_value(array_var);
+    const mx: i64 = max_value(array_var);
+    const holes_range: i64 = mx -% mn +% 1;
+    const holes: []i64 = make_list(holes_range, 0);
+    const holes_repeat: []i64 = make_list(holes_range, 0);
+    var i_3: i64 = 0;
+    i_3 = i_3;
+    while (i_3 < @as(i64, @intCast(array_var.len))) {
+        const index: i64 = array_var[_idx(array_var.len, i_3)] -% mn;
+        holes[_idx(holes.len, index)] = array_var[_idx(array_var.len, i_3)];
+        holes_repeat[_idx(holes_repeat.len, index)] = holes_repeat[_idx(holes_repeat.len, index)] +% 1;
+        i_3 = i_3 +% 1;
+    }
+    var array_index: i64 = 0;
+    array_index = array_index;
+    var h: i64 = 0;
+    h = h;
+    while (h < holes_range) {
+        while (holes_repeat[_idx(holes_repeat.len, h)] > 0) {
+            array_var[_idx(array_var.len, array_index)] = holes[_idx(holes.len, h)];
+            array_index = array_index +% 1;
+            holes_repeat[_idx(holes_repeat.len, h)] = holes_repeat[_idx(holes_repeat.len, h)] -% 1;
+        }
+        h = h +% 1;
+    }
+    return array_var;
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        std.debug.print("{s}\n", .{_str(pigeon_sort(blk1: { var _tmp_1 = [5]i64{0, 5, 3, 2, 2}; break :blk1 _tmp_1[0..]; }))});
+        std.debug.print("{s}\n", .{_str(pigeon_sort(@constCast((&[_]i64{})[0..0])))});
+        std.debug.print("{s}\n", .{_str(pigeon_sort(blk2: { var _tmp_2 = [3]i64{0 -% 2, 0 -% 5, 0 -% 45}; break :blk2 _tmp_2[0..]; }))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);

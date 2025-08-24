@@ -5,58 +5,60 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
+var data_var_1: []i64 = &[_]i64{};
+var result_var_1: []i64 = &[_]i64{};
 
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn heapify(arr_param: []i64, index: i64, heap_size: i64) void {
+    var arr_var: []i64 = arr_param;
+    arr_var = arr_var;
+    var largest: i64 = index;
+    largest = largest;
+    const left_index: i64 = 2 *% index +% 1;
+    const right_index: i64 = 2 *% index +% 2;
+    if (left_index < heap_size and arr_var[_idx(arr_var.len, left_index)] > arr_var[_idx(arr_var.len, largest)]) {
+        largest = left_index;
+    }
+    if (right_index < heap_size and arr_var[_idx(arr_var.len, right_index)] > arr_var[_idx(arr_var.len, largest)]) {
+        largest = right_index;
+    }
+    if (largest != index) {
+        const temp: i64 = arr_var[_idx(arr_var.len, largest)];
+        arr_var[_idx(arr_var.len, largest)] = arr_var[_idx(arr_var.len, index)];
+        arr_var[_idx(arr_var.len, index)] = temp;
+        heapify(arr_var, largest, heap_size);
+    }
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn heap_sort(arr_param_1: []i64) []i64 {
+    const arr_var_1: []i64 = arr_param_1;
+    const n: i64 = @as(i64, @intCast(arr_var_1.len));
+    var i: i64 = @divTrunc(n, 2) -% 1;
+    i = i;
+    while (i >= 0) {
+        heapify(arr_var_1, i, n);
+        i = i -% 1;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
+    i = n -% 1;
+    while (i > 0) {
+        const temp_1: i64 = arr_var_1[_idx(arr_var_1.len, 0)];
+        arr_var_1[_idx(arr_var_1.len, 0)] = arr_var_1[_idx(arr_var_1.len, i)];
+        arr_var_1[_idx(arr_var_1.len, i)] = temp_1;
+        heapify(arr_var_1, 0, i);
+        i = i -% 1;
     }
-    slowsort_recursive(seq, start, end_index -% 1);
-}
-
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
-    }
-    return seq_1;
+    return arr_var_1;
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        data_var_1 = std.heap.page_allocator.dupe(i64, blk0: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.append(3) catch unreachable; _tmp.append(7) catch unreachable; _tmp.append(9) catch unreachable; _tmp.append(28) catch unreachable; _tmp.append(123) catch unreachable; _tmp.append(0 -% 5) catch unreachable; _tmp.append(8) catch unreachable; _tmp.append(0 -% 30) catch unreachable; _tmp.append(0 -% 200) catch unreachable; _tmp.append(0) catch unreachable; _tmp.append(4) catch unreachable; break :blk0 (_tmp.toOwnedSlice() catch unreachable); }) catch unreachable;
+        result_var_1 = heap_sort(data_var_1);
+        std.debug.print("{s}\n", .{_str(result_var_1)});
+        if (!std.mem.eql(u8, _str(result_var_1), _str(blk1: { var _tmp_1 = std.ArrayList(i64).init(std.heap.page_allocator); _tmp_1.append(0 -% 200) catch unreachable; _tmp_1.append(0 -% 30) catch unreachable; _tmp_1.append(0 -% 5) catch unreachable; _tmp_1.append(0) catch unreachable; _tmp_1.append(3) catch unreachable; _tmp_1.append(4) catch unreachable; _tmp_1.append(7) catch unreachable; _tmp_1.append(8) catch unreachable; _tmp_1.append(9) catch unreachable; _tmp_1.append(28) catch unreachable; _tmp_1.append(123) catch unreachable; break :blk1 (_tmp_1.toOwnedSlice() catch unreachable); }))) {
+            @panic("Assertion error");
+        }
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);

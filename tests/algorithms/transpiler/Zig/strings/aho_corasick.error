@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/strings/aho_corasick.zig:9:36: error: expected expression, found ';'

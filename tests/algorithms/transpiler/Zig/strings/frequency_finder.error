@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/strings/frequency_finder.zig:38:35: error: expected expression, found 'const'

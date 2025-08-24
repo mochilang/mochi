@@ -5,58 +5,124 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
-
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn pow2(n: i64) i64 {
+    var res: i64 = 1;
+    res = res;
+    var i: i64 = 0;
+    i = i;
+    while (i < n) {
+        res = res *% 2;
+        i = i +% 1;
+    }
+    return res;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn bit_and(a: i64, b: i64) i64 {
+    var x: i64 = a;
+    x = x;
+    var y: i64 = b;
+    y = y;
+    var res_1: i64 = 0;
+    res_1 = res_1;
+    var bit: i64 = 1;
+    bit = bit;
+    while (x > 0 or y > 0) {
+        if (@mod(x, 2) == 1 and @mod(y, 2) == 1) {
+            res_1 = res_1 +% bit;
+        }
+        x = @as(i64, @divTrunc(x, 2));
+        y = @as(i64, @divTrunc(y, 2));
+        bit = bit *% 2;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
-    }
-    slowsort_recursive(seq, start, end_index -% 1);
+    return res_1;
 }
 
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
+fn bit_or(a_1: i64, b_1: i64) i64 {
+    var x_1: i64 = a_1;
+    x_1 = x_1;
+    var y_1: i64 = b_1;
+    y_1 = y_1;
+    var res_2: i64 = 0;
+    res_2 = res_2;
+    var bit_1: i64 = 1;
+    bit_1 = bit_1;
+    while (x_1 > 0 or y_1 > 0) {
+        if (@mod(x_1, 2) == 1 or @mod(y_1, 2) == 1) {
+            res_2 = res_2 +% bit_1;
+        }
+        x_1 = @as(i64, @divTrunc(x_1, 2));
+        y_1 = @as(i64, @divTrunc(y_1, 2));
+        bit_1 = bit_1 *% 2;
     }
-    return seq_1;
+    return res_2;
+}
+
+fn char_to_index(ch: []const u8) i64 {
+    const letters: []const u8 = "abcdefghijklmnopqrstuvwxyz";
+    var i_1: i64 = 0;
+    i_1 = i_1;
+    while (i_1 < @as(i64, @intCast(letters.len))) {
+        if (std.mem.eql(u8, letters[@as(usize, @intCast(i_1))..@min(@as(usize, @intCast(i_1 +% 1)), @as(usize, @intCast(letters.len)))], ch)) {
+            return i_1;
+        }
+        i_1 = i_1 +% 1;
+    }
+    return 26;
+}
+
+fn bitap_string_match(text: []const u8, pattern: []const u8) i64 {
+    if (pattern.len == 0) {
+        return 0;
+    }
+    const m: i64 = @as(i64, @intCast(pattern.len));
+    if (m > @as(i64, @intCast(text.len))) {
+        return 0 -% 1;
+    }
+    const limit: i64 = pow2(m +% 1);
+    const all_ones: i64 = limit -% 1;
+    var pattern_mask: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
+    pattern_mask = pattern_mask;
+    var i_2: i64 = 0;
+    i_2 = i_2;
+    while (i_2 < 27) {
+        pattern_mask = blk0: { var _tmp = std.ArrayList(i64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp.appendSlice(@as([]const i64, pattern_mask)) catch |err| handleError(err); _tmp.append(all_ones) catch |err| handleError(err); break :blk0 (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+        i_2 = i_2 +% 1;
+    }
+    i_2 = 0;
+    while (i_2 < m) {
+        const ch_1: []const u8 = pattern[@as(usize, @intCast(i_2))..@min(@as(usize, @intCast(i_2 +% 1)), @as(usize, @intCast(pattern.len)))];
+        const idx: i64 = char_to_index(ch_1);
+        pattern_mask[_idx(pattern_mask.len, idx)] = bit_and(pattern_mask[_idx(pattern_mask.len, idx)], all_ones -% pow2(i_2));
+        i_2 = i_2 +% 1;
+    }
+    var state: i64 = all_ones -% 1;
+    state = state;
+    i_2 = 0;
+    while (i_2 < @as(i64, @intCast(text.len))) {
+        const ch_2: []const u8 = text[@as(usize, @intCast(i_2))..@min(@as(usize, @intCast(i_2 +% 1)), @as(usize, @intCast(text.len)))];
+        const idx_1: i64 = char_to_index(ch_2);
+        state = bit_or(state, pattern_mask[_idx(pattern_mask.len, idx_1)]);
+        state = @mod(state *% 2, limit);
+        if (bit_and(state, pow2(m)) == 0) {
+            return i_2 -% m +% 1;
+        }
+        i_2 = i_2 +% 1;
+    }
+    return 0 -% 1;
+}
+
+fn mochi_main() void {
+    std.debug.print("{s}\n", .{_str(bitap_string_match("abdabababc", "ababc"))});
+    std.debug.print("{s}\n", .{_str(bitap_string_match("abdabababc", ""))});
+    std.debug.print("{s}\n", .{_str(bitap_string_match("abdabababc", "c"))});
+    std.debug.print("{s}\n", .{_str(bitap_string_match("abdabababc", "fofosdfo"))});
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        mochi_main();
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);

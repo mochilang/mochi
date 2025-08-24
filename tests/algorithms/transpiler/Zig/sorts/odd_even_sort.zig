@@ -5,58 +5,95 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
-
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn odd_even_sort(xs: []i64) []i64 {
+    var arr: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
+    arr = arr;
+    var i: i64 = 0;
+    i = i;
+    while (i < @as(i64, @intCast(xs.len))) {
+        arr = blk0: { var _tmp = std.ArrayList(i64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp.appendSlice(@as([]const i64, arr)) catch |err| handleError(err); _tmp.append(xs[_idx(xs.len, i)]) catch |err| handleError(err); break :blk0 (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+        i = i +% 1;
+    }
+    const n: i64 = @as(i64, @intCast(arr.len));
+    var sorted: bool = false;
+    sorted = sorted;
+    while (sorted == false) {
+        sorted = true;
+        var j: i64 = 0;
+        j = j;
+        while (j < n -% 1) {
+            if (arr[_idx(arr.len, j)] > arr[_idx(arr.len, j +% 1)]) {
+                const tmp: i64 = arr[_idx(arr.len, j)];
+                arr[_idx(arr.len, j)] = arr[_idx(arr.len, j +% 1)];
+                arr[_idx(arr.len, j +% 1)] = tmp;
+                sorted = false;
+            }
+            j = j +% 2;
+        }
+        j = 1;
+        while (j < n -% 1) {
+            if (arr[_idx(arr.len, j)] > arr[_idx(arr.len, j +% 1)]) {
+                const tmp_1: i64 = arr[_idx(arr.len, j)];
+                arr[_idx(arr.len, j)] = arr[_idx(arr.len, j +% 1)];
+                arr[_idx(arr.len, j +% 1)] = tmp_1;
+                sorted = false;
+            }
+            j = j +% 2;
+        }
+    }
+    return arr;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn print_list(xs_1: []i64) void {
+    var i_1: i64 = 0;
+    i_1 = i_1;
+    var out: []const u8 = "";
+    out = out;
+    while (i_1 < @as(i64, @intCast(xs_1.len))) {
+        if (i_1 > 0) {
+            out = _concat_string(out, " ");
+        }
+        out = _concat_string(out, _str(xs_1[_idx(xs_1.len, i_1)]));
+        i_1 = i_1 +% 1;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
-    }
-    slowsort_recursive(seq, start, end_index -% 1);
+    std.debug.print("{s}\n", .{out});
 }
 
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
+fn test_odd_even_sort() void {
+    const a: []i64 = @constCast(([5]i64{5, 4, 3, 2, 1})[0..5]);
+    const r1: []i64 = odd_even_sort(a);
+    if (r1[_idx(r1.len, 0)] != 1 or r1[_idx(r1.len, 1)] != 2 or r1[_idx(r1.len, 2)] != 3 or r1[_idx(r1.len, 3)] != 4 or r1[_idx(r1.len, 4)] != 5) {
+        @panic("case1 failed");
     }
-    return seq_1;
+    const b: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
+    const r2: []i64 = odd_even_sort(b);
+    if (@as(i64, @intCast(r2.len)) != 0) {
+        @panic("case2 failed");
+    }
+    const c: []i64 = blk1: { var _tmp_1 = std.ArrayList(i64).init(std.heap.page_allocator); _tmp_1.append(0 -% 10) catch unreachable; _tmp_1.append(0 -% 1) catch unreachable; _tmp_1.append(10) catch unreachable; _tmp_1.append(2) catch unreachable; break :blk1 (_tmp_1.toOwnedSlice() catch unreachable); };
+    const r3: []i64 = odd_even_sort(c);
+    if (r3[_idx(r3.len, 0)] != 0 -% 10 or r3[_idx(r3.len, 1)] != 0 -% 1 or r3[_idx(r3.len, 2)] != 2 or r3[_idx(r3.len, 3)] != 10) {
+        @panic("case3 failed");
+    }
+    const d: []i64 = @constCast(([4]i64{1, 2, 3, 4})[0..4]);
+    const r4: []i64 = odd_even_sort(d);
+    if (r4[_idx(r4.len, 0)] != 1 or r4[_idx(r4.len, 1)] != 2 or r4[_idx(r4.len, 2)] != 3 or r4[_idx(r4.len, 3)] != 4) {
+        @panic("case4 failed");
+    }
+}
+
+fn mochi_main() void {
+    test_odd_even_sort();
+    const sample: []i64 = @constCast(([5]i64{5, 4, 3, 2, 1})[0..5]);
+    const sorted_1: []i64 = odd_even_sort(sample);
+    print_list(sorted_1);
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        mochi_main();
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
@@ -143,6 +180,15 @@ fn _str(v: anytype) []const u8 {
     else => {},
     }
     return std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{v}) catch unreachable;
+}
+
+fn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {
+    const alloc = std.heap.page_allocator;
+    var out = alloc.alloc(u8, lhs.len + rhs.len + 1) catch unreachable;
+    std.mem.copyForwards(u8, out[0..lhs.len], lhs);
+    std.mem.copyForwards(u8, out[lhs.len..lhs.len + rhs.len], rhs);
+    out[lhs.len + rhs.len] = 0;
+    return out[0..lhs.len + rhs.len];
 }
 
 fn _mem() i64 {

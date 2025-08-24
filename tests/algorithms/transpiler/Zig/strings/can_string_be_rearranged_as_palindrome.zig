@@ -5,58 +5,103 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
+const LETTERS_var: []const u8 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LOWERCASE_var: []const u8 = "abcdefghijklmnopqrstuvwxyz";
 
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn char_to_lower(c: []const u8) []const u8 {
+    var i: i64 = 0;
+    i = i;
+    while (i < @as(i64, @intCast(LETTERS_var.len))) {
+        if (std.mem.eql(u8, c, LETTERS_var[@as(usize, @intCast(i))..@min(@as(usize, @intCast(i +% 1)), @as(usize, @intCast(LETTERS_var.len)))])) {
+            return LOWERCASE_var[@as(usize, @intCast(i))..@min(@as(usize, @intCast(i +% 1)), @as(usize, @intCast(LOWERCASE_var.len)))];
+        }
+        i = i +% 1;
+    }
+    return c;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn normalize(input_str: []const u8) []const u8 {
+    var res: []const u8 = "";
+    res = res;
+    var i_1: i64 = 0;
+    i_1 = i_1;
+    while (i_1 < @as(i64, @intCast(input_str.len))) {
+        const ch: []const u8 = input_str[@as(usize, @intCast(i_1))..@min(@as(usize, @intCast(i_1 +% 1)), @as(usize, @intCast(input_str.len)))];
+        const lc: []const u8 = char_to_lower(ch);
+        if (std.mem.order(u8, lc, "a") != .lt and std.mem.order(u8, lc, "z") != .gt) {
+            res = _concat_string(res, lc);
+        }
+        i_1 = i_1 +% 1;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
-    }
-    slowsort_recursive(seq, start, end_index -% 1);
+    return res;
 }
 
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
+fn can_string_be_rearranged_as_palindrome_counter(input_str_1: []const u8) bool {
+    const s: []const u8 = normalize(input_str_1);
+    var freq: std.StringHashMap(i64) = std.StringHashMap(i64).init(std.heap.page_allocator);
+    freq = freq;
+    var i_2: i64 = 0;
+    i_2 = i_2;
+    while (i_2 < @as(i64, @intCast(s.len))) {
+        const ch_1: []const u8 = s[@as(usize, @intCast(i_2))..@min(@as(usize, @intCast(i_2 +% 1)), @as(usize, @intCast(s.len)))];
+        if (freq.contains(ch_1)) {
+            freq.put(ch_1, (blk0: { if (freq.get(ch_1)) |v| { break :blk0 v; } break :blk0 0; }) +% 1) catch unreachable;
+        } else {
+            freq.put(ch_1, 1) catch unreachable;
+        }
+        i_2 = i_2 +% 1;
     }
-    return seq_1;
+    var odd: i64 = 0;
+    odd = odd;
+    var __mapit1 = freq.keyIterator();
+    while (__mapit1.next()) |__it0| {
+        const key = __it0.*;
+        if (@mod((blk1: { if (freq.get(key)) |v| { break :blk1 v; } break :blk1 0; }), 2) != 0) {
+            odd = odd +% 1;
+        }
+    }
+    return odd < 2;
+}
+
+fn can_string_be_rearranged_as_palindrome(input_str_2: []const u8) bool {
+    const s_1: []const u8 = normalize(input_str_2);
+    if (@as(i64, @intCast(s_1.len)) == 0) {
+        return true;
+    }
+    var character_freq_dict: std.StringHashMap(i64) = std.StringHashMap(i64).init(std.heap.page_allocator);
+    character_freq_dict = character_freq_dict;
+    var i_3: i64 = 0;
+    i_3 = i_3;
+    while (i_3 < @as(i64, @intCast(s_1.len))) {
+        const character: []const u8 = s_1[@as(usize, @intCast(i_3))..@min(@as(usize, @intCast(i_3 +% 1)), @as(usize, @intCast(s_1.len)))];
+        if (character_freq_dict.contains(character)) {
+            character_freq_dict.put(character, (blk2: { if (character_freq_dict.get(character)) |v| { break :blk2 v; } break :blk2 0; }) +% 1) catch unreachable;
+        } else {
+            character_freq_dict.put(character, 1) catch unreachable;
+        }
+        i_3 = i_3 +% 1;
+    }
+    var odd_char: i64 = 0;
+    odd_char = odd_char;
+    var __mapit3 = character_freq_dict.keyIterator();
+    while (__mapit3.next()) |__it2| {
+        const character_key = __it2.*;
+        const character_count: i64 = (blk3: { if (character_freq_dict.get(character_key)) |v| { break :blk3 v; } break :blk3 0; });
+        if (@mod(character_count, 2) != 0) {
+            odd_char = odd_char +% 1;
+        }
+    }
+    return !(odd_char > 1);
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        std.debug.print("{s}\n", .{_str(can_string_be_rearranged_as_palindrome_counter("Momo"))});
+        std.debug.print("{s}\n", .{_str(can_string_be_rearranged_as_palindrome_counter("Mother"))});
+        std.debug.print("{s}\n", .{_str(can_string_be_rearranged_as_palindrome("Momo"))});
+        std.debug.print("{s}\n", .{_str(can_string_be_rearranged_as_palindrome("Mother"))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
@@ -143,6 +188,15 @@ fn _str(v: anytype) []const u8 {
     else => {},
     }
     return std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{v}) catch unreachable;
+}
+
+fn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {
+    const alloc = std.heap.page_allocator;
+    var out = alloc.alloc(u8, lhs.len + rhs.len + 1) catch unreachable;
+    std.mem.copyForwards(u8, out[0..lhs.len], lhs);
+    std.mem.copyForwards(u8, out[lhs.len..lhs.len + rhs.len], rhs);
+    out[lhs.len + rhs.len] = 0;
+    return out[0..lhs.len + rhs.len];
 }
 
 fn _mem() i64 {

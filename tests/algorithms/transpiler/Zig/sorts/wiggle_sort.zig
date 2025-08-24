@@ -5,58 +5,52 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
-
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn swap(xs: []f64, i: i64, j: i64) []f64 {
+    var res: []f64 = std.heap.page_allocator.alloc(f64, 0) catch unreachable;
+    res = res;
+    var k: i64 = 0;
+    k = k;
+    while (k < @as(i64, @intCast(xs.len))) {
+        if (k == i) {
+            res = blk0: { var _tmp = std.ArrayList(f64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp.appendSlice(@as([]const f64, res)) catch |err| handleError(err); _tmp.append(xs[_idx(xs.len, j)]) catch |err| handleError(err); break :blk0 (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+        } else {
+            if (k == j) {
+                res = blk1: { var _tmp_1 = std.ArrayList(f64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp_1.appendSlice(@as([]const f64, res)) catch |err| handleError(err); _tmp_1.append(xs[_idx(xs.len, i)]) catch |err| handleError(err); break :blk1 (_tmp_1.toOwnedSlice() catch |err| handleError(err)); };
+            } else {
+                res = blk2: { var _tmp_2 = std.ArrayList(f64).initCapacity(std.heap.page_allocator, 0) catch |err| handleError(err); _tmp_2.appendSlice(@as([]const f64, res)) catch |err| handleError(err); _tmp_2.append(xs[_idx(xs.len, k)]) catch |err| handleError(err); break :blk2 (_tmp_2.toOwnedSlice() catch |err| handleError(err)); };
+            }
+        }
+        k = k +% 1;
+    }
+    return res;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn wiggle_sort(nums: []f64) []f64 {
+    var i_1: i64 = 0;
+    i_1 = i_1;
+    var res_1: []f64 = blk3: { const tmp = std.heap.page_allocator.alloc(f64, nums.len) catch unreachable; @memcpy(tmp, nums); break :blk3 tmp; };
+    res_1 = res_1;
+    while (i_1 < @as(i64, @intCast(res_1.len))) {
+        const j_1: i64 = if (i_1 == 0) @as(i64, @intCast(res_1.len)) -% 1 else i_1 -% 1;
+        const prev: f64 = res_1[_idx(res_1.len, j_1)];
+        const curr: f64 = res_1[_idx(res_1.len, i_1)];
+        if (@mod(i_1, 2) == 1 == prev > curr) {
+            res_1 = swap(res_1, j_1, i_1);
+        }
+        i_1 = i_1 +% 1;
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
-    }
-    slowsort_recursive(seq, start, end_index -% 1);
-}
-
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
-    }
-    return seq_1;
+    return res_1;
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        std.debug.print("{s}\n", .{_str(wiggle_sort(blk4: { var _tmp_3 = [6]f64{3.0, 5.0, 2.0, 1.0, 6.0, 4.0}; break :blk4 _tmp_3[0..]; }))});
+        std.debug.print("{s}\n", .{_str(wiggle_sort(blk5: { var _tmp_4 = [5]f64{0.0, 5.0, 3.0, 2.0, 2.0}; break :blk5 _tmp_4[0..]; }))});
+        std.debug.print("{s}\n", .{_str(wiggle_sort(@constCast((&[_]f64{})[0..0])))});
+        std.debug.print("{s}\n", .{_str(wiggle_sort(blk6: { var _tmp_5 = [3]f64{@as(f64, @floatFromInt(0)) - 2.0, @as(f64, @floatFromInt(0)) - 5.0, @as(f64, @floatFromInt(0)) - 45.0}; break :blk6 _tmp_5[0..]; }))});
+        std.debug.print("{s}\n", .{_str(wiggle_sort(blk7: { var _tmp_6 = [3]f64{@as(f64, @floatFromInt(0)) - 2.10000000000000009, @as(f64, @floatFromInt(0)) - 5.67999999999999972, @as(f64, @floatFromInt(0)) - 45.1099999999999994}; break :blk7 _tmp_6[0..]; }))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);

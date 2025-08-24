@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/sorts/wiggle_sort.zig:37:31: error: comparison operators cannot be chained

@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/sorts/tim_sort.zig:10:28: error: expected expression, found ';'

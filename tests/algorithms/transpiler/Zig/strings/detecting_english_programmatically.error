@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/strings/detecting_english_programmatically.zig:86:33: error: expected expression, found ';'

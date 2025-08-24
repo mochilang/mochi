@@ -5,58 +5,44 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const seq1_var: []i64 = ;
-const seq2_var_1: []i64 = std.heap.page_allocator.alloc(i64, 0) catch unreachable;
-const seq3_var: []i64 = ;
-const seq4_var: []i64 = ;
-const seq5_var: []i64 = ;
-const seq6_var: []i64 = ;
-const seq7_var: []i64 = ;
-const seq8_var: []i64 = ;
-
-fn swap(seq_param: []i64, i: i64, j: i64) void {
-    var seq_var: []i64 = seq_param;
-    seq_var = seq_var;
-    const temp: i64 = seq_var[_idx(seq_var.len, i)];
-    seq_var[_idx(seq_var.len, i)] = seq_var[_idx(seq_var.len, j)];
-    seq_var[_idx(seq_var.len, j)] = temp;
+fn min3(a: i64, b: i64, c: i64) i64 {
+    var m: i64 = a;
+    m = m;
+    if (b < m) {
+        m = b;
+    }
+    if (c < m) {
+        m = c;
+    }
+    return m;
 }
 
-fn slowsort_recursive(seq: []i64, start: i64, end_index: i64) void {
-    if (start >= end_index) {
-        return;
+fn edit_distance(source: []const u8, target: []const u8) i64 {
+    if (@as(i64, @intCast(source.len)) == 0) {
+        return @as(i64, @intCast(target.len));
     }
-    const mid: i64 = @divTrunc(start +% end_index, 2);
-    slowsort_recursive(seq, start, mid);
-    slowsort_recursive(seq, mid +% 1, end_index);
-    if (seq[_idx(seq.len, end_index)] < seq[_idx(seq.len, mid)]) {
-        swap(seq, end_index, mid);
+    if (@as(i64, @intCast(target.len)) == 0) {
+        return @as(i64, @intCast(source.len));
     }
-    slowsort_recursive(seq, start, end_index -% 1);
+    const last_source: []const u8 = source[@as(usize, @intCast(@as(i64, @intCast(source.len)) -% 1))..@min(@as(usize, @intCast(@as(i64, @intCast(source.len)))), @as(usize, @intCast(source.len)))];
+    const last_target: []const u8 = target[@as(usize, @intCast(@as(i64, @intCast(target.len)) -% 1))..@min(@as(usize, @intCast(@as(i64, @intCast(target.len)))), @as(usize, @intCast(target.len)))];
+    const delta: i64 = if (std.mem.eql(u8, last_source, last_target)) 0 else 1;
+    const delete_cost: i64 = edit_distance(source[@as(usize, @intCast(0))..@min(@as(usize, @intCast(@as(i64, @intCast(source.len)) -% 1)), @as(usize, @intCast(source.len)))], target) +% 1;
+    const insert_cost: i64 = edit_distance(source, target[@as(usize, @intCast(0))..@min(@as(usize, @intCast(@as(i64, @intCast(target.len)) -% 1)), @as(usize, @intCast(target.len)))]) +% 1;
+    const replace_cost: i64 = edit_distance(source[@as(usize, @intCast(0))..@min(@as(usize, @intCast(@as(i64, @intCast(source.len)) -% 1)), @as(usize, @intCast(source.len)))], target[@as(usize, @intCast(0))..@min(@as(usize, @intCast(@as(i64, @intCast(target.len)) -% 1)), @as(usize, @intCast(target.len)))]) +% delta;
+    return min3(delete_cost, insert_cost, replace_cost);
 }
 
-fn slow_sort(seq_1: []i64) []i64 {
-    if (@as(i64, @intCast(seq_1.len)) > 0) {
-        slowsort_recursive(seq_1, 0, @as(i64, @intCast(seq_1.len)) -% 1);
-    }
-    return seq_1;
+fn mochi_main() void {
+    const result: i64 = edit_distance("ATCGCTG", "TAGCTAA");
+    std.debug.print("{s}\n", .{_str(result)});
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(slow_sort(seq1_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq2_var_1))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq3_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq4_var))});
-        std.debug.print("{s}\n", .{_str(slow_sort(seq5_var))});
-        slowsort_recursive(seq6_var, 2, 7);
-        std.debug.print("{s}\n", .{_str(seq6_var)});
-        slowsort_recursive(seq7_var, 0, 4);
-        std.debug.print("{s}\n", .{_str(seq7_var)});
-        slowsort_recursive(seq8_var, 5, @as(i64, @intCast(seq8_var.len)) -% 1);
-        std.debug.print("{s}\n", .{_str(seq8_var)});
+        mochi_main();
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
