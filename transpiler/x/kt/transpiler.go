@@ -3033,6 +3033,8 @@ func kotlinZeroValue(t types.Type) string {
 			v = "Any?"
 		}
 		return fmt.Sprintf("mutableMapOf<%s, %s>()", k, v)
+	case types.FuncType, *types.FuncType:
+		return ""
 	case types.OptionType:
 		return "null"
 	case types.StructType:
@@ -6612,9 +6614,6 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 // Emit returns formatted Kotlin source code for prog.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
-	if prog.DataDir != "" {
-		fmt.Fprintf(&buf, "val _dataDir = %q\n\n", prog.DataDir)
-	}
 	// import helpers must appear before other declarations
 	for _, h := range prog.Helpers {
 		if strings.HasPrefix(h, "import ") {
@@ -6624,6 +6623,9 @@ func Emit(prog *Program) []byte {
 			}
 			buf.WriteString("\n")
 		}
+	}
+	if prog.DataDir != "" {
+		fmt.Fprintf(&buf, "val _dataDir = %q\n\n", prog.DataDir)
 	}
 	for _, h := range prog.Helpers {
 		if strings.HasPrefix(h, "import ") {

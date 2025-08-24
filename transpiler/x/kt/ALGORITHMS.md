@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-24 17:03 GMT+7
+Last updated: 2025-08-24 23:32 GMT+7
 
-## Algorithms Golden Test Checklist (677/1077)
+## Algorithms Golden Test Checklist (678/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -219,7 +219,7 @@ Last updated: 2025-08-24 17:03 GMT+7
 | 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
 | 211 | data_structures/heap/binomial_heap |   |  |  |
 | 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 28.52ms | 126.45KiB |
 | 214 | data_structures/heap/max_heap |   |  |  |
 | 215 | data_structures/heap/min_heap |   |  |  |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
