@@ -9225,10 +9225,15 @@ func convertUnary(u *parser.Unary) Expr {
 		for i := len(u.Ops) - 1; i >= 0; i-- {
 			switch u.Ops[i] {
 			case "-":
-				if f, ok := evalFloat(base); ok {
-					base = &FloatLit{Value: -f}
-				} else if v, ok := evalInt(base); ok {
+				// Prefer integer evaluation to avoid converting
+				// integer literals into floating-point values when
+				// applying unary minus. This ensures expressions
+				// like `-5` remain integral rather than becoming
+				// `-5.0`.
+				if v, ok := evalInt(base); ok {
 					base = &IntLit{Value: -v}
+				} else if f, ok := evalFloat(base); ok {
+					base = &FloatLit{Value: -f}
 				} else {
 					base = &UnaryExpr{Op: "-", Expr: base}
 				}
