@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 996/1077
-Last updated: 2025-08-23 15:31 +0700
+Completed programs: 980/1077
+Last updated: 2025-08-24 09:08 +0700
 
 Checklist:
 
@@ -271,7 +271,7 @@ Checklist:
 | 262 | data_structures/suffix_tree/suffix_tree | ✓ | 927.0µs | 9.78KB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 529.0µs | 1.41KB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 453.0µs | 1.30KB |
-| 265 | data_structures/trie/radix_tree |   |  |  |
+| 265 | data_structures/trie/radix_tree | ✓ | 734.0µs | 6.84KB |
 | 266 | data_structures/trie/trie | ✓ | 759.0µs | 6.95KB |
 | 267 | digital_image_processing/change_brightness | ✓ | 1.0ms | 4.03KB |
 | 268 | digital_image_processing/change_contrast | ✓ | 409.0µs | 1.68KB |
@@ -861,23 +861,23 @@ Checklist:
 | 852 | project_euler/problem_025/sol1 | ✓ | 691.0µs | 4.96KB |
 | 853 | project_euler/problem_025/sol2 | ✓ | 763.0µs | 4.98KB |
 | 854 | project_euler/problem_025/sol3 | ✓ |  |  |
-| 855 | project_euler/problem_026/sol1 | ✓ | 32.0ms | 2.05MB |
-| 856 | project_euler/problem_027/sol1 | ✓ | 102.0ms | 968B |
-| 857 | project_euler/problem_028/sol1 | ✓ | 387.0µs | 1.09KB |
-| 858 | project_euler/problem_029/sol1 | ✓ | 718.0µs | 4.99KB |
-| 859 | project_euler/problem_030/sol1 | ✓ | 21.0ms | 1016B |
-| 860 | project_euler/problem_031/sol1 | ✓ | 590.0µs | 4.98KB |
-| 861 | project_euler/problem_031/sol2 | ✓ | 847.0µs | 14.15KB |
-| 862 | project_euler/problem_032/sol32 | ✓ | 820.0ms | 1.71MB |
-| 863 | project_euler/problem_033/sol1 | ✓ | 360.0µs | 1.04KB |
-| 864 | project_euler/problem_034/sol1 | ✓ | 61.0ms | 1.02KB |
-| 865 | project_euler/problem_035/sol1 | ✓ | 2.0ms | 100.62KB |
-| 866 | project_euler/problem_036/sol1 | ✓ | 5.25s | 2.39MB |
-| 867 | project_euler/problem_037/sol1 | ✓ | 393.0ms | 2.41MB |
-| 868 | project_euler/problem_038/sol1 | ✓ | 2.0ms | 164.00KB |
-| 869 | project_euler/problem_039/sol1 | ✓ | 46.0ms | 53.45KB |
-| 870 | project_euler/problem_040/sol1 | ✓ | 77.0ms | 1.96MB |
-| 871 | project_euler/problem_041/sol1 | ✓ | 10.0ms | 177.32KB |
+| 855 | project_euler/problem_026/sol1 |   |  |  |
+| 856 | project_euler/problem_027/sol1 |   |  |  |
+| 857 | project_euler/problem_028/sol1 |   |  |  |
+| 858 | project_euler/problem_029/sol1 |   |  |  |
+| 859 | project_euler/problem_030/sol1 |   |  |  |
+| 860 | project_euler/problem_031/sol1 |   |  |  |
+| 861 | project_euler/problem_031/sol2 |   |  |  |
+| 862 | project_euler/problem_032/sol32 |   |  |  |
+| 863 | project_euler/problem_033/sol1 |   |  |  |
+| 864 | project_euler/problem_034/sol1 |   |  |  |
+| 865 | project_euler/problem_035/sol1 |   |  |  |
+| 866 | project_euler/problem_036/sol1 |   |  |  |
+| 867 | project_euler/problem_037/sol1 |   |  |  |
+| 868 | project_euler/problem_038/sol1 |   |  |  |
+| 869 | project_euler/problem_039/sol1 |   |  |  |
+| 870 | project_euler/problem_040/sol1 |   |  |  |
+| 871 | project_euler/problem_041/sol1 |   |  |  |
 | 872 | project_euler/problem_042/solution42 | ✓ | 599.0µs | 2.98KB |
 | 873 | project_euler/problem_043/sol1 | ✓ | 1.28s | 2.88MB |
 | 874 | project_euler/problem_044/sol1 | ✓ | 54.0ms | 126.23KB |
@@ -962,7 +962,7 @@ Checklist:
 | 953 | sorts/exchange_sort | ✓ | 782.0µs | 1.49KB |
 | 954 | sorts/external_sort | ✓ | 911.0µs | 2.11KB |
 | 955 | sorts/gnome_sort | ✓ | 468.0µs | 1.21KB |
-| 956 | sorts/heap_sort | ✓ | 611.0µs | 1.64KB |
+| 956 | sorts/heap_sort | ✓ | 441.0µs | 1.64KB |
 | 957 | sorts/insertion_sort | ✓ | 671.0µs | 1.27KB |
 | 958 | sorts/intro_sort | ✓ | 661.0µs | 1.53KB |
 | 959 | sorts/iterative_merge_sort | ✓ | 800.0µs | 2.41KB |
