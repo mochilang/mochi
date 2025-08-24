@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-24 15:51 GMT+7
+Last updated: 2025-08-24 17:09 GMT+7
 
-## Algorithms Golden Test Checklist (911/1077)
+## Algorithms Golden Test Checklist (913/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -181,9 +181,9 @@ Last updated: 2025-08-24 15:51 GMT+7
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 7.22ms | 17.3 MB |
 | 173 | data_structures/binary_tree/binary_search_tree | ✓ | 4.62ms | 7.7 MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | error |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 5.05ms | 25.0 MB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 4.24ms | 17.3 MB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 5.62ms | 17.3 MB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 1.96ms | 17.3 MB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 7.65ms | 25.0 MB |
