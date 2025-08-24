@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-23 14:49 +0700
+Last updated: 2025-08-23 15:31 +0700
 
-## Program Checklist (512/1077)
+## Program Checklist (514/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -860,11 +860,11 @@ Last updated: 2025-08-23 14:49 +0700
 | 851 | project_euler/problem_024/sol1 | ✓ | 557µs | 384.0 KB |
 | 852 | project_euler/problem_025/sol1 | ✓ | 270µs | 128.0 KB |
 | 853 | project_euler/problem_025/sol2 | ✓ | 298µs |  |
-| 854 | project_euler/problem_025/sol3 |   |  |  |
+| 854 | project_euler/problem_025/sol3 | ✓ |  |  |
 | 855 | project_euler/problem_026/sol1 |   |  |  |
 | 856 | project_euler/problem_027/sol1 |   |  |  |
 | 857 | project_euler/problem_028/sol1 |   |  |  |
-| 858 | project_euler/problem_029/sol1 |   |  |  |
+| 858 | project_euler/problem_029/sol1 | ✓ | 301µs | 128.0 KB |
 | 859 | project_euler/problem_030/sol1 |   |  |  |
 | 860 | project_euler/problem_031/sol1 |   |  |  |
 | 861 | project_euler/problem_031/sol2 |   |  |  |
