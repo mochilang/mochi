@@ -2852,9 +2852,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	io.WriteString(w, "(")
-	left := b.Left
-	right := b.Right
+        io.WriteString(w, "(")
+        if b.Op == "-" {
+                if nl, ok := b.Left.(*NumberLit); ok && (nl.Value == "0" || nl.Value == "0.0") {
+                        io.WriteString(w, "-")
+                        b.Right.emit(w)
+                        io.WriteString(w, ")")
+                        return
+                }
+        }
+        left := b.Left
+        right := b.Right
 	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" {
 		lt := inferType(left)
 		rt := inferType(right)
