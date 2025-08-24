@@ -2,7 +2,7 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-24 08:57 +0700
+Last updated: 2025-08-24 15:35 +0700
 
 ## Program Checklist (548/1077)
 | Index | Name | Status | Duration | Memory |
@@ -157,8 +157,8 @@ Last updated: 2025-08-24 08:57 +0700
 | 148 | conversions/temperature_conversions | ✓ | 299µs | 256.0 KB |
 | 149 | conversions/time_conversions |   |  |  |
 | 150 | conversions/volume_conversions | ✓ | 558µs | 512.0 KB |
-| 151 | conversions/weight_conversion | ✓ | 471µs | 384.0 KB |
-| 152 | data_compression/burrows_wheeler | ✓ | 1.55ms | 640.0 KB |
+| 151 | conversions/weight_conversion | ✓ | 418µs | 256.0 KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 1.474ms | 512.0 KB |
 | 153 | data_compression/huffman |   |  |  |
 | 154 | data_compression/lempel_ziv | ✓ | 1.59ms | 640.0 KB |
 | 155 | data_compression/lempel_ziv_decompress | ✓ | 1.034ms | 384.0 KB |
