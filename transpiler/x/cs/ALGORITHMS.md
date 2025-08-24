@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-23 15:05 GMT+7
+Last updated: 2025-08-24 09:01 GMT+7
 
-## Algorithms Golden Test Checklist (1033/1077)
+## Algorithms Golden Test Checklist (1034/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -878,9 +878,9 @@ Last updated: 2025-08-23 15:05 GMT+7
 | 869 | project_euler/problem_039/sol1 | ✓ | 18.0ms | 29.72KB |
 | 870 | project_euler/problem_040/sol1 | ✓ | 18.0ms | 21.09MB |
 | 871 | project_euler/problem_041/sol1 | ✓ | 5.0ms | 2.77MB |
-| 872 | project_euler/problem_042/solution42 | error |  |  |
+| 872 | project_euler/problem_042/solution42 | ✓ | 1.0µs | 53.54MB |
 | 873 | project_euler/problem_043/sol1 | ✓ | 238.0ms | 2.62GB |
-| 874 | project_euler/problem_044/sol1 | ✓ | 2.0ms | 381.83MB |
+| 874 | project_euler/problem_044/sol1 | ✓ | 1.0µs | 13.60KB |
 | 875 | project_euler/problem_045/sol1 | error |  |  |
 | 876 | project_euler/problem_046/sol1 | ✓ | 3.0ms | 16.47KB |
 | 877 | project_euler/problem_047/sol1 | ✓ | 25.0ms | 16.74MB |
@@ -962,7 +962,7 @@ Last updated: 2025-08-23 15:05 GMT+7
 | 953 | sorts/exchange_sort | ✓ | 3.0ms | 19.59KB |
 | 954 | sorts/external_sort | ✓ | 3.0ms | 24.15KB |
 | 955 | sorts/gnome_sort | ✓ | 3.0ms | 18.48KB |
-| 956 | sorts/heap_sort | ✓ | 3.0ms | 20.25KB |
+| 956 | sorts/heap_sort | ✓ | 1.0µs | 20.30KB |
 | 957 | sorts/insertion_sort | ✓ | 4.0ms | 18.61KB |
 | 958 | sorts/intro_sort | ✓ | 3.0ms | 19.47KB |
 | 959 | sorts/iterative_merge_sort | ✓ | 3.0ms | 29.31KB |
