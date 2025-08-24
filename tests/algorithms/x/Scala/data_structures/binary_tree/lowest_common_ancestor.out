@@ -1,0 +1,6 @@
+LCA of node 1 and 3 is: 1
+LCA of node 5 and 6 is: 1
+LCA of node 7 and 11 is: 3
+LCA of node 6 and 7 is: 3
+LCA of node 4 and 12 is: 4
+LCA of node 8 and 8 is: 8

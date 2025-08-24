@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 950/1077
-Last updated: 2025-08-24 09:06 +0700
+Completed programs: 956/1077
+Last updated: 2025-08-24 15:35 +0700
 
 Checklist:
 
@@ -157,9 +157,9 @@ Checklist:
 | 148 | conversions/temperature_conversions | ✓ | 10µs | 8.7 MB |
 | 149 | conversions/time_conversions | ✓ | 11µs | 8.7 MB |
 | 150 | conversions/volume_conversions | ✓ | 5µs | 8.7 MB |
-| 151 | conversions/weight_conversion | ✓ | 4µs | 8.7 MB |
+| 151 | conversions/weight_conversion | ✓ | 183.317ms | 8.7 MB |
 | 152 | data_compression/burrows_wheeler | ✓ | 8µs | 8.7 MB |
-| 153 | data_compression/huffman | error |  |  |
+| 153 | data_compression/huffman | ✓ | 183.317ms | 8.7 MB |
 | 154 | data_compression/lempel_ziv | ✓ | 19µs | 8.7 MB |
 | 155 | data_compression/lempel_ziv_decompress | ✓ | 3µs | 8.7 MB |
 | 156 | data_compression/lz77 | ✓ | 7µs | 8.7 MB |
@@ -179,7 +179,7 @@ Checklist:
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 67µs | 8.7 MB |
 | 171 | data_structures/binary_tree/avl_tree | ✓ | 17µs | 8.7 MB |
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 11µs | 8.7 MB |
-| 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 183.317ms | 8.7 MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 14µs | 8.7 MB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 5µs | 8.7 MB |
@@ -192,21 +192,21 @@ Checklist:
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
 | 184 | data_structures/binary_tree/is_sorted | ✓ | 4µs | 8.8 MB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree | error |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | error |  |  |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 183.317ms | 8.7 MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 183.317ms | 8.7 MB |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 321µs | 8.7 MB |
 | 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 7µs | 8.7 MB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees | error |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 10µs | 8.7 MB |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 7µs | 8.7 MB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | error |  |  |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 183.317ms | 8.7 MB |
 | 194 | data_structures/binary_tree/red_black_tree | ✓ | 7µs | 8.7 MB |
 | 195 | data_structures/binary_tree/segment_tree | ✓ | 8µs | 8.7 MB |
 | 196 | data_structures/binary_tree/segment_tree_other | ✓ | 14µs | 8.7 MB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 6µs | 8.7 MB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | error |  |  |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 183.317ms | 8.7 MB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 3µs | 8.7 MB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 4µs | 8.7 MB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 22µs | 8.8 MB |
