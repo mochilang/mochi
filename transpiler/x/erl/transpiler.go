@@ -192,8 +192,8 @@ mochi_format(V) when is_float(V) ->
             re:replace(S, "\\.?0+$", "", [global, {return, list}])
     end;
 mochi_format(V) when is_integer(V) -> integer_to_list(V);
-mochi_format(V) when is_binary(V) -> binary_to_list(V);
-mochi_format(V) when is_list(V) -> V;
+mochi_format(V) when is_binary(V) -> V;
+mochi_format(V) when is_list(V) -> mochi_str(V);
 mochi_format(V) -> lists:flatten(io_lib:format("~p", [V])).
 `
 
@@ -342,6 +342,11 @@ mochi_repeat(_, _) -> [].
 
 const helperStr = `
 -compile({nowarn_unused_function, [mochi_str/1]}).
+mochi_str(V) when is_list(V) ->
+    case io_lib:printable_list(V) of
+        true -> V;
+        false -> "[" ++ string:join([mochi_str(E) || E <- V], " ") ++ "]"
+    end;
 mochi_str(V) when is_float(V) ->
     I = trunc(V),
     case V == I of
@@ -3408,6 +3413,8 @@ func sanitizeFuncName(name string) string {
 	switch lower {
 	case "div", "rem", "band", "bor", "bxor", "bnot", "bsl", "bsr", "and", "or", "xor", "not", "when", "case", "catch", "end", "fun", "if", "receive", "try", "of", "after":
 		return lower + "_fn"
+	case "len":
+		return "len_fn"
 	default:
 		return lower
 	}
@@ -5483,8 +5490,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		name := p.Call.Func
 		nameLower := strings.ToLower(name)
 		var varCall bool
-		if builtinFunc(nameLower) {
+		if builtinFunc(nameLower) && !(nameLower == "len" && len(p.Call.Args) == 0) {
 			name = nameLower
+			if name == "str" || name == "repr" {
+				useStr = true
+			}
 		} else {
 			if _, ok := ctx.alias[name]; ok {
 				name = ctx.current(name)
@@ -5521,6 +5531,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 					args[i] = &CallExpr{Func: "mochi_str", Args: call.Args}
 				} else {
 					useFormat = true
+					useStr = true
 					args[i] = &CallExpr{Func: "mochi_format", Args: []Expr{a}}
 				}
 			}

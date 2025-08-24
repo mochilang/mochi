@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/hashing/hash_table_with_linked_list.erl:289:24: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  289|             Ht_tmp_3 = element(2, Ht_res_3),
+%     |                        ^
+
+[[] [] []]
+4
