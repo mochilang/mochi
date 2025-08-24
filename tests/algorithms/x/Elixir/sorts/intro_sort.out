@@ -1,0 +1,30 @@
+warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 199 │       {arr, _, _} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/intro_sort.exs:199:8: Main.partition/4
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 222 │       {_, v} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/intro_sort.exs:222:11: Main.int_log2/1
+
+     warning: variable "depth" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 254 │       {array, depth, e} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/intro_sort.exs:254:15: Main.intro_sort/5
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/intro_sort.exs:3: Main (module)
+
+[4, 4, 2, 6, 1, 7, 8, 22, 22, 14, 56, 56, 56, 27, 23, 12]
+[21, 21, 21, 21, 11, -11, 46]

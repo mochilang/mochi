@@ -1,8 +1,8 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: module attribute @data_dir was set but never used
     │
- 50 │       {i, result} = try do
-    │        ~
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/autocomplete_using_trie.exs:50:8: Main.autocomplete_using_trie/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/autocomplete_using_trie.exs:3: Main (module)
 
 ["depart ", "detergent ", "deer ", "deal "]

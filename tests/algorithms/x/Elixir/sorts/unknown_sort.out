@@ -1,36 +1,18 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: variable "removed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 28 │       {i, m} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:28:8: Main.list_min/1
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 57 │       {i, m} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:57:8: Main.list_max/1
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 88 │       {i, removed, res} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:88:8: Main.remove_once/2
-
-    warning: variable "removed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 88 │       {i, removed, res} = try do
+ 89 │       {_, removed, res} = try do
     │           ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:88:11: Main.remove_once/2
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:89:11: Main.remove_once/2
 
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 112 │       {i, res} = try do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:112:8: Main.reverse_list/1
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:3: Main (module)
 
-[0, 2, 2, 3, 5]
+** (RuntimeError) case1 failed
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:157: Main.test_merge_sort/0
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:171: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/unknown_sort.exs:178: (file)

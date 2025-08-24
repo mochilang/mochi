@@ -1,9 +1,9 @@
-warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+warning: module attribute @data_dir was set but never used
     │
- 45 │       i = try do
-    │       ~
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/capitalize.exs:45:7: Main.index_of/2
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/capitalize.exs:3: Main (module)
 
 "Hello world"
 "123 hello world"

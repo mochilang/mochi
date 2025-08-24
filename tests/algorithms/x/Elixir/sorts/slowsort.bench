@@ -1,5 +1,35 @@
-{
-  "duration_us": 10158,
-  "memory_bytes": 13024,
-  "name": "main"
-}
+warning: variable "seq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 21 │       seq = List.replace_at(seq, j, temp)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/slowsort.exs:21:7: Main.swap/3
+
+    warning: variable "seq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       seq = slowsort_recursive(seq, start, end_index - 1)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/slowsort.exs:40:7: Main.slowsort_recursive/3
+
+    warning: module attribute @data_dir was set but never used
+    │
+  3 │   @data_dir nil
+    │   ~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/slowsort.exs:3: Main (module)
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
+
+Got value:
+
+    nil
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/slowsort.exs:34: Main.slowsort_recursive/3
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/slowsort.exs:32: Main.slowsort_recursive/3
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/slowsort.exs:48: Main.slow_sort/1
+    /workspace/mochi/tests/algorithms/x/Elixir/sorts/slowsort.exs:70: Main.main/0
