@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,18 +36,20 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$node_data = [0];
-$left_child = [0];
-$right_child = [0];
-function new_node($value) {
-  global $node_data, $left_child, $right_child, $root, $vals;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $node_data = [0];
+  $left_child = [0];
+  $right_child = [0];
+  function new_node($value) {
+  global $left_child, $node_data, $right_child, $root, $vals;
   $node_data = _append($node_data, $value);
   $left_child = _append($left_child, 0);
   $right_child = _append($right_child, 0);
   return count($node_data) - 1;
-}
-function build_tree() {
-  global $node_data, $left_child, $right_child, $vals;
+};
+  function build_tree() {
+  global $left_child, $node_data, $right_child, $vals;
   $root = new_node(1);
   $n2 = new_node(2);
   $n5 = new_node(5);
@@ -44,9 +62,9 @@ function build_tree() {
   $right_child[$n2] = $n4;
   $right_child[$n5] = $n6;
   return $root;
-}
-function flatten($root) {
-  global $node_data, $left_child, $right_child, $vals;
+};
+  function flatten($root) {
+  global $left_child, $node_data, $right_child, $vals;
   if ($root == 0) {
   return [];
 }
@@ -64,9 +82,9 @@ function flatten($root) {
   $i = $i + 1;
 };
   return $res;
-}
-function display($values) {
-  global $node_data, $left_child, $right_child, $root, $vals;
+};
+  function display($values) {
+  global $left_child, $node_data, $right_child, $root, $vals;
   $s = '';
   $i = 0;
   while ($i < count($values)) {
@@ -78,8 +96,16 @@ function display($values) {
   $i = $i + 1;
 };
   echo rtrim($s), PHP_EOL;
-}
-echo rtrim('Flattened Linked List:'), PHP_EOL;
-$root = build_tree();
-$vals = flatten($root);
-display($vals);
+};
+  echo rtrim('Flattened Linked List:'), PHP_EOL;
+  $root = build_tree();
+  $vals = flatten($root);
+  display($vals);
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

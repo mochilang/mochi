@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -26,14 +43,19 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-function combine($a, $b, $op) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function combine($a, $b, $op) {
   global $arr, $tree;
   if ($op == 0) {
   return $a + $b;
@@ -48,13 +70,13 @@ function combine($a, $b, $op) {
   return $a;
 }
   return $b;
-}
-function build_tree($nodes, $arr, $start, $end, $op) {
+};
+  function build_tree($nodes, $arr, $start, $end, $op) {
   global $tree;
   if ($start == $end) {
-  $node = ['start' => $start, 'end' => $end, 'val' => $arr[$start], 'mid' => $start, 'left' => -1, 'right' => -1];
+  $node = ['end' => $end, 'left' => -1, 'mid' => $start, 'right' => -1, 'start' => $start, 'val' => $arr[$start]];
   $new_nodes = _append($nodes, $node);
-  return ['nodes' => $new_nodes, 'idx' => count($new_nodes) - 1];
+  return ['idx' => count($new_nodes) - 1, 'nodes' => $new_nodes];
 }
   $mid = _intdiv(($start + $end), 2);
   $left_res = build_tree($nodes, $arr, $start, $mid, $op);
@@ -62,15 +84,15 @@ function build_tree($nodes, $arr, $start, $end, $op) {
   $left_node = $right_res['nodes'][$left_res['idx']];
   $right_node = $right_res['nodes'][$right_res['idx']];
   $val = combine($left_node['val'], $right_node['val'], $op);
-  $parent = ['start' => $start, 'end' => $end, 'val' => $val, 'mid' => $mid, 'left' => $left_res['idx'], 'right' => $right_res['idx']];
+  $parent = ['end' => $end, 'left' => $left_res['idx'], 'mid' => $mid, 'right' => $right_res['idx'], 'start' => $start, 'val' => $val];
   $new_nodes = _append($right_res['nodes'], $parent);
-  return ['nodes' => $new_nodes, 'idx' => count($new_nodes) - 1];
-}
-function new_segment_tree($collection, $op) {
+  return ['idx' => count($new_nodes) - 1, 'nodes' => $new_nodes];
+};
+  function new_segment_tree($collection, $op) {
   global $arr, $tree;
   return ['arr' => $collection, 'op' => $op];
-}
-function update($tree, $i, $val) {
+};
+  function update($tree, $i, $val) {
   global $arr;
   $new_arr = [];
   $idx = 0;
@@ -78,13 +100,13 @@ function update($tree, $i, $val) {
   if ($idx == $i) {
   $new_arr = _append($new_arr, $val);
 } else {
-  $new_arr = _append($new_arr, $tree[$arr][$idx]);
+  $new_arr = _append($new_arr, $tree['arr'][$idx]);
 }
   $idx = $idx + 1;
 };
   return ['arr' => $new_arr, 'op' => $tree['op']];
-}
-function query_range($tree, $i, $j) {
+};
+  function query_range($tree, $i, $j) {
   global $arr;
   $result = $tree['arr'][$i];
   $idx = $i + 1;
@@ -93,20 +115,20 @@ function query_range($tree, $i, $j) {
   $idx = $idx + 1;
 };
   return $result;
-}
-function traverse($tree) {
+};
+  function traverse($tree) {
   global $arr;
   if (_len($tree['arr']) == 0) {
   return [];
 }
   $res = build_tree([], $tree['arr'], 0, _len($tree['arr']) - 1, $tree['op']);
   return $res['nodes'];
-}
-function node_to_string($node) {
+};
+  function node_to_string($node) {
   global $arr, $tree;
   return 'SegmentTreeNode(start=' . _str($node['start']) . ', end=' . _str($node['end']) . ', val=' . _str($node['val']) . ')';
-}
-function print_traverse($tree) {
+};
+  function print_traverse($tree) {
   global $arr;
   $nodes = traverse($tree);
   $i = 0;
@@ -115,9 +137,9 @@ function print_traverse($tree) {
   $i = $i + 1;
 };
   echo rtrim(''), PHP_EOL;
-}
-$arr = [2, 1, 5, 3, 4];
-foreach ([0, 1, 2] as $op) {
+};
+  $arr = [2, 1, 5, 3, 4];
+  foreach ([0, 1, 2] as $op) {
   echo rtrim('**************************************************'), PHP_EOL;
   $tree = new_segment_tree($arr, $op);
   print_traverse($tree);
@@ -128,3 +150,11 @@ foreach ([0, 1, 2] as $op) {
   echo rtrim(json_encode(query_range($tree, 1, 3), 1344)), PHP_EOL;
   echo rtrim(''), PHP_EOL;
 }
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

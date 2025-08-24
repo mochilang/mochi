@@ -1,19 +1,40 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
-    return intdiv($a, $b);
+    return intdiv(intval($a), intval($b));
 }
-function fenwick_from_list($arr) {
-  global $f_base, $f, $f2, $f3;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function fenwick_from_list($arr) {
+  global $f, $f2, $f3, $f_base;
   $size = count($arr);
   $tree = [];
   $i = 0;
@@ -30,9 +51,9 @@ function fenwick_from_list($arr) {
   $i = $i + 1;
 };
   return ['size' => $size, 'tree' => $tree];
-}
-function fenwick_empty($size) {
-  global $f_base, $f, $f2, $f3;
+};
+  function fenwick_empty($size) {
+  global $f, $f2, $f3, $f_base;
   $tree = [];
   $i = 0;
   while ($i < $size) {
@@ -40,9 +61,9 @@ function fenwick_empty($size) {
   $i = $i + 1;
 };
   return ['size' => $size, 'tree' => $tree];
-}
-function fenwick_get_array($f) {
-  global $f_base, $f2, $f3;
+};
+  function fenwick_get_array($f) {
+  global $f2, $f3, $f_base;
   $arr = [];
   $i = 0;
   while ($i < $f['size']) {
@@ -58,9 +79,9 @@ function fenwick_get_array($f) {
   $i = $i - 1;
 };
   return $arr;
-}
-function bit_and($a, $b) {
-  global $f_base, $f, $f2, $f3;
+};
+  function bit_and($a, $b) {
+  global $f, $f2, $f3, $f_base;
   $ua = $a;
   $ub = $b;
   $res = 0;
@@ -74,24 +95,24 @@ function bit_and($a, $b) {
   $bit = $bit * 2;
 };
   return $res;
-}
-function low_bit($x) {
-  global $f_base, $f, $f2, $f3;
+};
+  function low_bit($x) {
+  global $f, $f2, $f3, $f_base;
   if ($x == 0) {
   return 0;
 }
   return $x - bit_and($x, $x - 1);
-}
-function fenwick_next($index) {
-  global $f_base, $f, $f2, $f3;
+};
+  function fenwick_next($index) {
+  global $f, $f2, $f3, $f_base;
   return $index + low_bit($index);
-}
-function fenwick_prev($index) {
-  global $f_base, $f, $f2, $f3;
+};
+  function fenwick_prev($index) {
+  global $f, $f2, $f3, $f_base;
   return $index - low_bit($index);
-}
-function fenwick_add($f, $index, $value) {
-  global $f_base, $f2, $f3;
+};
+  function fenwick_add($f, $index, $value) {
+  global $f2, $f3, $f_base;
   $tree = $f['tree'];
   if ($index == 0) {
   $tree[0] = $tree[0] + $value;
@@ -103,14 +124,14 @@ function fenwick_add($f, $index, $value) {
   $i = fenwick_next($i);
 };
   return ['size' => $f['size'], 'tree' => $tree];
-}
-function fenwick_update($f, $index, $value) {
-  global $f_base, $f2, $f3;
+};
+  function fenwick_update($f, $index, $value) {
+  global $f2, $f3, $f_base;
   $current = fenwick_get($f, $index);
   return fenwick_add($f, $index, $value - $current);
-}
-function fenwick_prefix($f, $right) {
-  global $f_base, $f2, $f3;
+};
+  function fenwick_prefix($f, $right) {
+  global $f2, $f3, $f_base;
   if ($right == 0) {
   return 0;
 }
@@ -121,17 +142,17 @@ function fenwick_prefix($f, $right) {
   $r = fenwick_prev($r);
 };
   return $result;
-}
-function fenwick_query($f, $left, $right) {
-  global $f_base, $f2, $f3;
+};
+  function fenwick_query($f, $left, $right) {
+  global $f2, $f3, $f_base;
   return fenwick_prefix($f, $right) - fenwick_prefix($f, $left);
-}
-function fenwick_get($f, $index) {
-  global $f_base, $f2, $f3;
+};
+  function fenwick_get($f, $index) {
+  global $f2, $f3, $f_base;
   return fenwick_query($f, $index, $index + 1);
-}
-function fenwick_rank_query($f, $value) {
-  global $f_base, $f2, $f3;
+};
+  function fenwick_rank_query($f, $value) {
+  global $f2, $f3, $f_base;
   $v = $value - $f['tree'][0];
   if ($v < 0) {
   return -1;
@@ -150,24 +171,32 @@ function fenwick_rank_query($f, $value) {
   $jj = _intdiv($jj, 2);
 };
   return $i;
-}
-$f_base = fenwick_from_list([1, 2, 3, 4, 5]);
-echo rtrim(str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(fenwick_get_array($f_base), 1344))))))), PHP_EOL;
-$f = fenwick_from_list([1, 2, 3, 4, 5]);
-$f = fenwick_add($f, 0, 1);
-$f = fenwick_add($f, 1, 2);
-$f = fenwick_add($f, 2, 3);
-$f = fenwick_add($f, 3, 4);
-$f = fenwick_add($f, 4, 5);
-echo rtrim(str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(fenwick_get_array($f), 1344))))))), PHP_EOL;
-$f2 = fenwick_from_list([1, 2, 3, 4, 5]);
-echo rtrim(json_encode(fenwick_prefix($f2, 3), 1344)), PHP_EOL;
-echo rtrim(json_encode(fenwick_query($f2, 1, 4), 1344)), PHP_EOL;
-$f3 = fenwick_from_list([1, 2, 0, 3, 0, 5]);
-echo rtrim(json_encode(fenwick_rank_query($f3, 0), 1344)), PHP_EOL;
-echo rtrim(json_encode(fenwick_rank_query($f3, 2), 1344)), PHP_EOL;
-echo rtrim(json_encode(fenwick_rank_query($f3, 1), 1344)), PHP_EOL;
-echo rtrim(json_encode(fenwick_rank_query($f3, 3), 1344)), PHP_EOL;
-echo rtrim(json_encode(fenwick_rank_query($f3, 5), 1344)), PHP_EOL;
-echo rtrim(json_encode(fenwick_rank_query($f3, 6), 1344)), PHP_EOL;
-echo rtrim(json_encode(fenwick_rank_query($f3, 11), 1344)), PHP_EOL;
+};
+  $f_base = fenwick_from_list([1, 2, 3, 4, 5]);
+  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(fenwick_get_array($f_base), 1344)))))), PHP_EOL;
+  $f = fenwick_from_list([1, 2, 3, 4, 5]);
+  $f = fenwick_add($f, 0, 1);
+  $f = fenwick_add($f, 1, 2);
+  $f = fenwick_add($f, 2, 3);
+  $f = fenwick_add($f, 3, 4);
+  $f = fenwick_add($f, 4, 5);
+  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(fenwick_get_array($f), 1344)))))), PHP_EOL;
+  $f2 = fenwick_from_list([1, 2, 3, 4, 5]);
+  echo rtrim(json_encode(fenwick_prefix($f2, 3), 1344)), PHP_EOL;
+  echo rtrim(json_encode(fenwick_query($f2, 1, 4), 1344)), PHP_EOL;
+  $f3 = fenwick_from_list([1, 2, 0, 3, 0, 5]);
+  echo rtrim(json_encode(fenwick_rank_query($f3, 0), 1344)), PHP_EOL;
+  echo rtrim(json_encode(fenwick_rank_query($f3, 2), 1344)), PHP_EOL;
+  echo rtrim(json_encode(fenwick_rank_query($f3, 1), 1344)), PHP_EOL;
+  echo rtrim(json_encode(fenwick_rank_query($f3, 3), 1344)), PHP_EOL;
+  echo rtrim(json_encode(fenwick_rank_query($f3, 5), 1344)), PHP_EOL;
+  echo rtrim(json_encode(fenwick_rank_query($f3, 6), 1344)), PHP_EOL;
+  echo rtrim(json_encode(fenwick_rank_query($f3, 11), 1344)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -198,6 +198,13 @@ const helperAppend = `function _append($arr, $x) {
     return $arr;
 }`
 
+const helperExists = `function _exists($v) {
+    if (is_array($v)) return count($v) > 0;
+    if (is_string($v)) return strlen($v) > 0;
+    if (is_object($v) && property_exists($v, 'Items')) return count($v->Items) > 0;
+    return false;
+}`
+
 const helperGetOutput = `function _getoutput($cmd) {
     $out = shell_exec($cmd);
     if ($out === null) return '';
@@ -331,6 +338,7 @@ var usesPanic bool
 var usesBigIntOps bool
 var usesGetOutput bool
 var usesAppend bool
+var usesExists bool
 var usesFetch bool
 var benchMain bool
 var extraStmts []Stmt
@@ -2642,6 +2650,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesExists {
+		if _, err := io.WriteString(w, helperExists+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesIntDiv {
 		if _, err := io.WriteString(w, helperIntDiv+"\n"); err != nil {
 			return err
@@ -2747,6 +2760,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesBigIntOps = false
 	usesGetOutput = false
 	usesAppend = false
+	usesExists = false
 	usesFetch = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
@@ -3515,8 +3529,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("exists expects 1 arg")
 			}
-			count := &CallExpr{Func: "count", Args: []Expr{args[0]}}
-			return &BinaryExpr{Left: count, Op: ">", Right: &IntLit{Value: 0}}, nil
+			usesExists = true
+			return &CallExpr{Func: "_exists", Args: args}, nil
 		} else if name == "values" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values expects 1 arg")

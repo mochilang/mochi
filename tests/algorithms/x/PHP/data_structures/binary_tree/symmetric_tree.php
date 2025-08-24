@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -38,20 +39,20 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function make_symmetric_tree() {
-  global $symmetric_tree, $asymmetric_tree;
+  global $asymmetric_tree, $symmetric_tree;
   return [[1, 1, 2], [2, 3, 4], [2, 5, 6], [3, -1, -1], [4, -1, -1], [4, -1, -1], [3, -1, -1]];
 };
   function make_asymmetric_tree() {
-  global $symmetric_tree, $asymmetric_tree;
+  global $asymmetric_tree, $symmetric_tree;
   return [[1, 1, 2], [2, 3, 4], [2, 5, 6], [3, -1, -1], [4, -1, -1], [3, -1, -1], [4, -1, -1]];
 };
   function is_symmetric_tree($tree) {
-  global $symmetric_tree, $asymmetric_tree;
+  global $asymmetric_tree, $symmetric_tree;
   $stack = [$tree[0][1], $tree[0][2]];
   while (count($stack) >= 2) {
   $left = $stack[count($stack) - 2];
   $right = $stack[count($stack) - 1];
-  $stack = array_slice($stack, 0, count($stack) - 2 - 0);
+  $stack = array_slice($stack, 0, count($stack) - 2);
   if ($left == (-1) && $right == (-1)) {
   continue;
 }
@@ -75,7 +76,7 @@ $__start = _now();
   echo rtrim(_str(is_symmetric_tree($symmetric_tree))), PHP_EOL;
   echo rtrim(_str(is_symmetric_tree($asymmetric_tree))), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

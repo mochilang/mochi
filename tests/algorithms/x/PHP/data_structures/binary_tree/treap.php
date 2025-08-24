@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -44,34 +45,34 @@ $__start = _now();
   $node_rights = [];
   $seed = 1;
   function random() {
-  global $NIL, $node_values, $node_priors, $node_lefts, $node_rights, $seed;
+  global $NIL, $node_lefts, $node_priors, $node_rights, $node_values, $seed;
   $seed = ($seed * 13 + 7) % 100;
   return (floatval($seed)) / 100.0;
 };
   function new_node($value) {
-  global $NIL, $node_values, $node_priors, $node_lefts, $node_rights, $seed;
+  global $NIL, $node_lefts, $node_priors, $node_rights, $node_values, $seed;
   $node_values = _append($node_values, $value);
   $node_priors = _append($node_priors, random());
   $node_lefts = _append($node_lefts, $NIL);
   $node_rights = _append($node_rights, $NIL);
   return count($node_values) - 1;
 };
-  function split($root, $value) {
-  global $NIL, $node_values, $node_priors, $node_lefts, $node_rights, $seed;
+  function mochi_split($root, $value) {
+  global $NIL, $node_lefts, $node_priors, $node_rights, $node_values, $seed;
   if ($root == $NIL) {
   return ['left' => $NIL, 'right' => $NIL];
 }
   if ($value < $node_values[$root]) {
-  $res = explode($value, $node_lefts[$root]);
+  $res = mochi_split($node_lefts[$root], $value);
   $node_lefts[$root] = $res['right'];
   return ['left' => $res['left'], 'right' => $root];
 }
-  $res = explode($value, $node_rights[$root]);
+  $res = mochi_split($node_rights[$root], $value);
   $node_rights[$root] = $res['left'];
   return ['left' => $root, 'right' => $res['right']];
 };
   function merge($left, $right) {
-  global $NIL, $node_values, $node_priors, $node_lefts, $node_rights, $seed;
+  global $NIL, $node_lefts, $node_priors, $node_rights, $node_values, $seed;
   if ($left == $NIL) {
   return $right;
 }
@@ -86,19 +87,19 @@ $__start = _now();
   return $right;
 };
   function insert($root, $value) {
-  global $NIL, $node_values, $node_priors, $node_lefts, $node_rights, $seed;
+  global $NIL, $node_lefts, $node_priors, $node_rights, $node_values, $seed;
   $node = new_node($value);
-  $res = explode($value, $root);
+  $res = mochi_split($root, $value);
   return merge(merge($res['left'], $node), $res['right']);
 };
   function erase($root, $value) {
-  global $NIL, $node_values, $node_priors, $node_lefts, $node_rights, $seed;
-  $res1 = explode($value - 1, $root);
-  $res2 = explode($value, $res1['right']);
+  global $NIL, $node_lefts, $node_priors, $node_rights, $node_values, $seed;
+  $res1 = mochi_split($root, $value - 1);
+  $res2 = mochi_split($res1['right'], $value);
   return merge($res1['left'], $res2['right']);
 };
   function inorder($i, $acc) {
-  global $NIL, $node_values, $node_priors, $node_lefts, $node_rights, $seed;
+  global $NIL, $node_lefts, $node_priors, $node_rights, $node_values, $seed;
   if ($i == $NIL) {
   return $acc;
 }
@@ -107,7 +108,7 @@ $__start = _now();
   return inorder($node_rights[$i], $with_node);
 };
   function main() {
-  global $NIL, $node_values, $node_priors, $node_lefts, $node_rights, $seed;
+  global $NIL, $node_lefts, $node_priors, $node_rights, $node_values, $seed;
   $root = $NIL;
   $root = insert($root, 1);
   echo rtrim(_str(inorder($root, []))), PHP_EOL;
@@ -131,7 +132,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
