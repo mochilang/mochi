@@ -4927,6 +4927,15 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					expr = &CallExpr{Name: name, Args: args}
 				}
 			case *SelectorExpr:
+				var args []Expr
+				for _, a := range op.Call.Args {
+					ex, err := convertExpr(env, a)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, ex)
+				}
+				expr = nil
 				if len(t.Tail) == 1 {
 					name := t.Tail[0]
 					switch t.Root {
@@ -4934,66 +4943,41 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 						currProg.UseMath = true
 						mapped := map[string]string{"sqrt": "Sqrt", "pow": "Power", "sin": "Sin", "log": "Ln", "tanh": "TanH", "sinh": "SinH", "cosh": "CosH"}
 						if fn, ok := mapped[name]; ok {
-							var args []Expr
-							for _, a := range op.Call.Args {
-								ex, err := convertExpr(env, a)
-								if err != nil {
-									return nil, err
-								}
-								args = append(args, ex)
-							}
 							expr = &CallExpr{Name: fn, Args: args}
-							break
 						}
 					case "net":
-						if name == "LookupHost" && len(op.Call.Args) == 1 {
-							arg, err := convertExpr(env, op.Call.Args[0])
-							if err != nil {
-								return nil, err
-							}
+						if name == "LookupHost" && len(args) == 1 {
 							currProg.NeedListStr = true
 							currProg.UseLookupHost = true
 							_ = currProg.addArrayAlias("string")
 							_ = currProg.addArrayAlias("Variant")
-							expr = &CallExpr{Name: "_lookup_host", Args: []Expr{arg}}
-							break
+							expr = &CallExpr{Name: "_lookup_host", Args: []Expr{args[0]}}
 						}
 					case "testpkg":
-						if name == "Add" && len(op.Call.Args) == 2 {
-							a1, err := convertExpr(env, op.Call.Args[0])
-							if err != nil {
-								return nil, err
-							}
-							a2, err := convertExpr(env, op.Call.Args[1])
-							if err != nil {
-								return nil, err
-							}
-							expr = &BinaryExpr{Op: "+", Left: a1, Right: a2}
-							break
-						}
-						if name == "FifteenPuzzleExample" && len(op.Call.Args) == 0 {
+						if name == "Add" && len(args) == 2 {
+							expr = &BinaryExpr{Op: "+", Left: args[0], Right: args[1]}
+						} else if name == "FifteenPuzzleExample" && len(args) == 0 {
 							expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
-							break
 						}
 					}
 				}
 				if expr == nil {
 					if len(t.Tail) == 1 && t.Tail[0] == "contains" {
-						if len(op.Call.Args) != 1 {
+						if len(args) != 1 {
 							return nil, fmt.Errorf("contains expects 1 arg")
 						}
-						arg, err := convertExpr(env, op.Call.Args[0])
-						if err != nil {
-							return nil, err
-						}
 						if typ, ok := currentVarTypes[t.Root]; ok && typ == "string" {
-							expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "string"}
+							expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: args[0], Kind: "string"}
 						} else {
 							currProg.NeedContains = true
-							expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "list"}
+							expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: args[0], Kind: "list"}
 						}
 					} else {
-						return nil, fmt.Errorf("unsupported call target")
+						name := t.Root
+						if len(t.Tail) > 0 {
+							name = name + "." + strings.Join(t.Tail, ".")
+						}
+						expr = &CallExpr{Name: name, Args: args}
 					}
 				}
 			default:
