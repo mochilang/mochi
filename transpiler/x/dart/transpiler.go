@@ -183,6 +183,7 @@ var (
 	useParseIntStr    bool
 	useOrd            bool
 	useFloor          bool
+	useCeil           bool
 	useListEq         bool
 	useMath           bool
 	imports           []string
@@ -4747,6 +4748,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useCeil {
+		if _, err := io.WriteString(w, "double ceil(num x) => x.ceil().toDouble();\n\n"); err != nil {
+			return err
+		}
+	}
 	if useStr {
 		if _, err := io.WriteString(w, "String _str(dynamic v) => v.toString();\n\n"); err != nil {
 			return err
@@ -4998,6 +5004,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useParseIntStr = false
 	useOrd = false
 	useFloor = false
+	useCeil = false
 	useListEq = false
 	useMath = false
 	imports = nil
@@ -6163,6 +6170,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				useFloor = true
 				return &CallExpr{Func: &Name{Name: "floor"}, Args: []Expr{v}}, nil
+			}
+		}
+		if p.Call.Func == "ceil" && len(p.Call.Args) == 1 {
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc("ceil"); ok {
+					// user-defined ceil; treat as normal call
+				} else {
+					v, err := convertExpr(p.Call.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					useCeil = true
+					return &CallExpr{Func: &Name{Name: "ceil"}, Args: []Expr{v}}, nil
+				}
+			} else {
+				v, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				useCeil = true
+				return &CallExpr{Func: &Name{Name: "ceil"}, Args: []Expr{v}}, nil
 			}
 		}
 		if p.Call.Func == "panic" && len(p.Call.Args) == 1 {
