@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,10 +36,12 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function empty_stack() {
-  return ['nodes' => [], 'head' => 0 - 1];
-}
-function push($stack, $value) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function empty_stack() {
+  return ['head' => 0 - 1, 'nodes' => []];
+};
+  function push($stack, $value) {
   $nodes = $stack['nodes'];
   $idx = count($nodes);
   $new_node = ['data' => $value, 'next' => $stack['head'], 'prev' => 0 - 1];
@@ -33,11 +51,11 @@ function push($stack, $value) {
   $head_node['prev'] = $idx;
   $nodes[$stack['head']] = $head_node;
 }
-  return ['nodes' => $nodes, 'head' => $idx];
-}
-function pop($stack) {
+  return ['head' => $idx, 'nodes' => $nodes];
+};
+  function pop($stack) {
   if ($stack['head'] == 0 - 1) {
-  return ['stack' => $stack, 'value' => 0, 'ok' => false];
+  return ['ok' => false, 'stack' => $stack, 'value' => 0];
 }
   $nodes = $stack['nodes'];
   $head_node = $nodes[$stack['head']];
@@ -48,17 +66,17 @@ function pop($stack) {
   $next_node['prev'] = 0 - 1;
   $nodes[$next_idx] = $next_node;
 }
-  $new_stack = ['nodes' => $nodes, 'head' => $next_idx];
-  return ['stack' => $new_stack, 'value' => $value, 'ok' => true];
-}
-function top($stack) {
+  $new_stack = ['head' => $next_idx, 'nodes' => $nodes];
+  return ['ok' => true, 'stack' => $new_stack, 'value' => $value];
+};
+  function top($stack) {
   if ($stack['head'] == 0 - 1) {
-  return ['value' => 0, 'ok' => false];
+  return ['ok' => false, 'value' => 0];
 }
   $node = $stack['nodes'][$stack['head']];
-  return ['value' => $node['data'], 'ok' => true];
-}
-function size($stack) {
+  return ['ok' => true, 'value' => $node['data']];
+};
+  function size($stack) {
   $count = 0;
   $idx = $stack['head'];
   while ($idx != 0 - 1) {
@@ -67,11 +85,11 @@ function size($stack) {
   $idx = $node['next'];
 };
   return $count;
-}
-function is_empty($stack) {
+};
+  function is_empty($stack) {
   return $stack['head'] == 0 - 1;
-}
-function print_stack($stack) {
+};
+  function print_stack($stack) {
   echo rtrim('stack elements are:'), PHP_EOL;
   $idx = $stack['head'];
   $s = '';
@@ -83,8 +101,8 @@ function print_stack($stack) {
   if (strlen($s) > 0) {
   echo rtrim($s), PHP_EOL;
 }
-}
-function main() {
+};
+  function main() {
   $stack = empty_stack();
   echo rtrim('Stack operations using Doubly LinkedList'), PHP_EOL;
   $stack = push($stack, 4);
@@ -105,5 +123,13 @@ function main() {
   $stack = $p['stack'];
   print_stack($stack);
   echo rtrim('stack is empty: ' . _str(is_empty($stack))), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

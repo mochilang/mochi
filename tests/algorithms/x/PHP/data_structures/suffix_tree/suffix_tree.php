@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,11 +36,13 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function new_node() {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function new_node() {
   global $st;
-  return ['children' => [], 'is_end_of_string' => false, 'start' => -1, 'end' => -1];
-}
-function has_key($m, $k) {
+  return ['children' => [], 'end' => -1, 'is_end_of_string' => false, 'start' => -1];
+};
+  function has_key($m, $k) {
   global $st;
   foreach (array_keys($m) as $key) {
   if ($key == $k) {
@@ -32,8 +50,8 @@ function has_key($m, $k) {
 }
 };
   return false;
-}
-function add_suffix(&$tree, $suffix, $index) {
+};
+  function add_suffix($tree, $suffix, $index) {
   global $st;
   $nodes = $tree['nodes'];
   $node_idx = 0;
@@ -59,8 +77,8 @@ function add_suffix(&$tree, $suffix, $index) {
   $nodes[$node_idx] = $node;
   $tree['nodes'] = $nodes;
   return $tree;
-}
-function build_suffix_tree($tree) {
+};
+  function build_suffix_tree($tree) {
   global $st;
   $text = $tree['text'];
   $n = strlen($text);
@@ -77,15 +95,15 @@ function build_suffix_tree($tree) {
   $i = $i + 1;
 };
   return $t;
-}
-function new_suffix_tree($text) {
+};
+  function new_suffix_tree($text) {
   global $st;
-  $tree = ['text' => $text, 'nodes' => []];
+  $tree = ['nodes' => [], 'text' => $text];
   $tree['nodes'] = _append($tree['nodes'], new_node());
   $tree = build_suffix_tree($tree);
   return $tree;
-}
-function search($tree, $pattern) {
+};
+  function search($tree, $pattern) {
   global $st;
   $node_idx = 0;
   $i = 0;
@@ -101,7 +119,15 @@ function search($tree, $pattern) {
   $i = $i + 1;
 };
   return true;
-}
-$st = new_suffix_tree('bananas');
-echo rtrim(_str(search($st, 'ana'))), PHP_EOL;
-echo rtrim(_str(search($st, 'apple'))), PHP_EOL;
+};
+  $st = new_suffix_tree('bananas');
+  echo rtrim(_str(search($st, 'ana'))), PHP_EOL;
+  echo rtrim(_str(search($st, 'apple'))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

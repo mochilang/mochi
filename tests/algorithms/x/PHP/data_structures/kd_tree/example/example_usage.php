@@ -16,12 +16,6 @@ function _now() {
     }
     return hrtime(true);
 }
-function _len($x) {
-    if ($x === null) { return 0; }
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -123,14 +117,14 @@ $__start = _now();
   $right_points = sublist($points, $median + 1, count($points));
   $left_res = build_kdtree($left_points, $depth + 1);
   $right_res = build_kdtree($right_points, $depth + 1);
-  $offset = _len($left_res['nodes']) + 1;
+  $offset = count($left_res['nodes']) + 1;
   $shifted_right = shift_nodes($right_res['nodes'], $offset);
   $nodes = $left_res['nodes'];
   $left_index = $left_res['index'];
   $right_index = ($right_res['index'] == 0 - 1 ? 0 - 1 : $right_res['index'] + $offset);
   $nodes = _append($nodes, ['left' => $left_index, 'point' => $points[$median], 'right' => $right_index]);
   $nodes = array_merge($nodes, $shifted_right);
-  $root_index = _len($left_res['nodes']);
+  $root_index = count($left_res['nodes']);
   return ['index' => $root_index, 'nodes' => $nodes];
 };
   function square_distance($a, $b) {

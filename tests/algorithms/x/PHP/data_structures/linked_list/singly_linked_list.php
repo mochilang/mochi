@@ -1,9 +1,20 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
 function _str($x) {
     if (is_array($x)) {
@@ -25,30 +36,36 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function empty_list() {
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function empty_list() {
   return ['data' => []];
-}
-function length($list) {
-  return _len($list['data']);
-}
-function is_empty($list) {
-  return _len($list['data']) == 0;
-}
-function to_string($list) {
-  if (_len($list['data']) == 0) {
+};
+  function length($list) {
+  return count($list['data']);
+};
+  function is_empty($list) {
+  return count($list['data']) == 0;
+};
+  function to_string($list) {
+  if (count($list['data']) == 0) {
   return '';
 }
   $s = _str($list['data'][0]);
   $i = 1;
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   $s = $s . ' -> ' . _str($list['data'][$i]);
   $i = $i + 1;
 };
   return $s;
-}
-function insert_nth($list, $index, $value) {
-  if ($index < 0 || $index > _len($list['data'])) {
-  $panic('index out of range');
+};
+  function insert_nth($list, $index, $value) {
+  if ($index < 0 || $index > count($list['data'])) {
+  _panic('index out of range');
 }
   $res = [];
   $i = 0;
@@ -57,26 +74,26 @@ function insert_nth($list, $index, $value) {
   $i = $i + 1;
 };
   $res = _append($res, $value);
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   $res = _append($res, $list['data'][$i]);
   $i = $i + 1;
 };
   return ['data' => $res];
-}
-function insert_head($list, $value) {
+};
+  function insert_head($list, $value) {
   return insert_nth($list, 0, $value);
-}
-function insert_tail($list, $value) {
-  return insert_nth($list, _len($list['data']), $value);
-}
-function delete_nth($list, $index) {
-  if ($index < 0 || $index >= _len($list['data'])) {
-  $panic('index out of range');
+};
+  function insert_tail($list, $value) {
+  return insert_nth($list, count($list['data']), $value);
+};
+  function delete_nth($list, $index) {
+  if ($index < 0 || $index >= count($list['data'])) {
+  _panic('index out of range');
 }
   $res = [];
   $val = 0;
   $i = 0;
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   if ($i == $index) {
   $val = $list['data'][$i];
 } else {
@@ -85,26 +102,26 @@ function delete_nth($list, $index) {
   $i = $i + 1;
 };
   return ['list' => ['data' => $res], 'value' => $val];
-}
-function delete_head($list) {
+};
+  function delete_head($list) {
   return delete_nth($list, 0);
-}
-function delete_tail($list) {
-  return delete_nth($list, _len($list['data']) - 1);
-}
-function get_item($list, $index) {
-  if ($index < 0 || $index >= _len($list['data'])) {
-  $panic('index out of range');
+};
+  function delete_tail($list) {
+  return delete_nth($list, count($list['data']) - 1);
+};
+  function get_item($list, $index) {
+  if ($index < 0 || $index >= count($list['data'])) {
+  _panic('index out of range');
 }
   return $list['data'][$index];
-}
-function set_item($list, $index, $value) {
-  if ($index < 0 || $index >= _len($list['data'])) {
-  $panic('index out of range');
+};
+  function set_item($list, $index, $value) {
+  if ($index < 0 || $index >= count($list['data'])) {
+  _panic('index out of range');
 }
   $res = [];
   $i = 0;
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   if ($i == $index) {
   $res = _append($res, $value);
 } else {
@@ -113,17 +130,17 @@ function set_item($list, $index, $value) {
   $i = $i + 1;
 };
   return ['data' => $res];
-}
-function reverse_list($list) {
+};
+  function reverse_list($list) {
   $res = [];
-  $i = _len($list['data']) - 1;
+  $i = count($list['data']) - 1;
   while ($i >= 0) {
   $res = _append($res, $list['data'][$i]);
   $i = $i - 1;
 };
   return ['data' => $res];
-}
-function main() {
+};
+  function main() {
   $lst = empty_list();
   $i = 1;
   while ($i <= 5) {
@@ -146,5 +163,13 @@ function main() {
   echo rtrim(_str(get_item($lst, 1))), PHP_EOL;
   $lst = reverse_list($lst);
   echo rtrim(to_string($lst)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

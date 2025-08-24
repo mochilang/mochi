@@ -1,28 +1,41 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function empty_list() {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function empty_list() {
   return ['data' => []];
-}
-function push($lst, $value) {
+};
+  function push($lst, $value) {
   $res = [$value];
   $i = 0;
-  while ($i < _len($lst['data'])) {
+  while ($i < count($lst['data'])) {
   $res = _append($res, $lst['data'][$i]);
   $i = $i + 1;
 };
   return ['data' => $res];
-}
-function middle_element($lst) {
-  $n = _len($lst['data']);
+};
+  function middle_element($lst) {
+  $n = count($lst['data']);
   if ($n == 0) {
   echo rtrim('No element found.'), PHP_EOL;
   return 0;
@@ -34,8 +47,8 @@ function middle_element($lst) {
   $slow = $slow + 1;
 };
   return $lst['data'][$slow];
-}
-function main() {
+};
+  function main() {
   $lst = empty_list();
   middle_element($lst);
   $lst = push($lst, 5);
@@ -61,5 +74,13 @@ function main() {
   $lst = push($lst, -20);
   echo rtrim(json_encode(-20, 1344)), PHP_EOL;
   echo rtrim(json_encode(middle_element($lst), 1344)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

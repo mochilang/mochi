@@ -1,9 +1,20 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
 function _str($x) {
     if (is_array($x)) {
@@ -25,28 +36,30 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function to_string($list) {
-  if (_len($list['data']) == 0) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function to_string($list) {
+  if (count($list['data']) == 0) {
   return '';
 }
   $s = _str($list['data'][0]);
   $i = 1;
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   $s = $s . ' -> ' . _str($list['data'][$i]);
   $i = $i + 1;
 };
   return $s;
-}
-function reverse_k_nodes($list, $k) {
+};
+  function reverse_k_nodes($list, $k) {
   if ($k <= 1) {
   return $list;
 }
   $res = [];
   $i = 0;
-  while ($i < _len($list['data'])) {
+  while ($i < count($list['data'])) {
   $j = 0;
   $group = [];
-  while ($j < $k && $i + $j < _len($list['data'])) {
+  while ($j < $k && $i + $j < count($list['data'])) {
   $group = _append($group, $list['data'][$i + $j]);
   $j = $j + 1;
 };
@@ -66,12 +79,20 @@ function reverse_k_nodes($list, $k) {
   $i = $i + $k;
 };
   return ['data' => $res];
-}
-function main() {
+};
+  function main() {
   $ll = ['data' => [1, 2, 3, 4, 5]];
   echo rtrim('Original Linked List: ' . to_string($ll)), PHP_EOL;
   $k = 2;
   $ll = reverse_k_nodes($ll, $k);
   echo rtrim('After reversing groups of size ' . _str($k) . ': ' . to_string($ll)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,1 +1,1 @@
-run: timeout
+run: signal: killed

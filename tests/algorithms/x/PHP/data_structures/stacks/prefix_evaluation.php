@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +36,9 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-function split($s, $sep) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function split_custom($s, $sep) {
   global $test_expression, $test_expression2, $test_expression3;
   $res = [];
   $current = '';
@@ -37,10 +55,10 @@ function split($s, $sep) {
 };
   $res = _append($res, $current);
   return $res;
-}
-function tokenize($s) {
+};
+  function tokenize($s) {
   global $test_expression, $test_expression2, $test_expression3;
-  $parts = explode(' ', $s);
+  $parts = split_custom($s, ' ');
   $res = [];
   $i = 0;
   while ($i < count($parts)) {
@@ -51,12 +69,12 @@ function tokenize($s) {
   $i = $i + 1;
 };
   return $res;
-}
-function is_digit($ch) {
+};
+  function is_digit($ch) {
   global $test_expression, $test_expression2, $test_expression3;
   return $ch >= '0' && $ch <= '9';
-}
-function is_operand($token) {
+};
+  function is_operand($token) {
   global $test_expression, $test_expression2, $test_expression3;
   if ($token == '') {
   return false;
@@ -70,18 +88,18 @@ function is_operand($token) {
   $i = $i + 1;
 };
   return true;
-}
-function to_int($token) {
+};
+  function to_int($token) {
   global $test_expression, $test_expression2, $test_expression3;
   $res = 0;
   $i = 0;
   while ($i < strlen($token)) {
-  $res = $res * 10 + (ord(substr($token, $i, $i + 1 - $i)));
+  $res = $res * 10 + ((ctype_digit($token[$i]) ? intval($token[$i]) : ord($token[$i])));
   $i = $i + 1;
 };
   return $res;
-}
-function apply_op($op, $a, $b) {
+};
+  function apply_op($op, $a, $b) {
   global $test_expression, $test_expression2, $test_expression3;
   if ($op == '+') {
   return $a + $b;
@@ -96,8 +114,8 @@ function apply_op($op, $a, $b) {
   return $a / $b;
 }
   return 0.0;
-}
-function evaluate($expression) {
+};
+  function evaluate($expression) {
   global $test_expression, $test_expression2, $test_expression3;
   $tokens = tokenize($expression);
   $stack = [];
@@ -110,7 +128,7 @@ function evaluate($expression) {
 } else {
   $o1 = $stack[count($stack) - 1];
   $o2 = $stack[count($stack) - 2];
-  $stack = array_slice($stack, 0, count($stack) - 2 - 0);
+  $stack = array_slice($stack, 0, count($stack) - 2);
   $res = apply_op($token, $o1, $o2);
   $stack = _append($stack, $res);
 };
@@ -118,8 +136,8 @@ function evaluate($expression) {
   $i = $i - 1;
 };
   return $stack[0];
-}
-function eval_rec($tokens, $pos) {
+};
+  function eval_rec($tokens, $pos) {
   global $test_expression, $test_expression2, $test_expression3;
   $token = $tokens[$pos];
   $next = $pos + 1;
@@ -133,16 +151,24 @@ function eval_rec($tokens, $pos) {
   $b = $right[0];
   $p2 = $right[1];
   return [apply_op($token, $a, $b), $p2];
-}
-function evaluate_recursive($expression) {
+};
+  function evaluate_recursive($expression) {
   global $test_expression, $test_expression2, $test_expression3;
   $tokens = tokenize($expression);
   $res = eval_rec($tokens, 0);
   return $res[0];
-}
-$test_expression = '+ 9 * 2 6';
-echo rtrim(_str(evaluate($test_expression))), PHP_EOL;
-$test_expression2 = '/ * 10 2 + 4 1 ';
-echo rtrim(_str(evaluate($test_expression2))), PHP_EOL;
-$test_expression3 = '+ * 2 3 / 8 4';
-echo rtrim(_str(evaluate_recursive($test_expression3))), PHP_EOL;
+};
+  $test_expression = '+ 9 * 2 6';
+  echo rtrim(_str(evaluate($test_expression))), PHP_EOL;
+  $test_expression2 = '/ * 10 2 + 4 1 ';
+  echo rtrim(_str(evaluate($test_expression2))), PHP_EOL;
+  $test_expression3 = '+ * 2 3 / 8 4';
+  echo rtrim(_str(evaluate_recursive($test_expression3))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

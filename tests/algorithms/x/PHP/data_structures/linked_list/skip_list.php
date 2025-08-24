@@ -1,5 +1,21 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,25 +36,27 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$NIL = 0 - 1;
-$MAX_LEVEL = 6;
-$P = 0.5;
-$seed = 1;
-function random() {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $NIL = 0 - 1;
+  $MAX_LEVEL = 6;
+  $P = 0.5;
+  $seed = 1;
+  function random() {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   $seed = ($seed * 13 + 7) % 100;
   return (floatval($seed)) / 100.0;
-}
-function random_level() {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+};
+  function random_level() {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   $lvl = 1;
   while (random() < $P && $lvl < $MAX_LEVEL) {
   $lvl = $lvl + 1;
 };
   return $lvl;
-}
-function empty_forward() {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+};
+  function empty_forward() {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   $f = [];
   $i = 0;
   while ($i < $MAX_LEVEL) {
@@ -46,20 +64,20 @@ function empty_forward() {
   $i = $i + 1;
 };
   return $f;
-}
-$node_keys = [];
-$node_vals = [];
-$node_forwards = [];
-$level = 1;
-function init() {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+};
+  $node_keys = [];
+  $node_vals = [];
+  $node_forwards = [];
+  $level = 1;
+  function init() {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   $node_keys = [-1];
   $node_vals = [0];
   $node_forwards = [empty_forward()];
   $level = 1;
-}
-function insert($key, $value) {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+};
+  function insert($key, $value) {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   $update = [];
   $i = 0;
   while ($i < $MAX_LEVEL) {
@@ -100,9 +118,9 @@ function insert($key, $value) {
   $i = $i + 1;
 };
   $node_forwards = _append($node_forwards, $forwards);
-}
-function find($key) {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+};
+  function find($key) {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   $x = 0;
   $i = $level - 1;
   while ($i >= 0) {
@@ -116,9 +134,9 @@ function find($key) {
   return $node_vals[$x];
 }
   return -1;
-}
-function delete($key) {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+};
+  function delete($key) {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   $update = [];
   $i = 0;
   while ($i < $MAX_LEVEL) {
@@ -148,9 +166,9 @@ function delete($key) {
   while ($level > 1 && $node_forwards[0][$level - 1] == $NIL) {
   $level = $level - 1;
 };
-}
-function to_string() {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+};
+  function to_string() {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   $s = '';
   $x = $node_forwards[0][0];
   while ($x != $NIL) {
@@ -161,9 +179,9 @@ function to_string() {
   $x = $node_forwards[$x][0];
 };
   return $s;
-}
-function main() {
-  global $NIL, $MAX_LEVEL, $P, $seed, $node_keys, $node_vals, $node_forwards, $level;
+};
+  function main() {
+  global $MAX_LEVEL, $NIL, $P, $level, $node_forwards, $node_keys, $node_vals, $seed;
   init();
   insert(2, 2);
   insert(4, 4);
@@ -173,5 +191,13 @@ function main() {
   insert(9, 4);
   delete(4);
   echo rtrim(to_string()), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage(true);
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
