@@ -87,8 +87,10 @@ end
 
 const helperAppend = `
 def _append(arr, x)
+  arr = [] if arr.nil?
   x = x.clone if x.is_a?(Array)
-  (arr || []) + [x]
+  arr << x
+  arr
 end
 `
 
@@ -199,6 +201,7 @@ const helperIdx = `
 def _idx(arr, idx)
   return nil if arr.nil?
   if (arr.is_a?(Array) || arr.is_a?(String)) && idx.is_a?(Numeric)
+    idx += arr.length if idx < 0
     return nil if idx < 0 || idx >= arr.length
   end
   arr[idx]

@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 1069/1077
-Last updated: 2025-08-24 23:17 +0700
+Completed programs: 1070/1077
+Last updated: 2025-08-24 23:57 +0700
 
 Checklist:
 
@@ -271,7 +271,7 @@ Checklist:
 | 262 | data_structures/suffix_tree/suffix_tree | ✓ | 327µs | 34.2 KB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 1ms | 11.4 KB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 1ms | 13.8 KB |
-| 265 | data_structures/trie/radix_tree | ✓ | 1ms | 34.9 KB |
+| 265 | data_structures/trie/radix_tree | ✓ | 198µs | 35.6 KB |
 | 266 | data_structures/trie/trie | ✓ | 1ms | 28.7 KB |
 | 267 | digital_image_processing/change_brightness | ✓ | 1ms | 10.6 KB |
 | 268 | digital_image_processing/change_contrast | ✓ | 1ms | 12.3 KB |
@@ -279,7 +279,7 @@ Checklist:
 | 270 | digital_image_processing/dithering/burkes | ✓ | 1ms | 14.6 KB |
 | 271 | digital_image_processing/edge_detection/canny | ✓ | 1ms | 63.5 KB |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 1ms | 18.7 KB |
-| 273 | digital_image_processing/filters/convolve | ✓ | 1ms | 21.2 KB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 681µs | 18.6 KB |
 | 274 | digital_image_processing/filters/gabor_filter | ✓ | 1ms | 30.8 KB |
 | 275 | digital_image_processing/filters/gaussian_filter | ✓ | 1ms | 13.4 KB |
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 1ms | 15.1 KB |
@@ -294,7 +294,7 @@ Checklist:
 | 285 | digital_image_processing/rotation/rotation | ✓ | 1ms | 11.8 KB |
 | 286 | digital_image_processing/sepia | ✓ | 1ms | 11.1 KB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 1ms | 23.1 KB |
-| 288 | divide_and_conquer/closest_pair_of_points |   | 224µs | 12.1 KB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 163µs | 11.7 KB |
 | 289 | divide_and_conquer/convex_hull | ✓ | 1ms | 7.3 KB |
 | 290 | divide_and_conquer/heaps_algorithm | ✓ | 1ms | 11.2 KB |
 | 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 1ms | 11.1 KB |
