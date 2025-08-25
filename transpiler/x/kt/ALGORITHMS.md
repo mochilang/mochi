@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-25 08:43 GMT+7
+Last updated: 2025-08-25 22:45 GMT+7
 
-## Algorithms Golden Test Checklist (720/1077)
+## Algorithms Golden Test Checklist (721/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -681,7 +681,7 @@ Last updated: 2025-08-25 08:43 GMT+7
 | 672 | maths/special_numbers/krishnamurthy_number | ✓ | 9.14ms | 134.19KiB |
 | 673 | maths/special_numbers/perfect_number | ✓ | 22.64ms | 123.50KiB |
 | 674 | maths/special_numbers/polygonal_numbers | ✓ | 10.94ms | 130.52KiB |
-| 675 | maths/special_numbers/pronic_number | error |  |  |
+| 675 | maths/special_numbers/pronic_number | ✓ | 11.72ms | 142.09KiB |
 | 676 | maths/special_numbers/proth_number | ✓ | 23.89ms | 122.56KiB |
 | 677 | maths/special_numbers/triangular_numbers | ✓ | 7.31ms | 134.19KiB |
 | 678 | maths/special_numbers/ugly_numbers | ✓ | 25.17ms | 124.03KiB |
