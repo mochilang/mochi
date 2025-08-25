@@ -1159,6 +1159,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if b.Op == "/" && !b.Real {
+		io.WriteString(w, "_floordiv(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if _, ok := b.Left.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
 		b.Left.emit(w)
@@ -1170,10 +1178,6 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	switch op {
 	case "%":
 		op = "mod"
-	case "/":
-		if !b.Real {
-			op = "div"
-		}
 	}
 	fmt.Fprintf(w, " %s ", op)
 	if _, ok := b.Right.(*BinaryExpr); ok {
@@ -1604,6 +1608,7 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString("procedure panic(msg: string);\nbegin\n  writeln(msg);\n  halt(1);\nend;\n")
 	buf.WriteString("procedure error(msg: string);\nbegin\n  panic(msg);\nend;\n")
+	buf.WriteString("function _floordiv(a, b: int64): int64; var r: int64;\nbegin\n  r := a div b;\n  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;\n  _floordiv := r;\nend;\n")
 	buf.WriteString("function _to_float(x: integer): real;\nbegin\n  _to_float := x;\nend;\n")
 	if _, ok := funcNames["to_float"]; !ok {
 		buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := _to_float(x);\nend;\n")
