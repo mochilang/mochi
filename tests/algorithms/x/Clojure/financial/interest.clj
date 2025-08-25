@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare panic powf simple_interest compound_interest apr_interest main)
+
+(declare _read_file)
 
 (def ^:dynamic powf_i nil)
 
@@ -44,7 +52,7 @@
   (try (do (when (<= apr_interest_years 0.0) (do (panic "number_of_years must be > 0") (throw (ex-info "return" {:v 0.0})))) (when (< apr_interest_apr 0.0) (do (panic "nominal_annual_percentage_rate must be >= 0") (throw (ex-info "return" {:v 0.0})))) (when (<= apr_interest_principal 0.0) (do (panic "principal must be > 0") (throw (ex-info "return" {:v 0.0})))) (throw (ex-info "return" {:v (compound_interest apr_interest_principal (/ apr_interest_apr 365.0) (* apr_interest_years 365.0))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
-  (do (println (str (simple_interest 18000.0 0.06 3.0))) (println (str (simple_interest 0.5 0.06 3.0))) (println (str (simple_interest 18000.0 0.01 10.0))) (println (str (compound_interest 10000.0 0.05 3.0))) (println (str (compound_interest 10000.0 0.05 1.0))) (println (str (apr_interest 10000.0 0.05 3.0))) (println (str (apr_interest 10000.0 0.05 1.0)))))
+  (do (println (mochi_str (simple_interest 18000.0 0.06 3.0))) (println (mochi_str (simple_interest 0.5 0.06 3.0))) (println (mochi_str (simple_interest 18000.0 0.01 10.0))) (println (mochi_str (compound_interest 10000.0 0.05 3.0))) (println (mochi_str (compound_interest 10000.0 0.05 1.0))) (println (mochi_str (apr_interest 10000.0 0.05 3.0))) (println (mochi_str (apr_interest 10000.0 0.05 1.0)))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

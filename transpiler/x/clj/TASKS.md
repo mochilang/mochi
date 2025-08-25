@@ -1,3 +1,439 @@
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-25 21:42 +0700)
+- c transpiler: handle struct typedefs
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-24 16:58 +0700)
 - clj: handle ranged loops with control
 - Regenerated golden files - 102/105 vm valid programs passing

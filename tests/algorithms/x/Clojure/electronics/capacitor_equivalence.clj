@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare capacitor_parallel capacitor_series main)
+
+(declare _read_file)
 
 (def ^:dynamic capacitor_parallel_c nil)
 
@@ -41,13 +49,13 @@
 (def ^:dynamic main_series nil)
 
 (defn capacitor_parallel [capacitor_parallel_capacitors]
-  (binding [capacitor_parallel_c nil capacitor_parallel_i nil capacitor_parallel_sum_c nil] (try (do (set! capacitor_parallel_sum_c 0.0) (set! capacitor_parallel_i 0) (while (< capacitor_parallel_i (count capacitor_parallel_capacitors)) (do (set! capacitor_parallel_c (nth capacitor_parallel_capacitors capacitor_parallel_i)) (when (< capacitor_parallel_c 0.0) (do (throw (Exception. (str (str "Capacitor at index " (str capacitor_parallel_i)) " has a negative value!"))) (throw (ex-info "return" {:v 0.0})))) (set! capacitor_parallel_sum_c (+ capacitor_parallel_sum_c capacitor_parallel_c)) (set! capacitor_parallel_i (+ capacitor_parallel_i 1)))) (throw (ex-info "return" {:v capacitor_parallel_sum_c}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [capacitor_parallel_c nil capacitor_parallel_i nil capacitor_parallel_sum_c nil] (try (do (set! capacitor_parallel_sum_c 0.0) (set! capacitor_parallel_i 0) (while (< capacitor_parallel_i (count capacitor_parallel_capacitors)) (do (set! capacitor_parallel_c (nth capacitor_parallel_capacitors capacitor_parallel_i)) (when (< capacitor_parallel_c 0.0) (do (throw (Exception. (str (str "Capacitor at index " (mochi_str capacitor_parallel_i)) " has a negative value!"))) (throw (ex-info "return" {:v 0.0})))) (set! capacitor_parallel_sum_c (+ capacitor_parallel_sum_c capacitor_parallel_c)) (set! capacitor_parallel_i (+ capacitor_parallel_i 1)))) (throw (ex-info "return" {:v capacitor_parallel_sum_c}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn capacitor_series [capacitor_series_capacitors]
-  (binding [capacitor_series_c nil capacitor_series_first_sum nil capacitor_series_i nil] (try (do (set! capacitor_series_first_sum 0.0) (set! capacitor_series_i 0) (while (< capacitor_series_i (count capacitor_series_capacitors)) (do (set! capacitor_series_c (nth capacitor_series_capacitors capacitor_series_i)) (when (<= capacitor_series_c 0.0) (do (throw (Exception. (str (str "Capacitor at index " (str capacitor_series_i)) " has a negative or zero value!"))) (throw (ex-info "return" {:v 0.0})))) (set! capacitor_series_first_sum (+ capacitor_series_first_sum (/ 1.0 capacitor_series_c))) (set! capacitor_series_i (+ capacitor_series_i 1)))) (throw (ex-info "return" {:v (/ 1.0 capacitor_series_first_sum)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [capacitor_series_c nil capacitor_series_first_sum nil capacitor_series_i nil] (try (do (set! capacitor_series_first_sum 0.0) (set! capacitor_series_i 0) (while (< capacitor_series_i (count capacitor_series_capacitors)) (do (set! capacitor_series_c (nth capacitor_series_capacitors capacitor_series_i)) (when (<= capacitor_series_c 0.0) (do (throw (Exception. (str (str "Capacitor at index " (mochi_str capacitor_series_i)) " has a negative or zero value!"))) (throw (ex-info "return" {:v 0.0})))) (set! capacitor_series_first_sum (+ capacitor_series_first_sum (/ 1.0 capacitor_series_c))) (set! capacitor_series_i (+ capacitor_series_i 1)))) (throw (ex-info "return" {:v (/ 1.0 capacitor_series_first_sum)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
-  (binding [main_parallel nil main_series nil] (do (set! main_parallel (capacitor_parallel [5.71389 12.0 3.0])) (set! main_series (capacitor_series [5.71389 12.0 3.0])) (println (str main_parallel)) (println (str main_series)))))
+  (binding [main_parallel nil main_series nil] (do (set! main_parallel (capacitor_parallel [5.71389 12.0 3.0])) (set! main_series (capacitor_series [5.71389 12.0 3.0])) (println (mochi_str main_parallel)) (println (mochi_str main_series)))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

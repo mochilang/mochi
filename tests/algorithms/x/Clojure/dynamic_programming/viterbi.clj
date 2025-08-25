@@ -2,12 +2,6 @@
 
 (require 'clojure.set)
 
-(defrecord EmitP [Healthy Fever])
-
-(defrecord TransP [Healthy Fever])
-
-(defrecord StartP [Healthy Fever])
-
 (defn in [x coll]
   (cond (string? coll) (clojure.string/includes? coll x) (map? coll) (contains? coll x) (sequential? coll) (some (fn [e] (= e x)) coll) :else false))
 
@@ -21,7 +15,22 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
+(def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
+
+(declare key viterbi join_words)
+
+(declare _read_file)
 
 (def ^:dynamic join_words_i nil)
 
@@ -75,13 +84,6 @@
 
 (def ^:dynamic viterbi_t nil)
 
-(defn _fetch [url]
-  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
-
-(def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
-
-(declare key viterbi join_words)
-
 (defn key [key_state key_obs]
   (try (throw (ex-info "return" {:v (str (str key_state "|") key_obs)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
@@ -91,15 +93,15 @@
 (defn join_words [join_words_words]
   (binding [join_words_i nil join_words_res nil] (try (do (set! join_words_res "") (set! join_words_i 0) (while (< join_words_i (count join_words_words)) (do (when (> join_words_i 0) (set! join_words_res (str join_words_res " "))) (set! join_words_res (str join_words_res (nth join_words_words join_words_i))) (set! join_words_i (+ join_words_i 1)))) (throw (ex-info "return" {:v join_words_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
-(def ^:dynamic main_observations ["normal" "cold" "dizzy"])
+(def ^:dynamic main_observations nil)
 
-(def ^:dynamic main_states ["Healthy" "Fever"])
+(def ^:dynamic main_states nil)
 
-(def ^:dynamic main_start_p {"Fever" 0.4 "Healthy" 0.6})
+(def ^:dynamic main_start_p nil)
 
-(def ^:dynamic main_trans_p {"Fever" {"Fever" 0.6 "Healthy" 0.4} "Healthy" {"Fever" 0.3 "Healthy" 0.7}})
+(def ^:dynamic main_trans_p nil)
 
-(def ^:dynamic main_emit_p {"Fever" {"cold" 0.3 "dizzy" 0.6 "normal" 0.1} "Healthy" {"cold" 0.4 "dizzy" 0.1 "normal" 0.5}})
+(def ^:dynamic main_emit_p nil)
 
 (def ^:dynamic main_result nil)
 
@@ -107,6 +109,11 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_observations) (constantly ["normal" "cold" "dizzy"]))
+      (alter-var-root (var main_states) (constantly ["Healthy" "Fever"]))
+      (alter-var-root (var main_start_p) (constantly {"Fever" 0.4 "Healthy" 0.6}))
+      (alter-var-root (var main_trans_p) (constantly {"Fever" {"Fever" 0.6 "Healthy" 0.4} "Healthy" {"Fever" 0.3 "Healthy" 0.7}}))
+      (alter-var-root (var main_emit_p) (constantly {"Fever" {"cold" 0.3 "dizzy" 0.6 "normal" 0.1} "Healthy" {"cold" 0.4 "dizzy" 0.1 "normal" 0.5}}))
       (alter-var-root (var main_result) (constantly (viterbi main_observations main_states main_start_p main_trans_p main_emit_p)))
       (println (join_words main_result))
       (System/gc)

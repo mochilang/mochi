@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare _mod sin cos rotate iteration_step iterate vec_to_string vec_list_to_string)
+
+(declare _read_file)
 
 (def ^:dynamic cos_y nil)
 
@@ -99,7 +107,7 @@
   (binding [iterate_i nil iterate_vectors nil] (try (do (set! iterate_vectors iterate_initial) (set! iterate_i 0) (while (< iterate_i iterate_steps) (do (set! iterate_vectors (iteration_step iterate_vectors)) (set! iterate_i (+ iterate_i 1)))) (throw (ex-info "return" {:v iterate_vectors}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn vec_to_string [vec_to_string_v]
-  (try (throw (ex-info "return" {:v (str (str (str (str "(" (str (:x vec_to_string_v))) ", ") (str (:y vec_to_string_v))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (str (str "(" (mochi_str (:x vec_to_string_v))) ", ") (mochi_str (:y vec_to_string_v))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn vec_list_to_string [vec_list_to_string_lst]
   (binding [vec_list_to_string_i nil vec_list_to_string_res nil] (try (do (set! vec_list_to_string_res "[") (set! vec_list_to_string_i 0) (while (< vec_list_to_string_i (count vec_list_to_string_lst)) (do (set! vec_list_to_string_res (str vec_list_to_string_res (vec_to_string (nth vec_list_to_string_lst vec_list_to_string_i)))) (when (< vec_list_to_string_i (- (count vec_list_to_string_lst) 1)) (set! vec_list_to_string_res (str vec_list_to_string_res ", "))) (set! vec_list_to_string_i (+ vec_list_to_string_i 1)))) (set! vec_list_to_string_res (str vec_list_to_string_res "]")) (throw (ex-info "return" {:v vec_list_to_string_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare n_choose_k pow_float basis_function bezier_point)
+
+(declare _read_file)
 
 (def ^:dynamic basis_function_coef nil)
 
@@ -69,10 +77,10 @@
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
       (alter-var-root (var main_control) (constantly [[1.0 1.0] [1.0 2.0]]))
-      (println (str (basis_function main_control 0.0)))
-      (println (str (basis_function main_control 1.0)))
-      (println (str (bezier_point main_control 0.0)))
-      (println (str (bezier_point main_control 1.0)))
+      (println (mochi_str (basis_function main_control 0.0)))
+      (println (mochi_str (basis_function main_control 1.0)))
+      (println (mochi_str (bezier_point main_control 0.0)))
+      (println (mochi_str (bezier_point main_control 1.0)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

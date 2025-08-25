@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare absf pow10 round_to electric_power str_result)
+
+(declare _read_file)
 
 (def ^:dynamic electric_power_p nil)
 
@@ -47,7 +55,7 @@
   (binding [electric_power_p nil electric_power_zeros nil] (try (do (set! electric_power_zeros 0) (when (= electric_power_voltage 0.0) (set! electric_power_zeros (+ electric_power_zeros 1))) (when (= electric_power_current 0.0) (set! electric_power_zeros (+ electric_power_zeros 1))) (when (= electric_power_power 0.0) (set! electric_power_zeros (+ electric_power_zeros 1))) (if (not= electric_power_zeros 1) (throw (Exception. "Exactly one argument must be 0")) (if (< electric_power_power 0.0) (throw (Exception. "Power cannot be negative in any electrical/electronics system")) (if (= electric_power_voltage 0.0) (throw (ex-info "return" {:v {:name "voltage" :value (/ electric_power_power electric_power_current)}})) (if (= electric_power_current 0.0) (throw (ex-info "return" {:v {:name "current" :value (/ electric_power_power electric_power_voltage)}})) (if (= electric_power_power 0.0) (do (set! electric_power_p (absf (* electric_power_voltage electric_power_current))) (throw (ex-info "return" {:v {:name "power" :value (round_to electric_power_p 2)}}))) (throw (Exception. "Unhandled case")))))))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn str_result [str_result_r]
-  (try (throw (ex-info "return" {:v (str (str (str (str "Result(name='" (:name str_result_r)) "', value=") (str (:value str_result_r))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (str (str "Result(name='" (:name str_result_r)) "', value=") (mochi_str (:value str_result_r))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (def ^:dynamic main_r1 nil)
 

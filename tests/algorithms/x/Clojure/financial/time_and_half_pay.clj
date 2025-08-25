@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare pay main)
+
+(declare _read_file)
 
 (def ^:dynamic pay_normal_pay nil)
 
@@ -34,7 +42,7 @@
   (binding [pay_normal_pay nil pay_over_time nil pay_over_time_pay nil] (try (do (set! pay_normal_pay (* pay_hours_worked pay_pay_rate)) (set! pay_over_time (- pay_hours_worked pay_hours)) (when (< pay_over_time 0.0) (set! pay_over_time 0.0)) (set! pay_over_time_pay (/ (* pay_over_time pay_pay_rate) 2.0)) (throw (ex-info "return" {:v (+ pay_normal_pay pay_over_time_pay)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
-  (do (println (str (pay 41.0 1.0 40.0))) (println (str (pay 65.0 19.0 40.0))) (println (str (pay 10.0 1.0 40.0)))))
+  (do (println (mochi_str (pay 41.0 1.0 40.0))) (println (mochi_str (pay 65.0 19.0 40.0))) (println (mochi_str (pay 10.0 1.0 40.0)))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

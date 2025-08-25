@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare make_angle make_side ellipse_area ellipse_perimeter circle_area circle_perimeter circle_diameter circle_max_parts make_polygon polygon_add_side polygon_get_side polygon_set_side make_rectangle rectangle_perimeter rectangle_area make_square square_perimeter square_area main)
+
+(declare _read_file)
 
 (def ^:dynamic circle_area_area nil)
 
@@ -94,13 +102,13 @@
   (binding [make_polygon_s nil] (try (do (set! make_polygon_s []) (throw (ex-info "return" {:v {:sides make_polygon_s}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn polygon_add_side [polygon_add_side_p_p polygon_add_side_s]
-  (binding [polygon_add_side_p polygon_add_side_p_p] (do (set! polygon_add_side_p (assoc polygon_add_side_p :sides (conj (:sides polygon_add_side_p) polygon_add_side_s))) polygon_add_side_p)))
+  (binding [polygon_add_side_p polygon_add_side_p_p] (do (try (set! polygon_add_side_p (assoc polygon_add_side_p :sides (conj (:sides polygon_add_side_p) polygon_add_side_s))) (finally (alter-var-root (var polygon_add_side_p) (constantly polygon_add_side_p)))) polygon_add_side_p)))
 
 (defn polygon_get_side [polygon_get_side_p polygon_get_side_index]
   (try (throw (ex-info "return" {:v (get (:sides polygon_get_side_p) polygon_get_side_index)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn polygon_set_side [polygon_set_side_p_p polygon_set_side_index polygon_set_side_s]
-  (binding [polygon_set_side_p polygon_set_side_p_p polygon_set_side_tmp nil] (do (set! polygon_set_side_tmp (:sides polygon_set_side_p)) (set! polygon_set_side_tmp (assoc polygon_set_side_tmp polygon_set_side_index polygon_set_side_s)) (set! polygon_set_side_p (assoc polygon_set_side_p :sides polygon_set_side_tmp)) polygon_set_side_p)))
+  (binding [polygon_set_side_p polygon_set_side_p_p polygon_set_side_tmp nil] (do (try (do (set! polygon_set_side_tmp (:sides polygon_set_side_p)) (set! polygon_set_side_tmp (assoc polygon_set_side_tmp polygon_set_side_index polygon_set_side_s)) (set! polygon_set_side_p (assoc polygon_set_side_p :sides polygon_set_side_tmp))) (finally (alter-var-root (var polygon_set_side_p) (constantly polygon_set_side_p)))) polygon_set_side_p)))
 
 (defn make_rectangle [make_rectangle_short_len make_rectangle_long_len]
   (binding [make_rectangle_long nil make_rectangle_p nil make_rectangle_short nil] (try (do (when (or (<= make_rectangle_short_len 0.0) (<= make_rectangle_long_len 0.0)) (throw (Exception. "length must be positive"))) (set! make_rectangle_short (make_side make_rectangle_short_len (make_angle 90.0))) (set! make_rectangle_long (make_side make_rectangle_long_len (make_angle 90.0))) (set! make_rectangle_p (make_polygon)) (let [__res (polygon_add_side make_rectangle_p make_rectangle_short)] (do (set! make_rectangle_p polygon_add_side_p) __res)) (let [__res (polygon_add_side make_rectangle_p make_rectangle_long)] (do (set! make_rectangle_p polygon_add_side_p) __res)) (throw (ex-info "return" {:v {:long_side make_rectangle_long :poly make_rectangle_p :short_side make_rectangle_short}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

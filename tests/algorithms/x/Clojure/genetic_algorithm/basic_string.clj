@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare evaluate crossover mutate main)
+
+(declare _read_file)
 
 (def ^:dynamic crossover_child1 nil)
 
@@ -50,7 +58,7 @@
   (binding [mutate_gene nil] (try (do (when (= (count mutate_child) 0) (throw (ex-info "return" {:v mutate_child}))) (set! mutate_gene (nth mutate_genes 0)) (throw (ex-info "return" {:v (str (subs mutate_child 0 (min (- (count mutate_child) 1) (count mutate_child))) mutate_gene)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
-  (binding [main_mut nil main_pair nil] (do (println (str (evaluate "Helxo Worlx" "Hello World"))) (set! main_pair (crossover "123456" "abcdef")) (println (:first main_pair)) (println (:second main_pair)) (set! main_mut (mutate "123456" ["A" "B" "C" "D" "E" "F"])) (println main_mut))))
+  (binding [main_mut nil main_pair nil] (do (println (mochi_str (evaluate "Helxo Worlx" "Hello World"))) (set! main_pair (crossover "123456" "abcdef")) (println (:first main_pair)) (println (:second main_pair)) (set! main_mut (mutate "123456" ["A" "B" "C" "D" "E" "F"])) (println main_mut))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
