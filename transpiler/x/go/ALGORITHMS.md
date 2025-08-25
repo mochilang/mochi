@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
 Completed programs: 994/1077
-Last updated: 2025-08-25 08:35 +0700
+Last updated: 2025-08-25 22:27 +0700
 
 Checklist:
 
@@ -675,8 +675,8 @@ Checklist:
 | 666 | maths/special_numbers/carmichael_number | ✓ | 547.0µs | 1.02KB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 307.0µs | 952B |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 452.0µs | 4.03KB |
-| 669 | maths/special_numbers/happy_number | ✓ | 182.0µs | 1.32KB |
-| 670 | maths/special_numbers/harshad_numbers | ✓ | 1.0ms | 99.81KB |
+| 669 | maths/special_numbers/happy_number | ✓ | 487.0µs | 1.32KB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 1.0ms | 99.66KB |
 | 671 | maths/special_numbers/hexagonal_number | ✓ | 199.0µs | 960B |
 | 672 | maths/special_numbers/krishnamurthy_number | ✓ | 326.0µs | 1000B |
 | 673 | maths/special_numbers/perfect_number | ✓ | 286.0µs | 1.38KB |

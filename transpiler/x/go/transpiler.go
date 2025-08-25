@@ -1756,9 +1756,11 @@ func (k *KeysExpr) emit(w io.Writer) {
 type ListStringExpr struct{ List Expr }
 
 func (ls *ListStringExpr) emit(w io.Writer) {
-	io.WriteString(w, "strings.ReplaceAll(fmt.Sprint(")
+	usesJSON = true
+	usesStrings = true
+	io.WriteString(w, "func() string { b, _ := json.Marshal(")
 	ls.List.emit(w)
-	io.WriteString(w, "), \" \", \", \")")
+	io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ",", ", "); return s }()`)
 }
 
 // StringJoinExpr joins a list of strings with spaces.
