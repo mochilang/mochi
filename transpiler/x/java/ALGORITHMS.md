@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-25 08:44 GMT+7
+Last updated: 2025-08-25 16:55 GMT+7
 
-## Algorithms Golden Test Checklist (963/1077)
+## Algorithms Golden Test Checklist (960/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -400,13 +400,13 @@ Last updated: 2025-08-25 08:44 GMT+7
 | 391 | graphics/butterfly_pattern | ✓ | 43.0ms | 103.18KB |
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 33.0ms | 69.52KB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 21.0ms | 10.60KB |
-| 394 | graphs/a_star | ✓ | 29.0ms | 46.57KB |
+| 394 | graphs/a_star | error | 29.0ms | 46.57KB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 70.0ms | 68.09KB |
 | 396 | graphs/articulation_points | ✓ | 25.0ms | 46.04KB |
 | 397 | graphs/basic_graphs | ✓ | 32.0ms | 64.39KB |
 | 398 | graphs/bellman_ford | ✓ | 46.0ms | 39.23KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 30.0ms | 50.07KB |
-| 400 | graphs/bidirectional_a_star | ✓ | 54.0ms | 119.01KB |
+| 400 | graphs/bidirectional_a_star | error | 54.0ms | 119.01KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 182.0ms | 122.65KB |
 | 402 | graphs/bidirectional_search | ✓ | 46.0ms | 113.06KB |
 | 403 | graphs/boruvka | error |  |  |
@@ -421,7 +421,7 @@ Last updated: 2025-08-25 08:44 GMT+7
 | 412 | graphs/deep_clone_graph | error |  |  |
 | 413 | graphs/depth_first_search | ✓ | 39.0ms | 48.10KB |
 | 414 | graphs/depth_first_search_2 | ✓ | 62.0ms | 97.10KB |
-| 415 | graphs/dijkstra | ✓ | 38.0ms | 53.82KB |
+| 415 | graphs/dijkstra | error | 38.0ms | 53.82KB |
 | 416 | graphs/dijkstra_2 | ✓ | 47.0ms | 77.70KB |
 | 417 | graphs/dijkstra_algorithm | ✓ | 45.0ms | 48.27KB |
 | 418 | graphs/dijkstra_alternate | ✓ | 57.0ms | 94.76KB |

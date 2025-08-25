@@ -12,57 +12,50 @@ public class Main {
         }
     }
 
-    static double[] data;
-    static int window_size;
+    static double[] data = ((double[])(new double[]{(double)(10.0), (double)(12.0), (double)(15.0), (double)(13.0), (double)(14.0), (double)(16.0), (double)(18.0), (double)(17.0), (double)(19.0), (double)(21.0)}));
+    static java.math.BigInteger window_size = java.math.BigInteger.valueOf(3);
     static SMAValue[] sma_values;
-    static int idx = 0;
+    static java.math.BigInteger idx = java.math.BigInteger.valueOf(0);
 
-    static SMAValue[] simple_moving_average(double[] data, int window_size) {
-        if (window_size < 1) {
+    static SMAValue[] simple_moving_average(double[] data, java.math.BigInteger window_size) {
+        if (window_size.compareTo(java.math.BigInteger.valueOf(1)) < 0) {
             throw new RuntimeException(String.valueOf("Window size must be a positive integer"));
         }
-        SMAValue[] result = ((SMAValue[])(new SMAValue[]{}));
-        double window_sum = 0.0;
-        int i = 0;
-        while (i < data.length) {
-            window_sum = window_sum + data[i];
-            if (i >= window_size) {
-                window_sum = window_sum - data[i - window_size];
+        SMAValue[] result_1 = ((SMAValue[])(new SMAValue[]{}));
+        double window_sum_1 = (double)(0.0);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(data.length))) < 0) {
+            window_sum_1 = (double)((double)(window_sum_1) + (double)(data[_idx((data).length, ((java.math.BigInteger)(i_1)).longValue())]));
+            if (i_1.compareTo(window_size) >= 0) {
+                window_sum_1 = (double)((double)(window_sum_1) - (double)(data[_idx((data).length, ((java.math.BigInteger)(i_1.subtract(window_size))).longValue())]));
             }
-            if (i >= window_size - 1) {
-                double avg = window_sum / window_size;
-                result = ((SMAValue[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new SMAValue(avg, true))).toArray(SMAValue[]::new)));
+            if (i_1.compareTo(window_size.subtract(java.math.BigInteger.valueOf(1))) >= 0) {
+                double avg_1 = (double)((double)(window_sum_1) / ((java.math.BigInteger)(window_size)).doubleValue());
+                result_1 = ((SMAValue[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(new SMAValue((double)(avg_1), true))).toArray(SMAValue[]::new)));
             } else {
-                result = ((SMAValue[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new SMAValue(0.0, false))).toArray(SMAValue[]::new)));
+                result_1 = ((SMAValue[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(new SMAValue((double)(0.0), false))).toArray(SMAValue[]::new)));
             }
-            i = i + 1;
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((SMAValue[])(result_1));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            data = ((double[])(new double[]{10.0, 12.0, 15.0, 13.0, 14.0, 16.0, 18.0, 17.0, 19.0, 21.0}));
-            window_size = 3;
-            sma_values = ((SMAValue[])(simple_moving_average(((double[])(data)), window_size)));
-            idx = 0;
-            while (idx < sma_values.length) {
-                SMAValue item = sma_values[idx];
+            sma_values = ((SMAValue[])(simple_moving_average(((double[])(data)), new java.math.BigInteger(String.valueOf(window_size)))));
+            while (idx.compareTo(new java.math.BigInteger(String.valueOf(sma_values.length))) < 0) {
+                SMAValue item = sma_values[_idx((sma_values).length, ((java.math.BigInteger)(idx)).longValue())];
                 if (item.ok) {
-                    System.out.println("Day " + _p(idx + 1) + ": " + _p(item.value));
+                    System.out.println("Day " + _p(idx.add(java.math.BigInteger.valueOf(1))) + ": " + _p(item.value));
                 } else {
-                    System.out.println("Day " + _p(idx + 1) + ": Not enough data for SMA");
+                    System.out.println("Day " + _p(idx.add(java.math.BigInteger.valueOf(1))) + ": Not enough data for SMA");
                 }
-                idx = idx + 1;
+                idx = new java.math.BigInteger(String.valueOf(idx.add(java.math.BigInteger.valueOf(1))));
             }
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
             return;
         }
     }
@@ -102,6 +95,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }
