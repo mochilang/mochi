@@ -2917,7 +2917,11 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent+1)
 	io.WriteString(w, "long long __end = _now();\n")
 	writeIndent(w, indent+1)
-	io.WriteString(w, "long long __dur_us = (__end - __start) / 1000;\n")
+	// Round up to the nearest microsecond so extremely fast programs
+	// still report at least 1µs. This avoids zero durations in the
+	// generated benchmark output which would otherwise be omitted from
+	// the algorithms checklist.
+	io.WriteString(w, "long long __dur_us = (__end - __start + 999) / 1000;\n")
 	writeIndent(w, indent+1)
 	io.WriteString(w, "long long __mem_bytes = _mem();\n")
 	writeIndent(w, indent+1)
