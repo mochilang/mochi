@@ -15,7 +15,10 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -27,12 +30,14 @@
 
 (declare archimedes_principle archimedes_principle_default)
 
+(declare _read_file)
+
 (def ^:dynamic archimedes_principle_default_res nil)
 
 (def ^:dynamic main_G nil)
 
 (defn archimedes_principle [archimedes_principle_fluid_density archimedes_principle_volume archimedes_principle_gravity]
-  (try (do (when (<= archimedes_principle_fluid_density 0.0) (throw (Exception. "Impossible fluid density"))) (when (<= archimedes_principle_volume 0.0) (throw (Exception. "Impossible object volume"))) (when (< archimedes_principle_gravity 0.0) (throw (Exception. "Impossible gravity"))) (throw (ex-info "return" {:v (* (* archimedes_principle_fluid_density archimedes_principle_volume) archimedes_principle_gravity)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (when (<= archimedes_principle_fluid_density 0.0) (throw (Exception. "Impossible fluid density"))) (when (<= archimedes_principle_volume 0.0) (throw (Exception. "Impossible object volume"))) (when (< archimedes_principle_gravity 0.0) (throw (Exception. "Impossible gravity"))) (throw (ex-info "return" {:v (*' (*' archimedes_principle_fluid_density archimedes_principle_volume) archimedes_principle_gravity)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn archimedes_principle_default [archimedes_principle_default_fluid_density archimedes_principle_default_volume]
   (binding [archimedes_principle_default_res nil] (try (do (set! archimedes_principle_default_res (archimedes_principle archimedes_principle_default_fluid_density archimedes_principle_default_volume main_G)) (throw (ex-info "return" {:v archimedes_principle_default_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

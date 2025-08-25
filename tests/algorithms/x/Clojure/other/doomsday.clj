@@ -15,7 +15,10 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -26,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare get_week_day)
+
+(declare _read_file)
 
 (def ^:dynamic get_week_day_centurian nil)
 
@@ -48,7 +53,7 @@
 (def ^:dynamic main_WEEK_DAY_NAMES nil)
 
 (defn get_week_day [get_week_day_year get_week_day_month get_week_day_day]
-  (binding [get_week_day_centurian nil get_week_day_centurian_m nil get_week_day_century nil get_week_day_century_anchor nil get_week_day_day_anchor nil get_week_day_dooms_day nil get_week_day_week_day nil] (try (do (when (< get_week_day_year 100) (throw (Exception. "year should be in YYYY format"))) (when (or (< get_week_day_month 1) (> get_week_day_month 12)) (throw (Exception. "month should be between 1 to 12"))) (when (or (< get_week_day_day 1) (> get_week_day_day 31)) (throw (Exception. "day should be between 1 to 31"))) (set! get_week_day_century (quot get_week_day_year 100)) (set! get_week_day_century_anchor (mod (+ (* 5 (mod get_week_day_century 4)) 2) 7)) (set! get_week_day_centurian (mod get_week_day_year 100)) (set! get_week_day_centurian_m (mod get_week_day_centurian 12)) (set! get_week_day_dooms_day (mod (+ (+ (+ (quot get_week_day_centurian 12) get_week_day_centurian_m) (quot get_week_day_centurian_m 4)) get_week_day_century_anchor) 7)) (set! get_week_day_day_anchor (if (or (not= (mod get_week_day_year 4) 0) (and (= get_week_day_centurian 0) (not= (mod get_week_day_year 400) 0))) (nth main_DOOMSDAY_NOT_LEAP (- get_week_day_month 1)) (nth main_DOOMSDAY_LEAP (- get_week_day_month 1)))) (set! get_week_day_week_day (mod (- (+ get_week_day_dooms_day get_week_day_day) get_week_day_day_anchor) 7)) (when (< get_week_day_week_day 0) (set! get_week_day_week_day (+ get_week_day_week_day 7))) (throw (ex-info "return" {:v (get main_WEEK_DAY_NAMES get_week_day_week_day)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [get_week_day_centurian nil get_week_day_centurian_m nil get_week_day_century nil get_week_day_century_anchor nil get_week_day_day_anchor nil get_week_day_dooms_day nil get_week_day_week_day nil] (try (do (when (< get_week_day_year 100) (throw (Exception. "year should be in YYYY format"))) (when (or (< get_week_day_month 1) (> get_week_day_month 12)) (throw (Exception. "month should be between 1 to 12"))) (when (or (< get_week_day_day 1) (> get_week_day_day 31)) (throw (Exception. "day should be between 1 to 31"))) (set! get_week_day_century (/ get_week_day_year 100)) (set! get_week_day_century_anchor (mod (+' (*' 5 (mod get_week_day_century 4)) 2) 7)) (set! get_week_day_centurian (mod get_week_day_year 100)) (set! get_week_day_centurian_m (mod get_week_day_centurian 12)) (set! get_week_day_dooms_day (mod (+' (+' (+' (/ get_week_day_centurian 12) get_week_day_centurian_m) (/ get_week_day_centurian_m 4)) get_week_day_century_anchor) 7)) (set! get_week_day_day_anchor (if (or (not= (mod get_week_day_year 4) 0) (and (= get_week_day_centurian 0) (not= (mod get_week_day_year 400) 0))) (nth main_DOOMSDAY_NOT_LEAP (- get_week_day_month 1)) (nth main_DOOMSDAY_LEAP (- get_week_day_month 1)))) (set! get_week_day_week_day (mod (- (+' get_week_day_dooms_day get_week_day_day) get_week_day_day_anchor) 7)) (when (< get_week_day_week_day 0) (set! get_week_day_week_day (+' get_week_day_week_day 7))) (throw (ex-info "return" {:v (get main_WEEK_DAY_NAMES get_week_day_week_day)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

@@ -15,7 +15,10 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -27,6 +30,8 @@
 
 (declare leaky_rectified_linear_unit)
 
+(declare _read_file)
+
 (def ^:dynamic leaky_rectified_linear_unit_i nil)
 
 (def ^:dynamic leaky_rectified_linear_unit_result nil)
@@ -34,7 +39,7 @@
 (def ^:dynamic leaky_rectified_linear_unit_x nil)
 
 (defn leaky_rectified_linear_unit [leaky_rectified_linear_unit_vector leaky_rectified_linear_unit_alpha]
-  (binding [leaky_rectified_linear_unit_i nil leaky_rectified_linear_unit_result nil leaky_rectified_linear_unit_x nil] (try (do (set! leaky_rectified_linear_unit_result []) (set! leaky_rectified_linear_unit_i 0) (while (< leaky_rectified_linear_unit_i (count leaky_rectified_linear_unit_vector)) (do (set! leaky_rectified_linear_unit_x (nth leaky_rectified_linear_unit_vector leaky_rectified_linear_unit_i)) (if (> leaky_rectified_linear_unit_x 0.0) (set! leaky_rectified_linear_unit_result (conj leaky_rectified_linear_unit_result leaky_rectified_linear_unit_x)) (set! leaky_rectified_linear_unit_result (conj leaky_rectified_linear_unit_result (* leaky_rectified_linear_unit_alpha leaky_rectified_linear_unit_x)))) (set! leaky_rectified_linear_unit_i (+ leaky_rectified_linear_unit_i 1)))) (throw (ex-info "return" {:v leaky_rectified_linear_unit_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [leaky_rectified_linear_unit_i nil leaky_rectified_linear_unit_result nil leaky_rectified_linear_unit_x nil] (try (do (set! leaky_rectified_linear_unit_result []) (set! leaky_rectified_linear_unit_i 0) (while (< leaky_rectified_linear_unit_i (count leaky_rectified_linear_unit_vector)) (do (set! leaky_rectified_linear_unit_x (nth leaky_rectified_linear_unit_vector leaky_rectified_linear_unit_i)) (if (> leaky_rectified_linear_unit_x 0.0) (set! leaky_rectified_linear_unit_result (conj leaky_rectified_linear_unit_result leaky_rectified_linear_unit_x)) (set! leaky_rectified_linear_unit_result (conj leaky_rectified_linear_unit_result (*' leaky_rectified_linear_unit_alpha leaky_rectified_linear_unit_x)))) (set! leaky_rectified_linear_unit_i (+' leaky_rectified_linear_unit_i 1)))) (throw (ex-info "return" {:v leaky_rectified_linear_unit_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (def ^:dynamic main_vector1 nil)
 

@@ -15,7 +15,10 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -26,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare rand randint fisher_yates_shuffle_int fisher_yates_shuffle_str)
+
+(declare _read_file)
 
 (def ^:dynamic fisher_yates_shuffle_int_a nil)
 
@@ -49,19 +54,19 @@
 
 (def ^:dynamic randint_r nil)
 
-(def ^:dynamic main_seed 1)
+(def ^:dynamic main_seed nil)
 
 (defn rand []
-  (try (do (alter-var-root (var main_seed) (fn [_] (mod (+ (* main_seed 1103515245) 12345) 2147483648))) (throw (ex-info "return" {:v (quot main_seed 65536)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (alter-var-root (var main_seed) (fn [_] (mod (+' (*' main_seed 1103515245) 12345) 2147483648))) (throw (ex-info "return" {:v (quot main_seed 65536)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn randint [randint_a randint_b]
-  (binding [randint_r nil] (try (do (set! randint_r (rand)) (throw (ex-info "return" {:v (+ randint_a (mod randint_r (+ (- randint_b randint_a) 1)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [randint_r nil] (try (do (set! randint_r (rand)) (throw (ex-info "return" {:v (+' randint_a (mod randint_r (+' (- randint_b randint_a) 1)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn fisher_yates_shuffle_int [fisher_yates_shuffle_int_data]
-  (binding [fisher_yates_shuffle_int_a nil fisher_yates_shuffle_int_b nil fisher_yates_shuffle_int_i nil fisher_yates_shuffle_int_res nil fisher_yates_shuffle_int_temp nil] (try (do (set! fisher_yates_shuffle_int_res fisher_yates_shuffle_int_data) (set! fisher_yates_shuffle_int_i 0) (while (< fisher_yates_shuffle_int_i (count fisher_yates_shuffle_int_res)) (do (set! fisher_yates_shuffle_int_a (randint 0 (- (count fisher_yates_shuffle_int_res) 1))) (set! fisher_yates_shuffle_int_b (randint 0 (- (count fisher_yates_shuffle_int_res) 1))) (set! fisher_yates_shuffle_int_temp (nth fisher_yates_shuffle_int_res fisher_yates_shuffle_int_a)) (set! fisher_yates_shuffle_int_res (assoc fisher_yates_shuffle_int_res fisher_yates_shuffle_int_a (nth fisher_yates_shuffle_int_res fisher_yates_shuffle_int_b))) (set! fisher_yates_shuffle_int_res (assoc fisher_yates_shuffle_int_res fisher_yates_shuffle_int_b fisher_yates_shuffle_int_temp)) (set! fisher_yates_shuffle_int_i (+ fisher_yates_shuffle_int_i 1)))) (throw (ex-info "return" {:v fisher_yates_shuffle_int_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [fisher_yates_shuffle_int_a nil fisher_yates_shuffle_int_b nil fisher_yates_shuffle_int_i nil fisher_yates_shuffle_int_res nil fisher_yates_shuffle_int_temp nil] (try (do (set! fisher_yates_shuffle_int_res fisher_yates_shuffle_int_data) (set! fisher_yates_shuffle_int_i 0) (while (< fisher_yates_shuffle_int_i (count fisher_yates_shuffle_int_res)) (do (set! fisher_yates_shuffle_int_a (randint 0 (- (count fisher_yates_shuffle_int_res) 1))) (set! fisher_yates_shuffle_int_b (randint 0 (- (count fisher_yates_shuffle_int_res) 1))) (set! fisher_yates_shuffle_int_temp (nth fisher_yates_shuffle_int_res fisher_yates_shuffle_int_a)) (set! fisher_yates_shuffle_int_res (assoc fisher_yates_shuffle_int_res fisher_yates_shuffle_int_a (nth fisher_yates_shuffle_int_res fisher_yates_shuffle_int_b))) (set! fisher_yates_shuffle_int_res (assoc fisher_yates_shuffle_int_res fisher_yates_shuffle_int_b fisher_yates_shuffle_int_temp)) (set! fisher_yates_shuffle_int_i (+' fisher_yates_shuffle_int_i 1)))) (throw (ex-info "return" {:v fisher_yates_shuffle_int_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn fisher_yates_shuffle_str [fisher_yates_shuffle_str_data]
-  (binding [fisher_yates_shuffle_str_a nil fisher_yates_shuffle_str_b nil fisher_yates_shuffle_str_i nil fisher_yates_shuffle_str_res nil fisher_yates_shuffle_str_temp nil] (try (do (set! fisher_yates_shuffle_str_res fisher_yates_shuffle_str_data) (set! fisher_yates_shuffle_str_i 0) (while (< fisher_yates_shuffle_str_i (count fisher_yates_shuffle_str_res)) (do (set! fisher_yates_shuffle_str_a (randint 0 (- (count fisher_yates_shuffle_str_res) 1))) (set! fisher_yates_shuffle_str_b (randint 0 (- (count fisher_yates_shuffle_str_res) 1))) (set! fisher_yates_shuffle_str_temp (nth fisher_yates_shuffle_str_res fisher_yates_shuffle_str_a)) (set! fisher_yates_shuffle_str_res (assoc fisher_yates_shuffle_str_res fisher_yates_shuffle_str_a (nth fisher_yates_shuffle_str_res fisher_yates_shuffle_str_b))) (set! fisher_yates_shuffle_str_res (assoc fisher_yates_shuffle_str_res fisher_yates_shuffle_str_b fisher_yates_shuffle_str_temp)) (set! fisher_yates_shuffle_str_i (+ fisher_yates_shuffle_str_i 1)))) (throw (ex-info "return" {:v fisher_yates_shuffle_str_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [fisher_yates_shuffle_str_a nil fisher_yates_shuffle_str_b nil fisher_yates_shuffle_str_i nil fisher_yates_shuffle_str_res nil fisher_yates_shuffle_str_temp nil] (try (do (set! fisher_yates_shuffle_str_res fisher_yates_shuffle_str_data) (set! fisher_yates_shuffle_str_i 0) (while (< fisher_yates_shuffle_str_i (count fisher_yates_shuffle_str_res)) (do (set! fisher_yates_shuffle_str_a (randint 0 (- (count fisher_yates_shuffle_str_res) 1))) (set! fisher_yates_shuffle_str_b (randint 0 (- (count fisher_yates_shuffle_str_res) 1))) (set! fisher_yates_shuffle_str_temp (nth fisher_yates_shuffle_str_res fisher_yates_shuffle_str_a)) (set! fisher_yates_shuffle_str_res (assoc fisher_yates_shuffle_str_res fisher_yates_shuffle_str_a (nth fisher_yates_shuffle_str_res fisher_yates_shuffle_str_b))) (set! fisher_yates_shuffle_str_res (assoc fisher_yates_shuffle_str_res fisher_yates_shuffle_str_b fisher_yates_shuffle_str_temp)) (set! fisher_yates_shuffle_str_i (+' fisher_yates_shuffle_str_i 1)))) (throw (ex-info "return" {:v fisher_yates_shuffle_str_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (def ^:dynamic main_integers nil)
 
@@ -71,6 +76,7 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
+      (alter-var-root (var main_seed) (constantly 1))
       (alter-var-root (var main_integers) (constantly [0 1 2 3 4 5 6 7]))
       (alter-var-root (var main_strings) (constantly ["python" "says" "hello" "!"]))
       (println "Fisher-Yates Shuffle:")

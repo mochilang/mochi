@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare make_lcg next_number)
+
+(declare _read_file)
 
 (def ^:dynamic main_i nil)
 
@@ -32,17 +40,19 @@
   (try (throw (ex-info "return" {:v {:increment make_lcg_increment :modulo make_lcg_modulo :multiplier make_lcg_multiplier :seed make_lcg_seed}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn next_number [next_number_lcg_p]
-  (binding [next_number_lcg nil] (try (do (set! next_number_lcg next_number_lcg_p) (set! next_number_lcg (assoc next_number_lcg :seed (mod (+ (* (:multiplier next_number_lcg) (:seed next_number_lcg)) (:increment next_number_lcg)) (:modulo next_number_lcg)))) (throw (ex-info "return" {:v (:seed next_number_lcg)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [next_number_lcg next_number_lcg_p] (try (do (set! next_number_lcg (assoc next_number_lcg :seed (mod (+' (*' (:multiplier next_number_lcg) (:seed next_number_lcg)) (:increment next_number_lcg)) (:modulo next_number_lcg)))) (throw (ex-info "return" {:v (:seed next_number_lcg)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var next_number_lcg) (constantly next_number_lcg))))))
 
-(def ^:dynamic main_lcg (make_lcg 1664525 1013904223 4294967296 (swap! nowSeed (fn [s] (mod (+ (* s 1664525) 1013904223) 2147483647)))))
+(def ^:dynamic main_lcg nil)
 
-(def ^:dynamic main_i 0)
+(def ^:dynamic main_i nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (while (< main_i 5) (do (println (str (next_number main_lcg))) (def main_i (+ main_i 1))))
+      (alter-var-root (var main_lcg) (constantly (make_lcg 1664525 1013904223 4294967296 (swap! nowSeed (fn [s] (mod (+ (* s 1664525) 1013904223) 2147483647))))))
+      (alter-var-root (var main_i) (constantly 0))
+      (while (< main_i 5) (do (println (mochi_str (let [__res (next_number main_lcg)] (do (alter-var-root (var main_lcg) (constantly next_number_lcg)) __res)))) (alter-var-root (var main_i) (constantly (+' main_i 1)))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))
