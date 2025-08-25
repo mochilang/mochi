@@ -2028,6 +2028,20 @@ func isIntOnlyExpr(e Expr, env *types.Env) bool {
 	}
 }
 
+func looksLikeIndexName(name string) bool {
+	if len(name) == 1 {
+		switch name {
+		case "i", "j", "k", "l", "m", "n":
+			return true
+		}
+	}
+	lower := strings.ToLower(name)
+	if strings.Contains(lower, "idx") || strings.Contains(lower, "index") {
+		return true
+	}
+	return false
+}
+
 // isLikelyIntExpr provides a best-effort check to determine whether an
 // expression consists solely of integer values without relying on the type
 // environment. It treats all names as integers and rejects expressions that
@@ -2039,17 +2053,16 @@ func isLikelyIntExpr(e Expr) bool {
 	case *Name:
 		if currentEnv != nil {
 			if t, err := currentEnv.GetVar(ex.Name); err == nil {
-				return isIntLike(t)
+				if isIntLike(t) || looksLikeIndexName(ex.Name) {
+					return true
+				}
+				return false
 			}
-			// If the name is not present in the current environment,
-			// we lack type information. Assume non-integer to avoid
-			// accidentally converting float divisions to integer
-			// divisions.
+			if looksLikeIndexName(ex.Name) {
+				return true
+			}
 			return false
 		}
-		// Without any type information at all, fall back to treating the
-		// name as an integer, preserving the historical heuristic for
-		// index calculations.
 		return true
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {

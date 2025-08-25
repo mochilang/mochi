@@ -1,18 +1,5 @@
-[209, 201, 25, 103, 107, 15, 1, 9, 7, 11, 5]
-209
-[201, 107, 25, 103, 11, 15, 1, 9, 7, 5]
 {
-  "duration_us": 90,
+  "duration_us": 161,
   "memory_bytes": 0,
   "name": "main"
 }
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/heap/heap.py", line 138, in <module>
-    size = insert(heap, size, 100.0)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/heap/heap.py", line 108, in insert
-    max_heapify(h, heap_size, idx)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/heap/heap.py", line 79, in max_heapify
-    if left < heap_size and h[left] > h[largest]:
-                            ~^^^^^^
-TypeError: list indices must be integers or slices, not float
