@@ -1027,7 +1027,11 @@ func (p *Program) write(w io.Writer) {
 	if usesAny {
 		fmt.Fprintln(w, "static std::string _format_double(double v) {")
 		fmt.Fprintln(w, "    std::ostringstream ss;")
-		fmt.Fprintln(w, "    ss << std::defaultfloat << std::setprecision(6) << v;")
+		// Use max_digits10 to match Go's 'g' formatting which aims to
+		// print enough precision to round-trip a float64. Previous
+		// fixed precision (6) truncated many algorithm outputs leading
+		// to discrepancies with reference results.
+		fmt.Fprintln(w, "    ss << std::defaultfloat << std::setprecision(std::numeric_limits<double>::max_digits10) << v;")
 		fmt.Fprintln(w, "    auto s = ss.str();")
 		fmt.Fprintln(w, "    auto epos = s.find('e');")
 		fmt.Fprintln(w, "    if(epos == std::string::npos) epos = s.find('E');")
@@ -1078,7 +1082,9 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "static void any_to_json(std::ostream& os, const std::any& val) {")
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(int64_t)) os << std::any_cast<int64_t>(val);")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(cpp_int)) os << _cpp_int_to_string(std::any_cast<cpp_int>(val));")
+		if p.UseBigInt {
+			fmt.Fprintln(w, "    else if(val.type() == typeid(cpp_int)) os << _cpp_int_to_string(std::any_cast<cpp_int>(val));")
+		}
 		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << _format_double(std::any_cast<double>(val));")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << '\"' << std::any_cast<std::string>(val) << '\"';")
@@ -6643,10 +6649,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Name: "std::exp", Args: args}, nil
 		}
 		if p.Call.Func == "ln" && len(args) == 1 {
-			if currentProgram != nil {
-				currentProgram.addInclude("<cmath>")
+			// Only map to std::log when there is no user-defined function named "ln".
+			// Some Mochi algorithms (e.g. electronics/builtin_voltage.mochi) define
+			// their own logarithm implementation for approximation. When such a
+			// function exists, we should respect that definition instead of replacing
+			// it with the math library's log, otherwise the results diverge from the
+			// reference implementation.
+			if findFunc("ln") == nil {
+				if currentProgram != nil {
+					currentProgram.addInclude("<cmath>")
+				}
+				return &CallExpr{Name: "std::log", Args: args}, nil
 			}
-			return &CallExpr{Name: "std::log", Args: args}, nil
 		}
 		candidates := []string{p.Call.Func, safeName(p.Call.Func), "_" + safeName(p.Call.Func)}
 		for _, cname := range candidates {
