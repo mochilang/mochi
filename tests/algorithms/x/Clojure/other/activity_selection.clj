@@ -15,7 +15,10 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -27,6 +30,8 @@
 
 (declare print_max_activities)
 
+(declare _read_file)
+
 (def ^:dynamic print_max_activities_i nil)
 
 (def ^:dynamic print_max_activities_j nil)
@@ -36,7 +41,7 @@
 (def ^:dynamic print_max_activities_result nil)
 
 (defn print_max_activities [print_max_activities_start print_max_activities_finish]
-  (binding [print_max_activities_i nil print_max_activities_j nil print_max_activities_n nil print_max_activities_result nil] (do (set! print_max_activities_n (count print_max_activities_finish)) (println "The following activities are selected:") (set! print_max_activities_i 0) (set! print_max_activities_result "0,") (set! print_max_activities_j 1) (while (< print_max_activities_j print_max_activities_n) (do (when (>= (nth print_max_activities_start print_max_activities_j) (nth print_max_activities_finish print_max_activities_i)) (do (set! print_max_activities_result (str (str print_max_activities_result (mochi_str print_max_activities_j)) ",")) (set! print_max_activities_i print_max_activities_j))) (set! print_max_activities_j (+ print_max_activities_j 1)))) (println print_max_activities_result))))
+  (binding [print_max_activities_i nil print_max_activities_j nil print_max_activities_n nil print_max_activities_result nil] (do (set! print_max_activities_n (count print_max_activities_finish)) (println "The following activities are selected:") (set! print_max_activities_i 0) (set! print_max_activities_result "0,") (set! print_max_activities_j 1) (while (< print_max_activities_j print_max_activities_n) (do (when (>= (nth print_max_activities_start print_max_activities_j) (nth print_max_activities_finish print_max_activities_i)) (do (set! print_max_activities_result (str (str print_max_activities_result (mochi_str print_max_activities_j)) ",")) (set! print_max_activities_i print_max_activities_j))) (set! print_max_activities_j (+' print_max_activities_j 1)))) (println print_max_activities_result))))
 
 (def ^:dynamic main_start nil)
 

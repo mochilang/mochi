@@ -15,7 +15,10 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -27,6 +30,8 @@
 
 (declare binary_step main)
 
+(declare _read_file)
+
 (def ^:dynamic binary_step_i nil)
 
 (def ^:dynamic binary_step_out nil)
@@ -36,7 +41,7 @@
 (def ^:dynamic main_vector nil)
 
 (defn binary_step [binary_step_vector]
-  (binding [binary_step_i nil binary_step_out nil] (try (do (set! binary_step_out []) (set! binary_step_i 0) (while (< binary_step_i (count binary_step_vector)) (do (if (>= (nth binary_step_vector binary_step_i) 0.0) (set! binary_step_out (conj binary_step_out 1)) (set! binary_step_out (conj binary_step_out 0))) (set! binary_step_i (+ binary_step_i 1)))) (throw (ex-info "return" {:v binary_step_out}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [binary_step_i nil binary_step_out nil] (try (do (set! binary_step_out []) (set! binary_step_i 0) (while (< binary_step_i (count binary_step_vector)) (do (if (>= (nth binary_step_vector binary_step_i) 0.0) (set! binary_step_out (conj binary_step_out 1)) (set! binary_step_out (conj binary_step_out 0))) (set! binary_step_i (+' binary_step_i 1)))) (throw (ex-info "return" {:v binary_step_out}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (binding [main_result nil main_vector nil] (do (set! main_vector [(- 1.2) 0.0 2.0 1.45 (- 3.7) 0.3]) (set! main_result (binary_step main_vector)) (println main_result))))

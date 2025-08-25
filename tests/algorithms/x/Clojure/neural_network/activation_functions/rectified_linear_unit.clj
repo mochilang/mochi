@@ -15,7 +15,10 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -27,6 +30,8 @@
 
 (declare relu)
 
+(declare _read_file)
+
 (def ^:dynamic relu_i nil)
 
 (def ^:dynamic relu_result nil)
@@ -34,7 +39,7 @@
 (def ^:dynamic relu_v nil)
 
 (defn relu [relu_vector]
-  (binding [relu_i nil relu_result nil relu_v nil] (try (do (set! relu_result []) (set! relu_i 0) (while (< relu_i (count relu_vector)) (do (set! relu_v (nth relu_vector relu_i)) (if (> relu_v 0.0) (set! relu_result (conj relu_result relu_v)) (set! relu_result (conj relu_result 0.0))) (set! relu_i (+ relu_i 1)))) (throw (ex-info "return" {:v relu_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [relu_i nil relu_result nil relu_v nil] (try (do (set! relu_result []) (set! relu_i 0) (while (< relu_i (count relu_vector)) (do (set! relu_v (nth relu_vector relu_i)) (if (> relu_v 0.0) (set! relu_result (conj relu_result relu_v)) (set! relu_result (conj relu_result 0.0))) (set! relu_i (+' relu_i 1)))) (throw (ex-info "return" {:v relu_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

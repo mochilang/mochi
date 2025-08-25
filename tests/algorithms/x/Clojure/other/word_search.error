@@ -1,3 +1,4 @@
+run: exit status 1
 Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/other/word_search.clj:131:1083).
 Can only recur from tail position
 

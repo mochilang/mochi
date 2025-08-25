@@ -15,7 +15,10 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
 
 (defn mochi_str [v]
   (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
@@ -27,10 +30,12 @@
 
 (declare doppler_effect absf almost_equal test_doppler_effect main)
 
+(declare _read_file)
+
 (def ^:dynamic doppler_effect_doppler_freq nil)
 
 (defn doppler_effect [doppler_effect_org_freq doppler_effect_wave_vel doppler_effect_obs_vel doppler_effect_src_vel]
-  (binding [doppler_effect_doppler_freq nil] (try (do (when (= doppler_effect_wave_vel doppler_effect_src_vel) (throw (Exception. "division by zero implies vs=v and observer in front of the source"))) (set! doppler_effect_doppler_freq (/ (* doppler_effect_org_freq (+ doppler_effect_wave_vel doppler_effect_obs_vel)) (- doppler_effect_wave_vel doppler_effect_src_vel))) (when (<= doppler_effect_doppler_freq 0.0) (throw (Exception. "non-positive frequency implies vs>v or v0>v (in the opposite direction)"))) (throw (ex-info "return" {:v doppler_effect_doppler_freq}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [doppler_effect_doppler_freq nil] (try (do (when (= doppler_effect_wave_vel doppler_effect_src_vel) (throw (Exception. "division by zero implies vs=v and observer in front of the source"))) (set! doppler_effect_doppler_freq (/ (*' doppler_effect_org_freq (+' doppler_effect_wave_vel doppler_effect_obs_vel)) (- doppler_effect_wave_vel doppler_effect_src_vel))) (when (<= doppler_effect_doppler_freq 0.0) (throw (Exception. "non-positive frequency implies vs>v or v0>v (in the opposite direction)"))) (throw (ex-info "return" {:v doppler_effect_doppler_freq}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn absf [absf_x]
   (try (if (< absf_x 0.0) (- absf_x) absf_x) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
