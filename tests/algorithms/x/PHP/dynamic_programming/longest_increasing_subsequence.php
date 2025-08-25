@@ -1,6 +1,8 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));

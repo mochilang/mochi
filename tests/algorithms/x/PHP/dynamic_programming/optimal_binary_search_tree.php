@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _str($x) {
     if (is_array($x)) {
@@ -132,7 +133,7 @@ The cost of optimal BST for given tree nodes is ' . _str($dp[0][$n - 1]) . '.'),
   print_binary_search_tree($root, $keys, 0, $n - 1, (-1), false);
 }
 function main() {
-  $nodes = [['key' => 12, 'freq' => 8], ['key' => 10, 'freq' => 34], ['key' => 20, 'freq' => 50], ['key' => 42, 'freq' => 3], ['key' => 25, 'freq' => 40], ['key' => 37, 'freq' => 30]];
+  $nodes = [['freq' => 8, 'key' => 12], ['freq' => 34, 'key' => 10], ['freq' => 50, 'key' => 20], ['freq' => 3, 'key' => 42], ['freq' => 40, 'key' => 25], ['freq' => 30, 'key' => 37]];
   find_optimal_binary_search_tree($nodes);
 }
 main();

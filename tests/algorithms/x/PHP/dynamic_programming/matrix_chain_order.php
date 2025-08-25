@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _str($x) {
     if (is_array($x)) {
@@ -58,7 +59,7 @@ function matrix_chain_order($arr) {
 };
   $chain_length = $chain_length + 1;
 };
-  return ['matrix' => $m, 'solution' => $s];
+  return ['matrix' => &$m, 'solution' => &$s];
 }
 function optimal_parenthesization($s, $i, $j) {
   if ($i == $j) {

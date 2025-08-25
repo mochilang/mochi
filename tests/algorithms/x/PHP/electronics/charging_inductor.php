@@ -1,27 +1,11 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function expApprox($x) {
+function expApprox($x) {
   if ($x < 0.0) {
   return 1.0 / expApprox(-$x);
 }
@@ -38,15 +22,15 @@ $__start = _now();
   $n = $n + 1;
 };
   return $sum;
-};
-  function mochi_floor($x) {
+}
+function mochi_floor($x) {
   $i = intval($x);
   if ((floatval($i)) > $x) {
   $i = $i - 1;
 }
   return floatval($i);
-};
-  function pow10($n) {
+}
+function pow10($n) {
   $result = 1.0;
   $i = 0;
   while ($i < $n) {
@@ -54,12 +38,12 @@ $__start = _now();
   $i = $i + 1;
 };
   return $result;
-};
-  function mochi_round($x, $n) {
+}
+function mochi_round($x, $n) {
   $m = pow10($n);
   return mochi_floor($x * $m + 0.5) / $m;
-};
-  function charging_inductor($source_voltage, $resistance, $inductance, $time) {
+}
+function charging_inductor($source_voltage, $resistance, $inductance, $time) {
   if ($source_voltage <= 0.0) {
   _panic('Source voltage must be positive.');
 }
@@ -72,15 +56,7 @@ $__start = _now();
   $exponent = (-$time * $resistance) / $inductance;
   $current = $source_voltage / $resistance * (1.0 - expApprox($exponent));
   return mochi_round($current, 3);
-};
-  echo rtrim(json_encode(charging_inductor(5.8, 1.5, 2.3, 2.0), 1344)), PHP_EOL;
-  echo rtrim(json_encode(charging_inductor(8.0, 5.0, 3.0, 2.0), 1344)), PHP_EOL;
-  echo rtrim(json_encode(charging_inductor(8.0, 500.0, 3.0, 2.0), 1344)), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+echo rtrim(json_encode(charging_inductor(5.8, 1.5, 2.3, 2.0), 1344)), PHP_EOL;
+echo rtrim(json_encode(charging_inductor(8.0, 5.0, 3.0, 2.0), 1344)), PHP_EOL;
+echo rtrim(json_encode(charging_inductor(8.0, 500.0, 3.0, 2.0), 1344)), PHP_EOL;

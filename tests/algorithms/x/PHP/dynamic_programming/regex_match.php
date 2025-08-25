@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _append($arr, $x) {
     $arr[] = $x;
@@ -10,20 +11,20 @@ function recursive_match($text, $pattern) {
 }
   if (strlen($text) == 0) {
   if (strlen($pattern) >= 2 && substr($pattern, strlen($pattern) - 1, strlen($pattern) - (strlen($pattern) - 1)) == '*') {
-  return recursive_match($text, substr($pattern, 0, strlen($pattern) - 2 - 0));
+  return recursive_match($text, substr($pattern, 0, strlen($pattern) - 2));
 };
   return false;
 }
   $last_text = substr($text, strlen($text) - 1, strlen($text) - (strlen($text) - 1));
   $last_pattern = substr($pattern, strlen($pattern) - 1, strlen($pattern) - (strlen($pattern) - 1));
   if ($last_text == $last_pattern || $last_pattern == '.') {
-  return recursive_match(substr($text, 0, strlen($text) - 1 - 0), substr($pattern, 0, strlen($pattern) - 1 - 0));
+  return recursive_match(substr($text, 0, strlen($text) - 1), substr($pattern, 0, strlen($pattern) - 1));
 }
   if ($last_pattern == '*') {
-  if (recursive_match(substr($text, 0, strlen($text) - 1 - 0), $pattern)) {
+  if (recursive_match(substr($text, 0, strlen($text) - 1), $pattern)) {
   return true;
 };
-  return recursive_match($text, substr($pattern, 0, strlen($pattern) - 2 - 0));
+  return recursive_match($text, substr($pattern, 0, strlen($pattern) - 2));
 }
   return false;
 }

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function max_product_subarray($numbers) {
   if (count($numbers) == 0) {

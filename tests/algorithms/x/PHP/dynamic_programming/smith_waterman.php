@@ -1,11 +1,12 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
 function score_function($source_char, $target_char, $match_score, $mismatch_score, $gap_score) {
-  global $query, $subject, $score;
+  global $query, $score, $subject;
   if ($source_char == '-' || $target_char == '-') {
   return $gap_score;
 }
