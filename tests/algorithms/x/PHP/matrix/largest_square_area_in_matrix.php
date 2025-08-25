@@ -1,28 +1,11 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function update_area_of_max_square($row, $col, $rows, $cols, $mat, &$largest_square_area) {
+function update_area_of_max_square($row, $col, $rows, $cols, $mat, &$largest_square_area) {
   global $sample;
   if ($row >= $rows || $col >= $cols) {
   return 0;
@@ -39,14 +22,14 @@ $__start = _now();
 } else {
   return 0;
 }
-};
-  function largest_square_area_in_matrix_top_down($rows, $cols, $mat) {
+}
+function largest_square_area_in_matrix_top_down($rows, $cols, $mat) {
   global $sample;
   $largest = [0];
   update_area_of_max_square(0, 0, $rows, $cols, $mat, $largest);
   return $largest[0];
-};
-  function update_area_of_max_square_with_dp($row, $col, $rows, $cols, $mat, &$dp_array, &$largest_square_area) {
+}
+function update_area_of_max_square_with_dp($row, $col, $rows, $cols, $mat, &$dp_array, &$largest_square_area) {
   global $sample;
   if ($row >= $rows || $col >= $cols) {
   return 0;
@@ -68,8 +51,8 @@ $__start = _now();
   $dp_array[$row][$col] = 0;
   return 0;
 }
-};
-  function largest_square_area_in_matrix_top_down_with_dp($rows, $cols, $mat) {
+}
+function largest_square_area_in_matrix_top_down_with_dp($rows, $cols, $mat) {
   global $sample;
   $largest = [0];
   $dp_array = [];
@@ -86,8 +69,8 @@ $__start = _now();
 };
   update_area_of_max_square_with_dp(0, 0, $rows, $cols, $mat, $dp_array, $largest);
   return $largest[0];
-};
-  function largest_square_area_in_matrix_bottom_up($rows, $cols, $mat) {
+}
+function largest_square_area_in_matrix_bottom_up($rows, $cols, $mat) {
   global $sample;
   $dp_array = [];
   $r = 0;
@@ -123,8 +106,8 @@ $__start = _now();
   $row = $row - 1;
 };
   return $largest;
-};
-  function largest_square_area_in_matrix_bottom_up_space_optimization($rows, $cols, $mat) {
+}
+function largest_square_area_in_matrix_bottom_up_space_optimization($rows, $cols, $mat) {
   global $sample;
   $current_row = [];
   $i = 0;
@@ -167,17 +150,9 @@ $__start = _now();
   $row = $row - 1;
 };
   return $largest;
-};
-  $sample = [[1, 1], [1, 1]];
-  echo rtrim(json_encode(largest_square_area_in_matrix_top_down(2, 2, $sample), 1344)), PHP_EOL;
-  echo rtrim(json_encode(largest_square_area_in_matrix_top_down_with_dp(2, 2, $sample), 1344)), PHP_EOL;
-  echo rtrim(json_encode(largest_square_area_in_matrix_bottom_up(2, 2, $sample), 1344)), PHP_EOL;
-  echo rtrim(json_encode(largest_square_area_in_matrix_bottom_up_space_optimization(2, 2, $sample), 1344)), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$sample = [[1, 1], [1, 1]];
+echo rtrim(json_encode(largest_square_area_in_matrix_top_down(2, 2, $sample), 1344)), PHP_EOL;
+echo rtrim(json_encode(largest_square_area_in_matrix_top_down_with_dp(2, 2, $sample), 1344)), PHP_EOL;
+echo rtrim(json_encode(largest_square_area_in_matrix_bottom_up(2, 2, $sample), 1344)), PHP_EOL;
+echo rtrim(json_encode(largest_square_area_in_matrix_bottom_up_space_optimization(2, 2, $sample), 1344)), PHP_EOL;

@@ -1,21 +1,6 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -39,13 +24,23 @@ function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcdiv($sa, $sb, 0));
+        $q = bcdiv($sa, $sb, 0);
+        $rem = bcmod($sa, $sb);
+        $neg = ((strpos($sa, '-') === 0) xor (strpos($sb, '-') === 0));
+        if ($neg && bccomp($rem, '0') != 0) {
+            $q = bcsub($q, '1');
+        }
+        return intval($q);
     }
-    return intdiv(intval($a), intval($b));
+    $ai = intval($a);
+    $bi = intval($b);
+    $q = intdiv($ai, $bi);
+    if ((($ai ^ $bi) < 0) && ($ai % $bi != 0)) {
+        $q -= 1;
+    }
+    return $q;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function binary_search($arr, $lower_bound, $upper_bound, $value) {
+function binary_search($arr, $lower_bound, $upper_bound, $value) {
   $r = _intdiv(($lower_bound + $upper_bound), 2);
   if ($arr[$r] == $value) {
   return $r;
@@ -57,8 +52,8 @@ $__start = _now();
   return binary_search($arr, $r + 1, $upper_bound, $value);
 }
   return binary_search($arr, $lower_bound, $r - 1, $value);
-};
-  function mat_bin_search($value, $matrix) {
+}
+function mat_bin_search($value, $matrix) {
   $index = 0;
   if ($matrix[$index][0] == $value) {
   return [$index, 0];
@@ -71,21 +66,13 @@ $__start = _now();
   $index = $index + 1;
 };
   return [-1, -1];
-};
-  function main() {
+}
+function main() {
   $row = [1, 4, 7, 11, 15];
   echo rtrim(_str(binary_search($row, 0, count($row) - 1, 1))), PHP_EOL;
   echo rtrim(_str(binary_search($row, 0, count($row) - 1, 23))), PHP_EOL;
   $matrix = [[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]];
   echo rtrim(_str(mat_bin_search(1, $matrix))), PHP_EOL;
   echo rtrim(_str(mat_bin_search(34, $matrix))), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

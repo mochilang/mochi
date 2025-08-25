@@ -1,28 +1,11 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function is_safe($grid, $visited, $row, $col) {
+function is_safe($grid, $visited, $row, $col) {
   $rows = count($grid);
   $cols = count($grid[0]);
   $within_bounds = $row >= 0 && $row < $rows && $col >= 0 && $col < $cols;
@@ -32,8 +15,8 @@ $__start = _now();
   $visited_cell = $visited[$row][$col];
   $not_visited = $visited_cell == false;
   return $not_visited && $grid[$row][$col] == 1;
-};
-  function dfs($grid, &$visited, $row, $col) {
+}
+function dfs($grid, &$visited, $row, $col) {
   $row_nbr = [-1, -1, -1, 0, 0, 1, 1, 1];
   $col_nbr = [-1, 0, 1, -1, 1, -1, 0, 1];
   $visited[$row][$col] = true;
@@ -46,8 +29,8 @@ $__start = _now();
 }
   $k = $k + 1;
 };
-};
-  function count_islands($grid) {
+}
+function count_islands($grid) {
   $rows = count($grid);
   $cols = count($grid[0]);
   $visited = [];
@@ -76,14 +59,6 @@ $__start = _now();
   $i = $i + 1;
 };
   return $count;
-};
-  $grid = [[1, 1, 0, 0, 0], [0, 1, 0, 0, 1], [1, 0, 0, 1, 1], [0, 0, 0, 0, 0], [1, 0, 1, 0, 1]];
-  echo rtrim(json_encode(count_islands($grid), 1344)), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$grid = [[1, 1, 0, 0, 0], [0, 1, 0, 0, 1], [1, 0, 0, 1, 1], [0, 0, 0, 0, 0], [1, 0, 1, 0, 1]];
+echo rtrim(json_encode(count_islands($grid), 1344)), PHP_EOL;

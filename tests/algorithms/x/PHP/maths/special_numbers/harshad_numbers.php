@@ -1,21 +1,6 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
@@ -27,19 +12,29 @@ function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcdiv($sa, $sb, 0));
+        $q = bcdiv($sa, $sb, 0);
+        $rem = bcmod($sa, $sb);
+        $neg = ((strpos($sa, '-') === 0) xor (strpos($sb, '-') === 0));
+        if ($neg && bccomp($rem, '0') != 0) {
+            $q = bcsub($q, '1');
+        }
+        return intval($q);
     }
-    return intdiv(intval($a), intval($b));
+    $ai = intval($a);
+    $bi = intval($b);
+    $q = intdiv($ai, $bi);
+    if ((($ai ^ $bi) < 0) && ($ai % $bi != 0)) {
+        $q -= 1;
+    }
+    return $q;
 }
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function mochi_panic($msg) {
-};
-  function char_to_value($c) {
+function mochi_panic($msg) {
+}
+function char_to_value($c) {
   $digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $i = 0;
   while ($i < strlen($digits)) {
@@ -49,8 +44,8 @@ $__start = _now();
   $i = $i + 1;
 };
   _panic('invalid digit');
-};
-  function int_to_base($number, $base) {
+}
+function int_to_base($number, $base) {
   if ($base < 2 || $base > 36) {
   _panic('\'base\' must be between 2 and 36 inclusive');
 }
@@ -69,8 +64,8 @@ $__start = _now();
   $result = '0';
 }
   return $result;
-};
-  function base_to_int($num_str, $base) {
+}
+function base_to_int($num_str, $base) {
   $value = 0;
   $i = 0;
   while ($i < strlen($num_str)) {
@@ -79,8 +74,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $value;
-};
-  function sum_of_digits($num, $base) {
+}
+function sum_of_digits($num, $base) {
   if ($base < 2 || $base > 36) {
   _panic('\'base\' must be between 2 and 36 inclusive');
 }
@@ -93,8 +88,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return int_to_base($total, $base);
-};
-  function harshad_numbers_in_base($limit, $base) {
+}
+function harshad_numbers_in_base($limit, $base) {
   if ($base < 2 || $base > 36) {
   _panic('\'base\' must be between 2 and 36 inclusive');
 }
@@ -112,8 +107,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $numbers;
-};
-  function is_harshad_number_in_base($num, $base) {
+}
+function is_harshad_number_in_base($num, $base) {
   if ($base < 2 || $base > 36) {
   _panic('\'base\' must be between 2 and 36 inclusive');
 }
@@ -125,8 +120,8 @@ $__start = _now();
   $n_val = base_to_int($n, $base);
   $d_val = base_to_int($d, $base);
   return $n_val % $d_val == 0;
-};
-  function main() {
+}
+function main() {
   echo rtrim(int_to_base(0, 21)), PHP_EOL;
   echo rtrim(int_to_base(23, 2)), PHP_EOL;
   echo rtrim(int_to_base(58, 5)), PHP_EOL;
@@ -140,13 +135,5 @@ $__start = _now();
   echo rtrim(json_encode(is_harshad_number_in_base(18, 10), 1344)), PHP_EOL;
   echo rtrim(json_encode(is_harshad_number_in_base(21, 10), 1344)), PHP_EOL;
   echo rtrim(json_encode(is_harshad_number_in_base(-21, 5), 1344)), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();
