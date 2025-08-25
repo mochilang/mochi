@@ -3433,6 +3433,24 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		}
 		return fn, nil
 	}
+	if f.Name == "ln" && len(f.Params) == 1 {
+		paramName := f.Params[0].Name
+		fn := &FunDecl{Name: "ln", Ret: "Double", Params: []Param{{Name: paramName, Type: "Double"}}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "Foundation.log", Args: []Expr{&NameExpr{Name: paramName}}}}}}
+		if env != nil {
+			env.SetFuncType("ln", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}})
+			env.SetFunc("ln", f)
+		}
+		return fn, nil
+	}
+	if f.Name == "exp" && len(f.Params) == 1 {
+		paramName := f.Params[0].Name
+		fn := &FunDecl{Name: "exp", Ret: "Double", Params: []Param{{Name: paramName, Type: "Double"}}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "Foundation.exp", Args: []Expr{&NameExpr{Name: paramName}}}}}}
+		if env != nil {
+			env.SetFuncType("exp", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}})
+			env.SetFunc("exp", f)
+		}
+		return fn, nil
+	}
 	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
 	child := types.NewEnv(env)
 	updated := map[string]bool{}

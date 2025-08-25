@@ -1,5 +1,5 @@
-## Progress (2025-08-17 12:10 +0700)
-- swift transpiler: support complex float math
+## Progress (2025-08-25 22:27 +0700)
+- chore(clj): remove stale koch_snowflake error
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
