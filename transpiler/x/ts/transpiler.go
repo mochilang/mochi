@@ -214,6 +214,14 @@ type IIFEStmt struct {
 	Async bool
 }
 
+// IIFEExpr wraps a series of statements in an immediately invoked function
+// expression and yields its result. It mirrors Mochi's block expressions
+// that may contain statements and returns a value.
+type IIFEExpr struct {
+	Body  []Stmt
+	Async bool
+}
+
 type Expr interface {
 	emit(io.Writer)
 }
@@ -1743,6 +1751,19 @@ func (i *IIFEStmt) emit(w io.Writer) {
 		emitStmt(iw, st, 1)
 	}
 	io.WriteString(w, "})();")
+}
+
+func (i *IIFEExpr) emit(w io.Writer) {
+	if i.Async && useFetch {
+		io.WriteString(w, "(async () => {\n")
+	} else {
+		io.WriteString(w, "(() => {\n")
+	}
+	iw := &indentWriter{w: w, indent: "  "}
+	for _, st := range i.Body {
+		emitStmt(iw, st, 1)
+	}
+	io.WriteString(w, "})()")
 }
 
 func (u *UpdateStmt) emit(w io.Writer) {
@@ -4321,6 +4342,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("split expects two arguments")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "split", Args: []Expr{args[1]}}, nil
+		case "join":
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.GetFunc("join"); ok {
+					return &CallExpr{Func: "join", Args: args}, nil
+				}
+			}
+			if len(args) != 2 {
+				return nil, fmt.Errorf("join expects two arguments")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{args[1]}}, nil
 		case "toi":
 			if transpileEnv != nil {
 				if _, ok := transpileEnv.GetFunc("toi"); ok {
@@ -4646,15 +4677,42 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	var expr Expr = &NameRef{Name: "undefined"}
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
-		res, err := convertExpr(c.Result)
-		if err != nil {
-			return nil, err
-		}
 		cond, fields, err := patternCond(c.Pattern, target)
 		if err != nil {
 			return nil, err
 		}
-		res = replaceFields(res, target, fields)
+		var res Expr = &NameRef{Name: "undefined"}
+		if len(c.Block) > 0 {
+			body, err := convertStmtList(c.Block)
+			if err != nil {
+				return nil, err
+			}
+			if c.Result != nil {
+				r, err := convertExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+				body = append(body, &ReturnStmt{Value: r})
+			}
+			// prepend bindings for pattern variables
+			if len(fields) > 0 {
+				decls := make([]Stmt, 0, len(fields))
+				for name, fe := range fields {
+					idx := &IndexExpr{Target: target, Index: &StringLit{Value: fe}}
+					decls = append(decls, &VarDecl{Name: name, Expr: idx})
+				}
+				body = append(decls, body...)
+			}
+			res = &IIFEExpr{Body: body}
+		} else {
+			if c.Result != nil {
+				res, err = convertExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+			}
+			res = replaceFields(res, target, fields)
+		}
 		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
 	}
 	return expr, nil
@@ -4794,21 +4852,21 @@ func literalType(l *parser.Literal) types.Type {
 }
 
 func tsType(t types.Type) string {
-       switch tt := t.(type) {
-       case types.BigIntType, types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
-               // Use JavaScript's number for all Mochi numeric types.  While the
-               // "bigint" primitive exists in TypeScript, generated algorithm
-               // code relies on mixing arithmetic operations freely.  Emitting
-               // "bigint" here causes runtime type errors when numbers and
-               // bigints interact (e.g. loop counters that subtract integers).
-               // Mapping Mochi's unbounded integers to "number" keeps the
-               // transpiled code simple and matches the behaviour of other
-               // backends.
-               return "number"
-       case types.BoolType:
-               return "boolean"
-       case types.StringType:
-               return "string"
+	switch tt := t.(type) {
+	case types.BigIntType, types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
+		// Use JavaScript's number for all Mochi numeric types.  While the
+		// "bigint" primitive exists in TypeScript, generated algorithm
+		// code relies on mixing arithmetic operations freely.  Emitting
+		// "bigint" here causes runtime type errors when numbers and
+		// bigints interact (e.g. loop counters that subtract integers).
+		// Mapping Mochi's unbounded integers to "number" keeps the
+		// transpiled code simple and matches the behaviour of other
+		// backends.
+		return "number"
+	case types.BoolType:
+		return "boolean"
+	case types.StringType:
+		return "string"
 	case types.ListType:
 		return tsType(tt.Elem) + "[]"
 	case types.MapType:
