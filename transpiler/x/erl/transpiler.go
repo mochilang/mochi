@@ -361,6 +361,15 @@ mochi_str(V) ->
 
 const helperRepr = `
 -compile({nowarn_unused_function, [mochi_repr/1]}).
+mochi_repr(V) when is_binary(V) ->
+    V;
+mochi_repr(V) when is_list(V) ->
+    case io_lib:printable_list(V) of
+        true -> V;
+        false ->
+            S = lists:flatten(io_lib:format("~p", [V])),
+            lists:flatten(string:replace(S, ",", ", ", all))
+    end;
 mochi_repr(V) ->
     S = lists:flatten(io_lib:format("~p", [V])),
     lists:flatten(string:replace(S, ",", ", ", all)).
