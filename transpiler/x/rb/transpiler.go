@@ -87,7 +87,7 @@ end
 
 const helperAppend = `
 def _append(arr, x)
-  arr = [] if arr.nil?
+  arr = arr.nil? ? [] : arr.clone
   x = x.clone if x.is_a?(Array)
   arr << x
   arr
