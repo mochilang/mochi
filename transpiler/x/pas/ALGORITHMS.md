@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-25 08:45 GMT+7
+Last updated: 2025-08-25 16:57 GMT+7
 
-## Algorithms Golden Test Checklist (668/1077)
+## Algorithms Golden Test Checklist (669/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -372,7 +372,7 @@ Last updated: 2025-08-25 08:45 GMT+7
 | 363 | electronics/ohms_law |   |  |  |
 | 364 | electronics/real_and_reactive_power | ✓ | 0ns | 64B |
 | 365 | electronics/resistor_color_code | ✓ | 1.0µs | 17.06KB |
-| 366 | electronics/resistor_equivalence | ✓ | 0ns | 0B |
+| 366 | electronics/resistor_equivalence | ✓ | 1.0µs | 0B |
 | 367 | electronics/resonant_frequency | ✓ | 0ns | 0B |
 | 368 | electronics/wheatstone_bridge |   |  |  |
 | 369 | file_transfer/receive_file |   |  |  |
@@ -395,7 +395,7 @@ Last updated: 2025-08-25 08:45 GMT+7
 | 386 | genetic_algorithm/basic_string |   |  |  |
 | 387 | geodesy/haversine_distance |   |  |  |
 | 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
+| 389 | geometry/geometry | ✓ | 0ns | 0B |
 | 390 | graphics/bezier_curve |   |  |  |
 | 391 | graphics/butterfly_pattern |   |  |  |
 | 392 | graphics/digital_differential_analyzer_line |   |  |  |

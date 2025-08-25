@@ -1512,9 +1512,11 @@ func (p *Program) Emit() []byte {
 			if uses {
 				break
 			}
-			if _, ok := recordNames[f.Type]; ok && f.Type != r.Name {
-				uses = true
-				break
+			for name := range recordNames {
+				if name != r.Name && strings.Contains(f.Type, name) {
+					uses = true
+					break
+				}
 			}
 		}
 		if uses {
