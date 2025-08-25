@@ -1,0 +1,26 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/linked_list/skip_list.kt:61:93: error: type mismatch: inferred type is Int but BigInteger! was expected
+        while (((((node_forwards[x]!!) as MutableList<Int>)[i]!!).toBigInteger().compareTo((NIL)) != 0) && (node_keys[((node_forwards[x]!!) as MutableList<Int>)[i]!!]!! < key)) {
+                                                                                            ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/linked_list/skip_list.kt:68:40: error: type mismatch: inferred type is Int but BigInteger! was expected
+    if (((x).toBigInteger().compareTo((NIL)) != 0) && (node_keys[x]!! == key)) {
+                                       ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/linked_list/skip_list.kt:98:93: error: type mismatch: inferred type is Int but BigInteger! was expected
+        while (((((node_forwards[x]!!) as MutableList<Int>)[i]!!).toBigInteger().compareTo((NIL)) != 0) && (node_keys[((node_forwards[x]!!) as MutableList<Int>)[i]!!]!! < key)) {
+                                                                                            ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/linked_list/skip_list.kt:104:40: error: type mismatch: inferred type is Int but BigInteger! was expected
+    if (((x).toBigInteger().compareTo((NIL)) != 0) && (node_keys[x]!! == key)) {
+                                       ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/linked_list/skip_list.kt:120:93: error: type mismatch: inferred type is Int but BigInteger! was expected
+        while (((((node_forwards[x]!!) as MutableList<Int>)[i]!!).toBigInteger().compareTo((NIL)) != 0) && (node_keys[((node_forwards[x]!!) as MutableList<Int>)[i]!!]!! < key)) {
+                                                                                            ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/linked_list/skip_list.kt:127:40: error: type mismatch: inferred type is Int but BigInteger! was expected
+    if (((x).toBigInteger().compareTo((NIL)) == 0) || (node_keys[x]!! != key)) {
+                                       ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/linked_list/skip_list.kt:137:112: error: type mismatch: inferred type is Int but BigInteger! was expected
+    while ((level > 1) && ((((node_forwards[0]!!) as MutableList<Int>)[level - 1]!!).toBigInteger().compareTo((NIL)) == 0)) {
+                                                                                                               ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/linked_list/skip_list.kt:145:42: error: type mismatch: inferred type is Int but BigInteger! was expected
+    while ((x).toBigInteger().compareTo((NIL)) != 0) {
+                                         ^
