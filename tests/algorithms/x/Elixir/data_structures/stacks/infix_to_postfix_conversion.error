@@ -1,4 +1,5 @@
-error: invalid use of _. _ can only be used inside patterns to ignore values and cannot be used in expressions. Make sure you are inside a pattern or change it accordingly
+run: exit status 1
+     error: invalid use of _. _ can only be used inside patterns to ignore values and cannot be used in expressions. Make sure you are inside a pattern or change it accordingly
      │
  219 │             {_, postfix, stack}
      │              ^
@@ -20,3 +21,4 @@ error: invalid use of _. _ can only be used inside patterns to ignore values and
      └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/infix_to_postfix_conversion.exs:243:17: Main.infix_to_postfix/1
 
 ** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/infix_to_postfix_conversion.exs: cannot compile module Main (errors have been logged)
+

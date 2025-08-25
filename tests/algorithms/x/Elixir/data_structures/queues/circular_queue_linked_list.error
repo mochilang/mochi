@@ -1,4 +1,5 @@
-warning: module attribute @data_dir was set but never used
+run: exit status 1
+    warning: module attribute @data_dir was set but never used
     │
   3 │   @data_dir nil
     │   ~~~~~~~~~~~~~
