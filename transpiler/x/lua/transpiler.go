@@ -586,15 +586,15 @@ type MatchExpr struct {
 }
 
 type QueryComp struct {
-        Vars     []string
-        Sources  []Expr
-        Sides    []string
-       Distinct bool
-        Body     Expr
-        Where    Expr
-        GroupKey Expr
-        GroupVar string
-        Having   Expr
+	Vars     []string
+	Sources  []Expr
+	Sides    []string
+	Distinct bool
+	Body     Expr
+	Where    Expr
+	GroupKey Expr
+	GroupVar string
+	Having   Expr
 	Agg      string
 	SortKey  Expr
 	Skip     Expr
@@ -649,6 +649,22 @@ func (c *CallExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 			return
 		}
+	}
+	if c.Func == "exp" {
+		io.WriteString(w, "math.exp(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
+	if c.Func == "ln" {
+		io.WriteString(w, "math.log(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
 	}
 	if currentEnv != nil {
 		if _, ok := currentEnv.GetFunc(c.Func); ok {
@@ -2370,15 +2386,15 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, "return res\nend)()")
 		return
 	}
-       if qc.Agg != "" && qc.GroupKey == nil {
-               io.WriteString(w, "(function()\n  local _tmp = {}\n")
-       } else if qc.SortKey != nil {
-               io.WriteString(w, "(function()\n  local __tmp = {}\n  local _res = {}\n  local _idx = 0\n")
-       } else if qc.Distinct {
-               io.WriteString(w, "(function()\n  local _res = {}\n  local _seen = {}\n")
-       } else {
-               io.WriteString(w, "(function()\n  local _res = {}\n")
-       }
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, "(function()\n  local _tmp = {}\n")
+	} else if qc.SortKey != nil {
+		io.WriteString(w, "(function()\n  local __tmp = {}\n  local _res = {}\n  local _idx = 0\n")
+	} else if qc.Distinct {
+		io.WriteString(w, "(function()\n  local _res = {}\n  local _seen = {}\n")
+	} else {
+		io.WriteString(w, "(function()\n  local _res = {}\n")
+	}
 	order := make([]int, len(qc.Vars))
 	idx := 0
 	for i := range qc.Vars {
@@ -2406,42 +2422,42 @@ func (qc *QueryComp) emit(w io.Writer) {
 		qc.Where.emit(w)
 		io.WriteString(w, " then\n")
 	}
-       io.WriteString(w, "    ")
-       if qc.Agg != "" && qc.GroupKey == nil {
-               io.WriteString(w, "table.insert(_tmp, ")
-               if qc.Body != nil {
-                       qc.Body.emit(w)
-               } else {
-                       io.WriteString(w, "nil")
-               }
-               io.WriteString(w, ")\n")
-       } else if qc.SortKey != nil {
-               io.WriteString(w, "_idx = _idx + 1\n  table.insert(__tmp, {i = _idx, k = ")
-               qc.SortKey.emit(w)
-               io.WriteString(w, ", v = ")
-               if qc.Body != nil {
-                       qc.Body.emit(w)
-               } else {
-                       io.WriteString(w, "nil")
-               }
-               io.WriteString(w, "})\n")
-       } else if qc.Distinct {
-               io.WriteString(w, "local _val = ")
-               if qc.Body != nil {
-                       qc.Body.emit(w)
-               } else {
-                       io.WriteString(w, "nil")
-               }
-               io.WriteString(w, "\n    local _k = tostring(_val)\n    if _seen[_k] == nil then\n      table.insert(_res, _val)\n      _seen[_k] = true\n    end\n")
-       } else {
-               io.WriteString(w, "table.insert(_res, ")
-               if qc.Body != nil {
-                       qc.Body.emit(w)
-               } else {
-                       io.WriteString(w, "nil")
-               }
-               io.WriteString(w, ")\n")
-       }
+	io.WriteString(w, "    ")
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, "table.insert(_tmp, ")
+		if qc.Body != nil {
+			qc.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ")\n")
+	} else if qc.SortKey != nil {
+		io.WriteString(w, "_idx = _idx + 1\n  table.insert(__tmp, {i = _idx, k = ")
+		qc.SortKey.emit(w)
+		io.WriteString(w, ", v = ")
+		if qc.Body != nil {
+			qc.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, "})\n")
+	} else if qc.Distinct {
+		io.WriteString(w, "local _val = ")
+		if qc.Body != nil {
+			qc.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, "\n    local _k = tostring(_val)\n    if _seen[_k] == nil then\n      table.insert(_res, _val)\n      _seen[_k] = true\n    end\n")
+	} else {
+		io.WriteString(w, "table.insert(_res, ")
+		if qc.Body != nil {
+			qc.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ")\n")
+	}
 	if qc.Where != nil {
 		io.WriteString(w, "    end\n")
 	}
@@ -4135,7 +4151,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
-       return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Distinct: q.Distinct, Body: body, Where: where, GroupKey: groupExpr, GroupVar: groupVar, Having: having, Agg: agg, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}, nil
+	return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Distinct: q.Distinct, Body: body, Where: where, GroupKey: groupExpr, GroupVar: groupVar, Having: having, Agg: agg, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
