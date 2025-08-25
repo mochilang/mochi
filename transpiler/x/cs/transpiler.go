@@ -2630,7 +2630,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 			itemStr = fmt.Sprintf("(%s)%s", elem, itemStr)
 		}
 	}
-	fmt.Fprintf(w, "((Func<%s[]>)(() => { var _tmp = %s.Cast<%s>().ToList(); _tmp.Add(%s); return _tmp.ToArray(); }))()", elem, listStr, elem, itemStr)
+	fmt.Fprintf(w, "Enumerable.ToArray(%s.Append(%s))", listStr, itemStr)
 }
 
 type ConcatExpr struct {
