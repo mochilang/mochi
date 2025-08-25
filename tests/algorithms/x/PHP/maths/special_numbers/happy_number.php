@@ -27,9 +27,21 @@ function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcdiv($sa, $sb, 0));
+        $q = bcdiv($sa, $sb, 0);
+        $rem = bcmod($sa, $sb);
+        $neg = ((strpos($sa, '-') === 0) xor (strpos($sb, '-') === 0));
+        if ($neg && bccomp($rem, '0') != 0) {
+            $q = bcsub($q, '1');
+        }
+        return intval($q);
     }
-    return intdiv(intval($a), intval($b));
+    $ai = intval($a);
+    $bi = intval($b);
+    $q = intdiv($ai, $bi);
+    if ((($ai ^ $bi) < 0) && ($ai % $bi != 0)) {
+        $q -= 1;
+    }
+    return $q;
 }
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
@@ -83,7 +95,7 @@ $__start = _now();
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

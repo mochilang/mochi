@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-25 08:45 GMT+7
+Last updated: 2025-08-25 22:34 GMT+7
 
 ## Algorithms Golden Test Checklist (1006/1077)
 | Index | Name | Status | Duration | Memory |
@@ -675,7 +675,7 @@ Last updated: 2025-08-25 08:45 GMT+7
 | 666 | maths/special_numbers/carmichael_number | ✓ | 6.367ms | 36.5 KB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 69µs | 37.0 KB |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 174µs | 36.0 KB |
-| 669 | maths/special_numbers/happy_number | ✓ | 205µs | 36.9 KB |
+| 669 | maths/special_numbers/happy_number | ✓ | 139µs | 1.6 MB |
 | 670 | maths/special_numbers/harshad_numbers | ✓ | 420µs | 39.8 KB |
 | 671 | maths/special_numbers/hexagonal_number | ✓ | 47µs | 39.2 KB |
 | 672 | maths/special_numbers/krishnamurthy_number | ✓ | 124µs | 39.5 KB |
