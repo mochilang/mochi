@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare round_int hsv_to_rgb get_distance get_black_and_white_rgb get_color_coded_rgb get_image rgb_to_string)
+
+(declare _read_file)
 
 (def ^:dynamic get_distance_a nil)
 
@@ -87,7 +95,7 @@
   (binding [get_image_distance nil get_image_figure_height nil get_image_fx nil get_image_fy nil get_image_image_x nil get_image_image_y nil get_image_img nil get_image_rgb nil get_image_row nil] (try (do (set! get_image_img []) (set! get_image_figure_height (* (/ get_image_figure_width (double get_image_image_width)) (double get_image_image_height))) (set! get_image_image_y 0) (while (< get_image_image_y get_image_image_height) (do (set! get_image_row []) (set! get_image_image_x 0) (while (< get_image_image_x get_image_image_width) (do (set! get_image_fx (+ get_image_figure_center_x (* (- (/ (double get_image_image_x) (double get_image_image_width)) 0.5) get_image_figure_width))) (set! get_image_fy (+ get_image_figure_center_y (* (- (/ (double get_image_image_y) (double get_image_image_height)) 0.5) get_image_figure_height))) (set! get_image_distance (get_distance get_image_fx get_image_fy get_image_max_step)) (set! get_image_rgb nil) (if get_image_use_distance_color_coding (set! get_image_rgb (get_color_coded_rgb get_image_distance)) (set! get_image_rgb (get_black_and_white_rgb get_image_distance))) (set! get_image_row (conj get_image_row get_image_rgb)) (set! get_image_image_x (+ get_image_image_x 1)))) (set! get_image_img (conj get_image_img get_image_row)) (set! get_image_image_y (+ get_image_image_y 1)))) (throw (ex-info "return" {:v get_image_img}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn rgb_to_string [rgb_to_string_c]
-  (try (throw (ex-info "return" {:v (str (str (str (str (str (str "(" (str (:r rgb_to_string_c))) ", ") (str (:g rgb_to_string_c))) ", ") (str (:b rgb_to_string_c))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (str (str (str (str "(" (mochi_str (:r rgb_to_string_c))) ", ") (mochi_str (:g rgb_to_string_c))) ", ") (mochi_str (:b rgb_to_string_c))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (def ^:dynamic main_img1 nil)
 

@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare to_radians sin_taylor cos_taylor tan_approx sqrtApprox atanApprox atan2Approx asinApprox haversine_distance)
+
+(declare _read_file)
 
 (def ^:dynamic asinApprox_denom nil)
 
@@ -119,7 +127,7 @@
       (alter-var-root (var main_RADIUS) (constantly 6378137.0))
       (alter-var-root (var main_SAN_FRANCISCO) (constantly [37.774856 (- 122.424227)]))
       (alter-var-root (var main_YOSEMITE) (constantly [37.864742 (- 119.537521)]))
-      (println (str (haversine_distance (nth main_SAN_FRANCISCO 0) (nth main_SAN_FRANCISCO 1) (nth main_YOSEMITE 0) (nth main_YOSEMITE 1))))
+      (println (mochi_str (haversine_distance (nth main_SAN_FRANCISCO 0) (nth main_SAN_FRANCISCO 1) (nth main_YOSEMITE 0) (nth main_YOSEMITE 1))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

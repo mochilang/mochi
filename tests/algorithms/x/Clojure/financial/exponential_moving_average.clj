@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare exponential_moving_average)
+
+(declare _read_file)
 
 (def ^:dynamic exponential_moving_average_alpha nil)
 
@@ -50,7 +58,7 @@
       (alter-var-root (var main_stock_prices) (constantly [2.0 5.0 3.0 8.2 6.0 9.0 10.0]))
       (alter-var-root (var main_window_size) (constantly 3))
       (alter-var-root (var main_result) (constantly (exponential_moving_average main_stock_prices main_window_size)))
-      (println (str main_result))
+      (println (mochi_str main_result))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

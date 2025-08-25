@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare powf round2 present_value)
+
+(declare _read_file)
 
 (def ^:dynamic powf_i nil)
 
@@ -51,9 +59,9 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (present_value 0.13 [10.0 20.7 (- 293.0) 297.0])))
-      (println (str (present_value 0.07 [(- 109129.39) 30923.23 15098.93 29734.0 39.0])))
-      (println (str (present_value 0.07 [109129.39 30923.23 15098.93 29734.0 39.0])))
+      (println (mochi_str (present_value 0.13 [10.0 20.7 (- 293.0) 297.0])))
+      (println (mochi_str (present_value 0.07 [(- 109129.39) 30923.23 15098.93 29734.0 39.0])))
+      (println (mochi_str (present_value 0.07 [109129.39 30923.23 15098.93 29734.0 39.0])))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

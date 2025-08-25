@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare astable_frequency astable_duty_cycle)
+
+(declare _read_file)
 
 (defn astable_frequency [astable_frequency_resistance_1 astable_frequency_resistance_2 astable_frequency_capacitance]
   (try (do (when (or (or (<= astable_frequency_resistance_1 0.0) (<= astable_frequency_resistance_2 0.0)) (<= astable_frequency_capacitance 0.0)) (throw (Exception. "All values must be positive"))) (throw (ex-info "return" {:v (* (/ 1.44 (* (+ astable_frequency_resistance_1 (* 2.0 astable_frequency_resistance_2)) astable_frequency_capacitance)) 1000000.0)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

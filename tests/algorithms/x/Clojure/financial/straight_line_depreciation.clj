@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare straight_line_depreciation)
+
+(declare _read_file)
 
 (def ^:dynamic straight_line_depreciation_accumulated nil)
 
@@ -43,11 +51,11 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (straight_line_depreciation 10 1100.0 100.0)))
-      (println (str (straight_line_depreciation 6 1250.0 50.0)))
-      (println (str (straight_line_depreciation 4 1001.0 0.0)))
-      (println (str (straight_line_depreciation 11 380.0 50.0)))
-      (println (str (straight_line_depreciation 1 4985.0 100.0)))
+      (println (mochi_str (straight_line_depreciation 10 1100.0 100.0)))
+      (println (mochi_str (straight_line_depreciation 6 1250.0 50.0)))
+      (println (mochi_str (straight_line_depreciation 4 1001.0 0.0)))
+      (println (mochi_str (straight_line_depreciation 11 380.0 50.0)))
+      (println (mochi_str (straight_line_depreciation 1 4985.0 100.0)))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

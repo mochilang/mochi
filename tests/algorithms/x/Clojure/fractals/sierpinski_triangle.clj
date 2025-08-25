@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -24,11 +30,13 @@
 
 (declare get_mid point_to_string triangle)
 
+(declare _read_file)
+
 (defn get_mid [get_mid_p1 get_mid_p2]
   (try (throw (ex-info "return" {:v {:x (/ (+ (:x get_mid_p1) (:x get_mid_p2)) 2) :y (/ (+ (:y get_mid_p1) (:y get_mid_p2)) 2)}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn point_to_string [point_to_string_p]
-  (try (throw (ex-info "return" {:v (str (str (str (str "(" (str (:x point_to_string_p))) ",") (str (:y point_to_string_p))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (str (str "(" (mochi_str (:x point_to_string_p))) ",") (mochi_str (:y point_to_string_p))) ")")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn triangle [triangle_v1 triangle_v2 triangle_v3 triangle_depth]
   (try (do (println (str (str (str (str (point_to_string triangle_v1) " ") (point_to_string triangle_v2)) " ") (point_to_string triangle_v3))) (when (= triangle_depth 0) (throw (ex-info "return" {:v nil}))) (triangle triangle_v1 (get_mid triangle_v1 triangle_v2) (get_mid triangle_v1 triangle_v3) (- triangle_depth 1)) (triangle triangle_v2 (get_mid triangle_v1 triangle_v2) (get_mid triangle_v2 triangle_v3) (- triangle_depth 1)) (triangle triangle_v3 (get_mid triangle_v3 triangle_v2) (get_mid triangle_v1 triangle_v3) (- triangle_depth 1))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

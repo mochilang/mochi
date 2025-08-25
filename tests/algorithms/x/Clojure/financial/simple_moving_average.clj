@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare simple_moving_average)
+
+(declare _read_file)
 
 (def ^:dynamic main_idx nil)
 
@@ -43,7 +51,7 @@
 
 (def ^:dynamic main_sma_values nil)
 
-(def ^:dynamic main_idx 0)
+(def ^:dynamic main_idx nil)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
@@ -52,7 +60,8 @@
       (alter-var-root (var main_data) (constantly [10.0 12.0 15.0 13.0 14.0 16.0 18.0 17.0 19.0 21.0]))
       (alter-var-root (var main_window_size) (constantly 3))
       (alter-var-root (var main_sma_values) (constantly (simple_moving_average main_data main_window_size)))
-      (while (< main_idx (count main_sma_values)) (do (def ^:dynamic main_item (nth main_sma_values main_idx)) (if (:ok main_item) (println (str (str (str "Day " (str (+ main_idx 1))) ": ") (str (:value main_item)))) (println (str (str "Day " (str (+ main_idx 1))) ": Not enough data for SMA"))) (alter-var-root (var main_idx) (constantly (+ main_idx 1)))))
+      (alter-var-root (var main_idx) (constantly 0))
+      (while (< main_idx (count main_sma_values)) (do (def ^:dynamic main_item (nth main_sma_values main_idx)) (if (:ok main_item) (println (str (str (str "Day " (mochi_str (+ main_idx 1))) ": ") (mochi_str (:value main_item)))) (println (str (str "Day " (mochi_str (+ main_idx 1))) ": Not enough data for SMA"))) (alter-var-root (var main_idx) (constantly (+ main_idx 1)))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

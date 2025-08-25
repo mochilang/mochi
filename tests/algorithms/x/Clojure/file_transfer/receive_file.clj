@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare receive_file main)
+
+(declare _read_file)
 
 (def ^:dynamic main_incoming nil)
 
@@ -35,7 +43,7 @@
 (def ^:dynamic receive_file_out nil)
 
 (defn receive_file [receive_file_chunks]
-  (binding [receive_file_data nil receive_file_i nil receive_file_out nil] (try (do (set! receive_file_out "") (set! receive_file_i 0) (println "File opened") (println "Receiving data...") (loop [while_flag_1 true] (when (and while_flag_1 (< receive_file_i (count receive_file_chunks))) (do (set! receive_file_data (nth receive_file_chunks receive_file_i)) (cond (= receive_file_data "") (recur false) :else (do (set! receive_file_out (str receive_file_out receive_file_data)) (set! receive_file_i (+ receive_file_i 1)) (recur while_flag_1)))))) (println "Successfully received the file") (println "Connection closed") (throw (ex-info "return" {:v receive_file_out}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [receive_file_data nil receive_file_i nil receive_file_out nil] (try (do (set! receive_file_out "") (set! receive_file_i 0) (println "File opened") (println "Receiving data...") (loop [while_flag_1 true] (when (and while_flag_1 (< receive_file_i (count receive_file_chunks))) (do (set! receive_file_data (nth receive_file_chunks receive_file_i)) (if (= receive_file_data "") (recur false) (do (set! receive_file_out (str receive_file_out receive_file_data)) (set! receive_file_i (+ receive_file_i 1)) (recur while_flag_1)))))) (println "Successfully received the file") (println "Connection closed") (throw (ex-info "return" {:v receive_file_out}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (binding [main_incoming nil main_received nil] (do (set! main_incoming ["Hello " "from " "server"]) (set! main_received (receive_file main_incoming)) (println main_received))))

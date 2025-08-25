@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare sqrt real_power reactive_power)
+
+(declare _read_file)
 
 (def ^:dynamic sqrt_guess nil)
 
@@ -41,12 +49,12 @@
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (println (str (real_power 100.0 0.9)))
-      (println (str (real_power 0.0 0.8)))
-      (println (str (real_power 100.0 (- 0.9))))
-      (println (str (reactive_power 100.0 0.9)))
-      (println (str (reactive_power 0.0 0.8)))
-      (println (str (reactive_power 100.0 (- 0.9))))
+      (println (mochi_str (real_power 100.0 0.9)))
+      (println (mochi_str (real_power 0.0 0.8)))
+      (println (mochi_str (real_power 100.0 (- 0.9))))
+      (println (mochi_str (reactive_power 100.0 0.9)))
+      (println (mochi_str (reactive_power 0.0 0.8)))
+      (println (mochi_str (reactive_power 100.0 (- 0.9))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

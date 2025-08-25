@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -24,8 +30,10 @@
 
 (declare stringify max2 min2 complement intersection union membership)
 
+(declare _read_file)
+
 (defn stringify [stringify_fs]
-  (try (throw (ex-info "return" {:v (str (str (str (str (str (str (str (:name stringify_fs) ": [") (str (:left_boundary stringify_fs))) ", ") (str (:peak stringify_fs))) ", ") (str (:right_boundary stringify_fs))) "]")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (str (str (str (str (str (str (str (:name stringify_fs) ": [") (mochi_str (:left_boundary stringify_fs))) ", ") (mochi_str (:peak stringify_fs))) ", ") (mochi_str (:right_boundary stringify_fs))) "]")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn max2 [max2_a max2_b]
   (try (if (> max2_a max2_b) max2_a max2_b) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -67,8 +75,8 @@
       (println (stringify main_sheru_comp))
       (alter-var-root (var main_inter) (constantly (intersection main_siya main_sheru)))
       (println (stringify main_inter))
-      (println (str "Sheru membership 0.5: " (str (membership main_sheru 0.5))))
-      (println (str "Sheru membership 0.6: " (str (membership main_sheru 0.6))))
+      (println (str "Sheru membership 0.5: " (mochi_str (membership main_sheru 0.5))))
+      (println (str "Sheru membership 0.6: " (mochi_str (membership main_sheru 0.6))))
       (alter-var-root (var main_uni) (constantly (union main_siya main_sheru)))
       (println (stringify main_uni))
       (System/gc)

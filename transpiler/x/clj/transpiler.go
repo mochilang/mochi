@@ -78,21 +78,21 @@ type CharLit rune
 func (c CharLit) Emit(w io.Writer) {
 	r := rune(c)
 	switch r {
-case '\n':
-io.WriteString(w, "\\newline")
-case '\t':
-io.WriteString(w, "\\tab")
-case '\r':
-io.WriteString(w, "\\return")
-case '\b':
-io.WriteString(w, "\\backspace")
-case '\f':
-io.WriteString(w, "\\formfeed")
-case ' ':
-io.WriteString(w, "\\space")
-default:
-io.WriteString(w, "\\")
-io.WriteString(w, string(r))
+	case '\n':
+		io.WriteString(w, "\\newline")
+	case '\t':
+		io.WriteString(w, "\\tab")
+	case '\r':
+		io.WriteString(w, "\\return")
+	case '\b':
+		io.WriteString(w, "\\backspace")
+	case '\f':
+		io.WriteString(w, "\\formfeed")
+	case ' ':
+		io.WriteString(w, "\\space")
+	default:
+		io.WriteString(w, "\\")
+		io.WriteString(w, string(r))
 	}
 }
 
@@ -1184,8 +1184,18 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 				if stringVars != nil && isStringNode(v) {
 					stringVars[name] = true
 				}
-				if stringListVars != nil && isStringListNode(v) {
-					stringListVars[name] = true
+				if stringListVars != nil {
+					if isStringListNode(v) {
+						stringListVars[name] = true
+					} else if transpileEnv != nil && st.Let.Value != nil {
+						if typ := types.TypeOfExprBasic(st.Let.Value, transpileEnv); typ != nil {
+							if lt, ok := typ.(types.ListType); ok {
+								if _, ok := lt.Elem.(types.StringType); ok {
+									stringListVars[name] = true
+								}
+							}
+						}
+					}
 				}
 				if mapVars != nil && isMapNode(v) {
 					mapVars[name] = true
@@ -1228,8 +1238,18 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			if stringVars != nil && isStringNode(v) {
 				stringVars[name] = true
 			}
-			if stringListVars != nil && isStringListNode(v) {
-				stringListVars[name] = true
+			if stringListVars != nil {
+				if isStringListNode(v) {
+					stringListVars[name] = true
+				} else if transpileEnv != nil && st.Var.Value != nil {
+					if typ := types.TypeOfExprBasic(st.Var.Value, transpileEnv); typ != nil {
+						if lt, ok := typ.(types.ListType); ok {
+							if _, ok := lt.Elem.(types.StringType); ok {
+								stringListVars[name] = true
+							}
+						}
+					}
+				}
 			}
 			if mapVars != nil && isMapNode(v) {
 				mapVars[name] = true
@@ -1370,8 +1390,18 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if stringVars != nil && isStringNode(v) {
 			stringVars[name] = true
 		}
-		if stringListVars != nil && isStringListNode(v) {
-			stringListVars[name] = true
+		if stringListVars != nil {
+			if isStringListNode(v) {
+				stringListVars[name] = true
+			} else if transpileEnv != nil && s.Let.Value != nil {
+				if typ := types.TypeOfExprBasic(s.Let.Value, transpileEnv); typ != nil {
+					if lt, ok := typ.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StringType); ok {
+							stringListVars[name] = true
+						}
+					}
+				}
+			}
 		}
 		if mapVars != nil && isMapNode(v) {
 			mapVars[name] = true
@@ -1419,8 +1449,18 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if stringVars != nil && isStringNode(v) {
 			stringVars[name] = true
 		}
-		if stringListVars != nil && isStringListNode(v) {
-			stringListVars[name] = true
+		if stringListVars != nil {
+			if isStringListNode(v) {
+				stringListVars[name] = true
+			} else if transpileEnv != nil && s.Var.Value != nil {
+				if typ := types.TypeOfExprBasic(s.Var.Value, transpileEnv); typ != nil {
+					if lt, ok := typ.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StringType); ok {
+							stringListVars[name] = true
+						}
+					}
+				}
+			}
 		}
 		if mapVars != nil && isMapNode(v) {
 			mapVars[name] = true
@@ -1463,8 +1503,18 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if stringVars != nil && isStringNode(v) {
 			stringVars[name] = true
 		}
-		if stringListVars != nil && isStringListNode(v) {
-			stringListVars[name] = true
+		if stringListVars != nil {
+			if isStringListNode(v) {
+				stringListVars[name] = true
+			} else if transpileEnv != nil && s.Assign.Value != nil {
+				if typ := types.TypeOfExprBasic(s.Assign.Value, transpileEnv); typ != nil {
+					if lt, ok := typ.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StringType); ok {
+							stringListVars[name] = true
+						}
+					}
+				}
+			}
 		}
 		if mapVars != nil && isMapNode(v) {
 			mapVars[name] = true
@@ -1940,12 +1990,11 @@ func applyBinOp(op string, left, right Node) Node {
 	case "/":
 		// Clojure's `/` yields rational numbers when both operands are
 		// integers, whereas Mochi uses truncating integer division in
-		// that case. Prefer `quot` when operands are known integers,
-		// and also when neither operand is known to be floating point.
+		// that case. Prefer `quot` only when both operands are known
+		// integers. Otherwise default to `/` which performs floating
+		// point division and avoids divide-by-zero panics when the
+		// operands are floats.
 		if isIntNode(left) && isIntNode(right) {
-			return &List{Elems: []Node{Symbol("quot"), left, right}}
-		}
-		if !isFloatNode(left) && !isFloatNode(right) {
 			return &List{Elems: []Node{Symbol("quot"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol(sym), left, right}}
@@ -2483,13 +2532,13 @@ func isAggCall(e *parser.Expr) string {
 }
 
 func transpileExpr(e *parser.Expr) (Node, error) {
-       if e == nil {
-               // Treat missing expressions as Clojure nil.
-               return Symbol("nil"), nil
-       }
-       if e.Binary == nil {
-               return nil, fmt.Errorf("unsupported expr")
-       }
+	if e == nil {
+		// Treat missing expressions as Clojure nil.
+		return Symbol("nil"), nil
+	}
+	if e.Binary == nil {
+		return nil, fmt.Errorf("unsupported expr")
+	}
 	left, err := transpileUnary(e.Binary.Left)
 	if err != nil {
 		return nil, err

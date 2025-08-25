@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare abs sqrtApprox coulombs_law print_map)
+
+(declare _read_file)
 
 (def ^:dynamic coulombs_law_c1 nil)
 
@@ -35,6 +43,8 @@
 (def ^:dynamic coulombs_law_f nil)
 
 (def ^:dynamic coulombs_law_zero_count nil)
+
+(def ^:dynamic print_map_k nil)
 
 (def ^:dynamic sqrtApprox_guess nil)
 
@@ -52,7 +62,7 @@
   (binding [coulombs_law_c1 nil coulombs_law_c2 nil coulombs_law_charge_product nil coulombs_law_d nil coulombs_law_f nil coulombs_law_zero_count nil] (try (do (set! coulombs_law_charge_product (abs (* coulombs_law_charge1 coulombs_law_charge2))) (set! coulombs_law_zero_count 0) (when (= coulombs_law_force 0.0) (set! coulombs_law_zero_count (+ coulombs_law_zero_count 1))) (when (= coulombs_law_charge1 0.0) (set! coulombs_law_zero_count (+ coulombs_law_zero_count 1))) (when (= coulombs_law_charge2 0.0) (set! coulombs_law_zero_count (+ coulombs_law_zero_count 1))) (when (= coulombs_law_distance 0.0) (set! coulombs_law_zero_count (+ coulombs_law_zero_count 1))) (when (not= coulombs_law_zero_count 1) (throw (Exception. "One and only one argument must be 0"))) (when (< coulombs_law_distance 0.0) (throw (Exception. "Distance cannot be negative"))) (when (= coulombs_law_force 0.0) (do (set! coulombs_law_f (/ (* main_COULOMBS_CONSTANT coulombs_law_charge_product) (* coulombs_law_distance coulombs_law_distance))) (throw (ex-info "return" {:v {"force" coulombs_law_f}})))) (when (= coulombs_law_charge1 0.0) (do (set! coulombs_law_c1 (/ (* (abs coulombs_law_force) (* coulombs_law_distance coulombs_law_distance)) (* main_COULOMBS_CONSTANT coulombs_law_charge2))) (throw (ex-info "return" {:v {"charge1" coulombs_law_c1}})))) (when (= coulombs_law_charge2 0.0) (do (set! coulombs_law_c2 (/ (* (abs coulombs_law_force) (* coulombs_law_distance coulombs_law_distance)) (* main_COULOMBS_CONSTANT coulombs_law_charge1))) (throw (ex-info "return" {:v {"charge2" coulombs_law_c2}})))) (set! coulombs_law_d (sqrtApprox (/ (* main_COULOMBS_CONSTANT coulombs_law_charge_product) (abs coulombs_law_force)))) (throw (ex-info "return" {:v {"distance" coulombs_law_d}}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn print_map [print_map_m]
-  (do (doseq [k (keys print_map_m)] (println (str (str (str (str "{\"" k) "\": ") (str (get print_map_m k))) "}"))) print_map_m))
+  (binding [print_map_k nil] (do (doseq [print_map_k (keys print_map_m)] (println (str (str (str (str "{\"" print_map_k) "\": ") (mochi_str (get print_map_m print_map_k))) "}"))) print_map_m)))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

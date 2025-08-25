@@ -14,9 +14,23 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
+
+(defn _fetch [url]
+  {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare dfs_skip articulation_points main)
+
+(declare _read_file)
 
 (def ^:dynamic articulation_points_i nil)
 
@@ -34,15 +48,17 @@
 
 (def ^:dynamic count_v nil)
 
+(def ^:dynamic dfs_skip_to nil)
+
 (def ^:dynamic dfs_skip_visited nil)
 
 (def ^:dynamic main_graph nil)
 
 (defn dfs_skip [dfs_skip_graph dfs_skip_visited_p dfs_skip_skip dfs_skip_at]
-  (binding [count_v nil dfs_skip_visited nil] (try (do (set! dfs_skip_visited dfs_skip_visited_p) (set! dfs_skip_visited (assoc dfs_skip_visited dfs_skip_at true)) (set! count_v 1) (loop [to_seq (nth dfs_skip_graph dfs_skip_at)] (when (seq to_seq) (let [to (first to_seq)] (cond (= to dfs_skip_skip) (recur (rest to_seq)) :else (do (when (= (nth dfs_skip_visited to) false) (set! count_v (+ count_v (dfs_skip dfs_skip_graph dfs_skip_visited dfs_skip_skip to)))) (recur (rest to_seq))))))) (throw (ex-info "return" {:v count_v}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [dfs_skip_visited dfs_skip_visited_p count_v nil dfs_skip_to nil] (try (do (set! dfs_skip_visited (assoc dfs_skip_visited dfs_skip_at true)) (set! count_v 1) (loop [dfs_skip_to_seq (nth dfs_skip_graph dfs_skip_at)] (when (seq dfs_skip_to_seq) (let [dfs_skip_to (first dfs_skip_to_seq)] (cond (= dfs_skip_to dfs_skip_skip) (recur (rest dfs_skip_to_seq)) :else (do (when (= (nth dfs_skip_visited dfs_skip_to) false) (set! count_v (+ count_v (let [__res (dfs_skip dfs_skip_graph dfs_skip_visited dfs_skip_skip dfs_skip_to)] (do (set! dfs_skip_visited dfs_skip_visited) __res))))) (recur (rest dfs_skip_to_seq))))))) (throw (ex-info "return" {:v count_v}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var dfs_skip_visited) (constantly dfs_skip_visited))))))
 
 (defn articulation_points [articulation_points_graph]
-  (binding [articulation_points_i nil articulation_points_n nil articulation_points_reach nil articulation_points_result nil articulation_points_start nil articulation_points_v nil articulation_points_visited nil] (try (do (set! articulation_points_n (count articulation_points_graph)) (set! articulation_points_result []) (set! articulation_points_v 0) (while (< articulation_points_v articulation_points_n) (do (set! articulation_points_visited []) (set! articulation_points_i 0) (while (< articulation_points_i articulation_points_n) (do (set! articulation_points_visited (conj articulation_points_visited false)) (set! articulation_points_i (+ articulation_points_i 1)))) (set! articulation_points_start 0) (while (and (= articulation_points_start articulation_points_v) (< articulation_points_start articulation_points_n)) (set! articulation_points_start (+ articulation_points_start 1))) (set! articulation_points_reach (dfs_skip articulation_points_graph articulation_points_visited articulation_points_v articulation_points_start)) (when (< articulation_points_reach (- articulation_points_n 1)) (do (set! articulation_points_result (conj articulation_points_result articulation_points_v)) (println articulation_points_v))) (set! articulation_points_v (+ articulation_points_v 1)))) (throw (ex-info "return" {:v articulation_points_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [articulation_points_i nil articulation_points_n nil articulation_points_reach nil articulation_points_result nil articulation_points_start nil articulation_points_v nil articulation_points_visited nil] (try (do (set! articulation_points_n (count articulation_points_graph)) (set! articulation_points_result []) (set! articulation_points_v 0) (while (< articulation_points_v articulation_points_n) (do (set! articulation_points_visited []) (set! articulation_points_i 0) (while (< articulation_points_i articulation_points_n) (do (set! articulation_points_visited (conj articulation_points_visited false)) (set! articulation_points_i (+ articulation_points_i 1)))) (set! articulation_points_start 0) (while (and (= articulation_points_start articulation_points_v) (< articulation_points_start articulation_points_n)) (set! articulation_points_start (+ articulation_points_start 1))) (set! articulation_points_reach (let [__res (dfs_skip articulation_points_graph articulation_points_visited articulation_points_v articulation_points_start)] (do (set! articulation_points_visited dfs_skip_visited) __res))) (when (< articulation_points_reach (- articulation_points_n 1)) (do (set! articulation_points_result (conj articulation_points_result articulation_points_v)) (println articulation_points_v))) (set! articulation_points_v (+ articulation_points_v 1)))) (throw (ex-info "return" {:v articulation_points_result}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
   (binding [main_graph nil] (do (set! main_graph [[1 2] [0 2] [0 1 3 5] [2 4] [3] [2 6 8] [5 7] [6 8] [5 7]]) (articulation_points main_graph))))

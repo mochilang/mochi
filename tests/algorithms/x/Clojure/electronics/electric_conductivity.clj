@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare electric_conductivity)
+
+(declare _read_file)
 
 (def ^:dynamic electric_conductivity_zero_count nil)
 
@@ -45,9 +53,9 @@
       (alter-var-root (var main_r1) (constantly (electric_conductivity 25.0 100.0 0.0)))
       (alter-var-root (var main_r2) (constantly (electric_conductivity 0.0 1600.0 200.0)))
       (alter-var-root (var main_r3) (constantly (electric_conductivity 1000.0 0.0 1200.0)))
-      (println (str (str (:kind main_r1) " ") (str (:value main_r1))))
-      (println (str (str (:kind main_r2) " ") (str (:value main_r2))))
-      (println (str (str (:kind main_r3) " ") (str (:value main_r3))))
+      (println (str (str (:kind main_r1) " ") (mochi_str (:value main_r1))))
+      (println (str (str (:kind main_r2) " ") (mochi_str (:value main_r2))))
+      (println (str (str (:kind main_r3) " ") (mochi_str (:value main_r3))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

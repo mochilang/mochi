@@ -15,7 +15,13 @@
   (clojure.string/split s (re-pattern sep)))
 
 (defn toi [s]
-  (Integer/parseInt (str s)))
+  (int (Double/valueOf (str s))))
+
+(defn _ord [s]
+  (int (first s)))
+
+(defn mochi_str [v]
+  (cond (float? v) (let [s (str v)] (if (clojure.string/ends-with? s ".0") (subs s 0 (- (count s) 2)) s)) :else (str v)))
 
 (defn _fetch [url]
   {:data [{:from "" :intensity {:actual 0 :forecast 0 :index ""} :to ""}]})
@@ -23,6 +29,8 @@
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare make_conn_mock conn_recv conn_send conn_close make_socket_mock socket_bind socket_listen socket_accept socket_shutdown socket_close make_file_mock file_read file_open send_file test_send_file_running_as_expected)
+
+(declare _read_file)
 
 (def ^:dynamic conn_close_conn nil)
 
@@ -39,6 +47,10 @@
 (def ^:dynamic send_file_conn nil)
 
 (def ^:dynamic send_file_data nil)
+
+(def ^:dynamic send_file_f nil)
+
+(def ^:dynamic send_file_sock nil)
 
 (def ^:dynamic socket_accept_sock nil)
 
@@ -63,28 +75,28 @@
   (binding [conn_recv_conn conn_recv_conn_p] (try (do (set! conn_recv_conn (assoc conn_recv_conn :recv_called (+ (:recv_called conn_recv_conn) 1))) (throw (ex-info "return" {:v 0}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var conn_recv_conn) (constantly conn_recv_conn))))))
 
 (defn conn_send [conn_send_conn_p conn_send_data]
-  (binding [conn_send_conn conn_send_conn_p] (set! conn_send_conn (assoc conn_send_conn :send_called (+ (:send_called conn_send_conn) 1)))))
+  (binding [conn_send_conn conn_send_conn_p] (try (set! conn_send_conn (assoc conn_send_conn :send_called (+ (:send_called conn_send_conn) 1))) (finally (alter-var-root (var conn_send_conn) (constantly conn_send_conn))))))
 
 (defn conn_close [conn_close_conn_p]
-  (binding [conn_close_conn conn_close_conn_p] (set! conn_close_conn (assoc conn_close_conn :close_called (+ (:close_called conn_close_conn) 1)))))
+  (binding [conn_close_conn conn_close_conn_p] (try (set! conn_close_conn (assoc conn_close_conn :close_called (+ (:close_called conn_close_conn) 1))) (finally (alter-var-root (var conn_close_conn) (constantly conn_close_conn))))))
 
 (defn make_socket_mock [make_socket_mock_conn]
   (try (throw (ex-info "return" {:v {:accept_called 0 :bind_called 0 :close_called 0 :conn make_socket_mock_conn :listen_called 0 :shutdown_called 0}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn socket_bind [socket_bind_sock_p]
-  (binding [socket_bind_sock socket_bind_sock_p] (set! socket_bind_sock (assoc socket_bind_sock :bind_called (+ (:bind_called socket_bind_sock) 1)))))
+  (binding [socket_bind_sock socket_bind_sock_p] (try (set! socket_bind_sock (assoc socket_bind_sock :bind_called (+ (:bind_called socket_bind_sock) 1))) (finally (alter-var-root (var socket_bind_sock) (constantly socket_bind_sock))))))
 
 (defn socket_listen [socket_listen_sock_p]
-  (binding [socket_listen_sock socket_listen_sock_p] (set! socket_listen_sock (assoc socket_listen_sock :listen_called (+ (:listen_called socket_listen_sock) 1)))))
+  (binding [socket_listen_sock socket_listen_sock_p] (try (set! socket_listen_sock (assoc socket_listen_sock :listen_called (+ (:listen_called socket_listen_sock) 1))) (finally (alter-var-root (var socket_listen_sock) (constantly socket_listen_sock))))))
 
 (defn socket_accept [socket_accept_sock_p]
   (binding [socket_accept_sock socket_accept_sock_p] (try (do (set! socket_accept_sock (assoc socket_accept_sock :accept_called (+ (:accept_called socket_accept_sock) 1))) (throw (ex-info "return" {:v (:conn socket_accept_sock)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))) (finally (alter-var-root (var socket_accept_sock) (constantly socket_accept_sock))))))
 
 (defn socket_shutdown [socket_shutdown_sock_p]
-  (binding [socket_shutdown_sock socket_shutdown_sock_p] (set! socket_shutdown_sock (assoc socket_shutdown_sock :shutdown_called (+ (:shutdown_called socket_shutdown_sock) 1)))))
+  (binding [socket_shutdown_sock socket_shutdown_sock_p] (try (set! socket_shutdown_sock (assoc socket_shutdown_sock :shutdown_called (+ (:shutdown_called socket_shutdown_sock) 1))) (finally (alter-var-root (var socket_shutdown_sock) (constantly socket_shutdown_sock))))))
 
 (defn socket_close [socket_close_sock_p]
-  (binding [socket_close_sock socket_close_sock_p] (set! socket_close_sock (assoc socket_close_sock :close_called (+ (:close_called socket_close_sock) 1)))))
+  (binding [socket_close_sock socket_close_sock_p] (try (set! socket_close_sock (assoc socket_close_sock :close_called (+ (:close_called socket_close_sock) 1))) (finally (alter-var-root (var socket_close_sock) (constantly socket_close_sock))))))
 
 (defn make_file_mock [make_file_mock_values]
   (try (throw (ex-info "return" {:v {:data make_file_mock_values :read_called 0}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -95,11 +107,11 @@
 (defn file_open []
   (try (throw (ex-info "return" {:v (make_file_mock [1 0])})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(defn send_file [send_file_sock send_file_f]
-  (binding [send_file__ nil send_file_conn nil send_file_data nil] (do (let [__res (socket_bind send_file_sock)] (do (set! send_file_sock socket_bind_sock) __res)) (let [__res (socket_listen send_file_sock)] (do (set! send_file_sock socket_listen_sock) __res)) (set! send_file_conn (let [__res (socket_accept send_file_sock)] (do (set! send_file_sock socket_accept_sock) __res))) (set! send_file__ (let [__res (conn_recv send_file_conn 1024)] (do (set! send_file_conn conn_recv_conn) __res))) (set! send_file_data (let [__res (file_read send_file_f 1024)] (do (set! send_file_f file_read_f) __res))) (while (not= send_file_data 0) (do (let [__res (conn_send send_file_conn send_file_data)] (do (set! send_file_conn conn_send_conn) __res)) (set! send_file_data (let [__res (file_read send_file_f 1024)] (do (set! send_file_f file_read_f) __res))))) (let [__res (conn_close send_file_conn)] (do (set! send_file_conn conn_close_conn) __res)) (let [__res (socket_shutdown send_file_sock)] (do (set! send_file_sock socket_shutdown_sock) __res)) (let [__res (socket_close send_file_sock)] (do (set! send_file_sock socket_close_sock) __res)))))
+(defn send_file [send_file_sock_p send_file_f_p]
+  (binding [send_file_sock send_file_sock_p send_file_f send_file_f_p send_file__ nil send_file_conn nil send_file_data nil] (try (do (let [__res (socket_bind send_file_sock)] (do (set! send_file_sock socket_bind_sock) __res)) (let [__res (socket_listen send_file_sock)] (do (set! send_file_sock socket_listen_sock) __res)) (set! send_file_conn (let [__res (socket_accept send_file_sock)] (do (set! send_file_sock socket_accept_sock) __res))) (set! send_file__ (let [__res (conn_recv send_file_conn 1024)] (do (set! send_file_conn conn_recv_conn) __res))) (set! send_file_data (let [__res (file_read send_file_f 1024)] (do (set! send_file_f file_read_f) __res))) (while (not= send_file_data 0) (do (let [__res (conn_send send_file_conn send_file_data)] (do (set! send_file_conn conn_send_conn) __res)) (set! send_file_data (let [__res (file_read send_file_f 1024)] (do (set! send_file_f file_read_f) __res))))) (let [__res (conn_close send_file_conn)] (do (set! send_file_conn conn_close_conn) __res)) (let [__res (socket_shutdown send_file_sock)] (do (set! send_file_sock socket_shutdown_sock) __res)) (let [__res (socket_close send_file_sock)] (do (set! send_file_sock socket_close_sock) __res))) (finally (alter-var-root (var send_file_sock) (constantly send_file_sock)) (alter-var-root (var send_file_f) (constantly send_file_f))))))
 
 (defn test_send_file_running_as_expected []
-  (binding [test_send_file_running_as_expected_conn nil test_send_file_running_as_expected_f nil test_send_file_running_as_expected_sock nil] (try (do (set! test_send_file_running_as_expected_conn (make_conn_mock)) (set! test_send_file_running_as_expected_sock (make_socket_mock test_send_file_running_as_expected_conn)) (set! test_send_file_running_as_expected_f (file_open)) (send_file test_send_file_running_as_expected_sock test_send_file_running_as_expected_f) (if (and (and (and (and (and (and (and (and (= (:bind_called test_send_file_running_as_expected_sock) 1) (= (:listen_called test_send_file_running_as_expected_sock) 1)) (= (:accept_called test_send_file_running_as_expected_sock) 1)) (= (:recv_called test_send_file_running_as_expected_conn) 1)) (>= (:read_called test_send_file_running_as_expected_f) 1)) (= (:send_called test_send_file_running_as_expected_conn) 1)) (= (:close_called test_send_file_running_as_expected_conn) 1)) (= (:shutdown_called test_send_file_running_as_expected_sock) 1)) (= (:close_called test_send_file_running_as_expected_sock) 1)) "pass" "fail")) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [test_send_file_running_as_expected_conn nil test_send_file_running_as_expected_f nil test_send_file_running_as_expected_sock nil] (try (do (set! test_send_file_running_as_expected_conn (make_conn_mock)) (set! test_send_file_running_as_expected_sock (make_socket_mock test_send_file_running_as_expected_conn)) (set! test_send_file_running_as_expected_f (file_open)) (let [__res (send_file test_send_file_running_as_expected_sock test_send_file_running_as_expected_f)] (do (set! test_send_file_running_as_expected_sock send_file_sock) (set! test_send_file_running_as_expected_f send_file_f) __res)) (if (and (and (and (and (and (and (and (and (= (:bind_called test_send_file_running_as_expected_sock) 1) (= (:listen_called test_send_file_running_as_expected_sock) 1)) (= (:accept_called test_send_file_running_as_expected_sock) 1)) (= (:recv_called test_send_file_running_as_expected_conn) 1)) (>= (:read_called test_send_file_running_as_expected_f) 1)) (= (:send_called test_send_file_running_as_expected_conn) 1)) (= (:close_called test_send_file_running_as_expected_conn) 1)) (= (:shutdown_called test_send_file_running_as_expected_sock) 1)) (= (:close_called test_send_file_running_as_expected_sock) 1)) "pass" "fail")) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
