@@ -35,6 +35,7 @@ var pythonMathAliases map[string]bool
 var useNow bool
 var useInput bool
 var useKeys bool
+var useIter bool
 var useNumDenom bool
 var useSHA256 bool
 var useRepeat bool
@@ -1931,16 +1932,11 @@ func (f *ForInStmt) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, " of ")
 		if f.Iterable != nil {
+			useIter = true
 			useKeys = true
-			io.WriteString(w, "(Array.isArray(")
+			io.WriteString(w, "_iter(")
 			f.Iterable.emit(w)
-			io.WriteString(w, ") || typeof ")
-			f.Iterable.emit(w)
-			io.WriteString(w, " === 'string' ? ")
-			f.Iterable.emit(w)
-			io.WriteString(w, " : _keys(")
-			f.Iterable.emit(w)
-			io.WriteString(w, "))")
+			io.WriteString(w, ")")
 		}
 	}
 	io.WriteString(w, ") {\n")
@@ -2209,6 +2205,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useNow = false
 	useInput = false
 	useKeys = false
+	useIter = false
 	useNumDenom = false
 	useSHA256 = false
 	useRepeat = false
@@ -2235,6 +2232,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useNow = false
 		useInput = false
 		useKeys = false
+		useIter = false
 		useNumDenom = false
 		useSHA256 = false
 		useRepeat = false
@@ -2425,6 +2423,11 @@ function _input(): string {
 	if useKeys {
 		prelude = append(prelude, &RawStmt{Code: `function _keys(obj: any): any[] {
   return Object.keys(obj);
+}`})
+	}
+	if useIter {
+		prelude = append(prelude, &RawStmt{Code: `function _iter(x: any): any {
+  return Array.isArray(x) || typeof x === 'string' ? x : _keys(x);
 }`})
 	}
 	if useNumDenom {
@@ -3045,6 +3048,11 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 			if _, ok2 := idx.Index.(*StringLit); !ok2 {
 				keys = true
 			}
+		} else if elemType == nil {
+			// Default to iterating over keys when type information is
+			// unavailable. This avoids runtime errors when the value is
+			// a plain object rather than an array or string.
+			keys = true
 		}
 	}
 	body, err := convertStmtList(f.Body)
