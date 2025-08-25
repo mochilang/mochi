@@ -1,5 +1,32 @@
 # 📦 CHANGELOG.md
 
+## [0.10.73] – 2025-08-25T08:22:15+07:00
+
+### Added
+
+- C transpiler handles map element assignment inside lists and pointer field access.
+- Rust transpiler supports function fields and empty list globals.
+- Zig transpiler supports field function calls and tracks mutable references.
+- Pascal transpiler allows calling function fields and array field assignments.
+- Dart adds a `ceil` builtin; Swift enables stack algorithms.
+- Kotlin adds `containsKey` for maps; C++ supports nested struct literals and index assignment.
+
+### Changed
+
+- TypeScript and Scala regenerate algorithm outputs; TypeScript refines loops, object formatting and map membership.
+- Zig preserves parameter names and allows const list initialization.
+- Scheme iterates without map keys and supports unordered variant fields.
+- Go, PHP, Python, Pascal and others refresh algorithm benchmarks and outputs.
+
+### Fixed
+
+- Python transpiler handles builtin name collisions and in-place append.
+- C transpiler fixes pointer assignments and list literal mapping.
+- Kotlin transpiler resolves function field handling and data directory ordering.
+- Java handles nested list literals, big integer ranges and negative array indices.
+- Clojure loop breaks, Erlang string formatting and Elixir return/union handling corrected.
+- C++ adjusts float formatting and ensures `cpp_int` headers.
+
 ## [0.10.72] – 2025-08-24T15:35:26+07:00
 
 ### Added
