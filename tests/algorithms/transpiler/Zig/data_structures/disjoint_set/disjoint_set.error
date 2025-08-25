@@ -1,0 +1,19 @@
+signal: aborted
+thread 11585 panic: index out of bounds: index 0, len 0
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/disjoint_set/disjoint_set.zig:32:26: 0x2242b8 in find_set (disjoint_set)
+    if (ds_param_1.parent[_idx(ds_param_1.parent.len, x_1)] == x_1) {
+                         ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/disjoint_set/disjoint_set.zig:42:36: 0x22360d in union_set (disjoint_set)
+    const fx: FindResult = find_set(ds_param_2, x_2);
+                                   ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/disjoint_set/disjoint_set.zig:74:29: 0x221a51 in main (disjoint_set)
+        ds_var_1 = union_set(&ds_var_1, 0, 1);
+                            ^
+/usr/local/zig/lib/std/start.zig:564:22: 0x221579 in main (disjoint_set)
+            root.main();
+                     ^
+???:?:?: 0x7fead20371c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7fead20371c9` was not available, trace may be incomplete
+
+???:?:?: 0x7fead203728a in ??? (libc.so.6)
+???:?:?: 0x221204 in ??? (???)

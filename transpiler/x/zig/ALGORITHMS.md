@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-25 16:08 +0700
+Last updated: 2025-08-25 16:29 +0700
 
-## Program Checklist (589/1077)
+## Program Checklist (596/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -200,14 +200,14 @@ Last updated: 2025-08-25 16:08 +0700
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 1.154ms | 384.0 KB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 2.468ms | 640.0 KB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 12.763ms | 2.5 MB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
-| 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 1.066ms | 384.0 KB |
+| 199 | data_structures/binary_tree/treap | ✓ | 2.94ms | 896.0 KB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 4.069ms | 1.0 MB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 816µs | 512.0 KB |
 | 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
 | 203 | data_structures/hashing/bloom_filter |   |  |  |
 | 204 | data_structures/hashing/double_hash |   |  |  |
@@ -225,7 +225,7 @@ Last updated: 2025-08-25 16:08 +0700
 | 216 | data_structures/heap/randomized_heap | ✓ | 1.385ms | 512.0 KB |
 | 217 | data_structures/kd_tree/build_kdtree | ✓ | 323µs | 128.0 KB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 810µs | 384.0 KB |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 589µs | 512.0 KB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 694µs | 512.0 KB |
 | 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 1.182ms | 512.0 KB |
 | 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
