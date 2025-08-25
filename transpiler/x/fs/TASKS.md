@@ -1,3 +1,7 @@
+## Progress (2025-08-25 22:27 +0700)
+- chore(clj): remove stale koch_snowflake error
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-24 23:17 +0700)
 - c transpiler: use AST for map set
 - Generated F# for 103/105 programs (103 passing)

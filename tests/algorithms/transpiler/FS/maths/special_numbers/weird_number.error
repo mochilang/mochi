@@ -1,0 +1,73 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(150,38): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(150,41): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(150,44): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(150,47): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(150,50): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(152,37): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(154,39): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(154,42): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(154,45): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(154,48): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(154,51): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(154,55): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(154,59): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/weird_number.fs(154,63): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    

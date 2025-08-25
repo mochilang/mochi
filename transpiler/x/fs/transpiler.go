@@ -2216,9 +2216,34 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		}
 	}
-	lt := inferType(b.Left)
-	rt := inferType(b.Right)
-	resT := inferType(b)
+       lt := inferType(b.Left)
+       if lt == "" {
+               if call, ok := b.Left.(*CallExpr); ok {
+                       if t, ok2 := varTypes[call.Func]; ok2 {
+                               lt = t
+                       }
+               }
+       }
+       rt := inferType(b.Right)
+       if rt == "" {
+               if call, ok := b.Right.(*CallExpr); ok {
+                       if t, ok2 := varTypes[call.Func]; ok2 {
+                               rt = t
+                       }
+               }
+       }
+       if lt == "array" || rt == "array" || strings.HasSuffix(lt, " array") || strings.HasSuffix(rt, " array") {
+               le := elemTypeOf(b.Left)
+               re := elemTypeOf(b.Right)
+               if (lt == "array" || lt == "int array") && strings.HasSuffix(rt, "int64 array") && le == "int" {
+                       b.Left = &CallExpr{Func: "Array.map int64", Args: []Expr{b.Left}}
+                       lt = "int64 array"
+               } else if (rt == "array" || rt == "int array") && strings.HasSuffix(lt, "int64 array") && re == "int" {
+                       b.Right = &CallExpr{Func: "Array.map int64", Args: []Expr{b.Right}}
+                       rt = "int64 array"
+               }
+       }
+       resT := inferType(b)
 	left := b.Left
 	right := b.Right
 	castIf := func(expr Expr, targetType string) Expr {
@@ -2855,14 +2880,24 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if t == "string" {
-		io.WriteString(w, "string (")
-		i.Target.emit(w)
-		io.WriteString(w, ".[")
-		i.Index.emit(w)
-		io.WriteString(w, "])")
-		return
-	}
+       if t == "string" {
+               io.WriteString(w, "string (")
+               i.Target.emit(w)
+               io.WriteString(w, ".[")
+               ixT := inferType(i.Index)
+               if ixT != "int" {
+                       io.WriteString(w, "int ")
+               }
+               if needsParen(i.Index) {
+                       io.WriteString(w, "(")
+                       i.Index.emit(w)
+                       io.WriteString(w, ")")
+               } else {
+                       i.Index.emit(w)
+               }
+               io.WriteString(w, "])")
+               return
+       }
 	if t == "map" || t == "obj" || t == "" {
 		valT := mapValueType(t)
 		if id, ok := i.Target.(*IdentExpr); ok {
@@ -4551,16 +4586,25 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		currentReturn = prevReturn
 		hasNull := funcHasNull
 		funcHasNull = saveNull
-		if retType == "int" {
-			for _, st := range body {
-				if r, ok := st.(*ReturnStmt); ok {
-					if inferType(r.Expr) == "int64" {
-						retType = "int64"
-						break
-					}
-				}
-			}
-		}
+               if retType == "int" {
+                       for _, st := range body {
+                               if r, ok := st.(*ReturnStmt); ok {
+                                       if inferType(r.Expr) == "int64" {
+                                               retType = "int64"
+                                               break
+                                       }
+                               }
+                       }
+               } else if retType == "int array" {
+                       for _, st := range body {
+                               if r, ok := st.(*ReturnStmt); ok {
+                                       if inferType(r.Expr) == "int64 array" {
+                                               retType = "int64 array"
+                                               break
+                                       }
+                               }
+                       }
+               }
 		for i, p := range st.Fun.Params {
 			if paramTypes[i] == "int" {
 				if t, ok := varTypes[p.Name]; ok && t == "int64" {
@@ -4990,18 +5034,29 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							}
 						}
 					}
-					for i, t := range pts {
-						if i < len(args) && t != "" && t != inferType(args[i]) {
-							if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && inferType(args[i]) == "map" {
-								// let F# infer generic types for map literals
-							} else {
-								args[i] = &CastExpr{Expr: args[i], Type: t}
-							}
-						}
-					}
-				}
-			}
-			return &CallExpr{Func: fsIdent(p.Call.Func), Args: args}, nil
+                                       for i, t := range pts {
+                                               if i >= len(args) || t == "" {
+                                                       continue
+                                               }
+                                               if t == "int64" {
+                                                       if ce, ok := args[i].(*CastExpr); ok && ce.Type == "int64" {
+                                                               // already cast
+                                                       } else {
+                                                               args[i] = &CastExpr{Expr: args[i], Type: "int64"}
+                                                       }
+                                                       continue
+                                               }
+                                               if t != inferType(args[i]) {
+                                                       if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && inferType(args[i]) == "map" {
+                                                               // let F# infer generic types for map literals
+                                                       } else {
+                                                               args[i] = &CastExpr{Expr: args[i], Type: t}
+                                                       }
+                                               }
+                                       }
+                               }
+                       }
+                       return &CallExpr{Func: fsIdent(p.Call.Func), Args: args}, nil
 		}
 		switch p.Call.Func {
 		case "print":

@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 951/1077
-Last updated: 2025-08-25 08:35 +0700
+Completed programs: 950/1077
+Last updated: 2025-08-25 22:27 +0700
 
 Checklist:
 
@@ -675,20 +675,20 @@ Checklist:
 | 666 | maths/special_numbers/carmichael_number | ✓ | 571.223ms | 58.2 KB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 571.223ms | 58.3 KB |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 571.223ms | 55.5 KB |
-| 669 | maths/special_numbers/happy_number | ✓ | 571.223ms | 30.9 KB |
+| 669 | maths/special_numbers/happy_number | ✓ | 571.223ms | 31.0 KB |
 | 670 | maths/special_numbers/harshad_numbers | ✓ | 571.223ms | 58.1 KB |
-| 671 | maths/special_numbers/hexagonal_number | ✓ | 571.223ms | 31.8 KB |
-| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 571.223ms | 55.1 KB |
-| 673 | maths/special_numbers/perfect_number | ✓ | 571.223ms | 63.2 KB |
-| 674 | maths/special_numbers/polygonal_numbers | ✓ | 571.223ms | 54.7 KB |
-| 675 | maths/special_numbers/pronic_number | ✓ | 571.223ms | 31.0 KB |
-| 676 | maths/special_numbers/proth_number | ✓ | 571.223ms | 54.8 KB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 571.223ms | 31.9 KB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 571.223ms | 59.1 KB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 571.223ms | 35.2 KB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 571.223ms | 34.8 KB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 571.223ms | 30.9 KB |
+| 676 | maths/special_numbers/proth_number | ✓ | 571.223ms | 35.0 KB |
 | 677 | maths/special_numbers/triangular_numbers | ✓ | 571.223ms | 31.5 KB |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 571.223ms | 55.5 KB |
-| 679 | maths/special_numbers/weird_number | ✓ | 571.223ms | 59.1 KB |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 571.223ms | 38.7 KB |
-| 681 | maths/sum_of_digits | ✓ | 571.223ms | 68.6 KB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 571.223ms | 36.9 KB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 571.223ms | 35.6 KB |
+| 679 | maths/special_numbers/weird_number |   | 571.223ms | 59.1 KB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 571.223ms | 35.0 KB |
+| 681 | maths/sum_of_digits | ✓ | 571.223ms | 39.2 KB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 571.223ms | 36.5 KB |
 | 683 | maths/sum_of_harmonic_series | ✓ | 571.223ms | 37.0 KB |
 | 684 | maths/sumset | ✓ | 571.223ms | 61.9 KB |
 | 685 | maths/sylvester_sequence | ✓ | 571.223ms | 55.0 KB |
