@@ -1,3 +1,11 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 var _nowSeed = 0L
@@ -32,7 +40,7 @@ fun resistor_parallel(resistors: MutableList<Double>): Double {
     while (i < resistors.size) {
         var r: Double = resistors[i]!!
         if (r <= 0.0) {
-            panic(("Resistor at index " + i.toString()) + " has a negative or zero value!")
+            panic(("Resistor at index " + _numToStr(i)) + " has a negative or zero value!")
         }
         sum = sum + (1.0 / r)
         i = i + 1
@@ -46,7 +54,7 @@ fun resistor_series(resistors: MutableList<Double>): Double {
     while (i < resistors.size) {
         var r: Double = resistors[i]!!
         if (r < 0.0) {
-            panic(("Resistor at index " + i.toString()) + " has a negative value!")
+            panic(("Resistor at index " + _numToStr(i)) + " has a negative value!")
         }
         sum = sum + r
         i = i + 1
@@ -56,8 +64,8 @@ fun resistor_series(resistors: MutableList<Double>): Double {
 
 fun user_main(): Unit {
     var resistors: MutableList<Double> = mutableListOf(3.21389, 2.0, 3.0)
-    println("Parallel: " + resistor_parallel(resistors).toString())
-    println("Series: " + resistor_series(resistors).toString())
+    println("Parallel: " + _numToStr(resistor_parallel(resistors)))
+    println("Series: " + _numToStr(resistor_series(resistors)))
 }
 
 fun main() {

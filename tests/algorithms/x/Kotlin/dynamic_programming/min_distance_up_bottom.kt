@@ -1,6 +1,14 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -46,8 +54,8 @@ fun helper(word1: String, word2: String, cache: MutableList<MutableList<Int>>, i
     if (j >= len2) {
         return len1 - i
     }
-    if ((((cache[i]!!) as MutableList<Int>))[j]!! != (0 - 1)) {
-        return (((cache[i]!!) as MutableList<Int>))[j]!!
+    if (((cache[i]!!) as MutableList<Int>)[j]!! != (0 - 1)) {
+        return ((cache[i]!!) as MutableList<Int>)[j]!!
     }
     var diff: Int = (0).toInt()
     if (word1.substring(i, i + 1) != word2.substring(j, j + 1)) {
@@ -57,7 +65,7 @@ fun helper(word1: String, word2: String, cache: MutableList<MutableList<Int>>, i
     var insert_cost: Int = (1 + helper(word1, word2, cache, i, j + 1, len1, len2)).toInt()
     var replace_cost: Int = (diff + helper(word1, word2, cache, i + 1, j + 1, len1, len2)).toInt()
     _listSet(cache[i]!!, j, min3(delete_cost, insert_cost, replace_cost))
-    return (((cache[i]!!) as MutableList<Int>))[j]!!
+    return ((cache[i]!!) as MutableList<Int>)[j]!!
 }
 
 fun min_distance_up_bottom(word1: String, word2: String): Int {
@@ -79,10 +87,10 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(min_distance_up_bottom("intention", "execution").toString())
-        println(min_distance_up_bottom("intention", "").toString())
-        println(min_distance_up_bottom("", "").toString())
-        println(min_distance_up_bottom("zooicoarchaeologist", "zoologist").toString())
+        println(_numToStr(min_distance_up_bottom("intention", "execution")))
+        println(_numToStr(min_distance_up_bottom("intention", "")))
+        println(_numToStr(min_distance_up_bottom("", "")))
+        println(_numToStr(min_distance_up_bottom("zooicoarchaeologist", "zoologist")))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

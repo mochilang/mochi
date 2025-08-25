@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }
 
 var _nowSeed = 0L
@@ -43,7 +45,7 @@ fun sin_taylor(x: Double): Double {
     var sum: Double = x
     var i: Int = (1).toInt()
     while (i < 10) {
-        var k1: Double = 2.0 * ((i.toDouble()))
+        var k1: Double = 2.0 * (i.toDouble())
         var k2: Double = k1 + 1.0
         term = (((0.0 - term) * x) * x) / (k1 * k2)
         sum = sum + term
@@ -57,8 +59,8 @@ fun cos_taylor(x: Double): Double {
     var sum: Double = 1.0
     var i: Int = (1).toInt()
     while (i < 10) {
-        var k1: Double = (2.0 * ((i.toDouble()))) - 1.0
-        var k2: Double = 2.0 * ((i.toDouble()))
+        var k1: Double = (2.0 * (i.toDouble())) - 1.0
+        var k2: Double = 2.0 * (i.toDouble())
         term = (((0.0 - term) * x) * x) / (k1 * k2)
         sum = sum + term
         i = i + 1
@@ -86,7 +88,7 @@ fun apparent_power(voltage: Double, current: Double, voltage_angle: Double, curr
 }
 
 fun approx_equal(a: MutableList<Double>, b: MutableList<Double>, eps: Double): Boolean {
-    return (((abs(a[0]!! - b[0]!!) < eps) && (abs(a[1]!! - b[1]!!) < eps)) as Boolean)
+    return ((abs(a[0]!! - b[0]!!) < eps) && (abs(a[1]!! - b[1]!!) < eps)) as Boolean
 }
 
 fun test_zero_phase(): Unit {

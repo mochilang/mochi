@@ -1,3 +1,11 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -50,10 +58,10 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(maximum_non_adjacent_sum(mutableListOf(1, 2, 3)).toString())
-        println(maximum_non_adjacent_sum(mutableListOf(1, 5, 3, 7, 2, 2, 6)).toString())
-        println(maximum_non_adjacent_sum(mutableListOf(0 - 1, 0 - 5, 0 - 3, 0 - 7, 0 - 2, 0 - 2, 0 - 6)).toString())
-        println(maximum_non_adjacent_sum(mutableListOf(499, 500, 0 - 3, 0 - 7, 0 - 2, 0 - 2, 0 - 6)).toString())
+        println(_numToStr(maximum_non_adjacent_sum(mutableListOf(1, 2, 3))))
+        println(_numToStr(maximum_non_adjacent_sum(mutableListOf(1, 5, 3, 7, 2, 2, 6))))
+        println(_numToStr(maximum_non_adjacent_sum(mutableListOf(0 - 1, 0 - 5, 0 - 3, 0 - 7, 0 - 2, 0 - 2, 0 - 6))))
+        println(_numToStr(maximum_non_adjacent_sum(mutableListOf(499, 500, 0 - 3, 0 - 7, 0 - 2, 0 - 2, 0 - 6))))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

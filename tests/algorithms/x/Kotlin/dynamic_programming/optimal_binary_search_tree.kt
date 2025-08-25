@@ -1,6 +1,14 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -51,21 +59,21 @@ fun sort_nodes(nodes: MutableList<Node>): MutableList<Node> {
 }
 
 fun print_node(n: Node): Unit {
-    println(((("Node(key=" + n.key.toString()) + ", freq=") + n.freq.toString()) + ")")
+    println(((("Node(key=" + _numToStr(n.key)) + ", freq=") + _numToStr(n.freq)) + ")")
 }
 
 fun print_binary_search_tree(root: MutableList<MutableList<Int>>, keys: MutableList<Int>, i: Int, j: Int, parent: Int, is_left: Boolean): Unit {
     if ((((i > j) || (i < 0) as Boolean)) || (j > (root.size - 1))) {
         return
     }
-    var node: Int = ((((root[i]!!) as MutableList<Int>))[j]!!).toInt()
+    var node: Int = (((root[i]!!) as MutableList<Int>)[j]!!).toInt()
     if (parent == (0 - 1)) {
-        println((keys[node]!!).toString() + " is the root of the binary search tree.")
+        println(_numToStr(keys[node]!!) + " is the root of the binary search tree.")
     } else {
-        if ((is_left as Boolean)) {
-            println((((keys[node]!!).toString() + " is the left child of key ") + parent.toString()) + ".")
+        if (is_left as Boolean) {
+            println(((_numToStr(keys[node]!!) + " is the left child of key ") + _numToStr(parent)) + ".")
         } else {
-            println((((keys[node]!!).toString() + " is the right child of key ") + parent.toString()) + ".")
+            println(((_numToStr(keys[node]!!) + " is the right child of key ") + _numToStr(parent)) + ".")
         }
     }
     print_binary_search_tree(root, keys, i, node - 1, keys[node]!!, true)
@@ -117,13 +125,13 @@ fun find_optimal_binary_search_tree(original_nodes: MutableList<Node>): Unit {
         while (i < ((n - interval_length) + 1)) {
             var j: Int = ((i + interval_length) - 1).toInt()
             _listSet(dp[i]!!, j, INF)
-            _listSet(total[i]!!, j, (((total[i]!!) as MutableList<Int>))[j - 1]!! + freqs[j]!!)
-            var r: Int = ((((root[i]!!) as MutableList<Int>))[j - 1]!!).toInt()
-            while (r <= (((root[i + 1]!!) as MutableList<Int>))[j]!!) {
-                var left: Int = (if (r != i) (((dp[i]!!) as MutableList<Int>))[r - 1]!! else 0).toInt()
-                var right: Int = (if (r != j) (((dp[r + 1]!!) as MutableList<Int>))[j]!! else 0).toInt()
-                var cost: Int = ((left + (((total[i]!!) as MutableList<Int>))[j]!!) + right).toInt()
-                if ((((dp[i]!!) as MutableList<Int>))[j]!! > cost) {
+            _listSet(total[i]!!, j, ((total[i]!!) as MutableList<Int>)[j - 1]!! + freqs[j]!!)
+            var r: Int = (((root[i]!!) as MutableList<Int>)[j - 1]!!).toInt()
+            while (r <= ((root[i + 1]!!) as MutableList<Int>)[j]!!) {
+                var left: Int = (if (r != i) ((dp[i]!!) as MutableList<Int>)[r - 1]!! else 0).toInt()
+                var right: Int = (if (r != j) ((dp[r + 1]!!) as MutableList<Int>)[j]!! else 0).toInt()
+                var cost: Int = ((left + ((total[i]!!) as MutableList<Int>)[j]!!) + right).toInt()
+                if (((dp[i]!!) as MutableList<Int>)[j]!! > cost) {
                     _listSet(dp[i]!!, j, cost)
                     _listSet(root[i]!!, j, r)
                 }
@@ -139,7 +147,7 @@ fun find_optimal_binary_search_tree(original_nodes: MutableList<Node>): Unit {
         print_node(nodes[i]!!)
         i = i + 1
     }
-    println(("\nThe cost of optimal BST for given tree nodes is " + ((((dp[0]!!) as MutableList<Int>))[n - 1]!!).toString()) + ".")
+    println(("\nThe cost of optimal BST for given tree nodes is " + _numToStr(((dp[0]!!) as MutableList<Int>)[n - 1]!!)) + ".")
     print_binary_search_tree(root, keys, 0, n - 1, 0 - 1, false)
 }
 

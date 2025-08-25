@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 fun _numToStr(v: Number): String {
@@ -58,7 +60,7 @@ fun contains(list: MutableList<String>, value: String): Boolean {
 fun get_significant_digits(colors: MutableList<String>): Int {
     var digit: Int = (0).toInt()
     for (color in colors) {
-        if (!(color in significant_figures_color_values)) {
+        if (!(significant_figures_color_values.containsKey(color))) {
             panic(color + " is not a valid color for significant figure bands")
         }
         digit = (digit * 10) + (significant_figures_color_values)[color] as Int
@@ -67,21 +69,21 @@ fun get_significant_digits(colors: MutableList<String>): Int {
 }
 
 fun get_multiplier(color: String): Double {
-    if (!(color in multiplier_color_values)) {
+    if (!(multiplier_color_values.containsKey(color))) {
         panic(color + " is not a valid color for multiplier band")
     }
     return (multiplier_color_values)[color] as Double
 }
 
 fun get_tolerance(color: String): Double {
-    if (!(color in tolerance_color_values)) {
+    if (!(tolerance_color_values.containsKey(color))) {
         panic(color + " is not a valid color for tolerance band")
     }
     return (tolerance_color_values)[color] as Double
 }
 
 fun get_temperature_coeffecient(color: String): Int {
-    if (!(color in temperature_coeffecient_color_values)) {
+    if (!(temperature_coeffecient_color_values.containsKey(color))) {
         panic(color + " is not a valid color for temperature coeffecient band")
     }
     return (temperature_coeffecient_color_values)[color] as Int
@@ -177,8 +179,8 @@ fun calculate_resistance(number_of_bands: Int, color_code_list: MutableList<Stri
     }
     var resistance_value: Double = multiplier * (significant_digits).toDouble()
     var resistance_str: String = _numToStr(resistance_value)
-    if (resistance_value == ((resistance_value.toInt())).toDouble()) {
-        resistance_str = _numToStr((resistance_value.toInt()))
+    if (resistance_value == (resistance_value.toInt()).toDouble()) {
+        resistance_str = _numToStr(resistance_value.toInt())
     }
     var answer: String = ((resistance_str + "Ω ±") + _numToStr(tolerance)) + "% "
     if (temp_coeff != 0) {

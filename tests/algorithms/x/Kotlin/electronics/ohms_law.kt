@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun json(v: Any?) { println(toJson(v)) }
 
 fun toJson(v: Any?): String = when (v) {
@@ -59,9 +61,9 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        json(((ohms_law(10.0, 0.0, 5.0)) as Any?))
-        json(((ohms_law(0.0 - 10.0, 1.0, 0.0)) as Any?))
-        json(((ohms_law(0.0, 0.0 - 1.5, 2.0)) as Any?))
+        json((ohms_law(10.0, 0.0, 5.0)) as Any?)
+        json((ohms_law(0.0 - 10.0, 1.0, 0.0)) as Any?)
+        json((ohms_law(0.0, 0.0 - 1.5, 2.0)) as Any?)
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

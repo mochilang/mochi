@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 var _nowSeed = 0L
@@ -42,8 +44,8 @@ fun score_function(source_char: String, target_char: String, match_score: Int, m
 }
 
 fun smith_waterman(query: String, subject: String, match_score: Int, mismatch_score: Int, gap_score: Int): MutableList<MutableList<Int>> {
-    var q: String = (query.toUpperCase() as String)
-    var s: String = (subject.toUpperCase() as String)
+    var q: String = query.toUpperCase() as String
+    var s: String = subject.toUpperCase() as String
     var m: Int = (q.length).toInt()
     var n: Int = (s.length).toInt()
     var score: MutableList<MutableList<Int>> = mutableListOf<MutableList<Int>>()
@@ -58,9 +60,9 @@ fun smith_waterman(query: String, subject: String, match_score: Int, mismatch_sc
         for (j in 1 until n + 1) {
             var qc: String = q.substring(i - 1, i)
             var sc: String = s.substring(j - 1, j)
-            var diag: Int = ((((score[i - 1]!!) as MutableList<Int>))[j - 1]!! + score_function(qc, sc, match_score, mismatch_score, gap_score)).toInt()
-            var delete: Int = ((((score[i - 1]!!) as MutableList<Int>))[j]!! + gap_score).toInt()
-            var insert: Int = ((((score[i]!!) as MutableList<Int>))[j - 1]!! + gap_score).toInt()
+            var diag: Int = (((score[i - 1]!!) as MutableList<Int>)[j - 1]!! + score_function(qc, sc, match_score, mismatch_score, gap_score)).toInt()
+            var delete: Int = (((score[i - 1]!!) as MutableList<Int>)[j]!! + gap_score).toInt()
+            var insert: Int = (((score[i]!!) as MutableList<Int>)[j - 1]!! + gap_score).toInt()
             var max_val: Int = (0).toInt()
             if (diag > max_val) {
                 max_val = diag
@@ -78,15 +80,15 @@ fun smith_waterman(query: String, subject: String, match_score: Int, mismatch_sc
 }
 
 fun traceback(score: MutableList<MutableList<Int>>, query: String, subject: String, match_score: Int, mismatch_score: Int, gap_score: Int): String {
-    var q: String = (query.toUpperCase() as String)
-    var s: String = (subject.toUpperCase() as String)
+    var q: String = query.toUpperCase() as String
+    var s: String = subject.toUpperCase() as String
     var max_value: Int = (0).toInt()
     var i_max: Int = (0).toInt()
     var j_max: Int = (0).toInt()
     for (i in 0 until score.size) {
         for (j in 0 until (score[i]!!).size) {
-            if ((((score[i]!!) as MutableList<Int>))[j]!! > max_value) {
-                max_value = (((score[i]!!) as MutableList<Int>))[j]!!
+            if (((score[i]!!) as MutableList<Int>)[j]!! > max_value) {
+                max_value = ((score[i]!!) as MutableList<Int>)[j]!!
                 i_max = i
                 j_max = j
             }
@@ -103,13 +105,13 @@ fun traceback(score: MutableList<MutableList<Int>>, query: String, subject: Stri
     while ((i > 0) && (j > 0)) {
         var qc: String = q.substring(i - 1, i)
         var sc: String = s.substring(j - 1, j)
-        if ((((score[i]!!) as MutableList<Int>))[j]!! == ((((score[i - 1]!!) as MutableList<Int>))[j - 1]!! + score_function(qc, sc, match_score, mismatch_score, gap_score))) {
+        if (((score[i]!!) as MutableList<Int>)[j]!! == (((score[i - 1]!!) as MutableList<Int>)[j - 1]!! + score_function(qc, sc, match_score, mismatch_score, gap_score))) {
             align1 = qc + align1
             align2 = sc + align2
             i = i - 1
             j = j - 1
         } else {
-            if ((((score[i]!!) as MutableList<Int>))[j]!! == ((((score[i - 1]!!) as MutableList<Int>))[j]!! + gap_penalty)) {
+            if (((score[i]!!) as MutableList<Int>)[j]!! == (((score[i - 1]!!) as MutableList<Int>)[j]!! + gap_penalty)) {
                 align1 = qc + align1
                 align2 = "-" + align2
                 i = i - 1

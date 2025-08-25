@@ -1,4 +1,12 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -48,7 +56,7 @@ fun minimum_cost_path(matrix: MutableList<MutableList<Int>>): Int {
     var i: Int = (1).toInt()
     while (i < rows) {
         var row: MutableList<Int> = matrix[i]!!
-        _listSet(row, 0, row[0]!! + (((matrix[i - 1]!!) as MutableList<Int>))[0]!!)
+        _listSet(row, 0, row[0]!! + ((matrix[i - 1]!!) as MutableList<Int>)[0]!!)
         _listSet(matrix, i, row)
         i = i + 1
     }
@@ -57,7 +65,7 @@ fun minimum_cost_path(matrix: MutableList<MutableList<Int>>): Int {
         var row: MutableList<Int> = matrix[i]!!
         j = 1
         while (j < cols) {
-            var up: Int = ((((matrix[i - 1]!!) as MutableList<Int>))[j]!!).toInt()
+            var up: Int = (((matrix[i - 1]!!) as MutableList<Int>)[j]!!).toInt()
             var left: Int = (row[j - 1]!!).toInt()
             var best: Int = (min_int(up, left)).toInt()
             _listSet(row, j, row[j]!! + best)
@@ -66,7 +74,7 @@ fun minimum_cost_path(matrix: MutableList<MutableList<Int>>): Int {
         _listSet(matrix, i, row)
         i = i + 1
     }
-    return (((matrix[rows - 1]!!) as MutableList<Int>))[cols - 1]!!
+    return ((matrix[rows - 1]!!) as MutableList<Int>)[cols - 1]!!
 }
 
 fun main() {
@@ -74,8 +82,8 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(minimum_cost_path(m1).toString())
-        println(minimum_cost_path(m2).toString())
+        println(_numToStr(minimum_cost_path(m1)))
+        println(_numToStr(minimum_cost_path(m2)))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

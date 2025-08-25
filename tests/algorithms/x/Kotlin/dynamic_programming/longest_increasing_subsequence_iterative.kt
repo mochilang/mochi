@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 var _nowSeed = 0L
@@ -53,7 +55,7 @@ fun longest_subsequence(arr: MutableList<Int>): MutableList<Int> {
             if ((arr[prev]!! <= arr[i]!!) && (((lis[prev]!!).size + 1) > (lis[i]!!).size)) {
                 var temp: MutableList<Int> = copy_list(lis[prev]!!)
                 var temp2 = run { val _tmp = temp.toMutableList(); _tmp.add(arr[i]!!); _tmp }
-                _listSet(lis, i, (temp2 as MutableList<Int>))
+                _listSet(lis, i, temp2 as MutableList<Int>)
             }
             prev = prev + 1
         }

@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 var _nowSeed = 0L
@@ -53,7 +55,7 @@ fun min_partitions(s: String): Int {
         var mincut: Int = (i).toInt()
         var j: Int = (0).toInt()
         while (j <= i) {
-            if ((s[i].toString() == s[j].toString()) && ((((i - j) < 2) || (((pal[j + 1]!!) as MutableList<Boolean>))[i - 1]!! as Boolean))) {
+            if ((s[i].toString() == s[j].toString()) && ((((i - j) < 2) || ((pal[j + 1]!!) as MutableList<Boolean>)[i - 1]!! as Boolean))) {
                 _listSet(pal[j]!!, i, true)
                 if (j == 0) {
                     mincut = 0

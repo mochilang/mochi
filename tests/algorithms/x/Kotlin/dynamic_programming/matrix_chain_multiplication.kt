@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }
@@ -57,8 +59,8 @@ fun matrix_chain_multiply(arr: MutableList<Int>): Int {
             } else {
                 var k: Int = (i).toInt()
                 while (k < j) {
-                    var cost: Int = (((((dp[i]!!) as MutableList<Int>))[k]!! + (((dp[k + 1]!!) as MutableList<Int>))[j]!!) + ((arr[i - 1]!! * arr[k]!!) * arr[j]!!)).toInt()
-                    if (cost < (((dp[i]!!) as MutableList<Int>))[j]!!) {
+                    var cost: Int = ((((dp[i]!!) as MutableList<Int>)[k]!! + ((dp[k + 1]!!) as MutableList<Int>)[j]!!) + ((arr[i - 1]!! * arr[k]!!) * arr[j]!!)).toInt()
+                    if (cost < ((dp[i]!!) as MutableList<Int>)[j]!!) {
                         _listSet(dp[i]!!, j, cost)
                     }
                     k = k + 1
@@ -68,7 +70,7 @@ fun matrix_chain_multiply(arr: MutableList<Int>): Int {
         }
         i = i - 1
     }
-    return (((dp[1]!!) as MutableList<Int>))[n - 1]!!
+    return ((dp[1]!!) as MutableList<Int>)[n - 1]!!
 }
 
 fun test_example(): Unit {

@@ -1,4 +1,12 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -86,7 +94,7 @@ fun electric_power(voltage: Double, current: Double, power: Double): Result {
 }
 
 fun str_result(r: Result): String {
-    return ((("Result(name='" + r.name) + "', value=") + r.value.toString()) + ")"
+    return ((("Result(name='" + r.name) + "', value=") + _numToStr(r.value)) + ")"
 }
 
 fun main() {

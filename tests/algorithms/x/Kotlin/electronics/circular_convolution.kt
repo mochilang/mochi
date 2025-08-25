@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -28,11 +30,11 @@ fun toJson(v: Any?): String = when (v) {
 
 var example1: MutableList<Double> = circular_convolution(mutableListOf(2.0, 1.0, 2.0, 0.0 - 1.0), mutableListOf(1.0, 2.0, 3.0, 4.0))
 fun floor(x: Double): Double {
-    var i: Int = ((x.toInt())).toInt()
-    if (((i.toDouble())) > x) {
+    var i: Int = (x.toInt()).toInt()
+    if ((i.toDouble()) > x) {
         i = i - 1
     }
-    return (i.toDouble())
+    return i.toDouble()
 }
 
 fun pow10(n: Int): Double {

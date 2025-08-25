@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 var _nowSeed = 0L
@@ -42,7 +44,7 @@ fun recursive_match(text: String, pattern: String): Boolean {
         return recursive_match(text.substring(0, text.length - 1), pattern.substring(0, pattern.length - 1))
     }
     if (last_pattern == "*") {
-        if (((recursive_match(text.substring(0, text.length - 1), pattern)) as Boolean)) {
+        if ((recursive_match(text.substring(0, text.length - 1), pattern)) as Boolean) {
             return true
         }
         return recursive_match(text, pattern.substring(0, pattern.length - 2))
@@ -69,7 +71,7 @@ fun dp_match(text: String, pattern: String): Boolean {
     var j: Int = (1).toInt()
     while (j <= n) {
         if ((pattern.substring(j - 1, j) == "*") && (j >= 2)) {
-            if ((((((dp[0]!!) as MutableList<Boolean>))[j - 2]!!) as Boolean)) {
+            if ((((dp[0]!!) as MutableList<Boolean>)[j - 2]!!) as Boolean) {
                 _listSet(dp[0]!!, j, true)
             }
         }
@@ -82,18 +84,18 @@ fun dp_match(text: String, pattern: String): Boolean {
             var p_char: String = pattern.substring(j - 1, j)
             var t_char: String = text.substring(i - 1, i)
             if ((p_char == ".") || (p_char == t_char)) {
-                if ((((((dp[i - 1]!!) as MutableList<Boolean>))[j - 1]!!) as Boolean)) {
+                if ((((dp[i - 1]!!) as MutableList<Boolean>)[j - 1]!!) as Boolean) {
                     _listSet(dp[i]!!, j, true)
                 }
             } else {
                 if (p_char == "*") {
                     if (j >= 2) {
-                        if ((((((dp[i]!!) as MutableList<Boolean>))[j - 2]!!) as Boolean)) {
+                        if ((((dp[i]!!) as MutableList<Boolean>)[j - 2]!!) as Boolean) {
                             _listSet(dp[i]!!, j, true)
                         }
                         var prev_p: String = pattern.substring(j - 2, j - 1)
                         if ((prev_p == ".") || (prev_p == t_char)) {
-                            if ((((((dp[i - 1]!!) as MutableList<Boolean>))[j]!!) as Boolean)) {
+                            if ((((dp[i - 1]!!) as MutableList<Boolean>)[j]!!) as Boolean) {
                                 _listSet(dp[i]!!, j, true)
                             }
                         }
@@ -106,11 +108,11 @@ fun dp_match(text: String, pattern: String): Boolean {
         }
         i = i + 1
     }
-    return (((dp[m]!!) as MutableList<Boolean>))[n]!!
+    return ((dp[m]!!) as MutableList<Boolean>)[n]!!
 }
 
 fun print_bool(b: Boolean): Unit {
-    if ((b as Boolean)) {
+    if (b as Boolean) {
         println(true)
     } else {
         println(false)

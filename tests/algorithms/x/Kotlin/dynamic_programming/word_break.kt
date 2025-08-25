@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 fun _sliceStr(s: String, start: Int, end: Int): String {
@@ -54,9 +56,9 @@ fun word_break(s: String, words: MutableList<String>): Boolean {
     while (i <= n) {
         var j: Int = (0).toInt()
         while (j < i) {
-            if (((dp[j]!!) as Boolean)) {
+            if ((dp[j]!!) as Boolean) {
                 var sub: String = _sliceStr(s, j, i)
-                if (sub in dict) {
+                if (dict.containsKey(sub)) {
                     _listSet(dp, i, true)
                     j = i
                 }
@@ -69,7 +71,7 @@ fun word_break(s: String, words: MutableList<String>): Boolean {
 }
 
 fun print_bool(b: Boolean): Unit {
-    if ((b as Boolean)) {
+    if (b as Boolean) {
         println(true)
     } else {
         println(false)
