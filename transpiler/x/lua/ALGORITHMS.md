@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-24 17:05 GMT+7
+Last updated: 2025-08-25 08:40 GMT+7
 
-## Algorithms Golden Test Checklist (1054/1077)
+## Algorithms Golden Test Checklist (1055/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -323,56 +323,56 @@ Last updated: 2025-08-24 17:05 GMT+7
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 389µs | 840 B |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 552µs | 1.0 KB |
 | 316 | dynamic_programming/knapsack | ✓ | 210µs | 3.8 KB |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 219µs | 1016 B |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 335µs | 1.0 KB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 795µs | 856 B |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 1µs | 88 B |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 2.205ms | 888 B |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 316µs | 944 B |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 627µs | 944 B |
-| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 17µs | 40 B |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 346µs | 1.1 KB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 202µs | 808 B |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 150µs | 808 B |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 270µs | 864 B |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 1.36ms | 6.3 KB |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 513µs | 2.0 KB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 255µs | 1.6 KB |
-| 332 | dynamic_programming/minimum_partition | ✓ | 4.221ms | 2.0 KB |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 191µs | 808 B |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 345µs | 944 B |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 282µs | 944 B |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 913µs | 1016 B |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 393µs | 2.5 KB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 566µs | 808 B |
-| 339 | dynamic_programming/range_sum_query | ✓ | 277µs | 1.9 KB |
-| 340 | dynamic_programming/regex_match | ✓ | 762µs | 1.1 KB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 277µs | 1.1 KB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 147µs | 3.2 KB |
-| 343 | dynamic_programming/subset_generation | ✓ | 226µs | 912 B |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 410µs | 912 B |
-| 345 | dynamic_programming/trapped_water | ✓ | 177µs | 960 B |
-| 346 | dynamic_programming/tribonacci | ✓ | 212µs | 808 B |
-| 347 | dynamic_programming/viterbi | ✓ | 107µs | 3.0 KB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 547µs | 1.0 KB |
-| 349 | dynamic_programming/word_break | ✓ | 277µs | 888 B |
-| 350 | electronics/apparent_power | ✓ | 3µs | 288 B |
-| 351 | electronics/builtin_voltage | ✓ | 63µs | 960 B |
-| 352 | electronics/capacitor_equivalence | ✓ | 85µs | 1.0 KB |
-| 353 | electronics/carrier_concentration | ✓ | 86µs | 1.1 KB |
-| 354 | electronics/charging_capacitor | ✓ | 62µs | 864 B |
-| 355 | electronics/charging_inductor | ✓ | 63µs | 1.5 KB |
-| 356 | electronics/circular_convolution | ✓ | 159µs | 1.7 KB |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity | ✓ | 62µs | 1.1 KB |
-| 359 | electronics/electric_power | ✓ | 75µs | 1.5 KB |
-| 360 | electronics/electrical_impedance | ✓ | 79µs | 888 B |
-| 361 | electronics/ic_555_timer | ✓ | 59µs | 120 B |
-| 362 | electronics/ind_reactance | ✓ | 86µs | 856 B |
-| 363 | electronics/ohms_law | ✓ | 125µs | 936 B |
-| 364 | electronics/real_and_reactive_power | ✓ | 79µs | 864 B |
-| 365 | electronics/resistor_color_code | ✓ | 8µs | 3.3 KB |
-| 366 | electronics/resistor_equivalence | ✓ | 86µs | 1.0 KB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 248µs | 1.0 KB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 273µs | 1.1 KB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 463µs | 904 B |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 3µs | 136 B |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 1.307ms | 944 B |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 282µs | 992 B |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 583µs | 1000 B |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 3µs | 88 B |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 368µs | 1.2 KB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 186µs | 848 B |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 178µs | 848 B |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 210µs | 904 B |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 1.454ms | 6.3 KB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 584µs | 2.1 KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 191µs | 1.6 KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 4.373ms | 2.1 KB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 174µs | 848 B |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 343µs | 992 B |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 291µs | 944 B |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 557µs | 1.0 KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 729µs | 2.6 KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 460µs | 856 B |
+| 339 | dynamic_programming/range_sum_query | ✓ | 357µs | 1.9 KB |
+| 340 | dynamic_programming/regex_match | ✓ | 486µs | 1.2 KB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 197µs | 1.2 KB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 235µs | 3.2 KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 501µs | 968 B |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 453µs | 960 B |
+| 345 | dynamic_programming/trapped_water | ✓ | 322µs | 1008 B |
+| 346 | dynamic_programming/tribonacci | ✓ | 323µs | 808 B |
+| 347 | dynamic_programming/viterbi | ✓ | 77µs | 3.1 KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 410µs | 1.1 KB |
+| 349 | dynamic_programming/word_break | ✓ | 299µs | 936 B |
+| 350 | electronics/apparent_power | ✓ | 5µs | 288 B |
+| 351 | electronics/builtin_voltage | ✓ | 153µs | 960 B |
+| 352 | electronics/capacitor_equivalence | ✓ | 207µs | 1.0 KB |
+| 353 | electronics/carrier_concentration | ✓ | 138µs | 1.1 KB |
+| 354 | electronics/charging_capacitor | ✓ | 132µs | 928 B |
+| 355 | electronics/charging_inductor | ✓ | 242µs | 1.5 KB |
+| 356 | electronics/circular_convolution | ✓ | 453µs | 1.8 KB |
+| 357 | electronics/coulombs_law | ✓ | 166µs | 960 B |
+| 358 | electronics/electric_conductivity | ✓ | 132µs | 1.1 KB |
+| 359 | electronics/electric_power | ✓ | 137µs | 1.5 KB |
+| 360 | electronics/electrical_impedance | ✓ | 153µs | 888 B |
+| 361 | electronics/ic_555_timer | ✓ | 144µs | 120 B |
+| 362 | electronics/ind_reactance | ✓ | 146µs | 856 B |
+| 363 | electronics/ohms_law | ✓ | 314µs | 936 B |
+| 364 | electronics/real_and_reactive_power | ✓ | 141µs | 864 B |
+| 365 | electronics/resistor_color_code | ✓ | 10µs | 3.9 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 156µs | 1.0 KB |
 | 367 | electronics/resonant_frequency | ✓ | 55µs | 184 B |
 | 368 | electronics/wheatstone_bridge | ✓ | 66µs | 80 B |
 | 369 | file_transfer/receive_file | ✓ | 35µs | 912 B |

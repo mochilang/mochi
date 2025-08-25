@@ -27,73 +27,101 @@ end
 return os.time() * 1000000000 + math.floor(os.clock() * 1000000000)
 end
 
-local function _len(v)
-if type(v) == 'table' and v.items ~= nil then
-  return #v.items
-elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then
-    local c = 0
-    for k in pairs(v) do
-      if k ~= '__name' and k ~= '__order' then
-        c = c + 1
+local function _panic(msg)
+-- ensure panic messages are newline-terminated for readability
+if type(msg) == 'table' then
+  io.stderr:write(_str(msg) .. '\n')
+else
+  io.stderr:write(tostring(msg) .. '\n')
+end
+io.stderr:flush()
+os.exit(1)
+end
+
+local function _str(v)
+if type(v) == 'number' then
+  local s = tostring(v)
+  s = string.gsub(s, '%.0+$', '')
+  return s
+elseif type(v) == 'boolean' then
+    if v then return 'true' else return 'false' end
+  elseif type(v) == 'table' then
+      local src = v
+      if v.items ~= nil then
+        src = v.items
       end
+      local parts = {}
+      for i = 1, #src do
+        parts[#parts+1] = _str(src[i])
+      end
+      return '[' .. table.concat(parts, ', ') .. ']'
     end
-    return c
-  elseif type(v) == 'string' then
-      local l = utf8.len(v)
-      if l then return l end
-      return #v
-    elseif type(v) == 'table' then
-        return #v
-      else
-        return 0
+    return tostring(v)
+  end
+  do
+    collectgarbage()
+    local _bench_start_mem = collectgarbage('count') * 1024
+    local _bench_start = os.clock()
+    function abs(x)
+      if (x < 0.0) then
+        return (-x)
       end
+      return x
     end
-    
-    local function _str(v)
-    if type(v) == 'number' then
-      local s = tostring(v)
-      s = string.gsub(s, '%.0+$', '')
-      return s
-    elseif type(v) == 'boolean' then
-        if v then return 'true' else return 'false' end
-      elseif type(v) == 'table' then
-          local src = v
-          if v.items ~= nil then
-            src = v.items
-          end
-          local parts = {}
-          for i = 1, #src do
-            parts[#parts+1] = _str(src[i])
-          end
-          return '[' .. table.concat(parts, ', ') .. ']'
-        end
-        return tostring(v)
+    function sqrtApprox(x)
+      if (x <= 0.0) then
+        return 0.0
       end
-      do
-        collectgarbage()
-        local _bench_start_mem = collectgarbage('count') * 1024
-        local _bench_start = os.clock()
-        function maximum_non_adjacent_sum(nums)
-          if (_len(nums) == 0) then
-            return 0
-          end
-          local max_including = nums[0 + 1]
-          local max_excluding = 0
-          local i = 1
-          while (i < _len(nums)) do
-            local num = nums[i + 1]
-            local new_including = (max_excluding + num)
-            local new_excluding = (((max_including > max_excluding)) and (max_including) or (max_excluding))
-            max_including = new_including
-            max_excluding = new_excluding
-            i = (i + 1)
-          end
-          if (max_including > max_excluding) then
-            return max_including
-          end
-          return max_excluding
-        end
-        print((((type(_str(maximum_non_adjacent_sum({1, 2, 3}))) == "table")) and (
+      local guess = x
+      local i = 0
+      while (i < 20) do
+        guess = ((guess + (x / guess)) / 2.0)
+        i = (i + 1)
+      end
+      return guess
+    end
+    function coulombs_law(force, charge1, charge2, distance)
+      local charge_product = abs((charge1 * charge2))
+      local zero_count = 0
+      if (force == 0.0) then
+        zero_count = (zero_count + 1)
+      end
+      if (charge1 == 0.0) then
+        zero_count = (zero_count + 1)
+      end
+      if (charge2 == 0.0) then
+        zero_count = (zero_count + 1)
+      end
+      if (distance == 0.0) then
+        zero_count = (zero_count + 1)
+      end
+      if (zero_count ~= 1) then
+        _panic("One and only one argument must be 0")
+      end
+      if (distance < 0.0) then
+        _panic("Distance cannot be negative")
+      end
+      if (force == 0.0) then
+        local f = ((COULOMBS_CONSTANT * charge_product) / (distance * distance))
+        return {__name = "GenType1", __order = {"force"}, force = f}
+      end
+      if (charge1 == 0.0) then
+        local c1 = ((abs(force) * (distance * distance)) / (COULOMBS_CONSTANT * charge2))
+        return {__name = "GenType2", __order = {"charge1"}, charge1 = c1}
+      end
+      if (charge2 == 0.0) then
+        local c2 = ((abs(force) * (distance * distance)) / (COULOMBS_CONSTANT * charge1))
+        return {__name = "GenType3", __order = {"charge2"}, charge2 = c2}
+      end
+      local d = sqrtApprox(((COULOMBS_CONSTANT * charge_product) / abs(force)))
+      return {__name = "GenType4", __order = {"distance"}, distance = d}
+    end
+    function print_map(m)
+      local _k0 = {}
+      for k in pairs(m) do if k ~= '__name' and k ~= '__order' then table.insert(_k0, k) end end
+      table.sort(_k0, function(a,b) return a<b end)
+      for _, k in ipairs(_k0) do
+        print((((type((((("{\"" .. tostring(k)) .. "\": ") ..
         (function(v)
         local function encode(x)
         if type(x) == "table" then
@@ -147,8 +175,7 @@ elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then
               end
             end
             return encode(v)
-          end)(_str(maximum_non_adjacent_sum({1, 2, 3})))) or (_str(maximum_non_adjacent_sum({1, 2, 3})))))
-          print((((type(_str(maximum_non_adjacent_sum({1, 5, 3, 7, 2, 2, 6}))) == "table")) and (
+          end)(m[k])) .. "}")) == "table")) and (
           (function(v)
           local function encode(x)
           if type(x) == "table" then
@@ -202,8 +229,7 @@ elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then
                 end
               end
               return encode(v)
-            end)(_str(maximum_non_adjacent_sum({1, 5, 3, 7, 2, 2, 6})))) or (_str(maximum_non_adjacent_sum({1, 5, 3, 7, 2, 2, 6})))))
-            print((((type(_str(maximum_non_adjacent_sum({(-1), (-5), (-3), (-7), (-2), (-2), (-6)}))) == "table")) and (
+            end)((((("{\"" .. tostring(k)) .. "\": ") ..
             (function(v)
             local function encode(x)
             if type(x) == "table" then
@@ -257,8 +283,7 @@ elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then
                   end
                 end
                 return encode(v)
-              end)(_str(maximum_non_adjacent_sum({(-1), (-5), (-3), (-7), (-2), (-2), (-6)})))) or (_str(maximum_non_adjacent_sum({(-1), (-5), (-3), (-7), (-2), (-2), (-6)})))))
-              print((((type(_str(maximum_non_adjacent_sum({499, 500, (-3), (-7), (-2), (-2), (-6)}))) == "table")) and (
+              end)(m[k])) .. "}"))) or ((((("{\"" .. tostring(k)) .. "\": ") ..
               (function(v)
               local function encode(x)
               if type(x) == "table" then
@@ -312,11 +337,17 @@ elseif type(v) == 'table' and (v[1] == nil or v[0] ~= nil) then
                     end
                   end
                   return encode(v)
-                end)(_str(maximum_non_adjacent_sum({499, 500, (-3), (-7), (-2), (-2), (-6)})))) or (_str(maximum_non_adjacent_sum({499, 500, (-3), (-7), (-2), (-2), (-6)})))))
-                local _bench_end = os.clock()
-                collectgarbage()
-                local _bench_end_mem = collectgarbage('count') * 1024
-                local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
-                local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
-                print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
-              end;
+                end)(m[k])) .. "}"))))
+              end
+            end
+            COULOMBS_CONSTANT = 8.988e+09
+            print_map(coulombs_law(0.0, 3.0, 5.0, 2000.0))
+            print_map(coulombs_law(10.0, 3.0, 5.0, 0.0))
+            print_map(coulombs_law(10.0, 0.0, 5.0, 2000.0))
+            local _bench_end = os.clock()
+            collectgarbage()
+            local _bench_end_mem = collectgarbage('count') * 1024
+            local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
+            local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
+            print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
+          end;
