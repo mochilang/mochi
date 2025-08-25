@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (45/50) - Last updated 2025-08-25 22:56 +0700:
+Checklist of programs that currently transpile and run (46/50) - Last updated 2025-08-26 01:00 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 719 | networking_flow/ford_fulkerson | ✓ | 506us | 1.5 MB |
@@ -24,7 +24,7 @@ Checklist of programs that currently transpile and run (45/50) - Last updated 20
 | 735 | neural_network/simple_neural_network | ✓ | 122.60ms | 1.6 MB |
 | 736 | neural_network/two_hidden_layers_neural_network |  |  |  |
 | 737 | other/activity_selection | ✓ | 778us | 1.6 MB |
-| 738 | other/alternative_list_arrange |  |  |  |
+| 738 | other/alternative_list_arrange | ✓ | 994us | 1.5 MB |
 | 739 | other/bankers_algorithm | ✓ | 431us | 1.4 MB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 803us | 1.5 MB |
 | 741 | other/doomsday | ✓ | 234us | 1.4 MB |
