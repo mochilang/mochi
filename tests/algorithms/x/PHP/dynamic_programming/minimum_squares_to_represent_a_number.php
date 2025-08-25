@@ -1,8 +1,13 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 function make_list($len, $value) {
   $arr = [];
@@ -22,7 +27,7 @@ function int_sqrt($n) {
 }
 function minimum_squares_to_represent_a_number($number) {
   if ($number < 0) {
-  $panic('the value of input must not be a negative number');
+  _panic('the value of input must not be a negative number');
 }
   if ($number == 0) {
   return 1;

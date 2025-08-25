@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _str($x) {
     if (is_array($x)) {
@@ -74,7 +75,7 @@ function longest_common_subsequence($x, $y) {
 };
 }
 };
-  return ['length' => $dp[$m][$n], 'sequence' => $seq];
+  return ['length' => $dp[$m][$n], 'sequence' => &$seq];
 }
 $a = 'AGGTAB';
 $b = 'GXTXAYB';

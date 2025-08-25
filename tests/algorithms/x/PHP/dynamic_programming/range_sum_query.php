@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _str($x) {
     if (is_array($x)) {
@@ -21,7 +22,7 @@ function _append($arr, $x) {
     return $arr;
 }
 function prefix_sum($arr, $queries) {
-  global $arr1, $queries1, $arr2, $queries2;
+  global $arr1, $arr2, $queries1, $queries2;
   $dp = [];
   $i = 0;
   while ($i < count($arr)) {

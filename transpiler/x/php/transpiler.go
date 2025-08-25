@@ -1175,6 +1175,19 @@ func markRefParams(body []Stmt, params []string) []bool {
 			if ex.End != nil {
 				walkExpr(ex.End)
 			}
+		case *MapLit:
+			for _, it := range ex.Items {
+				if name := rootVar(it.Value); name != "" {
+					if k, ok := it.Key.(*StringLit); ok && k.Value == name {
+						if idxPos, ok := idx[name]; ok {
+							if _, ok := ret[name]; !ok {
+								ref[idxPos] = true
+							}
+						}
+					}
+				}
+				walkExpr(it.Value)
+			}
 		case *IndexAssignStmt:
 			// handled in walkStmt
 		}
@@ -2488,7 +2501,11 @@ func (m *MapLit) emit(w io.Writer) {
 			it.Key.emit(w)
 		}
 		fmt.Fprint(w, " => ")
-		it.Value.emit(w)
+		if v, ok := it.Value.(*Var); ok {
+			fmt.Fprintf(w, "&$%s", sanitizeVarName(v.Name))
+		} else {
+			it.Value.emit(w)
+		}
 	}
 	fmt.Fprint(w, "]")
 }

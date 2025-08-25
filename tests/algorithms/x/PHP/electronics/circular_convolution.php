@@ -1,20 +1,6 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -35,17 +21,15 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function mochi_floor($x) {
+function mochi_floor($x) {
   global $example1, $example2, $example3, $example4;
   $i = intval($x);
   if ((floatval($i)) > $x) {
   $i = $i - 1;
 }
   return floatval($i);
-};
-  function pow10($n) {
+}
+function pow10($n) {
   global $example1, $example2, $example3, $example4;
   $p = 1.0;
   $i = 0;
@@ -54,21 +38,21 @@ $__start = _now();
   $i = $i + 1;
 };
   return $p;
-};
-  function roundn($x, $n) {
+}
+function roundn($x, $n) {
   global $example1, $example2, $example3, $example4;
   $m = pow10($n);
   return mochi_floor($x * $m + 0.5) / $m;
-};
-  function pad($signal, $target) {
+}
+function pad($signal, $target) {
   global $example1, $example2, $example3, $example4;
   $s = $signal;
   while (count($s) < $target) {
   $s = _append($s, 0.0);
 };
   return $s;
-};
-  function circular_convolution($a, $b) {
+}
+function circular_convolution($a, $b) {
   global $example1, $example2, $example3, $example4;
   $n1 = count($a);
   $n2 = count($b);
@@ -90,20 +74,12 @@ $__start = _now();
   $i = $i + 1;
 };
   return $res;
-};
-  $example1 = circular_convolution([2.0, 1.0, 2.0, -1.0], [1.0, 2.0, 3.0, 4.0]);
-  echo rtrim(_str($example1)), PHP_EOL;
-  $example2 = circular_convolution([0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6], [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5]);
-  echo rtrim(_str($example2)), PHP_EOL;
-  $example3 = circular_convolution([-1.0, 1.0, 2.0, -2.0], [0.5, 1.0, -1.0, 2.0, 0.75]);
-  echo rtrim(_str($example3)), PHP_EOL;
-  $example4 = circular_convolution([1.0, -1.0, 2.0, 3.0, -1.0], [1.0, 2.0, 3.0]);
-  echo rtrim(_str($example4)), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$example1 = circular_convolution([2.0, 1.0, 2.0, -1.0], [1.0, 2.0, 3.0, 4.0]);
+echo rtrim(_str($example1)), PHP_EOL;
+$example2 = circular_convolution([0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6], [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5]);
+echo rtrim(_str($example2)), PHP_EOL;
+$example3 = circular_convolution([-1.0, 1.0, 2.0, -2.0], [0.5, 1.0, -1.0, 2.0, 0.75]);
+echo rtrim(_str($example3)), PHP_EOL;
+$example4 = circular_convolution([1.0, -1.0, 2.0, 3.0, -1.0], [1.0, 2.0, 3.0]);
+echo rtrim(_str($example4)), PHP_EOL;

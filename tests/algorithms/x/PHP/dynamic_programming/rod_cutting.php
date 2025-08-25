@@ -1,15 +1,20 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 function enforce_args($n, $prices) {
   if ($n < 0) {
-  $panic('n must be non-negative');
+  _panic('n must be non-negative');
 }
   if ($n > count($prices)) {
-  $panic('price list is shorter than n');
+  _panic('price list is shorter than n');
 }
 }
 function bottom_up_cut_rod($n, $prices) {
