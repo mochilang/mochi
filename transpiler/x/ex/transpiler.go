@@ -159,7 +159,7 @@ func uniqueWhileName() string {
 // counter that is typically not used after the loop ends.
 func isLoopCounter(name string) bool {
 	switch name {
-	case "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "idx", "term", "chk_map":
+    case "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "idx", "term", "chk_map":
 		// treat common loop variables and temporary maps as throwaway
 		// values to avoid unused variable warnings
 		return true
