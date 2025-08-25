@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-25 00:11 GMT+7
+Last updated: 2025-08-25 08:46 GMT+7
 
-## Algorithms Golden Test Checklist (1043/1077)
+## Algorithms Golden Test Checklist (1042/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -323,52 +323,52 @@ Last updated: 2025-08-25 00:11 GMT+7
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 4.0ms | 21.18KB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 6.0ms | 25.69KB |
 | 316 | dynamic_programming/knapsack | ✓ | 1.0µs | 49.98KB |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 3.0ms | 18.98KB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 2.0ms | 26.77KB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 3.0ms | 39.59KB |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 1.0µs | 43.91KB |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 3.0ms | 39.66KB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 3.0ms | 21.16KB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 3.0ms | 41.45KB |
-| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 1.0µs | 43.89KB |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 3.0ms | 31.17KB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 7.0ms | 17.03KB |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 3.0ms | 16.55KB |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 3.0ms | 15.04KB |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 4.0ms | 66.13KB |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 3.0ms | 68.38KB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 3.0ms | 16.93KB |
-| 332 | dynamic_programming/minimum_partition | ✓ | 3.0ms | 171.97KB |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 2.0ms | 17.01KB |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 3.0ms | 25.28KB |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 3.0ms | 21.23KB |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 3.0ms | 34.71KB |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 4.0ms | 35.09KB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 3.0ms | 46.84KB |
-| 339 | dynamic_programming/range_sum_query | ✓ | 3.0ms | 19.46KB |
-| 340 | dynamic_programming/regex_match | ✓ | 3.0ms | 28.04KB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 3.0ms | 18.62KB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 1.0ms | 29.84KB |
-| 343 | dynamic_programming/subset_generation | ✓ | 3.0ms | 24.37KB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 3.0ms | 23.80KB |
-| 345 | dynamic_programming/trapped_water | ✓ | 1.0µs | 28.34KB |
-| 346 | dynamic_programming/tribonacci | ✓ | 1.0µs | 19.51KB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 1.0µs | 22.37KB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 1.0µs | 17.06KB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 1.0µs | 89.23KB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 1.0µs | 24B |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 1.0µs | 72.10KB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 1.0µs | 33.73KB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 1.0µs | 87.19KB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 1.0µs | 24B |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 1.0µs | 59.50KB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 1.0µs | 17.63KB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 1.0µs | 17.20KB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 1.0µs | 14.78KB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 1.0µs | 140.84KB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 1.0µs | 355.74KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 1.0µs | 17.04KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 1.0µs | 396.39KB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 1.0µs | 17.60KB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 1.0µs | 60.62KB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 1.0µs | 35.76KB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 1.0µs | 108.57KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 1.0µs | 66.55KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 1.0µs | 82.54KB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 1.0µs | 23.26KB |
+| 340 | dynamic_programming/regex_match | ✓ | 1.0µs | 39.87KB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 1.0µs | 24.32KB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 1.0µs | 11.37KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 1.0µs | 33.69KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 1.0µs | 36.74KB |
+| 345 | dynamic_programming/trapped_water | ✓ | 1.0µs | 34.37KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 1.0µs | 21.20KB |
 | 347 | dynamic_programming/viterbi | ✓ | 1.0µs | 13.09KB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 1.0µs | 53.75KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 1.0µs | 53.77KB |
 | 349 | dynamic_programming/word_break | ✓ | 1.0µs | 21.30KB |
 | 350 | electronics/apparent_power | ✓ | 1.0µs | 24B |
-| 351 | electronics/builtin_voltage | ✓ | 1.0µs | 13.57KB |
+| 351 | electronics/builtin_voltage | ✓ | 1.0µs | 13.56KB |
 | 352 | electronics/capacitor_equivalence | ✓ | 1.0µs | 13.85KB |
-| 353 | electronics/carrier_concentration | ✓ | 1.0µs | 13.88KB |
-| 354 | electronics/charging_capacitor | ✓ | 1.0µs | 13.97KB |
-| 355 | electronics/charging_inductor | ✓ | 1.0µs | 13.91KB |
-| 356 | electronics/circular_convolution | ✓ | 1.0µs | 22.98KB |
+| 353 | electronics/carrier_concentration | ✓ | 1.0µs | 13.82KB |
+| 354 | electronics/charging_capacitor | ✓ | 1.0µs | 13.71KB |
+| 355 | electronics/charging_inductor | ✓ | 1.0µs | 13.65KB |
+| 356 | electronics/circular_convolution | ✓ | 1.0µs | 15.88KB |
 | 357 | electronics/coulombs_law | ✓ | 1.0µs | 14.84KB |
 | 358 | electronics/electric_conductivity | ✓ | 1.0µs | 13.98KB |
-| 359 | electronics/electric_power | ✓ | 1.0µs | 1.51MB |
-| 360 | electronics/electrical_impedance | ✓ | 1.0µs | 15.55KB |
-| 361 | electronics/ic_555_timer | ✓ | 1.0µs | 13.91KB |
-| 362 | electronics/ind_reactance | ✓ | 1.0µs | 15.87KB |
+| 359 | electronics/electric_power | ✓ | 1.0µs | 6.27KB |
+| 360 | electronics/electrical_impedance | ✓ | 1.0µs | 15.29KB |
+| 361 | electronics/ic_555_timer | ✓ | 1.0µs | 13.65KB |
+| 362 | electronics/ind_reactance | ✓ | 1.0µs | 15.61KB |
 | 363 | electronics/ohms_law | ✓ | 1.0µs | 104.58KB |
 | 364 | electronics/real_and_reactive_power | ✓ | 1.0µs | 13.84KB |
 | 365 | electronics/resistor_color_code | ✓ | 1.0µs | 24B |
