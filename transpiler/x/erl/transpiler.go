@@ -4608,7 +4608,11 @@ func convertUpdateStmt(us *parser.UpdateStmt, env *types.Env, ctx *context) (*Up
 
 func convertExpr(e *parser.Expr, env *types.Env, ctx *context) (Expr, error) {
 	if e == nil {
-		return nil, fmt.Errorf("nil expr")
+		// Some AST nodes may omit an expression when representing a
+		// "nil" value (for example, empty branches in pattern matches).
+		// Treat such cases as the Erlang nil atom so the transpiler can
+		// proceed instead of erroring out.
+		return &NameRef{Name: "nil"}, nil
 	}
 	return convertBinary(e.Binary, env, ctx)
 }
@@ -4841,6 +4845,20 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			}
 			useToInt = true
 			return &CallExpr{Func: "mochi_to_int", Args: []Expr{arg}}, nil
+		}
+		if name == "join" && len(pf.Target.Selector.Tail) == 0 {
+			if len(pf.Ops[0].Call.Args) != 2 {
+				return nil, fmt.Errorf("join expects 2 args")
+			}
+			a0, err := convertExpr(pf.Ops[0].Call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			a1, err := convertExpr(pf.Ops[0].Call.Args[1], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "string:join", Args: []Expr{a0, a1}}, nil
 		}
 		if mod, ok := ctx.autoModule(name); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 {
 			f := pf.Target.Selector.Tail[0]

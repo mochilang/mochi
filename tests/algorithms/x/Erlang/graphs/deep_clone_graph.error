@@ -1,8 +1,6 @@
-parse: error[P001]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:33:9: unexpected token "var" (expected "}")
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:33:9
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/deep_clone_graph.erl:125:9: variable 'Join' is unbound
+%  125|         Join(Lines, "\n")
+%     |         ^
 
- 33 |         var result: Node = Nil
-    |         ^
-
-help:
-  Check for a missing `{` or `}` to close the block.
+escript: There were compilation errors.
