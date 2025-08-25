@@ -1,2 +1,5 @@
-{degrees => 90.0} 
-                   length => 5.0 next => -1}]}}
+{
+  "duration_us": 571223,
+  "memory_bytes": 160432,
+  "name": "main"
+}
