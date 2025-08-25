@@ -107,7 +107,7 @@ $__start = _now();
   $graph = [[0, 16, 13, 0, 0, 0], [0, 0, 10, 12, 0, 0], [0, 4, 0, 0, 14, 0], [0, 0, 9, 0, 0, 20], [0, 0, 0, 7, 0, 4], [0, 0, 0, 0, 0, 0]];
   echo rtrim(_str(ford_fulkerson($graph, 0, 5))), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
