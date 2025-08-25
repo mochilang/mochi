@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 961/1077
-Last updated: 2025-08-24 23:57 +0700
+Completed programs: 962/1077
+Last updated: 2025-08-25 16:44 +0700
 
 Checklist:
 
@@ -386,7 +386,7 @@ Checklist:
 | 377 | financial/simple_moving_average | ✓ | 183.317ms | 8.7 MB |
 | 378 | financial/straight_line_depreciation | ✓ | 183.317ms | 8.8 MB |
 | 379 | financial/time_and_half_pay | ✓ | 183.317ms | 8.7 MB |
-| 380 | fractals/julia_sets | ✓ | 183.317ms | 8.7 MB |
+| 380 | fractals/julia_sets | error | 183.317ms | 8.7 MB |
 | 381 | fractals/koch_snowflake | ✓ | 183.317ms | 8.7 MB |
 | 382 | fractals/mandelbrot | ✓ | 183.317ms | 8.7 MB |
 | 383 | fractals/sierpinski_triangle | ✓ | 183.317ms | 8.7 MB |
@@ -1074,8 +1074,8 @@ Checklist:
 | 1065 | web_programming/giphy |   |  |  |
 | 1066 | web_programming/instagram_crawler |   |  |  |
 | 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video |   |  |  |
-| 1069 | web_programming/nasa_data |   |  |  |
+| 1068 | web_programming/instagram_video | ✓ | 183.317ms | 8.7 MB |
+| 1069 | web_programming/nasa_data | ✓ | 183.317ms | 8.8 MB |
 | 1070 | web_programming/open_google_results |   |  |  |
 | 1071 | web_programming/random_anime_character |   |  |  |
 | 1072 | web_programming/recaptcha_verification |   |  |  |

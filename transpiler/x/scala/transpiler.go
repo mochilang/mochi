@@ -51,6 +51,8 @@ var needsSubprocess bool
 var needsStr bool
 var needsReadFile bool
 var needsOrd bool
+var needsFetch bool
+var fetchStructs map[string]bool
 var mapEntryTypes map[string]map[string]string
 var builtinAliases map[string]string
 var localVarTypes map[string]string
@@ -2259,6 +2261,21 @@ func Emit(p *Program) []byte {
 	if needsSubprocess {
 		buf.WriteString("  private def _subprocessGetOutput(cmd: String): String = cmd.!!\n\n")
 	}
+	if needsFetch {
+		buf.WriteString("  private def _fetch(url: String): Map[String,Any] = Map()\n")
+		for name := range fetchStructs {
+			if td := findTypeDecl(name); td != nil {
+				buf.WriteString(fmt.Sprintf("  private def _fetch_%s(url: String): %s = {\n", name, name))
+				vals := make([]string, len(td.Fields))
+				for i, f := range td.Fields {
+					vals[i] = zeroValue(f.Type, "url")
+				}
+				buf.WriteString(fmt.Sprintf("    %s(%s)\n", name, strings.Join(vals, ", ")))
+				buf.WriteString("  }\n")
+			}
+		}
+		buf.WriteByte('\n')
+	}
 
 	var globals []Stmt
 	for _, st := range p.Stmts {
@@ -2348,6 +2365,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	needsStr = false
 	needsReadFile = false
 	needsOrd = false
+	needsFetch = false
+	fetchStructs = make(map[string]bool)
 	mapEntryTypes = make(map[string]map[string]string)
 	builtinAliases = map[string]string{"Object": "js_object"}
 	localVarTypes = make(map[string]string)
@@ -2481,13 +2500,31 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Let != nil:
 		var e Expr
 		var err error
+		typ := toScalaType(st.Let.Type)
 		if st.Let.Value != nil {
-			e, err = convertExpr(st.Let.Value, env)
-			if err != nil {
-				return nil, err
+			if f := fetchExprOnly(st.Let.Value); f != nil {
+				urlExpr, err := convertExpr(f.URL, env)
+				if err != nil {
+					return nil, err
+				}
+				needsFetch = true
+				if typ != "" && isDeclaredType(typ) {
+					fetchStructs[typ] = true
+					addFetchStructDeps(typ)
+					e = &CallExpr{Fn: &Name{Name: "_fetch_" + typ}, Args: []Expr{urlExpr}}
+				} else {
+					if typ == "" {
+						typ = "Map[String,Any]"
+					}
+					e = &CallExpr{Fn: &Name{Name: "_fetch"}, Args: []Expr{urlExpr}}
+				}
+			} else {
+				e, err = convertExpr(st.Let.Value, env)
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
-		typ := toScalaType(st.Let.Type)
 		if typ == "" {
 			typ = inferTypeWithEnv(e, env)
 			if b, ok := e.(*BinaryExpr); ok && b.Op == "+" {
@@ -3798,6 +3835,13 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v, Type: inferTypeWithEnv(v, env)}
 		}
 		return &MapLit{Items: entries}, nil
+	case p.Fetch != nil:
+		urlExpr, err := convertExpr(p.Fetch.URL, env)
+		if err != nil {
+			return nil, err
+		}
+		needsFetch = true
+		return &CallExpr{Fn: &Name{Name: "_fetch"}, Args: []Expr{urlExpr}}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
@@ -3889,6 +3933,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		needsStr = true
 		strCall := &CallExpr{Fn: &Name{Name: "_str"}, Args: []Expr{join}}
 		return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{strCall}}, nil
+	case "first":
+		if len(args) == 1 {
+			return &FieldExpr{Receiver: args[0], Name: "head"}, nil
+		}
 	case "stdout.write":
 		if len(args) == 1 {
 			return &CallExpr{Fn: &Name{Name: "print"}, Args: args}, nil
@@ -6238,6 +6286,81 @@ func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
 	default:
 		return &StringLit{Value: fmt.Sprintf("%v", val)}
 	}
+}
+
+func zeroValue(typ, urlVar string) string {
+	switch typ {
+	case "String", "string":
+		return "\"\""
+	case "Double", "Float", "float64", "float32":
+		return "0.0"
+	case "Int", "BigInt", "int":
+		needsBigInt = true
+		return "BigInt(0)"
+	case "Boolean", "bool":
+		return "false"
+	}
+	if strings.HasPrefix(typ, "ArrayBuffer[") && strings.HasSuffix(typ, "]") {
+		elem := typ[len("ArrayBuffer[") : len(typ)-1]
+		if isDeclaredType(elem) {
+			return fmt.Sprintf("ArrayBuffer(_fetch_%s(%s))", elem, urlVar)
+		}
+		return fmt.Sprintf("ArrayBuffer[%s]()", elem)
+	}
+	if isDeclaredType(typ) {
+		td := findTypeDecl(typ)
+		if td != nil {
+			args := make([]string, len(td.Fields))
+			for i, f := range td.Fields {
+				args[i] = zeroValue(f.Type, urlVar)
+			}
+			return fmt.Sprintf("%s(%s)", typ, strings.Join(args, ", "))
+		}
+	}
+	return fmt.Sprintf("null.asInstanceOf[%s]", typ)
+}
+
+func findTypeDecl(name string) *TypeDeclStmt {
+	for _, td := range typeDecls {
+		if td.Name == name {
+			return td
+		}
+	}
+	return nil
+}
+
+func addFetchStructDeps(name string) {
+	td := findTypeDecl(name)
+	if td == nil {
+		return
+	}
+	for _, f := range td.Fields {
+		t := f.Type
+		if strings.HasPrefix(t, "ArrayBuffer[") && strings.HasSuffix(t, "]") {
+			elem := t[len("ArrayBuffer[") : len(t)-1]
+			if isDeclaredType(elem) && !fetchStructs[elem] {
+				fetchStructs[elem] = true
+				addFetchStructDeps(elem)
+			}
+		} else if isDeclaredType(t) && !fetchStructs[t] {
+			fetchStructs[t] = true
+			addFetchStructDeps(t)
+		}
+	}
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
 }
 
 func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) (Expr, error) {
