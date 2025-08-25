@@ -6265,6 +6265,20 @@ func (p *Program) Emit() []byte {
 	if len(needListAppendStruct) > 0 {
 		for typ := range needListAppendStruct {
 			name := sanitizeTypeName(typ)
+			if typ == "MapSI" {
+				fmt.Fprintf(&buf, "static %s* list_append_%s(%s *arr, size_t *len, %s val) {\n", typ, name, typ, typ)
+				fmt.Fprintf(&buf, "    arr = realloc(arr, (*len + 1) * sizeof(%s));\n", typ)
+				buf.WriteString("    arr[*len].keys = malloc(val.cap * sizeof(char*));\n")
+				buf.WriteString("    arr[*len].vals = malloc(val.cap * sizeof(int));\n")
+				buf.WriteString("    memcpy(arr[*len].keys, val.keys, val.len * sizeof(char*));\n")
+				buf.WriteString("    memcpy(arr[*len].vals, val.vals, val.len * sizeof(int));\n")
+				buf.WriteString("    arr[*len].len = val.len;\n")
+				buf.WriteString("    arr[*len].cap = val.cap;\n")
+				buf.WriteString("    (*len)++;\n")
+				buf.WriteString("    return arr;\n")
+				buf.WriteString("}\n\n")
+				continue
+			}
 			fmt.Fprintf(&buf, "static %s* list_append_%s(%s *arr, size_t *len, %s val) {\n", typ, name, typ, typ)
 			fmt.Fprintf(&buf, "    arr = realloc(arr, (*len + 1) * sizeof(%s));\n", typ)
 			buf.WriteString("    arr[*len] = val;\n")
@@ -8054,6 +8068,115 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						}
 					}
 				}
+			}
+		}
+		if len(idxs) == 2 && len(fields) == 0 {
+			target := &IndexExpr{Target: &VarRef{Name: s.Assign.Name}, Index: idxs[0]}
+			t := inferExprType(env, target)
+			switch t {
+			case "MapSI":
+				needMapSetSI = true
+				return &CallStmt{Func: "map_set_si", Args: []Expr{
+					&UnaryExpr{Op: "&", Expr: target},
+					idxs[1],
+					valExpr,
+				}}, nil
+			case "MapII":
+				needMapSetII = true
+				return &CallStmt{Func: "map_set_ii", Args: []Expr{
+					&UnaryExpr{Op: "&", Expr: target},
+					idxs[1],
+					valExpr,
+				}}, nil
+			case "MapIS":
+				needMapSetIS = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_is(&")
+				target.emitExpr(&buf)
+				buf.WriteString(", ")
+				idxs[1].emitExpr(&buf)
+				buf.WriteString(", ")
+				emitMapStringValue(&buf, valExpr)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			case "MapSS":
+				needMapSetSS = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_ss(&")
+				target.emitExpr(&buf)
+				buf.WriteString(", ")
+				idxs[1].emitExpr(&buf)
+				buf.WriteString(", ")
+				emitMapStringValue(&buf, valExpr)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			case "MapSD":
+				needMapSetSD = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_sd(")
+				target.emitExpr(&buf)
+				buf.WriteString(".keys, ")
+				target.emitExpr(&buf)
+				buf.WriteString(".vals, &")
+				target.emitExpr(&buf)
+				buf.WriteString(".len, ")
+				idxs[1].emitExpr(&buf)
+				buf.WriteString(", ")
+				valExpr.emitExpr(&buf)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			case "MapSL":
+				needMapSetSL = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_sl(")
+				target.emitExpr(&buf)
+				buf.WriteString(".keys, ")
+				target.emitExpr(&buf)
+				buf.WriteString(".vals, ")
+				target.emitExpr(&buf)
+				buf.WriteString(".lens, &")
+				target.emitExpr(&buf)
+				buf.WriteString(".len, ")
+				idxs[1].emitExpr(&buf)
+				buf.WriteString(", ")
+				valExpr.emitExpr(&buf)
+				buf.WriteString(", ")
+				emitLenExpr(&buf, valExpr)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			case "MapIL":
+				needMapSetIL = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_il(")
+				buf.WriteString("&")
+				target.emitExpr(&buf)
+				buf.WriteString(".keys, &")
+				target.emitExpr(&buf)
+				buf.WriteString(".vals, &")
+				target.emitExpr(&buf)
+				buf.WriteString(".lens, &")
+				target.emitExpr(&buf)
+				buf.WriteString(".len, &")
+				target.emitExpr(&buf)
+				buf.WriteString(".cap, ")
+				idxs[1].emitExpr(&buf)
+				buf.WriteString(", ")
+				valExpr.emitExpr(&buf)
+				buf.WriteString(", ")
+				emitLenExpr(&buf, valExpr)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			case "MapSMI":
+				needMapSetSMI = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_smi(&")
+				target.emitExpr(&buf)
+				buf.WriteString(", ")
+				idxs[1].emitExpr(&buf)
+				buf.WriteString(", ")
+				valExpr.emitExpr(&buf)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
 			}
 		}
 		if isMapVar(s.Assign.Name) && len(idxs) == 1 && len(fields) == 0 {

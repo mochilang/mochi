@@ -1,5 +1,5 @@
-## Progress (2025-08-24 08:57 +0700)
-- Commit de6dccc34a: cpp: use big integers for default int
+## Progress (2025-08-25 07:29 +0700)
+- Commit 9b4b0a6aed: c transpiler: handle pointer field access
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
