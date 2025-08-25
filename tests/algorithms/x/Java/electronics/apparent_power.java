@@ -1,102 +1,71 @@
 public class Main {
-    static double PI;
+    static double PI = (double)(3.141592653589793);
 
     static double abs(double x) {
-        if (x < 0.0) {
-            return -x;
+        if ((double)(x) < (double)(0.0)) {
+            return (double)(-x);
         }
-        return x;
+        return (double)(x);
     }
 
     static double to_radians(double deg) {
-        return deg * PI / 180.0;
+        return (double)((double)((double)(deg) * (double)(PI)) / (double)(180.0));
     }
 
     static double sin_taylor(double x) {
-        double term = x;
-        double sum = x;
-        int i = 1;
-        while (i < 10) {
-            double k1 = 2.0 * (((Number)(i)).doubleValue());
-            double k2 = k1 + 1.0;
-            term = -term * x * x / (k1 * k2);
-            sum = sum + term;
-            i = i + 1;
+        double term = (double)(x);
+        double sum_1 = (double)(x);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(1);
+        while (i_1.compareTo(java.math.BigInteger.valueOf(10)) < 0) {
+            double k1_1 = (double)((double)(2.0) * (double)((((Number)(i_1)).doubleValue())));
+            double k2_1 = (double)((double)(k1_1) + (double)(1.0));
+            term = (double)((double)((double)((double)(-term) * (double)(x)) * (double)(x)) / (double)(((double)(k1_1) * (double)(k2_1))));
+            sum_1 = (double)((double)(sum_1) + (double)(term));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return sum;
+        return (double)(sum_1);
     }
 
     static double cos_taylor(double x) {
-        double term_1 = 1.0;
-        double sum_1 = 1.0;
-        int i_1 = 1;
-        while (i_1 < 10) {
-            double k1_1 = 2.0 * (((Number)(i_1)).doubleValue()) - 1.0;
-            double k2_1 = 2.0 * (((Number)(i_1)).doubleValue());
-            term_1 = -term_1 * x * x / (k1_1 * k2_1);
-            sum_1 = sum_1 + term_1;
-            i_1 = i_1 + 1;
+        double term_1 = (double)(1.0);
+        double sum_3 = (double)(1.0);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(1);
+        while (i_3.compareTo(java.math.BigInteger.valueOf(10)) < 0) {
+            double k1_3 = (double)((double)((double)(2.0) * (double)((((Number)(i_3)).doubleValue()))) - (double)(1.0));
+            double k2_3 = (double)((double)(2.0) * (double)((((Number)(i_3)).doubleValue())));
+            term_1 = (double)((double)((double)((double)(-term_1) * (double)(x)) * (double)(x)) / (double)(((double)(k1_3) * (double)(k2_3))));
+            sum_3 = (double)((double)(sum_3) + (double)(term_1));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return sum_1;
+        return (double)(sum_3);
     }
 
     static double[] rect(double mag, double angle) {
-        double c = cos_taylor(angle);
-        double s = sin_taylor(angle);
-        return new double[]{mag * c, mag * s};
+        double c = (double)(cos_taylor((double)(angle)));
+        double s_1 = (double)(sin_taylor((double)(angle)));
+        return ((double[])(new double[]{(double)((double)(mag) * (double)(c)), (double)((double)(mag) * (double)(s_1))}));
     }
 
     static double[] multiply(double[] a, double[] b) {
-        return new double[]{a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]};
+        return ((double[])(new double[]{(double)((double)((double)(a[_idx((a).length, 0L)]) * (double)(b[_idx((b).length, 0L)])) - (double)((double)(a[_idx((a).length, 1L)]) * (double)(b[_idx((b).length, 1L)]))), (double)((double)((double)(a[_idx((a).length, 0L)]) * (double)(b[_idx((b).length, 1L)])) + (double)((double)(a[_idx((a).length, 1L)]) * (double)(b[_idx((b).length, 0L)])))}));
     }
 
     static double[] apparent_power(double voltage, double current, double voltage_angle, double current_angle) {
-        double vrad = to_radians(voltage_angle);
-        double irad = to_radians(current_angle);
-        double[] vrect = ((double[])(rect(voltage, vrad)));
-        double[] irect = ((double[])(rect(current, irad)));
-        double[] result = ((double[])(multiply(((double[])(vrect)), ((double[])(irect)))));
-        return result;
+        double vrad = (double)(to_radians((double)(voltage_angle)));
+        double irad_1 = (double)(to_radians((double)(current_angle)));
+        double[] vrect_1 = ((double[])(rect((double)(voltage), (double)(vrad))));
+        double[] irect_1 = ((double[])(rect((double)(current), (double)(irad_1))));
+        double[] result_1 = ((double[])(multiply(((double[])(vrect_1)), ((double[])(irect_1)))));
+        return ((double[])(result_1));
     }
 
     static boolean approx_equal(double[] a, double[] b, double eps) {
-        return Math.abs(a[0] - b[0]) < eps && Math.abs(a[1] - b[1]) < eps;
+        return Math.abs((double)(a[_idx((a).length, 0L)]) - (double)(b[_idx((b).length, 0L)])) < (double)(eps) && Math.abs((double)(a[_idx((a).length, 1L)]) - (double)(b[_idx((b).length, 1L)])) < (double)(eps);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            PI = 3.141592653589793;
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

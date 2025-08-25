@@ -1,79 +1,45 @@
 public class Main {
 
-    static int[] make_list(int len, int value) {
-        int[] arr = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < len) {
-            arr = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(arr), java.util.stream.IntStream.of(value)).toArray()));
-            i = i + 1;
+    static java.math.BigInteger[] make_list(java.math.BigInteger len, java.math.BigInteger value) {
+        java.math.BigInteger[] arr = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(len) < 0) {
+            arr = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(value)))).toArray(java.math.BigInteger[]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return arr;
+        return ((java.math.BigInteger[])(arr));
     }
 
-    static int min_int(int a, int b) {
-        if (a < b) {
-            return a;
+    static java.math.BigInteger min_int(java.math.BigInteger a, java.math.BigInteger b) {
+        if (a.compareTo(b) < 0) {
+            return new java.math.BigInteger(String.valueOf(a));
         }
-        return b;
+        return new java.math.BigInteger(String.valueOf(b));
     }
 
-    static int min_steps_to_one(int number) {
-        if (number <= 0) {
-            return 0;
+    static java.math.BigInteger min_steps_to_one(java.math.BigInteger number) {
+        if (number.compareTo(java.math.BigInteger.valueOf(0)) <= 0) {
+            return java.math.BigInteger.valueOf(0);
         }
-        int[] table = ((int[])(make_list(number + 1, number + 1)));
-table[1] = 0;
-        int i_1 = 1;
-        while (i_1 < number) {
-table[i_1 + 1] = min_int(table[i_1 + 1], table[i_1] + 1);
-            if (i_1 * 2 <= number) {
-table[i_1 * 2] = min_int(table[i_1 * 2], table[i_1] + 1);
+        java.math.BigInteger[] table_1 = ((java.math.BigInteger[])(make_list(new java.math.BigInteger(String.valueOf(number.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(number.add(java.math.BigInteger.valueOf(1)))))));
+table_1[(int)(1L)] = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(1);
+        while (i_3.compareTo(number) < 0) {
+table_1[(int)(((java.math.BigInteger)(i_3.add(java.math.BigInteger.valueOf(1)))).longValue())] = new java.math.BigInteger(String.valueOf(min_int(new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(i_3.add(java.math.BigInteger.valueOf(1)))).longValue())])), new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(i_3)).longValue())].add(java.math.BigInteger.valueOf(1)))))));
+            if (i_3.multiply(java.math.BigInteger.valueOf(2)).compareTo(number) <= 0) {
+table_1[(int)(((java.math.BigInteger)(i_3.multiply(java.math.BigInteger.valueOf(2)))).longValue())] = new java.math.BigInteger(String.valueOf(min_int(new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(i_3.multiply(java.math.BigInteger.valueOf(2)))).longValue())])), new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(i_3)).longValue())].add(java.math.BigInteger.valueOf(1)))))));
             }
-            if (i_1 * 3 <= number) {
-table[i_1 * 3] = min_int(table[i_1 * 3], table[i_1] + 1);
+            if (i_3.multiply(java.math.BigInteger.valueOf(3)).compareTo(number) <= 0) {
+table_1[(int)(((java.math.BigInteger)(i_3.multiply(java.math.BigInteger.valueOf(3)))).longValue())] = new java.math.BigInteger(String.valueOf(min_int(new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(i_3.multiply(java.math.BigInteger.valueOf(3)))).longValue())])), new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(i_3)).longValue())].add(java.math.BigInteger.valueOf(1)))))));
             }
-            i_1 = i_1 + 1;
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return table[number];
+        return new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(number)).longValue())]));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(min_steps_to_one(10)));
-            System.out.println(_p(min_steps_to_one(15)));
-            System.out.println(_p(min_steps_to_one(6)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(min_steps_to_one(java.math.BigInteger.valueOf(10))));
+        System.out.println(_p(min_steps_to_one(java.math.BigInteger.valueOf(15))));
+        System.out.println(_p(min_steps_to_one(java.math.BigInteger.valueOf(6))));
     }
 
     static String _p(Object v) {
@@ -89,6 +55,38 @@ table[i_1 * 3] = min_int(table[i_1 * 3], table[i_1] + 1);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

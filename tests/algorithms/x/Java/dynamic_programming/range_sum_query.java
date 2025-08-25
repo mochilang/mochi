@@ -1,8 +1,8 @@
 public class Main {
     static class Query {
-        int left;
-        int right;
-        Query(int left, int right) {
+        java.math.BigInteger left;
+        java.math.BigInteger right;
+        Query(java.math.BigInteger left, java.math.BigInteger right) {
             this.left = left;
             this.right = right;
         }
@@ -12,76 +12,40 @@ public class Main {
         }
     }
 
-    static int[] arr1;
+    static java.math.BigInteger[] arr1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(61), java.math.BigInteger.valueOf(12)}));
     static Query[] queries1;
-    static int[] arr2;
+    static java.math.BigInteger[] arr2 = ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(3)}));
     static Query[] queries2;
 
-    static int[] prefix_sum(int[] arr, Query[] queries) {
-        int[] dp = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < arr.length) {
-            if (i == 0) {
-                dp = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(dp), java.util.stream.IntStream.of(arr[0])).toArray()));
+    static java.math.BigInteger[] prefix_sum(java.math.BigInteger[] arr, Query[] queries) {
+        java.math.BigInteger[] dp = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(arr.length))) < 0) {
+            if (i_1.compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+                dp = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(dp), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(arr[_idx((arr).length, 0L)])))).toArray(java.math.BigInteger[]::new)));
             } else {
-                dp = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(dp), java.util.stream.IntStream.of(dp[i - 1] + arr[i])).toArray()));
+                dp = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(dp), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(dp[_idx((dp).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())].add(arr[_idx((arr).length, ((java.math.BigInteger)(i_1)).longValue())]))))).toArray(java.math.BigInteger[]::new)));
             }
-            i = i + 1;
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        int[] result = ((int[])(new int[]{}));
-        int j = 0;
-        while (j < queries.length) {
-            Query q = queries[j];
-            int sum = dp[q.right];
-            if (q.left > 0) {
-                sum = sum - dp[q.left - 1];
+        java.math.BigInteger[] result_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+        while (j_1.compareTo(new java.math.BigInteger(String.valueOf(queries.length))) < 0) {
+            Query q_1 = queries[_idx((queries).length, ((java.math.BigInteger)(j_1)).longValue())];
+            java.math.BigInteger sum_1 = new java.math.BigInteger(String.valueOf(dp[_idx((dp).length, ((java.math.BigInteger)(q_1.right)).longValue())]));
+            if (q_1.left.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+                sum_1 = new java.math.BigInteger(String.valueOf(sum_1.subtract(dp[_idx((dp).length, ((java.math.BigInteger)(q_1.left.subtract(java.math.BigInteger.valueOf(1)))).longValue())])));
             }
-            result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(sum)).toArray()));
-            j = j + 1;
+            result_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(sum_1)))).toArray(java.math.BigInteger[]::new)));
+            j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((java.math.BigInteger[])(result_1));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            arr1 = ((int[])(new int[]{1, 4, 6, 2, 61, 12}));
-            queries1 = ((Query[])(new Query[]{new Query(2, 5), new Query(1, 5), new Query(3, 4)}));
-            System.out.println(_p(prefix_sum(((int[])(arr1)), ((Query[])(queries1)))));
-            arr2 = ((int[])(new int[]{4, 2, 1, 6, 3}));
-            queries2 = ((Query[])(new Query[]{new Query(3, 4), new Query(1, 3), new Query(0, 2)}));
-            System.out.println(_p(prefix_sum(((int[])(arr2)), ((Query[])(queries2)))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        queries1 = ((Query[])(new Query[]{new Query(java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(5)), new Query(java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(5)), new Query(java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(4))}));
+        System.out.println(_p(prefix_sum(((java.math.BigInteger[])(arr1)), ((Query[])(queries1)))));
+        queries2 = ((Query[])(new Query[]{new Query(java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(4)), new Query(java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(3)), new Query(java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(2))}));
+        System.out.println(_p(prefix_sum(((java.math.BigInteger[])(arr2)), ((Query[])(queries2)))));
     }
 
     static String _p(Object v) {
@@ -97,6 +61,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

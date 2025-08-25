@@ -18,26 +18,26 @@ public class Main {
 
     static double sqrtApprox(double x) {
         double guess = (double)((double)(x) / (double)(2.0));
-        long i_1 = 0L;
-        while ((long)(i_1) < 20L) {
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
             guess = (double)((double)(((double)(guess) + (double)((double)(x) / (double)(guess)))) / (double)(2.0));
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return guess;
+        return (double)(guess);
     }
 
     static CarrierResult carrier_concentration(double electron_conc, double hole_conc, double intrinsic_conc) {
-        long zero_count = 0L;
+        java.math.BigInteger zero_count = java.math.BigInteger.valueOf(0);
         if ((double)(electron_conc) == (double)(0.0)) {
-            zero_count = (long)((long)(zero_count) + 1L);
+            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
         }
         if ((double)(hole_conc) == (double)(0.0)) {
-            zero_count = (long)((long)(zero_count) + 1L);
+            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
         }
         if ((double)(intrinsic_conc) == (double)(0.0)) {
-            zero_count = (long)((long)(zero_count) + 1L);
+            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
         }
-        if ((long)(zero_count) != 1L) {
+        if (zero_count.compareTo(java.math.BigInteger.valueOf(1)) != 0) {
             throw new RuntimeException(String.valueOf("You cannot supply more or less than 2 values"));
         }
         if ((double)(electron_conc) < (double)(0.0)) {
@@ -50,57 +50,23 @@ public class Main {
             throw new RuntimeException(String.valueOf("Intrinsic concentration cannot be negative in a semiconductor"));
         }
         if ((double)(electron_conc) == (double)(0.0)) {
-            return new CarrierResult("electron_conc", (double)(((double)(intrinsic_conc) * (double)(intrinsic_conc))) / (double)(hole_conc));
+            return new CarrierResult("electron_conc", (double)((double)(((double)(intrinsic_conc) * (double)(intrinsic_conc))) / (double)(hole_conc)));
         }
         if ((double)(hole_conc) == (double)(0.0)) {
-            return new CarrierResult("hole_conc", (double)(((double)(intrinsic_conc) * (double)(intrinsic_conc))) / (double)(electron_conc));
+            return new CarrierResult("hole_conc", (double)((double)(((double)(intrinsic_conc) * (double)(intrinsic_conc))) / (double)(electron_conc)));
         }
         if ((double)(intrinsic_conc) == (double)(0.0)) {
-            return new CarrierResult("intrinsic_conc", sqrtApprox((double)((double)(electron_conc) * (double)(hole_conc))));
+            return new CarrierResult("intrinsic_conc", (double)(sqrtApprox((double)((double)(electron_conc) * (double)(hole_conc)))));
         }
-        return new CarrierResult("", -1.0);
+        return new CarrierResult("", (double)(-1.0));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            r1 = carrier_concentration((double)(25.0), (double)(100.0), (double)(0.0));
-            System.out.println(r1.name + ", " + _p(r1.value));
-            r2 = carrier_concentration((double)(0.0), (double)(1600.0), (double)(200.0));
-            System.out.println(r2.name + ", " + _p(r2.value));
-            r3 = carrier_concentration((double)(1000.0), (double)(0.0), (double)(1200.0));
-            System.out.println(r3.name + ", " + _p(r3.value));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        r1 = carrier_concentration((double)(25.0), (double)(100.0), (double)(0.0));
+        System.out.println(r1.name + ", " + _p(r1.value));
+        r2 = carrier_concentration((double)(0.0), (double)(1600.0), (double)(200.0));
+        System.out.println(r2.name + ", " + _p(r2.value));
+        r3 = carrier_concentration((double)(1000.0), (double)(0.0), (double)(1200.0));
+        System.out.println(r3.name + ", " + _p(r3.value));
     }
 
     static String _p(Object v) {
@@ -115,6 +81,30 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();

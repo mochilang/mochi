@@ -1,89 +1,55 @@
 public class Main {
 
     static double expApprox(double x) {
-        double y = x;
-        boolean is_neg = false;
-        if (x < 0.0) {
-            is_neg = true;
-            y = -x;
+        double y = (double)(x);
+        boolean is_neg_1 = false;
+        if ((double)(x) < (double)(0.0)) {
+            is_neg_1 = true;
+            y = (double)(-x);
         }
-        double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 30) {
-            term = term * y / (((Number)(n)).doubleValue());
-            sum = sum + term;
-            n = n + 1;
+        double term_1 = (double)(1.0);
+        double sum_1 = (double)(1.0);
+        java.math.BigInteger n_1 = java.math.BigInteger.valueOf(1);
+        while (n_1.compareTo(java.math.BigInteger.valueOf(30)) < 0) {
+            term_1 = (double)((double)((double)(term_1) * (double)(y)) / (double)((((Number)(n_1)).doubleValue())));
+            sum_1 = (double)((double)(sum_1) + (double)(term_1));
+            n_1 = new java.math.BigInteger(String.valueOf(n_1.add(java.math.BigInteger.valueOf(1))));
         }
-        if (((Boolean)(is_neg))) {
-            return 1.0 / sum;
+        if (is_neg_1) {
+            return (double)((double)(1.0) / (double)(sum_1));
         }
-        return sum;
+        return (double)(sum_1);
     }
 
     static double round3(double x) {
-        double scaled = x * 1000.0;
-        if (scaled >= 0.0) {
-            scaled = scaled + 0.5;
+        double scaled = (double)((double)(x) * (double)(1000.0));
+        if ((double)(scaled) >= (double)(0.0)) {
+            scaled = (double)((double)(scaled) + (double)(0.5));
         } else {
-            scaled = scaled - 0.5;
+            scaled = (double)((double)(scaled) - (double)(0.5));
         }
-        int scaled_int = ((Number)(scaled)).intValue();
-        return (((Number)(scaled_int)).doubleValue()) / 1000.0;
+        java.math.BigInteger scaled_int_1 = new java.math.BigInteger(String.valueOf(((Number)(scaled)).intValue()));
+        return (double)((double)((((Number)(scaled_int_1)).doubleValue())) / (double)(1000.0));
     }
 
     static double charging_capacitor(double source_voltage, double resistance, double capacitance, double time_sec) {
-        if (source_voltage <= 0.0) {
+        if ((double)(source_voltage) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Source voltage must be positive."));
         }
-        if (resistance <= 0.0) {
+        if ((double)(resistance) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Resistance must be positive."));
         }
-        if (capacitance <= 0.0) {
+        if ((double)(capacitance) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Capacitance must be positive."));
         }
-        double exponent = -time_sec / (resistance * capacitance);
-        double voltage = source_voltage * (1.0 - expApprox(exponent));
-        return round3(voltage);
+        double exponent_1 = (double)((double)(-time_sec) / (double)(((double)(resistance) * (double)(capacitance))));
+        double voltage_1 = (double)((double)(source_voltage) * (double)(((double)(1.0) - (double)(expApprox((double)(exponent_1))))));
+        return (double)(round3((double)(voltage_1)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(charging_capacitor(0.2, 0.9, 8.4, 0.5));
-            System.out.println(charging_capacitor(2.2, 3.5, 2.4, 9.0));
-            System.out.println(charging_capacitor(15.0, 200.0, 20.0, 2.0));
-            System.out.println(charging_capacitor(20.0, 2000.0, 0.0003, 4.0));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(charging_capacitor((double)(0.2), (double)(0.9), (double)(8.4), (double)(0.5)));
+        System.out.println(charging_capacitor((double)(2.2), (double)(3.5), (double)(2.4), (double)(9.0)));
+        System.out.println(charging_capacitor((double)(15.0), (double)(200.0), (double)(20.0), (double)(2.0)));
+        System.out.println(charging_capacitor((double)(20.0), (double)(2000.0), (double)(0.0003), (double)(4.0)));
     }
 }

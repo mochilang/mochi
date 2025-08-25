@@ -1,102 +1,67 @@
 public class Main {
     static double BOLTZMANN;
     static double ELECTRON_VOLT;
-    static double TEMPERATURE;
+    static double TEMPERATURE = (double)(300.0);
 
-    static double pow10(int n) {
-        double result = 1.0;
-        int i = 0;
-        while (i < n) {
-            result = result * 10.0;
-            i = i + 1;
+    static double pow10(java.math.BigInteger n) {
+        double result = (double)(1.0);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(n) < 0) {
+            result = (double)((double)(result) * (double)(10.0));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return (double)(result);
     }
 
     static double ln_series(double x) {
-        double t = (x - 1.0) / (x + 1.0);
-        double term = t;
-        double sum = 0.0;
-        int n = 1;
-        while (n <= 19) {
-            sum = sum + term / (((Number)(n)).doubleValue());
-            term = term * t * t;
-            n = n + 2;
+        double t = (double)((double)(((double)(x) - (double)(1.0))) / (double)(((double)(x) + (double)(1.0))));
+        double term_1 = (double)(t);
+        double sum_1 = (double)(0.0);
+        java.math.BigInteger n_1 = java.math.BigInteger.valueOf(1);
+        while (n_1.compareTo(java.math.BigInteger.valueOf(19)) <= 0) {
+            sum_1 = (double)((double)(sum_1) + (double)((double)(term_1) / (double)((((Number)(n_1)).doubleValue()))));
+            term_1 = (double)((double)((double)(term_1) * (double)(t)) * (double)(t));
+            n_1 = new java.math.BigInteger(String.valueOf(n_1.add(java.math.BigInteger.valueOf(2))));
         }
-        return 2.0 * sum;
+        return (double)((double)(2.0) * (double)(sum_1));
     }
 
     static double ln(double x) {
-        double y = x;
-        int k = 0;
-        while (y >= 10.0) {
-            y = y / 10.0;
-            k = k + 1;
+        double y = (double)(x);
+        java.math.BigInteger k_1 = java.math.BigInteger.valueOf(0);
+        while ((double)(y) >= (double)(10.0)) {
+            y = (double)((double)(y) / (double)(10.0));
+            k_1 = new java.math.BigInteger(String.valueOf(k_1.add(java.math.BigInteger.valueOf(1))));
         }
-        while (y < 1.0) {
-            y = y * 10.0;
-            k = k - 1;
+        while ((double)(y) < (double)(1.0)) {
+            y = (double)((double)(y) * (double)(10.0));
+            k_1 = new java.math.BigInteger(String.valueOf(k_1.subtract(java.math.BigInteger.valueOf(1))));
         }
-        return ln_series(y) + (((Number)(k)).doubleValue()) * ln_series(10.0);
+        return (double)((double)(ln_series((double)(y))) + (double)((double)((((Number)(k_1)).doubleValue())) * (double)(ln_series((double)(10.0)))));
     }
 
     static double builtin_voltage(double donor_conc, double acceptor_conc, double intrinsic_conc) {
-        if (donor_conc <= 0.0) {
+        if ((double)(donor_conc) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Donor concentration should be positive"));
         }
-        if (acceptor_conc <= 0.0) {
+        if ((double)(acceptor_conc) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Acceptor concentration should be positive"));
         }
-        if (intrinsic_conc <= 0.0) {
+        if ((double)(intrinsic_conc) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Intrinsic concentration should be positive"));
         }
-        if (donor_conc <= intrinsic_conc) {
+        if ((double)(donor_conc) <= (double)(intrinsic_conc)) {
             throw new RuntimeException(String.valueOf("Donor concentration should be greater than intrinsic concentration"));
         }
-        if (acceptor_conc <= intrinsic_conc) {
+        if ((double)(acceptor_conc) <= (double)(intrinsic_conc)) {
             throw new RuntimeException(String.valueOf("Acceptor concentration should be greater than intrinsic concentration"));
         }
-        return BOLTZMANN * TEMPERATURE * ln((donor_conc * acceptor_conc) / (intrinsic_conc * intrinsic_conc)) / ELECTRON_VOLT;
+        return (double)((double)((double)((double)(BOLTZMANN) * (double)(TEMPERATURE)) * (double)(Math.log((double)(((double)(donor_conc) * (double)(acceptor_conc))) / (double)(((double)(intrinsic_conc) * (double)(intrinsic_conc)))))) / (double)(ELECTRON_VOLT));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            BOLTZMANN = 1.380649 / pow10(23);
-            ELECTRON_VOLT = 1.602176634 / pow10(19);
-            TEMPERATURE = 300.0;
-            System.out.println(_p(builtin_voltage(pow10(17), pow10(17), pow10(10))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        BOLTZMANN = (double)((double)(1.380649) / (double)(pow10(java.math.BigInteger.valueOf(23))));
+        ELECTRON_VOLT = (double)((double)(1.602176634) / (double)(pow10(java.math.BigInteger.valueOf(19))));
+        System.out.println(_p(builtin_voltage((double)(pow10(java.math.BigInteger.valueOf(17))), (double)(pow10(java.math.BigInteger.valueOf(17))), (double)(pow10(java.math.BigInteger.valueOf(10))))));
     }
 
     static String _p(Object v) {
@@ -111,6 +76,34 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

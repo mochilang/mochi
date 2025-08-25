@@ -1,68 +1,38 @@
 public class Main {
 
-    static int dp_count(int[] s, int n) {
-        if (n < 0) {
-            return 0;
+    static java.math.BigInteger dp_count(java.math.BigInteger[] s, java.math.BigInteger n) {
+        if (n.compareTo(java.math.BigInteger.valueOf(0)) < 0) {
+            return java.math.BigInteger.valueOf(0);
         }
-        int[] table = ((int[])(new int[]{}));
-        int i = 0;
-        while (i <= n) {
-            table = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(table), java.util.stream.IntStream.of(0)).toArray()));
-            i = i + 1;
+        java.math.BigInteger[] table_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(n) <= 0) {
+            table_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(table_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(0))).toArray(java.math.BigInteger[]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-table[0] = 1;
-        int idx = 0;
-        while (idx < s.length) {
-            int coin_val = s[idx];
-            int j = coin_val;
-            while (j <= n) {
-table[j] = table[j] + table[j - coin_val];
-                j = j + 1;
+table_1[(int)(0L)] = java.math.BigInteger.valueOf(1);
+        java.math.BigInteger idx_1 = java.math.BigInteger.valueOf(0);
+        while (idx_1.compareTo(new java.math.BigInteger(String.valueOf(s.length))) < 0) {
+            java.math.BigInteger coin_val_1 = new java.math.BigInteger(String.valueOf(s[_idx((s).length, ((java.math.BigInteger)(idx_1)).longValue())]));
+            java.math.BigInteger j_1 = new java.math.BigInteger(String.valueOf(coin_val_1));
+            while (j_1.compareTo(n) <= 0) {
+table_1[(int)(((java.math.BigInteger)(j_1)).longValue())] = new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(j_1)).longValue())].add(table_1[_idx((table_1).length, ((java.math.BigInteger)(j_1.subtract(coin_val_1))).longValue())])));
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-            idx = idx + 1;
+            idx_1 = new java.math.BigInteger(String.valueOf(idx_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return table[n];
+        return new java.math.BigInteger(String.valueOf(table_1[_idx((table_1).length, ((java.math.BigInteger)(n)).longValue())]));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(dp_count(((int[])(new int[]{1, 2, 3})), 4));
-            System.out.println(dp_count(((int[])(new int[]{1, 2, 3})), 7));
-            System.out.println(dp_count(((int[])(new int[]{2, 5, 3, 6})), 10));
-            System.out.println(dp_count(((int[])(new int[]{10})), 99));
-            System.out.println(dp_count(((int[])(new int[]{4, 5, 6})), 0));
-            System.out.println(dp_count(((int[])(new int[]{1, 2, 3})), -5));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(dp_count(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3)})), java.math.BigInteger.valueOf(4)));
+        System.out.println(dp_count(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3)})), java.math.BigInteger.valueOf(7)));
+        System.out.println(dp_count(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(6)})), java.math.BigInteger.valueOf(10)));
+        System.out.println(dp_count(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(10)})), java.math.BigInteger.valueOf(99)));
+        System.out.println(dp_count(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(6)})), java.math.BigInteger.valueOf(0)));
+        System.out.println(dp_count(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3)})), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(5)).negate()))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

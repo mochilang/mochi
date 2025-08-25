@@ -531,7 +531,9 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	if typ == "java.math.BigInteger" {
 		switch ex := e.(type) {
 		case *IntLit:
-			fmt.Fprintf(w, "java.math.BigInteger.valueOf(%d)", ex.Value)
+			fmt.Fprint(w, "java.math.BigInteger.valueOf(")
+			ex.emit(w)
+			fmt.Fprint(w, ")")
 		case *LongLit:
 			fmt.Fprintf(w, "java.math.BigInteger.valueOf(%dL)", ex.Value)
 		default:
@@ -1269,6 +1271,13 @@ func stmtReturns(s Stmt) bool {
 	switch st := s.(type) {
 	case *ReturnStmt:
 		return true
+	case *ExprStmt:
+		if ce, ok := st.Expr.(*CallExpr); ok {
+			if ce.Func == "panic" || ce.Func == "error" {
+				return true
+			}
+		}
+		return false
 	case *IfStmt:
 		if len(st.Then) == 0 || len(st.Else) == 0 {
 			return false
@@ -3574,7 +3583,9 @@ func (u *UnaryExpr) emit(w io.Writer) {
 				u.Value.emit(w)
 				fmt.Fprint(w, ")")
 			} else if il, ok := u.Value.(*IntLit); ok {
-				fmt.Fprintf(w, "java.math.BigInteger.valueOf(%d)", il.Value)
+				fmt.Fprint(w, "java.math.BigInteger.valueOf(")
+				il.emit(w)
+				fmt.Fprint(w, ")")
 			} else {
 				u.Value.emit(w)
 			}

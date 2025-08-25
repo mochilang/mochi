@@ -1,85 +1,55 @@
 public class Main {
 
-    static int[] make_list(int len, int value) {
-        int[] arr = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < len) {
-            arr = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(arr), java.util.stream.IntStream.of(value)).toArray()));
-            i = i + 1;
+    static java.math.BigInteger[] make_list(java.math.BigInteger len, java.math.BigInteger value) {
+        java.math.BigInteger[] arr = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(len) < 0) {
+            arr = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(value)))).toArray(java.math.BigInteger[]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return arr;
+        return ((java.math.BigInteger[])(arr));
     }
 
-    static int int_sqrt(int n) {
-        int r = 0;
-        while ((r + 1) * (r + 1) <= n) {
-            r = r + 1;
+    static java.math.BigInteger int_sqrt(java.math.BigInteger n) {
+        java.math.BigInteger r = java.math.BigInteger.valueOf(0);
+        while ((r.add(java.math.BigInteger.valueOf(1))).multiply((r.add(java.math.BigInteger.valueOf(1)))).compareTo(n) <= 0) {
+            r = new java.math.BigInteger(String.valueOf(r.add(java.math.BigInteger.valueOf(1))));
         }
-        return r;
+        return new java.math.BigInteger(String.valueOf(r));
     }
 
-    static int minimum_squares_to_represent_a_number(int number) {
-        if (number < 0) {
+    static java.math.BigInteger minimum_squares_to_represent_a_number(java.math.BigInteger number) {
+        if (number.compareTo(java.math.BigInteger.valueOf(0)) < 0) {
             throw new RuntimeException(String.valueOf("the value of input must not be a negative number"));
         }
-        if (number == 0) {
-            return 1;
+        if (number.compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+            return java.math.BigInteger.valueOf(1);
         }
-        int[] answers = ((int[])(make_list(number + 1, -1)));
-answers[0] = 0;
-        int i_1 = 1;
-        while (i_1 <= number) {
-            int answer = i_1;
-            int root = int_sqrt(i_1);
-            int j = 1;
-            while (j <= root) {
-                int current_answer = 1 + answers[i_1 - j * j];
-                if (current_answer < answer) {
-                    answer = current_answer;
+        java.math.BigInteger[] answers_1 = ((java.math.BigInteger[])(make_list(new java.math.BigInteger(String.valueOf(number.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())))));
+answers_1[(int)(0L)] = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(1);
+        while (i_3.compareTo(number) <= 0) {
+            java.math.BigInteger answer_1 = new java.math.BigInteger(String.valueOf(i_3));
+            java.math.BigInteger root_1 = new java.math.BigInteger(String.valueOf(int_sqrt(new java.math.BigInteger(String.valueOf(i_3)))));
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(1);
+            while (j_1.compareTo(root_1) <= 0) {
+                java.math.BigInteger current_answer_1 = new java.math.BigInteger(String.valueOf(java.math.BigInteger.valueOf(1).add(answers_1[_idx((answers_1).length, ((java.math.BigInteger)(i_3.subtract(j_1.multiply(j_1)))).longValue())])));
+                if (current_answer_1.compareTo(answer_1) < 0) {
+                    answer_1 = new java.math.BigInteger(String.valueOf(current_answer_1));
                 }
-                j = j + 1;
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-answers[i_1] = answer;
-            i_1 = i_1 + 1;
+answers_1[(int)(((java.math.BigInteger)(i_3)).longValue())] = new java.math.BigInteger(String.valueOf(answer_1));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return answers[number];
+        return new java.math.BigInteger(String.valueOf(answers_1[_idx((answers_1).length, ((java.math.BigInteger)(number)).longValue())]));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(minimum_squares_to_represent_a_number(25));
-            System.out.println(minimum_squares_to_represent_a_number(21));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(minimum_squares_to_represent_a_number(java.math.BigInteger.valueOf(25)));
+        System.out.println(minimum_squares_to_represent_a_number(java.math.BigInteger.valueOf(21)));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

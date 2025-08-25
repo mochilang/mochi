@@ -1,64 +1,30 @@
 public class Main {
 
-    static int maximum_non_adjacent_sum(int[] nums) {
-        if (nums.length == 0) {
-            return 0;
+    static java.math.BigInteger maximum_non_adjacent_sum(java.math.BigInteger[] nums) {
+        if (new java.math.BigInteger(String.valueOf(nums.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+            return java.math.BigInteger.valueOf(0);
         }
-        int max_including = nums[0];
-        int max_excluding = 0;
-        int i = 1;
-        while (i < nums.length) {
-            int num = nums[i];
-            int new_including = max_excluding + num;
-            int new_excluding = max_including > max_excluding ? max_including : max_excluding;
-            max_including = new_including;
-            max_excluding = new_excluding;
-            i = i + 1;
+        java.math.BigInteger max_including_1 = new java.math.BigInteger(String.valueOf(nums[_idx((nums).length, 0L)]));
+        java.math.BigInteger max_excluding_1 = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(1);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(nums.length))) < 0) {
+            java.math.BigInteger num_1 = new java.math.BigInteger(String.valueOf(nums[_idx((nums).length, ((java.math.BigInteger)(i_1)).longValue())]));
+            java.math.BigInteger new_including_1 = new java.math.BigInteger(String.valueOf(max_excluding_1.add(num_1)));
+            java.math.BigInteger new_excluding_1 = new java.math.BigInteger(String.valueOf(max_including_1.compareTo(max_excluding_1) > 0 ? max_including_1 : max_excluding_1));
+            max_including_1 = new java.math.BigInteger(String.valueOf(new_including_1));
+            max_excluding_1 = new java.math.BigInteger(String.valueOf(new_excluding_1));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        if (max_including > max_excluding) {
-            return max_including;
+        if (max_including_1.compareTo(max_excluding_1) > 0) {
+            return new java.math.BigInteger(String.valueOf(max_including_1));
         }
-        return max_excluding;
+        return new java.math.BigInteger(String.valueOf(max_excluding_1));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(maximum_non_adjacent_sum(((int[])(new int[]{1, 2, 3})))));
-            System.out.println(_p(maximum_non_adjacent_sum(((int[])(new int[]{1, 5, 3, 7, 2, 2, 6})))));
-            System.out.println(_p(maximum_non_adjacent_sum(((int[])(new int[]{-1, -5, -3, -7, -2, -2, -6})))));
-            System.out.println(_p(maximum_non_adjacent_sum(((int[])(new int[]{499, 500, -3, -7, -2, -2, -6})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(maximum_non_adjacent_sum(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3)})))));
+        System.out.println(_p(maximum_non_adjacent_sum(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(6)})))));
+        System.out.println(_p(maximum_non_adjacent_sum(((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(5)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(3)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(7)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(6)).negate()))})))));
+        System.out.println(_p(maximum_non_adjacent_sum(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(499), java.math.BigInteger.valueOf(500), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(3)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(7)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(6)).negate()))})))));
     }
 
     static String _p(Object v) {
@@ -74,6 +40,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

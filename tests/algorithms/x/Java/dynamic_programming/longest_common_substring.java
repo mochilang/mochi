@@ -1,41 +1,41 @@
 public class Main {
 
     static String longest_common_substring(String text1, String text2) {
-        if (_runeLen(text1) == 0 || _runeLen(text2) == 0) {
+        if (new java.math.BigInteger(String.valueOf(_runeLen(text1))).compareTo(java.math.BigInteger.valueOf(0)) == 0 || new java.math.BigInteger(String.valueOf(_runeLen(text2))).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             return "";
         }
-        int m = _runeLen(text1);
-        int n = _runeLen(text2);
-        int[][] dp = ((int[][])(new int[][]{}));
-        int i = 0;
-        while (i < m + 1) {
-            int[] row = ((int[])(new int[]{}));
-            int j = 0;
-            while (j < n + 1) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray()));
-                j = j + 1;
+        java.math.BigInteger m_1 = new java.math.BigInteger(String.valueOf(_runeLen(text1)));
+        java.math.BigInteger n_1 = new java.math.BigInteger(String.valueOf(_runeLen(text2)));
+        java.math.BigInteger[][] dp_1 = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{}));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(m_1.add(java.math.BigInteger.valueOf(1))) < 0) {
+            java.math.BigInteger[] row_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+            while (j_1.compareTo(n_1.add(java.math.BigInteger.valueOf(1))) < 0) {
+                row_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(0))).toArray(java.math.BigInteger[]::new)));
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-            dp = ((int[][])(appendObj((int[][])dp, row)));
-            i = i + 1;
+            dp_1 = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(dp_1), java.util.stream.Stream.of(new java.math.BigInteger[][]{((java.math.BigInteger[])(row_1))})).toArray(java.math.BigInteger[][]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        int end_pos = 0;
-        int max_len = 0;
-        int ii = 1;
-        while (ii <= m) {
-            int jj = 1;
-            while (jj <= n) {
-                if ((_substr(text1, ii - 1, ii).equals(_substr(text2, jj - 1, jj)))) {
-dp[ii][jj] = 1 + dp[ii - 1][jj - 1];
-                    if (dp[ii][jj] > max_len) {
-                        max_len = dp[ii][jj];
-                        end_pos = ii;
+        java.math.BigInteger end_pos_1 = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger max_len_1 = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger ii_1 = java.math.BigInteger.valueOf(1);
+        while (ii_1.compareTo(m_1) <= 0) {
+            java.math.BigInteger jj_1 = java.math.BigInteger.valueOf(1);
+            while (jj_1.compareTo(n_1) <= 0) {
+                if ((_substr(text1, (int)(((java.math.BigInteger)(ii_1.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(ii_1)).longValue())).equals(_substr(text2, (int)(((java.math.BigInteger)(jj_1.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(jj_1)).longValue()))))) {
+dp_1[_idx((dp_1).length, ((java.math.BigInteger)(ii_1)).longValue())][(int)(((java.math.BigInteger)(jj_1)).longValue())] = new java.math.BigInteger(String.valueOf(java.math.BigInteger.valueOf(1).add(dp_1[_idx((dp_1).length, ((java.math.BigInteger)(ii_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(ii_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(jj_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())])));
+                    if (dp_1[_idx((dp_1).length, ((java.math.BigInteger)(ii_1)).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(ii_1)).longValue())]).length, ((java.math.BigInteger)(jj_1)).longValue())].compareTo(max_len_1) > 0) {
+                        max_len_1 = new java.math.BigInteger(String.valueOf(dp_1[_idx((dp_1).length, ((java.math.BigInteger)(ii_1)).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(ii_1)).longValue())]).length, ((java.math.BigInteger)(jj_1)).longValue())]));
+                        end_pos_1 = new java.math.BigInteger(String.valueOf(ii_1));
                     }
                 }
-                jj = jj + 1;
+                jj_1 = new java.math.BigInteger(String.valueOf(jj_1.add(java.math.BigInteger.valueOf(1))));
             }
-            ii = ii + 1;
+            ii_1 = new java.math.BigInteger(String.valueOf(ii_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return _substr(text1, end_pos - max_len, end_pos);
+        return _substr(text1, (int)(((java.math.BigInteger)(end_pos_1.subtract(max_len_1))).longValue()), (int)(((java.math.BigInteger)(end_pos_1)).longValue()));
     }
     public static void main(String[] args) {
         System.out.println(longest_common_substring("abcdef", "xabded"));
@@ -43,19 +43,21 @@ dp[ii][jj] = 1 + dp[ii - 1][jj - 1];
         System.out.println(longest_common_substring("zxabcdezy", "yzabcdezx"));
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

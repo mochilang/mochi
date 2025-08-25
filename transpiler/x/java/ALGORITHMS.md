@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-25 00:02 GMT+7
+Last updated: 2025-08-25 08:44 GMT+7
 
 ## Algorithms Golden Test Checklist (963/1077)
 | Index | Name | Status | Duration | Memory |
@@ -218,7 +218,7 @@ Last updated: 2025-08-25 00:02 GMT+7
 | 209 | data_structures/hashing/quadratic_probing | error |  |  |
 | 210 | data_structures/hashing/tests/test_hash_map | error |  |  |
 | 211 | data_structures/heap/binomial_heap | ✓ | 39.0ms | 47.06KB |
-| 212 | data_structures/heap/heap | error | 36.0ms | 48.34KB |
+| 212 | data_structures/heap/heap | ✓ | 36.0ms | 48.34KB |
 | 213 | data_structures/heap/heap_generic | ✓ | 33.0ms | 57.71KB |
 | 214 | data_structures/heap/max_heap | ✓ | 43.0ms | 46.20KB |
 | 215 | data_structures/heap/min_heap | ✓ | 52.0ms | 79.74KB |
@@ -323,56 +323,56 @@ Last updated: 2025-08-25 00:02 GMT+7
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 33.0ms | 46.24KB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 33.0ms | 59.14KB |
 | 316 | dynamic_programming/knapsack | error |  |  |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 38.0ms | 92.94KB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 39.0ms | 94.22KB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 26.0ms | 46.24KB |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 14.0ms | 0B |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 25.0ms | 46.14KB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 28.0ms | 46.04KB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 29.0ms | 51.66KB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 38.0ms | 102.16KB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 48.0ms | 103.41KB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 33.0ms | 55.20KB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 16.0ms | 0B |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 37.0ms | 56.19KB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 32.0ms | 54.25KB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 40.0ms | 60.91KB |
 | 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 14.0ms | 0B |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 40.0ms | 95.34KB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 23.0ms | 664B |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 13.0ms | 448B |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 16.0ms | 10.56KB |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 34.0ms | 46.48KB |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 27.0ms | 46.04KB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 17.0ms | 864B |
-| 332 | dynamic_programming/minimum_partition | ✓ | 16.0ms | 992B |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 14.0ms | 664B |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 27.0ms | 46.04KB |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 31.0ms | 46.25KB |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 32.0ms | 46.25KB |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 45.0ms | 104.84KB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 26.0ms | 46.41KB |
-| 339 | dynamic_programming/range_sum_query | ✓ | 32.0ms | 46.87KB |
-| 340 | dynamic_programming/regex_match | ✓ | 14.0ms | 1.18KB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 25.0ms | 46.09KB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 43.0ms | 95.88KB |
-| 343 | dynamic_programming/subset_generation | ✓ | 39.0ms | 49.78KB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 14.0ms | 776B |
-| 345 | dynamic_programming/trapped_water | ✓ | 41.0ms | 47.18KB |
-| 346 | dynamic_programming/tribonacci | ✓ | 28.0ms | 46.82KB |
-| 347 | dynamic_programming/viterbi | ✓ | 43.0ms | 96.02KB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 14.0ms | 1.09KB |
-| 349 | dynamic_programming/word_break | ✓ | 25.0ms | 1.43KB |
-| 350 | electronics/apparent_power | ✓ | 15.0ms | 0B |
-| 351 | electronics/builtin_voltage | ✓ | 16.0ms | 10.45KB |
-| 352 | electronics/capacitor_equivalence | ✓ | 38.0ms | 10.66KB |
-| 353 | electronics/carrier_concentration | ✓ | 50.0ms | 88.63KB |
-| 354 | electronics/charging_capacitor | ✓ | 16.0ms | 10.36KB |
-| 355 | electronics/charging_inductor | ✓ | 18.0ms | 10.25KB |
-| 356 | electronics/circular_convolution | ✓ | 27.0ms | 57.16KB |
-| 357 | electronics/coulombs_law | ✓ | 44.0ms | 88.13KB |
-| 358 | electronics/electric_conductivity | ✓ | 35.0ms | 88.51KB |
-| 359 | electronics/electric_power | ✓ | 48.0ms | 88.23KB |
-| 360 | electronics/electrical_impedance | ✓ | 14.0ms | 10.73KB |
-| 361 | electronics/ic_555_timer | ✓ | 16.0ms | 10.25KB |
-| 362 | electronics/ind_reactance | ✓ | 19.0ms | 10.73KB |
-| 363 | electronics/ohms_law | ✓ | 29.0ms | 79.68KB |
-| 364 | electronics/real_and_reactive_power | ✓ | 15.0ms | 10.45KB |
-| 365 | electronics/resistor_color_code | ✓ | 14.0ms | 3.65KB |
-| 366 | electronics/resistor_equivalence | ✓ | 21.0ms | 47.55KB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 45.0ms | 104.45KB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 18.0ms | 9.84KB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 15.0ms | 9.33KB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 16.0ms | 19.65KB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 56.0ms | 55.79KB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 32.0ms | 54.23KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 16.0ms | 1.97KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 49.0ms | 55.02KB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 17.0ms | 9.84KB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 39.0ms | 54.23KB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 35.0ms | 54.73KB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 37.0ms | 54.73KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 62.0ms | 119.05KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 35.0ms | 55.20KB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 29.0ms | 47.39KB |
+| 340 | dynamic_programming/regex_match | ✓ | 32.0ms | 54.67KB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 30.0ms | 46.11KB |
+| 342 | dynamic_programming/smith_waterman | error | 43.0ms | 95.88KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 30.0ms | 57.59KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 39.0ms | 54.26KB |
+| 345 | dynamic_programming/trapped_water | ✓ | 29.0ms | 54.73KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 28.0ms | 55.32KB |
+| 347 | dynamic_programming/viterbi | ✓ | 40.0ms | 107.16KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 35.0ms | 54.59KB |
+| 349 | dynamic_programming/word_break | ✓ | 21.0ms | 10.32KB |
+| 350 | electronics/apparent_power | ✓ | 14.0ms | 0B |
+| 351 | electronics/builtin_voltage | ✓ | 18.0ms | 19.54KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 16.0ms | 19.65KB |
+| 353 | electronics/carrier_concentration | ✓ | 35.0ms | 97.73KB |
+| 354 | electronics/charging_capacitor | ✓ | 19.0ms | 19.03KB |
+| 355 | electronics/charging_inductor | ✓ | 17.0ms | 19.13KB |
+| 356 | electronics/circular_convolution | ✓ | 22.0ms | 19.64KB |
+| 357 | electronics/coulombs_law | ✓ | 37.0ms | 97.98KB |
+| 358 | electronics/electric_conductivity | ✓ | 38.0ms | 97.70KB |
+| 359 | electronics/electric_power | ✓ | 46.0ms | 97.32KB |
+| 360 | electronics/electrical_impedance | ✓ | 19.0ms | 20.48KB |
+| 361 | electronics/ic_555_timer | ✓ | 29.0ms | 10.25KB |
+| 362 | electronics/ind_reactance | ✓ | 20.0ms | 20.48KB |
+| 363 | electronics/ohms_law | ✓ | 34.0ms | 89.43KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 16.0ms | 19.65KB |
+| 365 | electronics/resistor_color_code | ✓ | 17.0ms | 13.20KB |
+| 366 | electronics/resistor_equivalence | ✓ | 23.0ms | 56.75KB |
 | 367 | electronics/resonant_frequency | ✓ | 14.0ms | 10.25KB |
 | 368 | electronics/wheatstone_bridge | ✓ | 16.0ms | 10.25KB |
 | 369 | file_transfer/receive_file | ✓ | 21.0ms | 33.11KB |

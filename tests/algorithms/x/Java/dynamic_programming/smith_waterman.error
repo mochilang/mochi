@@ -1,0 +1,23 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden342_smith_waterman2905266102/001/Main.java:31: error: incompatible types: BigInteger cannot be converted to long
+                String qc_1 = _substr(q, (int)(((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(i)).subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)((long)(i)));
+                                                                                                                                                                                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden342_smith_waterman2905266102/001/Main.java:32: error: incompatible types: BigInteger cannot be converted to long
+                String sc_1 = _substr(s_1, (int)(((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(j)).subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)((long)(j)));
+                                                                                                                                                                                           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden342_smith_waterman2905266102/001/Main.java:34: error: incompatible types: BigInteger cannot be converted to long
+                java.math.BigInteger delete_1 = new java.math.BigInteger(String.valueOf(score_1[_idx((score_1).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(i)).subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((score_1[_idx((score_1).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(i)).subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, (long)(j))].add(gap_score)));
+                                                                                                                                                                                                                                                                                                                                                                                                                                       ^
+/tmp/TestJavaTranspiler_Algorithms_Golden342_smith_waterman2905266102/001/Main.java:35: error: incompatible types: BigInteger cannot be converted to long
+                java.math.BigInteger insert_1 = new java.math.BigInteger(String.valueOf(score_1[_idx((score_1).length, (long)(i))][_idx((score_1[_idx((score_1).length, (long)(i))]).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(j)).subtract(java.math.BigInteger.valueOf(1)))).longValue())].add(gap_score)));
+                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden342_smith_waterman2905266102/001/Main.java:35: error: incompatible types: BigInteger cannot be converted to long
+                java.math.BigInteger insert_1 = new java.math.BigInteger(String.valueOf(score_1[_idx((score_1).length, (long)(i))][_idx((score_1[_idx((score_1).length, (long)(i))]).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(j)).subtract(java.math.BigInteger.valueOf(1)))).longValue())].add(gap_score)));
+                                                                                                                                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden342_smith_waterman2905266102/001/Main.java:46: error: incompatible types: BigInteger cannot be converted to long
+score_1[_idx((score_1).length, (long)(i))][(int)((long)(j))] = new java.math.BigInteger(String.valueOf(max_val_1));
+                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden342_smith_waterman2905266102/001/Main.java:46: error: incompatible types: BigInteger cannot be converted to long
+score_1[_idx((score_1).length, (long)(i))][(int)((long)(j))] = new java.math.BigInteger(String.valueOf(max_val_1));
+                                                       ^
+7 errors
