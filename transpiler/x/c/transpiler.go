@@ -1646,54 +1646,64 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					writeIndent(w, indent)
 				}
 			}
-			fmt.Fprintf(w, "%s **%s_init[%d] = {", base, d.Name, len(lst.Elems))
-			for i := range lst.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
-				fmt.Fprintf(w, "%s_%d", d.Name, i)
-			}
-			io.WriteString(w, "};\n")
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s ***%s = %s_init;\n", base, d.Name, d.Name)
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_lens_init[%d] = {", d.Name, len(lst.Elems))
-			for i, e := range lst.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
-				if ll, ok2 := e.(*ListLit); ok2 {
-					fmt.Fprintf(w, "%d", len(ll.Elems))
-				} else {
-					io.WriteString(w, "0")
-				}
-			}
-			io.WriteString(w, "};\n")
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t *%s_lens = %s_lens_init;\n", d.Name, d.Name)
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t *%s_lens_lens_init[%d] = {", d.Name, len(lst.Elems))
-			for i := range lst.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
-				if _, ok := lst.Elems[i].(*ListLit); ok {
-					fmt.Fprintf(w, "%s_%d_lens", d.Name, i)
-				} else {
-					io.WriteString(w, "NULL")
-				}
-			}
-			io.WriteString(w, "};\n")
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t **%s_lens_lens = %s_lens_lens_init;\n", d.Name, d.Name)
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_lens_lens_len = %d;\n", d.Name, len(lst.Elems))
-			return
-		} else if call, ok := d.Value.(*CallExpr); ok {
+                       fmt.Fprintf(w, "static %s **%s_init[%d] = {", base, d.Name, len(lst.Elems))
+                       for i, elem := range lst.Elems {
+                               if i > 0 {
+                                       io.WriteString(w, ", ")
+                               }
+                               if _, ok2 := elem.(*ListLit); ok2 {
+                                       fmt.Fprintf(w, "%s_%d", d.Name, i)
+                               } else if vr, ok3 := elem.(*VarRef); ok3 {
+                                       fmt.Fprintf(w, "%s_init", vr.Name)
+                               } else {
+                                       elem.emitExpr(w)
+                               }
+                       }
+                       io.WriteString(w, "};\n")
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "%s ***%s = %s_init;\n", base, d.Name, d.Name)
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "static size_t %s_lens_init[%d] = {", d.Name, len(lst.Elems))
+                       for i, e := range lst.Elems {
+                               if i > 0 {
+                                       io.WriteString(w, ", ")
+                               }
+                               if ll, ok2 := e.(*ListLit); ok2 {
+                                       fmt.Fprintf(w, "%d", len(ll.Elems))
+                               } else if vr, ok3 := e.(*VarRef); ok3 {
+                                       fmt.Fprintf(w, "%s_len", vr.Name)
+                               } else {
+                                       emitLenExpr(w, e)
+                               }
+                       }
+                       io.WriteString(w, "};\n")
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "size_t *%s_lens = %s_lens_init;\n", d.Name, d.Name)
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "static size_t *%s_lens_lens_init[%d] = {", d.Name, len(lst.Elems))
+                       for i, elem := range lst.Elems {
+                               if i > 0 {
+                                       io.WriteString(w, ", ")
+                               }
+                               if _, ok2 := elem.(*ListLit); ok2 {
+                                       fmt.Fprintf(w, "%s_%d_lens", d.Name, i)
+                               } else if vr, ok3 := elem.(*VarRef); ok3 {
+                                       fmt.Fprintf(w, "%s_lens_init", vr.Name)
+                               } else {
+                                       io.WriteString(w, "NULL")
+                               }
+                       }
+                       io.WriteString(w, "};\n")
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "size_t **%s_lens_lens = %s_lens_lens_init;\n", d.Name, d.Name)
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "size_t %s_lens_lens_len = %d;\n", d.Name, len(lst.Elems))
+                       return
+               } else if call, ok := d.Value.(*CallExpr); ok {
 			fmt.Fprintf(w, "%s ***%s = ", base, d.Name)
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
@@ -1823,49 +1833,49 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		if lst, ok := d.Value.(*ListLit); ok {
 			if len(lst.Elems) > 0 {
 				if _, ok2 := lst.Elems[0].(*ListLit); ok2 {
-					for i, e := range lst.Elems {
-						if sl, ok3 := e.(*ListLit); ok3 {
-							fmt.Fprintf(w, "%s %s_%d[%d] = {", base, d.Name, i, len(sl.Elems))
-							for j, se := range sl.Elems {
-								if j > 0 {
-									io.WriteString(w, ", ")
-								}
-								se.emitExpr(w)
-							}
-							io.WriteString(w, "};\n")
-							writeIndent(w, indent)
-						}
-					}
-					fmt.Fprintf(w, "%s %s%s_init[%d] = {", base, strings.Repeat("*", dims-1), d.Name, len(lst.Elems))
-					for i := range lst.Elems {
-						if i > 0 {
-							io.WriteString(w, ", ")
-						}
-						fmt.Fprintf(w, "%s_%d", d.Name, i)
-					}
-					io.WriteString(w, "};\n")
-					writeIndent(w, indent)
-					fmt.Fprintf(w, "%s %s%s = %s_init;\n", base, stars, d.Name, d.Name)
-					writeIndent(w, indent)
-					fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
-					writeIndent(w, indent)
-					fmt.Fprintf(w, "size_t %s_lens_init[%d] = {", d.Name, len(lst.Elems))
-					for i, e := range lst.Elems {
-						if i > 0 {
-							io.WriteString(w, ", ")
-						}
-						if sl, ok3 := e.(*ListLit); ok3 {
-							fmt.Fprintf(w, "%d", len(sl.Elems))
-						} else {
-							emitLenExpr(w, e)
-						}
-					}
-					io.WriteString(w, "};\n")
-					writeIndent(w, indent)
-					fmt.Fprintf(w, "size_t *%s_lens = %s_lens_init;\n", d.Name, d.Name)
-					writeIndent(w, indent)
-					fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
-					return
+                                       for i, e := range lst.Elems {
+                                               if sl, ok3 := e.(*ListLit); ok3 {
+                                                       fmt.Fprintf(w, "static %s %s_%d[%d] = {", base, d.Name, i, len(sl.Elems))
+                                                       for j, se := range sl.Elems {
+                                                               if j > 0 {
+                                                                       io.WriteString(w, ", ")
+                                                               }
+                                                               se.emitExpr(w)
+                                                       }
+                                                       io.WriteString(w, "};\n")
+                                                       writeIndent(w, indent)
+                                               }
+                                       }
+                                       fmt.Fprintf(w, "static %s %s%s_init[%d] = {", base, strings.Repeat("*", dims-1), d.Name, len(lst.Elems))
+                                       for i := range lst.Elems {
+                                               if i > 0 {
+                                                       io.WriteString(w, ", ")
+                                               }
+                                               fmt.Fprintf(w, "%s_%d", d.Name, i)
+                                       }
+                                       io.WriteString(w, "};\n")
+                                       writeIndent(w, indent)
+                                       fmt.Fprintf(w, "static %s %s%s = %s_init;\n", base, stars, d.Name, d.Name)
+                                       writeIndent(w, indent)
+                                       fmt.Fprintf(w, "static const size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+                                       writeIndent(w, indent)
+                                       fmt.Fprintf(w, "static size_t %s_lens_init[%d] = {", d.Name, len(lst.Elems))
+                                       for i, e := range lst.Elems {
+                                               if i > 0 {
+                                                       io.WriteString(w, ", ")
+                                               }
+                                               if sl, ok3 := e.(*ListLit); ok3 {
+                                                       fmt.Fprintf(w, "%d", len(sl.Elems))
+                                               } else {
+                                                       emitLenExpr(w, e)
+                                               }
+                                       }
+                                       io.WriteString(w, "};\n")
+                                       writeIndent(w, indent)
+                                       fmt.Fprintf(w, "static size_t *%s_lens = %s_lens_init;\n", d.Name, d.Name)
+                                       writeIndent(w, indent)
+                                       fmt.Fprintf(w, "static size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
+                                       return
 				}
 			}
 			fmt.Fprintf(w, "%s %s%s = NULL;\n", base, stars, d.Name)
@@ -2615,25 +2625,23 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		}
 	}
 
-	if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, vr.Name)
-			if strings.HasSuffix(vt, "[][]") && !strings.Contains(vt, "char[][]") {
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "%s_lens = %s_lens;\n", a.Name, vr.Name)
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "%s_lens_len = %s_lens_len;\n", a.Name, vr.Name)
-			}
-		}
-
-		if fe, ok := a.Value.(*FieldExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s_len = ", a.Name)
-			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
-			io.WriteString(w, ";\n")
-		}
-	}
+       if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+               if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, vr.Name)
+                       if strings.HasSuffix(vt, "[][]") && !strings.Contains(vt, "char[][]") {
+                               writeIndent(w, indent)
+                               fmt.Fprintf(w, "%s_lens = %s_lens;\n", a.Name, vr.Name)
+                               writeIndent(w, indent)
+                               fmt.Fprintf(w, "%s_lens_len = %s_lens_len;\n", a.Name, vr.Name)
+                       }
+               }
+       } else if fe, ok := a.Value.(*FieldExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+               writeIndent(w, indent)
+               fmt.Fprintf(w, "%s_len = ", a.Name)
+               (&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+               io.WriteString(w, ";\n")
+       }
 
 	if call, ok := a.Value.(*CallExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
 		if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {

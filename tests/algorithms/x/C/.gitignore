@@ -1,0 +1,7 @@
+*
+!.gitignore
+!*/
+!*.c
+!*.bench
+!*.out
+!*.error
