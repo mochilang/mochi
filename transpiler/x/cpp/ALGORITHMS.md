@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 1034/1077
-Last updated: 2025-08-25 08:33 +0700
+Last updated: 2025-08-25 16:39 +0700
 
 Checklist:
 
@@ -372,8 +372,8 @@ Checklist:
 | 363 | electronics/ohms_law | ✓ | 225.0µs | 3.43MB |
 | 364 | electronics/real_and_reactive_power | ✓ | 486.0µs | 3.61MB |
 | 365 | electronics/resistor_color_code | ✓ | 0ns | 3.64MB |
-| 366 | electronics/resistor_equivalence | ✓ | 612.0µs | 3.78MB |
-| 367 | electronics/resonant_frequency | ✓ | 377.0µs | 3.78MB |
+| 366 | electronics/resistor_equivalence | ✓ | 485.0µs | 3.74MB |
+| 367 | electronics/resonant_frequency | ✓ | 582.0µs | 3.81MB |
 | 368 | electronics/wheatstone_bridge | ✓ | 339.0µs | 3.65MB |
 | 369 | file_transfer/receive_file | ✓ | 170.0µs | 3.44MB |
 | 370 | file_transfer/send_file | ✓ | 147.0µs | 3.44MB |
