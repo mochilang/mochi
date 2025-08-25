@@ -1,2 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/kd_tree/nearest_neighbour_search.zig:79:94: error: indexing into empty slice is not allowed
