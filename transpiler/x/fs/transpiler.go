@@ -1482,6 +1482,12 @@ func (a *AppendExpr) emit(w io.Writer) {
 			io.WriteString(w, ")|]")
 			return
 		}
+		if elemType == "int64" && it == "int" {
+			io.WriteString(w, "int64 (")
+			a.Elem.emit(w)
+			io.WriteString(w, ")|]")
+			return
+		}
 		if it == "obj" || it == "" {
 			io.WriteString(w, "unbox<")
 			io.WriteString(w, elemType)
@@ -4324,6 +4330,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if cur == "int" && t == "int64" {
 				e = &CastExpr{Expr: e, Type: "int"}
 				t = "int"
+			}
+			if cur == "int64" && t == "int" {
+				e = &CastExpr{Expr: e, Type: "int64"}
+				t = "int64"
 			}
 			if t == "array" {
 				if app, ok := e.(*AppendExpr); ok {
