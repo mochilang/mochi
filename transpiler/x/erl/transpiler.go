@@ -3806,6 +3806,25 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			return []Stmt{&ListMapAssignStmt{Name: alias, Old: old, Index: idxExpr, Key: key, Value: val}}, nil
 		}
 		if len(st.Assign.Index) == 2 && st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil && len(st.Assign.Field) == 0 {
+			if _, ok := types.TypeOfExprBasic(st.Assign.Index[1].Start, env).(types.StringType); ok {
+				idxExpr, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				key, err := convertExpr(st.Assign.Index[1].Start, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				if ctx.isGlobal(name) {
+					old := fmt.Sprintf("erlang:get('%s')", name)
+					tmp := ctx.newAlias(name + "_tmp")
+					stmt := &ListMapAssignStmt{Name: tmp, Old: old, Index: idxExpr, Key: key, Value: val}
+					return []Stmt{stmt, &PutStmt{Name: name, Expr: &NameRef{Name: tmp}}}, nil
+				}
+				old := ctx.current(name)
+				alias := ctx.newAlias(name)
+				return []Stmt{&ListMapAssignStmt{Name: alias, Old: old, Index: idxExpr, Key: key, Value: val}}, nil
+			}
 			idx1, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
 			if err != nil {
 				return nil, err

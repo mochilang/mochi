@@ -1,21 +1,21 @@
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/min_heap.erl:307:24: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
-%  307|             Mh_tmp_2 = element(2, Mh_res_2),
-%     |                        ^
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/min_heap.erl:309:21: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  309|             Mh_14 = element(2, Mh_res_2),
+%     |                     ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/min_heap.erl:363:20: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
-%  363|         Mh_tmp_5 = element(2, Mh_res_5),
-%     |                    ^
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/min_heap.erl:361:17: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  361|         Mh_26 = element(2, Mh_res_5),
+%     |                 ^
 
-[77 105 110 32 72 101 97 112 32 45 32 98 101 102 111 114 101 32 100 101 99 114 101 97 115 101 32 107 101 121]
-[78 111 100 101 40 82 44 32 45 49 41]
-[78 111 100 101 40 88 44 32 49 41]
-[78 111 100 101 40 65 44 32 51 41]
-[78 111 100 101 40 66 44 32 54 41]
-[78 111 100 101 40 69 44 32 52 41]
-[77 105 110 32 72 101 97 112 32 45 32 65 102 116 101 114 32 100 101 99 114 101 97 115 101 32 107 101 121 32 111 102 32 110 111 100 101 32 91 66 32 45 62 32 45 49 55 93]
-[78 111 100 101 40 82 44 32 45 49 41]
-[78 111 100 101 40 88 44 32 49 41]
-[78 111 100 101 40 65 44 32 51 41]
-[78 111 100 101 40 66 44 32 54 41]
-[78 111 100 101 40 69 44 32 52 41]
+Min Heap - before decrease key
+Node(R, -1)
+Node(X, 1)
+Node(A, 3)
+Node(B, 6)
+Node(E, 4)
+Min Heap - After decrease key of node [B -> -17]
+Node(R, -1)
+Node(X, 1)
+Node(A, 3)
+Node(B, 6)
+Node(E, 4)
 6
