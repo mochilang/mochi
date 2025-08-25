@@ -4794,15 +4794,21 @@ func literalType(l *parser.Literal) types.Type {
 }
 
 func tsType(t types.Type) string {
-	switch tt := t.(type) {
-	case types.BigIntType:
-		return "bigint"
-	case types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
-		return "number"
-	case types.BoolType:
-		return "boolean"
-	case types.StringType:
-		return "string"
+       switch tt := t.(type) {
+       case types.BigIntType, types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
+               // Use JavaScript's number for all Mochi numeric types.  While the
+               // "bigint" primitive exists in TypeScript, generated algorithm
+               // code relies on mixing arithmetic operations freely.  Emitting
+               // "bigint" here causes runtime type errors when numbers and
+               // bigints interact (e.g. loop counters that subtract integers).
+               // Mapping Mochi's unbounded integers to "number" keeps the
+               // transpiled code simple and matches the behaviour of other
+               // backends.
+               return "number"
+       case types.BoolType:
+               return "boolean"
+       case types.StringType:
+               return "string"
 	case types.ListType:
 		return tsType(tt.Elem) + "[]"
 	case types.MapType:
