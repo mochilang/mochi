@@ -241,7 +241,8 @@ const helperJSON = `let json (arr:obj) =
 
 const helperStr = `let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%.10g" f
+    | :? float as f ->
+        if f = floor f then sprintf "%g.0" f else sprintf "%g" f
     | :? int64 as n -> sprintf "%d" n
     | _ ->
         let s = sprintf "%A" v

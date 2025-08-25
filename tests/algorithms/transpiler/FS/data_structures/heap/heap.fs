@@ -1,4 +1,4 @@
-// Generated 2025-08-08 10:32 +0700
+// Generated 2025-08-24 23:57 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -42,159 +30,165 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a
 let rec _str v =
-    let s = sprintf "%A" v
-    s.Replace("[|", "[")
-     .Replace("|]", "]")
-     .Replace("; ", " ")
-     .Replace(";", "")
-     .Replace("\"", "")
-let _floordiv (a:int) (b:int) : int =
+    match box v with
+    | :? float as f ->
+        if f = floor f then sprintf "%g.0" f else sprintf "%g" f
+    | :? int64 as n -> sprintf "%d" n
+    | _ ->
+        let s = sprintf "%A" v
+        s.Replace("[|", "[")
+         .Replace("|]", "]")
+         .Replace("; ", " ")
+         .Replace(";", "")
+         .Replace("L", "")
+         .Replace("\"", "")
+let _floordiv64 (a:int64) (b:int64) : int64 =
     let q = a / b
     let r = a % b
-    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
+    if r <> 0L && ((a < 0L) <> (b < 0L)) then q - 1L else q
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
-let rec parent_index (child_idx: int) =
-    let mutable __ret : int = Unchecked.defaultof<int>
+let rec parent_index (child_idx: int64) =
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
     let mutable child_idx = child_idx
     try
-        __ret <- if child_idx > 0 then (_floordiv (child_idx - 1) 2) else (-1)
+        __ret <- if child_idx > (int64 0) then (_floordiv64 (int64 (child_idx - (int64 1))) (int64 (int64 2))) else (int64 (-1))
         raise Return
         __ret
     with
         | Return -> __ret
-let rec left_child_idx (parent_idx: int) =
-    let mutable __ret : int = Unchecked.defaultof<int>
+and left_child_idx (parent_idx: int64) =
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
     let mutable parent_idx = parent_idx
     try
-        __ret <- (2 * parent_idx) + 1
+        __ret <- ((int64 2) * parent_idx) + (int64 1)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec right_child_idx (parent_idx: int) =
-    let mutable __ret : int = Unchecked.defaultof<int>
+and right_child_idx (parent_idx: int64) =
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
     let mutable parent_idx = parent_idx
     try
-        __ret <- (2 * parent_idx) + 2
+        __ret <- ((int64 2) * parent_idx) + (int64 2)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec max_heapify (h: float array) (heap_size: int) (index: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and max_heapify (h: float array) (heap_size: int64) (index: int64) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable h = h
     let mutable heap_size = heap_size
     let mutable index = index
     try
-        let mutable largest: int = index
-        let left: int = left_child_idx (index)
-        let right: int = right_child_idx (index)
-        if (left < heap_size) && ((_idx h (left)) > (_idx h (largest))) then
+        let mutable largest: int64 = index
+        let left: int64 = left_child_idx (index)
+        let right: int64 = right_child_idx (index)
+        if (left < heap_size) && ((_idx h (int left)) > (_idx h (int largest))) then
             largest <- left
-        if (right < heap_size) && ((_idx h (right)) > (_idx h (largest))) then
+        if (right < heap_size) && ((_idx h (int right)) > (_idx h (int largest))) then
             largest <- right
         if largest <> index then
-            let temp: float = _idx h (index)
-            h.[index] <- _idx h (largest)
-            h.[largest] <- temp
-            max_heapify (h) (heap_size) (largest)
+            let temp: float = _idx h (int index)
+            h.[int index] <- _idx h (int largest)
+            h.[int largest] <- temp
+            ignore (max_heapify (h) (heap_size) (largest))
         __ret
     with
         | Return -> __ret
-let rec build_max_heap (h: float array) =
-    let mutable __ret : int = Unchecked.defaultof<int>
+and build_max_heap (h: float array) =
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
     let mutable h = h
     try
-        let mutable heap_size: int = Seq.length (h)
-        let mutable i: int = (_floordiv heap_size 2) - 1
-        while i >= 0 do
-            max_heapify (h) (heap_size) (i)
-            i <- i - 1
+        let mutable heap_size: int64 = int64 (Seq.length (h))
+        let mutable i: int64 = (_floordiv64 (int64 heap_size) (int64 (int64 2))) - (int64 1)
+        while i >= (int64 0) do
+            ignore (max_heapify (h) (heap_size) (i))
+            i <- i - (int64 1)
         __ret <- heap_size
         raise Return
         __ret
     with
         | Return -> __ret
-let rec extract_max (h: float array) (heap_size: int) =
+and extract_max (h: float array) (heap_size: int64) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable h = h
     let mutable heap_size = heap_size
     try
-        let max_value: float = _idx h (0)
-        h.[0] <- _idx h (heap_size - 1)
-        max_heapify (h) (heap_size - 1) (0)
+        let max_value: float = _idx h (int 0)
+        h.[0] <- _idx h (int (heap_size - (int64 1)))
+        ignore (max_heapify (h) (heap_size - (int64 1)) (int64 0))
         __ret <- max_value
         raise Return
         __ret
     with
         | Return -> __ret
-let rec insert (h: float array) (heap_size: int) (value: float) =
-    let mutable __ret : int = Unchecked.defaultof<int>
+and insert (h: float array) (heap_size: int64) (value: float) =
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
     let mutable h = h
     let mutable heap_size = heap_size
     let mutable value = value
     try
-        if heap_size < (Seq.length (h)) then
-            h.[heap_size] <- value
+        if heap_size < (int64 (Seq.length (h))) then
+            h.[int heap_size] <- value
         else
             h <- Array.append h [|value|]
-        heap_size <- heap_size + 1
-        let mutable idx: int = _floordiv (heap_size - 1) 2
-        while idx >= 0 do
-            max_heapify (h) (heap_size) (idx)
-            idx <- _floordiv (idx - 1) 2
+        heap_size <- heap_size + (int64 1)
+        let mutable idx: int64 = _floordiv64 (int64 (heap_size - (int64 1))) (int64 (int64 2))
+        while idx >= (int64 0) do
+            ignore (max_heapify (h) (heap_size) (idx))
+            idx <- _floordiv64 (int64 (idx - (int64 1))) (int64 (int64 2))
         __ret <- heap_size
         raise Return
         __ret
     with
         | Return -> __ret
-let rec heap_sort (h: float array) (heap_size: int) =
-    let mutable __ret : unit = Unchecked.defaultof<unit>
+and heap_sort (h: float array) (heap_size: int64) =
+    let mutable __ret : obj = Unchecked.defaultof<obj>
     let mutable h = h
     let mutable heap_size = heap_size
     try
-        let mutable size: int = heap_size
-        let mutable j: int = size - 1
-        while j > 0 do
-            let temp: float = _idx h (0)
-            h.[0] <- _idx h (j)
-            h.[j] <- temp
-            size <- size - 1
-            max_heapify (h) (size) (0)
-            j <- j - 1
+        let mutable size: int64 = heap_size
+        let mutable j: int64 = size - (int64 1)
+        while j > (int64 0) do
+            let temp: float = _idx h (int 0)
+            h.[0] <- _idx h (int j)
+            h.[int j] <- temp
+            size <- size - (int64 1)
+            ignore (max_heapify (h) (size) (int64 0))
+            j <- j - (int64 1)
         __ret
     with
         | Return -> __ret
-let rec heap_to_string (h: float array) (heap_size: int) =
+and heap_to_string (h: float array) (heap_size: int64) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable h = h
     let mutable heap_size = heap_size
     try
         let mutable s: string = "["
-        let mutable i: int = 0
+        let mutable i: int64 = int64 0
         while i < heap_size do
-            s <- s + (_str (_idx h (i)))
-            if i < (heap_size - 1) then
+            s <- s + (_str (_idx h (int i)))
+            if i < (heap_size - (int64 1)) then
                 s <- s + ", "
-            i <- i + 1
+            i <- i + (int64 1)
         s <- s + "]"
         __ret <- s
         raise Return
         __ret
     with
         | Return -> __ret
-let mutable heap: float array = [|103.0; 9.0; 1.0; 7.0; 11.0; 15.0; 25.0; 201.0; 209.0; 107.0; 5.0|]
-let mutable size: int = build_max_heap (heap)
-printfn "%s" (heap_to_string (heap) (size))
+let mutable heap: float array = unbox<float array> [|103.0; 9.0; 1.0; 7.0; 11.0; 15.0; 25.0; 201.0; 209.0; 107.0; 5.0|]
+let mutable size: int64 = build_max_heap (heap)
+ignore (printfn "%s" (heap_to_string (heap) (size)))
 let m: float = extract_max (heap) (size)
-size <- size - 1
-printfn "%s" (_str (m))
-printfn "%s" (heap_to_string (heap) (size))
+size <- size - (int64 1)
+ignore (printfn "%s" (_str (m)))
+ignore (printfn "%s" (heap_to_string (heap) (size)))
 size <- insert (heap) (size) (100.0)
-printfn "%s" (heap_to_string (heap) (size))
-heap_sort (heap) (size)
-printfn "%s" (heap_to_string (heap) (size))
+ignore (printfn "%s" (heap_to_string (heap) (size)))
+ignore (heap_sort (heap) (size))
+ignore (printfn "%s" (heap_to_string (heap) (size)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
