@@ -4003,6 +4003,24 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func literalBool(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return false, false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
+		return bool(*p.Target.Lit.Bool), true
+	}
+	return false, false
+}
+
 func isSimpleIdent(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", false
@@ -4038,6 +4056,47 @@ func parseFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+type loadOptions struct {
+	format    string
+	delimiter string
+	header    bool
+}
+
+func parseLoadOptions(e *parser.Expr) loadOptions {
+	opts := loadOptions{delimiter: ",", header: true}
+	ml := mapLiteralExpr(e)
+	if ml == nil {
+		return opts
+	}
+	for _, it := range ml.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if !ok {
+			continue
+		}
+		switch key {
+		case "format":
+			if s, ok := literalString(it.Value); ok {
+				opts.format = s
+			}
+		case "delimiter":
+			if s, ok := literalString(it.Value); ok {
+				opts.delimiter = s
+			}
+		case "header":
+			if b, ok := literalBool(it.Value); ok {
+				opts.header = b
+			}
+		}
+	}
+	if opts.format == "" && (opts.delimiter != "," || !opts.header) {
+		opts.format = "csv"
+	}
+	return opts
 }
 
 func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
@@ -4094,7 +4153,7 @@ func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
 	}
 }
 
-func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) (Expr, error) {
+func dataExprFromFile(path string, opts loadOptions, typ *parser.TypeRef, env *types.Env) (Expr, error) {
 	if path == "" {
 		return &ListLit{}, nil
 	}
@@ -4113,7 +4172,7 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) 
 		return nil, err
 	}
 	var v interface{}
-	switch format {
+	switch opts.format {
 	case "yaml":
 		if err := yaml.Unmarshal(data, &v); err != nil {
 			return nil, err
@@ -4135,11 +4194,40 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) 
 			}
 		}
 		v = arr
+	case "csv":
+		lines := bytes.Split(data, []byte{'\n'})
+		var headers []string
+		if opts.header && len(lines) > 0 {
+			headers = strings.Split(strings.TrimSpace(string(lines[0])), opts.delimiter)
+			lines = lines[1:]
+		}
+		var arr []interface{}
+		for _, line := range lines {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			cols := strings.Split(string(line), opts.delimiter)
+			m := make(map[string]interface{})
+			if opts.header && len(headers) > 0 {
+				for i, h := range headers {
+					if i < len(cols) {
+						m[h] = cols[i]
+					}
+				}
+			} else {
+				for i, c := range cols {
+					m[fmt.Sprintf("c%d", i)] = c
+				}
+			}
+			arr = append(arr, m)
+		}
+		v = arr
 	default:
 		return nil, fmt.Errorf("unsupported load format")
 	}
 	expr := valueToExpr(v, typ, env)
-	if format == "jsonl" {
+	if opts.format == "jsonl" || opts.format == "csv" {
 		if ll, ok := expr.(*ListLit); ok {
 			ll.Pretty = true
 		}
@@ -7429,12 +7517,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		}
 		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Load != nil:
-		format := parseFormat(p.Load.With)
+		opts := parseLoadOptions(p.Load.With)
 		path := ""
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
 		}
-		expr, err := dataExprFromFile(path, format, p.Load.Type, env)
+		expr, err := dataExprFromFile(path, opts, p.Load.Type, env)
 		if err == nil {
 			return expr, nil
 		}
