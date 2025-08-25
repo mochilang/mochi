@@ -1517,6 +1517,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			} else {
 				fmt.Fprintf(w, "%s - %s", ltmp, rtmp)
 			}
+		case "/":
+			if b.IntOp {
+				fmt.Fprintf(w, "Int((Double(%s) / Double(%s)).rounded(.down))", ltmp, rtmp)
+			} else {
+				fmt.Fprintf(w, "%s / %s", ltmp, rtmp)
+			}
 		case "*":
 			if b.IntOp {
 				fmt.Fprintf(w, "%s &* %s", ltmp, rtmp)
@@ -1560,6 +1566,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			fmt.Fprintf(w, "(%s &- %s)", left, right)
 		} else {
 			fmt.Fprintf(w, "(%s - %s)", left, right)
+		}
+		return
+	case "/":
+		if b.IntOp {
+			fmt.Fprintf(w, "Int((Double(%s) / Double(%s)).rounded(.down))", left, right)
+		} else {
+			fmt.Fprintf(w, "(%s / %s)", left, right)
 		}
 		return
 	case "*":

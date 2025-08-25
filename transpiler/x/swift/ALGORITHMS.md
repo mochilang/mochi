@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 981/1077
-Last updated: 2025-08-24 23:17 +0700
+Last updated: 2025-08-24 23:57 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -218,7 +218,7 @@ Last updated: 2025-08-24 23:17 +0700
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 312µs | 3.1 MB |
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 335µs | 3.2 MB |
 | 211 | data_structures/heap/binomial_heap | ✓ | 219µs | 3.3 MB |
-| 212 | data_structures/heap/heap | ✓ |  |  |
+| 212 | data_structures/heap/heap | ✓ | 880µs | 3.4 MB |
 | 213 | data_structures/heap/heap_generic | ✓ | 723µs | 3.2 MB |
 | 214 | data_structures/heap/max_heap | ✓ | 425µs | 3.2 MB |
 | 215 | data_structures/heap/min_heap | ✓ | 272µs | 3.3 MB |
