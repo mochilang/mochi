@@ -2324,22 +2324,22 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 							fmt.Fprintf(w, "%s = list_append_%sptr(%s, &%s_len, ", a.Name, sanitizeTypeName(typ), a.Name, a.Name)
 						}
 					}
-                                       call.Args[1].emitExpr(w)
-                                       io.WriteString(w, ");\n")
-                                       if strings.Contains(varTypes[a.Name], "[][]") {
-                                               needListAppendSizeT = true
-                                               writeIndent(w, indent)
-                                               fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, ", a.Name, a.Name, a.Name)
-                                               emitLenExpr(w, call.Args[1])
-                                               io.WriteString(w, ");\n")
-                                               if strings.Contains(varTypes[a.Name], "[][][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
-                                                       needListAppendSizeTPtr = true
-                                                       writeIndent(w, indent)
-                                                       fmt.Fprintf(w, "%s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL);\n", a.Name, a.Name, a.Name)
-                                               }
-                                       }
-                                       return
-                               }
+					call.Args[1].emitExpr(w)
+					io.WriteString(w, ");\n")
+					if strings.Contains(varTypes[a.Name], "[][]") {
+						needListAppendSizeT = true
+						writeIndent(w, indent)
+						fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, ", a.Name, a.Name, a.Name)
+						emitLenExpr(w, call.Args[1])
+						io.WriteString(w, ");\n")
+						if strings.Contains(varTypes[a.Name], "[][][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
+							needListAppendSizeTPtr = true
+							writeIndent(w, indent)
+							fmt.Fprintf(w, "%s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL);\n", a.Name, a.Name, a.Name)
+						}
+					}
+					return
+				}
 				if base != "" && !strings.HasSuffix(base, "[]") {
 					if needListAppendStruct == nil {
 						needListAppendStruct = make(map[string]bool)
@@ -2359,7 +2359,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				}
 				if strings.HasSuffix(base, "[]") {
 					elemBase := strings.TrimSuffix(base, "[]")
-                                       if strings.Contains(varTypes[a.Name], "[][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
+					if strings.Contains(varTypes[a.Name], "[][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
 						// support appending list pointers (e.g. list<list<int>>)
 						elemElemBase := strings.TrimSuffix(elemBase, "[]")
 						switch elemElemBase {
@@ -2423,7 +2423,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 					fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, ", a.Name, a.Name, a.Name)
 					emitLenExpr(w, call.Args[1])
 					io.WriteString(w, ");\n")
-                                       if strings.Contains(varTypes[a.Name], "[][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
+					if strings.Contains(varTypes[a.Name], "[][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
 						needListAppendSizeTPtr = true
 						writeIndent(w, indent)
 						fmt.Fprintf(w, "%s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL);\n", a.Name, a.Name, a.Name)
@@ -3716,7 +3716,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			switch {
 			case strings.HasSuffix(base, "[]"):
 				elemBase := strings.TrimSuffix(base, "[]")
-                       if strings.Contains(varTypes[vr.Name], "[][]") || strings.Count(varTypes[vr.Name], "*") >= 3 {
+				if strings.Contains(varTypes[vr.Name], "[][]") || strings.Count(varTypes[vr.Name], "*") >= 3 {
 					elemElemBase := strings.TrimSuffix(elemBase, "[]")
 					switch elemElemBase {
 					case "int":
@@ -3771,7 +3771,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				}
 				fmt.Fprintf(w, "), %s_lens = list_append_szt(%s_lens, &%s_lens_len, ", vr.Name, vr.Name, vr.Name)
 				emitLenExpr(w, c.Args[1])
-                       if strings.Contains(varTypes[vr.Name], "[][]") || strings.Count(varTypes[vr.Name], "*") >= 3 {
+				if strings.Contains(varTypes[vr.Name], "[][]") || strings.Count(varTypes[vr.Name], "*") >= 3 {
 					needListAppendSizeTPtr = true
 					fmt.Fprintf(w, "), %s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL), %s_lens = %s_lens, %s)", vr.Name, vr.Name, vr.Name, currentFuncName, vr.Name, vr.Name)
 				} else {
@@ -5653,10 +5653,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needMapGetSL || needMapSetSL || needMapLenSL {
-               buf.WriteString("typedef struct MapSL { const char **keys; void **vals; size_t *lens; size_t len; size_t cap; } MapSL;\n\n")
+		buf.WriteString("typedef struct MapSL { const char **keys; void **vals; size_t *lens; size_t len; size_t cap; } MapSL;\n\n")
 	}
 	if needMapGetIL || needMapSetIL || needMapLenIL {
-               buf.WriteString("typedef struct MapIL { int *keys; void **vals; size_t *lens; size_t len; size_t cap; } MapIL;\n\n")
+		buf.WriteString("typedef struct MapIL { int *keys; void **vals; size_t *lens; size_t len; size_t cap; } MapIL;\n\n")
 	}
 	if needStrMapIL {
 		buf.WriteString("static char* str_map_il(MapIL m) {\n")
@@ -5677,19 +5677,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needMapGetSS || needMapSetSS {
-               buf.WriteString("typedef struct MapSS { const char **keys; const char **vals; size_t len; size_t cap; } MapSS;\n\n")
+		buf.WriteString("typedef struct MapSS { const char **keys; const char **vals; size_t len; size_t cap; } MapSS;\n\n")
 	}
 	if needMapGetSI || needMapSetSI {
-               buf.WriteString("typedef struct MapSI { const char **keys; int *vals; size_t len; size_t cap; } MapSI;\n\n")
+		buf.WriteString("typedef struct MapSI { const char **keys; int *vals; size_t len; size_t cap; } MapSI;\n\n")
 	}
 	if needMapGetIS || needMapSetIS {
-               buf.WriteString("typedef struct MapIS { int *keys; const char **vals; size_t len; size_t cap; } MapIS;\n\n")
+		buf.WriteString("typedef struct MapIS { int *keys; const char **vals; size_t len; size_t cap; } MapIS;\n\n")
 	}
 	if needMapGetII || needMapSetII {
-               buf.WriteString("typedef struct MapII { int *keys; int *vals; size_t len; size_t cap; } MapII;\n\n")
+		buf.WriteString("typedef struct MapII { int *keys; int *vals; size_t len; size_t cap; } MapII;\n\n")
 	}
 	if needMapGetSD || needMapSetSD || needJSONMapSD || needStrMapSD {
-               buf.WriteString("typedef struct MapSD { const char **keys; double *vals; size_t len; size_t cap; } MapSD;\n\n")
+		buf.WriteString("typedef struct MapSD { const char **keys; double *vals; size_t len; size_t cap; } MapSD;\n\n")
 	}
 	if len(needMapGetSStruct) > 0 {
 		var names []string
@@ -5698,7 +5698,7 @@ func (p *Program) Emit() []byte {
 		}
 		sort.Strings(names)
 		for _, name := range names {
-                       fmt.Fprintf(&buf, "struct %s;\n", name)
+			fmt.Fprintf(&buf, "struct %s;\n", name)
 			fmt.Fprintf(&buf, "typedef struct { const char **keys; %s *vals; size_t len; size_t cap; } MapS%s;\n\n", name, name)
 		}
 	}
@@ -6344,9 +6344,7 @@ func (p *Program) Emit() []byte {
 		}
 	}
 	for _, name := range ordered {
-               if !needMapGetSStruct[name] {
-                       fmt.Fprintf(&buf, "struct %s;\n", name)
-               }
+		fmt.Fprintf(&buf, "typedef struct %s %s;\n", name, name)
 	}
 	if len(ordered) > 0 {
 		buf.WriteString("\n")
