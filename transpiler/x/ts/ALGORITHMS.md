@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-25 01:47 UTC
+Last updated: 2025-08-25 15:41 UTC
 
-## Algorithms Golden Test Checklist (1065/1077)
+## Algorithms Golden Test Checklist (1067/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -179,7 +179,7 @@ Last updated: 2025-08-25 01:47 UTC
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 5.21ms | 121.3 KB |
 | 171 | data_structures/binary_tree/avl_tree | ✓ | 1.372ms | 25.7 KB |
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 1.439ms | 38.7 KB |
-| 173 | data_structures/binary_tree/binary_search_tree |   | 1.294ms | 44.9 KB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 571.223ms | 81.5 KB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 571.223ms | 23.6 KB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 830µs | 15.2 KB |
@@ -675,7 +675,7 @@ Last updated: 2025-08-25 01:47 UTC
 | 666 | maths/special_numbers/carmichael_number | ✓ | 571.223ms | 1.1 MB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 571.223ms | 14.5 KB |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 571.223ms | 43.6 KB |
-| 669 | maths/special_numbers/happy_number | ✓ | 571.223ms | 534.1 KB |
+| 669 | maths/special_numbers/happy_number | ✓ | 571.223ms | 534.0 KB |
 | 670 | maths/special_numbers/harshad_numbers | ✓ | 571.223ms | 151.5 KB |
 | 671 | maths/special_numbers/hexagonal_number | ✓ | 571.223ms | 19.4 KB |
 | 672 | maths/special_numbers/krishnamurthy_number | ✓ | 571.223ms | 19.6 KB |
@@ -1073,7 +1073,7 @@ Last updated: 2025-08-25 01:47 UTC
 | 1064 | web_programming/get_top_hn_posts | ✓ | 344.902ms | 246.4 KB |
 | 1065 | web_programming/giphy | ✓ | 1.305ms | 25.5 KB |
 | 1066 | web_programming/instagram_crawler | ✓ | 4.789ms | 631.1 KB |
-| 1067 | web_programming/instagram_pic |   |  |  |
+| 1067 | web_programming/instagram_pic | ✓ | 571.223ms | 529.4 KB |
 | 1068 | web_programming/instagram_video | ✓ | 909µs | 14.5 KB |
 | 1069 | web_programming/nasa_data | ✓ | 648.68ms | 1.1 MB |
 | 1070 | web_programming/open_google_results | ✓ | 1.045ms | 19.1 KB |
