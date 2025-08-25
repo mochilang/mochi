@@ -1325,7 +1325,12 @@ func (m *MapLit) emit(w io.Writer) {
 								}
 							} else {
 								exprType := zigTypeFromExpr(e.Value)
-								if strings.HasPrefix(exprType, "*") && !strings.HasPrefix(f.Type, "*") {
+								if strings.HasPrefix(f.Type, "*") && strings.HasPrefix(exprType, "*const ") {
+									io.WriteString(w, "@constCast(")
+									e.Value.emit(w)
+									io.WriteString(w, ")")
+									goto emitted
+								} else if strings.HasPrefix(exprType, "*") && !strings.HasPrefix(f.Type, "*") {
 									io.WriteString(w, "(")
 									e.Value.emit(w)
 									io.WriteString(w, ").*")
@@ -1615,8 +1620,13 @@ func (p *Program) Emit() []byte {
 	varUses, varMut = collectVarInfo(p)
 	for _, vd := range varDecls {
 		key := vd.Scope + ":" + vd.Name
-		if vd.Mutable && !varMut[key] && !varMut[":"+vd.Name] {
-			if !strings.HasSuffix(vd.Name, "_var") {
+		if varMut[key] || varMut[":"+vd.Name] {
+			vd.Mutable = true
+			continue
+		}
+		if vd.Mutable && !strings.HasSuffix(vd.Name, "_var") {
+			base := strings.TrimPrefix(vd.Type, "*")
+			if structDefs[base] == nil {
 				vd.Mutable = false
 			}
 		}
@@ -5669,6 +5679,21 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			}
 		}
 	}
+	// Functions returning existing structs should return pointers so that
+	// mutations are reflected outside the function.
+	if structDefs[ret] != nil {
+	outer:
+		for _, st := range body {
+			if rs, ok := st.(*ReturnStmt); ok {
+				switch rs.Value.(type) {
+				case *VarRef, *FieldExpr:
+					ret = "*" + ret
+					funcReturns[name] = ret
+					break outer
+				}
+			}
+		}
+	}
 	if strings.HasPrefix(ret, "std.StringHashMap(") {
 		for _, st := range body {
 			if rs, ok := st.(*ReturnStmt); ok {
@@ -5803,6 +5828,14 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			vd.Type = toZigType(s.Let.Type)
 		} else {
 			vd.Type = zigTypeFromExpr(expr)
+		}
+		// Variables holding structs behave like references in Mochi and
+		// may be mutated through pointer parameters. Declare them as
+		// mutable to allow such side effects even if they appear
+		// immutable in the local syntax.
+		baseType := strings.TrimPrefix(vd.Type, "*")
+		if structDefs[baseType] != nil {
+			vd.Mutable = true
 		}
 		varTypes[s.Let.Name] = vd.Type
 		varTypes[alias] = vd.Type
@@ -6445,7 +6478,17 @@ func compileTypeDecl(td *parser.TypeDecl) error {
 		fields := []Field{}
 		for _, m := range td.Members {
 			if m.Field != nil {
-				fields = append(fields, Field{Name: toSnakeCase(m.Field.Name), Type: toZigType(m.Field.Type)})
+				ftype := toZigType(m.Field.Type)
+				// Struct fields that reference another struct
+				// should store a pointer to preserve Mochi's
+				// reference semantics. This ensures that
+				// mutations through one reference are visible
+				// to all holders, matching the behaviour of the
+				// original program.
+				if structDefs[ftype] != nil {
+					ftype = "*" + ftype
+				}
+				fields = append(fields, Field{Name: toSnakeCase(m.Field.Name), Type: ftype})
 			} else if m.Method != nil {
 				fn := m.Method
 				params := []Param{{Name: "self", Type: td.Name}}
@@ -6508,7 +6551,18 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 		case *CallExpr:
 			for i, a := range t.Args {
 				walkExpr(a)
-				if v, ok := a.(*VarRef); ok {
+				var v *VarRef
+				switch arg := a.(type) {
+				case *VarRef:
+					v = arg
+				case *CallExpr:
+					if arg.Func == "@constCast" && len(arg.Args) == 1 {
+						if vr, ok := arg.Args[0].(*VarRef); ok {
+							v = vr
+						}
+					}
+				}
+				if v != nil {
 					if params, ok2 := funcParamTypes[t.Func]; ok2 && i < len(params) {
 						ptype := params[i]
 						if strings.HasPrefix(ptype, "*") && !strings.HasPrefix(ptype, "*const ") {
@@ -6673,6 +6727,14 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			continue
 		}
 		scope = f.Name
+		// Seed usage map for function parameters so that unused ones
+		// can be detected and renamed to '_' during emission.
+		for _, prm := range f.Params {
+			key := scope + ":" + prm.Name
+			if _, exists := uses[key]; !exists {
+				uses[key] = 0
+			}
+		}
 		for _, st := range f.Body {
 			walkStmt(st)
 		}

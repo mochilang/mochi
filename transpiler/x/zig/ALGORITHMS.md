@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-25 16:29 +0700
+Last updated: 2025-08-25 16:46 +0700
 
-## Program Checklist (596/1077)
+## Program Checklist (597/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -372,12 +372,12 @@ Last updated: 2025-08-25 16:29 +0700
 | 363 | electronics/ohms_law | ✓ | 685µs | 384.0 KB |
 | 364 | electronics/real_and_reactive_power | ✓ | 783µs | 384.0 KB |
 | 365 | electronics/resistor_color_code | ✓ | 736µs | 512.0 KB |
-| 366 | electronics/resistor_equivalence | ✓ | 513µs | 384.0 KB |
-| 367 | electronics/resonant_frequency | ✓ | 597µs | 384.0 KB |
-| 368 | electronics/wheatstone_bridge | ✓ | 466µs | 384.0 KB |
-| 369 | file_transfer/receive_file | ✓ | 548µs | 256.0 KB |
-| 370 | file_transfer/send_file | ✓ | 514µs |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
+| 366 | electronics/resistor_equivalence | ✓ | 485µs | 512.0 KB |
+| 367 | electronics/resonant_frequency | ✓ | 344µs | 128.0 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 349µs | 256.0 KB |
+| 369 | file_transfer/receive_file | ✓ | 441µs | 128.0 KB |
+| 370 | file_transfer/send_file | ✓ | 333µs |  |
+| 371 | file_transfer/tests/test_send_file | ✓ | 372µs | 128.0 KB |
 | 372 | financial/equated_monthly_installments | ✓ | 550µs | 256.0 KB |
 | 373 | financial/exponential_moving_average | ✓ | 761µs | 384.0 KB |
 | 374 | financial/interest | ✓ | 589µs | 384.0 KB |

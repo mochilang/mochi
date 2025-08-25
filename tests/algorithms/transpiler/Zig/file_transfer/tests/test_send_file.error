@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/file_transfer/tests/test_send_file.zig:32:37: error: unused function parameter
-/workspace/mochi/tests/algorithms/transpiler/Zig/file_transfer/tests/test_send_file.zig:37:37: error: unused function parameter
-/workspace/mochi/tests/algorithms/transpiler/Zig/file_transfer/tests/test_send_file.zig:74:34: error: unused function parameter
-/workspace/mochi/tests/algorithms/transpiler/Zig/file_transfer/tests/test_send_file.zig:92:11: error: '_' used as an identifier without @"_" syntax
