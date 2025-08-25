@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
@@ -14,6 +15,18 @@ function _now() {
         return $now_seed;
     }
     return hrtime(true);
+}
+function _slice($x, $start, $length = null) {
+    if (is_string($x)) {
+        if ($length === null) return substr($x, $start);
+        return substr($x, $start, $length);
+    }
+    if ($length === null) return array_slice($x, $start);
+    return array_slice($x, $start, $length);
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -43,7 +56,7 @@ $__start = _now();
 };
   return $res;
 };
-  function slice($s, $start, $end) {
+  function mochi_slice($s, $start, $end) {
   $res = '';
   $i = $start;
   while ($i < $end) {
@@ -67,18 +80,18 @@ $__start = _now();
   function bin_to_hexadecimal($binary_str) {
   $s = strip_spaces($binary_str);
   if (strlen($s) == 0) {
-  $panic('Empty string was passed to the function');
+  _panic('Empty string was passed to the function');
 }
   $is_negative = false;
-  if (substr($s, 0, 0 + 1 - 0) == '-') {
+  if (substr($s, 0, 0 + 1) == '-') {
   $is_negative = true;
-  $s = array_slice($s, 1, strlen($s) - 1);
+  $s = _slice($s, 1, strlen($s) - 1);
 }
   $i = 0;
   while ($i < strlen($s)) {
   $c = substr($s, $i, $i + 1 - $i);
   if ($c != '0' && $c != '1') {
-  $panic('Non-binary value was passed to the function');
+  _panic('Non-binary value was passed to the function');
 }
   $i = $i + 1;
 };
@@ -89,7 +102,7 @@ $__start = _now();
   $res = '0x';
   $j = 0;
   while ($j < strlen($s)) {
-  $chunk = array_slice($s, $j, $j + 4 - $j);
+  $chunk = _slice($s, $j, $j + 4 - $j);
   $val = bits_to_int($chunk);
   $res = $res . substr($digits, $val, $val + 1 - $val);
   $j = $j + 4;
@@ -103,7 +116,7 @@ $__start = _now();
   echo rtrim(bin_to_hexadecimal(' 1010   ')), PHP_EOL;
   echo rtrim(bin_to_hexadecimal('-11101')), PHP_EOL;
 $__end = _now();
-$__end_mem = memory_get_peak_usage();
+$__end_mem = memory_get_peak_usage(true);
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

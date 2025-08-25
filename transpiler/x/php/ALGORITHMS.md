@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-25 22:41 GMT+7
+Last updated: 2025-08-26 00:06 GMT+7
 
-## Algorithms Golden Test Checklist (1006/1077)
+## Algorithms Golden Test Checklist (1007/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -129,7 +129,7 @@ Last updated: 2025-08-25 22:41 GMT+7
 | 120 | computer_vision/pooling_functions | ✓ | 152µs | 37.4 KB |
 | 121 | conversions/astronomical_length_scale_conversion | ✓ | 106µs | 36.5 KB |
 | 122 | conversions/binary_to_decimal | ✓ | 91µs | 39.6 KB |
-| 123 | conversions/binary_to_hexadecimal | error |  |  |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 46µs | 1.6 MB |
 | 124 | conversions/binary_to_octal | ✓ | 99µs | 40.1 KB |
 | 125 | conversions/convert_number_to_words | ✓ | 331µs | 71.9 KB |
 | 126 | conversions/decimal_to_any | ✓ | 158µs | 34.8 KB |
@@ -725,7 +725,7 @@ Last updated: 2025-08-25 22:41 GMT+7
 | 716 | matrix/spiral_print | ✓ | 195µs | 37.2 KB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 170µs | 74.2 KB |
 | 718 | matrix/validate_sudoku_board | ✓ | 181µs | 39.3 KB |
-| 719 | networking_flow/ford_fulkerson | ✓ | 115µs | 40.0 KB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 99µs | 1.6 MB |
 | 720 | networking_flow/minimum_cut | ✓ | 332µs | 40.1 KB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 86µs | 35.8 KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 203µs | 38.8 KB |

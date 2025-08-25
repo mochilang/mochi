@@ -198,6 +198,15 @@ const helperAppend = `function _append($arr, $x) {
     return $arr;
 }`
 
+const helperSlice = `function _slice($x, $start, $length = null) {
+    if (is_string($x)) {
+        if ($length === null) return substr($x, $start);
+        return substr($x, $start, $length);
+    }
+    if ($length === null) return array_slice($x, $start);
+    return array_slice($x, $start, $length);
+}`
+
 const helperExists = `function _exists($v) {
     if (is_array($v)) return count($v) > 0;
     if (is_string($v)) return strlen($v) > 0;
@@ -352,6 +361,7 @@ var usesGetOutput bool
 var usesAppend bool
 var usesExists bool
 var usesFetch bool
+var usesSlice bool
 var benchMain bool
 var extraStmts []Stmt
 
@@ -2534,33 +2544,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	if isStringExpr(s.X) {
-		fmt.Fprint(w, "substr(")
-		s.X.emit(w)
-		fmt.Fprint(w, ", ")
-		s.Start.emit(w)
-		if s.End != nil {
-			fmt.Fprint(w, ", ")
-			(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
-		}
-		fmt.Fprint(w, ")")
-		return
-	} else if s.End != nil {
-		if be, ok := s.End.(*BinaryExpr); ok && be.Op == "+" {
-			if rv, ok2 := be.Right.(*IntLit); ok2 && rv.Value == 1 {
-				if lv, ok3 := be.Left.(*Var); ok3 {
-					if sv, ok4 := s.Start.(*Var); ok4 && sv.Name == lv.Name {
-						s.X.emit(w)
-						fmt.Fprint(w, "[")
-						s.Start.emit(w)
-						fmt.Fprint(w, "]")
-						return
-					}
-				}
-			}
-		}
-	}
-	fmt.Fprint(w, "array_slice(")
+	fmt.Fprint(w, "_slice(")
 	s.X.emit(w)
 	fmt.Fprint(w, ", ")
 	s.Start.emit(w)
@@ -2679,6 +2663,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesSlice {
+		if _, err := io.WriteString(w, helperSlice+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesExists {
 		if _, err := io.WriteString(w, helperExists+"\n"); err != nil {
 			return err
@@ -2791,6 +2780,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesAppend = false
 	usesExists = false
 	usesFetch = false
+	usesSlice = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	if prog.Pos.Filename != "" {
@@ -3240,6 +3230,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if isStringExpr(e) {
 					e = &SubstringExpr{Str: e, Start: start, End: end}
 				} else {
+					usesSlice = true
 					e = &SliceExpr{X: e, Start: start, End: end}
 				}
 			}
@@ -3357,6 +3348,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 3 {
 				return nil, fmt.Errorf("slice expects 3 args")
 			}
+			usesSlice = true
 			return &SliceExpr{X: args[0], Start: args[1], End: args[2]}, nil
 		} else if name == "split" && isBuiltin {
 			if len(args) != 2 {
@@ -5292,10 +5284,10 @@ func isIntExpr(e Expr) bool {
 		return isIntExpr(v.Then) && isIntExpr(v.Else)
 	case *CallExpr:
 		switch v.Func {
-               case "len", "count", "intval", "_intdiv", "_iadd", "_isub", "_imul", "_idiv", "_imod":
-                       return true
-               }
-       }
+		case "len", "count", "intval", "_intdiv", "_iadd", "_isub", "_imul", "_idiv", "_imod":
+			return true
+		}
+	}
 	return false
 }
 
