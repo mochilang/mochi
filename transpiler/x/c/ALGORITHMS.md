@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (922/1077) - Last updated 2025-08-25 19:02 +0700:
+Checklist of programs that currently transpile and run (922/1077) - Last updated 2025-08-25 19:22 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -347,7 +347,7 @@ Checklist of programs that currently transpile and run (922/1077) - Last updated
 | 340 | dynamic_programming/regex_match | ✓ | 309us | 1.5 MB |
 | 341 | dynamic_programming/rod_cutting | ✓ | 311us | 1.5 MB |
 | 342 | dynamic_programming/smith_waterman | ✓ | 247us | 1.4 MB |
-| 343 | dynamic_programming/subset_generation | ✓ | 175us | 1.5 MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 693us | 1.6 MB |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 389us | 1.5 MB |
 | 345 | dynamic_programming/trapped_water | ✓ | 430us | 1.6 MB |
 | 346 | dynamic_programming/tribonacci | ✓ | 377us | 1.4 MB |
