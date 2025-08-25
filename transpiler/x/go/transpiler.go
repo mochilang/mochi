@@ -1756,9 +1756,9 @@ func (k *KeysExpr) emit(w io.Writer) {
 type ListStringExpr struct{ List Expr }
 
 func (ls *ListStringExpr) emit(w io.Writer) {
-	io.WriteString(w, "fmt.Sprint(")
+	io.WriteString(w, "strings.ReplaceAll(fmt.Sprint(")
 	ls.List.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, "), \" \", \", \")")
 }
 
 // StringJoinExpr joins a list of strings with spaces.
@@ -2980,6 +2980,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.TypeOfExpr(a, env)
 				switch t.(type) {
 				case types.ListType:
+					usesStrings = true
 					ex = &ListStringExpr{List: ex}
 				case types.StructType:
 					needStrings = true
