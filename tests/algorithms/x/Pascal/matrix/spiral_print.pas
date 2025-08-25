@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -110,12 +120,12 @@ function spiral_traversal(spiral_traversal_matrix: IntArrayArray): IntArray;
 var
   spiral_traversal_rows: integer;
   spiral_traversal_cols: integer;
-  spiral_traversal_top: integer;
+  spiral_traversal_top: int64;
   spiral_traversal_bottom: integer;
-  spiral_traversal_left: integer;
+  spiral_traversal_left: int64;
   spiral_traversal_right: integer;
-  spiral_traversal_result_: array of integer;
-  spiral_traversal_i: integer;
+  spiral_traversal_result_: array of int64;
+  spiral_traversal_i: int64;
 begin
   if not is_valid_matrix(spiral_traversal_matrix) then begin
   exit([]);
@@ -161,7 +171,7 @@ end;
 end;
 procedure spiral_print_clockwise(spiral_print_clockwise_matrix: IntArrayArray);
 var
-  spiral_print_clockwise_value: integer;
+  spiral_print_clockwise_value: int64;
 begin
   for spiral_print_clockwise_value in spiral_traversal(spiral_print_clockwise_matrix) do begin
   writeln(IntToStr(spiral_print_clockwise_value));
@@ -169,7 +179,7 @@ end;
 end;
 procedure main();
 var
-  main_a: array of array of integer;
+  main_a: array of array of int64;
 begin
   main_a := [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]];
   spiral_print_clockwise(main_a);
@@ -187,4 +197,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

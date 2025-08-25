@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,6 +66,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
@@ -91,7 +101,7 @@ function add(add_a: RealArrayArray; add_b: RealArrayArray): RealArrayArray; forw
 function subtract(subtract_a: RealArrayArray; subtract_b: RealArrayArray): RealArrayArray; forward;
 function scalar_multiply(scalar_multiply_a: RealArrayArray; scalar_multiply_s: real): RealArrayArray; forward;
 function multiply(multiply_a: RealArrayArray; multiply_b: RealArrayArray): RealArrayArray; forward;
-function identity(identity_n: integer): RealArrayArray; forward;
+function identity(identity_n: int64): RealArrayArray; forward;
 function transpose(transpose_a: RealArrayArray): RealArrayArray; forward;
 procedure main(); forward;
 procedure check_matrix(check_matrix_mat: RealArrayArray);
@@ -105,9 +115,9 @@ var
   add_rows: integer;
   add_cols: integer;
   add_result_: array of RealArray;
-  add_i: integer;
+  add_i: int64;
   add_row: array of real;
-  add_j: integer;
+  add_j: int64;
 begin
   check_matrix(add_a);
   check_matrix(add_b);
@@ -135,9 +145,9 @@ var
   subtract_rows: integer;
   subtract_cols: integer;
   subtract_result_: array of RealArray;
-  subtract_i: integer;
+  subtract_i: int64;
   subtract_row: array of real;
-  subtract_j: integer;
+  subtract_j: int64;
 begin
   check_matrix(subtract_a);
   check_matrix(subtract_b);
@@ -165,9 +175,9 @@ var
   scalar_multiply_rows: integer;
   scalar_multiply_cols: integer;
   scalar_multiply_result_: array of RealArray;
-  scalar_multiply_i: integer;
+  scalar_multiply_i: int64;
   scalar_multiply_row: array of real;
-  scalar_multiply_j: integer;
+  scalar_multiply_j: int64;
 begin
   check_matrix(scalar_multiply_a);
   scalar_multiply_rows := Length(scalar_multiply_a);
@@ -191,11 +201,11 @@ var
   multiply_rows: integer;
   multiply_cols: integer;
   multiply_result_: array of RealArray;
-  multiply_i: integer;
+  multiply_i: int64;
   multiply_row: array of real;
-  multiply_j: integer;
+  multiply_j: int64;
   multiply_sum: real;
-  multiply_k: integer;
+  multiply_k: int64;
 begin
   check_matrix(multiply_a);
   check_matrix(multiply_b);
@@ -224,12 +234,12 @@ end;
 end;
   exit(multiply_result_);
 end;
-function identity(identity_n: integer): RealArrayArray;
+function identity(identity_n: int64): RealArrayArray;
 var
   identity_result_: array of RealArray;
-  identity_i: integer;
+  identity_i: int64;
   identity_row: array of real;
-  identity_j: integer;
+  identity_j: int64;
 begin
   identity_result_ := [];
   identity_i := 0;
@@ -254,9 +264,9 @@ var
   transpose_rows: integer;
   transpose_cols: integer;
   transpose_result_: array of RealArray;
-  transpose_j: integer;
+  transpose_j: int64;
   transpose_row: array of real;
-  transpose_i: integer;
+  transpose_i: int64;
 begin
   check_matrix(transpose_a);
   transpose_rows := Length(transpose_a);
@@ -303,4 +313,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

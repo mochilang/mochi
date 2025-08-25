@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,29 +66,32 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  num: integer;
-function is_happy_number(num: integer): boolean; forward;
+function is_happy_number(is_happy_number_num: int64): boolean; forward;
 procedure test_is_happy_number(); forward;
 procedure main(); forward;
-function is_happy_number(num: integer): boolean;
+function is_happy_number(is_happy_number_num: int64): boolean;
 var
-  is_happy_number_seen: array of integer;
-  is_happy_number_n: integer;
-  is_happy_number_i: integer;
-  is_happy_number_total: integer;
-  is_happy_number_temp: integer;
-  is_happy_number_digit: integer;
+  is_happy_number_seen: array of int64;
+  is_happy_number_n: int64;
+  is_happy_number_i: int64;
+  is_happy_number_total: int64;
+  is_happy_number_temp: int64;
+  is_happy_number_digit: int64;
 begin
-  if num <= 0 then begin
+  if is_happy_number_num <= 0 then begin
   panic('num must be a positive integer');
 end;
   is_happy_number_seen := [];
-  is_happy_number_n := num;
+  is_happy_number_n := is_happy_number_num;
   while is_happy_number_n <> 1 do begin
   is_happy_number_i := 0;
   while is_happy_number_i < Length(is_happy_number_seen) do begin
@@ -97,7 +106,7 @@ end;
   while is_happy_number_temp > 0 do begin
   is_happy_number_digit := is_happy_number_temp mod 10;
   is_happy_number_total := is_happy_number_total + (is_happy_number_digit * is_happy_number_digit);
-  is_happy_number_temp := is_happy_number_temp div 10;
+  is_happy_number_temp := _floordiv(is_happy_number_temp, 10);
 end;
   is_happy_number_n := is_happy_number_total;
 end;
@@ -135,4 +144,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

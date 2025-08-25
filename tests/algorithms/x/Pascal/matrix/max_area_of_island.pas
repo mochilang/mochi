@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils, fgl;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,22 +67,26 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   matrix: array of IntArray;
-function encode(encode_row: integer; encode_col: integer): string; forward;
-function is_safe(is_safe_row: integer; is_safe_col: integer; is_safe_rows: integer; is_safe_cols: integer): boolean; forward;
+function encode(encode_row: int64; encode_col: int64): string; forward;
+function is_safe(is_safe_row: int64; is_safe_col: int64; is_safe_rows: int64; is_safe_cols: int64): boolean; forward;
 function has(has_seen: specialize TFPGMap<string, boolean>; has_key: string): boolean; forward;
-function depth_first_search(depth_first_search_row: integer; depth_first_search_col: integer; depth_first_search_seen: specialize TFPGMap<string, boolean>; depth_first_search_mat: IntArrayArray): integer; forward;
-function find_max_area(find_max_area_mat: IntArrayArray): integer; forward;
-function encode(encode_row: integer; encode_col: integer): string;
+function depth_first_search(depth_first_search_row: int64; depth_first_search_col: int64; depth_first_search_seen: specialize TFPGMap<string, boolean>; depth_first_search_mat: IntArrayArray): int64; forward;
+function find_max_area(find_max_area_mat: IntArrayArray): int64; forward;
+function encode(encode_row: int64; encode_col: int64): string;
 begin
   exit((IntToStr(encode_row) + ',') + IntToStr(encode_col));
 end;
-function is_safe(is_safe_row: integer; is_safe_col: integer; is_safe_rows: integer; is_safe_cols: integer): boolean;
+function is_safe(is_safe_row: int64; is_safe_col: int64; is_safe_rows: int64; is_safe_cols: int64): boolean;
 begin
   exit((((is_safe_row >= 0) and (is_safe_row < is_safe_rows)) and (is_safe_col >= 0)) and (is_safe_col < is_safe_cols));
 end;
@@ -84,7 +94,7 @@ function has(has_seen: specialize TFPGMap<string, boolean>; has_key: string): bo
 begin
   exit(has_seen.IndexOf(has_key) <> -1);
 end;
-function depth_first_search(depth_first_search_row: integer; depth_first_search_col: integer; depth_first_search_seen: specialize TFPGMap<string, boolean>; depth_first_search_mat: IntArrayArray): integer;
+function depth_first_search(depth_first_search_row: int64; depth_first_search_col: int64; depth_first_search_seen: specialize TFPGMap<string, boolean>; depth_first_search_mat: IntArrayArray): int64;
 var
   depth_first_search_rows: integer;
   depth_first_search_cols: integer;
@@ -100,17 +110,17 @@ end else begin
   exit(0);
 end;
 end;
-function find_max_area(find_max_area_mat: IntArrayArray): integer;
+function find_max_area(find_max_area_mat: IntArrayArray): int64;
 var
   find_max_area_seen: specialize TFPGMap<string, boolean>;
   find_max_area_rows: integer;
-  find_max_area_max_area: integer;
-  find_max_area_r: integer;
-  find_max_area_line: array of integer;
+  find_max_area_max_area: int64;
+  find_max_area_r: int64;
+  find_max_area_line: array of int64;
   find_max_area_cols: integer;
-  find_max_area_c: integer;
+  find_max_area_c: int64;
   find_max_area_key: string;
-  find_max_area_area: integer;
+  find_max_area_area: int64;
 begin
   find_max_area_seen := specialize TFPGMap<string, boolean>.Create();
   find_max_area_rows := Length(find_max_area_mat);
@@ -149,4 +159,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

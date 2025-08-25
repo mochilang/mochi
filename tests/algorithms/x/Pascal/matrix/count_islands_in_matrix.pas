@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type BoolArray = array of boolean;
 type IntArrayArray = array of IntArray;
 type BoolArrayArray = array of BoolArray;
@@ -45,6 +45,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -53,7 +59,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -63,16 +69,20 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   grid: array of IntArray;
-function is_safe(is_safe_grid: IntArrayArray; is_safe_visited: BoolArrayArray; is_safe_row: integer; is_safe_col: integer): boolean; forward;
-procedure dfs(dfs_grid: IntArrayArray; dfs_visited: BoolArrayArray; dfs_row: integer; dfs_col: integer); forward;
-function count_islands(count_islands_grid: IntArrayArray): integer; forward;
-function is_safe(is_safe_grid: IntArrayArray; is_safe_visited: BoolArrayArray; is_safe_row: integer; is_safe_col: integer): boolean;
+function is_safe(is_safe_grid: IntArrayArray; is_safe_visited: BoolArrayArray; is_safe_row: int64; is_safe_col: int64): boolean; forward;
+procedure dfs(dfs_grid: IntArrayArray; dfs_visited: BoolArrayArray; dfs_row: int64; dfs_col: int64); forward;
+function count_islands(count_islands_grid: IntArrayArray): int64; forward;
+function is_safe(is_safe_grid: IntArrayArray; is_safe_visited: BoolArrayArray; is_safe_row: int64; is_safe_col: int64): boolean;
 var
   is_safe_rows: integer;
   is_safe_cols: integer;
@@ -90,13 +100,13 @@ end;
   is_safe_not_visited := is_safe_visited_cell = false;
   exit(is_safe_not_visited and (is_safe_grid[is_safe_row][is_safe_col] = 1));
 end;
-procedure dfs(dfs_grid: IntArrayArray; dfs_visited: BoolArrayArray; dfs_row: integer; dfs_col: integer);
+procedure dfs(dfs_grid: IntArrayArray; dfs_visited: BoolArrayArray; dfs_row: int64; dfs_col: int64);
 var
-  dfs_row_nbr: array of integer;
-  dfs_col_nbr: array of integer;
-  dfs_k: integer;
-  dfs_new_row: integer;
-  dfs_new_col: integer;
+  dfs_row_nbr: array of int64;
+  dfs_col_nbr: array of int64;
+  dfs_k: int64;
+  dfs_new_row: int64;
+  dfs_new_col: int64;
 begin
   dfs_row_nbr := [-1, -1, -1, 0, 0, 1, 1, 1];
   dfs_col_nbr := [-1, 0, 1, -1, 1, -1, 0, 1];
@@ -111,15 +121,15 @@ end;
   dfs_k := dfs_k + 1;
 end;
 end;
-function count_islands(count_islands_grid: IntArrayArray): integer;
+function count_islands(count_islands_grid: IntArrayArray): int64;
 var
   count_islands_rows: integer;
   count_islands_cols: integer;
   count_islands_visited: array of BoolArray;
-  count_islands_i: integer;
+  count_islands_i: int64;
   count_islands_row_list: array of boolean;
-  count_islands_j: integer;
-  count_islands_count: integer;
+  count_islands_j: int64;
+  count_islands_count: int64;
 begin
   count_islands_rows := Length(count_islands_grid);
   count_islands_cols := Length(count_islands_grid[0]);
@@ -163,4 +173,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

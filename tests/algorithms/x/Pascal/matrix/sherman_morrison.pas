@@ -5,8 +5,8 @@ type RealArray = array of real;
 type RealArrayArray = array of RealArray;
 type Matrix = record
   data: array of RealArray;
-  rows: integer;
-  cols: integer;
+  rows: int64;
+  cols: int64;
 end;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -48,6 +48,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -56,7 +62,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -66,13 +72,17 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function makeMatrix(data: RealArrayArray; rows: integer; cols: integer): Matrix; forward;
-function make_matrix(make_matrix_rows: integer; make_matrix_cols: integer; make_matrix_value: real): Matrix; forward;
+function makeMatrix(data: RealArrayArray; rows: int64; cols: int64): Matrix; forward;
+function make_matrix(make_matrix_rows: int64; make_matrix_cols: int64; make_matrix_value: real): Matrix; forward;
 function matrix_from_lists(matrix_from_lists_vals: RealArrayArray): Matrix; forward;
 function matrix_to_string(matrix_to_string_m: Matrix): string; forward;
 function matrix_add(matrix_add_a: Matrix; matrix_add_b: Matrix): Matrix; forward;
@@ -82,18 +92,18 @@ function matrix_mul(matrix_mul_a: Matrix; matrix_mul_b: Matrix): Matrix; forward
 function matrix_transpose(matrix_transpose_m: Matrix): Matrix; forward;
 function sherman_morrison(sherman_morrison_ainv: Matrix; sherman_morrison_u: Matrix; sherman_morrison_v: Matrix): Matrix; forward;
 procedure main(); forward;
-function makeMatrix(data: RealArrayArray; rows: integer; cols: integer): Matrix;
+function makeMatrix(data: RealArrayArray; rows: int64; cols: int64): Matrix;
 begin
   Result.data := data;
   Result.rows := rows;
   Result.cols := cols;
 end;
-function make_matrix(make_matrix_rows: integer; make_matrix_cols: integer; make_matrix_value: real): Matrix;
+function make_matrix(make_matrix_rows: int64; make_matrix_cols: int64; make_matrix_value: real): Matrix;
 var
   make_matrix_arr: array of RealArray;
-  make_matrix_r: integer;
+  make_matrix_r: int64;
   make_matrix_row: array of real;
-  make_matrix_c: integer;
+  make_matrix_c: int64;
 begin
   make_matrix_arr := [];
   make_matrix_r := 0;
@@ -112,7 +122,7 @@ end;
 function matrix_from_lists(matrix_from_lists_vals: RealArrayArray): Matrix;
 var
   matrix_from_lists_r: integer;
-  matrix_from_lists_c: integer;
+  matrix_from_lists_c: int64;
 begin
   matrix_from_lists_r := Length(matrix_from_lists_vals);
   if matrix_from_lists_r = 0 then begin
@@ -125,8 +135,8 @@ end;
 function matrix_to_string(matrix_to_string_m: Matrix): string;
 var
   matrix_to_string_s: string;
-  matrix_to_string_i: integer;
-  matrix_to_string_j: integer;
+  matrix_to_string_i: int64;
+  matrix_to_string_j: int64;
 begin
   matrix_to_string_s := '';
   matrix_to_string_i := 0;
@@ -142,7 +152,7 @@ end;
 end;
   matrix_to_string_s := matrix_to_string_s + ']';
   if matrix_to_string_i < (matrix_to_string_m.rows - 1) then begin
-  matrix_to_string_s := matrix_to_string_s + '' + #10 + '';
+  matrix_to_string_s := matrix_to_string_s + #10;
 end;
   matrix_to_string_i := matrix_to_string_i + 1;
 end;
@@ -151,9 +161,9 @@ end;
 function matrix_add(matrix_add_a: Matrix; matrix_add_b: Matrix): Matrix;
 var
   matrix_add_res: array of RealArray;
-  matrix_add_i: integer;
+  matrix_add_i: int64;
   matrix_add_row: array of real;
-  matrix_add_j: integer;
+  matrix_add_j: int64;
 begin
   if (matrix_add_a.rows <> matrix_add_b.rows) or (matrix_add_a.cols <> matrix_add_b.cols) then begin
   exit(makeMatrix([], 0, 0));
@@ -175,9 +185,9 @@ end;
 function matrix_sub(matrix_sub_a: Matrix; matrix_sub_b: Matrix): Matrix;
 var
   matrix_sub_res: array of RealArray;
-  matrix_sub_i: integer;
+  matrix_sub_i: int64;
   matrix_sub_row: array of real;
-  matrix_sub_j: integer;
+  matrix_sub_j: int64;
 begin
   if (matrix_sub_a.rows <> matrix_sub_b.rows) or (matrix_sub_a.cols <> matrix_sub_b.cols) then begin
   exit(makeMatrix([], 0, 0));
@@ -199,9 +209,9 @@ end;
 function matrix_mul_scalar(matrix_mul_scalar_m: Matrix; matrix_mul_scalar_k: real): Matrix;
 var
   matrix_mul_scalar_res: array of RealArray;
-  matrix_mul_scalar_i: integer;
+  matrix_mul_scalar_i: int64;
   matrix_mul_scalar_row: array of real;
-  matrix_mul_scalar_j: integer;
+  matrix_mul_scalar_j: int64;
 begin
   matrix_mul_scalar_res := [];
   matrix_mul_scalar_i := 0;
@@ -220,11 +230,11 @@ end;
 function matrix_mul(matrix_mul_a: Matrix; matrix_mul_b: Matrix): Matrix;
 var
   matrix_mul_res: array of RealArray;
-  matrix_mul_i: integer;
+  matrix_mul_i: int64;
   matrix_mul_row: array of real;
-  matrix_mul_j: integer;
+  matrix_mul_j: int64;
   matrix_mul_sum: real;
-  matrix_mul_k: integer;
+  matrix_mul_k: int64;
 begin
   if matrix_mul_a.cols <> matrix_mul_b.rows then begin
   exit(makeMatrix([], 0, 0));
@@ -252,9 +262,9 @@ end;
 function matrix_transpose(matrix_transpose_m: Matrix): Matrix;
 var
   matrix_transpose_res: array of RealArray;
-  matrix_transpose_c: integer;
+  matrix_transpose_c: int64;
   matrix_transpose_row: array of real;
-  matrix_transpose_r: integer;
+  matrix_transpose_r: int64;
 begin
   matrix_transpose_res := [];
   matrix_transpose_c := 0;
@@ -317,4 +327,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,21 +65,25 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function pow_float(pow_float_base: real; pow_float_exp_: integer): real; forward;
-function sum_of_geometric_progression(sum_of_geometric_progression_first_term: integer; sum_of_geometric_progression_common_ratio: integer; sum_of_geometric_progression_num_of_terms: integer): real; forward;
+function pow_float(pow_float_base: real; pow_float_exp_: int64): real; forward;
+function sum_of_geometric_progression(sum_of_geometric_progression_first_term: int64; sum_of_geometric_progression_common_ratio: int64; sum_of_geometric_progression_num_of_terms: int64): real; forward;
 procedure test_sum(); forward;
 procedure main(); forward;
-function pow_float(pow_float_base: real; pow_float_exp_: integer): real;
+function pow_float(pow_float_base: real; pow_float_exp_: int64): real;
 var
   pow_float_result_: real;
-  pow_float_exponent: integer;
-  pow_float_i: integer;
-  pow_float_i_7: integer;
+  pow_float_exponent: int64;
+  pow_float_i: int64;
+  pow_float_i_7: int64;
 begin
   pow_float_result_ := 1;
   pow_float_exponent := pow_float_exp_;
@@ -93,7 +103,7 @@ end;
 end;
   exit(pow_float_result_);
 end;
-function sum_of_geometric_progression(sum_of_geometric_progression_first_term: integer; sum_of_geometric_progression_common_ratio: integer; sum_of_geometric_progression_num_of_terms: integer): real;
+function sum_of_geometric_progression(sum_of_geometric_progression_first_term: int64; sum_of_geometric_progression_common_ratio: int64; sum_of_geometric_progression_num_of_terms: int64): real;
 var
   sum_of_geometric_progression_a: real;
   sum_of_geometric_progression_r: real;
@@ -134,4 +144,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

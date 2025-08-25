@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils, Math;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,26 +66,29 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-function ugly_numbers(n: integer): integer; forward;
-function ugly_numbers(n: integer): integer;
+function ugly_numbers(ugly_numbers_n: int64): int64; forward;
+function ugly_numbers(ugly_numbers_n: int64): int64;
 var
-  ugly_numbers_ugly_nums: array of integer;
-  ugly_numbers_i2: integer;
-  ugly_numbers_i3: integer;
-  ugly_numbers_i5: integer;
-  ugly_numbers_next_2: integer;
-  ugly_numbers_next_3: integer;
-  ugly_numbers_next_5: integer;
-  ugly_numbers_count: integer;
-  ugly_numbers_next_num: integer;
+  ugly_numbers_ugly_nums: array of int64;
+  ugly_numbers_i2: int64;
+  ugly_numbers_i3: int64;
+  ugly_numbers_i5: int64;
+  ugly_numbers_next_2: int64;
+  ugly_numbers_next_3: int64;
+  ugly_numbers_next_5: int64;
+  ugly_numbers_count: int64;
+  ugly_numbers_next_num: int64;
 begin
-  if n <= 0 then begin
+  if ugly_numbers_n <= 0 then begin
   exit(1);
 end;
   ugly_numbers_ugly_nums := [];
@@ -91,7 +100,7 @@ end;
   ugly_numbers_next_3 := 3;
   ugly_numbers_next_5 := 5;
   ugly_numbers_count := 1;
-  while ugly_numbers_count < n do begin
+  while ugly_numbers_count < ugly_numbers_n do begin
   if ugly_numbers_next_2 < ugly_numbers_next_3 then begin
   ugly_numbers_next_num := IfThen(ugly_numbers_next_2 < ugly_numbers_next_5, ugly_numbers_next_2, ugly_numbers_next_5);
 end else begin
@@ -130,4 +139,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

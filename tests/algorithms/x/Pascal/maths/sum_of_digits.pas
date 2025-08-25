@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,55 +65,58 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-function abs_int(n: integer): integer; forward;
-function sum_of_digits(n: integer): integer; forward;
-function sum_of_digits_recursion(n: integer): integer; forward;
-function sum_of_digits_compact(n: integer): integer; forward;
+function abs_int(abs_int_n: int64): int64; forward;
+function sum_of_digits(sum_of_digits_n: int64): int64; forward;
+function sum_of_digits_recursion(sum_of_digits_recursion_n: int64): int64; forward;
+function sum_of_digits_compact(sum_of_digits_compact_n: int64): int64; forward;
 procedure test_sum_of_digits(); forward;
 procedure main(); forward;
-function abs_int(n: integer): integer;
+function abs_int(abs_int_n: int64): int64;
 begin
-  if n < 0 then begin
-  exit(-n);
+  if abs_int_n < 0 then begin
+  exit(-abs_int_n);
 end;
-  exit(n);
+  exit(abs_int_n);
 end;
-function sum_of_digits(n: integer): integer;
+function sum_of_digits(sum_of_digits_n: int64): int64;
 var
-  sum_of_digits_m: integer;
-  sum_of_digits_res: integer;
+  sum_of_digits_m: int64;
+  sum_of_digits_res: int64;
 begin
-  sum_of_digits_m := abs_int(n);
+  sum_of_digits_m := abs_int(sum_of_digits_n);
   sum_of_digits_res := 0;
   while sum_of_digits_m > 0 do begin
   sum_of_digits_res := sum_of_digits_res + (sum_of_digits_m mod 10);
-  sum_of_digits_m := sum_of_digits_m div 10;
+  sum_of_digits_m := _floordiv(sum_of_digits_m, 10);
 end;
   exit(sum_of_digits_res);
 end;
-function sum_of_digits_recursion(n: integer): integer;
+function sum_of_digits_recursion(sum_of_digits_recursion_n: int64): int64;
 var
-  sum_of_digits_recursion_m: integer;
+  sum_of_digits_recursion_m: int64;
 begin
-  sum_of_digits_recursion_m := abs_int(n);
+  sum_of_digits_recursion_m := abs_int(sum_of_digits_recursion_n);
   if sum_of_digits_recursion_m < 10 then begin
   exit(sum_of_digits_recursion_m);
 end;
-  exit((sum_of_digits_recursion_m mod 10) + sum_of_digits_recursion(sum_of_digits_recursion_m div 10));
+  exit((sum_of_digits_recursion_m mod 10) + sum_of_digits_recursion(_floordiv(sum_of_digits_recursion_m, 10)));
 end;
-function sum_of_digits_compact(n: integer): integer;
+function sum_of_digits_compact(sum_of_digits_compact_n: int64): int64;
 var
   sum_of_digits_compact_s: string;
-  sum_of_digits_compact_res: integer;
-  sum_of_digits_compact_i: integer;
+  sum_of_digits_compact_res: int64;
+  sum_of_digits_compact_i: int64;
 begin
-  sum_of_digits_compact_s := IntToStr(abs_int(n));
+  sum_of_digits_compact_s := IntToStr(abs_int(sum_of_digits_compact_n));
   sum_of_digits_compact_res := 0;
   sum_of_digits_compact_i := 0;
   while sum_of_digits_compact_i < Length(sum_of_digits_compact_s) do begin
@@ -172,4 +181,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,36 +65,38 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  digit: integer;
-  n: integer;
-function factorial(digit: integer): integer; forward;
-function is_krishnamurthy(n: integer): boolean; forward;
-function factorial(digit: integer): integer;
+function factorial(factorial_digit: int64): int64; forward;
+function is_krishnamurthy(is_krishnamurthy_n: int64): boolean; forward;
+function factorial(factorial_digit: int64): int64;
 begin
-  if (digit = 0) or (digit = 1) then begin
+  if (factorial_digit = 0) or (factorial_digit = 1) then begin
   exit(1);
 end;
-  exit(digit * factorial(digit - 1));
+  exit(factorial_digit * factorial(factorial_digit - 1));
 end;
-function is_krishnamurthy(n: integer): boolean;
+function is_krishnamurthy(is_krishnamurthy_n: int64): boolean;
 var
-  is_krishnamurthy_duplicate: integer;
-  is_krishnamurthy_fact_sum: integer;
-  is_krishnamurthy_digit: integer;
+  is_krishnamurthy_duplicate: int64;
+  is_krishnamurthy_fact_sum: int64;
+  is_krishnamurthy_digit: int64;
 begin
-  is_krishnamurthy_duplicate := n;
+  is_krishnamurthy_duplicate := is_krishnamurthy_n;
   is_krishnamurthy_fact_sum := 0;
   while is_krishnamurthy_duplicate > 0 do begin
   is_krishnamurthy_digit := is_krishnamurthy_duplicate mod 10;
   is_krishnamurthy_fact_sum := is_krishnamurthy_fact_sum + factorial(is_krishnamurthy_digit);
-  is_krishnamurthy_duplicate := is_krishnamurthy_duplicate div 10;
+  is_krishnamurthy_duplicate := _floordiv(is_krishnamurthy_duplicate, 10);
 end;
-  exit(is_krishnamurthy_fact_sum = n);
+  exit(is_krishnamurthy_fact_sum = is_krishnamurthy_n);
 end;
 begin
   init_now();
@@ -104,4 +112,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

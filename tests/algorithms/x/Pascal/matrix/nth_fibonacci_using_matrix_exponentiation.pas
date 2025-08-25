@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,26 +67,30 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
 function multiply(multiply_matrix_a: IntArrayArray; multiply_matrix_b: IntArrayArray): IntArrayArray; forward;
-function identity(identity_n: integer): IntArrayArray; forward;
-function nth_fibonacci_matrix(nth_fibonacci_matrix_n: integer): integer; forward;
-function nth_fibonacci_bruteforce(nth_fibonacci_bruteforce_n: integer): integer; forward;
-function parse_number(parse_number_s: string): integer; forward;
+function identity(identity_n: int64): IntArrayArray; forward;
+function nth_fibonacci_matrix(nth_fibonacci_matrix_n: int64): int64; forward;
+function nth_fibonacci_bruteforce(nth_fibonacci_bruteforce_n: int64): int64; forward;
+function parse_number(parse_number_s: string): int64; forward;
 procedure main(); forward;
 function multiply(multiply_matrix_a: IntArrayArray; multiply_matrix_b: IntArrayArray): IntArrayArray;
 var
   multiply_n: integer;
   multiply_matrix_c: array of IntArray;
-  multiply_i: integer;
-  multiply_row: array of integer;
-  multiply_j: integer;
-  multiply_val: integer;
-  multiply_k: integer;
+  multiply_i: int64;
+  multiply_row: array of int64;
+  multiply_j: int64;
+  multiply_val: int64;
+  multiply_k: int64;
 begin
   multiply_n := Length(multiply_matrix_a);
   multiply_matrix_c := [];
@@ -103,12 +113,12 @@ end;
 end;
   exit(multiply_matrix_c);
 end;
-function identity(identity_n: integer): IntArrayArray;
+function identity(identity_n: int64): IntArrayArray;
 var
   identity_res: array of IntArray;
-  identity_i: integer;
-  identity_row: array of integer;
-  identity_j: integer;
+  identity_i: int64;
+  identity_row: array of int64;
+  identity_j: int64;
 begin
   identity_res := [];
   identity_i := 0;
@@ -128,11 +138,11 @@ end;
 end;
   exit(identity_res);
 end;
-function nth_fibonacci_matrix(nth_fibonacci_matrix_n: integer): integer;
+function nth_fibonacci_matrix(nth_fibonacci_matrix_n: int64): int64;
 var
   nth_fibonacci_matrix_res_matrix: IntArrayArray;
-  nth_fibonacci_matrix_fib_matrix: array of array of integer;
-  nth_fibonacci_matrix_m: integer;
+  nth_fibonacci_matrix_fib_matrix: array of array of int64;
+  nth_fibonacci_matrix_m: int64;
 begin
   if nth_fibonacci_matrix_n <= 1 then begin
   exit(nth_fibonacci_matrix_n);
@@ -145,16 +155,16 @@ end;
   nth_fibonacci_matrix_res_matrix := multiply(nth_fibonacci_matrix_res_matrix, nth_fibonacci_matrix_fib_matrix);
 end;
   nth_fibonacci_matrix_fib_matrix := multiply(nth_fibonacci_matrix_fib_matrix, nth_fibonacci_matrix_fib_matrix);
-  nth_fibonacci_matrix_m := nth_fibonacci_matrix_m div 2;
+  nth_fibonacci_matrix_m := _floordiv(nth_fibonacci_matrix_m, 2);
 end;
   exit(nth_fibonacci_matrix_res_matrix[0][0]);
 end;
-function nth_fibonacci_bruteforce(nth_fibonacci_bruteforce_n: integer): integer;
+function nth_fibonacci_bruteforce(nth_fibonacci_bruteforce_n: int64): int64;
 var
-  nth_fibonacci_bruteforce_fib0: integer;
-  nth_fibonacci_bruteforce_fib1: integer;
-  nth_fibonacci_bruteforce_i: integer;
-  nth_fibonacci_bruteforce_next: integer;
+  nth_fibonacci_bruteforce_fib0: int64;
+  nth_fibonacci_bruteforce_fib1: int64;
+  nth_fibonacci_bruteforce_i: int64;
+  nth_fibonacci_bruteforce_next: int64;
 begin
   if nth_fibonacci_bruteforce_n <= 1 then begin
   exit(nth_fibonacci_bruteforce_n);
@@ -170,10 +180,10 @@ end;
 end;
   exit(nth_fibonacci_bruteforce_fib1);
 end;
-function parse_number(parse_number_s: string): integer;
+function parse_number(parse_number_s: string): int64;
 var
-  parse_number_result_: integer;
-  parse_number_i: integer;
+  parse_number_result_: int64;
+  parse_number_i: int64;
   parse_number_ch: string;
 begin
   parse_number_result_ := 0;
@@ -190,9 +200,9 @@ end;
 procedure main();
 var
   main_ordinals: array of string;
-  main_i: integer;
+  main_i: int64;
   main_ordinal: string;
-  main_n: integer;
+  main_n: int64;
   main_msg: string;
 begin
   main_ordinals := ['0th', '1st', '2nd', '3rd', '10th', '100th', '1000th'];
@@ -217,4 +227,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,17 +67,21 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-procedure search_in_sorted_matrix(search_in_sorted_matrix_mat: RealArrayArray; search_in_sorted_matrix_m: integer; search_in_sorted_matrix_n: integer; search_in_sorted_matrix_key: real); forward;
+procedure search_in_sorted_matrix(search_in_sorted_matrix_mat: RealArrayArray; search_in_sorted_matrix_m: int64; search_in_sorted_matrix_n: int64; search_in_sorted_matrix_key: real); forward;
 procedure main(); forward;
-procedure search_in_sorted_matrix(search_in_sorted_matrix_mat: RealArrayArray; search_in_sorted_matrix_m: integer; search_in_sorted_matrix_n: integer; search_in_sorted_matrix_key: real);
+procedure search_in_sorted_matrix(search_in_sorted_matrix_mat: RealArrayArray; search_in_sorted_matrix_m: int64; search_in_sorted_matrix_n: int64; search_in_sorted_matrix_key: real);
 var
-  search_in_sorted_matrix_i: integer;
-  search_in_sorted_matrix_j: integer;
+  search_in_sorted_matrix_i: int64;
+  search_in_sorted_matrix_j: int64;
 begin
   search_in_sorted_matrix_i := search_in_sorted_matrix_m - 1;
   search_in_sorted_matrix_j := 0;
@@ -112,4 +122,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

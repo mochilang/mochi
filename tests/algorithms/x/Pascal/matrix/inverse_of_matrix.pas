@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,6 +66,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 procedure show_list_real(xs: array of real);
 var i: integer;
@@ -114,8 +124,8 @@ var
   inverse_of_matrix_det_5: real;
   inverse_of_matrix_cof: array of RealArray;
   inverse_of_matrix_inv: array of RealArray;
-  inverse_of_matrix_i: integer;
-  inverse_of_matrix_j: integer;
+  inverse_of_matrix_i: int64;
+  inverse_of_matrix_j: int64;
 begin
   if ((Length(inverse_of_matrix_matrix) = 2) and (Length(inverse_of_matrix_matrix[0]) = 2)) and (Length(inverse_of_matrix_matrix[1]) = 2) then begin
   inverse_of_matrix_det := (inverse_of_matrix_matrix[0][0] * inverse_of_matrix_matrix[1][1]) - (inverse_of_matrix_matrix[1][0] * inverse_of_matrix_matrix[0][1]);
@@ -172,4 +182,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

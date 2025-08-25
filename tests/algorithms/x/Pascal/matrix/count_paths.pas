@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type BoolArray = array of boolean;
 type IntArrayArray = array of IntArray;
 type BoolArrayArray = array of BoolArray;
@@ -45,6 +45,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -53,7 +59,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -63,19 +69,23 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function depth_first_search(depth_first_search_grid: IntArrayArray; depth_first_search_row: integer; depth_first_search_col: integer; depth_first_search_visit: BoolArrayArray): integer; forward;
-function count_paths(count_paths_grid: IntArrayArray): integer; forward;
+function depth_first_search(depth_first_search_grid: IntArrayArray; depth_first_search_row: int64; depth_first_search_col: int64; depth_first_search_visit: BoolArrayArray): int64; forward;
+function count_paths(count_paths_grid: IntArrayArray): int64; forward;
 procedure main(); forward;
-function depth_first_search(depth_first_search_grid: IntArrayArray; depth_first_search_row: integer; depth_first_search_col: integer; depth_first_search_visit: BoolArrayArray): integer;
+function depth_first_search(depth_first_search_grid: IntArrayArray; depth_first_search_row: int64; depth_first_search_col: int64; depth_first_search_visit: BoolArrayArray): int64;
 var
   depth_first_search_row_length: integer;
   depth_first_search_col_length: integer;
-  depth_first_search_count: integer;
+  depth_first_search_count: int64;
 begin
   depth_first_search_row_length := Length(depth_first_search_grid);
   depth_first_search_col_length := Length(depth_first_search_grid[0]);
@@ -100,14 +110,14 @@ end;
   depth_first_search_visit[depth_first_search_row][depth_first_search_col] := false;
   exit(depth_first_search_count);
 end;
-function count_paths(count_paths_grid: IntArrayArray): integer;
+function count_paths(count_paths_grid: IntArrayArray): int64;
 var
   count_paths_rows: integer;
   count_paths_cols: integer;
   count_paths_visit: array of BoolArray;
-  count_paths_i: integer;
+  count_paths_i: int64;
   count_paths_row_visit: array of boolean;
-  count_paths_j: integer;
+  count_paths_j: int64;
 begin
   count_paths_rows := Length(count_paths_grid);
   count_paths_cols := Length(count_paths_grid[0]);
@@ -127,8 +137,8 @@ end;
 end;
 procedure main();
 var
-  main_grid1: array of array of integer;
-  main_grid2: array of array of integer;
+  main_grid1: array of array of int64;
+  main_grid2: array of array of int64;
 begin
   main_grid1 := [[0, 0, 0, 0], [1, 1, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0]];
   writeln(IntToStr(count_paths(main_grid1)));
@@ -147,4 +157,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

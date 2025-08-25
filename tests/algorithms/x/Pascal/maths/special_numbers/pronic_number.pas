@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,38 +65,41 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-function int_sqrt(n: integer): integer; forward;
-function is_pronic(n: integer): boolean; forward;
+function int_sqrt(int_sqrt_n: int64): int64; forward;
+function is_pronic(is_pronic_n: int64): boolean; forward;
 procedure test_is_pronic(); forward;
 procedure main(); forward;
-function int_sqrt(n: integer): integer;
+function int_sqrt(int_sqrt_n: int64): int64;
 var
-  int_sqrt_r: integer;
+  int_sqrt_r: int64;
 begin
   int_sqrt_r := 0;
-  while ((int_sqrt_r + 1) * (int_sqrt_r + 1)) <= n do begin
+  while ((int_sqrt_r + 1) * (int_sqrt_r + 1)) <= int_sqrt_n do begin
   int_sqrt_r := int_sqrt_r + 1;
 end;
   exit(int_sqrt_r);
 end;
-function is_pronic(n: integer): boolean;
+function is_pronic(is_pronic_n: int64): boolean;
 var
-  is_pronic_root: integer;
+  is_pronic_root: int64;
 begin
-  if n < 0 then begin
+  if is_pronic_n < 0 then begin
   exit(false);
 end;
-  if (n mod 2) <> 0 then begin
+  if (is_pronic_n mod 2) <> 0 then begin
   exit(false);
 end;
-  is_pronic_root := int_sqrt(n);
-  exit(n = (is_pronic_root * (is_pronic_root + 1)));
+  is_pronic_root := int_sqrt(is_pronic_n);
+  exit(is_pronic_n = (is_pronic_root * (is_pronic_root + 1)));
 end;
 procedure test_is_pronic();
 begin
@@ -139,4 +148,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

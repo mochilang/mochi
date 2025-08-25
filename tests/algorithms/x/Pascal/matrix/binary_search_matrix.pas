@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -86,14 +96,14 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function binary_search(binary_search_arr: IntArray; binary_search_lower_bound: integer; binary_search_upper_bound: integer; binary_search_value: integer): integer; forward;
-function mat_bin_search(mat_bin_search_value: integer; mat_bin_search_matrix: IntArrayArray): IntArray; forward;
+function binary_search(binary_search_arr: IntArray; binary_search_lower_bound: int64; binary_search_upper_bound: int64; binary_search_value: int64): int64; forward;
+function mat_bin_search(mat_bin_search_value: int64; mat_bin_search_matrix: IntArrayArray): IntArray; forward;
 procedure main(); forward;
-function binary_search(binary_search_arr: IntArray; binary_search_lower_bound: integer; binary_search_upper_bound: integer; binary_search_value: integer): integer;
+function binary_search(binary_search_arr: IntArray; binary_search_lower_bound: int64; binary_search_upper_bound: int64; binary_search_value: int64): int64;
 var
-  binary_search_r: integer;
+  binary_search_r: int64;
 begin
-  binary_search_r := (binary_search_lower_bound + binary_search_upper_bound) div 2;
+  binary_search_r := _floordiv(binary_search_lower_bound + binary_search_upper_bound, 2);
   if binary_search_arr[binary_search_r] = binary_search_value then begin
   exit(binary_search_r);
 end;
@@ -105,10 +115,10 @@ end;
 end;
   exit(binary_search(binary_search_arr, binary_search_lower_bound, binary_search_r - 1, binary_search_value));
 end;
-function mat_bin_search(mat_bin_search_value: integer; mat_bin_search_matrix: IntArrayArray): IntArray;
+function mat_bin_search(mat_bin_search_value: int64; mat_bin_search_matrix: IntArrayArray): IntArray;
 var
-  mat_bin_search_index: integer;
-  mat_bin_search_r: integer;
+  mat_bin_search_index: int64;
+  mat_bin_search_r: int64;
 begin
   mat_bin_search_index := 0;
   if mat_bin_search_matrix[mat_bin_search_index][0] = mat_bin_search_value then begin
@@ -125,7 +135,7 @@ end;
 end;
 procedure main();
 var
-  main_row: array of integer;
+  main_row: array of int64;
   main_matrix: array of IntArray;
 begin
   main_row := [1, 4, 7, 11, 15];
@@ -147,4 +157,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

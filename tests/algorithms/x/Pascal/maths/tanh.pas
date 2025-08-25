@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,6 +65,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
@@ -84,7 +94,7 @@ var
   expApprox_y: real;
   expApprox_term: real;
   expApprox_sum: real;
-  expApprox_n: integer;
+  expApprox_n: int64;
 begin
   expApprox_neg := false;
   expApprox_y := expApprox_x;
@@ -108,7 +118,7 @@ end;
 function tangent_hyperbolic(tangent_hyperbolic_vector: RealArray): RealArray;
 var
   tangent_hyperbolic_result_: array of real;
-  tangent_hyperbolic_i: integer;
+  tangent_hyperbolic_i: int64;
   tangent_hyperbolic_x: real;
   tangent_hyperbolic_t: real;
 begin
@@ -144,4 +154,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

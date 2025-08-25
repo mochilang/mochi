@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,26 +65,29 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-function sylvester(n: integer): integer; forward;
-function sylvester(n: integer): integer;
+function sylvester(sylvester_n: int64): int64; forward;
+function sylvester(sylvester_n: int64): int64;
 var
-  sylvester_prev: integer;
-  sylvester_lower: integer;
-  sylvester_upper: integer;
+  sylvester_prev: int64;
+  sylvester_lower: int64;
+  sylvester_upper: int64;
 begin
-  if n < 1 then begin
+  if sylvester_n < 1 then begin
   panic('The input value of n has to be > 0');
 end;
-  if n = 1 then begin
+  if sylvester_n = 1 then begin
   exit(2);
 end;
-  sylvester_prev := sylvester(n - 1);
+  sylvester_prev := sylvester(sylvester_n - 1);
   sylvester_lower := sylvester_prev - 1;
   sylvester_upper := sylvester_prev;
   exit((sylvester_lower * sylvester_upper) + 1);
@@ -95,4 +104,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

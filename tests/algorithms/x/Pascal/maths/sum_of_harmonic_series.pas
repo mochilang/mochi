@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,32 +66,32 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  common_difference: real;
-  first_term: real;
-  num: real;
-  number_of_terms: integer;
-function sum_of_harmonic_progression(first_term: real; common_difference: real; number_of_terms: integer): real; forward;
-function abs_val(num: real): real; forward;
+function sum_of_harmonic_progression(sum_of_harmonic_progression_first_term: real; sum_of_harmonic_progression_common_difference: real; sum_of_harmonic_progression_number_of_terms: int64): real; forward;
+function abs_val(abs_val_num: real): real; forward;
 procedure test_sum_of_harmonic_progression(); forward;
 procedure main(); forward;
-function sum_of_harmonic_progression(first_term: real; common_difference: real; number_of_terms: integer): real;
+function sum_of_harmonic_progression(sum_of_harmonic_progression_first_term: real; sum_of_harmonic_progression_common_difference: real; sum_of_harmonic_progression_number_of_terms: int64): real;
 var
   sum_of_harmonic_progression_arithmetic_progression: array of real;
   sum_of_harmonic_progression_term: real;
-  sum_of_harmonic_progression_i: integer;
+  sum_of_harmonic_progression_i: int64;
   sum_of_harmonic_progression_total: real;
-  sum_of_harmonic_progression_j: integer;
+  sum_of_harmonic_progression_j: int64;
 begin
-  sum_of_harmonic_progression_arithmetic_progression := [1 / first_term];
-  sum_of_harmonic_progression_term := 1 / first_term;
+  sum_of_harmonic_progression_arithmetic_progression := [1 / sum_of_harmonic_progression_first_term];
+  sum_of_harmonic_progression_term := 1 / sum_of_harmonic_progression_first_term;
   sum_of_harmonic_progression_i := 0;
-  while sum_of_harmonic_progression_i < (number_of_terms - 1) do begin
-  sum_of_harmonic_progression_term := sum_of_harmonic_progression_term + common_difference;
+  while sum_of_harmonic_progression_i < (sum_of_harmonic_progression_number_of_terms - 1) do begin
+  sum_of_harmonic_progression_term := sum_of_harmonic_progression_term + sum_of_harmonic_progression_common_difference;
   sum_of_harmonic_progression_arithmetic_progression := concat(sum_of_harmonic_progression_arithmetic_progression, [sum_of_harmonic_progression_term]);
   sum_of_harmonic_progression_i := sum_of_harmonic_progression_i + 1;
 end;
@@ -97,12 +103,12 @@ end;
 end;
   exit(sum_of_harmonic_progression_total);
 end;
-function abs_val(num: real): real;
+function abs_val(abs_val_num: real): real;
 begin
-  if num < 0 then begin
-  exit(-num);
+  if abs_val_num < 0 then begin
+  exit(-abs_val_num);
 end;
-  exit(num);
+  exit(abs_val_num);
 end;
 procedure test_sum_of_harmonic_progression();
 var
@@ -135,4 +141,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

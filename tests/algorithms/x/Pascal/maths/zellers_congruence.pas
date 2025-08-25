@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,20 +65,24 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function Map1(): specialize TFPGMap<integer, string>; forward;
-function parse_decimal(parse_decimal_s: string): integer; forward;
+function Map1(): specialize TFPGMap<int64, string>; forward;
+function parse_decimal(parse_decimal_s: string): int64; forward;
 function zeller_day(zeller_day_date_input: string): string; forward;
 function zeller(zeller_date_input: string): string; forward;
 procedure test_zeller(); forward;
 procedure main(); forward;
-function Map1(): specialize TFPGMap<integer, string>;
+function Map1(): specialize TFPGMap<int64, string>;
 begin
-  Result := specialize TFPGMap<integer, string>.Create();
+  Result := specialize TFPGMap<int64, string>.Create();
   Result.AddOrSetData(0, 'Sunday');
   Result.AddOrSetData(1, 'Monday');
   Result.AddOrSetData(2, 'Tuesday');
@@ -81,10 +91,10 @@ begin
   Result.AddOrSetData(5, 'Friday');
   Result.AddOrSetData(6, 'Saturday');
 end;
-function parse_decimal(parse_decimal_s: string): integer;
+function parse_decimal(parse_decimal_s: string): int64;
 var
-  parse_decimal_value: integer;
-  parse_decimal_i: integer;
+  parse_decimal_value: int64;
+  parse_decimal_i: int64;
   parse_decimal_c: string;
 begin
   parse_decimal_value := 0;
@@ -101,20 +111,20 @@ end;
 end;
 function zeller_day(zeller_day_date_input: string): string;
 var
-  zeller_day_days: specialize TFPGMap<integer, string>;
-  zeller_day_m: integer;
+  zeller_day_days: specialize TFPGMap<int64, string>;
+  zeller_day_m: int64;
   zeller_day_sep1: string;
-  zeller_day_d: integer;
+  zeller_day_d: int64;
   zeller_day_sep2: string;
-  zeller_day_y: integer;
-  zeller_day_year: integer;
-  zeller_day_month: integer;
-  zeller_day_c: integer;
-  zeller_day_k: integer;
+  zeller_day_y: int64;
+  zeller_day_year: int64;
+  zeller_day_month: int64;
+  zeller_day_c: int64;
+  zeller_day_k: int64;
   zeller_day_t: integer;
-  zeller_day_u: integer;
-  zeller_day_v: integer;
-  zeller_day_x: integer;
+  zeller_day_u: int64;
+  zeller_day_v: int64;
+  zeller_day_x: int64;
   zeller_day_z: integer;
   zeller_day_w: integer;
   zeller_day_f: integer;
@@ -149,11 +159,11 @@ end;
   zeller_day_year := zeller_day_year - 1;
   zeller_day_month := zeller_day_month + 12;
 end;
-  zeller_day_c := zeller_day_year div 100;
+  zeller_day_c := _floordiv(zeller_day_year, 100);
   zeller_day_k := zeller_day_year mod 100;
   zeller_day_t := Trunc((2.6 * Double(zeller_day_month)) - 5.39);
-  zeller_day_u := zeller_day_c div 4;
-  zeller_day_v := zeller_day_k div 4;
+  zeller_day_u := _floordiv(zeller_day_c, 4);
+  zeller_day_v := _floordiv(zeller_day_k, 4);
   zeller_day_x := zeller_day_d + zeller_day_k;
   zeller_day_z := ((zeller_day_t + zeller_day_u) + zeller_day_v) + zeller_day_x;
   zeller_day_w := zeller_day_z - (2 * zeller_day_c);
@@ -174,7 +184,7 @@ procedure test_zeller();
 var
   test_zeller_inputs: array of string;
   test_zeller_expected: array of string;
-  test_zeller_i: integer;
+  test_zeller_i: int64;
   test_zeller_res: string;
 begin
   test_zeller_inputs := ['01-31-2010', '02-01-2010', '11-26-2024', '07-04-1776'];
@@ -205,4 +215,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

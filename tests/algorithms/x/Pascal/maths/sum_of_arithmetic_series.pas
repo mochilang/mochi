@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,22 +65,23 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  common_diff: integer;
-  first_term: integer;
-  num_of_terms: integer;
-function sum_of_series(first_term: integer; common_diff: integer; num_of_terms: integer): integer; forward;
+function sum_of_series(sum_of_series_first_term: int64; sum_of_series_common_diff: int64; sum_of_series_num_of_terms: int64): int64; forward;
 procedure test_sum_of_series(); forward;
 procedure main(); forward;
-function sum_of_series(first_term: integer; common_diff: integer; num_of_terms: integer): integer;
+function sum_of_series(sum_of_series_first_term: int64; sum_of_series_common_diff: int64; sum_of_series_num_of_terms: int64): int64;
 var
-  sum_of_series_total: integer;
+  sum_of_series_total: int64;
 begin
-  sum_of_series_total := (num_of_terms * ((2 * first_term) + ((num_of_terms - 1) * common_diff))) div 2;
+  sum_of_series_total := _floordiv(sum_of_series_num_of_terms * ((2 * sum_of_series_first_term) + ((sum_of_series_num_of_terms - 1) * sum_of_series_common_diff)), 2);
   exit(sum_of_series_total);
 end;
 procedure test_sum_of_series();
@@ -103,4 +110,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
