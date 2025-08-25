@@ -1,21 +1,6 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -43,13 +28,23 @@ function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcdiv($sa, $sb, 0));
+        $q = bcdiv($sa, $sb, 0);
+        $rem = bcmod($sa, $sb);
+        $neg = ((strpos($sa, '-') === 0) xor (strpos($sb, '-') === 0));
+        if ($neg && bccomp($rem, '0') != 0) {
+            $q = bcsub($q, '1');
+        }
+        return intval($q);
     }
-    return intdiv(intval($a), intval($b));
+    $ai = intval($a);
+    $bi = intval($b);
+    $q = intdiv($ai, $bi);
+    if ((($ai ^ $bi) < 0) && ($ai % $bi != 0)) {
+        $q -= 1;
+    }
+    return $q;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function generate_large_matrix() {
+function generate_large_matrix() {
   global $grid, $results_bin, $results_break, $results_brute, $test_grids;
   $result = [];
   $i = 0;
@@ -64,8 +59,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $result;
-};
-  function find_negative_index($arr) {
+}
+function find_negative_index($arr) {
   global $grid, $i, $results_bin, $results_break, $results_brute, $test_grids;
   $left = 0;
   $right = count($arr) - 1;
@@ -91,8 +86,8 @@ $__start = _now();
 }
 };
   return count($arr);
-};
-  function count_negatives_binary_search($grid) {
+}
+function count_negatives_binary_search($grid) {
   global $results_bin, $results_break, $results_brute, $test_grids;
   $total = 0;
   $bound = count($grid[0]);
@@ -105,8 +100,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return (count($grid) * count($grid[0])) - $total;
-};
-  function count_negatives_brute_force($grid) {
+}
+function count_negatives_brute_force($grid) {
   global $results_bin, $results_break, $results_brute, $test_grids;
   $count = 0;
   $i = 0;
@@ -122,8 +117,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $count;
-};
-  function count_negatives_brute_force_with_break($grid) {
+}
+function count_negatives_brute_force_with_break($grid) {
   global $results_bin, $results_break, $results_brute, $test_grids;
   $total = 0;
   $i = 0;
@@ -141,35 +136,27 @@ $__start = _now();
   $i = $i + 1;
 };
   return $total;
-};
-  $grid = generate_large_matrix();
-  $test_grids = [[[4, 3, 2, -1], [3, 2, 1, -1], [1, 1, -1, -2], [-1, -1, -2, -3]], [[3, 2], [1, 0]], [[7, 7, 6]], [[7, 7, 6], [-1, -2, -3]], $grid];
-  $results_bin = [];
-  $i = 0;
-  while ($i < count($test_grids)) {
+}
+$grid = generate_large_matrix();
+$test_grids = [[[4, 3, 2, -1], [3, 2, 1, -1], [1, 1, -1, -2], [-1, -1, -2, -3]], [[3, 2], [1, 0]], [[7, 7, 6]], [[7, 7, 6], [-1, -2, -3]], $grid];
+$results_bin = [];
+$i = 0;
+while ($i < count($test_grids)) {
   $results_bin = _append($results_bin, count_negatives_binary_search($test_grids[$i]));
   $i = $i + 1;
 }
-  echo rtrim(_str($results_bin)), PHP_EOL;
-  $results_brute = [];
-  $i = 0;
-  while ($i < count($test_grids)) {
+echo rtrim(_str($results_bin)), PHP_EOL;
+$results_brute = [];
+$i = 0;
+while ($i < count($test_grids)) {
   $results_brute = _append($results_brute, count_negatives_brute_force($test_grids[$i]));
   $i = $i + 1;
 }
-  echo rtrim(_str($results_brute)), PHP_EOL;
-  $results_break = [];
-  $i = 0;
-  while ($i < count($test_grids)) {
+echo rtrim(_str($results_brute)), PHP_EOL;
+$results_break = [];
+$i = 0;
+while ($i < count($test_grids)) {
   $results_break = _append($results_break, count_negatives_brute_force_with_break($test_grids[$i]));
   $i = $i + 1;
 }
-  echo rtrim(_str($results_break)), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+echo rtrim(_str($results_break)), PHP_EOL;

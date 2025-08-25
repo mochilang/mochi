@@ -1,21 +1,6 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -36,16 +21,14 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function abs_int($n) {
+function abs_int($n) {
   global $mat, $r180, $r270, $r90;
   if ($n < 0) {
   return -$n;
 }
   return $n;
-};
-  function make_matrix($row_size) {
+}
+function make_matrix($row_size) {
   global $r180, $r270, $r90;
   $size = abs_int($row_size);
   if ($size == 0) {
@@ -64,8 +47,8 @@ $__start = _now();
   $y = $y + 1;
 };
   return $mat;
-};
-  function transpose($mat) {
+}
+function transpose($mat) {
   global $r180, $r270, $r90;
   $n = count($mat);
   $result = [];
@@ -81,8 +64,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $result;
-};
-  function reverse_row($mat) {
+}
+function reverse_row($mat) {
   global $r180, $r270, $r90;
   $result = [];
   $i = count($mat) - 1;
@@ -91,8 +74,8 @@ $__start = _now();
   $i = $i - 1;
 };
   return $result;
-};
-  function reverse_column($mat) {
+}
+function reverse_column($mat) {
   global $r180, $r270, $r90;
   $result = [];
   $i = 0;
@@ -107,26 +90,26 @@ $__start = _now();
   $i = $i + 1;
 };
   return $result;
-};
-  function rotate_90($mat) {
+}
+function rotate_90($mat) {
   global $r180, $r270, $r90;
   $t = transpose($mat);
   $rr = reverse_row($t);
   return $rr;
-};
-  function rotate_180($mat) {
+}
+function rotate_180($mat) {
   global $r180, $r270, $r90;
   $rc = reverse_column($mat);
   $rr = reverse_row($rc);
   return $rr;
-};
-  function rotate_270($mat) {
+}
+function rotate_270($mat) {
   global $r180, $r270, $r90;
   $t = transpose($mat);
   $rc = reverse_column($t);
   return $rc;
-};
-  function row_to_string($row) {
+}
+function row_to_string($row) {
   global $mat, $r180, $r270, $r90;
   $line = '';
   $i = 0;
@@ -139,50 +122,42 @@ $__start = _now();
   $i = $i + 1;
 };
   return $line;
-};
-  function print_matrix($mat) {
+}
+function print_matrix($mat) {
   global $r180, $r270, $r90;
   $i = 0;
   while ($i < count($mat)) {
   echo rtrim(row_to_string($mat[$i])), PHP_EOL;
   $i = $i + 1;
 };
-};
-  $mat = make_matrix(4);
-  echo rtrim('
+}
+$mat = make_matrix(4);
+echo rtrim('
 origin:
 '), PHP_EOL;
-  print_matrix($mat);
-  echo rtrim('
+print_matrix($mat);
+echo rtrim('
 rotate 90 counterclockwise:
 '), PHP_EOL;
-  $r90 = rotate_90($mat);
-  print_matrix($r90);
-  $mat = make_matrix(4);
-  echo rtrim('
+$r90 = rotate_90($mat);
+print_matrix($r90);
+$mat = make_matrix(4);
+echo rtrim('
 origin:
 '), PHP_EOL;
-  print_matrix($mat);
-  echo rtrim('
+print_matrix($mat);
+echo rtrim('
 rotate 180:
 '), PHP_EOL;
-  $r180 = rotate_180($mat);
-  print_matrix($r180);
-  $mat = make_matrix(4);
-  echo rtrim('
+$r180 = rotate_180($mat);
+print_matrix($r180);
+$mat = make_matrix(4);
+echo rtrim('
 origin:
 '), PHP_EOL;
-  print_matrix($mat);
-  echo rtrim('
+print_matrix($mat);
+echo rtrim('
 rotate 270 counterclockwise:
 '), PHP_EOL;
-  $r270 = rotate_270($mat);
-  print_matrix($r270);
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+$r270 = rotate_270($mat);
+print_matrix($r270);

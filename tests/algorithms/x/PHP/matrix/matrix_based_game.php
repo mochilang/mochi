@@ -1,21 +1,6 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -43,20 +28,30 @@ function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
-        return intval(bcdiv($sa, $sb, 0));
+        $q = bcdiv($sa, $sb, 0);
+        $rem = bcmod($sa, $sb);
+        $neg = ((strpos($sa, '-') === 0) xor (strpos($sb, '-') === 0));
+        if ($neg && bccomp($rem, '0') != 0) {
+            $q = bcsub($q, '1');
+        }
+        return intval($q);
     }
-    return intdiv(intval($a), intval($b));
+    $ai = intval($a);
+    $bi = intval($b);
+    $q = intdiv($ai, $bi);
+    if ((($ai ^ $bi) < 0) && ($ai % $bi != 0)) {
+        $q -= 1;
+    }
+    return $q;
 }
 function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function is_alnum($ch) {
+function is_alnum($ch) {
   return ($ch >= '0' && $ch <= '9') || ($ch >= 'A' && $ch <= 'Z') || ($ch >= 'a' && $ch <= 'z');
-};
-  function to_int($token) {
+}
+function to_int($token) {
   $res = 0;
   $i = 0;
   while ($i < strlen($token)) {
@@ -64,8 +59,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $res;
-};
-  function mochi_split($s, $sep) {
+}
+function mochi_split($s, $sep) {
   $res = [];
   $current = '';
   $i = 0;
@@ -81,8 +76,8 @@ $__start = _now();
 };
   $res = _append($res, $current);
   return $res;
-};
-  function parse_moves($input_str) {
+}
+function parse_moves($input_str) {
   $pairs = mochi_split($input_str, ',');
   $moves = [];
   $i = 0;
@@ -111,17 +106,17 @@ $__start = _now();
 }
   $x = to_int($numbers[0]);
   $y = to_int($numbers[1]);
-  $moves = _append($moves, ['x' => $x, 'y' => $y]);
+  $moves = _append($moves, ['x' => &$x, 'y' => &$y]);
   $i = $i + 1;
 };
   return $moves;
-};
-  function validate_matrix_size($size) {
+}
+function validate_matrix_size($size) {
   if ($size <= 0) {
   _panic('Matrix size must be a positive integer.');
 }
-};
-  function validate_matrix_content($matrix, $size) {
+}
+function validate_matrix_content($matrix, $size) {
   if (count($matrix) != $size) {
   _panic('The matrix dont match with size.');
 }
@@ -141,8 +136,8 @@ $__start = _now();
 };
   $i = $i + 1;
 };
-};
-  function validate_moves($moves, $size) {
+}
+function validate_moves($moves, $size) {
   $i = 0;
   while ($i < count($moves)) {
   $mv = $moves[$i];
@@ -151,8 +146,8 @@ $__start = _now();
 }
   $i = $i + 1;
 };
-};
-  function mochi_contains($pos, $r, $c) {
+}
+function mochi_contains($pos, $r, $c) {
   $i = 0;
   while ($i < count($pos)) {
   $p = $pos[$i];
@@ -162,8 +157,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return false;
-};
-  function find_repeat($matrix_g, $row, $column, $size) {
+}
+function find_repeat($matrix_g, $row, $column, $size) {
   $column = $size - 1 - $column;
   $visited = [];
   $repeated = [];
@@ -171,7 +166,7 @@ $__start = _now();
   if ($color == '-') {
   return $repeated;
 }
-  $stack = [['x' => $column, 'y' => $row]];
+  $stack = [['x' => &$column, 'y' => &$row]];
   while (count($stack) > 0) {
   $idx = count($stack) - 1;
   $pos = $stack[$idx];
@@ -192,11 +187,11 @@ $__start = _now();
 }
 };
   return $repeated;
-};
-  function increment_score($count) {
+}
+function increment_score($count) {
   return _intdiv($count * ($count + 1), 2);
-};
-  function move_x($matrix_g, $column, $size) {
+}
+function move_x($matrix_g, $column, $size) {
   $new_list = [];
   $row = 0;
   while ($row < $size) {
@@ -214,8 +209,8 @@ $__start = _now();
   $row = $row + 1;
 };
   return $matrix_g;
-};
-  function move_y($matrix_g, $size) {
+}
+function move_y($matrix_g, $size) {
   $empty_cols = [];
   $column = $size - 1;
   while ($column >= 0) {
@@ -253,8 +248,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $matrix_g;
-};
-  function play(&$matrix_g, $pos_x, $pos_y, $size) {
+}
+function play(&$matrix_g, $pos_x, $pos_y, $size) {
   $same_colors = find_repeat($matrix_g, $pos_x, $pos_y, $size);
   if (count($same_colors) != 0) {
   $i = 0;
@@ -271,9 +266,9 @@ $__start = _now();
   $matrix_g = move_y($matrix_g, $size);
 }
   $sc = increment_score(count($same_colors));
-  return ['matrix' => $matrix_g, 'score' => $sc];
-};
-  function build_matrix($matrix) {
+  return ['matrix' => &$matrix_g, 'score' => &$sc];
+}
+function build_matrix($matrix) {
   $res = [];
   $i = 0;
   while ($i < count($matrix)) {
@@ -288,8 +283,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $res;
-};
-  function process_game($size, $matrix, $moves) {
+}
+function process_game($size, $matrix, $moves) {
   $game_matrix = build_matrix($matrix);
   $total = 0;
   $i = 0;
@@ -301,8 +296,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $total;
-};
-  function main() {
+}
+function main() {
   $size = 4;
   $matrix = ['RRBG', 'RBBG', 'YYGG', 'XYGG'];
   $moves = parse_moves('0 1,1 1');
@@ -311,13 +306,5 @@ $__start = _now();
   validate_moves($moves, $size);
   $score = process_game($size, $matrix, $moves);
   echo rtrim(_str($score)), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

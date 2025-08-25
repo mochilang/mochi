@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-25 08:45 GMT+7
+Last updated: 2025-08-25 22:41 GMT+7
 
 ## Algorithms Golden Test Checklist (1006/1077)
 | Index | Name | Status | Duration | Memory |
@@ -704,19 +704,19 @@ Last updated: 2025-08-25 08:45 GMT+7
 | 695 | maths/volume | ✓ | 95µs | 73.8 KB |
 | 696 | maths/zellers_congruence | ✓ | 106µs | 37.6 KB |
 | 697 | matrix/binary_search_matrix | ✓ | 153µs | 35.5 KB |
-| 698 | matrix/count_islands_in_matrix | ✓ | 430µs | 39.4 KB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 134µs | 1.6 MB |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 3.526052s | 35.3 MB |
 | 700 | matrix/count_paths | ✓ | 150µs | 36.6 KB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 81µs | 36.8 KB |
 | 702 | matrix/inverse_of_matrix | ✓ | 157µs | 49.9 KB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 129µs | 67.6 KB |
-| 704 | matrix/matrix_based_game | ✓ | 196µs | 72.4 KB |
+| 704 | matrix/matrix_based_game | ✓ | 211µs | 1.6 MB |
 | 705 | matrix/matrix_class | ✓ | 320µs | 107.5 KB |
 | 706 | matrix/matrix_equalization | ✓ | 97µs | 35.8 KB |
 | 707 | matrix/matrix_multiplication_recursion | ✓ | 338µs | 36.0 KB |
 | 708 | matrix/matrix_operation | ✓ | 395µs | 73.7 KB |
 | 709 | matrix/max_area_of_island | ✓ | 167µs | 40.2 KB |
-| 710 | matrix/median_matrix | ✓ | 121µs | 38.8 KB |
+| 710 | matrix/median_matrix | ✓ | 145µs | 1.6 MB |
 | 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 301µs | 37.6 KB |
 | 712 | matrix/pascal_triangle | ✓ | 187µs | 36.3 KB |
 | 713 | matrix/rotate_matrix | ✓ | 137µs | 36.8 KB |

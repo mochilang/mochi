@@ -1,21 +1,6 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -32,21 +17,19 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function encode($row, $col) {
+function encode($row, $col) {
   global $matrix;
   return _str($row) . ',' . _str($col);
-};
-  function is_safe($row, $col, $rows, $cols) {
+}
+function is_safe($row, $col, $rows, $cols) {
   global $matrix;
   return $row >= 0 && $row < $rows && $col >= 0 && $col < $cols;
-};
-  function has($seen, $key) {
+}
+function has($seen, $key) {
   global $matrix;
   return array_key_exists($key, $seen);
-};
-  function depth_first_search($row, $col, &$seen, $mat) {
+}
+function depth_first_search($row, $col, &$seen, $mat) {
   global $matrix;
   $rows = count($mat);
   $cols = count($mat[0]);
@@ -57,8 +40,8 @@ $__start = _now();
 } else {
   return 0;
 }
-};
-  function find_max_area($mat) {
+}
+function find_max_area($mat) {
   global $matrix;
   $seen = [];
   $rows = count($mat);
@@ -83,14 +66,6 @@ $__start = _now();
   $r = $r + 1;
 };
   return $max_area;
-};
-  $matrix = [[0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], [0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0], [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]];
-  echo rtrim(json_encode(find_max_area($matrix), 1344)), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$matrix = [[0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], [0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0], [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]];
+echo rtrim(json_encode(find_max_area($matrix), 1344)), PHP_EOL;

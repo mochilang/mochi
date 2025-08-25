@@ -1,21 +1,6 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -36,9 +21,7 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function make_matrix($rows, $cols, $value) {
+function make_matrix(&$rows, &$cols, $value) {
   $arr = [];
   $r = 0;
   while ($r < $rows) {
@@ -51,14 +34,14 @@ $__start = _now();
   $arr = _append($arr, $row);
   $r = $r + 1;
 };
-  return ['data' => $arr, 'rows' => $rows, 'cols' => $cols];
-};
-  function matrix_from_lists($vals) {
+  return ['cols' => &$cols, 'data' => &$arr, 'rows' => &$rows];
+}
+function matrix_from_lists($vals) {
   $r = count($vals);
   $c = ($r == 0 ? 0 : count($vals[0]));
-  return ['data' => $vals, 'rows' => $r, 'cols' => $c];
-};
-  function matrix_to_string($m) {
+  return ['cols' => &$c, 'data' => &$vals, 'rows' => &$r];
+}
+function matrix_to_string($m) {
   $s = '';
   $i = 0;
   while ($i < $m['rows']) {
@@ -79,10 +62,10 @@ $__start = _now();
   $i = $i + 1;
 };
   return $s;
-};
-  function matrix_add($a, $b) {
+}
+function matrix_add($a, $b) {
   if ($a['rows'] != $b['rows'] || $a['cols'] != $b['cols']) {
-  return ['data' => [], 'rows' => 0, 'cols' => 0];
+  return ['cols' => 0, 'data' => [], 'rows' => 0];
 }
   $res = [];
   $i = 0;
@@ -96,11 +79,11 @@ $__start = _now();
   $res = _append($res, $row);
   $i = $i + 1;
 };
-  return ['data' => $res, 'rows' => $a['rows'], 'cols' => $a['cols']];
-};
-  function matrix_sub($a, $b) {
+  return ['cols' => $a['cols'], 'data' => &$res, 'rows' => $a['rows']];
+}
+function matrix_sub($a, $b) {
   if ($a['rows'] != $b['rows'] || $a['cols'] != $b['cols']) {
-  return ['data' => [], 'rows' => 0, 'cols' => 0];
+  return ['cols' => 0, 'data' => [], 'rows' => 0];
 }
   $res = [];
   $i = 0;
@@ -114,9 +97,9 @@ $__start = _now();
   $res = _append($res, $row);
   $i = $i + 1;
 };
-  return ['data' => $res, 'rows' => $a['rows'], 'cols' => $a['cols']];
-};
-  function matrix_mul_scalar($m, $k) {
+  return ['cols' => $a['cols'], 'data' => &$res, 'rows' => $a['rows']];
+}
+function matrix_mul_scalar($m, $k) {
   $res = [];
   $i = 0;
   while ($i < $m['rows']) {
@@ -129,11 +112,11 @@ $__start = _now();
   $res = _append($res, $row);
   $i = $i + 1;
 };
-  return ['data' => $res, 'rows' => $m['rows'], 'cols' => $m['cols']];
-};
-  function matrix_mul($a, $b) {
+  return ['cols' => $m['cols'], 'data' => &$res, 'rows' => $m['rows']];
+}
+function matrix_mul($a, $b) {
   if ($a['cols'] != $b['rows']) {
-  return ['data' => [], 'rows' => 0, 'cols' => 0];
+  return ['cols' => 0, 'data' => [], 'rows' => 0];
 }
   $res = [];
   $i = 0;
@@ -153,9 +136,9 @@ $__start = _now();
   $res = _append($res, $row);
   $i = $i + 1;
 };
-  return ['data' => $res, 'rows' => $a['rows'], 'cols' => $b['cols']];
-};
-  function matrix_transpose($m) {
+  return ['cols' => $b['cols'], 'data' => &$res, 'rows' => $a['rows']];
+}
+function matrix_transpose($m) {
   $res = [];
   $c = 0;
   while ($c < $m['cols']) {
@@ -168,34 +151,26 @@ $__start = _now();
   $res = _append($res, $row);
   $c = $c + 1;
 };
-  return ['data' => $res, 'rows' => $m['cols'], 'cols' => $m['rows']];
-};
-  function sherman_morrison($ainv, $u, $v) {
+  return ['cols' => $m['rows'], 'data' => &$res, 'rows' => $m['cols']];
+}
+function sherman_morrison($ainv, $u, $v) {
   $vt = matrix_transpose($v);
   $vu = matrix_mul(matrix_mul($vt, $ainv), $u);
   $factor = $vu['data'][0][0] + 1.0;
   if ($factor == 0.0) {
-  return ['data' => [], 'rows' => 0, 'cols' => 0];
+  return ['cols' => 0, 'data' => [], 'rows' => 0];
 }
   $term1 = matrix_mul($ainv, $u);
   $term2 = matrix_mul($vt, $ainv);
   $numerator = matrix_mul($term1, $term2);
   $scaled = matrix_mul_scalar($numerator, 1.0 / $factor);
   return matrix_sub($ainv, $scaled);
-};
-  function main() {
+}
+function main() {
   $ainv = matrix_from_lists([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
   $u = matrix_from_lists([[1.0], [2.0], [-3.0]]);
   $v = matrix_from_lists([[4.0], [-2.0], [5.0]]);
   $result = sherman_morrison($ainv, $u, $v);
   echo rtrim(matrix_to_string($result)), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

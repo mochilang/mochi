@@ -1,21 +1,6 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -36,9 +21,30 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function bubble_sort($a) {
+function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        $q = bcdiv($sa, $sb, 0);
+        $rem = bcmod($sa, $sb);
+        $neg = ((strpos($sa, '-') === 0) xor (strpos($sb, '-') === 0));
+        if ($neg && bccomp($rem, '0') != 0) {
+            $q = bcsub($q, '1');
+        }
+        return intval($q);
+    }
+    $ai = intval($a);
+    $bi = intval($b);
+    $q = intdiv($ai, $bi);
+    if ((($ai ^ $bi) < 0) && ($ai % $bi != 0)) {
+        $q -= 1;
+    }
+    return $q;
+}
+function bubble_sort($a) {
   global $matrix1, $matrix2;
   $arr = $a;
   $n = count($arr);
@@ -56,8 +62,8 @@ $__start = _now();
   $i = $i + 1;
 };
   return $arr;
-};
-  function median($matrix) {
+}
+function median($matrix) {
   global $matrix1, $matrix2;
   $linear = [];
   $i = 0;
@@ -71,18 +77,10 @@ $__start = _now();
   $i = $i + 1;
 };
   $sorted = bubble_sort($linear);
-  $mid = (count($sorted) - 1) / 2;
+  $mid = _intdiv((count($sorted) - 1), 2);
   return $sorted[$mid];
-};
-  $matrix1 = [[1, 3, 5], [2, 6, 9], [3, 6, 9]];
-  echo rtrim(_str(median($matrix1))), PHP_EOL;
-  $matrix2 = [[1, 2, 3], [4, 5, 6]];
-  echo rtrim(_str(median($matrix2))), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$matrix1 = [[1, 3, 5], [2, 6, 9], [3, 6, 9]];
+echo rtrim(_str(median($matrix1))), PHP_EOL;
+$matrix2 = [[1, 2, 3], [4, 5, 6]];
+echo rtrim(_str(median($matrix2))), PHP_EOL;

@@ -5292,10 +5292,10 @@ func isIntExpr(e Expr) bool {
 		return isIntExpr(v.Then) && isIntExpr(v.Else)
 	case *CallExpr:
 		switch v.Func {
-		case "intval", "_intdiv", "_iadd", "_isub", "_imul", "_idiv", "_imod":
-			return true
-		}
-	}
+               case "len", "count", "intval", "_intdiv", "_iadd", "_isub", "_imul", "_idiv", "_imod":
+                       return true
+               }
+       }
 	return false
 }
 

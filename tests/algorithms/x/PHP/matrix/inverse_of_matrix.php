@@ -1,24 +1,7 @@
 <?php
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function inverse_of_matrix($matrix) {
+function inverse_of_matrix($matrix) {
   global $m2, $m3;
   if (count($matrix) == 2 && count($matrix[0]) == 2 && count($matrix[1]) == 2) {
   $det = $matrix[0][0] * $matrix[1][1] - $matrix[1][0] * $matrix[0][1];
@@ -59,16 +42,8 @@ $__start = _now();
 }
   echo rtrim('Please provide a matrix of size 2x2 or 3x3.'), PHP_EOL;
   return [];
-};
-  $m2 = [[2.0, 5.0], [2.0, 0.0]];
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(inverse_of_matrix($m2), 1344)))))), PHP_EOL;
-  $m3 = [[2.0, 5.0, 7.0], [2.0, 0.0, 1.0], [1.0, 2.0, 3.0]];
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(inverse_of_matrix($m3), 1344)))))), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$m2 = [[2.0, 5.0], [2.0, 0.0]];
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(inverse_of_matrix($m2), 1344)))))), PHP_EOL;
+$m3 = [[2.0, 5.0, 7.0], [2.0, 0.0, 1.0], [1.0, 2.0, 3.0]];
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(inverse_of_matrix($m3), 1344)))))), PHP_EOL;
