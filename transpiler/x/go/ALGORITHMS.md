@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 994/1077
-Last updated: 2025-08-25 08:35 +0700
+Completed programs: 995/1077
+Last updated: 2025-08-25 16:43 +0700
 
 Checklist:
 
@@ -372,57 +372,57 @@ Checklist:
 | 363 | electronics/ohms_law | ✓ | 858.0µs | 4.98KB |
 | 364 | electronics/real_and_reactive_power | ✓ | 613.0µs | 1.12KB |
 | 365 | electronics/resistor_color_code | ✓ | 546.0µs | 3.42KB |
-| 366 | electronics/resistor_equivalence | ✓ | 494.0µs | 1.10KB |
-| 367 | electronics/resonant_frequency | ✓ | 676.0µs | 1000B |
-| 368 | electronics/wheatstone_bridge | ✓ | 873.0µs | 1.01KB |
-| 369 | file_transfer/receive_file | ✓ | 537.0µs | 1.00KB |
-| 370 | file_transfer/send_file | ✓ | 814.0µs | 1.93KB |
-| 371 | file_transfer/tests/test_send_file | ✓ | 475.0µs | 968B |
-| 372 | financial/equated_monthly_installments | ✓ | 775.0µs | 1.02KB |
-| 373 | financial/exponential_moving_average | ✓ | 1.0ms | 1.34KB |
-| 374 | financial/interest | ✓ | 570.0µs | 1.22KB |
-| 375 | financial/present_value | ✓ | 504.0µs | 1.04KB |
-| 376 | financial/price_plus_tax | ✓ | 418.0µs | 1.15KB |
-| 377 | financial/simple_moving_average | ✓ | 970.0µs | 2.06KB |
-| 378 | financial/straight_line_depreciation | ✓ | 1.0ms | 2.30KB |
-| 379 | financial/time_and_half_pay | ✓ | 759.0µs | 1.01KB |
-| 380 | fractals/julia_sets | ✓ | 1.0ms | 7.27KB |
-| 381 | fractals/koch_snowflake | ✓ | 575.0µs | 2.31KB |
-| 382 | fractals/mandelbrot | ✓ | 1.0ms | 16.99KB |
-| 383 | fractals/sierpinski_triangle | ✓ | 992.0µs | 2.66KB |
-| 384 | fractals/vicsek | ✓ | 740.0µs | 3.99KB |
-| 385 | fuzzy_logic/fuzzy_operations | ✓ | 489.0µs | 1.55KB |
-| 386 | genetic_algorithm/basic_string | ✓ | 525.0µs | 1016B |
-| 387 | geodesy/haversine_distance | ✓ | 924.0µs | 1.01KB |
-| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 998.0µs | 1.07KB |
-| 389 | geometry/geometry | ✓ | 444.0µs | 1.52KB |
-| 390 | graphics/bezier_curve | ✓ | 860.0µs | 1.37KB |
-| 391 | graphics/butterfly_pattern | ✓ | 991.0µs | 3.18KB |
-| 392 | graphics/digital_differential_analyzer_line | ✓ | 925.0µs | 4.94KB |
-| 393 | graphics/vector3_for_2d_rendering | ✓ | 877.0µs | 1.23KB |
-| 394 | graphs/a_star | ✓ | 1.0ms | 11.27KB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 6.0ms | 286.30KB |
-| 396 | graphs/articulation_points | ✓ | 550.0µs | 1.18KB |
-| 397 | graphs/basic_graphs | ✓ | 2.0ms | 28.06KB |
-| 398 | graphs/bellman_ford | ✓ | 463.0µs | 1.20KB |
-| 399 | graphs/bi_directional_dijkstra | ✓ | 1.0ms | 2.46KB |
-| 400 | graphs/bidirectional_a_star | ✓ | 3.0ms | 195.38KB |
+| 366 | electronics/resistor_equivalence | ✓ | 335.0µs | 1.10KB |
+| 367 | electronics/resonant_frequency | ✓ | 341.0µs | 1000B |
+| 368 | electronics/wheatstone_bridge | ✓ | 337.0µs | 1016B |
+| 369 | file_transfer/receive_file | ✓ | 334.0µs | 1.00KB |
+| 370 | file_transfer/send_file | ✓ | 269.0µs | 1.93KB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 258.0µs | 968B |
+| 372 | financial/equated_monthly_installments | ✓ | 451.0µs | 1.03KB |
+| 373 | financial/exponential_moving_average | ✓ | 684.0µs | 1.34KB |
+| 374 | financial/interest | ✓ | 243.0µs | 1.22KB |
+| 375 | financial/present_value | ✓ | 311.0µs | 1.04KB |
+| 376 | financial/price_plus_tax | ✓ | 311.0µs | 1.15KB |
+| 377 | financial/simple_moving_average | ✓ | 368.0µs | 2.05KB |
+| 378 | financial/straight_line_depreciation | ✓ | 550.0µs | 2.30KB |
+| 379 | financial/time_and_half_pay | ✓ | 415.0µs | 1.01KB |
+| 380 | fractals/julia_sets | ✓ | 524.0µs | 5.61KB |
+| 381 | fractals/koch_snowflake | ✓ | 364.0µs | 2.31KB |
+| 382 | fractals/mandelbrot | ✓ | 620.0µs | 16.99KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 372.0µs | 2.70KB |
+| 384 | fractals/vicsek | ✓ | 475.0µs | 3.99KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 519.0µs | 1.55KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 408.0µs | 1016B |
+| 387 | geodesy/haversine_distance | ✓ | 500.0µs | 1.01KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 311.0µs | 1.07KB |
+| 389 | geometry/geometry | ✓ | 350.0µs | 1.51KB |
+| 390 | graphics/bezier_curve | ✓ | 509.0µs | 1.37KB |
+| 391 | graphics/butterfly_pattern | ✓ | 526.0µs | 3.18KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 590.0µs | 4.94KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 523.0µs | 1.23KB |
+| 394 | graphs/a_star | ✓ | 725.0µs | 9.52KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 3.0ms | 286.30KB |
+| 396 | graphs/articulation_points | ✓ | 300.0µs | 1.18KB |
+| 397 | graphs/basic_graphs | ✓ | 782.0µs | 25.94KB |
+| 398 | graphs/bellman_ford | ✓ | 346.0µs | 1.20KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 302.0µs | 2.46KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 1.0ms | 195.38KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 39.53KB |
-| 402 | graphs/bidirectional_search | ✓ | 1.0ms | 2.56KB |
-| 403 | graphs/boruvka | ✓ | 634.0µs | 3.98KB |
-| 404 | graphs/breadth_first_search | ✓ | 824.0µs | 3.75KB |
-| 405 | graphs/breadth_first_search_2 | ✓ | 349.0µs | 2.40KB |
-| 406 | graphs/breadth_first_search_shortest_path | ✓ | 541.0µs | 2.27KB |
-| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1.0ms | 7.88KB |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite | ✓ | 617.0µs | 1.45KB |
-| 410 | graphs/check_cycle | ✓ | 420.0µs | 1.27KB |
-| 411 | graphs/connected_components | ✓ | 635.0µs | 2.77KB |
+| 402 | graphs/bidirectional_search | ✓ | 530.0µs | 2.56KB |
+| 403 | graphs/boruvka | ✓ | 426.0µs | 3.98KB |
+| 404 | graphs/breadth_first_search | ✓ | 604.0µs | 1.75KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 464.0µs | 2.40KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 544.0µs | 2.27KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 740.0µs | 8.76KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 350.0µs | 3.83KB |
+| 409 | graphs/check_bipatrite | ✓ | 394.0µs | 1.45KB |
+| 410 | graphs/check_cycle | ✓ | 479.0µs | 1.27KB |
+| 411 | graphs/connected_components | ✓ | 534.0µs | 2.77KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search | ✓ | 752.0µs | 4.11KB |
-| 414 | graphs/depth_first_search_2 | ✓ | 989.0µs | 2.09KB |
-| 415 | graphs/dijkstra | ✓ | 751.0µs | 8.12KB |
-| 416 | graphs/dijkstra_2 | ✓ | 641.0µs | 1.04KB |
+| 413 | graphs/depth_first_search | ✓ | 596.0µs | 2.13KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 616.0µs | 2.07KB |
+| 415 | graphs/dijkstra | ✓ | 652.0µs | 8.18KB |
+| 416 | graphs/dijkstra_2 | ✓ | 433.0µs | 1.04KB |
 | 417 | graphs/dijkstra_algorithm | ✓ | 404.0µs | 1.40KB |
 | 418 | graphs/dijkstra_alternate | ✓ | 512.0µs | 2.32KB |
 | 419 | graphs/dijkstra_binary_grid | ✓ | 852.0µs | 4.56KB |
