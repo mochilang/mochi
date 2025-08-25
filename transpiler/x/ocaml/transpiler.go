@@ -2825,7 +2825,7 @@ type Name struct {
 func (n *Name) emit(w io.Writer) {
 	ident := sanitizeIdent(n.Ident)
 	if n.Ref {
-		ident = "!" + n.Ident
+		ident = "!" + ident
 	}
 	if n.Boxed && n.Typ != "" {
 		fmt.Fprintf(w, "(Obj.magic %s : %s)", ident, ocamlType(n.Typ))
