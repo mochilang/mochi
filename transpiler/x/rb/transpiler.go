@@ -2505,6 +2505,15 @@ func (f *FormatListBare) emit(e *emitter) {
 	io.WriteString(e.w, `); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s)`)
 }
 
+// FormatMap renders a map as "{k: v}" for printing.
+type FormatMap struct{ Map Expr }
+
+func (f *FormatMap) emit(e *emitter) {
+	io.WriteString(e.w, `((x = `)
+	f.Map.emit(e)
+	io.WriteString(e.w, `); x.is_a?(Hash) ? ("{" + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + "}") : x.to_s)`)
+}
+
 // FormatBool renders a boolean as "true" or "false" for printing.
 type FormatBool struct{ Value Expr }
 
@@ -5101,6 +5110,8 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 		switch t.(type) {
 		case types.ListType:
 			ex = &FormatList{List: ex}
+		case types.MapType:
+			ex = &FormatMap{Map: ex}
 		case types.BoolType:
 			ex = &FormatBool{Value: ex}
 		}
@@ -5112,6 +5123,8 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 		switch types.ExprType(orig[i], currentEnv).(type) {
 		case types.ListType:
 			ex = &FormatList{List: ex}
+		case types.MapType:
+			ex = &FormatMap{Map: ex}
 		case types.BoolType:
 			ex = &FormatBool{Value: ex}
 		}
