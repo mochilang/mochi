@@ -1,8 +1,0 @@
-parse: error[P001]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:64:19: unexpected token "=>" (expected "}")
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:64:19
-
- 64 |       N(v, neigh) => {
-    |                   ^
-
-help:
-  Check for a missing `{` or `}` to close the block.
