@@ -1974,7 +1974,13 @@ func applyBinOp(op string, left, right Node) Node {
 		// `+` avoids accidentally coercing numbers to strings which was
 		// previously causing runtime ClassCastException errors when
 		// numeric expressions were concatenated via `str`.
-		return &List{Elems: []Node{Symbol("+"), left, right}}
+		// Default to the big-integer variant of `+` to prevent
+		// arithmetic overflow for large integer computations.
+		return &List{Elems: []Node{Symbol("+'"), left, right}}
+	case "*":
+		// Use the big-integer multiplication variant to ensure the
+		// result is promoted instead of overflowing primitive longs.
+		return &List{Elems: []Node{Symbol("*'"), left, right}}
 	case "union":
 		setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
 		u := &List{Elems: []Node{Symbol("clojure.set/union"), setFn(left), setFn(right)}}
