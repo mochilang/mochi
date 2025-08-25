@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 type IntArrayArrayArray = array of IntArrayArray;
 var _nowSeed: int64 = 0;
@@ -40,7 +40,39 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -65,37 +97,34 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  src: IntArray;
-  n: integer;
-  elements: IntArray;
-function copy_list(src: IntArray): IntArray; forward;
-function subset_combinations(elements: IntArray; n: integer): IntArrayArray; forward;
-function copy_list(src: IntArray): IntArray;
+function copy_list(copy_list_src: IntArray): IntArray; forward;
+function subset_combinations(subset_combinations_elements: IntArray; subset_combinations_n: int64): IntArrayArray; forward;
+function copy_list(copy_list_src: IntArray): IntArray;
 var
-  copy_list_result_: array of integer;
-  copy_list_i: integer;
+  copy_list_result_: array of int64;
+  copy_list_i: int64;
 begin
   copy_list_result_ := [];
   copy_list_i := 0;
-  while copy_list_i < Length(src) do begin
-  copy_list_result_ := concat(copy_list_result_, IntArray([src[copy_list_i]]));
+  while copy_list_i < Length(copy_list_src) do begin
+  copy_list_result_ := concat(copy_list_result_, IntArray([copy_list_src[copy_list_i]]));
   copy_list_i := copy_list_i + 1;
 end;
   exit(copy_list_result_);
 end;
-function subset_combinations(elements: IntArray; n: integer): IntArrayArray;
+function subset_combinations(subset_combinations_elements: IntArray; subset_combinations_n: int64): IntArrayArray;
 var
   subset_combinations_r: integer;
   subset_combinations_dp: array of IntArrayArray;
-  subset_combinations_i: integer;
-  subset_combinations_j: integer;
+  subset_combinations_i: int64;
+  subset_combinations_j: int64;
   subset_combinations_prevs: array of IntArray;
-  subset_combinations_k: integer;
-  subset_combinations_prev: array of integer;
+  subset_combinations_k: int64;
+  subset_combinations_prev: array of int64;
   subset_combinations_comb: IntArray;
 begin
-  subset_combinations_r := Length(elements);
-  if n > subset_combinations_r then begin
+  subset_combinations_r := Length(subset_combinations_elements);
+  if subset_combinations_n > subset_combinations_r then begin
   exit([]);
 end;
   subset_combinations_dp := [];
@@ -114,7 +143,7 @@ end;
   while subset_combinations_k < Length(subset_combinations_prevs) do begin
   subset_combinations_prev := subset_combinations_prevs[subset_combinations_k];
   subset_combinations_comb := copy_list(subset_combinations_prev);
-  subset_combinations_comb := concat(subset_combinations_comb, IntArray([elements[subset_combinations_i - 1]]));
+  subset_combinations_comb := concat(subset_combinations_comb, IntArray([subset_combinations_elements[subset_combinations_i - 1]]));
   subset_combinations_dp[subset_combinations_j] := concat(subset_combinations_dp[subset_combinations_j], [subset_combinations_comb]);
   subset_combinations_k := subset_combinations_k + 1;
 end;
@@ -122,7 +151,7 @@ end;
 end;
   subset_combinations_i := subset_combinations_i + 1;
 end;
-  exit(subset_combinations_dp[n]);
+  exit(subset_combinations_dp[subset_combinations_n]);
 end;
 begin
   init_now();
@@ -136,4 +165,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

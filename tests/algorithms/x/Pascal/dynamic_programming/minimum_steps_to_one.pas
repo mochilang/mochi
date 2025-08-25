@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -38,61 +38,88 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  len: integer;
-  value: integer;
-  b: integer;
-  a: integer;
-  number: integer;
-function make_list(len: integer; value: integer): IntArray; forward;
-function min_int(a: integer; b: integer): integer; forward;
-function min_steps_to_one(number: integer): integer; forward;
-function make_list(len: integer; value: integer): IntArray;
+function make_list(make_list_len: int64; make_list_value: int64): IntArray; forward;
+function min_int(min_int_a: int64; min_int_b: int64): int64; forward;
+function min_steps_to_one(min_steps_to_one_number: int64): int64; forward;
+function make_list(make_list_len: int64; make_list_value: int64): IntArray;
 var
-  make_list_arr: array of integer;
-  make_list_i: integer;
+  make_list_arr: array of int64;
+  make_list_i: int64;
 begin
   make_list_arr := [];
   make_list_i := 0;
-  while make_list_i < len do begin
-  make_list_arr := concat(make_list_arr, IntArray([value]));
+  while make_list_i < make_list_len do begin
+  make_list_arr := concat(make_list_arr, IntArray([make_list_value]));
   make_list_i := make_list_i + 1;
 end;
   exit(make_list_arr);
 end;
-function min_int(a: integer; b: integer): integer;
+function min_int(min_int_a: int64; min_int_b: int64): int64;
 begin
-  if a < b then begin
-  exit(a);
+  if min_int_a < min_int_b then begin
+  exit(min_int_a);
 end;
-  exit(b);
+  exit(min_int_b);
 end;
-function min_steps_to_one(number: integer): integer;
+function min_steps_to_one(min_steps_to_one_number: int64): int64;
 var
   min_steps_to_one_table: IntArray;
-  min_steps_to_one_i: integer;
+  min_steps_to_one_i: int64;
 begin
-  if number <= 0 then begin
+  if min_steps_to_one_number <= 0 then begin
   exit(0);
 end;
-  min_steps_to_one_table := make_list(number + 1, number + 1);
+  min_steps_to_one_table := make_list(min_steps_to_one_number + 1, min_steps_to_one_number + 1);
   min_steps_to_one_table[1] := 0;
   min_steps_to_one_i := 1;
-  while min_steps_to_one_i < number do begin
+  while min_steps_to_one_i < min_steps_to_one_number do begin
   min_steps_to_one_table[min_steps_to_one_i + 1] := min_int(min_steps_to_one_table[min_steps_to_one_i + 1], min_steps_to_one_table[min_steps_to_one_i] + 1);
-  if (min_steps_to_one_i * 2) <= number then begin
+  if (min_steps_to_one_i * 2) <= min_steps_to_one_number then begin
   min_steps_to_one_table[min_steps_to_one_i * 2] := min_int(min_steps_to_one_table[min_steps_to_one_i * 2], min_steps_to_one_table[min_steps_to_one_i] + 1);
 end;
-  if (min_steps_to_one_i * 3) <= number then begin
+  if (min_steps_to_one_i * 3) <= min_steps_to_one_number then begin
   min_steps_to_one_table[min_steps_to_one_i * 3] := min_int(min_steps_to_one_table[min_steps_to_one_i * 3], min_steps_to_one_table[min_steps_to_one_i] + 1);
 end;
   min_steps_to_one_i := min_steps_to_one_i + 1;
 end;
-  exit(min_steps_to_one_table[number]);
+  exit(min_steps_to_one_table[min_steps_to_one_number]);
 end;
 begin
   init_now();
@@ -108,4 +135,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

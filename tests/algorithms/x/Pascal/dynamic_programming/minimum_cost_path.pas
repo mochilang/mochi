@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -39,6 +39,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -46,61 +78,58 @@ var
   bench_memdiff_0: int64;
   m1: array of IntArray;
   m2: array of IntArray;
-  matrix: IntArrayArray;
-  a: integer;
-  b: integer;
-function min_int(a: integer; b: integer): integer; forward;
-function minimum_cost_path(matrix: IntArrayArray): integer; forward;
-function min_int(a: integer; b: integer): integer;
+function min_int(min_int_a: int64; min_int_b: int64): int64; forward;
+function minimum_cost_path(minimum_cost_path_matrix: IntArrayArray): int64; forward;
+function min_int(min_int_a: int64; min_int_b: int64): int64;
 begin
-  if a < b then begin
-  exit(a);
+  if min_int_a < min_int_b then begin
+  exit(min_int_a);
 end;
-  exit(b);
+  exit(min_int_b);
 end;
-function minimum_cost_path(matrix: IntArrayArray): integer;
+function minimum_cost_path(minimum_cost_path_matrix: IntArrayArray): int64;
 var
   minimum_cost_path_rows: integer;
   minimum_cost_path_cols: integer;
-  minimum_cost_path_j: integer;
-  minimum_cost_path_row0: array of integer;
-  minimum_cost_path_i: integer;
-  minimum_cost_path_row: array of integer;
-  minimum_cost_path_up: integer;
-  minimum_cost_path_left: integer;
-  minimum_cost_path_best: integer;
+  minimum_cost_path_j: int64;
+  minimum_cost_path_row0: array of int64;
+  minimum_cost_path_i: int64;
+  minimum_cost_path_row: array of int64;
+  minimum_cost_path_up: int64;
+  minimum_cost_path_left: int64;
+  minimum_cost_path_best: int64;
 begin
-  minimum_cost_path_rows := Length(matrix);
-  minimum_cost_path_cols := Length(matrix[0]);
+  minimum_cost_path_rows := Length(minimum_cost_path_matrix);
+  minimum_cost_path_cols := Length(minimum_cost_path_matrix[0]);
   minimum_cost_path_j := 1;
   while minimum_cost_path_j < minimum_cost_path_cols do begin
-  minimum_cost_path_row0 := matrix[0];
+  minimum_cost_path_row0 := minimum_cost_path_matrix[0];
   minimum_cost_path_row0[minimum_cost_path_j] := minimum_cost_path_row0[minimum_cost_path_j] + minimum_cost_path_row0[minimum_cost_path_j - 1];
-  matrix[0] := minimum_cost_path_row0;
+  minimum_cost_path_matrix[0] := minimum_cost_path_row0;
   minimum_cost_path_j := minimum_cost_path_j + 1;
 end;
   minimum_cost_path_i := 1;
   while minimum_cost_path_i < minimum_cost_path_rows do begin
-  minimum_cost_path_row := matrix[minimum_cost_path_i];
-  minimum_cost_path_row[0] := minimum_cost_path_row[0] + matrix[minimum_cost_path_i - 1][0];
-  matrix[minimum_cost_path_i] := minimum_cost_path_row;
+  minimum_cost_path_row := minimum_cost_path_matrix[minimum_cost_path_i];
+  minimum_cost_path_row[0] := minimum_cost_path_row[0] + minimum_cost_path_matrix[minimum_cost_path_i - 1][0];
+  minimum_cost_path_matrix[minimum_cost_path_i] := minimum_cost_path_row;
   minimum_cost_path_i := minimum_cost_path_i + 1;
 end;
   minimum_cost_path_i := 1;
   while minimum_cost_path_i < minimum_cost_path_rows do begin
-  minimum_cost_path_row := matrix[minimum_cost_path_i];
+  minimum_cost_path_row := minimum_cost_path_matrix[minimum_cost_path_i];
   minimum_cost_path_j := 1;
   while minimum_cost_path_j < minimum_cost_path_cols do begin
-  minimum_cost_path_up := matrix[minimum_cost_path_i - 1][minimum_cost_path_j];
+  minimum_cost_path_up := minimum_cost_path_matrix[minimum_cost_path_i - 1][minimum_cost_path_j];
   minimum_cost_path_left := minimum_cost_path_row[minimum_cost_path_j - 1];
   minimum_cost_path_best := min_int(minimum_cost_path_up, minimum_cost_path_left);
   minimum_cost_path_row[minimum_cost_path_j] := minimum_cost_path_row[minimum_cost_path_j] + minimum_cost_path_best;
   minimum_cost_path_j := minimum_cost_path_j + 1;
 end;
-  matrix[minimum_cost_path_i] := minimum_cost_path_row;
+  minimum_cost_path_matrix[minimum_cost_path_i] := minimum_cost_path_row;
   minimum_cost_path_i := minimum_cost_path_i + 1;
 end;
-  exit(matrix[minimum_cost_path_rows - 1][minimum_cost_path_cols - 1]);
+  exit(minimum_cost_path_matrix[minimum_cost_path_rows - 1][minimum_cost_path_cols - 1]);
 end;
 begin
   init_now();
@@ -117,4 +146,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

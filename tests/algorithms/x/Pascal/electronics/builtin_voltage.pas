@@ -1,4 +1,4 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
 var _nowSeed: int64 = 0;
@@ -37,6 +37,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -45,36 +77,31 @@ var
   BOLTZMANN: real;
   ELECTRON_VOLT: real;
   TEMPERATURE: real;
-  acceptor_conc: real;
-  n: integer;
-  intrinsic_conc: real;
-  donor_conc: real;
-  x: real;
-function pow10(n: integer): real; forward;
-function ln_series(x: real): real; forward;
-function ln(x: real): real; forward;
-function builtin_voltage(donor_conc: real; acceptor_conc: real; intrinsic_conc: real): real; forward;
-function pow10(n: integer): real;
+function pow10(pow10_n: int64): real; forward;
+function ln_series(ln_series_x: real): real; forward;
+function ln_(ln__x: real): real; forward;
+function builtin_voltage(builtin_voltage_donor_conc: real; builtin_voltage_acceptor_conc: real; builtin_voltage_intrinsic_conc: real): real; forward;
+function pow10(pow10_n: int64): real;
 var
   pow10_result_: real;
-  pow10_i: integer;
+  pow10_i: int64;
 begin
   pow10_result_ := 1;
   pow10_i := 0;
-  while pow10_i < n do begin
+  while pow10_i < pow10_n do begin
   pow10_result_ := pow10_result_ * 10;
   pow10_i := pow10_i + 1;
 end;
   exit(pow10_result_);
 end;
-function ln_series(x: real): real;
+function ln_series(ln_series_x: real): real;
 var
   ln_series_t: real;
   ln_series_term: real;
   ln_series_sum: real;
-  ln_series_n: integer;
+  ln_series_n: int64;
 begin
-  ln_series_t := (x - 1) / (x + 1);
+  ln_series_t := (ln_series_x - 1) / (ln_series_x + 1);
   ln_series_term := ln_series_t;
   ln_series_sum := 0;
   ln_series_n := 1;
@@ -85,41 +112,41 @@ begin
 end;
   exit(2 * ln_series_sum);
 end;
-function ln(x: real): real;
+function ln_(ln__x: real): real;
 var
-  ln_y: real;
-  ln_k: integer;
+  ln__y: real;
+  ln__k: int64;
 begin
-  ln_y := x;
-  ln_k := 0;
-  while ln_y >= 10 do begin
-  ln_y := ln_y / 10;
-  ln_k := ln_k + 1;
+  ln__y := ln__x;
+  ln__k := 0;
+  while ln__y >= 10 do begin
+  ln__y := ln__y / 10;
+  ln__k := ln__k + 1;
 end;
-  while ln_y < 1 do begin
-  ln_y := ln_y * 10;
-  ln_k := ln_k - 1;
+  while ln__y < 1 do begin
+  ln__y := ln__y * 10;
+  ln__k := ln__k - 1;
 end;
-  exit(ln_series(ln_y) + (Double(ln_k) * ln_series(10)));
+  exit(ln_series(ln__y) + (Double(ln__k) * ln_series(10)));
 end;
-function builtin_voltage(donor_conc: real; acceptor_conc: real; intrinsic_conc: real): real;
+function builtin_voltage(builtin_voltage_donor_conc: real; builtin_voltage_acceptor_conc: real; builtin_voltage_intrinsic_conc: real): real;
 begin
-  if donor_conc <= 0 then begin
+  if builtin_voltage_donor_conc <= 0 then begin
   panic('Donor concentration should be positive');
 end;
-  if acceptor_conc <= 0 then begin
+  if builtin_voltage_acceptor_conc <= 0 then begin
   panic('Acceptor concentration should be positive');
 end;
-  if intrinsic_conc <= 0 then begin
+  if builtin_voltage_intrinsic_conc <= 0 then begin
   panic('Intrinsic concentration should be positive');
 end;
-  if donor_conc <= intrinsic_conc then begin
+  if builtin_voltage_donor_conc <= builtin_voltage_intrinsic_conc then begin
   panic('Donor concentration should be greater than intrinsic concentration');
 end;
-  if acceptor_conc <= intrinsic_conc then begin
+  if builtin_voltage_acceptor_conc <= builtin_voltage_intrinsic_conc then begin
   panic('Acceptor concentration should be greater than intrinsic concentration');
 end;
-  exit(((BOLTZMANN * TEMPERATURE) * ln((donor_conc * acceptor_conc) / (intrinsic_conc * intrinsic_conc))) / ELECTRON_VOLT);
+  exit(((BOLTZMANN * TEMPERATURE) * ln((builtin_voltage_donor_conc * builtin_voltage_acceptor_conc) / (builtin_voltage_intrinsic_conc * builtin_voltage_intrinsic_conc))) / ELECTRON_VOLT);
 end;
 begin
   init_now();
@@ -136,4 +163,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

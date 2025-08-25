@@ -1,12 +1,12 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils, Math;
 type Node = record
-  key: integer;
-  freq: integer;
+  key: int64;
+  freq: int64;
 end;
 type NodeArray = array of Node;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -44,40 +44,63 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  nodes: NodeArray;
-  j: integer;
-  i: integer;
-  is_left: boolean;
-  original_nodes: NodeArray;
-  n: Node;
-  root: IntArrayArray;
-  keys: IntArray;
-  parent: integer;
-function makeNode(key: integer; freq: integer): Node; forward;
-function sort_nodes(nodes: NodeArray): NodeArray; forward;
-procedure print_node(n: Node); forward;
-procedure print_binary_search_tree(root: IntArrayArray; keys: IntArray; i: integer; j: integer; parent: integer; is_left: boolean); forward;
-procedure find_optimal_binary_search_tree(original_nodes: NodeArray); forward;
+function makeNode(key: int64; freq: int64): Node; forward;
+function sort_nodes(sort_nodes_nodes: NodeArray): NodeArray; forward;
+procedure print_node(print_node_n: Node); forward;
+procedure print_binary_search_tree(print_binary_search_tree_root: IntArrayArray; print_binary_search_tree_keys: IntArray; print_binary_search_tree_i: int64; print_binary_search_tree_j: int64; print_binary_search_tree_parent: int64; print_binary_search_tree_is_left: boolean); forward;
+procedure find_optimal_binary_search_tree(find_optimal_binary_search_tree_original_nodes: NodeArray); forward;
 procedure main(); forward;
-function makeNode(key: integer; freq: integer): Node;
+function makeNode(key: int64; freq: int64): Node;
 begin
   Result.key := key;
   Result.freq := freq;
 end;
-function sort_nodes(nodes: NodeArray): NodeArray;
+function sort_nodes(sort_nodes_nodes: NodeArray): NodeArray;
 var
   sort_nodes_arr: array of Node;
-  sort_nodes_i: integer;
+  sort_nodes_i: int64;
   sort_nodes_key_node: Node;
-  sort_nodes_j: integer;
+  sort_nodes_j: int64;
   sort_nodes_temp: Node;
 begin
-  sort_nodes_arr := nodes;
+  sort_nodes_arr := sort_nodes_nodes;
   sort_nodes_i := 1;
   while sort_nodes_i < Length(sort_nodes_arr) do begin
   sort_nodes_key_node := sort_nodes_arr[sort_nodes_i];
@@ -96,53 +119,53 @@ end;
 end;
   exit(sort_nodes_arr);
 end;
-procedure print_node(n: Node);
+procedure print_node(print_node_n: Node);
 begin
-  writeln(((('Node(key=' + IntToStr(n.key)) + ', freq=') + IntToStr(n.freq)) + ')');
+  writeln(((('Node(key=' + IntToStr(print_node_n.key)) + ', freq=') + IntToStr(print_node_n.freq)) + ')');
 end;
-procedure print_binary_search_tree(root: IntArrayArray; keys: IntArray; i: integer; j: integer; parent: integer; is_left: boolean);
+procedure print_binary_search_tree(print_binary_search_tree_root: IntArrayArray; print_binary_search_tree_keys: IntArray; print_binary_search_tree_i: int64; print_binary_search_tree_j: int64; print_binary_search_tree_parent: int64; print_binary_search_tree_is_left: boolean);
 var
-  print_binary_search_tree_node_var: integer;
+  print_binary_search_tree_node_var: int64;
 begin
-  if ((i > j) or (i < 0)) or (j > (Length(root) - 1)) then begin
+  if ((print_binary_search_tree_i > print_binary_search_tree_j) or (print_binary_search_tree_i < 0)) or (print_binary_search_tree_j > (Length(print_binary_search_tree_root) - 1)) then begin
   exit();
 end;
-  print_binary_search_tree_node_var := root[i][j];
-  if parent = -1 then begin
-  writeln(IntToStr(keys[print_binary_search_tree_node_var]) + ' is the root of the binary search tree.');
+  print_binary_search_tree_node_var := print_binary_search_tree_root[print_binary_search_tree_i][print_binary_search_tree_j];
+  if print_binary_search_tree_parent = -1 then begin
+  writeln(IntToStr(print_binary_search_tree_keys[print_binary_search_tree_node_var]) + ' is the root of the binary search tree.');
 end else begin
-  if is_left then begin
-  writeln(((IntToStr(keys[print_binary_search_tree_node_var]) + ' is the left child of key ') + IntToStr(parent)) + '.');
+  if print_binary_search_tree_is_left then begin
+  writeln(((IntToStr(print_binary_search_tree_keys[print_binary_search_tree_node_var]) + ' is the left child of key ') + IntToStr(print_binary_search_tree_parent)) + '.');
 end else begin
-  writeln(((IntToStr(keys[print_binary_search_tree_node_var]) + ' is the right child of key ') + IntToStr(parent)) + '.');
+  writeln(((IntToStr(print_binary_search_tree_keys[print_binary_search_tree_node_var]) + ' is the right child of key ') + IntToStr(print_binary_search_tree_parent)) + '.');
 end;
 end;
-  print_binary_search_tree(root, keys, i, print_binary_search_tree_node_var - 1, keys[print_binary_search_tree_node_var], true);
-  print_binary_search_tree(root, keys, print_binary_search_tree_node_var + 1, j, keys[print_binary_search_tree_node_var], false);
+  print_binary_search_tree(print_binary_search_tree_root, print_binary_search_tree_keys, print_binary_search_tree_i, print_binary_search_tree_node_var - 1, print_binary_search_tree_keys[print_binary_search_tree_node_var], true);
+  print_binary_search_tree(print_binary_search_tree_root, print_binary_search_tree_keys, print_binary_search_tree_node_var + 1, print_binary_search_tree_j, print_binary_search_tree_keys[print_binary_search_tree_node_var], false);
 end;
-procedure find_optimal_binary_search_tree(original_nodes: NodeArray);
+procedure find_optimal_binary_search_tree(find_optimal_binary_search_tree_original_nodes: NodeArray);
 var
   find_optimal_binary_search_tree_nodes: array of Node;
   find_optimal_binary_search_tree_n: integer;
-  find_optimal_binary_search_tree_keys: array of integer;
-  find_optimal_binary_search_tree_freqs: array of integer;
-  find_optimal_binary_search_tree_i: integer;
+  find_optimal_binary_search_tree_keys: array of int64;
+  find_optimal_binary_search_tree_freqs: array of int64;
+  find_optimal_binary_search_tree_i: int64;
   find_optimal_binary_search_tree_node_var: Node;
   find_optimal_binary_search_tree_dp: array of IntArray;
   find_optimal_binary_search_tree_total: array of IntArray;
   find_optimal_binary_search_tree_root: array of IntArray;
-  find_optimal_binary_search_tree_dp_row: array of integer;
-  find_optimal_binary_search_tree_total_row: array of integer;
-  find_optimal_binary_search_tree_root_row: array of integer;
-  find_optimal_binary_search_tree_j: integer;
-  find_optimal_binary_search_tree_interval_length: integer;
-  find_optimal_binary_search_tree_INF: integer;
-  find_optimal_binary_search_tree_r: integer;
-  find_optimal_binary_search_tree_left: integer;
-  find_optimal_binary_search_tree_right: integer;
-  find_optimal_binary_search_tree_cost: integer;
+  find_optimal_binary_search_tree_dp_row: array of int64;
+  find_optimal_binary_search_tree_total_row: array of int64;
+  find_optimal_binary_search_tree_root_row: array of int64;
+  find_optimal_binary_search_tree_j: int64;
+  find_optimal_binary_search_tree_interval_length: int64;
+  find_optimal_binary_search_tree_INF: int64;
+  find_optimal_binary_search_tree_r: int64;
+  find_optimal_binary_search_tree_left: int64;
+  find_optimal_binary_search_tree_right: int64;
+  find_optimal_binary_search_tree_cost: int64;
 begin
-  find_optimal_binary_search_tree_nodes := sort_nodes(original_nodes);
+  find_optimal_binary_search_tree_nodes := sort_nodes(find_optimal_binary_search_tree_original_nodes);
   find_optimal_binary_search_tree_n := Length(find_optimal_binary_search_tree_nodes);
   find_optimal_binary_search_tree_keys := [];
   find_optimal_binary_search_tree_freqs := [];
@@ -216,7 +239,7 @@ end;
   print_node(find_optimal_binary_search_tree_nodes[find_optimal_binary_search_tree_i]);
   find_optimal_binary_search_tree_i := find_optimal_binary_search_tree_i + 1;
 end;
-  writeln(('' + #10 + 'The cost of optimal BST for given tree nodes is ' + IntToStr(find_optimal_binary_search_tree_dp[0][find_optimal_binary_search_tree_n - 1])) + '.');
+  writeln((#10 + 'The cost of optimal BST for given tree nodes is ' + IntToStr(find_optimal_binary_search_tree_dp[0][find_optimal_binary_search_tree_n - 1])) + '.');
   print_binary_search_tree(find_optimal_binary_search_tree_root, find_optimal_binary_search_tree_keys, 0, find_optimal_binary_search_tree_n - 1, -1, false);
 end;
 procedure main();
@@ -238,4 +261,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

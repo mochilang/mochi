@@ -1,4 +1,4 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
 var _nowSeed: int64 = 0;
@@ -37,32 +37,59 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  capacitance: real;
-  source_voltage: real;
-  resistance: real;
-  x: real;
-  time_sec: real;
-function expApprox(x: real): real; forward;
-function round3(x: real): real; forward;
-function charging_capacitor(source_voltage: real; resistance: real; capacitance: real; time_sec: real): real; forward;
-function expApprox(x: real): real;
+function expApprox(expApprox_x: real): real; forward;
+function round3(round3_x: real): real; forward;
+function charging_capacitor(charging_capacitor_source_voltage: real; charging_capacitor_resistance: real; charging_capacitor_capacitance: real; charging_capacitor_time_sec: real): real; forward;
+function expApprox(expApprox_x: real): real;
 var
   expApprox_y: real;
   expApprox_is_neg: boolean;
   expApprox_term: real;
   expApprox_sum: real;
-  expApprox_n: integer;
+  expApprox_n: int64;
 begin
-  expApprox_y := x;
+  expApprox_y := expApprox_x;
   expApprox_is_neg := false;
-  if x < 0 then begin
+  if expApprox_x < 0 then begin
   expApprox_is_neg := true;
-  expApprox_y := -x;
+  expApprox_y := -expApprox_x;
 end;
   expApprox_term := 1;
   expApprox_sum := 1;
@@ -77,12 +104,12 @@ end;
 end;
   exit(expApprox_sum);
 end;
-function round3(x: real): real;
+function round3(round3_x: real): real;
 var
   round3_scaled: real;
-  round3_scaled_int: integer;
+  round3_scaled_int: int64;
 begin
-  round3_scaled := x * 1000;
+  round3_scaled := round3_x * 1000;
   if round3_scaled >= 0 then begin
   round3_scaled := round3_scaled + 0.5;
 end else begin
@@ -91,22 +118,22 @@ end;
   round3_scaled_int := Trunc(round3_scaled);
   exit(Double(round3_scaled_int) / 1000);
 end;
-function charging_capacitor(source_voltage: real; resistance: real; capacitance: real; time_sec: real): real;
+function charging_capacitor(charging_capacitor_source_voltage: real; charging_capacitor_resistance: real; charging_capacitor_capacitance: real; charging_capacitor_time_sec: real): real;
 var
   charging_capacitor_exponent: real;
   charging_capacitor_voltage: real;
 begin
-  if source_voltage <= 0 then begin
+  if charging_capacitor_source_voltage <= 0 then begin
   panic('Source voltage must be positive.');
 end;
-  if resistance <= 0 then begin
+  if charging_capacitor_resistance <= 0 then begin
   panic('Resistance must be positive.');
 end;
-  if capacitance <= 0 then begin
+  if charging_capacitor_capacitance <= 0 then begin
   panic('Capacitance must be positive.');
 end;
-  charging_capacitor_exponent := -time_sec / (resistance * capacitance);
-  charging_capacitor_voltage := source_voltage * (1 - expApprox(charging_capacitor_exponent));
+  charging_capacitor_exponent := -charging_capacitor_time_sec / (charging_capacitor_resistance * charging_capacitor_capacitance);
+  charging_capacitor_voltage := charging_capacitor_source_voltage * (1 - expApprox(charging_capacitor_exponent));
   exit(round3(charging_capacitor_voltage));
 end;
 begin
@@ -124,4 +151,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

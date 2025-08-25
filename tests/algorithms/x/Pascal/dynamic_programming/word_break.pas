@@ -1,4 +1,4 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils, fgl;
 type StrArray = array of string;
@@ -39,39 +39,68 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  s: string;
-  b: boolean;
-  words: StrArray;
-function build_set(words: StrArray): specialize TFPGMap<string, boolean>; forward;
-function word_break(s: string; words: StrArray): boolean; forward;
-procedure print_bool(b: boolean); forward;
-function build_set(words: StrArray): specialize TFPGMap<string, boolean>;
+function build_set(build_set_words: StrArray): specialize TFPGMap<string, boolean>; forward;
+function word_break(word_break_s: string; word_break_words: StrArray): boolean; forward;
+procedure print_bool(print_bool_b: boolean); forward;
+function build_set(build_set_words: StrArray): specialize TFPGMap<string, boolean>;
 var
   build_set_m: specialize TFPGMap<string, boolean>;
   build_set_w: string;
 begin
   build_set_m := specialize TFPGMap<string, boolean>.Create();
-  for build_set_w in words do begin
+  for build_set_w in build_set_words do begin
   build_set_m[build_set_w] := true;
 end;
   exit(build_set_m);
 end;
-function word_break(s: string; words: StrArray): boolean;
+function word_break(word_break_s: string; word_break_words: StrArray): boolean;
 var
   word_break_n: integer;
   word_break_dict: specialize TFPGMap<string, boolean>;
   word_break_dp: array of boolean;
-  word_break_i: integer;
-  word_break_j: integer;
+  word_break_i: int64;
+  word_break_j: int64;
   word_break_sub: string;
 begin
-  word_break_n := Length(s);
-  word_break_dict := build_set(words);
+  word_break_n := Length(word_break_s);
+  word_break_dict := build_set(word_break_words);
   word_break_dp := [];
   word_break_i := 0;
   while word_break_i <= word_break_n do begin
@@ -84,7 +113,7 @@ end;
   word_break_j := 0;
   while word_break_j < word_break_i do begin
   if word_break_dp[word_break_j] then begin
-  word_break_sub := copy(s, word_break_j+1, (word_break_i - (word_break_j)));
+  word_break_sub := copy(word_break_s, word_break_j+1, (word_break_i - (word_break_j)));
   if word_break_dict.IndexOf(word_break_sub) <> -1 then begin
   word_break_dp[word_break_i] := true;
   word_break_j := word_break_i;
@@ -96,9 +125,9 @@ end;
 end;
   exit(word_break_dp[word_break_n]);
 end;
-procedure print_bool(b: boolean);
+procedure print_bool(print_bool_b: boolean);
 begin
-  if b then begin
+  if print_bool_b then begin
   writeln(Ord(true));
 end else begin
   writeln(Ord(false));
@@ -118,4 +147,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

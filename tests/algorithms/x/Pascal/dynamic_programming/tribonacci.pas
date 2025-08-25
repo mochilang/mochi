@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -60,7 +66,11 @@ begin
   end;
   writeln(']');
 end;
-procedure show_list(xs: array of integer);
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
+procedure show_list_int64(xs: array of int64);
 var i: integer;
 begin
   write('[');
@@ -70,22 +80,41 @@ begin
   end;
   write(']');
 end;
+function list_int_to_str(xs: array of int64): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + IntToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+function list_list_int_to_str(xs: array of IntArray): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + list_int_to_str(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  num: integer;
-function tribonacci(num: integer): IntArray; forward;
-function tribonacci(num: integer): IntArray;
+function tribonacci(tribonacci_num: int64): IntArray; forward;
+function tribonacci(tribonacci_num: int64): IntArray;
 var
-  tribonacci_dp: array of integer;
-  tribonacci_i: integer;
-  tribonacci_t: integer;
+  tribonacci_dp: array of int64;
+  tribonacci_i: int64;
+  tribonacci_t: int64;
 begin
   tribonacci_dp := [];
   tribonacci_i := 0;
-  while tribonacci_i < num do begin
+  while tribonacci_i < tribonacci_num do begin
   if (tribonacci_i = 0) or (tribonacci_i = 1) then begin
   tribonacci_dp := concat(tribonacci_dp, IntArray([0]));
 end else begin
@@ -104,7 +133,7 @@ begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  show_list(tribonacci(8));
+  show_list_int64(tribonacci(8));
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
   writeln('{');
@@ -112,4 +141,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
