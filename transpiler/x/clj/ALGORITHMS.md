@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-24 23:29 GMT+7
+Last updated: 2025-08-25 16:51 GMT+7
 
 ## Algorithms Golden Test Checklist (847/1077)
 | Index | Name | Status | Duration | Memory |
@@ -372,7 +372,7 @@ Last updated: 2025-08-24 23:29 GMT+7
 | 363 | electronics/ohms_law | ✓ | 56.036ms | 20.59MB |
 | 364 | electronics/real_and_reactive_power | ✓ | 42.12ms | 20.43MB |
 | 365 | electronics/resistor_color_code | ✓ | 55.145ms | 42.52MB |
-| 366 | electronics/resistor_equivalence | ✓ | 48.958ms | 20.17MB |
+| 366 | electronics/resistor_equivalence | ✓ | 61.96ms | 20.97MB |
 | 367 | electronics/resonant_frequency | ✓ | 44.095ms | 19.84MB |
 | 368 | electronics/wheatstone_bridge | ✓ | 47.552ms | 19.18MB |
 | 369 | file_transfer/receive_file | ✓ | 42.386ms | 19.25MB |

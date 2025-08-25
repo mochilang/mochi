@@ -78,17 +78,21 @@ type CharLit rune
 func (c CharLit) Emit(w io.Writer) {
 	r := rune(c)
 	switch r {
-	case '\n':
-		io.WriteString(w, "\\newline")
-	case '\t':
-		io.WriteString(w, "\\tab")
-	case '\r':
-		io.WriteString(w, "\\return")
-	case ' ':
-		io.WriteString(w, "\\space")
-	default:
-		io.WriteString(w, "\\")
-		io.WriteString(w, string(r))
+case '\n':
+io.WriteString(w, "\\newline")
+case '\t':
+io.WriteString(w, "\\tab")
+case '\r':
+io.WriteString(w, "\\return")
+case '\b':
+io.WriteString(w, "\\backspace")
+case '\f':
+io.WriteString(w, "\\formfeed")
+case ' ':
+io.WriteString(w, "\\space")
+default:
+io.WriteString(w, "\\")
+io.WriteString(w, string(r))
 	}
 }
 
@@ -2479,12 +2483,13 @@ func isAggCall(e *parser.Expr) string {
 }
 
 func transpileExpr(e *parser.Expr) (Node, error) {
-	if e == nil {
-		return nil, fmt.Errorf("nil expr")
-	}
-	if e.Binary == nil {
-		return nil, fmt.Errorf("unsupported expr")
-	}
+       if e == nil {
+               // Treat missing expressions as Clojure nil.
+               return Symbol("nil"), nil
+       }
+       if e.Binary == nil {
+               return nil, fmt.Errorf("unsupported expr")
+       }
 	left, err := transpileUnary(e.Binary.Left)
 	if err != nil {
 		return nil, err
