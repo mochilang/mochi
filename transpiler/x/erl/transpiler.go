@@ -1268,7 +1268,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, " ++ \" \" ++ ")
 		}
-		io.WriteString(w, "mochi_format(")
+		io.WriteString(w, "mochi_repr(")
 		a.emit(w)
 		io.WriteString(w, ")")
 	}
@@ -5561,13 +5561,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			args := make([]Expr, len(ce.Args))
 			for i, a := range ce.Args {
 				fmtParts[i] = "~s"
+				useStr = true
 				if call, ok := a.(*CallExpr); ok && call.Func == "str" {
-					useStr = true
-					args[i] = &CallExpr{Func: "mochi_str", Args: call.Args}
+					args[i] = &CallExpr{Func: "mochi_repr", Args: []Expr{&CallExpr{Func: "mochi_str", Args: call.Args}}}
 				} else {
-					useFormat = true
-					useStr = true
-					args[i] = &CallExpr{Func: "mochi_format", Args: []Expr{a}}
+					args[i] = &CallExpr{Func: "mochi_repr", Args: []Expr{a}}
 				}
 			}
 			fmtStr := strings.Join(fmtParts, " ") + "~n"
