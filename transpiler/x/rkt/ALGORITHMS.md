@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-24 16:39 UTC
+Last updated: 2025-08-24 17:04 UTC
 
 ## Algorithms Golden Test Checklist (946/1077)
 | Index | Name | Status | Duration | Memory |
@@ -218,7 +218,7 @@ Last updated: 2025-08-24 16:39 UTC
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 9m31.223891s | 8.0 KB |
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 9m31.223891s | 77.6 KB |
 | 211 | data_structures/heap/binomial_heap | ✓ | 9m31.223891s | 13.9 KB |
-| 212 | data_structures/heap/heap | ✓ | 9m31.223891s | 84.4 KB |
+| 212 | data_structures/heap/heap | ✓ | 183µs | 109.5 KB |
 | 213 | data_structures/heap/heap_generic | ✓ | 149µs | 73.3 KB |
 | 214 | data_structures/heap/max_heap | ✓ | 53µs | 20.1 KB |
 | 215 | data_structures/heap/min_heap | ✓ | 53µs | 17.7 KB |
