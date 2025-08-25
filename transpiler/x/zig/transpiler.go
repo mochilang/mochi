@@ -2147,17 +2147,23 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 							break
 						}
 					}
-					if funDepth == 0 && blockDepth == 0 && allConst {
+					if funDepth == 0 && blockDepth == 0 && allConst && !strings.HasPrefix(elem, "[]") {
 						kw = "var"
 						v.Value = nil
 						fmt.Fprintf(w, "&[_]%s{}", elem)
 						globalInits = append(globalInits, &AssignStmt{Name: v.Name, Value: ll})
 					} else if allConst {
-						lbl := newLabel()
-						tmp := uniqueName("_tmp")
-						fmt.Fprintf(w, "%s: { var %s = ", lbl, tmp)
-						ll.emitArray(w)
-						fmt.Fprintf(w, "; break :%s %s[0..]; }", lbl, tmp)
+						if strings.HasPrefix(elem, "[]") {
+							io.WriteString(w, "@constCast(")
+							ll.emit(w)
+							io.WriteString(w, ")")
+						} else {
+							lbl := newLabel()
+							tmp := uniqueName("_tmp")
+							fmt.Fprintf(w, "%s: { var %s = ", lbl, tmp)
+							ll.emitArray(w)
+							fmt.Fprintf(w, "; break :%s %s[0..]; }", lbl, tmp)
+						}
 					} else {
 						ll.emit(w)
 					}
