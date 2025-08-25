@@ -577,10 +577,21 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	}
 	if typ == "int" || typ == "long" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
+		if ve, ok := e.(*VarExpr); ok {
+			if t, ok2 := varTypes[ve.Name]; ok2 {
+				it = t
+			}
+		}
 		if typ == "long" && (it == "java.math.BigInteger" || it == "bigint") {
 			fmt.Fprint(w, "((java.math.BigInteger)(")
 			e.emit(w)
 			fmt.Fprint(w, ")).longValue()")
+			return
+		}
+		if typ == "double" && (it == "java.math.BigInteger" || it == "bigint") {
+			fmt.Fprint(w, "((java.math.BigInteger)(")
+			e.emit(w)
+			fmt.Fprint(w, ")).doubleValue()")
 			return
 		}
 		if typ == "int" || typ == "long" {
@@ -944,11 +955,11 @@ func inferType(e Expr) string {
 			if lt == "bigrat" || rt == "bigrat" {
 				return "bigrat"
 			}
-			if lt == "bigint" || rt == "bigint" || lt == "java.math.BigInteger" || rt == "java.math.BigInteger" {
-				return "bigint"
-			}
 			if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
 				return "double"
+			}
+			if lt == "bigint" || rt == "bigint" || lt == "java.math.BigInteger" || rt == "java.math.BigInteger" {
+				return "bigint"
 			}
 			if lt == "long" || rt == "long" {
 				return "long"
@@ -960,11 +971,11 @@ func inferType(e Expr) string {
 			if lt == "bigrat" || rt == "bigrat" {
 				return "bigrat"
 			}
-			if lt == "bigint" || rt == "bigint" || lt == "java.math.BigInteger" || rt == "java.math.BigInteger" {
-				return "bigint"
-			}
 			if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
 				return "double"
+			}
+			if lt == "bigint" || rt == "bigint" || lt == "java.math.BigInteger" || rt == "java.math.BigInteger" {
+				return "bigint"
 			}
 			if lt == "long" || rt == "long" {
 				return "long"
@@ -1892,6 +1903,15 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 			typ = t
 		}
 	}
+	if typ == "bigint" || typ == "int" || typ == "java.math.BigInteger" {
+		if b, ok := s.Expr.(*BinaryExpr); ok && b.Op == "/" {
+			lt := inferType(b.Left)
+			rt := inferType(b.Right)
+			if lt == "double" || lt == "float" || rt == "double" || rt == "float" {
+				typ = "double"
+			}
+		}
+	}
 	if typ == "" || typ == "Object" {
 		if t, ok := varTypes[s.Name]; ok && t != "" && t != "Object" {
 			typ = t
@@ -2654,7 +2674,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if rt == "" && guessIntExpr(b.Right) {
 			rt = "int"
 		}
-		big := lt == "bigint" || lt == "java.math.BigInteger" || lt == "int" || rt == "bigint" || rt == "java.math.BigInteger" || rt == "int"
+		leftBig := lt == "bigint" || lt == "java.math.BigInteger" || lt == "int"
+		rightBig := rt == "bigint" || rt == "java.math.BigInteger" || rt == "int"
+		big := leftBig && rightBig
 		if lt == "bigrat" || rt == "bigrat" {
 			needBigRat = true
 			switch b.Op {
