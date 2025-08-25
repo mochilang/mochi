@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-25 08:47 GMT+7
+Last updated: 2025-08-25 16:56 GMT+7
 
-## Algorithms Golden Test Checklist (822/1077)
+## Algorithms Golden Test Checklist (827/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -416,12 +416,12 @@ Last updated: 2025-08-25 08:47 GMT+7
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 38µs | 2.0 MB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 115µs | 2.0 MB |
 | 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
+| 410 | graphs/check_cycle | ✓ | 61µs | 2.2 MB |
 | 411 | graphs/connected_components | ✓ | 87µs | 1.9 MB |
-| 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
+| 412 | graphs/deep_clone_graph | ✓ | 22µs | 2.2 MB |
+| 413 | graphs/depth_first_search | ✓ | 133µs | 2.2 MB |
+| 414 | graphs/depth_first_search_2 | ✓ | 83µs | 2.1 MB |
+| 415 | graphs/dijkstra | ✓ | 151µs | 2.2 MB |
 | 416 | graphs/dijkstra_2 |   |  |  |
 | 417 | graphs/dijkstra_algorithm |   |  |  |
 | 418 | graphs/dijkstra_alternate |   |  |  |

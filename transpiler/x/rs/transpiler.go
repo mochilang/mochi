@@ -352,7 +352,10 @@ type Expr interface{ emit(io.Writer) }
 // ExprStmt is a statement consisting of a single expression.
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer) {
+	s.Expr.emit(w)
+	io.WriteString(w, ";")
+}
 
 type CallExpr struct {
 	Func string
@@ -401,6 +404,16 @@ func (c *CallExpr) emit(w io.Writer) {
 	}
 	if c.Func == "padStart" && len(c.Args) == 3 {
 		(&PadStartExpr{Str: c.Args[0], Width: c.Args[1], Pad: c.Args[2]}).emit(w)
+		if len(temps) > 0 {
+			io.WriteString(w, "}")
+		}
+		return
+	}
+	if c.Func == "join" && len(c.Args) == 2 {
+		c.Args[0].emit(w)
+		io.WriteString(w, ".join(")
+		c.Args[1].emit(w)
+		io.WriteString(w, ")")
 		if len(temps) > 0 {
 			io.WriteString(w, "}")
 		}
@@ -2390,12 +2403,13 @@ func (v *VarDecl) emit(w io.Writer) {
 				io.WriteString(w, "(")
 				v.Expr.emit(w)
 				io.WriteString(w, " as i64)")
+				io.WriteString(w, ";")
 				return
 			}
 			if _, ok := v.Expr.(*NameRef); ok && v.Type != "" && !strings.HasPrefix(v.Type, "&") {
 				if _, ok2 := structTypes[v.Type]; ok2 || strings.HasPrefix(v.Type, "Vec<") || strings.HasPrefix(v.Type, "HashMap") || v.Type == "String" {
 					v.Expr.emit(w)
-					io.WriteString(w, ".clone()")
+					io.WriteString(w, ".clone();")
 					return
 				}
 			}
@@ -2409,6 +2423,7 @@ func (v *VarDecl) emit(w io.Writer) {
 			io.WriteString(w, "Default::default()")
 		}
 	}
+	io.WriteString(w, ";")
 }
 
 type AssignStmt struct {
@@ -2659,7 +2674,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 					s.Value.emit(w)
 				}
 			}
-			io.WriteString(w, ")")
+			io.WriteString(w, ");")
 			if useUnsafe {
 				io.WriteString(w, " }")
 			}
@@ -2715,6 +2730,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	if useUnsafe {
 		io.WriteString(w, " }")
 	}
+	io.WriteString(w, ";")
 }
 
 type BinaryExpr struct {
@@ -2999,6 +3015,7 @@ func (i *IfExpr) emit(w io.Writer) {
 type MatchArm struct {
 	Pattern Expr // nil for _
 	Result  Expr
+	Body    []Stmt
 }
 
 type MatchExpr struct {
@@ -3020,7 +3037,19 @@ func (m *MatchExpr) emit(w io.Writer) {
 			io.WriteString(w, "_")
 		}
 		io.WriteString(w, " => ")
-		a.Result.emit(w)
+		if a.Body != nil {
+			io.WriteString(w, "{")
+			for _, st := range a.Body {
+				st.emit(w)
+				io.WriteString(w, "\n")
+			}
+			if a.Result != nil {
+				a.Result.emit(w)
+			}
+			io.WriteString(w, "}")
+		} else {
+			a.Result.emit(w)
+		}
 		io.WriteString(w, ",")
 	}
 	io.WriteString(w, " }")
@@ -6307,16 +6336,40 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		if n, ok := pat.(*NameRef); ok && n.Name == "_" {
 			pat = nil
 		}
-		res, err := compileExpr(c.Result)
-		if err != nil {
-			return nil, err
+		var res Expr
+		var body []Stmt
+		if c.Result != nil {
+			r, err := compileExpr(c.Result)
+			if err != nil {
+				return nil, err
+			}
+			if ml, ok := r.(*MapLit); ok && len(ml.Items) == 0 && c.Block == nil {
+				body = []Stmt{}
+			} else {
+				res = r
+			}
+		} else if c.Block != nil {
+			prev := curEnv
+			child := types.NewEnv(curEnv)
+			curEnv = child
+			stmts := make([]Stmt, 0, len(c.Block))
+			for _, st := range c.Block {
+				cs, err := compileStmt(st)
+				if err != nil {
+					curEnv = prev
+					return nil, err
+				}
+				stmts = append(stmts, cs)
+			}
+			curEnv = prev
+			body = stmts
 		}
 		if inferType(res) == "String" {
 			if _, ok := res.(*StringLit); ok {
 				res = &StringCastExpr{Expr: res}
 			}
 		}
-		arms[i] = MatchArm{Pattern: pat, Result: res}
+		arms[i] = MatchArm{Pattern: pat, Result: res, Body: body}
 		if nr, ok := target.(*NameRef); ok {
 			names := map[string]bool{}
 			collectNamesExpr(names, res)
