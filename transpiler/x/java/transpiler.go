@@ -3113,7 +3113,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 		switch elem {
 		case "int", "long":
 			elem = "Long"
-		case "double":
+		case "double", "float", "float64":
 			elem = "Double"
 		case "boolean":
 			elem = "Boolean"
@@ -3708,7 +3708,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		case "long":
 			useDefault = true
 			defVal = "0L"
-		case "double":
+		case "double", "float", "float64":
 			useDefault = true
 			defVal = "0.0"
 		case "boolean":
@@ -3723,7 +3723,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			case "long", "Long":
 				useDefault = true
 				defVal = "0L"
-			case "double", "Double":
+			case "double", "float", "float64", "Double":
 				useDefault = true
 				defVal = "0.0"
 			case "boolean", "Boolean":
@@ -6321,7 +6321,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				case "int", "long":
 					needArrGetI = true
 					inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
-				case "double":
+				case "double", "float", "float64":
 					needArrGetD = true
 					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
 				case "boolean":
@@ -8377,7 +8377,7 @@ func zeroValueExpr(t string) Expr {
 	switch t {
 	case "int", "long", "bigint", "java.math.BigInteger":
 		return &IntLit{Value: 0}
-	case "double":
+	case "double", "float", "float64":
 		return &FloatLit{Value: 0}
 	case "boolean":
 		return &BoolLit{Value: false}
