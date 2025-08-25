@@ -8,6 +8,6 @@ Exception in thread "main" java.lang.IndexOutOfBoundsException: Index -214748364
 	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:302)
 	at java.base/java.util.Objects.checkIndex(Objects.java:385)
 	at java.base/java.util.ArrayList.get(ArrayList.java:427)
-	at Matrix_equalizationKt.array_equalization(matrix_equalization.kt:41)
-	at Matrix_equalizationKt.main(matrix_equalization.kt:61)
+	at Matrix_equalizationKt.array_equalization(matrix_equalization.kt:43)
+	at Matrix_equalizationKt.main(matrix_equalization.kt:63)
 	at Matrix_equalizationKt.main(matrix_equalization.kt)

@@ -1869,7 +1869,11 @@ func (s *AssignStmt) emit(w io.Writer, indentLevel int) {
 	if typ == "Int" {
 		io.WriteString(w, "(")
 		s.Value.emit(w)
-		io.WriteString(w, ").toInt()")
+		if valType == "Long" {
+			io.WriteString(w, ").coerceAtMost(Int.MAX_VALUE.toLong()).toInt()")
+		} else {
+			io.WriteString(w, ").toInt()")
+		}
 		return
 	}
 	if typ == "Long" && valType != "Long" {
@@ -3265,6 +3269,9 @@ func guessType(e Expr) string {
 			if lt == "Double" || rt == "Double" {
 				return "Double"
 			}
+			if lt == "Int" && rt == "Int" {
+				return "Long"
+			}
 			return "Int"
 		}
 		if v.Op == "*" {
@@ -3281,6 +3288,9 @@ func guessType(e Expr) string {
 			}
 			if lt == "Double" || rt == "Double" {
 				return "Double"
+			}
+			if lt == "Int" && rt == "Int" {
+				return "Long"
 			}
 			return "Int"
 		}
