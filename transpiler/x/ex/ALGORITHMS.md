@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-25 00:15 GMT+7
+Last updated: 2025-08-25 16:59 GMT+7
 
-## Algorithms Golden Test Checklist (919/1077)
+## Algorithms Golden Test Checklist (913/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -372,12 +372,12 @@ Last updated: 2025-08-25 00:15 GMT+7
 | 363 | electronics/ohms_law | ✓ | 11.06ms | 32.7 MB |
 | 364 | electronics/real_and_reactive_power | ✓ | 14.79ms | 32.7 MB |
 | 365 | electronics/resistor_color_code | ✓ | 1us | 0 B |
-| 366 | electronics/resistor_equivalence | ✓ | 8.17ms | 25.0 MB |
+| 366 | electronics/resistor_equivalence | ✓ | 8.83ms | 25.0 MB |
 | 367 | electronics/resonant_frequency | ✓ | 5.71ms | 25.0 MB |
 | 368 | electronics/wheatstone_bridge | ✓ | 5.59ms | 25.0 MB |
 | 369 | file_transfer/receive_file | ✓ | 238us | 0 B |
 | 370 | file_transfer/send_file | ✓ | 370us | 12.5 MB |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
+| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
 | 372 | financial/equated_monthly_installments | ✓ | 6.01ms | 25.0 MB |
 | 373 | financial/exponential_moving_average | ✓ | 8.19ms | 17.3 MB |
 | 374 | financial/interest | ✓ | 6.91ms | 15.4 MB |
@@ -402,15 +402,15 @@ Last updated: 2025-08-25 00:15 GMT+7
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 7.93ms | 35.2 MB |
 | 394 | graphs/a_star | ✓ | 10.61ms | 9.5 MB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 24.42ms | 79.3 MB |
-| 396 | graphs/articulation_points | ✓ | 655us | 25.0 MB |
-| 397 | graphs/basic_graphs | ✓ | 11.23ms | 17.3 MB |
+| 396 | graphs/articulation_points | error | 655us | 25.0 MB |
+| 397 | graphs/basic_graphs | error | 11.23ms | 17.3 MB |
 | 398 | graphs/bellman_ford | ✓ | 8.62ms | 17.3 MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 7.05ms | 12.5 MB |
-| 400 | graphs/bidirectional_a_star | ✓ | 12.42ms | 57.7 MB |
-| 401 | graphs/bidirectional_breadth_first_search | ✓ | 12.58ms | 99.1 MB |
-| 402 | graphs/bidirectional_search | ✓ | 280us | 17.4 MB |
+| 400 | graphs/bidirectional_a_star | error | 12.42ms | 57.7 MB |
+| 401 | graphs/bidirectional_breadth_first_search | error | 12.58ms | 99.1 MB |
+| 402 | graphs/bidirectional_search | error | 280us | 17.4 MB |
 | 403 | graphs/boruvka | ✓ | 812us | 17.3 MB |
-| 404 | graphs/breadth_first_search | ✓ | 11.21ms | 17.3 MB |
+| 404 | graphs/breadth_first_search | error | 11.21ms | 17.3 MB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 8.47ms | 17.3 MB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 8.83ms | 25.0 MB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1us | 0 B |
@@ -420,7 +420,7 @@ Last updated: 2025-08-25 00:15 GMT+7
 | 411 | graphs/connected_components | ✓ | 10.55ms | 12.5 MB |
 | 412 | graphs/deep_clone_graph | error |  |  |
 | 413 | graphs/depth_first_search | ✓ | 9.19ms | 17.3 MB |
-| 414 | graphs/depth_first_search_2 | ✓ | 15.79ms | 17.3 MB |
+| 414 | graphs/depth_first_search_2 | error | 15.79ms | 17.3 MB |
 | 415 | graphs/dijkstra | ✓ | 288us | 0 B |
 | 416 | graphs/dijkstra_2 | ✓ | 730us | 17.3 MB |
 | 417 | graphs/dijkstra_algorithm | ✓ | 396us | 12.5 MB |

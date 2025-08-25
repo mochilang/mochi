@@ -159,7 +159,7 @@ func uniqueWhileName() string {
 // counter that is typically not used after the loop ends.
 func isLoopCounter(name string) bool {
 	switch name {
-    case "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "idx", "term", "chk_map":
+	case "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "idx", "term", "chk_map":
 		// treat common loop variables and temporary maps as throwaway
 		// values to avoid unused variable warnings
 		return true
@@ -2085,10 +2085,12 @@ func Emit(p *Program, benchMain bool) []byte {
 	}
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
-	if dataDir != "" {
-		fmt.Fprintf(&buf, "  @data_dir %q\n", dataDir)
-	} else {
-		buf.WriteString("  @data_dir nil\n")
+	if usedHelpers["read_file"] {
+		if dataDir != "" {
+			fmt.Fprintf(&buf, "  @data_dir %q\n", dataDir)
+		} else {
+			buf.WriteString("  @data_dir nil\n")
+		}
 	}
 	if ex := kernelImportExcepts(); len(ex) > 0 {
 		buf.WriteString("  import Kernel, except: [")
