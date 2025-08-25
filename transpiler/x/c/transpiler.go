@@ -207,8 +207,16 @@ func emitLenExpr(w io.Writer, e Expr) {
 	case *FieldExpr:
 		typ := inferExprType(currentEnv, v.Target)
 		base := strings.TrimPrefix(typ, "struct ")
+		fieldType := ""
+		if st, ok := structTypes[strings.TrimSuffix(base, "*")]; ok {
+			if ft, ok2 := st.Fields[v.Name]; ok2 {
+				fieldType = cTypeFromMochiType(ft)
+			}
+		}
 		v.Target.emitExpr(w)
-		if strings.HasSuffix(base, "*") {
+		if strings.HasPrefix(fieldType, "Map") {
+			io.WriteString(w, "."+v.Name+".len")
+		} else if strings.HasSuffix(base, "*") {
 			if _, ok := structTypes[strings.TrimSuffix(base, "*")]; ok {
 				io.WriteString(w, "->"+v.Name+"_len")
 			} else {
@@ -3148,7 +3156,9 @@ type MapLit struct{ Items []MapItem }
 func (m *MapLit) emitExpr(w io.Writer) {
 	if len(m.Items) == 0 {
 		typ := "MapSI"
-		if currentVarType != nil {
+		if currentParamType != "" {
+			typ = currentParamType
+		} else if currentVarType != nil {
 			if mt, ok := currentVarType.(types.MapType); ok {
 				typ = cTypeFromMochiType(mt)
 			}
@@ -3156,8 +3166,6 @@ func (m *MapLit) emitExpr(w io.Writer) {
 			if t, ok := varTypes[currentVarName]; ok {
 				typ = t
 			}
-		} else if currentParamType != "" {
-			typ = currentParamType
 		}
 		io.WriteString(w, "("+typ+"){0}")
 		return
@@ -4513,7 +4521,16 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				continue
 			}
 		}
+		prevType := currentVarType
+		prevParam := currentParamType
+		prevName := currentVarName
+		currentVarType = nil
+		currentParamType = paramType
+		currentVarName = ""
 		a.emitExpr(w)
+		currentVarName = prevName
+		currentParamType = prevParam
+		currentVarType = prevType
 		emitExtraArgs(w, paramType, a)
 		first = false
 	}
