@@ -1,8 +1,8 @@
 public class Main {
     static class NumberContainer {
-        java.util.Map<Long,long[]> numbermap;
-        java.util.Map<Long,Long> indexmap;
-        NumberContainer(java.util.Map<Long,long[]> numbermap, java.util.Map<Long,Long> indexmap) {
+        java.util.Map<java.math.BigInteger,java.math.BigInteger[]> numbermap;
+        java.util.Map<java.math.BigInteger,java.math.BigInteger> indexmap;
+        NumberContainer(java.util.Map<java.math.BigInteger,java.math.BigInteger[]> numbermap, java.util.Map<java.math.BigInteger,java.math.BigInteger> indexmap) {
             this.numbermap = numbermap;
             this.indexmap = indexmap;
         }
@@ -12,122 +12,150 @@ public class Main {
         }
     }
 
-    static java.util.Map<Long,long[]> nm = null;
-    static java.util.Map<Long,Long> im = null;
+    static java.util.Map<java.math.BigInteger,java.math.BigInteger[]> nm = null;
+    static java.util.Map<java.math.BigInteger,java.math.BigInteger> im = null;
     static NumberContainer cont = null;
 
-    static long[] remove_at(long[] xs, long idx) {
-        long[] res = ((long[])(new long[]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(xs.length)) {
-            if ((long)(i_1) != (long)(idx)) {
-                res = ((long[])(appendLong(res, (long)(xs[(int)((long)(i_1))]))));
+    static java.math.BigInteger[] remove_at(java.math.BigInteger[] xs, java.math.BigInteger idx) {
+        java.math.BigInteger[] res = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(xs.length))) < 0) {
+            if (i_1.compareTo(idx) != 0) {
+                res = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(xs[_idx((xs).length, ((java.math.BigInteger)(i_1)).longValue())])))).toArray(java.math.BigInteger[]::new)));
             }
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return res;
+        return ((java.math.BigInteger[])(res));
     }
 
-    static long[] insert_at(long[] xs, long idx, long val) {
-        long[] res_1 = ((long[])(new long[]{}));
-        long i_3 = 0L;
-        while ((long)(i_3) < (long)(xs.length)) {
-            if ((long)(i_3) == (long)(idx)) {
-                res_1 = ((long[])(appendLong(res_1, (long)(val))));
+    static java.math.BigInteger[] insert_at(java.math.BigInteger[] xs, java.math.BigInteger idx, java.math.BigInteger val) {
+        java.math.BigInteger[] res_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(xs.length))) < 0) {
+            if (i_3.compareTo(idx) == 0) {
+                res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(val)))).toArray(java.math.BigInteger[]::new)));
             }
-            res_1 = ((long[])(appendLong(res_1, (long)(xs[(int)((long)(i_3))]))));
-            i_3 = (long)((long)(i_3) + 1L);
+            res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(xs[_idx((xs).length, ((java.math.BigInteger)(i_3)).longValue())])))).toArray(java.math.BigInteger[]::new)));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        if ((long)(idx) == (long)(xs.length)) {
-            res_1 = ((long[])(appendLong(res_1, (long)(val))));
+        if (idx.compareTo(new java.math.BigInteger(String.valueOf(xs.length))) == 0) {
+            res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(val)))).toArray(java.math.BigInteger[]::new)));
         }
-        return res_1;
+        return ((java.math.BigInteger[])(res_1));
     }
 
-    static long[] binary_search_delete(long[] array, long item) {
-        long low = 0L;
-        long high_1 = (long)((long)(array.length) - 1L);
-        long[] arr_1 = ((long[])(array));
-        while ((long)(low) <= (long)(high_1)) {
-            long mid_1 = Math.floorDiv(((long)(low) + (long)(high_1)), 2);
-            if ((long)(arr_1[(int)((long)(mid_1))]) == (long)(item)) {
-                arr_1 = ((long[])(remove_at(((long[])(arr_1)), (long)(mid_1))));
-                return arr_1;
-            } else             if ((long)(arr_1[(int)((long)(mid_1))]) < (long)(item)) {
-                low = (long)((long)(mid_1) + 1L);
+    static java.math.BigInteger[] binary_search_delete(java.math.BigInteger[] array, java.math.BigInteger item) {
+        java.math.BigInteger low = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger high_1 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(array.length)).subtract(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger[] arr_1 = ((java.math.BigInteger[])(array));
+        while (low.compareTo(high_1) <= 0) {
+            java.math.BigInteger mid_1 = new java.math.BigInteger(String.valueOf((low.add(high_1)).divide(java.math.BigInteger.valueOf(2))));
+            if (arr_1[_idx((arr_1).length, ((java.math.BigInteger)(mid_1)).longValue())].compareTo(item) == 0) {
+                arr_1 = ((java.math.BigInteger[])(remove_at(((java.math.BigInteger[])(arr_1)), new java.math.BigInteger(String.valueOf(mid_1)))));
+                return ((java.math.BigInteger[])(arr_1));
+            } else             if (arr_1[_idx((arr_1).length, ((java.math.BigInteger)(mid_1)).longValue())].compareTo(item) < 0) {
+                low = new java.math.BigInteger(String.valueOf(mid_1.add(java.math.BigInteger.valueOf(1))));
             } else {
-                high_1 = (long)((long)(mid_1) - 1L);
+                high_1 = new java.math.BigInteger(String.valueOf(mid_1.subtract(java.math.BigInteger.valueOf(1))));
             }
         }
         System.out.println("ValueError: Either the item is not in the array or the array was unsorted");
-        return arr_1;
+        return ((java.math.BigInteger[])(arr_1));
     }
 
-    static long[] binary_search_insert(long[] array, long index) {
-        long low_1 = 0L;
-        long high_3 = (long)((long)(array.length) - 1L);
-        long[] arr_3 = ((long[])(array));
-        while ((long)(low_1) <= (long)(high_3)) {
-            Object mid_3 = Math.floorDiv(((long)(low_1) + (long)(high_3)), 2);
-            if ((long)(arr_3[(int)(((Number)(mid_3)).longValue())]) == (long)(index)) {
-                arr_3 = ((long[])(insert_at(((long[])(arr_3)), (long)(((Number)(mid_3)).intValue() + 1L), (long)(index))));
-                return arr_3;
-            } else             if ((long)(arr_3[(int)(((Number)(mid_3)).longValue())]) < (long)(index)) {
-                low_1 = (long)(((Number)(mid_3)).intValue() + 1L);
+    static java.math.BigInteger[] binary_search_insert(java.math.BigInteger[] array, java.math.BigInteger index) {
+        java.math.BigInteger low_1 = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger high_3 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(array.length)).subtract(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger[] arr_3 = ((java.math.BigInteger[])(array));
+        while (low_1.compareTo(high_3) <= 0) {
+            java.math.BigInteger mid_3 = new java.math.BigInteger(String.valueOf((low_1.add(high_3)).divide(java.math.BigInteger.valueOf(2))));
+            if (arr_3[_idx((arr_3).length, ((java.math.BigInteger)(mid_3)).longValue())].compareTo(index) == 0) {
+                arr_3 = ((java.math.BigInteger[])(insert_at(((java.math.BigInteger[])(arr_3)), new java.math.BigInteger(String.valueOf(mid_3.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(index)))));
+                return ((java.math.BigInteger[])(arr_3));
+            } else             if (arr_3[_idx((arr_3).length, ((java.math.BigInteger)(mid_3)).longValue())].compareTo(index) < 0) {
+                low_1 = new java.math.BigInteger(String.valueOf(mid_3.add(java.math.BigInteger.valueOf(1))));
             } else {
-                high_3 = (long)(((Number)(mid_3)).intValue() - 1L);
+                high_3 = new java.math.BigInteger(String.valueOf(mid_3.subtract(java.math.BigInteger.valueOf(1))));
             }
         }
-        arr_3 = ((long[])(insert_at(((long[])(arr_3)), (long)(low_1), (long)(index))));
-        return arr_3;
+        arr_3 = ((java.math.BigInteger[])(insert_at(((java.math.BigInteger[])(arr_3)), new java.math.BigInteger(String.valueOf(low_1)), new java.math.BigInteger(String.valueOf(index)))));
+        return ((java.math.BigInteger[])(arr_3));
     }
 
-    static NumberContainer change(NumberContainer cont, long idx, long num) {
-        java.util.Map<Long,long[]> numbermap = cont.numbermap;
-        java.util.Map<Long,Long> indexmap_1 = cont.indexmap;
+    static NumberContainer change(NumberContainer cont, java.math.BigInteger idx, java.math.BigInteger num) {
+        java.util.Map<java.math.BigInteger,java.math.BigInteger[]> numbermap = cont.numbermap;
+        java.util.Map<java.math.BigInteger,java.math.BigInteger> indexmap_1 = cont.indexmap;
         if (indexmap_1.containsKey(idx)) {
-            long old_1 = (long)(((long)(indexmap_1).getOrDefault(idx, 0L)));
-            long[] indexes_1 = (long[])(((long[])(numbermap).get(old_1)));
-            if ((long)(indexes_1.length) == 1L) {
-numbermap.put(old_1, ((long[])(new long[]{})));
+            java.math.BigInteger old_1 = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(indexmap_1).get(idx))));
+            java.math.BigInteger[] indexes_1 = (java.math.BigInteger[])(((java.math.BigInteger[])(numbermap).get(old_1)));
+            if (new java.math.BigInteger(String.valueOf(indexes_1.length)).compareTo(java.math.BigInteger.valueOf(1)) == 0) {
+numbermap.put(old_1, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
             } else {
-numbermap.put(old_1, ((long[])(binary_search_delete(((long[])(indexes_1)), (long)(idx)))));
+numbermap.put(old_1, ((java.math.BigInteger[])(binary_search_delete(((java.math.BigInteger[])(indexes_1)), new java.math.BigInteger(String.valueOf(idx))))));
             }
         }
-indexmap_1.put(idx, (long)(num));
+indexmap_1.put(idx, new java.math.BigInteger(String.valueOf(num)));
         if (numbermap.containsKey(num)) {
-numbermap.put(num, ((long[])(binary_search_insert((long[])(((long[])(numbermap).get(num))), (long)(idx)))));
+numbermap.put(num, ((java.math.BigInteger[])(binary_search_insert((java.math.BigInteger[])(((java.math.BigInteger[])(numbermap).get(num))), new java.math.BigInteger(String.valueOf(idx))))));
         } else {
-numbermap.put(num, ((long[])(new long[]{idx})));
+numbermap.put(num, ((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(idx))})));
         }
         return new NumberContainer(numbermap, indexmap_1);
     }
 
-    static long find(NumberContainer cont, long num) {
-        java.util.Map<Long,long[]> numbermap_1 = cont.numbermap;
+    static java.math.BigInteger find(NumberContainer cont, java.math.BigInteger num) {
+        java.util.Map<java.math.BigInteger,java.math.BigInteger[]> numbermap_1 = cont.numbermap;
         if (numbermap_1.containsKey(num)) {
-            long[] arr_5 = (long[])(((long[])(numbermap_1).get(num)));
-            if ((long)(arr_5.length) > 0L) {
-                return arr_5[(int)(0L)];
+            java.math.BigInteger[] arr_5 = (java.math.BigInteger[])(((java.math.BigInteger[])(numbermap_1).get(num)));
+            if (new java.math.BigInteger(String.valueOf(arr_5.length)).compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+                return new java.math.BigInteger(String.valueOf(arr_5[_idx((arr_5).length, 0L)]));
             }
         }
-        return -1;
+        return new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
     }
     public static void main(String[] args) {
-        nm = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>()));
-        im = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
-        cont = new NumberContainer(nm, im);
-        System.out.println(find(cont, 10L));
-        cont = change(cont, 0L, 10L);
-        System.out.println(find(cont, 10L));
-        cont = change(cont, 0L, 20L);
-        System.out.println(find(cont, 10L));
-        System.out.println(find(cont, 20L));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            nm = ((java.util.Map<java.math.BigInteger,java.math.BigInteger[]>)(new java.util.LinkedHashMap<java.math.BigInteger, java.math.BigInteger[]>()));
+            im = ((java.util.Map<java.math.BigInteger,java.math.BigInteger>)(new java.util.LinkedHashMap<java.math.BigInteger, java.math.BigInteger>()));
+            cont = new NumberContainer(nm, im);
+            System.out.println(find(cont, java.math.BigInteger.valueOf(10)));
+            cont = change(cont, java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(10));
+            System.out.println(find(cont, java.math.BigInteger.valueOf(10)));
+            cont = change(cont, java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(20));
+            System.out.println(find(cont, java.math.BigInteger.valueOf(10)));
+            System.out.println(find(cont, java.math.BigInteger.valueOf(20)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
     }
 
-    static long[] appendLong(long[] arr, long v) {
-        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

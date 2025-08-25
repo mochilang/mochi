@@ -1,11 +1,11 @@
 public class Main {
     static class DataSet {
-        long[][] images;
-        long[][] labels;
-        long num_examples;
-        long index_in_epoch;
-        long epochs_completed;
-        DataSet(long[][] images, long[][] labels, long num_examples, long index_in_epoch, long epochs_completed) {
+        java.math.BigInteger[][] images;
+        java.math.BigInteger[][] labels;
+        java.math.BigInteger num_examples;
+        java.math.BigInteger index_in_epoch;
+        java.math.BigInteger epochs_completed;
+        DataSet(java.math.BigInteger[][] images, java.math.BigInteger[][] labels, java.math.BigInteger num_examples, java.math.BigInteger index_in_epoch, java.math.BigInteger epochs_completed) {
             this.images = images;
             this.labels = labels;
             this.num_examples = num_examples;
@@ -35,9 +35,9 @@ public class Main {
 
     static class BatchResult {
         DataSet dataset;
-        long[][] images;
-        long[][] labels;
-        BatchResult(DataSet dataset, long[][] images, long[][] labels) {
+        java.math.BigInteger[][] images;
+        java.math.BigInteger[][] labels;
+        BatchResult(DataSet dataset, java.math.BigInteger[][] images, java.math.BigInteger[][] labels) {
             this.dataset = dataset;
             this.images = images;
             this.labels = labels;
@@ -49,93 +49,117 @@ public class Main {
     }
 
 
-    static long[][] dense_to_one_hot(long[] labels, long num_classes) {
-        long[][] result = ((long[][])(new long[][]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(labels.length)) {
-            long[] row_1 = ((long[])(new long[]{}));
-            long j_1 = 0L;
-            while ((long)(j_1) < (long)(num_classes)) {
-                if ((long)(j_1) == (long)(labels[(int)((long)(i_1))])) {
-                    row_1 = ((long[])(appendLong(row_1, 1L)));
+    static java.math.BigInteger[][] dense_to_one_hot(java.math.BigInteger[] labels, java.math.BigInteger num_classes) {
+        java.math.BigInteger[][] result = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{}));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(labels.length))) < 0) {
+            java.math.BigInteger[] row_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+            while (j_1.compareTo(num_classes) < 0) {
+                if (j_1.compareTo(labels[_idx((labels).length, ((java.math.BigInteger)(i_1)).longValue())]) == 0) {
+                    row_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(1))).toArray(java.math.BigInteger[]::new)));
                 } else {
-                    row_1 = ((long[])(appendLong(row_1, 0L)));
+                    row_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(0))).toArray(java.math.BigInteger[]::new)));
                 }
-                j_1 = (long)((long)(j_1) + 1L);
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-            result = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
-            i_1 = (long)((long)(i_1) + 1L);
+            result = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new java.math.BigInteger[][]{((java.math.BigInteger[])(row_1))})).toArray(java.math.BigInteger[][]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((java.math.BigInteger[][])(result));
     }
 
-    static DataSet new_dataset(long[][] images, long[][] labels) {
-        return new DataSet(images, labels, images.length, 0, 0);
+    static DataSet new_dataset(java.math.BigInteger[][] images, java.math.BigInteger[][] labels) {
+        return new DataSet(((java.math.BigInteger[][])(images)), ((java.math.BigInteger[][])(labels)), new java.math.BigInteger(String.valueOf(images.length)), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0));
     }
 
-    static BatchResult next_batch(DataSet ds, long batch_size) {
-        long start = (long)(ds.index_in_epoch);
-        if ((long)((long)(start) + (long)(batch_size)) > (long)(ds.num_examples)) {
-            long rest_1 = (long)((long)(ds.num_examples) - (long)(start));
-            long[][] images_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)((long)(start)), (int)((long)(ds.num_examples)))));
-            long[][] labels_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)((long)(start)), (int)((long)(ds.num_examples)))));
-            long new_index_1 = (long)((long)(batch_size) - (long)(rest_1));
-            long[][] images_new_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)(0L), (int)((long)(new_index_1)))));
-            long[][] labels_new_1 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)(0L), (int)((long)(new_index_1)))));
-            long[][] batch_images_2 = ((long[][])(concat(images_rest_1, images_new_1)));
-            long[][] batch_labels_2 = ((long[][])(concat(labels_rest_1, labels_new_1)));
-            DataSet new_ds_2 = new DataSet(ds.images, ds.labels, ds.num_examples, new_index_1, (long)(ds.epochs_completed) + 1L);
-            return new BatchResult(new_ds_2, batch_images_2, batch_labels_2);
+    static BatchResult next_batch(DataSet ds, java.math.BigInteger batch_size) {
+        java.math.BigInteger start = new java.math.BigInteger(String.valueOf(ds.index_in_epoch));
+        if (start.add(batch_size).compareTo(ds.num_examples) > 0) {
+            java.math.BigInteger rest_1 = new java.math.BigInteger(String.valueOf(ds.num_examples.subtract(start)));
+            java.math.BigInteger[][] images_rest_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.images, (int)(((java.math.BigInteger)(start)).longValue()), (int)(((java.math.BigInteger)(ds.num_examples)).longValue()))));
+            java.math.BigInteger[][] labels_rest_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.labels, (int)(((java.math.BigInteger)(start)).longValue()), (int)(((java.math.BigInteger)(ds.num_examples)).longValue()))));
+            java.math.BigInteger new_index_1 = new java.math.BigInteger(String.valueOf(batch_size.subtract(rest_1)));
+            java.math.BigInteger[][] images_new_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.images, (int)(0L), (int)(((java.math.BigInteger)(new_index_1)).longValue()))));
+            java.math.BigInteger[][] labels_new_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.labels, (int)(0L), (int)(((java.math.BigInteger)(new_index_1)).longValue()))));
+            java.math.BigInteger[][] batch_images_2 = ((java.math.BigInteger[][])(concat(images_rest_1, images_new_1)));
+            java.math.BigInteger[][] batch_labels_2 = ((java.math.BigInteger[][])(concat(labels_rest_1, labels_new_1)));
+            DataSet new_ds_2 = new DataSet(((java.math.BigInteger[][])(ds.images)), ((java.math.BigInteger[][])(ds.labels)), new java.math.BigInteger(String.valueOf(ds.num_examples)), new java.math.BigInteger(String.valueOf(new_index_1)), new java.math.BigInteger(String.valueOf(ds.epochs_completed.add(java.math.BigInteger.valueOf(1)))));
+            return new BatchResult(new_ds_2, ((java.math.BigInteger[][])(batch_images_2)), ((java.math.BigInteger[][])(batch_labels_2)));
         } else {
-            long end_1 = (long)((long)(start) + (long)(batch_size));
-            long[][] batch_images_3 = ((long[][])(java.util.Arrays.copyOfRange(ds.images, (int)((long)(start)), (int)((long)(end_1)))));
-            long[][] batch_labels_3 = ((long[][])(java.util.Arrays.copyOfRange(ds.labels, (int)((long)(start)), (int)((long)(end_1)))));
-            DataSet new_ds_3 = new DataSet(ds.images, ds.labels, ds.num_examples, end_1, ds.epochs_completed);
-            return new BatchResult(new_ds_3, batch_images_3, batch_labels_3);
+            java.math.BigInteger end_1 = new java.math.BigInteger(String.valueOf(start.add(batch_size)));
+            java.math.BigInteger[][] batch_images_3 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.images, (int)(((java.math.BigInteger)(start)).longValue()), (int)(((java.math.BigInteger)(end_1)).longValue()))));
+            java.math.BigInteger[][] batch_labels_3 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.labels, (int)(((java.math.BigInteger)(start)).longValue()), (int)(((java.math.BigInteger)(end_1)).longValue()))));
+            DataSet new_ds_3 = new DataSet(((java.math.BigInteger[][])(ds.images)), ((java.math.BigInteger[][])(ds.labels)), new java.math.BigInteger(String.valueOf(ds.num_examples)), new java.math.BigInteger(String.valueOf(end_1)), new java.math.BigInteger(String.valueOf(ds.epochs_completed)));
+            return new BatchResult(new_ds_3, ((java.math.BigInteger[][])(batch_images_3)), ((java.math.BigInteger[][])(batch_labels_3)));
         }
     }
 
-    static Datasets read_data_sets(long[][] train_images, long[] train_labels_raw, long[][] test_images, long[] test_labels_raw, long validation_size, long num_classes) {
-        long[][] train_labels = ((long[][])(dense_to_one_hot(((long[])(train_labels_raw)), (long)(num_classes))));
-        long[][] test_labels_1 = ((long[][])(dense_to_one_hot(((long[])(test_labels_raw)), (long)(num_classes))));
-        long[][] validation_images_1 = ((long[][])(java.util.Arrays.copyOfRange(train_images, (int)(0L), (int)((long)(validation_size)))));
-        long[][] validation_labels_1 = ((long[][])(java.util.Arrays.copyOfRange(train_labels, (int)(0L), (int)((long)(validation_size)))));
-        long[][] train_images_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(train_images, (int)((long)(validation_size)), (int)((long)(train_images.length)))));
-        long[][] train_labels_rest_1 = ((long[][])(java.util.Arrays.copyOfRange(train_labels, (int)((long)(validation_size)), (int)((long)(train_labels.length)))));
-        DataSet train_1 = new_dataset(((long[][])(train_images_rest_1)), ((long[][])(train_labels_rest_1)));
-        DataSet validation_1 = new_dataset(((long[][])(validation_images_1)), ((long[][])(validation_labels_1)));
-        DataSet testset_1 = new_dataset(((long[][])(test_images)), ((long[][])(test_labels_1)));
+    static Datasets read_data_sets(java.math.BigInteger[][] train_images, java.math.BigInteger[] train_labels_raw, java.math.BigInteger[][] test_images, java.math.BigInteger[] test_labels_raw, java.math.BigInteger validation_size, java.math.BigInteger num_classes) {
+        java.math.BigInteger[][] train_labels = ((java.math.BigInteger[][])(dense_to_one_hot(((java.math.BigInteger[])(train_labels_raw)), new java.math.BigInteger(String.valueOf(num_classes)))));
+        java.math.BigInteger[][] test_labels_1 = ((java.math.BigInteger[][])(dense_to_one_hot(((java.math.BigInteger[])(test_labels_raw)), new java.math.BigInteger(String.valueOf(num_classes)))));
+        java.math.BigInteger[][] validation_images_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(train_images, (int)(0L), (int)(((java.math.BigInteger)(validation_size)).longValue()))));
+        java.math.BigInteger[][] validation_labels_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(train_labels, (int)(0L), (int)(((java.math.BigInteger)(validation_size)).longValue()))));
+        java.math.BigInteger[][] train_images_rest_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(train_images, (int)(((java.math.BigInteger)(validation_size)).longValue()), (int)((long)(train_images.length)))));
+        java.math.BigInteger[][] train_labels_rest_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(train_labels, (int)(((java.math.BigInteger)(validation_size)).longValue()), (int)((long)(train_labels.length)))));
+        DataSet train_1 = new_dataset(((java.math.BigInteger[][])(train_images_rest_1)), ((java.math.BigInteger[][])(train_labels_rest_1)));
+        DataSet validation_1 = new_dataset(((java.math.BigInteger[][])(validation_images_1)), ((java.math.BigInteger[][])(validation_labels_1)));
+        DataSet testset_1 = new_dataset(((java.math.BigInteger[][])(test_images)), ((java.math.BigInteger[][])(test_labels_1)));
         return new Datasets(train_1, validation_1, testset_1);
     }
 
     static void main() {
-        long[][] train_images = ((long[][])(new long[][]{new long[]{0, 1}, new long[]{1, 2}, new long[]{2, 3}, new long[]{3, 4}, new long[]{4, 5}}));
-        long[] train_labels_raw_1 = ((long[])(new long[]{0, 1, 2, 3, 4}));
-        long[][] test_images_1 = ((long[][])(new long[][]{new long[]{5, 6}, new long[]{6, 7}}));
-        long[] test_labels_raw_1 = ((long[])(new long[]{5, 6}));
-        Datasets data_1 = read_data_sets(((long[][])(train_images)), ((long[])(train_labels_raw_1)), ((long[][])(test_images_1)), ((long[])(test_labels_raw_1)), 2L, 10L);
+        java.math.BigInteger[][] train_images = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(1)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(4)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(5)}))}));
+        java.math.BigInteger[] train_labels_raw_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(4)}));
+        java.math.BigInteger[][] test_images_1 = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(6)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(6), java.math.BigInteger.valueOf(7)}))}));
+        java.math.BigInteger[] test_labels_raw_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(6)}));
+        Datasets data_1 = read_data_sets(((java.math.BigInteger[][])(train_images)), ((java.math.BigInteger[])(train_labels_raw_1)), ((java.math.BigInteger[][])(test_images_1)), ((java.math.BigInteger[])(test_labels_raw_1)), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(10));
         DataSet ds_1 = data_1.train;
-        BatchResult res_1 = next_batch(ds_1, 2L);
+        BatchResult res_1 = next_batch(ds_1, java.math.BigInteger.valueOf(2));
         ds_1 = res_1.dataset;
         System.out.println(_p(res_1.images));
         System.out.println(_p(res_1.labels));
-        res_1 = next_batch(ds_1, 2L);
+        res_1 = next_batch(ds_1, java.math.BigInteger.valueOf(2));
         ds_1 = res_1.dataset;
         System.out.println(_p(res_1.images));
         System.out.println(_p(res_1.labels));
-        res_1 = next_batch(ds_1, 2L);
+        res_1 = next_batch(ds_1, java.math.BigInteger.valueOf(2));
         ds_1 = res_1.dataset;
         System.out.println(_p(res_1.images));
         System.out.println(_p(res_1.labels));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
     }
 
-    static long[] appendLong(long[] arr, long v) {
-        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static Object concat(Object a, Object b) {
@@ -160,10 +184,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
             return String.valueOf(d);
         }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

@@ -1,10 +1,10 @@
 public class Main {
     static class LCG {
-        long multiplier;
-        long increment;
-        long modulo;
-        long seed;
-        LCG(long multiplier, long increment, long modulo, long seed) {
+        java.math.BigInteger multiplier;
+        java.math.BigInteger increment;
+        java.math.BigInteger modulo;
+        java.math.BigInteger seed;
+        LCG(java.math.BigInteger multiplier, java.math.BigInteger increment, java.math.BigInteger modulo, java.math.BigInteger seed) {
             this.multiplier = multiplier;
             this.increment = increment;
             this.modulo = modulo;
@@ -17,21 +17,29 @@ public class Main {
     }
 
     static LCG lcg = null;
-    static long i = 0L;
+    static java.math.BigInteger i = java.math.BigInteger.valueOf(0);
 
-    static LCG make_lcg(long multiplier, long increment, long modulo, long seed) {
-        return new LCG(multiplier, increment, modulo, seed);
+    static LCG make_lcg(java.math.BigInteger multiplier, java.math.BigInteger increment, java.math.BigInteger modulo, java.math.BigInteger seed) {
+        return new LCG(new java.math.BigInteger(String.valueOf(multiplier)), new java.math.BigInteger(String.valueOf(increment)), new java.math.BigInteger(String.valueOf(modulo)), new java.math.BigInteger(String.valueOf(seed)));
     }
 
-    static long next_number(LCG lcg) {
-lcg.seed = Math.floorMod(((long)((long)(lcg.multiplier) * (long)(lcg.seed)) + (long)(lcg.increment)), lcg.modulo);
-        return lcg.seed;
+    static java.math.BigInteger next_number(LCG lcg) {
+lcg.seed = (lcg.multiplier.multiply(lcg.seed).add(lcg.increment)).remainder(lcg.modulo);
+        return new java.math.BigInteger(String.valueOf(lcg.seed));
     }
     public static void main(String[] args) {
-        lcg = make_lcg(1664525L, 1013904223L, 4294967296L, (long)(_now()));
-        while ((long)(i) < 5L) {
-            System.out.println(_p(next_number(lcg)));
-            i = (long)((long)(i) + 1L);
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            lcg = make_lcg(java.math.BigInteger.valueOf(1664525), java.math.BigInteger.valueOf(1013904223), java.math.BigInteger.valueOf(4294967296L), new java.math.BigInteger(String.valueOf(_now())));
+            while (i.compareTo(java.math.BigInteger.valueOf(5)) < 0) {
+                System.out.println(_p(next_number(lcg)));
+                i = new java.math.BigInteger(String.valueOf(i.add(java.math.BigInteger.valueOf(1))));
+            }
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
         }
     }
 
@@ -51,6 +59,12 @@ lcg.seed = Math.floorMod(((long)((long)(lcg.multiplier) * (long)(lcg.seed)) + (l
         return (int)(System.nanoTime() / 1000);
     }
 
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -63,6 +77,30 @@ lcg.seed = Math.floorMod(((long)((long)(lcg.multiplier) * (long)(lcg.seed)) + (l
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();

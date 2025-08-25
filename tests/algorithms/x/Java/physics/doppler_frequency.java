@@ -8,14 +8,14 @@ public class Main {
         if ((double)(doppler_freq_1) <= (double)(0.0)) {
             throw new RuntimeException(String.valueOf("non-positive frequency implies vs>v or v0>v (in the opposite direction)"));
         }
-        return doppler_freq_1;
+        return (double)(doppler_freq_1);
     }
 
     static double absf(double x) {
         if ((double)(x) < (double)(0.0)) {
-            return -x;
+            return (double)(-x);
         }
-        return x;
+        return (double)(x);
     }
 
     static boolean almost_equal(double a, double b, double tol) {
@@ -48,6 +48,36 @@ public class Main {
         System.out.println(doppler_effect((double)(100.0), (double)(330.0), (double)(10.0), (double)(0.0)));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

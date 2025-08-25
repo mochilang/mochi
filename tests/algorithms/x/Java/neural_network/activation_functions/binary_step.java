@@ -1,22 +1,22 @@
 public class Main {
 
-    static long[] binary_step(double[] vector) {
-        long[] out = ((long[])(new long[]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(vector.length)) {
-            if ((double)(vector[(int)((long)(i_1))]) >= (double)(0.0)) {
-                out = ((long[])(appendLong(out, 1L)));
+    static java.math.BigInteger[] binary_step(double[] vector) {
+        java.math.BigInteger[] out = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(vector.length))) < 0) {
+            if ((double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_1)).longValue())]) >= (double)(0.0)) {
+                out = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(out), java.util.stream.Stream.of(java.math.BigInteger.valueOf(1))).toArray(java.math.BigInteger[]::new)));
             } else {
-                out = ((long[])(appendLong(out, 0L)));
+                out = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(out), java.util.stream.Stream.of(java.math.BigInteger.valueOf(0))).toArray(java.math.BigInteger[]::new)));
             }
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return out;
+        return ((java.math.BigInteger[])(out));
     }
 
     static void main() {
-        double[] vector = ((double[])(new double[]{-1.2, 0.0, 2.0, 1.45, -3.7, 0.3}));
-        long[] result_1 = ((long[])(binary_step(((double[])(vector)))));
+        double[] vector = ((double[])(new double[]{(double)(-1.2), (double)(0.0), (double)(2.0), (double)(1.45), (double)(-3.7), (double)(0.3)}));
+        java.math.BigInteger[] result_1 = ((java.math.BigInteger[])(binary_step(((double[])(vector)))));
         System.out.println(java.util.Arrays.toString(result_1));
     }
     public static void main(String[] args) {
@@ -53,9 +53,7 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static long[] appendLong(long[] arr, long v) {
-        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

@@ -1,113 +1,143 @@
 public class Main {
     static double[][] vehicles = ((double[][])(new double[][]{}));
-    static long[] weights = ((long[])(new long[]{0, 0, 1}));
+    static java.math.BigInteger[] weights = ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(1)}));
     static double[][] result;
 
     static double[][] get_data(double[][] source_data) {
         double[][] data_lists = ((double[][])(new double[][]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(source_data.length)) {
-            double[] row_1 = ((double[])(source_data[(int)((long)(i_1))]));
-            long j_1 = 0L;
-            while ((long)(j_1) < (long)(row_1.length)) {
-                if ((long)(data_lists.length) < (long)((long)(j_1) + 1L)) {
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(source_data.length))) < 0) {
+            double[] row_1 = ((double[])(source_data[_idx((source_data).length, ((java.math.BigInteger)(i_1)).longValue())]));
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+            while (j_1.compareTo(new java.math.BigInteger(String.valueOf(row_1.length))) < 0) {
+                if (new java.math.BigInteger(String.valueOf(data_lists.length)).compareTo(j_1.add(java.math.BigInteger.valueOf(1))) < 0) {
                     double[] empty_1 = ((double[])(new double[]{}));
-                    data_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(data_lists), java.util.stream.Stream.of(new double[][]{empty_1})).toArray(double[][]::new)));
+                    data_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(data_lists), java.util.stream.Stream.of(new double[][]{((double[])(empty_1))})).toArray(double[][]::new)));
                 }
-data_lists[(int)((long)(j_1))] = ((double[])(appendDouble(data_lists[(int)((long)(j_1))], (double)(row_1[(int)((long)(j_1))]))));
-                j_1 = (long)((long)(j_1) + 1L);
+data_lists[(int)(((java.math.BigInteger)(j_1)).longValue())] = ((double[])(appendDouble(data_lists[_idx((data_lists).length, ((java.math.BigInteger)(j_1)).longValue())], (double)(row_1[_idx((row_1).length, ((java.math.BigInteger)(j_1)).longValue())]))));
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return data_lists;
+        return ((double[][])(data_lists));
     }
 
-    static double[][] calculate_each_score(double[][] data_lists, long[] weights) {
+    static double[][] calculate_each_score(double[][] data_lists, java.math.BigInteger[] weights) {
         double[][] score_lists = ((double[][])(new double[][]{}));
-        long i_3 = 0L;
-        while ((long)(i_3) < (long)(data_lists.length)) {
-            double[] dlist_1 = ((double[])(data_lists[(int)((long)(i_3))]));
-            long weight_1 = (long)(weights[(int)((long)(i_3))]);
-            double mind_1 = (double)(dlist_1[(int)(0L)]);
-            double maxd_1 = (double)(dlist_1[(int)(0L)]);
-            long j_3 = 1L;
-            while ((long)(j_3) < (long)(dlist_1.length)) {
-                double val_1 = (double)(dlist_1[(int)((long)(j_3))]);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(data_lists.length))) < 0) {
+            double[] dlist_1 = ((double[])(data_lists[_idx((data_lists).length, ((java.math.BigInteger)(i_3)).longValue())]));
+            java.math.BigInteger weight_1 = new java.math.BigInteger(String.valueOf(weights[_idx((weights).length, ((java.math.BigInteger)(i_3)).longValue())]));
+            double mind_1 = (double)(dlist_1[_idx((dlist_1).length, 0L)]);
+            double maxd_1 = (double)(dlist_1[_idx((dlist_1).length, 0L)]);
+            java.math.BigInteger j_3 = java.math.BigInteger.valueOf(1);
+            while (j_3.compareTo(new java.math.BigInteger(String.valueOf(dlist_1.length))) < 0) {
+                double val_1 = (double)(dlist_1[_idx((dlist_1).length, ((java.math.BigInteger)(j_3)).longValue())]);
                 if ((double)(val_1) < (double)(mind_1)) {
                     mind_1 = (double)(val_1);
                 }
                 if ((double)(val_1) > (double)(maxd_1)) {
                     maxd_1 = (double)(val_1);
                 }
-                j_3 = (long)((long)(j_3) + 1L);
+                j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
             }
             double[] score_1 = ((double[])(new double[]{}));
-            j_3 = 0L;
-            if ((long)(weight_1) == 0L) {
-                while ((long)(j_3) < (long)(dlist_1.length)) {
-                    double item_2 = (double)(dlist_1[(int)((long)(j_3))]);
+            j_3 = java.math.BigInteger.valueOf(0);
+            if (weight_1.compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+                while (j_3.compareTo(new java.math.BigInteger(String.valueOf(dlist_1.length))) < 0) {
+                    double item_2 = (double)(dlist_1[_idx((dlist_1).length, ((java.math.BigInteger)(j_3)).longValue())]);
                     if ((double)((double)(maxd_1) - (double)(mind_1)) == (double)(0.0)) {
                         score_1 = ((double[])(appendDouble(score_1, (double)(1.0))));
                     } else {
                         score_1 = ((double[])(appendDouble(score_1, (double)((double)(1.0) - (double)(((double)(((double)(item_2) - (double)(mind_1))) / (double)(((double)(maxd_1) - (double)(mind_1)))))))));
                     }
-                    j_3 = (long)((long)(j_3) + 1L);
+                    j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
                 }
             } else {
-                while ((long)(j_3) < (long)(dlist_1.length)) {
-                    double item_3 = (double)(dlist_1[(int)((long)(j_3))]);
+                while (j_3.compareTo(new java.math.BigInteger(String.valueOf(dlist_1.length))) < 0) {
+                    double item_3 = (double)(dlist_1[_idx((dlist_1).length, ((java.math.BigInteger)(j_3)).longValue())]);
                     if ((double)((double)(maxd_1) - (double)(mind_1)) == (double)(0.0)) {
                         score_1 = ((double[])(appendDouble(score_1, (double)(0.0))));
                     } else {
                         score_1 = ((double[])(appendDouble(score_1, (double)((double)(((double)(item_3) - (double)(mind_1))) / (double)(((double)(maxd_1) - (double)(mind_1)))))));
                     }
-                    j_3 = (long)((long)(j_3) + 1L);
+                    j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
                 }
             }
-            score_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(score_lists), java.util.stream.Stream.of(new double[][]{score_1})).toArray(double[][]::new)));
-            i_3 = (long)((long)(i_3) + 1L);
+            score_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(score_lists), java.util.stream.Stream.of(new double[][]{((double[])(score_1))})).toArray(double[][]::new)));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return score_lists;
+        return ((double[][])(score_lists));
     }
 
     static double[] generate_final_scores(double[][] score_lists) {
-        long count = (long)(score_lists[(int)(0L)].length);
+        java.math.BigInteger count = new java.math.BigInteger(String.valueOf(score_lists[_idx((score_lists).length, 0L)].length));
         double[] final_scores_1 = ((double[])(new double[]{}));
-        long i_5 = 0L;
-        while ((long)(i_5) < (long)(count)) {
+        java.math.BigInteger i_5 = java.math.BigInteger.valueOf(0);
+        while (i_5.compareTo(count) < 0) {
             final_scores_1 = ((double[])(appendDouble(final_scores_1, (double)(0.0))));
-            i_5 = (long)((long)(i_5) + 1L);
+            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
         }
-        i_5 = 0L;
-        while ((long)(i_5) < (long)(score_lists.length)) {
-            double[] slist_1 = ((double[])(score_lists[(int)((long)(i_5))]));
-            long j_5 = 0L;
-            while ((long)(j_5) < (long)(slist_1.length)) {
-final_scores_1[(int)((long)(j_5))] = (double)((double)(final_scores_1[(int)((long)(j_5))]) + (double)(slist_1[(int)((long)(j_5))]));
-                j_5 = (long)((long)(j_5) + 1L);
+        i_5 = java.math.BigInteger.valueOf(0);
+        while (i_5.compareTo(new java.math.BigInteger(String.valueOf(score_lists.length))) < 0) {
+            double[] slist_1 = ((double[])(score_lists[_idx((score_lists).length, ((java.math.BigInteger)(i_5)).longValue())]));
+            java.math.BigInteger j_5 = java.math.BigInteger.valueOf(0);
+            while (j_5.compareTo(new java.math.BigInteger(String.valueOf(slist_1.length))) < 0) {
+final_scores_1[(int)(((java.math.BigInteger)(j_5)).longValue())] = (double)((double)(final_scores_1[_idx((final_scores_1).length, ((java.math.BigInteger)(j_5)).longValue())]) + (double)(slist_1[_idx((slist_1).length, ((java.math.BigInteger)(j_5)).longValue())]));
+                j_5 = new java.math.BigInteger(String.valueOf(j_5.add(java.math.BigInteger.valueOf(1))));
             }
-            i_5 = (long)((long)(i_5) + 1L);
+            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
         }
-        return final_scores_1;
+        return ((double[])(final_scores_1));
     }
 
-    static double[][] procentual_proximity(double[][] source_data, long[] weights) {
+    static double[][] procentual_proximity(double[][] source_data, java.math.BigInteger[] weights) {
         double[][] data_lists_1 = ((double[][])(get_data(((double[][])(source_data)))));
-        double[][] score_lists_2 = ((double[][])(calculate_each_score(((double[][])(data_lists_1)), ((long[])(weights)))));
+        double[][] score_lists_2 = ((double[][])(calculate_each_score(((double[][])(data_lists_1)), ((java.math.BigInteger[])(weights)))));
         double[] final_scores_3 = ((double[])(generate_final_scores(((double[][])(score_lists_2)))));
-        long i_7 = 0L;
-        while ((long)(i_7) < (long)(final_scores_3.length)) {
-source_data[(int)((long)(i_7))] = ((double[])(appendDouble(source_data[(int)((long)(i_7))], (double)(final_scores_3[(int)((long)(i_7))]))));
-            i_7 = (long)((long)(i_7) + 1L);
+        java.math.BigInteger i_7 = java.math.BigInteger.valueOf(0);
+        while (i_7.compareTo(new java.math.BigInteger(String.valueOf(final_scores_3.length))) < 0) {
+source_data[(int)(((java.math.BigInteger)(i_7)).longValue())] = ((double[])(appendDouble(source_data[_idx((source_data).length, ((java.math.BigInteger)(i_7)).longValue())], (double)(final_scores_3[_idx((final_scores_3).length, ((java.math.BigInteger)(i_7)).longValue())]))));
+            i_7 = new java.math.BigInteger(String.valueOf(i_7.add(java.math.BigInteger.valueOf(1))));
         }
-        return source_data;
+        return ((double[][])(source_data));
     }
     public static void main(String[] args) {
-        vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{20.0, 60.0, 2012.0}})).toArray(double[][]::new)));
-        vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{23.0, 90.0, 2015.0}})).toArray(double[][]::new)));
-        vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{new double[]{22.0, 50.0, 2011.0}})).toArray(double[][]::new)));
-        result = ((double[][])(procentual_proximity(((double[][])(vehicles)), ((long[])(weights)))));
-        System.out.println(_p(result));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{((double[])(new double[]{(double)(20.0), (double)(60.0), (double)(2012.0)}))})).toArray(double[][]::new)));
+            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{((double[])(new double[]{(double)(23.0), (double)(90.0), (double)(2015.0)}))})).toArray(double[][]::new)));
+            vehicles = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vehicles), java.util.stream.Stream.of(new double[][]{((double[])(new double[]{(double)(22.0), (double)(50.0), (double)(2011.0)}))})).toArray(double[][]::new)));
+            result = ((double[][])(procentual_proximity(((double[][])(vehicles)), ((java.math.BigInteger[])(weights)))));
+            System.out.println(_p(result));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static double[] appendDouble(double[] arr, double v) {
@@ -129,10 +159,38 @@ source_data[(int)((long)(i_7))] = ((double[])(appendDouble(source_data[(int)((lo
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
             return String.valueOf(d);
         }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

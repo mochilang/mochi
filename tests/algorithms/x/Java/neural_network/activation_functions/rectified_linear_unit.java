@@ -2,23 +2,23 @@ public class Main {
 
     static double[] relu(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(vector.length)) {
-            double v_1 = (double)(vector[(int)((long)(i_1))]);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(vector.length))) < 0) {
+            double v_1 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_1)).longValue())]);
             if ((double)(v_1) > (double)(0.0)) {
                 result = ((double[])(appendDouble(result, (double)(v_1))));
             } else {
                 result = ((double[])(appendDouble(result, (double)(0.0))));
             }
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((double[])(result));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(relu(((double[])(new double[]{-1.0, 0.0, 5.0})))));
+            System.out.println(_p(relu(((double[])(new double[]{(double)(-1.0), (double)(0.0), (double)(5.0)})))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
@@ -67,10 +67,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
             return String.valueOf(d);
         }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

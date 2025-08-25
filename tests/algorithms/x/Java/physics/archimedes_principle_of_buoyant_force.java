@@ -11,13 +11,43 @@ public class Main {
         if ((double)(gravity) < (double)(0.0)) {
             throw new RuntimeException(String.valueOf("Impossible gravity"));
         }
-        return (double)((double)(fluid_density) * (double)(volume)) * (double)(gravity);
+        return (double)((double)((double)(fluid_density) * (double)(volume)) * (double)(gravity));
     }
 
     static double archimedes_principle_default(double fluid_density, double volume) {
         double res = (double)(archimedes_principle((double)(fluid_density), (double)(volume), (double)(G)));
-        return res;
+        return (double)(res);
     }
     public static void main(String[] args) {
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }
