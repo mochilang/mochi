@@ -56,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -66,7 +66,7 @@ begin
   end;
   writeln(']');
 end;
-procedure json(x: int64);
+procedure json(x: int64); overload;
 begin
   writeln(x);
 end;
