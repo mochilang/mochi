@@ -1,6 +1,6 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
-uses SysUtils;
+uses SysUtils, Math;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -37,92 +37,118 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  time: real;
-  source_voltage: real;
-  resistance: real;
-  x: real;
-  n: integer;
-  inductance: real;
-function expApprox(x: real): real; forward;
-function floor(x: real): real; forward;
-function pow10(n: integer): real; forward;
-function round(x: real; n: integer): real; forward;
-function charging_inductor(source_voltage: real; resistance: real; inductance: real; time: real): real; forward;
-function expApprox(x: real): real;
+function expApprox(expApprox_x: real): real; forward;
+function floor(floor_x: real): real; forward;
+function pow10(pow10_n: int64): real; forward;
+function round(round_x: real; round_n: int64): real; forward;
+function charging_inductor(charging_inductor_source_voltage: real; charging_inductor_resistance: real; charging_inductor_inductance: real; charging_inductor_time: real): real; forward;
+function expApprox(expApprox_x: real): real;
 var
   expApprox_half: real;
   expApprox_sum: real;
   expApprox_term: real;
-  expApprox_n: integer;
+  expApprox_n: int64;
 begin
-  if x < 0 then begin
-  exit(1 / expApprox(-x));
+  if expApprox_x < 0 then begin
+  exit(1 / expApprox(-expApprox_x));
 end;
-  if x > 1 then begin
-  expApprox_half := expApprox(x / 2);
+  if expApprox_x > 1 then begin
+  expApprox_half := expApprox(expApprox_x / 2);
   exit(expApprox_half * expApprox_half);
 end;
   expApprox_sum := 1;
   expApprox_term := 1;
   expApprox_n := 1;
   while expApprox_n < 20 do begin
-  expApprox_term := (expApprox_term * x) / Double(expApprox_n);
+  expApprox_term := (expApprox_term * expApprox_x) / Double(expApprox_n);
   expApprox_sum := expApprox_sum + expApprox_term;
   expApprox_n := expApprox_n + 1;
 end;
   exit(expApprox_sum);
 end;
-function floor(x: real): real;
+function floor(floor_x: real): real;
 var
   floor_i: integer;
 begin
-  floor_i := Trunc(x);
-  if Double(floor_i) > x then begin
+  floor_i := Trunc(floor_x);
+  if Double(floor_i) > floor_x then begin
   floor_i := floor_i - 1;
 end;
   exit(Double(floor_i));
 end;
-function pow10(n: integer): real;
+function pow10(pow10_n: int64): real;
 var
   pow10_result_: real;
-  pow10_i: integer;
+  pow10_i: int64;
 begin
   pow10_result_ := 1;
   pow10_i := 0;
-  while pow10_i < n do begin
+  while pow10_i < pow10_n do begin
   pow10_result_ := pow10_result_ * 10;
   pow10_i := pow10_i + 1;
 end;
   exit(pow10_result_);
 end;
-function round(x: real; n: integer): real;
+function round(round_x: real; round_n: int64): real;
 var
   round_m: real;
 begin
-  round_m := pow10(n);
-  exit(floor((x * round_m) + 0.5) / round_m);
+  round_m := pow10(round_n);
+  exit(Floor((round_x * round_m) + 0.5) / round_m);
 end;
-function charging_inductor(source_voltage: real; resistance: real; inductance: real; time: real): real;
+function charging_inductor(charging_inductor_source_voltage: real; charging_inductor_resistance: real; charging_inductor_inductance: real; charging_inductor_time: real): real;
 var
   charging_inductor_exponent: real;
   charging_inductor_current: real;
 begin
-  if source_voltage <= 0 then begin
+  if charging_inductor_source_voltage <= 0 then begin
   panic('Source voltage must be positive.');
 end;
-  if resistance <= 0 then begin
+  if charging_inductor_resistance <= 0 then begin
   panic('Resistance must be positive.');
 end;
-  if inductance <= 0 then begin
+  if charging_inductor_inductance <= 0 then begin
   panic('Inductance must be positive.');
 end;
-  charging_inductor_exponent := (-time * resistance) / inductance;
-  charging_inductor_current := (source_voltage / resistance) * (1 - expApprox(charging_inductor_exponent));
+  charging_inductor_exponent := (-charging_inductor_time * charging_inductor_resistance) / charging_inductor_inductance;
+  charging_inductor_current := (charging_inductor_source_voltage / charging_inductor_resistance) * (1 - expApprox(charging_inductor_exponent));
   exit(round(charging_inductor_current, 3));
 end;
 begin
@@ -139,4 +165,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

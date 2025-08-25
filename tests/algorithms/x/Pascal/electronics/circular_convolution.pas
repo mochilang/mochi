@@ -1,4 +1,4 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils, Math;
 type RealArray = array of real;
@@ -38,6 +38,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
@@ -57,58 +89,52 @@ var
   example2: RealArray;
   example3: RealArray;
   example4: RealArray;
-  n: integer;
-  x: real;
-  signal: RealArray;
-  b: RealArray;
-  target: integer;
-  a: RealArray;
-function floor(x: real): real; forward;
-function pow10(n: integer): real; forward;
-function roundn(x: real; n: integer): real; forward;
-function pad(signal: RealArray; target: integer): RealArray; forward;
-function circular_convolution(a: RealArray; b: RealArray): RealArray; forward;
-function floor(x: real): real;
+function floor(floor_x: real): real; forward;
+function pow10(pow10_n: int64): real; forward;
+function roundn(roundn_x: real; roundn_n: int64): real; forward;
+function pad(pad_signal: RealArray; pad_target: int64): RealArray; forward;
+function circular_convolution(circular_convolution_a: RealArray; circular_convolution_b: RealArray): RealArray; forward;
+function floor(floor_x: real): real;
 var
   floor_i: integer;
 begin
-  floor_i := Trunc(x);
-  if Double(floor_i) > x then begin
+  floor_i := Trunc(floor_x);
+  if Double(floor_i) > floor_x then begin
   floor_i := floor_i - 1;
 end;
   exit(Double(floor_i));
 end;
-function pow10(n: integer): real;
+function pow10(pow10_n: int64): real;
 var
   pow10_p: real;
-  pow10_i: integer;
+  pow10_i: int64;
 begin
   pow10_p := 1;
   pow10_i := 0;
-  while pow10_i < n do begin
+  while pow10_i < pow10_n do begin
   pow10_p := pow10_p * 10;
   pow10_i := pow10_i + 1;
 end;
   exit(pow10_p);
 end;
-function roundn(x: real; n: integer): real;
+function roundn(roundn_x: real; roundn_n: int64): real;
 var
   roundn_m: real;
 begin
-  roundn_m := pow10(n);
-  exit(floor((x * roundn_m) + 0.5) / roundn_m);
+  roundn_m := pow10(roundn_n);
+  exit(Floor((roundn_x * roundn_m) + 0.5) / roundn_m);
 end;
-function pad(signal: RealArray; target: integer): RealArray;
+function pad(pad_signal: RealArray; pad_target: int64): RealArray;
 var
   pad_s: array of real;
 begin
-  pad_s := signal;
-  while Length(pad_s) < target do begin
+  pad_s := pad_signal;
+  while Length(pad_s) < pad_target do begin
   pad_s := concat(pad_s, [0]);
 end;
   exit(pad_s);
 end;
-function circular_convolution(a: RealArray; b: RealArray): RealArray;
+function circular_convolution(circular_convolution_a: RealArray; circular_convolution_b: RealArray): RealArray;
 var
   circular_convolution_n1: integer;
   circular_convolution_n2: integer;
@@ -116,21 +142,21 @@ var
   circular_convolution_x: RealArray;
   circular_convolution_y: RealArray;
   circular_convolution_res: array of real;
-  circular_convolution_i: integer;
+  circular_convolution_i: int64;
   circular_convolution_sum: real;
-  circular_convolution_k: integer;
-  circular_convolution_j: integer;
-  circular_convolution_idx: integer;
+  circular_convolution_k: int64;
+  circular_convolution_j: int64;
+  circular_convolution_idx: int64;
 begin
-  circular_convolution_n1 := Length(a);
-  circular_convolution_n2 := Length(b);
+  circular_convolution_n1 := Length(circular_convolution_a);
+  circular_convolution_n2 := Length(circular_convolution_b);
   if circular_convolution_n1 > circular_convolution_n2 then begin
   circular_convolution_n := circular_convolution_n1;
 end else begin
   circular_convolution_n := circular_convolution_n2;
 end;
-  circular_convolution_x := pad(a, circular_convolution_n);
-  circular_convolution_y := pad(b, circular_convolution_n);
+  circular_convolution_x := pad(circular_convolution_a, circular_convolution_n);
+  circular_convolution_y := pad(circular_convolution_b, circular_convolution_n);
   circular_convolution_res := [];
   circular_convolution_i := 0;
   while circular_convolution_i < circular_convolution_n do begin
@@ -170,4 +196,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

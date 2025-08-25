@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -39,7 +39,39 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -64,19 +96,17 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  items: IntArray;
-  nums: IntArray;
-function sort_list(nums: IntArray): IntArray; forward;
-function largest_divisible_subset(items: IntArray): IntArray; forward;
+function sort_list(sort_list_nums: IntArray): IntArray; forward;
+function largest_divisible_subset(largest_divisible_subset_items: IntArray): IntArray; forward;
 procedure main(); forward;
-function sort_list(nums: IntArray): IntArray;
+function sort_list(sort_list_nums: IntArray): IntArray;
 var
-  sort_list_arr: array of integer;
-  sort_list_i: integer;
-  sort_list_key: integer;
-  sort_list_j: integer;
+  sort_list_arr: array of int64;
+  sort_list_i: int64;
+  sort_list_key: int64;
+  sort_list_j: int64;
 begin
-  sort_list_arr := nums;
+  sort_list_arr := sort_list_nums;
   sort_list_i := 1;
   while sort_list_i < Length(sort_list_arr) do begin
   sort_list_key := sort_list_arr[sort_list_i];
@@ -90,22 +120,22 @@ end;
 end;
   exit(sort_list_arr);
 end;
-function largest_divisible_subset(items: IntArray): IntArray;
+function largest_divisible_subset(largest_divisible_subset_items: IntArray): IntArray;
 var
   largest_divisible_subset_nums: IntArray;
   largest_divisible_subset_n: integer;
-  largest_divisible_subset_memo: array of integer;
-  largest_divisible_subset_prev: array of integer;
-  largest_divisible_subset_i: integer;
-  largest_divisible_subset_j: integer;
-  largest_divisible_subset_ans: integer;
-  largest_divisible_subset_last_index: integer;
-  largest_divisible_subset_result_: array of integer;
+  largest_divisible_subset_memo: array of int64;
+  largest_divisible_subset_prev: array of int64;
+  largest_divisible_subset_i: int64;
+  largest_divisible_subset_j: int64;
+  largest_divisible_subset_ans: int64;
+  largest_divisible_subset_last_index: int64;
+  largest_divisible_subset_result_: array of int64;
 begin
-  if Length(items) = 0 then begin
+  if Length(largest_divisible_subset_items) = 0 then begin
   exit([]);
 end;
-  largest_divisible_subset_nums := sort_list(items);
+  largest_divisible_subset_nums := sort_list(largest_divisible_subset_items);
   largest_divisible_subset_n := Length(largest_divisible_subset_nums);
   largest_divisible_subset_memo := [];
   largest_divisible_subset_prev := [];
@@ -149,7 +179,7 @@ end;
 end;
 procedure main();
 var
-  main_items: array of integer;
+  main_items: array of int64;
   main_subset: IntArray;
 begin
   main_items := [1, 16, 7, 8, 4];
@@ -168,4 +198,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

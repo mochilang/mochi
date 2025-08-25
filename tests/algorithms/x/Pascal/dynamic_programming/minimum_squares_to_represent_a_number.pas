@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -38,60 +38,88 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  value: integer;
-  number: integer;
-  n: integer;
-  len: integer;
-function make_list(len: integer; value: integer): IntArray; forward;
-function int_sqrt(n: integer): integer; forward;
-function minimum_squares_to_represent_a_number(number: integer): integer; forward;
-function make_list(len: integer; value: integer): IntArray;
+function make_list(make_list_len: int64; make_list_value: int64): IntArray; forward;
+function int_sqrt(int_sqrt_n: int64): int64; forward;
+function minimum_squares_to_represent_a_number(minimum_squares_to_represent_a_number_number: int64): int64; forward;
+function make_list(make_list_len: int64; make_list_value: int64): IntArray;
 var
-  make_list_arr: array of integer;
-  make_list_i: integer;
+  make_list_arr: array of int64;
+  make_list_i: int64;
 begin
   make_list_arr := [];
   make_list_i := 0;
-  while make_list_i < len do begin
-  make_list_arr := concat(make_list_arr, IntArray([value]));
+  while make_list_i < make_list_len do begin
+  make_list_arr := concat(make_list_arr, IntArray([make_list_value]));
   make_list_i := make_list_i + 1;
 end;
   exit(make_list_arr);
 end;
-function int_sqrt(n: integer): integer;
+function int_sqrt(int_sqrt_n: int64): int64;
 var
-  int_sqrt_r: integer;
+  int_sqrt_r: int64;
 begin
   int_sqrt_r := 0;
-  while ((int_sqrt_r + 1) * (int_sqrt_r + 1)) <= n do begin
+  while ((int_sqrt_r + 1) * (int_sqrt_r + 1)) <= int_sqrt_n do begin
   int_sqrt_r := int_sqrt_r + 1;
 end;
   exit(int_sqrt_r);
 end;
-function minimum_squares_to_represent_a_number(number: integer): integer;
+function minimum_squares_to_represent_a_number(minimum_squares_to_represent_a_number_number: int64): int64;
 var
   minimum_squares_to_represent_a_number_answers: IntArray;
-  minimum_squares_to_represent_a_number_i: integer;
-  minimum_squares_to_represent_a_number_answer: integer;
-  minimum_squares_to_represent_a_number_root: integer;
-  minimum_squares_to_represent_a_number_j: integer;
-  minimum_squares_to_represent_a_number_current_answer: integer;
+  minimum_squares_to_represent_a_number_i: int64;
+  minimum_squares_to_represent_a_number_answer: int64;
+  minimum_squares_to_represent_a_number_root: int64;
+  minimum_squares_to_represent_a_number_j: int64;
+  minimum_squares_to_represent_a_number_current_answer: int64;
 begin
-  if number < 0 then begin
+  if minimum_squares_to_represent_a_number_number < 0 then begin
   panic('the value of input must not be a negative number');
 end;
-  if number = 0 then begin
+  if minimum_squares_to_represent_a_number_number = 0 then begin
   exit(1);
 end;
-  minimum_squares_to_represent_a_number_answers := make_list(number + 1, -1);
+  minimum_squares_to_represent_a_number_answers := make_list(minimum_squares_to_represent_a_number_number + 1, -1);
   minimum_squares_to_represent_a_number_answers[0] := 0;
   minimum_squares_to_represent_a_number_i := 1;
-  while minimum_squares_to_represent_a_number_i <= number do begin
+  while minimum_squares_to_represent_a_number_i <= minimum_squares_to_represent_a_number_number do begin
   minimum_squares_to_represent_a_number_answer := minimum_squares_to_represent_a_number_i;
   minimum_squares_to_represent_a_number_root := int_sqrt(minimum_squares_to_represent_a_number_i);
   minimum_squares_to_represent_a_number_j := 1;
@@ -105,7 +133,7 @@ end;
   minimum_squares_to_represent_a_number_answers[minimum_squares_to_represent_a_number_i] := minimum_squares_to_represent_a_number_answer;
   minimum_squares_to_represent_a_number_i := minimum_squares_to_represent_a_number_i + 1;
 end;
-  exit(minimum_squares_to_represent_a_number_answers[number]);
+  exit(minimum_squares_to_represent_a_number_answers[minimum_squares_to_represent_a_number_number]);
 end;
 begin
   init_now();
@@ -120,4 +148,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

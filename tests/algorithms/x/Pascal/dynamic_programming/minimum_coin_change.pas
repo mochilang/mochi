@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -38,43 +38,73 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-  s: IntArray;
-function dp_count(s: IntArray; n: integer): integer; forward;
-function dp_count(s: IntArray; n: integer): integer;
+function dp_count(dp_count_s: IntArray; dp_count_n: int64): int64; forward;
+function dp_count(dp_count_s: IntArray; dp_count_n: int64): int64;
 var
-  dp_count_table: array of integer;
-  dp_count_i: integer;
-  dp_count_idx: integer;
-  dp_count_coin_val: integer;
-  dp_count_j: integer;
+  dp_count_table: array of int64;
+  dp_count_i: int64;
+  dp_count_idx: int64;
+  dp_count_coin_val: int64;
+  dp_count_j: int64;
 begin
-  if n < 0 then begin
+  if dp_count_n < 0 then begin
   exit(0);
 end;
   dp_count_table := [];
   dp_count_i := 0;
-  while dp_count_i <= n do begin
+  while dp_count_i <= dp_count_n do begin
   dp_count_table := concat(dp_count_table, IntArray([0]));
   dp_count_i := dp_count_i + 1;
 end;
   dp_count_table[0] := 1;
   dp_count_idx := 0;
-  while dp_count_idx < Length(s) do begin
-  dp_count_coin_val := s[dp_count_idx];
+  while dp_count_idx < Length(dp_count_s) do begin
+  dp_count_coin_val := dp_count_s[dp_count_idx];
   dp_count_j := dp_count_coin_val;
-  while dp_count_j <= n do begin
+  while dp_count_j <= dp_count_n do begin
   dp_count_table[dp_count_j] := dp_count_table[dp_count_j] + dp_count_table[dp_count_j - dp_count_coin_val];
   dp_count_j := dp_count_j + 1;
 end;
   dp_count_idx := dp_count_idx + 1;
 end;
-  exit(dp_count_table[n]);
+  exit(dp_count_table[dp_count_n]);
 end;
 begin
   init_now();
@@ -93,4 +123,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

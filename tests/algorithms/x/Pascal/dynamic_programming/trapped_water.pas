@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils, Math;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -38,58 +38,87 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  value: integer;
-  len: integer;
-  heights: IntArray;
-function make_list(len: integer; value: integer): IntArray; forward;
-function trapped_rainwater(heights: IntArray): integer; forward;
-function make_list(len: integer; value: integer): IntArray;
+function make_list(make_list_len: int64; make_list_value: int64): IntArray; forward;
+function trapped_rainwater(trapped_rainwater_heights: IntArray): int64; forward;
+function make_list(make_list_len: int64; make_list_value: int64): IntArray;
 var
-  make_list_arr: array of integer;
-  make_list_i: integer;
+  make_list_arr: array of int64;
+  make_list_i: int64;
 begin
   make_list_arr := [];
   make_list_i := 0;
-  while make_list_i < len do begin
-  make_list_arr := concat(make_list_arr, IntArray([value]));
+  while make_list_i < make_list_len do begin
+  make_list_arr := concat(make_list_arr, IntArray([make_list_value]));
   make_list_i := make_list_i + 1;
 end;
   exit(make_list_arr);
 end;
-function trapped_rainwater(heights: IntArray): integer;
+function trapped_rainwater(trapped_rainwater_heights: IntArray): int64;
 var
-  trapped_rainwater_i: integer;
-  trapped_rainwater_length_: integer;
+  trapped_rainwater_i: int64;
+  trapped_rainwater_length_: int64;
   trapped_rainwater_left_max: IntArray;
   trapped_rainwater_right_max: IntArray;
-  trapped_rainwater_last: integer;
-  trapped_rainwater_total: integer;
-  trapped_rainwater_left: integer;
-  trapped_rainwater_right: integer;
-  trapped_rainwater_smaller: integer;
+  trapped_rainwater_last: int64;
+  trapped_rainwater_total: int64;
+  trapped_rainwater_left: int64;
+  trapped_rainwater_right: int64;
+  trapped_rainwater_smaller: int64;
 begin
-  if Length(heights) = 0 then begin
+  if Length(trapped_rainwater_heights) = 0 then begin
   exit(0);
 end;
   trapped_rainwater_i := 0;
-  while trapped_rainwater_i < Length(heights) do begin
-  if heights[trapped_rainwater_i] < 0 then begin
+  while trapped_rainwater_i < Length(trapped_rainwater_heights) do begin
+  if trapped_rainwater_heights[trapped_rainwater_i] < 0 then begin
   panic('No height can be negative');
 end;
   trapped_rainwater_i := trapped_rainwater_i + 1;
 end;
-  trapped_rainwater_length_ := Length(heights);
+  trapped_rainwater_length_ := Length(trapped_rainwater_heights);
   trapped_rainwater_left_max := make_list(trapped_rainwater_length_, 0);
-  trapped_rainwater_left_max[0] := heights[0];
+  trapped_rainwater_left_max[0] := trapped_rainwater_heights[0];
   trapped_rainwater_i := 1;
   while trapped_rainwater_i < trapped_rainwater_length_ do begin
-  if heights[trapped_rainwater_i] > trapped_rainwater_left_max[trapped_rainwater_i - 1] then begin
-  trapped_rainwater_left_max[trapped_rainwater_i] := heights[trapped_rainwater_i];
+  if trapped_rainwater_heights[trapped_rainwater_i] > trapped_rainwater_left_max[trapped_rainwater_i - 1] then begin
+  trapped_rainwater_left_max[trapped_rainwater_i] := trapped_rainwater_heights[trapped_rainwater_i];
 end else begin
   trapped_rainwater_left_max[trapped_rainwater_i] := trapped_rainwater_left_max[trapped_rainwater_i - 1];
 end;
@@ -97,11 +126,11 @@ end;
 end;
   trapped_rainwater_right_max := make_list(trapped_rainwater_length_, 0);
   trapped_rainwater_last := trapped_rainwater_length_ - 1;
-  trapped_rainwater_right_max[trapped_rainwater_last] := heights[trapped_rainwater_last];
+  trapped_rainwater_right_max[trapped_rainwater_last] := trapped_rainwater_heights[trapped_rainwater_last];
   trapped_rainwater_i := trapped_rainwater_last - 1;
   while trapped_rainwater_i >= 0 do begin
-  if heights[trapped_rainwater_i] > trapped_rainwater_right_max[trapped_rainwater_i + 1] then begin
-  trapped_rainwater_right_max[trapped_rainwater_i] := heights[trapped_rainwater_i];
+  if trapped_rainwater_heights[trapped_rainwater_i] > trapped_rainwater_right_max[trapped_rainwater_i + 1] then begin
+  trapped_rainwater_right_max[trapped_rainwater_i] := trapped_rainwater_heights[trapped_rainwater_i];
 end else begin
   trapped_rainwater_right_max[trapped_rainwater_i] := trapped_rainwater_right_max[trapped_rainwater_i + 1];
 end;
@@ -117,7 +146,7 @@ end;
 end else begin
   trapped_rainwater_smaller := trapped_rainwater_right;
 end;
-  trapped_rainwater_total := trapped_rainwater_total + (trapped_rainwater_smaller - heights[trapped_rainwater_i]);
+  trapped_rainwater_total := trapped_rainwater_total + (trapped_rainwater_smaller - trapped_rainwater_heights[trapped_rainwater_i]);
   trapped_rainwater_i := trapped_rainwater_i + 1;
 end;
   exit(trapped_rainwater_total);
@@ -135,4 +164,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

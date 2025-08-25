@@ -1,12 +1,12 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
 type Query = record
-  left: integer;
-  right: integer;
+  left: int64;
+  right: int64;
 end;
+type IntArray = array of int64;
 type QueryArray = array of Query;
-type IntArray = array of integer;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -44,7 +44,39 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -69,42 +101,40 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  arr1: array of integer;
+  arr1: array of int64;
   queries1: array of Query;
-  arr2: array of integer;
+  arr2: array of int64;
   queries2: array of Query;
-  queries: QueryArray;
-  arr: IntArray;
-function makeQuery(left: integer; right: integer): Query; forward;
-function prefix_sum(arr: IntArray; queries: QueryArray): IntArray; forward;
-function makeQuery(left: integer; right: integer): Query;
+function makeQuery(left: int64; right: int64): Query; forward;
+function prefix_sum(prefix_sum_arr: IntArray; prefix_sum_queries: QueryArray): IntArray; forward;
+function makeQuery(left: int64; right: int64): Query;
 begin
   Result.left := left;
   Result.right := right;
 end;
-function prefix_sum(arr: IntArray; queries: QueryArray): IntArray;
+function prefix_sum(prefix_sum_arr: IntArray; prefix_sum_queries: QueryArray): IntArray;
 var
-  prefix_sum_dp: array of integer;
-  prefix_sum_i: integer;
-  prefix_sum_result_: array of integer;
-  prefix_sum_j: integer;
+  prefix_sum_dp: array of int64;
+  prefix_sum_i: int64;
+  prefix_sum_result_: array of int64;
+  prefix_sum_j: int64;
   prefix_sum_q: Query;
-  prefix_sum_sum: integer;
+  prefix_sum_sum: int64;
 begin
   prefix_sum_dp := [];
   prefix_sum_i := 0;
-  while prefix_sum_i < Length(arr) do begin
+  while prefix_sum_i < Length(prefix_sum_arr) do begin
   if prefix_sum_i = 0 then begin
-  prefix_sum_dp := concat(prefix_sum_dp, IntArray([arr[0]]));
+  prefix_sum_dp := concat(prefix_sum_dp, IntArray([prefix_sum_arr[0]]));
 end else begin
-  prefix_sum_dp := concat(prefix_sum_dp, IntArray([prefix_sum_dp[prefix_sum_i - 1] + arr[prefix_sum_i]]));
+  prefix_sum_dp := concat(prefix_sum_dp, IntArray([prefix_sum_dp[prefix_sum_i - 1] + prefix_sum_arr[prefix_sum_i]]));
 end;
   prefix_sum_i := prefix_sum_i + 1;
 end;
   prefix_sum_result_ := [];
   prefix_sum_j := 0;
-  while prefix_sum_j < Length(queries) do begin
-  prefix_sum_q := queries[prefix_sum_j];
+  while prefix_sum_j < Length(prefix_sum_queries) do begin
+  prefix_sum_q := prefix_sum_queries[prefix_sum_j];
   prefix_sum_sum := prefix_sum_dp[prefix_sum_q.right];
   if prefix_sum_q.left > 0 then begin
   prefix_sum_sum := prefix_sum_sum - prefix_sum_dp[prefix_sum_q.left - 1];
@@ -131,4 +161,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

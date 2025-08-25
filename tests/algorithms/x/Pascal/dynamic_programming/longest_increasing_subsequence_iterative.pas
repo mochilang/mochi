@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -39,7 +39,39 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -64,41 +96,39 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  arr: IntArray;
-  xs: IntArray;
-function copy_list(xs: IntArray): IntArray; forward;
-function longest_subsequence(arr: IntArray): IntArray; forward;
+function copy_list(copy_list_xs: IntArray): IntArray; forward;
+function longest_subsequence(longest_subsequence_arr: IntArray): IntArray; forward;
 procedure main(); forward;
-function copy_list(xs: IntArray): IntArray;
+function copy_list(copy_list_xs: IntArray): IntArray;
 var
-  copy_list_res: array of integer;
-  copy_list_i: integer;
+  copy_list_res: array of int64;
+  copy_list_i: int64;
 begin
   copy_list_res := [];
   copy_list_i := 0;
-  while copy_list_i < Length(xs) do begin
-  copy_list_res := concat(copy_list_res, IntArray([xs[copy_list_i]]));
+  while copy_list_i < Length(copy_list_xs) do begin
+  copy_list_res := concat(copy_list_res, IntArray([copy_list_xs[copy_list_i]]));
   copy_list_i := copy_list_i + 1;
 end;
   exit(copy_list_res);
 end;
-function longest_subsequence(arr: IntArray): IntArray;
+function longest_subsequence(longest_subsequence_arr: IntArray): IntArray;
 var
   longest_subsequence_n: integer;
   longest_subsequence_lis: array of IntArray;
-  longest_subsequence_i: integer;
-  longest_subsequence_single: array of integer;
-  longest_subsequence_prev: integer;
+  longest_subsequence_i: int64;
+  longest_subsequence_single: array of int64;
+  longest_subsequence_prev: int64;
   longest_subsequence_temp: IntArray;
-  longest_subsequence_temp2: array of integer;
-  longest_subsequence_result_: array of integer;
+  longest_subsequence_temp2: array of int64;
+  longest_subsequence_result_: array of int64;
 begin
-  longest_subsequence_n := Length(arr);
+  longest_subsequence_n := Length(longest_subsequence_arr);
   longest_subsequence_lis := [];
   longest_subsequence_i := 0;
   while longest_subsequence_i < longest_subsequence_n do begin
   longest_subsequence_single := [];
-  longest_subsequence_single := concat(longest_subsequence_single, IntArray([arr[longest_subsequence_i]]));
+  longest_subsequence_single := concat(longest_subsequence_single, IntArray([longest_subsequence_arr[longest_subsequence_i]]));
   longest_subsequence_lis := concat(longest_subsequence_lis, [longest_subsequence_single]);
   longest_subsequence_i := longest_subsequence_i + 1;
 end;
@@ -106,9 +136,9 @@ end;
   while longest_subsequence_i < longest_subsequence_n do begin
   longest_subsequence_prev := 0;
   while longest_subsequence_prev < longest_subsequence_i do begin
-  if (arr[longest_subsequence_prev] <= arr[longest_subsequence_i]) and ((Length(longest_subsequence_lis[longest_subsequence_prev]) + 1) > Length(longest_subsequence_lis[longest_subsequence_i])) then begin
+  if (longest_subsequence_arr[longest_subsequence_prev] <= longest_subsequence_arr[longest_subsequence_i]) and ((Length(longest_subsequence_lis[longest_subsequence_prev]) + 1) > Length(longest_subsequence_lis[longest_subsequence_i])) then begin
   longest_subsequence_temp := copy_list(longest_subsequence_lis[longest_subsequence_prev]);
-  longest_subsequence_temp2 := concat(longest_subsequence_temp, IntArray([arr[longest_subsequence_i]]));
+  longest_subsequence_temp2 := concat(longest_subsequence_temp, IntArray([longest_subsequence_arr[longest_subsequence_i]]));
   longest_subsequence_lis[longest_subsequence_i] := longest_subsequence_temp2;
 end;
   longest_subsequence_prev := longest_subsequence_prev + 1;
@@ -146,4 +176,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

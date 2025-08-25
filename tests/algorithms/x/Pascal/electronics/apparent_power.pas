@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -60,67 +66,60 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   PI: real;
-  deg: real;
-  angle: real;
-  current_angle: real;
-  voltage: real;
-  voltage_angle: real;
-  x: real;
-  current: real;
-  a: RealArray;
-  mag: real;
-  eps: real;
-  b: RealArray;
-function abs(x: real): real; forward;
-function to_radians(deg: real): real; forward;
-function sin_taylor(x: real): real; forward;
-function cos_taylor(x: real): real; forward;
-function rect(mag: real; angle: real): RealArray; forward;
-function multiply(a: RealArray; b: RealArray): RealArray; forward;
-function apparent_power(voltage: real; current: real; voltage_angle: real; current_angle: real): RealArray; forward;
-function approx_equal(a: RealArray; b: RealArray; eps: real): boolean; forward;
-function abs(x: real): real;
+function abs(abs_x: real): real; forward;
+function to_radians(to_radians_deg: real): real; forward;
+function sin_taylor(sin_taylor_x: real): real; forward;
+function cos_taylor(cos_taylor_x: real): real; forward;
+function rect(rect_mag: real; rect_angle: real): RealArray; forward;
+function multiply(multiply_a: RealArray; multiply_b: RealArray): RealArray; forward;
+function apparent_power(apparent_power_voltage: real; apparent_power_current: real; apparent_power_voltage_angle: real; apparent_power_current_angle: real): RealArray; forward;
+function approx_equal(approx_equal_a: RealArray; approx_equal_b: RealArray; approx_equal_eps: real): boolean; forward;
+function abs(abs_x: real): real;
 begin
-  if x < 0 then begin
-  exit(-x);
+  if abs_x < 0 then begin
+  exit(-abs_x);
 end;
-  exit(x);
+  exit(abs_x);
 end;
-function to_radians(deg: real): real;
+function to_radians(to_radians_deg: real): real;
 begin
-  exit((deg * PI) / 180);
+  exit((to_radians_deg * PI) / 180);
 end;
-function sin_taylor(x: real): real;
+function sin_taylor(sin_taylor_x: real): real;
 var
   sin_taylor_term: real;
   sin_taylor_sum: real;
-  sin_taylor_i: integer;
+  sin_taylor_i: int64;
   sin_taylor_k1: real;
   sin_taylor_k2: real;
 begin
-  sin_taylor_term := x;
-  sin_taylor_sum := x;
+  sin_taylor_term := sin_taylor_x;
+  sin_taylor_sum := sin_taylor_x;
   sin_taylor_i := 1;
   while sin_taylor_i < 10 do begin
   sin_taylor_k1 := 2 * Double(sin_taylor_i);
   sin_taylor_k2 := sin_taylor_k1 + 1;
-  sin_taylor_term := ((-sin_taylor_term * x) * x) / (sin_taylor_k1 * sin_taylor_k2);
+  sin_taylor_term := ((-sin_taylor_term * sin_taylor_x) * sin_taylor_x) / (sin_taylor_k1 * sin_taylor_k2);
   sin_taylor_sum := sin_taylor_sum + sin_taylor_term;
   sin_taylor_i := sin_taylor_i + 1;
 end;
   exit(sin_taylor_sum);
 end;
-function cos_taylor(x: real): real;
+function cos_taylor(cos_taylor_x: real): real;
 var
   cos_taylor_term: real;
   cos_taylor_sum: real;
-  cos_taylor_i: integer;
+  cos_taylor_i: int64;
   cos_taylor_k1: real;
   cos_taylor_k2: real;
 begin
@@ -130,26 +129,26 @@ begin
   while cos_taylor_i < 10 do begin
   cos_taylor_k1 := (2 * Double(cos_taylor_i)) - 1;
   cos_taylor_k2 := 2 * Double(cos_taylor_i);
-  cos_taylor_term := ((-cos_taylor_term * x) * x) / (cos_taylor_k1 * cos_taylor_k2);
+  cos_taylor_term := ((-cos_taylor_term * cos_taylor_x) * cos_taylor_x) / (cos_taylor_k1 * cos_taylor_k2);
   cos_taylor_sum := cos_taylor_sum + cos_taylor_term;
   cos_taylor_i := cos_taylor_i + 1;
 end;
   exit(cos_taylor_sum);
 end;
-function rect(mag: real; angle: real): RealArray;
+function rect(rect_mag: real; rect_angle: real): RealArray;
 var
   rect_c: real;
   rect_s: real;
 begin
-  rect_c := cos_taylor(angle);
-  rect_s := sin_taylor(angle);
-  exit([mag * rect_c, mag * rect_s]);
+  rect_c := cos_taylor(rect_angle);
+  rect_s := sin_taylor(rect_angle);
+  exit([rect_mag * rect_c, rect_mag * rect_s]);
 end;
-function multiply(a: RealArray; b: RealArray): RealArray;
+function multiply(multiply_a: RealArray; multiply_b: RealArray): RealArray;
 begin
-  exit([(a[0] * b[0]) - (a[1] * b[1]), (a[0] * b[1]) + (a[1] * b[0])]);
+  exit([(multiply_a[0] * multiply_b[0]) - (multiply_a[1] * multiply_b[1]), (multiply_a[0] * multiply_b[1]) + (multiply_a[1] * multiply_b[0])]);
 end;
-function apparent_power(voltage: real; current: real; voltage_angle: real; current_angle: real): RealArray;
+function apparent_power(apparent_power_voltage: real; apparent_power_current: real; apparent_power_voltage_angle: real; apparent_power_current_angle: real): RealArray;
 var
   apparent_power_vrad: real;
   apparent_power_irad: real;
@@ -157,16 +156,16 @@ var
   apparent_power_irect: array of real;
   apparent_power_result_: array of real;
 begin
-  apparent_power_vrad := to_radians(voltage_angle);
-  apparent_power_irad := to_radians(current_angle);
-  apparent_power_vrect := rect(voltage, apparent_power_vrad);
-  apparent_power_irect := rect(current, apparent_power_irad);
+  apparent_power_vrad := to_radians(apparent_power_voltage_angle);
+  apparent_power_irad := to_radians(apparent_power_current_angle);
+  apparent_power_vrect := rect(apparent_power_voltage, apparent_power_vrad);
+  apparent_power_irect := rect(apparent_power_current, apparent_power_irad);
   apparent_power_result_ := multiply(apparent_power_vrect, apparent_power_irect);
   exit(apparent_power_result_);
 end;
-function approx_equal(a: RealArray; b: RealArray; eps: real): boolean;
+function approx_equal(approx_equal_a: RealArray; approx_equal_b: RealArray; approx_equal_eps: real): boolean;
 begin
-  exit((abs(a[0] - b[0]) < eps) and (abs(a[1] - b[1]) < eps));
+  exit((abs(approx_equal_a[0] - approx_equal_b[0]) < approx_equal_eps) and (abs(approx_equal_a[1] - approx_equal_b[1]) < approx_equal_eps));
 end;
 begin
   init_now();
@@ -180,4 +179,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

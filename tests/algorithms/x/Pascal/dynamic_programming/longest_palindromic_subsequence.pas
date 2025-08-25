@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -39,51 +39,80 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  s: string;
-  a: integer;
-  b: integer;
-function reverse(s: string): string; forward;
-function max_int(a: integer; b: integer): integer; forward;
-function longest_palindromic_subsequence(s: string): integer; forward;
-function reverse(s: string): string;
+function reverse(reverse_s: string): string; forward;
+function max_int(max_int_a: int64; max_int_b: int64): int64; forward;
+function longest_palindromic_subsequence(longest_palindromic_subsequence_s: string): int64; forward;
+function reverse(reverse_s: string): string;
 var
   reverse_result_: string;
   reverse_i: integer;
 begin
   reverse_result_ := '';
-  reverse_i := Length(s) - 1;
+  reverse_i := Length(reverse_s) - 1;
   while reverse_i >= 0 do begin
-  reverse_result_ := reverse_result_ + copy(s, reverse_i+1, (reverse_i + 1 - (reverse_i)));
+  reverse_result_ := reverse_result_ + copy(reverse_s, reverse_i+1, (reverse_i + 1 - (reverse_i)));
   reverse_i := reverse_i - 1;
 end;
   exit(reverse_result_);
 end;
-function max_int(a: integer; b: integer): integer;
+function max_int(max_int_a: int64; max_int_b: int64): int64;
 begin
-  if a > b then begin
-  exit(a);
+  if max_int_a > max_int_b then begin
+  exit(max_int_a);
 end;
-  exit(b);
+  exit(max_int_b);
 end;
-function longest_palindromic_subsequence(s: string): integer;
+function longest_palindromic_subsequence(longest_palindromic_subsequence_s: string): int64;
 var
   longest_palindromic_subsequence_rev: string;
   longest_palindromic_subsequence_n: integer;
   longest_palindromic_subsequence_m: integer;
   longest_palindromic_subsequence_dp: array of IntArray;
-  longest_palindromic_subsequence_i: integer;
-  longest_palindromic_subsequence_row: array of integer;
-  longest_palindromic_subsequence_j: integer;
+  longest_palindromic_subsequence_i: int64;
+  longest_palindromic_subsequence_row: array of int64;
+  longest_palindromic_subsequence_j: int64;
   longest_palindromic_subsequence_a_char: string;
   longest_palindromic_subsequence_b_char: string;
 begin
-  longest_palindromic_subsequence_rev := reverse(s);
-  longest_palindromic_subsequence_n := Length(s);
+  longest_palindromic_subsequence_rev := reverse(longest_palindromic_subsequence_s);
+  longest_palindromic_subsequence_n := Length(longest_palindromic_subsequence_s);
   longest_palindromic_subsequence_m := Length(longest_palindromic_subsequence_rev);
   longest_palindromic_subsequence_dp := [];
   longest_palindromic_subsequence_i := 0;
@@ -101,7 +130,7 @@ end;
   while longest_palindromic_subsequence_i <= longest_palindromic_subsequence_n do begin
   longest_palindromic_subsequence_j := 1;
   while longest_palindromic_subsequence_j <= longest_palindromic_subsequence_m do begin
-  longest_palindromic_subsequence_a_char := copy(s, longest_palindromic_subsequence_i - 1+1, (longest_palindromic_subsequence_i - (longest_palindromic_subsequence_i - 1)));
+  longest_palindromic_subsequence_a_char := copy(longest_palindromic_subsequence_s, longest_palindromic_subsequence_i - 1+1, (longest_palindromic_subsequence_i - (longest_palindromic_subsequence_i - 1)));
   longest_palindromic_subsequence_b_char := copy(longest_palindromic_subsequence_rev, longest_palindromic_subsequence_j - 1+1, (longest_palindromic_subsequence_j - (longest_palindromic_subsequence_j - 1)));
   if longest_palindromic_subsequence_a_char = longest_palindromic_subsequence_b_char then begin
   longest_palindromic_subsequence_dp[longest_palindromic_subsequence_i][longest_palindromic_subsequence_j] := 1 + longest_palindromic_subsequence_dp[longest_palindromic_subsequence_i - 1][longest_palindromic_subsequence_j - 1];
@@ -127,4 +156,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

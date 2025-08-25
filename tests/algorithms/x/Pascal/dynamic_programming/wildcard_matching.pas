@@ -1,4 +1,4 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
 type BoolArray = array of boolean;
@@ -39,65 +39,91 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  b: boolean;
-  rows: integer;
-  cols: integer;
-  s: string;
-  n: integer;
-  p: string;
-function make_bool_list(n: integer): BoolArray; forward;
-function make_bool_matrix(rows: integer; cols: integer): BoolArrayArray; forward;
-function is_match(s: string; p: string): boolean; forward;
-procedure print_bool(b: boolean); forward;
-function make_bool_list(n: integer): BoolArray;
+function make_bool_list(make_bool_list_n: int64): BoolArray; forward;
+function make_bool_matrix(make_bool_matrix_rows: int64; make_bool_matrix_cols: int64): BoolArrayArray; forward;
+function is_match(is_match_s: string; is_match_p: string): boolean; forward;
+procedure print_bool(print_bool_b: boolean); forward;
+function make_bool_list(make_bool_list_n: int64): BoolArray;
 var
   make_bool_list_row: array of boolean;
-  make_bool_list_i: integer;
+  make_bool_list_i: int64;
 begin
   make_bool_list_row := [];
   make_bool_list_i := 0;
-  while make_bool_list_i < n do begin
+  while make_bool_list_i < make_bool_list_n do begin
   make_bool_list_row := concat(make_bool_list_row, [false]);
   make_bool_list_i := make_bool_list_i + 1;
 end;
   exit(make_bool_list_row);
 end;
-function make_bool_matrix(rows: integer; cols: integer): BoolArrayArray;
+function make_bool_matrix(make_bool_matrix_rows: int64; make_bool_matrix_cols: int64): BoolArrayArray;
 var
   make_bool_matrix_matrix: array of BoolArray;
-  make_bool_matrix_i: integer;
+  make_bool_matrix_i: int64;
 begin
   make_bool_matrix_matrix := [];
   make_bool_matrix_i := 0;
-  while make_bool_matrix_i < rows do begin
-  make_bool_matrix_matrix := concat(make_bool_matrix_matrix, [make_bool_list(cols)]);
+  while make_bool_matrix_i < make_bool_matrix_rows do begin
+  make_bool_matrix_matrix := concat(make_bool_matrix_matrix, [make_bool_list(make_bool_matrix_cols)]);
   make_bool_matrix_i := make_bool_matrix_i + 1;
 end;
   exit(make_bool_matrix_matrix);
 end;
-function is_match(s: string; p: string): boolean;
+function is_match(is_match_s: string; is_match_p: string): boolean;
 var
   is_match_n: integer;
   is_match_m: integer;
   is_match_dp: BoolArrayArray;
-  is_match_j: integer;
-  is_match_i: integer;
-  is_match_j2: integer;
+  is_match_j: int64;
+  is_match_i: int64;
+  is_match_j2: int64;
   is_match_pc: string;
   is_match_sc: string;
 begin
-  is_match_n := Length(s);
-  is_match_m := Length(p);
+  is_match_n := Length(is_match_s);
+  is_match_m := Length(is_match_p);
   is_match_dp := make_bool_matrix(is_match_n + 1, is_match_m + 1);
   is_match_dp[0][0] := true;
   is_match_j := 1;
   while is_match_j <= is_match_m do begin
-  if copy(p, is_match_j - 1+1, (is_match_j - (is_match_j - 1))) = '*' then begin
+  if copy(is_match_p, is_match_j - 1+1, (is_match_j - (is_match_j - 1))) = '*' then begin
   is_match_dp[0][is_match_j] := is_match_dp[0][is_match_j - 1];
 end;
   is_match_j := is_match_j + 1;
@@ -106,8 +132,8 @@ end;
   while is_match_i <= is_match_n do begin
   is_match_j2 := 1;
   while is_match_j2 <= is_match_m do begin
-  is_match_pc := copy(p, is_match_j2 - 1+1, (is_match_j2 - (is_match_j2 - 1)));
-  is_match_sc := copy(s, is_match_i - 1+1, (is_match_i - (is_match_i - 1)));
+  is_match_pc := copy(is_match_p, is_match_j2 - 1+1, (is_match_j2 - (is_match_j2 - 1)));
+  is_match_sc := copy(is_match_s, is_match_i - 1+1, (is_match_i - (is_match_i - 1)));
   if (is_match_pc = is_match_sc) or (is_match_pc = '?') then begin
   is_match_dp[is_match_i][is_match_j2] := is_match_dp[is_match_i - 1][is_match_j2 - 1];
 end else begin
@@ -123,9 +149,9 @@ end;
 end;
   exit(is_match_dp[is_match_n][is_match_m]);
 end;
-procedure print_bool(b: boolean);
+procedure print_bool(print_bool_b: boolean);
 begin
-  if b then begin
+  if print_bool_b then begin
   writeln(Ord(true));
 end else begin
   writeln(Ord(false));
@@ -145,4 +171,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

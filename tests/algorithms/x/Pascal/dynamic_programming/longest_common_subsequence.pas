@@ -1,11 +1,11 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
 type LcsResult = record
-  length_: integer;
+  length_: int64;
   sequence: string;
 end;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -51,31 +83,27 @@ var
   a: string;
   b: string;
   res: LcsResult;
-  y: string;
-  rows: integer;
-  x: string;
-  cols: integer;
-function makeLcsResult(length_: integer; sequence: string): LcsResult; forward;
-function zeros_matrix(rows: integer; cols: integer): IntArrayArray; forward;
-function longest_common_subsequence(x: string; y: string): LcsResult; forward;
-function makeLcsResult(length_: integer; sequence: string): LcsResult;
+function makeLcsResult(length_: int64; sequence: string): LcsResult; forward;
+function zeros_matrix(zeros_matrix_rows: int64; zeros_matrix_cols: int64): IntArrayArray; forward;
+function longest_common_subsequence(longest_common_subsequence_x: string; longest_common_subsequence_y: string): LcsResult; forward;
+function makeLcsResult(length_: int64; sequence: string): LcsResult;
 begin
   Result.length_ := length_;
   Result.sequence := sequence;
 end;
-function zeros_matrix(rows: integer; cols: integer): IntArrayArray;
+function zeros_matrix(zeros_matrix_rows: int64; zeros_matrix_cols: int64): IntArrayArray;
 var
   zeros_matrix_matrix: array of IntArray;
-  zeros_matrix_i: integer;
-  zeros_matrix_row: array of integer;
-  zeros_matrix_j: integer;
+  zeros_matrix_i: int64;
+  zeros_matrix_row: array of int64;
+  zeros_matrix_j: int64;
 begin
   zeros_matrix_matrix := [];
   zeros_matrix_i := 0;
-  while zeros_matrix_i <= rows do begin
+  while zeros_matrix_i <= zeros_matrix_rows do begin
   zeros_matrix_row := [];
   zeros_matrix_j := 0;
-  while zeros_matrix_j <= cols do begin
+  while zeros_matrix_j <= zeros_matrix_cols do begin
   zeros_matrix_row := concat(zeros_matrix_row, IntArray([0]));
   zeros_matrix_j := zeros_matrix_j + 1;
 end;
@@ -84,25 +112,25 @@ end;
 end;
   exit(zeros_matrix_matrix);
 end;
-function longest_common_subsequence(x: string; y: string): LcsResult;
+function longest_common_subsequence(longest_common_subsequence_x: string; longest_common_subsequence_y: string): LcsResult;
 var
   longest_common_subsequence_m: integer;
   longest_common_subsequence_n: integer;
   longest_common_subsequence_dp: IntArrayArray;
-  longest_common_subsequence_i: integer;
-  longest_common_subsequence_j: integer;
+  longest_common_subsequence_i: int64;
+  longest_common_subsequence_j: int64;
   longest_common_subsequence_seq: string;
   longest_common_subsequence_i2: integer;
   longest_common_subsequence_j2: integer;
 begin
-  longest_common_subsequence_m := Length(x);
-  longest_common_subsequence_n := Length(y);
+  longest_common_subsequence_m := Length(longest_common_subsequence_x);
+  longest_common_subsequence_n := Length(longest_common_subsequence_y);
   longest_common_subsequence_dp := zeros_matrix(longest_common_subsequence_m, longest_common_subsequence_n);
   longest_common_subsequence_i := 1;
   while longest_common_subsequence_i <= longest_common_subsequence_m do begin
   longest_common_subsequence_j := 1;
   while longest_common_subsequence_j <= longest_common_subsequence_n do begin
-  if x[longest_common_subsequence_i - 1+1] = y[longest_common_subsequence_j - 1+1] then begin
+  if longest_common_subsequence_x[longest_common_subsequence_i - 1+1] = longest_common_subsequence_y[longest_common_subsequence_j - 1+1] then begin
   longest_common_subsequence_dp[longest_common_subsequence_i][longest_common_subsequence_j] := longest_common_subsequence_dp[longest_common_subsequence_i - 1][longest_common_subsequence_j - 1] + 1;
 end else begin
   if longest_common_subsequence_dp[longest_common_subsequence_i - 1][longest_common_subsequence_j] > longest_common_subsequence_dp[longest_common_subsequence_i][longest_common_subsequence_j - 1] then begin
@@ -119,8 +147,8 @@ end;
   longest_common_subsequence_i2 := longest_common_subsequence_m;
   longest_common_subsequence_j2 := longest_common_subsequence_n;
   while (longest_common_subsequence_i2 > 0) and (longest_common_subsequence_j2 > 0) do begin
-  if x[longest_common_subsequence_i2 - 1+1] = y[longest_common_subsequence_j2 - 1+1] then begin
-  longest_common_subsequence_seq := x[longest_common_subsequence_i2 - 1+1] + longest_common_subsequence_seq;
+  if longest_common_subsequence_x[longest_common_subsequence_i2 - 1+1] = longest_common_subsequence_y[longest_common_subsequence_j2 - 1+1] then begin
+  longest_common_subsequence_seq := longest_common_subsequence_x[longest_common_subsequence_i2 - 1+1] + longest_common_subsequence_seq;
   longest_common_subsequence_i2 := longest_common_subsequence_i2 - 1;
   longest_common_subsequence_j2 := longest_common_subsequence_j2 - 1;
 end else begin
@@ -148,4 +176,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

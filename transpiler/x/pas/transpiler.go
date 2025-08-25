@@ -1613,8 +1613,8 @@ func (p *Program) Emit() []byte {
 	if _, ok := funcNames["to_float"]; !ok {
 		buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := _to_float(x);\nend;\n")
 	}
-	buf.WriteString("procedure json(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
-	buf.WriteString("procedure json(x: int64);\nbegin\n  writeln(x);\nend;\n")
+	buf.WriteString("procedure json(xs: array of real); overload;\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
+	buf.WriteString("procedure json(x: int64); overload;\nbegin\n  writeln(x);\nend;\n")
 	if p.NeedJSON {
 		buf.WriteString("procedure json_intarray(xs: IntArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
 		if p.NeedJSONReal {
@@ -4582,11 +4582,33 @@ func ensureMap(keyType, valType string, items []MapItem, params []string) string
 			if m.KeyType == keyType && m.ValType == valType && len(m.Items) == len(items) {
 				match := true
 				for i := range items {
-					// naive comparison only works for string keys and IntLits etc
+					// compare simple string keys
 					lk, ok1 := items[i].Key.(*StringLit)
 					rk, ok2 := m.Items[i].Key.(*StringLit)
 					if !ok1 || !ok2 || lk.Value != rk.Value {
 						match = false
+						break
+					}
+					// also compare literal values when possible to avoid
+					// conflating maps that merely share the same keys
+					switch lv := items[i].Value.(type) {
+					case *IntLit:
+						rv, ok := m.Items[i].Value.(*IntLit)
+						if !ok || lv.Value != rv.Value {
+							match = false
+						}
+					case *RealLit:
+						rv, ok := m.Items[i].Value.(*RealLit)
+						if !ok || lv.Value != rv.Value {
+							match = false
+						}
+					case *StringLit:
+						rv, ok := m.Items[i].Value.(*StringLit)
+						if !ok || lv.Value != rv.Value {
+							match = false
+						}
+					}
+					if !match {
 						break
 					}
 				}
@@ -4877,6 +4899,9 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 						arr := currProg.addArrayAlias("integer")
 						_ = currProg.addArrayAlias(arr)
 						expr = &CallExpr{Name: "json_intarray", Args: args}
+					case strings.Contains(t, "TFPGMap") && strings.Contains(t, "real>"):
+						currProg.NeedShowMapReal = true
+						expr = &CallExpr{Name: "show_map_real", Args: args}
 					case t == "integer" || t == "real":
 						expr = &CallExpr{Name: "writeln", Args: args}
 					default:

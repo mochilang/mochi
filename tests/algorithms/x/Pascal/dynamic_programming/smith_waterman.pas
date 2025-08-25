@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -39,6 +39,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -47,25 +79,20 @@ var
   query: string;
   subject: string;
   score: IntArrayArray;
-  match_score: integer;
-  mismatch_score: integer;
-  source_char: string;
-  gap_score: integer;
-  target_char: string;
-function score_function(source_char: string; target_char: string; match_score: integer; mismatch_score: integer; gap_score: integer): integer; forward;
-function smith_waterman(query: string; subject: string; match_score: integer; mismatch_score: integer; gap_score: integer): IntArrayArray; forward;
-function traceback(score: IntArrayArray; query: string; subject: string; match_score: integer; mismatch_score: integer; gap_score: integer): string; forward;
-function score_function(source_char: string; target_char: string; match_score: integer; mismatch_score: integer; gap_score: integer): integer;
+function score_function(score_function_source_char: string; score_function_target_char: string; score_function_match_score: int64; score_function_mismatch_score: int64; score_function_gap_score: int64): int64; forward;
+function smith_waterman(smith_waterman_query: string; smith_waterman_subject: string; smith_waterman_match_score: int64; smith_waterman_mismatch_score: int64; smith_waterman_gap_score: int64): IntArrayArray; forward;
+function traceback(traceback_score: IntArrayArray; traceback_query: string; traceback_subject: string; traceback_match_score: int64; traceback_mismatch_score: int64; traceback_gap_score: int64): string; forward;
+function score_function(score_function_source_char: string; score_function_target_char: string; score_function_match_score: int64; score_function_mismatch_score: int64; score_function_gap_score: int64): int64;
 begin
-  if (source_char = '-') or (target_char = '-') then begin
-  exit(gap_score);
+  if (score_function_source_char = '-') or (score_function_target_char = '-') then begin
+  exit(score_function_gap_score);
 end;
-  if source_char = target_char then begin
-  exit(match_score);
+  if score_function_source_char = score_function_target_char then begin
+  exit(score_function_match_score);
 end;
-  exit(mismatch_score);
+  exit(score_function_mismatch_score);
 end;
-function smith_waterman(query: string; subject: string; match_score: integer; mismatch_score: integer; gap_score: integer): IntArrayArray;
+function smith_waterman(smith_waterman_query: string; smith_waterman_subject: string; smith_waterman_match_score: int64; smith_waterman_mismatch_score: int64; smith_waterman_gap_score: int64): IntArrayArray;
 var
   smith_waterman_q: string;
   smith_waterman_s: string;
@@ -73,19 +100,19 @@ var
   smith_waterman_n: integer;
   smith_waterman_score: array of IntArray;
   smith_waterman__: int64;
-  smith_waterman_row: array of integer;
+  smith_waterman_row: array of int64;
   smith_waterman__2: int64;
   smith_waterman_i: int64;
   smith_waterman_j: int64;
   smith_waterman_qc: string;
   smith_waterman_sc: string;
-  smith_waterman_diag: integer;
-  smith_waterman_delete: integer;
-  smith_waterman_insert: integer;
-  smith_waterman_max_val: integer;
+  smith_waterman_diag: int64;
+  smith_waterman_delete: int64;
+  smith_waterman_insert: int64;
+  smith_waterman_max_val: int64;
 begin
-  smith_waterman_q := UpperCase(query);
-  smith_waterman_s := UpperCase(subject);
+  smith_waterman_q := UpperCase(smith_waterman_query);
+  smith_waterman_s := UpperCase(smith_waterman_subject);
   smith_waterman_m := Length(smith_waterman_q);
   smith_waterman_n := Length(smith_waterman_s);
   smith_waterman_score := [];
@@ -100,9 +127,9 @@ end;
   for smith_waterman_j := 1 to (smith_waterman_n + 1 - 1) do begin
   smith_waterman_qc := copy(smith_waterman_q, smith_waterman_i - 1+1, (smith_waterman_i - (smith_waterman_i - 1)));
   smith_waterman_sc := copy(smith_waterman_s, smith_waterman_j - 1+1, (smith_waterman_j - (smith_waterman_j - 1)));
-  smith_waterman_diag := smith_waterman_score[smith_waterman_i - 1][smith_waterman_j - 1] + score_function(smith_waterman_qc, smith_waterman_sc, match_score, mismatch_score, gap_score);
-  smith_waterman_delete := smith_waterman_score[smith_waterman_i - 1][smith_waterman_j] + gap_score;
-  smith_waterman_insert := smith_waterman_score[smith_waterman_i][smith_waterman_j - 1] + gap_score;
+  smith_waterman_diag := smith_waterman_score[smith_waterman_i - 1][smith_waterman_j - 1] + score_function(smith_waterman_qc, smith_waterman_sc, smith_waterman_match_score, smith_waterman_mismatch_score, smith_waterman_gap_score);
+  smith_waterman_delete := smith_waterman_score[smith_waterman_i - 1][smith_waterman_j] + smith_waterman_gap_score;
+  smith_waterman_insert := smith_waterman_score[smith_waterman_i][smith_waterman_j - 1] + smith_waterman_gap_score;
   smith_waterman_max_val := 0;
   if smith_waterman_diag > smith_waterman_max_val then begin
   smith_waterman_max_val := smith_waterman_diag;
@@ -118,30 +145,30 @@ end;
 end;
   exit(smith_waterman_score);
 end;
-function traceback(score: IntArrayArray; query: string; subject: string; match_score: integer; mismatch_score: integer; gap_score: integer): string;
+function traceback(traceback_score: IntArrayArray; traceback_query: string; traceback_subject: string; traceback_match_score: int64; traceback_mismatch_score: int64; traceback_gap_score: int64): string;
 var
   traceback_q: string;
   traceback_s: string;
-  traceback_max_value: integer;
-  traceback_i_max: integer;
-  traceback_j_max: integer;
+  traceback_max_value: int64;
+  traceback_i_max: int64;
+  traceback_j_max: int64;
   traceback_i: int64;
   traceback_j: int64;
   traceback_align1: string;
   traceback_align2: string;
-  traceback_gap_penalty: integer;
+  traceback_gap_penalty: int64;
   traceback_qc: string;
   traceback_sc: string;
 begin
-  traceback_q := UpperCase(query);
-  traceback_s := UpperCase(subject);
+  traceback_q := UpperCase(traceback_query);
+  traceback_s := UpperCase(traceback_subject);
   traceback_max_value := 0;
   traceback_i_max := 0;
   traceback_j_max := 0;
-  for traceback_i := 0 to (Length(score) - 1) do begin
-  for traceback_j := 0 to (Length(score[traceback_i]) - 1) do begin
-  if score[traceback_i][traceback_j] > traceback_max_value then begin
-  traceback_max_value := score[traceback_i][traceback_j];
+  for traceback_i := 0 to (Length(traceback_score) - 1) do begin
+  for traceback_j := 0 to (Length(traceback_score[traceback_i]) - 1) do begin
+  if traceback_score[traceback_i][traceback_j] > traceback_max_value then begin
+  traceback_max_value := traceback_score[traceback_i][traceback_j];
   traceback_i_max := traceback_i;
   traceback_j_max := traceback_j;
 end;
@@ -151,20 +178,20 @@ end;
   traceback_j := traceback_j_max;
   traceback_align1 := '';
   traceback_align2 := '';
-  traceback_gap_penalty := score_function('-', '-', match_score, mismatch_score, gap_score);
+  traceback_gap_penalty := score_function('-', '-', traceback_match_score, traceback_mismatch_score, traceback_gap_score);
   if (traceback_i = 0) or (traceback_j = 0) then begin
   exit('');
 end;
   while (traceback_i > 0) and (traceback_j > 0) do begin
   traceback_qc := copy(traceback_q, traceback_i - 1+1, (traceback_i - (traceback_i - 1)));
   traceback_sc := copy(traceback_s, traceback_j - 1+1, (traceback_j - (traceback_j - 1)));
-  if score[traceback_i][traceback_j] = (score[traceback_i - 1][traceback_j - 1] + score_function(traceback_qc, traceback_sc, match_score, mismatch_score, gap_score)) then begin
+  if traceback_score[traceback_i][traceback_j] = (traceback_score[traceback_i - 1][traceback_j - 1] + score_function(traceback_qc, traceback_sc, traceback_match_score, traceback_mismatch_score, traceback_gap_score)) then begin
   traceback_align1 := traceback_qc + traceback_align1;
   traceback_align2 := traceback_sc + traceback_align2;
   traceback_i := traceback_i - 1;
   traceback_j := traceback_j - 1;
 end else begin
-  if score[traceback_i][traceback_j] = (score[traceback_i - 1][traceback_j] + traceback_gap_penalty) then begin
+  if traceback_score[traceback_i][traceback_j] = (traceback_score[traceback_i - 1][traceback_j] + traceback_gap_penalty) then begin
   traceback_align1 := traceback_qc + traceback_align1;
   traceback_align2 := '-' + traceback_align2;
   traceback_i := traceback_i - 1;
@@ -175,7 +202,7 @@ end else begin
 end;
 end;
 end;
-  exit((traceback_align1 + '' + #10 + '') + traceback_align2);
+  exit((traceback_align1 + #10) + traceback_align2);
 end;
 begin
   init_now();
@@ -192,4 +219,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -1,7 +1,7 @@
-{$mode objfpc}
+{$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -39,28 +39,59 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64);
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  INF: integer;
-  arr: IntArray;
-function matrix_chain_multiply(arr: IntArray): integer; forward;
-function matrix_chain_multiply(arr: IntArray): integer;
+  INF: int64;
+function matrix_chain_multiply(matrix_chain_multiply_arr: IntArray): int64; forward;
+function matrix_chain_multiply(matrix_chain_multiply_arr: IntArray): int64;
 var
   matrix_chain_multiply_n: integer;
   matrix_chain_multiply_dp: array of IntArray;
-  matrix_chain_multiply_i: integer;
-  matrix_chain_multiply_row: array of integer;
-  matrix_chain_multiply_j: integer;
-  matrix_chain_multiply_k: integer;
-  matrix_chain_multiply_cost: integer;
+  matrix_chain_multiply_i: int64;
+  matrix_chain_multiply_row: array of int64;
+  matrix_chain_multiply_j: int64;
+  matrix_chain_multiply_k: int64;
+  matrix_chain_multiply_cost: int64;
 begin
-  if Length(arr) < 2 then begin
+  if Length(matrix_chain_multiply_arr) < 2 then begin
   exit(0);
 end;
-  matrix_chain_multiply_n := Length(arr);
+  matrix_chain_multiply_n := Length(matrix_chain_multiply_arr);
   matrix_chain_multiply_dp := [];
   matrix_chain_multiply_i := 0;
   while matrix_chain_multiply_i < matrix_chain_multiply_n do begin
@@ -82,7 +113,7 @@ end;
 end else begin
   matrix_chain_multiply_k := matrix_chain_multiply_i;
   while matrix_chain_multiply_k < matrix_chain_multiply_j do begin
-  matrix_chain_multiply_cost := (matrix_chain_multiply_dp[matrix_chain_multiply_i][matrix_chain_multiply_k] + matrix_chain_multiply_dp[matrix_chain_multiply_k + 1][matrix_chain_multiply_j]) + ((arr[matrix_chain_multiply_i - 1] * arr[matrix_chain_multiply_k]) * arr[matrix_chain_multiply_j]);
+  matrix_chain_multiply_cost := (matrix_chain_multiply_dp[matrix_chain_multiply_i][matrix_chain_multiply_k] + matrix_chain_multiply_dp[matrix_chain_multiply_k + 1][matrix_chain_multiply_j]) + ((matrix_chain_multiply_arr[matrix_chain_multiply_i - 1] * matrix_chain_multiply_arr[matrix_chain_multiply_k]) * matrix_chain_multiply_arr[matrix_chain_multiply_j]);
   if matrix_chain_multiply_cost < matrix_chain_multiply_dp[matrix_chain_multiply_i][matrix_chain_multiply_j] then begin
   matrix_chain_multiply_dp[matrix_chain_multiply_i][matrix_chain_multiply_j] := matrix_chain_multiply_cost;
 end;
@@ -107,4 +138,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
