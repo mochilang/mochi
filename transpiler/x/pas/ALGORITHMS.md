@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-24 22:27 GMT+7
+Last updated: 2025-08-25 00:09 GMT+7
 
-## Algorithms Golden Test Checklist (658/1077)
+## Algorithms Golden Test Checklist (660/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -218,8 +218,8 @@ Last updated: 2025-08-24 22:27 GMT+7
 | 209 | data_structures/hashing/quadratic_probing |   |  |  |
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 0ns | 0B |
 | 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
+| 212 | data_structures/heap/heap | ✓ | 0ns | 192B |
+| 213 | data_structures/heap/heap_generic | ✓ |  |  |
 | 214 | data_structures/heap/max_heap |   |  |  |
 | 215 | data_structures/heap/min_heap |   |  |  |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
@@ -280,7 +280,7 @@ Last updated: 2025-08-24 22:27 GMT+7
 | 271 | digital_image_processing/edge_detection/canny | error |  |  |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 0ns | 256B |
 | 273 | digital_image_processing/filters/convolve | error |  |  |
-| 274 | digital_image_processing/filters/gabor_filter | error | 0ns | 256B |
+| 274 | digital_image_processing/filters/gabor_filter | error |  |  |
 | 275 | digital_image_processing/filters/gaussian_filter | ✓ | 0ns | 704B |
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 0ns | 960B |
 | 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 0ns | 576B |
