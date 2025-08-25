@@ -1,70 +1,36 @@
 public class Main {
 
     static java.util.Map<String,Double> ohms_law(double voltage, double current, double resistance) {
-        int zeros = 0;
-        if (voltage == 0.0) {
-            zeros = zeros + 1;
+        java.math.BigInteger zeros = java.math.BigInteger.valueOf(0);
+        if ((double)(voltage) == (double)(0.0)) {
+            zeros = new java.math.BigInteger(String.valueOf(zeros.add(java.math.BigInteger.valueOf(1))));
         }
-        if (current == 0.0) {
-            zeros = zeros + 1;
+        if ((double)(current) == (double)(0.0)) {
+            zeros = new java.math.BigInteger(String.valueOf(zeros.add(java.math.BigInteger.valueOf(1))));
         }
-        if (resistance == 0.0) {
-            zeros = zeros + 1;
+        if ((double)(resistance) == (double)(0.0)) {
+            zeros = new java.math.BigInteger(String.valueOf(zeros.add(java.math.BigInteger.valueOf(1))));
         }
-        if (zeros != 1) {
+        if (zeros.compareTo(java.math.BigInteger.valueOf(1)) != 0) {
             System.out.println("One and only one argument must be 0");
-            return new java.util.LinkedHashMap<String, Double>();
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
         }
-        if (resistance < 0.0) {
+        if ((double)(resistance) < (double)(0.0)) {
             System.out.println("Resistance cannot be negative");
-            return new java.util.LinkedHashMap<String, Double>();
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
         }
-        if (voltage == 0.0) {
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("voltage", current * resistance)));
+        if ((double)(voltage) == (double)(0.0)) {
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("voltage", (double)((double)(current) * (double)(resistance))); }}));
         }
-        if (current == 0.0) {
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("current", voltage / resistance)));
+        if ((double)(current) == (double)(0.0)) {
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("current", (double)((double)(voltage) / (double)(resistance))); }}));
         }
-        return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("resistance", voltage / current)));
+        return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("resistance", (double)((double)(voltage) / (double)(current))); }}));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            json(ohms_law(10.0, 0.0, 5.0));
-            json(ohms_law(-10.0, 1.0, 0.0));
-            json(ohms_law(0.0, -1.5, 2.0));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        json(ohms_law((double)(10.0), (double)(0.0), (double)(5.0)));
+        json(ohms_law((double)(-10.0), (double)(1.0), (double)(0.0)));
+        json(ohms_law((double)(0.0), (double)(-1.5), (double)(2.0)));
     }
 
     static void json(Object v) {

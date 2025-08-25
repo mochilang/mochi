@@ -2,101 +2,71 @@ public class Main {
 
     static String reverse(String s) {
         String result = "";
-        int i = _runeLen(s) - 1;
-        while (i >= 0) {
-            result = result + s.substring(i, i + 1);
-            i = i - 1;
+        java.math.BigInteger i_1 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(_runeLen(s))).subtract(java.math.BigInteger.valueOf(1))));
+        while (i_1.compareTo(java.math.BigInteger.valueOf(0)) >= 0) {
+            result = result + _substr(s, (int)(((java.math.BigInteger)(i_1)).longValue()), (int)(((java.math.BigInteger)(i_1.add(java.math.BigInteger.valueOf(1)))).longValue()));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.subtract(java.math.BigInteger.valueOf(1))));
         }
         return result;
     }
 
-    static int max_int(int a, int b) {
-        if (a > b) {
-            return a;
+    static java.math.BigInteger max_int(java.math.BigInteger a, java.math.BigInteger b) {
+        if (a.compareTo(b) > 0) {
+            return new java.math.BigInteger(String.valueOf(a));
         }
-        return b;
+        return new java.math.BigInteger(String.valueOf(b));
     }
 
-    static int longest_palindromic_subsequence(String s) {
+    static java.math.BigInteger longest_palindromic_subsequence(String s) {
         String rev = String.valueOf(reverse(s));
-        int n = _runeLen(s);
-        int m = _runeLen(rev);
-        int[][] dp = ((int[][])(new int[][]{}));
-        int i_1 = 0;
-        while (i_1 <= n) {
-            int[] row = ((int[])(new int[]{}));
-            int j = 0;
-            while (j <= m) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray()));
-                j = j + 1;
+        java.math.BigInteger n_1 = new java.math.BigInteger(String.valueOf(_runeLen(s)));
+        java.math.BigInteger m_1 = new java.math.BigInteger(String.valueOf(_runeLen(rev)));
+        java.math.BigInteger[][] dp_1 = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{}));
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(n_1) <= 0) {
+            java.math.BigInteger[] row_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+            while (j_1.compareTo(m_1) <= 0) {
+                row_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(0))).toArray(java.math.BigInteger[]::new)));
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-            dp = ((int[][])(appendObj(dp, row)));
-            i_1 = i_1 + 1;
+            dp_1 = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(dp_1), java.util.stream.Stream.of(new java.math.BigInteger[][]{((java.math.BigInteger[])(row_1))})).toArray(java.math.BigInteger[][]::new)));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        i_1 = 1;
-        while (i_1 <= n) {
-            int j_1 = 1;
-            while (j_1 <= m) {
-                String a_char = s.substring(i_1 - 1, i_1);
-                String b_char = rev.substring(j_1 - 1, j_1);
-                if ((a_char.equals(b_char))) {
-dp[i_1][j_1] = 1 + dp[i_1 - 1][j_1 - 1];
+        i_3 = java.math.BigInteger.valueOf(1);
+        while (i_3.compareTo(n_1) <= 0) {
+            java.math.BigInteger j_3 = java.math.BigInteger.valueOf(1);
+            while (j_3.compareTo(m_1) <= 0) {
+                String a_char_1 = _substr(s, (int)(((java.math.BigInteger)(i_3.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(i_3)).longValue()));
+                String b_char_1 = _substr(rev, (int)(((java.math.BigInteger)(j_3.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(j_3)).longValue()));
+                if ((a_char_1.equals(b_char_1))) {
+dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_3)).longValue())][(int)(((java.math.BigInteger)(j_3)).longValue())] = new java.math.BigInteger(String.valueOf(java.math.BigInteger.valueOf(1).add(dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_3.subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_3.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(j_3.subtract(java.math.BigInteger.valueOf(1)))).longValue())])));
                 } else {
-dp[i_1][j_1] = max_int(dp[i_1 - 1][j_1], dp[i_1][j_1 - 1]);
+dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_3)).longValue())][(int)(((java.math.BigInteger)(j_3)).longValue())] = new java.math.BigInteger(String.valueOf(max_int(new java.math.BigInteger(String.valueOf(dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_3.subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_3.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(j_3)).longValue())])), new java.math.BigInteger(String.valueOf(dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_3)).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(i_3)).longValue())]).length, ((java.math.BigInteger)(j_3.subtract(java.math.BigInteger.valueOf(1)))).longValue())])))));
                 }
-                j_1 = j_1 + 1;
+                j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
             }
-            i_1 = i_1 + 1;
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return dp[n][m];
+        return new java.math.BigInteger(String.valueOf(dp_1[_idx((dp_1).length, ((java.math.BigInteger)(n_1)).longValue())][_idx((dp_1[_idx((dp_1).length, ((java.math.BigInteger)(n_1)).longValue())]).length, ((java.math.BigInteger)(m_1)).longValue())]));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(longest_palindromic_subsequence("bbbab")));
-            System.out.println(_p(longest_palindromic_subsequence("bbabcbcab")));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+        System.out.println(_p(longest_palindromic_subsequence("bbbab")));
+        System.out.println(_p(longest_palindromic_subsequence("bbabcbcab")));
     }
 
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 
     static String _p(Object v) {
@@ -112,6 +82,38 @@ dp[i_1][j_1] = max_int(dp[i_1 - 1][j_1], dp[i_1][j_1 - 1]);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

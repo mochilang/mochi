@@ -1,74 +1,40 @@
 public class Main {
 
     static double resistor_parallel(double[] resistors) {
-        double sum = 0.0;
-        int i = 0;
-        while (i < resistors.length) {
-            double r = resistors[i];
-            if (r <= 0.0) {
-                throw new RuntimeException(String.valueOf("Resistor at index " + _p(i) + " has a negative or zero value!"));
+        double sum = (double)(0.0);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(resistors.length))) < 0) {
+            double r_1 = (double)(resistors[_idx((resistors).length, ((java.math.BigInteger)(i_1)).longValue())]);
+            if ((double)(r_1) <= (double)(0.0)) {
+                throw new RuntimeException(String.valueOf("Resistor at index " + _p(i_1) + " has a negative or zero value!"));
             }
-            sum = sum + 1.0 / r;
-            i = i + 1;
+            sum = (double)((double)(sum) + (double)((double)(1.0) / (double)(r_1)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return 1.0 / sum;
+        return (double)((double)(1.0) / (double)(sum));
     }
 
     static double resistor_series(double[] resistors) {
-        double sum_1 = 0.0;
-        int i_1 = 0;
-        while (i_1 < resistors.length) {
-            double r_1 = resistors[i_1];
-            if (r_1 < 0.0) {
-                throw new RuntimeException(String.valueOf("Resistor at index " + _p(i_1) + " has a negative value!"));
+        double sum_1 = (double)(0.0);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(resistors.length))) < 0) {
+            double r_3 = (double)(resistors[_idx((resistors).length, ((java.math.BigInteger)(i_3)).longValue())]);
+            if ((double)(r_3) < (double)(0.0)) {
+                throw new RuntimeException(String.valueOf("Resistor at index " + _p(i_3) + " has a negative value!"));
             }
-            sum_1 = sum_1 + r_1;
-            i_1 = i_1 + 1;
+            sum_1 = (double)((double)(sum_1) + (double)(r_3));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return sum_1;
+        return (double)(sum_1);
     }
 
     static void main() {
-        double[] resistors = ((double[])(new double[]{3.21389, 2.0, 3.0}));
+        double[] resistors = ((double[])(new double[]{(double)(3.21389), (double)(2.0), (double)(3.0)}));
         System.out.println("Parallel: " + _p(resistor_parallel(((double[])(resistors)))));
         System.out.println("Series: " + _p(resistor_series(((double[])(resistors)))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -84,6 +50,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

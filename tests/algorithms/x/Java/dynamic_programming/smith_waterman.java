@@ -1,142 +1,100 @@
 public class Main {
-    static String query;
-    static String subject;
-    static int[][] score_1;
+    static String query = "HEAGAWGHEE";
+    static String subject = "PAWHEAE";
+    static java.math.BigInteger[][] score_2;
 
-    static int score_function(String source_char, String target_char, int match_score, int mismatch_score, int gap_score) {
+    static java.math.BigInteger score_function(String source_char, String target_char, java.math.BigInteger match_score, java.math.BigInteger mismatch_score, java.math.BigInteger gap_score) {
         if ((source_char.equals("-")) || (target_char.equals("-"))) {
-            return gap_score;
+            return new java.math.BigInteger(String.valueOf(gap_score));
         }
         if ((source_char.equals(target_char))) {
-            return match_score;
+            return new java.math.BigInteger(String.valueOf(match_score));
         }
-        return mismatch_score;
+        return new java.math.BigInteger(String.valueOf(mismatch_score));
     }
 
-    static int[][] smith_waterman(String query, String subject, int match_score, int mismatch_score, int gap_score) {
+    static java.math.BigInteger[][] smith_waterman(String query, String subject, java.math.BigInteger match_score, java.math.BigInteger mismatch_score, java.math.BigInteger gap_score) {
         String q = query.toUpperCase();
-        String s = subject.toUpperCase();
-        int m = _runeLen(q);
-        int n = _runeLen(s);
-        int[][] score = ((int[][])(new int[][]{}));
-        for (int _v = 0; _v < (m + 1); _v++) {
-            int[] row = ((int[])(new int[]{}));
-            for (int _2 = 0; _2 < (n + 1); _2++) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray()));
+        String s_1 = subject.toUpperCase();
+        java.math.BigInteger m_1 = new java.math.BigInteger(String.valueOf(_runeLen(q)));
+        java.math.BigInteger n_1 = new java.math.BigInteger(String.valueOf(_runeLen(s_1)));
+        java.math.BigInteger[][] score_1 = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{}));
+        for (java.math.BigInteger _v = new java.math.BigInteger(String.valueOf(0)); _v.compareTo((m_1.add(java.math.BigInteger.valueOf(1)))) < 0; _v = _v.add(java.math.BigInteger.ONE)) {
+            java.math.BigInteger[] row_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+            for (java.math.BigInteger _2 = new java.math.BigInteger(String.valueOf(0)); _2.compareTo((n_1.add(java.math.BigInteger.valueOf(1)))) < 0; _2 = _2.add(java.math.BigInteger.ONE)) {
+                row_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(0))).toArray(java.math.BigInteger[]::new)));
             }
-            score = ((int[][])(appendObj(score, row)));
+            score_1 = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(score_1), java.util.stream.Stream.of(new java.math.BigInteger[][]{((java.math.BigInteger[])(row_1))})).toArray(java.math.BigInteger[][]::new)));
         }
-        for (int i = 1; i < (m + 1); i++) {
-            for (int j = 1; j < (n + 1); j++) {
-                String qc = _substr(q, i - 1, i);
-                String sc = _substr(s, j - 1, j);
-                int diag = score[i - 1][j - 1] + score_function(qc, sc, match_score, mismatch_score, gap_score);
-                int delete = score[i - 1][j] + gap_score;
-                int insert = score[i][j - 1] + gap_score;
-                int max_val = 0;
-                if (diag > max_val) {
-                    max_val = diag;
+        for (java.math.BigInteger i = new java.math.BigInteger(String.valueOf(1)); i.compareTo((m_1.add(java.math.BigInteger.valueOf(1)))) < 0; i = i.add(java.math.BigInteger.ONE)) {
+            for (java.math.BigInteger j = new java.math.BigInteger(String.valueOf(1)); j.compareTo((n_1.add(java.math.BigInteger.valueOf(1)))) < 0; j = j.add(java.math.BigInteger.ONE)) {
+                String qc_1 = _substr(q, (int)(((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(i)).subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)((long)(i)));
+                String sc_1 = _substr(s_1, (int)(((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(j)).subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)((long)(j)));
+                java.math.BigInteger diag_1 = new java.math.BigInteger(String.valueOf(score_1[_idx((score_1).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(i)).subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((score_1[_idx((score_1).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(i)).subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(j)).subtract(java.math.BigInteger.valueOf(1)))).longValue())].add(score_function(qc_1, sc_1, new java.math.BigInteger(String.valueOf(match_score)), new java.math.BigInteger(String.valueOf(mismatch_score)), new java.math.BigInteger(String.valueOf(gap_score))))));
+                java.math.BigInteger delete_1 = new java.math.BigInteger(String.valueOf(score_1[_idx((score_1).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(i)).subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((score_1[_idx((score_1).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(i)).subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, (long)(j))].add(gap_score)));
+                java.math.BigInteger insert_1 = new java.math.BigInteger(String.valueOf(score_1[_idx((score_1).length, (long)(i))][_idx((score_1[_idx((score_1).length, (long)(i))]).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(j)).subtract(java.math.BigInteger.valueOf(1)))).longValue())].add(gap_score)));
+                java.math.BigInteger max_val_1 = java.math.BigInteger.valueOf(0);
+                if (diag_1.compareTo(max_val_1) > 0) {
+                    max_val_1 = new java.math.BigInteger(String.valueOf(diag_1));
                 }
-                if (delete > max_val) {
-                    max_val = delete;
+                if (delete_1.compareTo(max_val_1) > 0) {
+                    max_val_1 = new java.math.BigInteger(String.valueOf(delete_1));
                 }
-                if (insert > max_val) {
-                    max_val = insert;
+                if (insert_1.compareTo(max_val_1) > 0) {
+                    max_val_1 = new java.math.BigInteger(String.valueOf(insert_1));
                 }
-score[i][j] = max_val;
+score_1[_idx((score_1).length, (long)(i))][(int)((long)(j))] = new java.math.BigInteger(String.valueOf(max_val_1));
             }
         }
-        return score;
+        return ((java.math.BigInteger[][])(score_1));
     }
 
-    static String traceback(int[][] score, String query, String subject, int match_score, int mismatch_score, int gap_score) {
+    static String traceback(java.math.BigInteger[][] score, String query, String subject, java.math.BigInteger match_score, java.math.BigInteger mismatch_score, java.math.BigInteger gap_score) {
         String q_1 = query.toUpperCase();
-        String s_1 = subject.toUpperCase();
-        int max_value = 0;
-        int i_max = 0;
-        int j_max = 0;
+        String s_3 = subject.toUpperCase();
+        java.math.BigInteger max_value_1 = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger i_max_1 = java.math.BigInteger.valueOf(0);
+        java.math.BigInteger j_max_1 = java.math.BigInteger.valueOf(0);
         for (int i = 0; i < score.length; i++) {
-            for (int j = 0; j < score[i].length; j++) {
-                if (score[i][j] > max_value) {
-                    max_value = score[i][j];
-                    i_max = i;
-                    j_max = j;
+            for (int j = 0; j < score[_idx((score).length, (long)(i))].length; j++) {
+                if (score[_idx((score).length, (long)(i))][_idx((score[_idx((score).length, (long)(i))]).length, (long)(j))].compareTo(max_value_1) > 0) {
+                    max_value_1 = new java.math.BigInteger(String.valueOf(score[_idx((score).length, (long)(i))][_idx((score[_idx((score).length, (long)(i))]).length, (long)(j))]));
+                    i_max_1 = new java.math.BigInteger(String.valueOf(i));
+                    j_max_1 = new java.math.BigInteger(String.valueOf(j));
                 }
             }
         }
-        int i = i_max;
-        int j = j_max;
-        String align1 = "";
-        String align2 = "";
-        int gap_penalty = score_function("-", "-", match_score, mismatch_score, gap_score);
-        if (i == 0 || j == 0) {
+        java.math.BigInteger i_1 = new java.math.BigInteger(String.valueOf(i_max_1));
+        java.math.BigInteger j_1 = new java.math.BigInteger(String.valueOf(j_max_1));
+        String align1_1 = "";
+        String align2_1 = "";
+        java.math.BigInteger gap_penalty_1 = new java.math.BigInteger(String.valueOf(score_function("-", "-", new java.math.BigInteger(String.valueOf(match_score)), new java.math.BigInteger(String.valueOf(mismatch_score)), new java.math.BigInteger(String.valueOf(gap_score)))));
+        if (i_1.compareTo(java.math.BigInteger.valueOf(0)) == 0 || j_1.compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             return "";
         }
-        while (i > 0 && j > 0) {
-            String qc_1 = _substr(q_1, i - 1, i);
-            String sc_1 = _substr(s_1, j - 1, j);
-            if (score[i][j] == score[i - 1][j - 1] + score_function(qc_1, sc_1, match_score, mismatch_score, gap_score)) {
-                align1 = qc_1 + align1;
-                align2 = sc_1 + align2;
-                i = i - 1;
-                j = j - 1;
-            } else             if (score[i][j] == score[i - 1][j] + gap_penalty) {
-                align1 = qc_1 + align1;
-                align2 = "-" + align2;
-                i = i - 1;
+        while (i_1.compareTo(java.math.BigInteger.valueOf(0)) > 0 && j_1.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            String qc_3 = _substr(q_1, (int)(((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(i_1)).longValue()));
+            String sc_3 = _substr(s_3, (int)(((java.math.BigInteger)(j_1.subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)(((java.math.BigInteger)(j_1)).longValue()));
+            if (score[_idx((score).length, ((java.math.BigInteger)(i_1)).longValue())][_idx((score[_idx((score).length, ((java.math.BigInteger)(i_1)).longValue())]).length, ((java.math.BigInteger)(j_1)).longValue())].compareTo(score[_idx((score).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((score[_idx((score).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(j_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())].add(score_function(qc_3, sc_3, new java.math.BigInteger(String.valueOf(match_score)), new java.math.BigInteger(String.valueOf(mismatch_score)), new java.math.BigInteger(String.valueOf(gap_score))))) == 0) {
+                align1_1 = qc_3 + align1_1;
+                align2_1 = sc_3 + align2_1;
+                i_1 = new java.math.BigInteger(String.valueOf(i_1.subtract(java.math.BigInteger.valueOf(1))));
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.subtract(java.math.BigInteger.valueOf(1))));
+            } else             if (score[_idx((score).length, ((java.math.BigInteger)(i_1)).longValue())][_idx((score[_idx((score).length, ((java.math.BigInteger)(i_1)).longValue())]).length, ((java.math.BigInteger)(j_1)).longValue())].compareTo(score[_idx((score).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())][_idx((score[_idx((score).length, ((java.math.BigInteger)(i_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())]).length, ((java.math.BigInteger)(j_1)).longValue())].add(gap_penalty_1)) == 0) {
+                align1_1 = qc_3 + align1_1;
+                align2_1 = "-" + align2_1;
+                i_1 = new java.math.BigInteger(String.valueOf(i_1.subtract(java.math.BigInteger.valueOf(1))));
             } else {
-                align1 = "-" + align1;
-                align2 = sc_1 + align2;
-                j = j - 1;
+                align1_1 = "-" + align1_1;
+                align2_1 = sc_3 + align2_1;
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.subtract(java.math.BigInteger.valueOf(1))));
             }
         }
-        return align1 + "\n" + align2;
+        return align1_1 + "\n" + align2_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            query = "HEAGAWGHEE";
-            subject = "PAWHEAE";
-            score_1 = ((int[][])(smith_waterman(query, subject, 1, -1, -2)));
-            System.out.println(traceback(((int[][])(score_1)), query, subject, 1, -1, -2));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+        score_2 = ((java.math.BigInteger[][])(smith_waterman(query, subject, java.math.BigInteger.valueOf(1), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2)).negate())))));
+        System.out.println(traceback(((java.math.BigInteger[][])(score_2)), query, subject, java.math.BigInteger.valueOf(1), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2)).negate()))));
     }
 
     static int _runeLen(String s) {
@@ -144,8 +102,16 @@ score[i][j] = max_val;
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

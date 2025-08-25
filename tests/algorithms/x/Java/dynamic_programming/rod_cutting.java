@@ -1,80 +1,49 @@
 public class Main {
-    static int[] prices;
+    static java.math.BigInteger[] prices = ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(5), java.math.BigInteger.valueOf(8), java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(10), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(17), java.math.BigInteger.valueOf(20), java.math.BigInteger.valueOf(24), java.math.BigInteger.valueOf(30)}));
 
-    static void enforce_args(int n, int[] prices) {
-        if (n < 0) {
+    static void enforce_args(java.math.BigInteger n, java.math.BigInteger[] prices) {
+        if (n.compareTo(java.math.BigInteger.valueOf(0)) < 0) {
             throw new RuntimeException(String.valueOf("n must be non-negative"));
         }
-        if (n > prices.length) {
+        if (n.compareTo(new java.math.BigInteger(String.valueOf(prices.length))) > 0) {
             throw new RuntimeException(String.valueOf("price list is shorter than n"));
         }
     }
 
-    static int bottom_up_cut_rod(int n, int[] prices) {
-        enforce_args(n, ((int[])(prices)));
-        int[] max_rev = new int[0];
-        int i = 0;
-        while (i <= n) {
-            if (i == 0) {
-                max_rev = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(max_rev), java.util.stream.IntStream.of(0)).toArray()));
+    static java.math.BigInteger bottom_up_cut_rod(java.math.BigInteger n, java.math.BigInteger[] prices) {
+        enforce_args(new java.math.BigInteger(String.valueOf(n)), ((java.math.BigInteger[])(prices)));
+        java.math.BigInteger[] max_rev_1 = new java.math.BigInteger[0];
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(n) <= 0) {
+            if (i_1.compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+                max_rev_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(max_rev_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(0))).toArray(java.math.BigInteger[]::new)));
             } else {
-                max_rev = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(max_rev), java.util.stream.IntStream.of(-(int)2147483648L)).toArray()));
+                max_rev_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(max_rev_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2147483648L)).negate())))).toArray(java.math.BigInteger[]::new)));
             }
-            i = i + 1;
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        int length = 1;
-        while (length <= n) {
-            int best = max_rev[length];
-            int j = 1;
-            while (j <= length) {
-                int candidate = prices[j - 1] + max_rev[length - j];
-                if (candidate > best) {
-                    best = candidate;
+        java.math.BigInteger length_1 = java.math.BigInteger.valueOf(1);
+        while (length_1.compareTo(n) <= 0) {
+            java.math.BigInteger best_1 = new java.math.BigInteger(String.valueOf(max_rev_1[_idx((max_rev_1).length, ((java.math.BigInteger)(length_1)).longValue())]));
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(1);
+            while (j_1.compareTo(length_1) <= 0) {
+                java.math.BigInteger candidate_1 = new java.math.BigInteger(String.valueOf(prices[_idx((prices).length, ((java.math.BigInteger)(j_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())].add(max_rev_1[_idx((max_rev_1).length, ((java.math.BigInteger)(length_1.subtract(j_1))).longValue())])));
+                if (candidate_1.compareTo(best_1) > 0) {
+                    best_1 = new java.math.BigInteger(String.valueOf(candidate_1));
                 }
-                j = j + 1;
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-max_rev[length] = best;
-            length = length + 1;
+max_rev_1[(int)(((java.math.BigInteger)(length_1)).longValue())] = new java.math.BigInteger(String.valueOf(best_1));
+            length_1 = new java.math.BigInteger(String.valueOf(length_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return max_rev[n];
+        return new java.math.BigInteger(String.valueOf(max_rev_1[_idx((max_rev_1).length, ((java.math.BigInteger)(n)).longValue())]));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            prices = ((int[])(new int[]{1, 5, 8, 9, 10, 17, 17, 20, 24, 30}));
-            System.out.println(bottom_up_cut_rod(4, ((int[])(prices))));
-            System.out.println(bottom_up_cut_rod(10, ((int[])(prices))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(bottom_up_cut_rod(java.math.BigInteger.valueOf(4), ((java.math.BigInteger[])(prices))));
+        System.out.println(bottom_up_cut_rod(java.math.BigInteger.valueOf(10), ((java.math.BigInteger[])(prices))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

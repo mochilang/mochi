@@ -1,6 +1,6 @@
 public class Main {
-    static String[] observations = new String[0];
-    static String[] states = new String[0];
+    static String[] observations = ((String[])(new String[]{"normal", "cold", "dizzy"}));
+    static String[] states = ((String[])(new String[]{"Healthy", "Fever"}));
     static java.util.Map<String,Double> start_p = null;
     static java.util.Map<String,java.util.Map<String,Double>> trans_p = null;
     static java.util.Map<String,java.util.Map<String,Double>> emit_p = null;
@@ -11,129 +11,97 @@ public class Main {
     }
 
     static String[] viterbi(String[] observations, String[] states, java.util.Map<String,Double> start_p, java.util.Map<String,java.util.Map<String,Double>> trans_p, java.util.Map<String,java.util.Map<String,Double>> emit_p) {
-        if (observations.length == 0 || states.length == 0) {
+        if (new java.math.BigInteger(String.valueOf(observations.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0 || new java.math.BigInteger(String.valueOf(states.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             throw new RuntimeException(String.valueOf("empty parameters"));
         }
-        java.util.Map<String,Double> probs = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
-        java.util.Map<String,String> ptrs = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>()));
-        String first_obs = observations[0];
-        int i = 0;
-        while (i < states.length) {
-            String state = states[i];
-probs.put(key(state, first_obs), (double)(((double)(start_p).getOrDefault(state, 0.0))) * (double)(((double)(((java.util.Map<String,Double>)(emit_p).get(state))).getOrDefault(first_obs, 0.0))));
-ptrs.put(key(state, first_obs), "");
-            i = i + 1;
+        java.util.Map<String,Double> probs_1 = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
+        java.util.Map<String,String> ptrs_1 = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>()));
+        String first_obs_1 = observations[_idx((observations).length, 0L)];
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(states.length))) < 0) {
+            String state_1 = states[_idx((states).length, ((java.math.BigInteger)(i_1)).longValue())];
+probs_1.put(key(state_1, first_obs_1), (double)((double)(((double)(start_p).getOrDefault(state_1, 0.0))) * (double)(((double)(((java.util.Map<String,Double>)(emit_p).get(state_1))).getOrDefault(first_obs_1, 0.0)))));
+ptrs_1.put(key(state_1, first_obs_1), "");
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        int t = 1;
-        while (t < observations.length) {
-            String obs = observations[t];
-            int j = 0;
-            while (j < states.length) {
-                String state_1 = states[j];
-                double max_prob = -1.0;
-                String prev_state = "";
-                int k = 0;
-                while (k < states.length) {
-                    String state0 = states[k];
-                    String obs0 = observations[t - 1];
-                    double prob_prev = (double)(((double)(probs).getOrDefault(key(state0, obs0), 0.0)));
-                    double prob = prob_prev * (double)(((double)(((java.util.Map<String,Double>)(trans_p).get(state0))).getOrDefault(state_1, 0.0))) * (double)(((double)(((java.util.Map<String,Double>)(emit_p).get(state_1))).getOrDefault(obs, 0.0)));
-                    if (prob > max_prob) {
-                        max_prob = prob;
-                        prev_state = state0;
+        java.math.BigInteger t_1 = java.math.BigInteger.valueOf(1);
+        while (t_1.compareTo(new java.math.BigInteger(String.valueOf(observations.length))) < 0) {
+            String obs_1 = observations[_idx((observations).length, ((java.math.BigInteger)(t_1)).longValue())];
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+            while (j_1.compareTo(new java.math.BigInteger(String.valueOf(states.length))) < 0) {
+                String state_3 = states[_idx((states).length, ((java.math.BigInteger)(j_1)).longValue())];
+                double max_prob_1 = (double)(-1.0);
+                String prev_state_1 = "";
+                java.math.BigInteger k_1 = java.math.BigInteger.valueOf(0);
+                while (k_1.compareTo(new java.math.BigInteger(String.valueOf(states.length))) < 0) {
+                    String state0_1 = states[_idx((states).length, ((java.math.BigInteger)(k_1)).longValue())];
+                    String obs0_1 = observations[_idx((observations).length, ((java.math.BigInteger)(t_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())];
+                    double prob_prev_1 = (double)(((double)(probs_1).getOrDefault(key(state0_1, obs0_1), 0.0)));
+                    double prob_1 = (double)((double)((double)(prob_prev_1) * (double)(((double)(((java.util.Map<String,Double>)(trans_p).get(state0_1))).getOrDefault(state_3, 0.0)))) * (double)(((double)(((java.util.Map<String,Double>)(emit_p).get(state_3))).getOrDefault(obs_1, 0.0))));
+                    if ((double)(prob_1) > (double)(max_prob_1)) {
+                        max_prob_1 = (double)(prob_1);
+                        prev_state_1 = state0_1;
                     }
-                    k = k + 1;
+                    k_1 = new java.math.BigInteger(String.valueOf(k_1.add(java.math.BigInteger.valueOf(1))));
                 }
-probs.put(key(state_1, obs), max_prob);
-ptrs.put(key(state_1, obs), prev_state);
-                j = j + 1;
+probs_1.put(key(state_3, obs_1), (double)(max_prob_1));
+ptrs_1.put(key(state_3, obs_1), prev_state_1);
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-            t = t + 1;
+            t_1 = new java.math.BigInteger(String.valueOf(t_1.add(java.math.BigInteger.valueOf(1))));
         }
-        String[] path = ((String[])(new String[]{}));
-        int n = 0;
-        while (n < observations.length) {
-            path = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(path), java.util.stream.Stream.of("")).toArray(String[]::new)));
-            n = n + 1;
+        String[] path_1 = ((String[])(new String[]{}));
+        java.math.BigInteger n_1 = java.math.BigInteger.valueOf(0);
+        while (n_1.compareTo(new java.math.BigInteger(String.valueOf(observations.length))) < 0) {
+            path_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(path_1), java.util.stream.Stream.of("")).toArray(String[]::new)));
+            n_1 = new java.math.BigInteger(String.valueOf(n_1.add(java.math.BigInteger.valueOf(1))));
         }
-        String last_obs = observations[observations.length - 1];
-        double max_final = -1.0;
-        String last_state = "";
-        int m = 0;
-        while (m < states.length) {
-            String state_2 = states[m];
-            double prob_1 = (double)(((double)(probs).getOrDefault(key(state_2, last_obs), 0.0)));
-            if (prob_1 > max_final) {
-                max_final = prob_1;
-                last_state = state_2;
+        String last_obs_1 = observations[_idx((observations).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(observations.length)).subtract(java.math.BigInteger.valueOf(1)))).longValue())];
+        double max_final_1 = (double)(-1.0);
+        String last_state_1 = "";
+        java.math.BigInteger m_1 = java.math.BigInteger.valueOf(0);
+        while (m_1.compareTo(new java.math.BigInteger(String.valueOf(states.length))) < 0) {
+            String state_5 = states[_idx((states).length, ((java.math.BigInteger)(m_1)).longValue())];
+            double prob_3 = (double)(((double)(probs_1).getOrDefault(key(state_5, last_obs_1), 0.0)));
+            if ((double)(prob_3) > (double)(max_final_1)) {
+                max_final_1 = (double)(prob_3);
+                last_state_1 = state_5;
             }
-            m = m + 1;
+            m_1 = new java.math.BigInteger(String.valueOf(m_1.add(java.math.BigInteger.valueOf(1))));
         }
-        int last_index = observations.length - 1;
-path[last_index] = last_state;
-        int idx = last_index;
-        while (idx > 0) {
-            String obs_1 = observations[idx];
-            String prev = ((String)(ptrs).get(key(path[idx], obs_1)));
-path[idx - 1] = prev;
-            idx = idx - 1;
+        java.math.BigInteger last_index_1 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(observations.length)).subtract(java.math.BigInteger.valueOf(1))));
+path_1[(int)(((java.math.BigInteger)(last_index_1)).longValue())] = last_state_1;
+        java.math.BigInteger idx_1 = new java.math.BigInteger(String.valueOf(last_index_1));
+        while (idx_1.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            String obs_3 = observations[_idx((observations).length, ((java.math.BigInteger)(idx_1)).longValue())];
+            String prev_1 = ((String)(ptrs_1).get(key(path_1[_idx((path_1).length, ((java.math.BigInteger)(idx_1)).longValue())], obs_3)));
+path_1[(int)(((java.math.BigInteger)(idx_1.subtract(java.math.BigInteger.valueOf(1)))).longValue())] = prev_1;
+            idx_1 = new java.math.BigInteger(String.valueOf(idx_1.subtract(java.math.BigInteger.valueOf(1))));
         }
-        return path;
+        return ((String[])(path_1));
     }
 
     static String join_words(String[] words) {
         String res = "";
-        int i_1 = 0;
-        while (i_1 < words.length) {
-            if (i_1 > 0) {
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(words.length))) < 0) {
+            if (i_3.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
                 res = res + " ";
             }
-            res = res + words[i_1];
-            i_1 = i_1 + 1;
+            res = res + words[_idx((words).length, ((java.math.BigInteger)(i_3)).longValue())];
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
         return res;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            observations = ((String[])(new String[]{"normal", "cold", "dizzy"}));
-            states = ((String[])(new String[]{"Healthy", "Fever"}));
-            start_p = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("Healthy", 0.6), java.util.Map.entry("Fever", 0.4)))));
-            trans_p = ((java.util.Map<String,java.util.Map<String,Double>>)(new java.util.LinkedHashMap<String, java.util.Map<String,Double>>(java.util.Map.ofEntries(java.util.Map.entry("Healthy", ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("Healthy", 0.7), java.util.Map.entry("Fever", 0.3)))))), java.util.Map.entry("Fever", ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("Healthy", 0.4), java.util.Map.entry("Fever", 0.6))))))))));
-            emit_p = ((java.util.Map<String,java.util.Map<String,Double>>)(new java.util.LinkedHashMap<String, java.util.Map<String,Double>>(java.util.Map.ofEntries(java.util.Map.entry("Healthy", ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("normal", 0.5), java.util.Map.entry("cold", 0.4), java.util.Map.entry("dizzy", 0.1)))))), java.util.Map.entry("Fever", ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("normal", 0.1), java.util.Map.entry("cold", 0.3), java.util.Map.entry("dizzy", 0.6))))))))));
-            result = ((String[])(viterbi(((String[])(observations)), ((String[])(states)), start_p, trans_p, emit_p)));
-            System.out.println(join_words(((String[])(result))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        start_p = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("Healthy", (double)(0.6)); put("Fever", (double)(0.4)); }}));
+        trans_p = ((java.util.Map<String,java.util.Map<String,Double>>)(new java.util.LinkedHashMap<String, java.util.Map<String,Double>>() {{ put("Healthy", ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("Healthy", (double)(0.7)); put("Fever", (double)(0.3)); }}))); put("Fever", ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("Healthy", (double)(0.4)); put("Fever", (double)(0.6)); }}))); }}));
+        emit_p = ((java.util.Map<String,java.util.Map<String,Double>>)(new java.util.LinkedHashMap<String, java.util.Map<String,Double>>() {{ put("Healthy", ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("normal", (double)(0.5)); put("cold", (double)(0.4)); put("dizzy", (double)(0.1)); }}))); put("Fever", ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("normal", (double)(0.1)); put("cold", (double)(0.3)); put("dizzy", (double)(0.6)); }}))); }}));
+        result = ((String[])(viterbi(((String[])(observations)), ((String[])(states)), start_p, trans_p, emit_p)));
+        System.out.println(join_words(((String[])(result))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

@@ -1,42 +1,55 @@
 public class Main {
-    static int[] longest_subsequence(int[] xs) {
-        int n = xs.length;
-        if (n <= 1) {
-            return xs;
+    static java.math.BigInteger[] longest_subsequence(java.math.BigInteger[] xs) {
+        java.math.BigInteger n = new java.math.BigInteger(String.valueOf(xs.length));
+        if (n.compareTo(java.math.BigInteger.valueOf(1)) <= 0) {
+            return ((java.math.BigInteger[])(xs));
         }
-        int pivot = xs[0];
-        boolean is_found = false;
-        int i = 1;
-        int[] longest_subseq = ((int[])(new int[]{}));
-        while (!is_found && i < n) {
-            if (xs[i] < pivot) {
-                is_found = true;
-                int[] temp_array = ((int[])(java.util.Arrays.copyOfRange(xs, i, n)));
-                temp_array = ((int[])(longest_subsequence(((int[])(temp_array)))));
-                if (temp_array.length > longest_subseq.length) {
-                    longest_subseq = ((int[])(temp_array));
+        java.math.BigInteger pivot_1 = new java.math.BigInteger(String.valueOf(xs[_idx((xs).length, 0L)]));
+        boolean is_found_1 = false;
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(1);
+        java.math.BigInteger[] longest_subseq_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        while (!is_found_1 && i_1.compareTo(n) < 0) {
+            if (xs[_idx((xs).length, ((java.math.BigInteger)(i_1)).longValue())].compareTo(pivot_1) < 0) {
+                is_found_1 = true;
+                java.math.BigInteger[] temp_array_1 = ((java.math.BigInteger[])(java.util.Arrays.copyOfRange(xs, (int)(((java.math.BigInteger)(i_1)).longValue()), (int)(((java.math.BigInteger)(n)).longValue()))));
+                temp_array_1 = ((java.math.BigInteger[])(longest_subsequence(((java.math.BigInteger[])(temp_array_1)))));
+                if (new java.math.BigInteger(String.valueOf(temp_array_1.length)).compareTo(new java.math.BigInteger(String.valueOf(longest_subseq_1.length))) > 0) {
+                    longest_subseq_1 = ((java.math.BigInteger[])(temp_array_1));
                 }
             } else {
-                i = i + 1;
+                i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
             }
         }
-        int[] filtered = ((int[])(new int[]{}));
-        int j = 1;
-        while (j < n) {
-            if (xs[j] >= pivot) {
-                filtered = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(filtered), java.util.stream.IntStream.of(xs[j])).toArray()));
+        java.math.BigInteger[] filtered_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger j_1 = java.math.BigInteger.valueOf(1);
+        while (j_1.compareTo(n) < 0) {
+            if (xs[_idx((xs).length, ((java.math.BigInteger)(j_1)).longValue())].compareTo(pivot_1) >= 0) {
+                filtered_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(filtered_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(xs[_idx((xs).length, ((java.math.BigInteger)(j_1)).longValue())])))).toArray(java.math.BigInteger[]::new)));
             }
-            j = j + 1;
+            j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
         }
-        int[] candidate = ((int[])(new int[]{}));
-        candidate = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(candidate), java.util.stream.IntStream.of(pivot)).toArray()));
-        candidate = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(candidate), java.util.Arrays.stream(longest_subsequence(((int[])(filtered))))).toArray()));
-        if (candidate.length > longest_subseq.length) {
-            return candidate;
+        java.math.BigInteger[] candidate_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        candidate_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(candidate_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(pivot_1)))).toArray(java.math.BigInteger[]::new)));
+        candidate_1 = ((java.math.BigInteger[])(concat(candidate_1, longest_subsequence(((java.math.BigInteger[])(filtered_1))))));
+        if (new java.math.BigInteger(String.valueOf(candidate_1.length)).compareTo(new java.math.BigInteger(String.valueOf(longest_subseq_1.length))) > 0) {
+            return ((java.math.BigInteger[])(candidate_1));
         } else {
-            return longest_subseq;
+            return ((java.math.BigInteger[])(longest_subseq_1));
         }
     }
     public static void main(String[] args) {
+    }
+
+    static Object concat(Object a, Object b) {
+        int len1 = java.lang.reflect.Array.getLength(a);
+        int len2 = java.lang.reflect.Array.getLength(b);
+        Object out = java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), len1 + len2);
+        System.arraycopy(a, 0, out, 0, len1);
+        System.arraycopy(b, 0, out, len1, len2);
+        return out;
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

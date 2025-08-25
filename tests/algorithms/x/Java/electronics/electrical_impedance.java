@@ -1,82 +1,48 @@
 public class Main {
 
     static double sqrtApprox(double x) {
-        if (x <= 0.0) {
-            return 0.0;
+        if ((double)(x) <= (double)(0.0)) {
+            return (double)(0.0);
         }
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = (double)((double)(x) / (double)(2.0));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
+            guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return guess;
+        return (double)(guess_1);
     }
 
     static java.util.Map<String,Double> electrical_impedance(double resistance, double reactance, double impedance) {
-        int zero_count = 0;
-        if (resistance == 0.0) {
-            zero_count = zero_count + 1;
+        java.math.BigInteger zero_count = java.math.BigInteger.valueOf(0);
+        if ((double)(resistance) == (double)(0.0)) {
+            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
         }
-        if (reactance == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(reactance) == (double)(0.0)) {
+            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
         }
-        if (impedance == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(impedance) == (double)(0.0)) {
+            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
         }
-        if (zero_count != 1) {
+        if (zero_count.compareTo(java.math.BigInteger.valueOf(1)) != 0) {
             throw new RuntimeException(String.valueOf("One and only one argument must be 0"));
         }
-        if (resistance == 0.0) {
-            double value = sqrtApprox(impedance * impedance - reactance * reactance);
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("resistance", value)));
-        } else         if (reactance == 0.0) {
-            double value_1 = sqrtApprox(impedance * impedance - resistance * resistance);
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("reactance", value_1)));
-        } else         if (impedance == 0.0) {
-            double value_2 = sqrtApprox(resistance * resistance + reactance * reactance);
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("impedance", value_2)));
+        if ((double)(resistance) == (double)(0.0)) {
+            double value_3 = (double)(sqrtApprox((double)((double)((double)(impedance) * (double)(impedance)) - (double)((double)(reactance) * (double)(reactance)))));
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("resistance", (double)(value_3)); }}));
+        } else         if ((double)(reactance) == (double)(0.0)) {
+            double value_4 = (double)(sqrtApprox((double)((double)((double)(impedance) * (double)(impedance)) - (double)((double)(resistance) * (double)(resistance)))));
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("reactance", (double)(value_4)); }}));
+        } else         if ((double)(impedance) == (double)(0.0)) {
+            double value_5 = (double)(sqrtApprox((double)((double)((double)(resistance) * (double)(resistance)) + (double)((double)(reactance) * (double)(reactance)))));
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>() {{ put("impedance", (double)(value_5)); }}));
         } else {
             throw new RuntimeException(String.valueOf("Exactly one argument must be 0"));
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(electrical_impedance(3.0, 4.0, 0.0));
-            System.out.println(electrical_impedance(0.0, 4.0, 5.0));
-            System.out.println(electrical_impedance(3.0, 0.0, 5.0));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(electrical_impedance((double)(3.0), (double)(4.0), (double)(0.0)));
+        System.out.println(electrical_impedance((double)(0.0), (double)(4.0), (double)(5.0)));
+        System.out.println(electrical_impedance((double)(3.0), (double)(0.0), (double)(5.0)));
     }
 }

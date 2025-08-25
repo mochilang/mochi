@@ -1,38 +1,38 @@
 public class Main {
 
     static double capacitor_parallel(double[] capacitors) {
-        double sum_c = 0.0;
-        long i = 0;
-        while (i < capacitors.length) {
-            double c = capacitors[(int)(i)];
-            if (c < 0.0) {
-                throw new RuntimeException(String.valueOf("Capacitor at index " + _p(i) + " has a negative value!"));
+        double sum_c = (double)(0.0);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(capacitors.length))) < 0) {
+            double c_1 = (double)(capacitors[_idx((capacitors).length, ((java.math.BigInteger)(i_1)).longValue())]);
+            if ((double)(c_1) < (double)(0.0)) {
+                throw new RuntimeException(String.valueOf("Capacitor at index " + _p(i_1) + " has a negative value!"));
             }
-            sum_c = sum_c + c;
-            i = i + 1;
+            sum_c = (double)((double)(sum_c) + (double)(c_1));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return sum_c;
+        return (double)(sum_c);
     }
 
     static double capacitor_series(double[] capacitors) {
-        double first_sum = 0.0;
-        long i_1 = 0;
-        while (i_1 < capacitors.length) {
-            double c_1 = capacitors[(int)(i_1)];
-            if (c_1 <= 0.0) {
-                throw new RuntimeException(String.valueOf("Capacitor at index " + _p(i_1) + " has a negative or zero value!"));
+        double first_sum = (double)(0.0);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(capacitors.length))) < 0) {
+            double c_3 = (double)(capacitors[_idx((capacitors).length, ((java.math.BigInteger)(i_3)).longValue())]);
+            if ((double)(c_3) <= (double)(0.0)) {
+                throw new RuntimeException(String.valueOf("Capacitor at index " + _p(i_3) + " has a negative or zero value!"));
             }
-            first_sum = first_sum + 1.0 / c_1;
-            i_1 = i_1 + 1;
+            first_sum = (double)((double)(first_sum) + (double)((double)(1.0) / (double)(c_3)));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return 1.0 / first_sum;
+        return (double)((double)(1.0) / (double)(first_sum));
     }
 
     static void main() {
-        double parallel = capacitor_parallel(((double[])(new double[]{5.71389, 12.0, 3.0})));
-        double series = capacitor_series(((double[])(new double[]{5.71389, 12.0, 3.0})));
+        double parallel = (double)(capacitor_parallel(((double[])(new double[]{(double)(5.71389), (double)(12.0), (double)(3.0)}))));
+        double series_1 = (double)(capacitor_series(((double[])(new double[]{(double)(5.71389), (double)(12.0), (double)(3.0)}))));
         System.out.println(_p(parallel));
-        System.out.println(_p(series));
+        System.out.println(_p(series_1));
     }
     public static void main(String[] args) {
         main();
@@ -51,11 +51,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
-            if (d == Math.rint(d)) return String.valueOf((long) d);
             return String.valueOf(d);
         }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }
