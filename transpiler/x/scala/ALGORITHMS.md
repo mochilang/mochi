@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 960/1077
-Last updated: 2025-08-24 23:17 +0700
+Completed programs: 961/1077
+Last updated: 2025-08-24 23:57 +0700
 
 Checklist:
 
@@ -218,7 +218,7 @@ Checklist:
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 3µs | 3.5 MB |
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 9µs | 3.5 MB |
 | 211 | data_structures/heap/binomial_heap | ✓ | 16µs | 3.5 MB |
-| 212 | data_structures/heap/heap |   |  |  |
+| 212 | data_structures/heap/heap | ✓ | 183.317ms | 3.5 MB |
 | 213 | data_structures/heap/heap_generic | ✓ | 183.317ms | 8.7 MB |
 | 214 | data_structures/heap/max_heap | ✓ | 183.317ms | 8.7 MB |
 | 215 | data_structures/heap/min_heap | ✓ | 183.317ms | 8.7 MB |
