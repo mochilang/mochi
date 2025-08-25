@@ -1,145 +1,116 @@
 public class Main {
-    static double[] heap = new double[0];
-    static int size_1 = 0;
+    static double[] heap = ((double[])(new double[]{(double)(103.0), (double)(9.0), (double)(1.0), (double)(7.0), (double)(11.0), (double)(15.0), (double)(25.0), (double)(201.0), (double)(209.0), (double)(107.0), (double)(5.0)}));
+    static java.math.BigInteger size_1 = null;
     static double m;
 
-    static int parent_index(int child_idx) {
-        if (child_idx > 0) {
-            return ((int)(Math.floorDiv((child_idx - 1), 2)));
+    static java.math.BigInteger parent_index(java.math.BigInteger child_idx) {
+        if (child_idx.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            return new java.math.BigInteger(String.valueOf((child_idx.subtract(java.math.BigInteger.valueOf(1))).divide(java.math.BigInteger.valueOf(2))));
         }
-        return -1;
+        return new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
     }
 
-    static int left_child_idx(int parent_idx) {
-        return 2 * parent_idx + 1;
+    static java.math.BigInteger left_child_idx(java.math.BigInteger parent_idx) {
+        return new java.math.BigInteger(String.valueOf(java.math.BigInteger.valueOf(2).multiply(parent_idx).add(java.math.BigInteger.valueOf(1))));
     }
 
-    static int right_child_idx(int parent_idx) {
-        return 2 * parent_idx + 2;
+    static java.math.BigInteger right_child_idx(java.math.BigInteger parent_idx) {
+        return new java.math.BigInteger(String.valueOf(java.math.BigInteger.valueOf(2).multiply(parent_idx).add(java.math.BigInteger.valueOf(2))));
     }
 
-    static void max_heapify(double[] h, int heap_size, int index) {
-        int largest = index;
-        int left = left_child_idx(index);
-        int right = right_child_idx(index);
-        if (left < heap_size && h[left] > h[largest]) {
-            largest = left;
+    static void max_heapify(double[] h, java.math.BigInteger heap_size, java.math.BigInteger index) {
+        java.math.BigInteger largest = new java.math.BigInteger(String.valueOf(index));
+        java.math.BigInteger left_1 = new java.math.BigInteger(String.valueOf(left_child_idx(new java.math.BigInteger(String.valueOf(index)))));
+        java.math.BigInteger right_1 = new java.math.BigInteger(String.valueOf(right_child_idx(new java.math.BigInteger(String.valueOf(index)))));
+        if (left_1.compareTo(heap_size) < 0 && (double)(h[_idx((h).length, ((java.math.BigInteger)(left_1)).longValue())]) > (double)(h[_idx((h).length, ((java.math.BigInteger)(largest)).longValue())])) {
+            largest = new java.math.BigInteger(String.valueOf(left_1));
         }
-        if (right < heap_size && h[right] > h[largest]) {
-            largest = right;
+        if (right_1.compareTo(heap_size) < 0 && (double)(h[_idx((h).length, ((java.math.BigInteger)(right_1)).longValue())]) > (double)(h[_idx((h).length, ((java.math.BigInteger)(largest)).longValue())])) {
+            largest = new java.math.BigInteger(String.valueOf(right_1));
         }
-        if (largest != index) {
-            double temp = h[index];
-h[index] = h[largest];
-h[largest] = temp;
-            max_heapify(((double[])(h)), heap_size, largest);
+        if (largest.compareTo(index) != 0) {
+            double temp_1 = (double)(h[_idx((h).length, ((java.math.BigInteger)(index)).longValue())]);
+h[(int)(((java.math.BigInteger)(index)).longValue())] = (double)(h[_idx((h).length, ((java.math.BigInteger)(largest)).longValue())]);
+h[(int)(((java.math.BigInteger)(largest)).longValue())] = (double)(temp_1);
+            max_heapify(((double[])(h)), new java.math.BigInteger(String.valueOf(heap_size)), new java.math.BigInteger(String.valueOf(largest)));
         }
     }
 
-    static int build_max_heap(double[] h) {
-        int heap_size = h.length;
-        int i = Math.floorDiv(heap_size, 2) - 1;
-        while (i >= 0) {
-            max_heapify(((double[])(h)), heap_size, i);
-            i = i - 1;
+    static java.math.BigInteger build_max_heap(double[] h) {
+        java.math.BigInteger heap_size = new java.math.BigInteger(String.valueOf(h.length));
+        java.math.BigInteger i_1 = new java.math.BigInteger(String.valueOf(heap_size.divide(java.math.BigInteger.valueOf(2)).subtract(java.math.BigInteger.valueOf(1))));
+        while (i_1.compareTo(java.math.BigInteger.valueOf(0)) >= 0) {
+            max_heapify(((double[])(h)), new java.math.BigInteger(String.valueOf(heap_size)), new java.math.BigInteger(String.valueOf(i_1)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.subtract(java.math.BigInteger.valueOf(1))));
         }
-        return heap_size;
+        return new java.math.BigInteger(String.valueOf(heap_size));
     }
 
-    static double extract_max(double[] h, int heap_size) {
-        double max_value = h[0];
-h[0] = h[heap_size - 1];
-        max_heapify(((double[])(h)), heap_size - 1, 0);
-        return max_value;
+    static double extract_max(double[] h, java.math.BigInteger heap_size) {
+        double max_value = (double)(h[_idx((h).length, 0L)]);
+h[(int)(0L)] = (double)(h[_idx((h).length, ((java.math.BigInteger)(heap_size.subtract(java.math.BigInteger.valueOf(1)))).longValue())]);
+        max_heapify(((double[])(h)), new java.math.BigInteger(String.valueOf(heap_size.subtract(java.math.BigInteger.valueOf(1)))), java.math.BigInteger.valueOf(0));
+        return (double)(max_value);
     }
 
-    static int insert(double[] h, int heap_size, double value) {
-        if (heap_size < h.length) {
-h[heap_size] = value;
+    static java.math.BigInteger insert(double[] h, java.math.BigInteger heap_size, double value) {
+        if (heap_size.compareTo(new java.math.BigInteger(String.valueOf(h.length))) < 0) {
+h[(int)(((java.math.BigInteger)(heap_size)).longValue())] = (double)(value);
         } else {
-            h = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(h), java.util.stream.DoubleStream.of(value)).toArray()));
+            h = ((double[])(appendDouble(h, (double)(value))));
         }
-        heap_size = heap_size + 1;
-        int idx = Math.floorDiv((heap_size - 1), 2);
-        while (idx >= 0) {
-            max_heapify(((double[])(h)), heap_size, idx);
-            idx = Math.floorDiv((idx - 1), 2);
+        heap_size = new java.math.BigInteger(String.valueOf(heap_size.add(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger idx_1 = new java.math.BigInteger(String.valueOf((heap_size.subtract(java.math.BigInteger.valueOf(1))).divide(java.math.BigInteger.valueOf(2))));
+        while (idx_1.compareTo(java.math.BigInteger.valueOf(0)) >= 0) {
+            max_heapify(((double[])(h)), new java.math.BigInteger(String.valueOf(heap_size)), new java.math.BigInteger(String.valueOf(idx_1)));
+            idx_1 = new java.math.BigInteger(String.valueOf((idx_1.subtract(java.math.BigInteger.valueOf(1))).divide(java.math.BigInteger.valueOf(2))));
         }
-        return heap_size;
+        return new java.math.BigInteger(String.valueOf(heap_size));
     }
 
-    static void heap_sort(double[] h, int heap_size) {
-        int size = heap_size;
-        int j = size - 1;
-        while (j > 0) {
-            double temp_1 = h[0];
-h[0] = h[j];
-h[j] = temp_1;
-            size = size - 1;
-            max_heapify(((double[])(h)), size, 0);
-            j = j - 1;
+    static void heap_sort(double[] h, java.math.BigInteger heap_size) {
+        java.math.BigInteger size = new java.math.BigInteger(String.valueOf(heap_size));
+        java.math.BigInteger j_1 = new java.math.BigInteger(String.valueOf(size.subtract(java.math.BigInteger.valueOf(1))));
+        while (j_1.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            double temp_3 = (double)(h[_idx((h).length, 0L)]);
+h[(int)(0L)] = (double)(h[_idx((h).length, ((java.math.BigInteger)(j_1)).longValue())]);
+h[(int)(((java.math.BigInteger)(j_1)).longValue())] = (double)(temp_3);
+            size = new java.math.BigInteger(String.valueOf(size.subtract(java.math.BigInteger.valueOf(1))));
+            max_heapify(((double[])(h)), new java.math.BigInteger(String.valueOf(size)), java.math.BigInteger.valueOf(0));
+            j_1 = new java.math.BigInteger(String.valueOf(j_1.subtract(java.math.BigInteger.valueOf(1))));
         }
     }
 
-    static String heap_to_string(double[] h, int heap_size) {
+    static String heap_to_string(double[] h, java.math.BigInteger heap_size) {
         String s = "[";
-        int i_1 = 0;
-        while (i_1 < heap_size) {
-            s = s + _p(_getd(h, i_1));
-            if (i_1 < heap_size - 1) {
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(heap_size) < 0) {
+            s = s + _p(_getd(h, ((Number)(i_3)).intValue()));
+            if (i_3.compareTo(heap_size.subtract(java.math.BigInteger.valueOf(1))) < 0) {
                 s = s + ", ";
             }
-            i_1 = i_1 + 1;
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
         s = s + "]";
         return s;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            heap = ((double[])(new double[]{103.0, 9.0, 1.0, 7.0, 11.0, 15.0, 25.0, 201.0, 209.0, 107.0, 5.0}));
-            size_1 = build_max_heap(((double[])(heap)));
-            System.out.println(heap_to_string(((double[])(heap)), size_1));
-            m = extract_max(((double[])(heap)), size_1);
-            size_1 = size_1 - 1;
-            System.out.println(_p(m));
-            System.out.println(heap_to_string(((double[])(heap)), size_1));
-            size_1 = insert(((double[])(heap)), size_1, 100.0);
-            System.out.println(heap_to_string(((double[])(heap)), size_1));
-            heap_sort(((double[])(heap)), size_1);
-            System.out.println(heap_to_string(((double[])(heap)), size_1));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        size_1 = new java.math.BigInteger(String.valueOf(build_max_heap(((double[])(heap)))));
+        System.out.println(heap_to_string(((double[])(heap)), new java.math.BigInteger(String.valueOf(size_1))));
+        m = (double)(extract_max(((double[])(heap)), new java.math.BigInteger(String.valueOf(size_1))));
+        size_1 = new java.math.BigInteger(String.valueOf(size_1.subtract(java.math.BigInteger.valueOf(1))));
+        System.out.println(_p(m));
+        System.out.println(heap_to_string(((double[])(heap)), new java.math.BigInteger(String.valueOf(size_1))));
+        size_1 = new java.math.BigInteger(String.valueOf(insert(((double[])(heap)), new java.math.BigInteger(String.valueOf(size_1)), (double)(100.0))));
+        System.out.println(heap_to_string(((double[])(heap)), new java.math.BigInteger(String.valueOf(size_1))));
+        heap_sort(((double[])(heap)), new java.math.BigInteger(String.valueOf(size_1)));
+        System.out.println(heap_to_string(((double[])(heap)), new java.math.BigInteger(String.valueOf(size_1))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -155,10 +126,42 @@ h[j] = temp_1;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
     static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

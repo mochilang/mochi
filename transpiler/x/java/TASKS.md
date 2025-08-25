@@ -1,4 +1,6 @@
-## Progress (2025-08-16 09:25 +0700)
+## Progress (2025-08-24 23:57 +0700)
+- rs transpiler: support function fields (30c348480d)
+
 - swift: handle mixed-type string addition (2727b07680)
 
 - swift: handle mixed-type string addition (2727b07680)
