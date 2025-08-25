@@ -1,4 +1,4 @@
-// Generated 2025-08-17 12:28 +0700
+// Generated 2025-08-25 22:27 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,47 +21,50 @@ let _now () =
 _initNow()
 let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%.10g" f
+    | :? float as f ->
+        if f = floor f then sprintf "%g.0" f else sprintf "%g" f
+    | :? int64 as n -> sprintf "%d" n
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")
          .Replace("|]", "]")
          .Replace("; ", " ")
          .Replace(";", "")
+         .Replace("L", "")
          .Replace("\"", "")
-let _floordiv (a:int) (b:int) : int =
+let _floordiv64 (a:int64) (b:int64) : int64 =
     let q = a / b
     let r = a % b
-    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
+    if r <> 0L && ((a < 0L) <> (b < 0L)) then q - 1L else q
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
-let rec factorial (digit: int) =
-    let mutable __ret : int = Unchecked.defaultof<int>
+let rec factorial (digit: int64) =
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
     let mutable digit = digit
     try
-        __ret <- if (digit = 0) || (digit = 1) then 1 else (digit * (factorial (digit - 1)))
+        __ret <- if (digit = (int64 0)) || (digit = (int64 1)) then (int64 1) else (digit * (factorial (digit - (int64 1))))
         raise Return
         __ret
     with
         | Return -> __ret
-and is_krishnamurthy (n: int) =
+and is_krishnamurthy (n: int64) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable n = n
     try
-        let mutable duplicate: int = n
-        let mutable fact_sum: int = 0
-        while duplicate > 0 do
-            let digit: int = ((duplicate % 10 + 10) % 10)
-            fact_sum <- fact_sum + (factorial (digit))
-            duplicate <- _floordiv (int duplicate) (int 10)
+        let mutable duplicate: int64 = n
+        let mutable fact_sum: int64 = int64 0
+        while duplicate > (int64 0) do
+            let digit: int64 = ((duplicate % (int64 10) + (int64 10)) % (int64 10))
+            fact_sum <- fact_sum + (factorial (int64 digit))
+            duplicate <- _floordiv64 (int64 duplicate) (int64 (int64 10))
         __ret <- fact_sum = n
         raise Return
         __ret
     with
         | Return -> __ret
-ignore (printfn "%s" (_str (is_krishnamurthy (145))))
-ignore (printfn "%s" (_str (is_krishnamurthy (240))))
-ignore (printfn "%s" (_str (is_krishnamurthy (1))))
+ignore (printfn "%s" (_str (is_krishnamurthy (int64 145))))
+ignore (printfn "%s" (_str (is_krishnamurthy (int64 240))))
+ignore (printfn "%s" (_str (is_krishnamurthy (int64 1))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

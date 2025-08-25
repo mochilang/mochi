@@ -1,4 +1,4 @@
-// Generated 2025-08-17 12:28 +0700
+// Generated 2025-08-25 22:27 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -31,112 +31,115 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%.10g" f
+    | :? float as f ->
+        if f = floor f then sprintf "%g.0" f else sprintf "%g" f
+    | :? int64 as n -> sprintf "%d" n
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")
          .Replace("|]", "]")
          .Replace("; ", " ")
          .Replace(";", "")
+         .Replace("L", "")
          .Replace("\"", "")
-let _floordiv (a:int) (b:int) : int =
+let _floordiv64 (a:int64) (b:int64) : int64 =
     let q = a / b
     let r = a % b
-    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
-let rec bubble_sort (xs: int array) =
-    let mutable __ret : int array = Unchecked.defaultof<int array>
+    if r <> 0L && ((a < 0L) <> (b < 0L)) then q - 1L else q
+let rec bubble_sort (xs: int64 array) =
+    let mutable __ret : int64 array = Unchecked.defaultof<int64 array>
     let mutable xs = xs
     try
-        let mutable arr: int array = xs
-        let mutable n: int = Seq.length (arr)
-        let mutable i: int = 0
+        let mutable arr: int64 array = xs
+        let mutable n: int64 = int64 (Seq.length (arr))
+        let mutable i: int64 = int64 0
         while i < n do
-            let mutable j: int = 0
-            while j < ((n - i) - 1) do
-                if (_idx arr (int j)) > (_idx arr (int (j + 1))) then
-                    let tmp: int = _idx arr (int j)
-                    arr.[j] <- _idx arr (int (j + 1))
-                    arr.[(j + 1)] <- tmp
-                j <- j + 1
-            i <- i + 1
+            let mutable j: int64 = int64 0
+            while j < ((n - i) - (int64 1)) do
+                if (_idx arr (int j)) > (_idx arr (int (j + (int64 1)))) then
+                    let tmp: int64 = _idx arr (int j)
+                    arr.[int j] <- _idx arr (int (j + (int64 1)))
+                    arr.[int (j + (int64 1))] <- tmp
+                j <- j + (int64 1)
+            i <- i + (int64 1)
         __ret <- arr
         raise Return
         __ret
     with
         | Return -> __ret
-and factors (num: int) =
-    let mutable __ret : int array = Unchecked.defaultof<int array>
+and factors (num: int64) =
+    let mutable __ret : int64 array = Unchecked.defaultof<int64 array>
     let mutable num = num
     try
-        let mutable values: int array = unbox<int array> [|1|]
-        let mutable i: int = 2
-        while ((int64 i) * (int64 i)) <= (int64 num) do
-            if (((num % i + i) % i)) = 0 then
+        let mutable values: int64 array = Array.map int64 [|1|]
+        let mutable i: int64 = int64 2
+        while (i * i) <= num do
+            if (((num % i + i) % i)) = (int64 0) then
                 values <- Array.append values [|i|]
-                let d: int = _floordiv (int num) (int i)
+                let d: int64 = _floordiv64 (int64 num) (int64 i)
                 if d <> i then
                     values <- Array.append values [|d|]
-            i <- i + 1
+            i <- i + (int64 1)
         __ret <- bubble_sort (values)
         raise Return
         __ret
     with
         | Return -> __ret
-and sum_list (xs: int array) =
-    let mutable __ret : int = Unchecked.defaultof<int>
+and sum_list (xs: int64 array) =
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
     let mutable xs = xs
     try
-        let mutable total: int = 0
-        let mutable i: int = 0
-        while i < (Seq.length (xs)) do
+        let mutable total: int64 = int64 0
+        let mutable i: int64 = int64 0
+        while i < (int64 (Seq.length (xs))) do
             total <- total + (_idx xs (int i))
-            i <- i + 1
+            i <- i + (int64 1)
         __ret <- total
         raise Return
         __ret
     with
         | Return -> __ret
-and abundant (n: int) =
+and abundant (n: int64) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable n = n
     try
-        __ret <- (sum_list (factors (n))) > n
+        __ret <- (sum_list (factors (int64 n))) > n
         raise Return
         __ret
     with
         | Return -> __ret
-and semi_perfect (number: int) =
+and semi_perfect (number: int64) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable number = number
     try
-        if number <= 0 then
+        if number <= (int64 0) then
             __ret <- true
             raise Return
-        let mutable values: int array = factors (number)
+        let mutable values: int64 array = factors (int64 number)
         let mutable possible: bool array = Array.empty<bool>
-        let mutable j: int = 0
+        let mutable j: int64 = int64 0
         while j <= number do
-            possible <- Array.append possible [|(j = 0)|]
-            j <- j + 1
-        let mutable idx: int = 0
-        while idx < (Seq.length (values)) do
-            let v: int = _idx values (int idx)
-            let mutable s: int = number
+            possible <- Array.append possible [|(j = (int64 0))|]
+            j <- j + (int64 1)
+        let mutable idx: int64 = int64 0
+        while idx < (int64 (Seq.length (values))) do
+            let v: int64 = _idx values (int idx)
+            let mutable s: int64 = number
             while s >= v do
                 if _idx possible (int (s - v)) then
-                    possible.[s] <- true
-                s <- s - 1
-            idx <- idx + 1
+                    possible.[int s] <- true
+                s <- s - (int64 1)
+            idx <- idx + (int64 1)
         __ret <- _idx possible (int number)
         raise Return
         __ret
     with
         | Return -> __ret
-and weird (number: int) =
+and weird (number: int64) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable number = number
     try
-        __ret <- (abundant (number)) && ((semi_perfect (number)) = false)
+        __ret <- (abundant (int64 number)) && ((semi_perfect (int64 number)) = false)
         raise Return
         __ret
     with
@@ -144,35 +147,35 @@ and weird (number: int) =
 and run_tests () =
     let mutable __ret : obj = Unchecked.defaultof<obj>
     try
-        if (factors (12)) <> [|1; 2; 3; 4; 6|] then
+        if (factors (int64 12)) <> [|1; 2; 3; 4; 6|] then
             ignore (failwith ("factors 12 failed"))
-        if (factors (1)) <> [|1|] then
+        if (factors (int64 1)) <> [|1|] then
             ignore (failwith ("factors 1 failed"))
-        if (factors (100)) <> [|1; 2; 4; 5; 10; 20; 25; 50|] then
+        if (factors (int64 100)) <> [|1; 2; 4; 5; 10; 20; 25; 50|] then
             ignore (failwith ("factors 100 failed"))
-        if (abundant (0)) <> true then
+        if (abundant (int64 0)) <> true then
             ignore (failwith ("abundant 0 failed"))
-        if (abundant (1)) <> false then
+        if (abundant (int64 1)) <> false then
             ignore (failwith ("abundant 1 failed"))
-        if (abundant (12)) <> true then
+        if (abundant (int64 12)) <> true then
             ignore (failwith ("abundant 12 failed"))
-        if (abundant (13)) <> false then
+        if (abundant (int64 13)) <> false then
             ignore (failwith ("abundant 13 failed"))
-        if (abundant (20)) <> true then
+        if (abundant (int64 20)) <> true then
             ignore (failwith ("abundant 20 failed"))
-        if (semi_perfect (0)) <> true then
+        if (semi_perfect (int64 0)) <> true then
             ignore (failwith ("semi_perfect 0 failed"))
-        if (semi_perfect (1)) <> true then
+        if (semi_perfect (int64 1)) <> true then
             ignore (failwith ("semi_perfect 1 failed"))
-        if (semi_perfect (12)) <> true then
+        if (semi_perfect (int64 12)) <> true then
             ignore (failwith ("semi_perfect 12 failed"))
-        if (semi_perfect (13)) <> false then
+        if (semi_perfect (int64 13)) <> false then
             ignore (failwith ("semi_perfect 13 failed"))
-        if (weird (0)) <> false then
+        if (weird (int64 0)) <> false then
             ignore (failwith ("weird 0 failed"))
-        if (weird (70)) <> true then
+        if (weird (int64 70)) <> true then
             ignore (failwith ("weird 70 failed"))
-        if (weird (77)) <> false then
+        if (weird (int64 77)) <> false then
             ignore (failwith ("weird 77 failed"))
         __ret
     with
@@ -184,14 +187,14 @@ and main () =
         let __mem_start = System.GC.GetTotalMemory(true)
         ignore (run_tests())
         let nums: int array = unbox<int array> [|69; 70; 71|]
-        let mutable i: int = 0
-        while i < (Seq.length (nums)) do
-            let n: int = _idx nums (int i)
-            if weird (n) then
+        let mutable i: int64 = int64 0
+        while i < (int64 (Seq.length (nums))) do
+            let n: int64 = int64 (_idx nums (int i))
+            if weird (int64 n) then
                 ignore (printfn "%s" ((_str (n)) + " is weird."))
             else
                 ignore (printfn "%s" ((_str (n)) + " is not weird."))
-            i <- i + 1
+            i <- i + (int64 1)
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
