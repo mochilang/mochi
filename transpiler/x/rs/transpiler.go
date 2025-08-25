@@ -4800,14 +4800,21 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		outerLocals = localVarStack[len(localVarStack)-2]
 	}
 	caps := collectCaptures(body, params, outerLocals, name)
-	// Skip names that correspond to other top-level functions. Those
-	// functions are tracked in funReturns and should not force the current
-	// function to be treated as a closure.
+	// Skip names that correspond to other top-level or built-in
+	// functions. These are tracked in funReturns and do not require the
+	// generated function to capture any environment. Previously the
+	// filtering logic also checked varTypes/currentParamTypes which could
+	// be populated for certain helpers (e.g. `floor`), mistakenly leaving
+	// them in `caps` and forcing the surrounding function to become a
+	// closure. By removing such names here we ensure pure helper functions
+	// like `round_to` are emitted as normal `fn` items.
 	if len(caps) > 0 {
 		filtered := make([]string, 0, len(caps))
 		for _, c := range caps {
-			if _, ok := funReturns[c]; ok && currentParamTypes[c] == "" && varTypes[c] == "" {
-				continue
+			if _, ok := funReturns[c]; ok {
+				if strings.HasPrefix(varTypes[c], "fn(") || (currentParamTypes[c] == "" && varTypes[c] == "") {
+					continue
+				}
 			}
 			filtered = append(filtered, c)
 		}
@@ -4823,7 +4830,17 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	// (e.g. maths/fibonacci using `fib_recursive_cached_term`). By also
 	// considering `topLevelNonConstLet`, we ensure such functions become
 	// closures and can access surrounding state safely.
-	useClosure := nested || len(caps) > 0 || topLevelNonConstLet
+	// Only force top-level functions into closures when absolutely
+	// necessary.  Previously any program containing a non-constant
+	// top-level `let` would set `topLevelNonConstLet`, causing *all*
+	// subsequent functions to be emitted as closures.  Functions such as
+	// `round_to` in `electronics/electric_power.mochi` then became
+	// closures even though they had no captures, leading to Rust compile
+	// errors when other functions (emitted as normal `fn` items) attempted
+	// to call them.  Restrict the `topLevelNonConstLet` behaviour to the
+	// `main` function so other top-level functions remain regular `fn`
+	// declarations unless they actually capture outer variables.
+	useClosure := nested || len(caps) > 0 || (topLevelNonConstLet && fn.Name == "main")
 	// Always emit the top-level `main` function as a closure so it can
 	// reference other generated closures. This avoids Rust compile errors
 	// when `main` needs to capture variables such as other function

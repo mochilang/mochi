@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-24 23:47 GMT+7
+Last updated: 2025-08-25 08:47 GMT+7
 
 ## Algorithms Golden Test Checklist (822/1077)
 | Index | Name | Status | Duration | Memory |
@@ -323,56 +323,56 @@ Last updated: 2025-08-24 23:47 GMT+7
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 48µs | 2.2 MB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 68µs | 1.9 MB |
 | 316 | dynamic_programming/knapsack | ✓ | 86µs | 2.1 MB |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 112µs | 2.2 MB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 60µs | 2.0 MB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 79µs | 2.0 MB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 64µs | 2.1 MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 101µs | 2.1 MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 186µs | 2.0 MB |
 | 320 | dynamic_programming/longest_increasing_subsequence | ✓ |  | 2.0 MB |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 80µs | 2.0 MB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 50µs | 2.1 MB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 114µs | 2.2 MB |
-| 324 | dynamic_programming/matrix_chain_multiplication | ✓ |  | 2.0 MB |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 108µs | 2.1 MB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 40µs | 1.9 MB |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 31µs | 1.8 MB |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 50µs | 2.0 MB |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 292µs | 2.1 MB |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 169µs | 2.1 MB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 34µs | 1.8 MB |
-| 332 | dynamic_programming/minimum_partition | ✓ | 202µs | 2.1 MB |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 52µs | 1.8 MB |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 76µs | 2.1 MB |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 38µs | 1.9 MB |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 88µs | 2.1 MB |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 93µs | 2.2 MB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 90µs | 2.2 MB |
-| 339 | dynamic_programming/range_sum_query | ✓ | 47µs | 2.0 MB |
-| 340 | dynamic_programming/regex_match | ✓ | 87µs | 2.0 MB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 56µs | 2.1 MB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 93µs | 2.2 MB |
-| 343 | dynamic_programming/subset_generation | ✓ | 73µs | 2.1 MB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 56µs | 2.1 MB |
-| 345 | dynamic_programming/trapped_water | ✓ | 53µs | 2.0 MB |
-| 346 | dynamic_programming/tribonacci | ✓ | 20µs | 2.0 MB |
-| 347 | dynamic_programming/viterbi | ✓ | 184µs | 2.2 MB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 127µs | 2.1 MB |
-| 349 | dynamic_programming/word_break | ✓ | 81µs | 2.1 MB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 100µs | 2.1 MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 119µs | 2.0 MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 198µs | 2.1 MB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ |  | 2.1 MB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 132µs | 2.1 MB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 54µs | 2.0 MB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 34µs | 2.1 MB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 236µs | 2.0 MB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 371µs | 2.0 MB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 312µs | 1.9 MB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 33µs | 2.1 MB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 417µs | 2.1 MB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 54µs | 2.1 MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 104µs | 2.1 MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 87µs | 2.1 MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 201µs | 2.1 MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 188µs | 2.0 MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 121µs | 2.1 MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 121µs | 2.1 MB |
+| 340 | dynamic_programming/regex_match | ✓ | 97µs | 1.9 MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 99µs | 2.1 MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 143µs | 2.2 MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 95µs | 2.0 MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 107µs | 2.3 MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 80µs | 2.1 MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 79µs | 2.2 MB |
+| 347 | dynamic_programming/viterbi | ✓ | 133µs | 2.2 MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 134µs | 2.1 MB |
+| 349 | dynamic_programming/word_break | ✓ | 74µs | 2.1 MB |
 | 350 | electronics/apparent_power | ✓ |  | 1.8 MB |
-| 351 | electronics/builtin_voltage | ✓ | 44µs | 2.1 MB |
-| 352 | electronics/capacitor_equivalence | ✓ | 36µs | 2.0 MB |
-| 353 | electronics/carrier_concentration | ✓ | 70µs | 2.0 MB |
-| 354 | electronics/charging_capacitor | ✓ | 66µs | 2.0 MB |
-| 355 | electronics/charging_inductor | ✓ | 58µs | 2.0 MB |
-| 356 | electronics/circular_convolution | ✓ | 217µs | 2.1 MB |
-| 357 | electronics/coulombs_law | ✓ | 79µs | 2.1 MB |
-| 358 | electronics/electric_conductivity | ✓ | 64µs | 2.0 MB |
-| 359 | electronics/electric_power | ✓ | 40µs | 2.1 MB |
-| 360 | electronics/electrical_impedance | ✓ | 47µs | 2.0 MB |
-| 361 | electronics/ic_555_timer | ✓ | 92µs | 2.1 MB |
-| 362 | electronics/ind_reactance | ✓ | 122µs | 2.1 MB |
-| 363 | electronics/ohms_law | ✓ | 109µs | 2.1 MB |
-| 364 | electronics/real_and_reactive_power | ✓ | 54µs | 2.2 MB |
-| 365 | electronics/resistor_color_code | ✓ | 70µs | 2.1 MB |
-| 366 | electronics/resistor_equivalence | ✓ | 51µs | 2.0 MB |
+| 351 | electronics/builtin_voltage | ✓ | 44µs | 2.2 MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 30µs | 2.3 MB |
+| 353 | electronics/carrier_concentration | ✓ | 106µs | 2.1 MB |
+| 354 | electronics/charging_capacitor | ✓ | 77µs | 2.1 MB |
+| 355 | electronics/charging_inductor | ✓ | 55µs | 2.0 MB |
+| 356 | electronics/circular_convolution | ✓ | 106µs | 2.0 MB |
+| 357 | electronics/coulombs_law | ✓ | 62µs | 1.9 MB |
+| 358 | electronics/electric_conductivity | ✓ | 67µs | 2.2 MB |
+| 359 | electronics/electric_power | ✓ | 193µs | 2.2 MB |
+| 360 | electronics/electrical_impedance | ✓ | 52µs | 2.0 MB |
+| 361 | electronics/ic_555_timer | ✓ | 47µs | 2.0 MB |
+| 362 | electronics/ind_reactance | ✓ | 49µs | 2.0 MB |
+| 363 | electronics/ohms_law | ✓ | 35µs | 2.1 MB |
+| 364 | electronics/real_and_reactive_power | ✓ | 57µs | 2.0 MB |
+| 365 | electronics/resistor_color_code | ✓ | 36µs | 2.0 MB |
+| 366 | electronics/resistor_equivalence | ✓ | 63µs | 2.0 MB |
 | 367 | electronics/resonant_frequency | ✓ | 51µs | 2.0 MB |
 | 368 | electronics/wheatstone_bridge | ✓ | 57µs | 2.0 MB |
 | 369 | file_transfer/receive_file | ✓ | 32µs | 2.2 MB |
