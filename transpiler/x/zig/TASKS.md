@@ -1,3 +1,68 @@
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-25 16:46 +0700)
+- Commit d690280cd1: zig: handle constant lists and simple sum types
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-24 22:16 +0700)
 - Commit b9a682dda0: rm stale path_sum error
 - Generated Zig for 98/105 programs
