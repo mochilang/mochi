@@ -1252,11 +1252,21 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		if dims > 1 {
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "size_t *%s_lens = malloc(%d * sizeof(size_t));\n", tmp, len(lst.Elems))
+			if dims > 2 {
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "size_t **%s_lens_lens = malloc(%d * sizeof(size_t*));\n", tmp, len(lst.Elems))
+			}
 			for i, e := range lst.Elems {
 				writeIndent(w, indent+1)
 				fmt.Fprintf(w, "%s_lens[%d] = ", tmp, i)
 				emitLenExpr(w, e)
 				io.WriteString(w, ";\n")
+				if dims > 2 {
+					writeIndent(w, indent+1)
+					fmt.Fprintf(w, "%s_lens_lens[%d] = ", tmp, i)
+					emitLensExpr(w, e)
+					io.WriteString(w, ";\n")
+				}
 			}
 		}
 		writeIndent(w, indent+1)
@@ -1266,6 +1276,10 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "%s_data[%d] = ", tmp, i)
 			e.emitExpr(w)
 			io.WriteString(w, ";\n")
+		}
+		if dims > 2 {
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "%s_lens_lens = %s_lens_lens;\n", currentFuncName, tmp)
 		}
 		if dims > 1 {
 			writeIndent(w, indent+1)
@@ -1503,6 +1517,28 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 				typ = "long long[]"
 			}
 		}
+	} else if typ == "long long[][]" {
+		if lst, ok := d.Value.(*ListLit); ok && len(lst.Elems) > 0 {
+			allInt := true
+			for _, e := range lst.Elems {
+				if ll, ok2 := e.(*ListLit); ok2 {
+					for _, inner := range ll.Elems {
+						if inferExprType(currentEnv, inner) != "long long" {
+							allInt = false
+							break
+						}
+					}
+				} else if inferExprType(currentEnv, e) != "long long" {
+					allInt = false
+				}
+				if !allInt {
+					break
+				}
+			}
+			if !allInt {
+				typ = "double[][]"
+			}
+		}
 	}
 	if typ == "" || typ == "int" {
 		typ = "long long"
@@ -1654,6 +1690,21 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t **%s_lens_lens = %s_lens_lens_init;\n", d.Name, d.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_lens_lens_len = %d;\n", d.Name, len(lst.Elems))
+			return
+		} else if call, ok := d.Value.(*CallExpr); ok {
+			fmt.Fprintf(w, "%s ***%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", d.Name, call.Func)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, call.Func)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t **%s_lens_lens = %s_lens_lens;\n", d.Name, call.Func)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_lens_len = %s_len;\n", d.Name, call.Func)
 			return
 		} else if fe, ok := d.Value.(*FieldExpr); ok {
 			fmt.Fprintf(w, "%s ***%s = ", base, d.Name)
@@ -5207,8 +5258,12 @@ func (p *Program) Emit() []byte {
 	for _, fn := range p.Functions {
 		if strings.HasSuffix(fn.Return, "[]") {
 			fmt.Fprintf(&buf, "size_t %s_len;\n", fn.Name)
-			if strings.HasSuffix(fn.Return, "[][]") {
+			dims := strings.Count(fn.Return, "[]")
+			if dims >= 2 {
 				fmt.Fprintf(&buf, "size_t *%s_lens;\n", fn.Name)
+			}
+			if dims >= 3 {
+				fmt.Fprintf(&buf, "size_t **%s_lens_lens;\n", fn.Name)
 			}
 		}
 	}
