@@ -316,7 +316,11 @@ func evalIntExpr(e Expr) (int, bool) {
 					return l * r, true
 				case "/":
 					if r != 0 {
-						return l / r, true
+						q := l / r
+						if (l%r != 0) && ((l < 0) != (r < 0)) {
+							q--
+						}
+						return q, true
 					}
 				case "%":
 					if r != 0 {
@@ -1434,6 +1438,20 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, " %s ", b.Op)
 	b.Right.emit(w)
 	fmt.Fprint(w, ")")
+}
+
+// IntFloorDivExpr represents floor division for integers.
+type IntFloorDivExpr struct {
+	Left  Expr
+	Right Expr
+}
+
+func (b *IntFloorDivExpr) emit(w io.Writer) {
+	io.WriteString(w, "func() int { a := ")
+	b.Left.emit(w)
+	io.WriteString(w, "; b := ")
+	b.Right.emit(w)
+	io.WriteString(w, "; q := a / b; r := a % b; if (r != 0) && ((r < 0) != (b < 0)) { q-- }; return q }()")
 }
 
 // foldPow10 returns the computed value of left*pow10(int) if the pattern
@@ -5983,7 +6001,11 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 						}
 					}
 					if newExpr == nil {
-						newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+						if ops[i].Op == "/" && isIntType(typesList[i]) && isIntType(typesList[i+1]) {
+							newExpr = &IntFloorDivExpr{Left: left, Right: right}
+						} else {
+							newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+						}
 					}
 				}
 				operands[i] = newExpr
