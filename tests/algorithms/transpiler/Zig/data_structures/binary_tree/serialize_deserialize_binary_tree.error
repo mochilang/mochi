@@ -1,0 +1,3 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/serialize_deserialize_binary_tree.zig:97:54: error: expected type '?*serialize_deserialize_binary_tree.Node', found '@TypeOf(.{})'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/serialize_deserialize_binary_tree.zig:82:28: error: expected type '?*serialize_deserialize_binary_tree.Node', found '@TypeOf(.{})'

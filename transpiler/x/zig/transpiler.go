@@ -2147,12 +2147,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 							break
 						}
 					}
-					if funDepth == 0 && blockDepth == 0 && allConst && !strings.HasPrefix(elem, "[]") {
-						kw = "var"
-						v.Value = nil
-						fmt.Fprintf(w, "&[_]%s{}", elem)
-						globalInits = append(globalInits, &AssignStmt{Name: v.Name, Value: ll})
-					} else if allConst {
+					if allConst {
 						if strings.HasPrefix(elem, "[]") {
 							io.WriteString(w, "@constCast(")
 							ll.emit(w)
@@ -6422,15 +6417,16 @@ func stmtsUse(name string, stmts []Stmt) bool {
 
 func compileTypeDecl(td *parser.TypeDecl) error {
 	if len(td.Variants) > 0 {
-		if td.Name == "Tree" && len(td.Variants) == 2 && td.Variants[1].Name == "Node" {
-			typeAliases["Tree"] = "?*Node"
-			fields := make([]Field, len(td.Variants[1].Fields))
-			for i, f := range td.Variants[1].Fields {
+		if len(td.Variants) == 2 && len(td.Variants[0].Fields) == 0 && len(td.Variants[1].Fields) > 0 {
+			second := td.Variants[1]
+			typeAliases[td.Name] = "?*" + second.Name
+			fields := make([]Field, len(second.Fields))
+			for i, f := range second.Fields {
 				fields[i] = Field{Name: toSnakeCase(f.Name), Type: toZigType(f.Type)}
 			}
-			structDefs["Node"] = &StructDef{Name: "Node", Fields: fields}
+			structDefs[second.Name] = &StructDef{Name: second.Name, Fields: fields}
 			if len(aliasStack) > 0 {
-				aliasStack[0]["Empty"] = "null"
+				aliasStack[0][td.Variants[0].Name] = "null"
 			}
 			return nil
 		}
