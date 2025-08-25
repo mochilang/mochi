@@ -109,6 +109,9 @@ func sanitizeName(name string) string {
 	case "map":
 		// avoid clashing with Racket's built-in map function
 		return "map_"
+	case "sort":
+		// avoid clashing with Racket's built-in sort function
+		return "sort_"
 	case "sublist":
 		// avoid clashing with helper `sublist` defined in the prelude
 		return "sublist_"
