@@ -132,6 +132,8 @@ const helperAppend = `
 def _append(lst, v):
     if lst is None:
         lst = []
+    elif not isinstance(lst, list):
+        lst = list(lst)
     lst.append(v)
     return lst
 `
