@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-08-24 17:04 GMT+7
+Last updated: 2025-08-25 08:39 GMT+7
 
 ## Rosetta Golden Test Checklist (487/491)
 | Index | Name | Status | Duration | Memory |

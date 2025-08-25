@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-25 00:06 GMT+7
+Last updated: 2025-08-25 08:39 GMT+7
 
 ## Algorithms Golden Test Checklist (1007/1077)
 | Index | Name | Status | Duration | Memory |
@@ -323,7 +323,7 @@ Last updated: 2025-08-25 00:06 GMT+7
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 558.0µs | 12.57MB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 133.0µs | 13.50MB |
 | 316 | dynamic_programming/knapsack | ✓ | 770.0µs | 14.25MB |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 26.0µs | 12.80MB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 53.0µs | 0B |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 660.0µs | 12.48MB |
 | 319 | dynamic_programming/longest_common_substring | ✓ | 68.0µs | 12.37MB |
 | 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 62.0µs | 12.43MB |
