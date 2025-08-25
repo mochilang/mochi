@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (906/1077) - Last updated 2025-08-25 16:08 +0700:
+Checklist of programs that currently transpile and run (906/1077) - Last updated 2025-08-25 16:46 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -271,10 +271,10 @@ Checklist of programs that currently transpile and run (906/1077) - Last updated
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 656us | 1.6 MB |
 | 265 | data_structures/trie/radix_tree |  |  |  |
 | 266 | data_structures/trie/trie |  |  |  |
-| 267 | digital_image_processing/change_brightness | ✓ | 285us | 1.4 MB |
-| 268 | digital_image_processing/change_contrast | ✓ | 153us | 1.5 MB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 146us | 1.4 MB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 211us | 1.6 MB |
+| 267 | digital_image_processing/change_brightness | ✓ | 323us | 1.5 MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 461us | 1.4 MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 218us | 1.5 MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 217us | 1.6 MB |
 | 271 | digital_image_processing/edge_detection/canny |  |  |  |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 847us | 1.6 MB |
 | 273 | digital_image_processing/filters/convolve | ✓ | 513us | 1.6 MB |

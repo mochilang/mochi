@@ -3192,6 +3192,26 @@ func (m *MapLit) emitExpr(w io.Writer) {
 		fmt.Fprintf(w, "MapIL %s = { %s_keys, %s_vals, %s_lens, %d, %d }; %s;})", tmp, tmp, tmp, tmp, len(m.Items), len(m.Items)+16, tmp)
 		return
 	}
+	if keyT == "const char*" && strings.HasSuffix(valT, "[]") {
+		tmp := fmt.Sprintf("__map%d", tempCounter)
+		tempCounter++
+		fmt.Fprintf(w, "({const char** %s_keys = malloc(%d * sizeof(char*)); ", tmp, len(m.Items))
+		fmt.Fprintf(w, "void **%s_vals = malloc(%d * sizeof(void*)); ", tmp, len(m.Items))
+		fmt.Fprintf(w, "size_t *%s_lens = malloc(%d * sizeof(size_t)); ", tmp, len(m.Items))
+		for i, it := range m.Items {
+			fmt.Fprintf(w, "%s_keys[%d] = ", tmp, i)
+			it.Key.emitExpr(w)
+			io.WriteString(w, "; ")
+			fmt.Fprintf(w, "%s_vals[%d] = ", tmp, i)
+			it.Value.emitExpr(w)
+			io.WriteString(w, "; ")
+			fmt.Fprintf(w, "%s_lens[%d] = ", tmp, i)
+			emitLenExpr(w, it.Value)
+			io.WriteString(w, "; ")
+		}
+		fmt.Fprintf(w, "MapSL %s = { %s_keys, %s_vals, %s_lens, %d, %d }; %s;})", tmp, tmp, tmp, tmp, len(m.Items), len(m.Items)+16, tmp)
+		return
+	}
 	if keyT == "const char*" && (valT == "int" || valT == "long long") {
 		tmp := fmt.Sprintf("__map%d", tempCounter)
 		tempCounter++
