@@ -1,5 +1,5 @@
-{badmatch [[true false false false false] 
-           [false false false false false] 
-           [false false false false false] 
-           [false false false false false] 
-           [false false false false false]]}
+{badmatch,[[true,false,false,false,false],
+           [false,false,false,false,false],
+           [false,false,false,false,false],
+           [false,false,false,false,false],
+           [false,false,false,false,false]]}
