@@ -32,6 +32,8 @@ var typeDecls []*TypeDeclStmt
 var needsBreaks bool
 var needsJSON bool
 var needsBigInt bool
+var needsFloorDiv bool
+var needsFloorMod bool
 var replaceContinue bool
 var loopCounter int
 var breakStack []string
@@ -2143,9 +2145,9 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    ArrayBuffer(addrs, null)\n")
 		buf.WriteString("  }\n\n")
 	}
-	if needsBigRat {
-		buf.WriteString("  class BigRat(var num: BigInt, var den: BigInt) {\n")
-		buf.WriteString("    def +(o: BigRat) = BigRat(num * o.den + o.num * den, den * o.den)\n")
+        if needsBigRat {
+                buf.WriteString("  class BigRat(var num: BigInt, var den: BigInt) {\n")
+                buf.WriteString("    def +(o: BigRat) = BigRat(num * o.den + o.num * den, den * o.den)\n")
 		buf.WriteString("    def -(o: BigRat) = BigRat(num * o.den - o.num * den, den * o.den)\n")
 		buf.WriteString("    def *(o: BigRat) = BigRat(num * o.num, den * o.den)\n")
 		buf.WriteString("    def /(o: BigRat) = BigRat(num * o.den, den * o.num)\n")
@@ -2160,10 +2162,25 @@ func Emit(p *Program) []byte {
 		buf.WriteString("  def _bigrat(n: BigInt, d: BigInt = BigInt(1)) = BigRat(n, d)\n")
 		buf.WriteString("  def _bigrat(r: BigRat): BigRat = r\n")
 		buf.WriteString("  def num(r: BigRat): BigInt = r.num\n")
-		buf.WriteString("  def denom(r: BigRat): BigInt = r.den\n\n")
-	}
-	if needsJSON {
-		buf.WriteString("  def toJson(value: Any, indent: Int = 0): String = value match {\n")
+                buf.WriteString("  def denom(r: BigRat): BigInt = r.den\n\n")
+        }
+       if needsFloorDiv {
+               buf.WriteString("  private def _div(a: BigInt, b: BigInt): BigInt = {\n")
+               buf.WriteString("    var q = a / b\n")
+               buf.WriteString("    var r = a % b\n")
+               buf.WriteString("    if (r != 0 && ((r < 0) != (b < 0))) q -= 1\n")
+               buf.WriteString("    q\n")
+               buf.WriteString("  }\n\n")
+       }
+       if needsFloorMod {
+               buf.WriteString("  private def _mod(a: BigInt, b: BigInt): BigInt = {\n")
+               buf.WriteString("    var r = a % b\n")
+               buf.WriteString("    if (r != 0 && ((r < 0) != (b < 0))) r += b\n")
+               buf.WriteString("    r\n")
+               buf.WriteString("  }\n\n")
+       }
+        if needsJSON {
+                buf.WriteString("  def toJson(value: Any, indent: Int = 0): String = value match {\n")
 		buf.WriteString("    case m: scala.collection.Map[_, _] =>\n")
 		buf.WriteString("      val items = ListMap(m.toSeq.sortBy(_._1.toString): _*).toSeq.map{ case (k,v) => \"  \"*(indent+1)+\"\\\"\"+k.toString+\"\\\": \"+toJson(v, indent+1) }\n")
 		buf.WriteString("      \"{\\n\"+items.mkString(\",\\n\")+\"\\n\"+\"  \"*indent+\"}\"\n")
@@ -3099,21 +3116,27 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					right = &CastExpr{Value: right, Type: "String"}
 				}
 			}
-			if op == "%" {
-				lt := inferTypeWithEnv(left, env)
-				rt := inferTypeWithEnv(right, env)
-				if lt != "Double" && lt != "Float" && rt != "Double" && rt != "Float" {
-					if lt == "BigInt" || rt == "BigInt" || isBigIntExpr(left) || isBigIntExpr(right) {
-						ex = &BinaryExpr{Left: left, Op: "%", Right: right}
-					} else {
-						ex = &CallExpr{Fn: &Name{Name: "Math.floorMod"}, Args: []Expr{left, right}}
-					}
-				} else {
-					ex = &BinaryExpr{Left: left, Op: op, Right: right}
-				}
-			} else {
-				ex = &BinaryExpr{Left: left, Op: op, Right: right}
-			}
+                       if op == "/" {
+                               lt := inferTypeWithEnv(left, env)
+                               rt := inferTypeWithEnv(right, env)
+                               if lt != "Double" && lt != "Float" && rt != "Double" && rt != "Float" {
+                                       needsFloorDiv = true
+                                       ex = &CallExpr{Fn: &Name{Name: "_div"}, Args: []Expr{left, right}}
+                               } else {
+                                       ex = &BinaryExpr{Left: left, Op: op, Right: right}
+                               }
+                       } else if op == "%" {
+                               lt := inferTypeWithEnv(left, env)
+                               rt := inferTypeWithEnv(right, env)
+                               if lt != "Double" && lt != "Float" && rt != "Double" && rt != "Float" {
+                                       needsFloorMod = true
+                                       ex = &CallExpr{Fn: &Name{Name: "_mod"}, Args: []Expr{left, right}}
+                               } else {
+                                       ex = &BinaryExpr{Left: left, Op: op, Right: right}
+                               }
+                       } else {
+                               ex = &BinaryExpr{Left: left, Op: op, Right: right}
+                       }
 		}
 		operands[i] = ex
 		operands = append(operands[:i+1], operands[i+2:]...)
