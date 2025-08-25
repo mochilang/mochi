@@ -2980,8 +2980,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.TypeOfExpr(a, env)
 				switch t.(type) {
 				case types.ListType:
-					usesStrings = true
-					ex = &ListStringExpr{List: ex}
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StructType); ok {
+							needStrings = true
+							usesJSON = true
+							ex = &StructJSONExpr{Value: ex}
+						} else {
+							usesStrings = true
+							ex = &ListStringExpr{List: ex}
+						}
+					}
 				case types.StructType:
 					needStrings = true
 					usesJSON = true
