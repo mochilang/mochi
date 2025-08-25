@@ -1,6 +1,14 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -57,8 +65,8 @@ fun matrix_chain_order(arr: MutableList<Int>): MatrixChainResult {
             _listSet(m[a]!!, b, 1000000000)
             var c: Int = (a).toInt()
             while (c < b) {
-                var cost: Int = (((((m[a]!!) as MutableList<Int>))[c]!! + (((m[c + 1]!!) as MutableList<Int>))[b]!!) + ((arr[a - 1]!! * arr[c]!!) * arr[b]!!)).toInt()
-                if (cost < (((m[a]!!) as MutableList<Int>))[b]!!) {
+                var cost: Int = ((((m[a]!!) as MutableList<Int>)[c]!! + ((m[c + 1]!!) as MutableList<Int>)[b]!!) + ((arr[a - 1]!! * arr[c]!!) * arr[b]!!)).toInt()
+                if (cost < ((m[a]!!) as MutableList<Int>)[b]!!) {
                     _listSet(m[a]!!, b, cost)
                     _listSet(s[a]!!, b, c)
                 }
@@ -73,10 +81,10 @@ fun matrix_chain_order(arr: MutableList<Int>): MatrixChainResult {
 
 fun optimal_parenthesization(s: MutableList<MutableList<Int>>, i: Int, j: Int): String {
     if (i == j) {
-        return "A" + i.toString()
+        return "A" + _numToStr(i)
     } else {
-        var left: String = optimal_parenthesization(s, i, (((s[i]!!) as MutableList<Int>))[j]!!)
-        var right: String = optimal_parenthesization(s, (((s[i]!!) as MutableList<Int>))[j]!! + 1, j)
+        var left: String = optimal_parenthesization(s, i, ((s[i]!!) as MutableList<Int>)[j]!!)
+        var right: String = optimal_parenthesization(s, ((s[i]!!) as MutableList<Int>)[j]!! + 1, j)
         return ((("( " + left) + " ") + right) + " )"
     }
 }
@@ -87,7 +95,7 @@ fun user_main(): Unit {
     var res: MatrixChainResult = matrix_chain_order(arr)
     var m: MutableList<MutableList<Int>> = res.matrix
     var s: MutableList<MutableList<Int>> = res.solution
-    println("No. of Operation required: " + ((((m[1]!!) as MutableList<Int>))[n - 1]!!).toString())
+    println("No. of Operation required: " + _numToStr(((m[1]!!) as MutableList<Int>)[n - 1]!!))
     var seq: String = optimal_parenthesization(s, 1, n - 1)
     println(seq)
 }

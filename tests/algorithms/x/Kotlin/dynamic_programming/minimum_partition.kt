@@ -1,4 +1,12 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -60,9 +68,9 @@ fun find_min(numbers: MutableList<Int>): Int {
     while (i <= n) {
         j = 1
         while (j <= s) {
-            _listSet(dp[i]!!, j, (((dp[i - 1]!!) as MutableList<Boolean>))[j]!!)
+            _listSet(dp[i]!!, j, ((dp[i - 1]!!) as MutableList<Boolean>)[j]!!)
             if (numbers[i - 1]!! <= j) {
-                if ((((((dp[i - 1]!!) as MutableList<Boolean>))[j - numbers[i - 1]!!]!!) as Boolean)) {
+                if ((((dp[i - 1]!!) as MutableList<Boolean>)[j - numbers[i - 1]!!]!!) as Boolean) {
                     _listSet(dp[i]!!, j, true)
                 }
             }
@@ -71,9 +79,9 @@ fun find_min(numbers: MutableList<Int>): Int {
         i = i + 1
     }
     var diff: Int = (0).toInt()
-    j = s / 2
+    j = Math.floorDiv(s, 2)
     while (j >= 0) {
-        if ((((((dp[n]!!) as MutableList<Boolean>))[j]!!) as Boolean)) {
+        if ((((dp[n]!!) as MutableList<Boolean>)[j]!!) as Boolean) {
             diff = s - (2 * j)
             break
         }
@@ -87,18 +95,18 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(find_min(mutableListOf(1, 2, 3, 4, 5)).toString())
-        println(find_min(mutableListOf(5, 5, 5, 5, 5)).toString())
-        println(find_min(mutableListOf(5, 5, 5, 5)).toString())
-        println(find_min(mutableListOf(3)).toString())
-        println(find_min(mutableListOf<Int>()).toString())
-        println(find_min(mutableListOf(1, 2, 3, 4)).toString())
-        println(find_min(mutableListOf(0, 0, 0, 0)).toString())
-        println(find_min(mutableListOf(0 - 1, 0 - 5, 5, 1)).toString())
-        println(find_min(mutableListOf(9, 9, 9, 9, 9)).toString())
-        println(find_min(mutableListOf(1, 5, 10, 3)).toString())
-        println(find_min(mutableListOf(0 - 1, 0, 1)).toString())
-        println(find_min(mutableListOf(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)).toString())
+        println(_numToStr(find_min(mutableListOf(1, 2, 3, 4, 5))))
+        println(_numToStr(find_min(mutableListOf(5, 5, 5, 5, 5))))
+        println(_numToStr(find_min(mutableListOf(5, 5, 5, 5))))
+        println(_numToStr(find_min(mutableListOf(3))))
+        println(_numToStr(find_min(mutableListOf<Int>())))
+        println(_numToStr(find_min(mutableListOf(1, 2, 3, 4))))
+        println(_numToStr(find_min(mutableListOf(0, 0, 0, 0))))
+        println(_numToStr(find_min(mutableListOf(0 - 1, 0 - 5, 5, 1))))
+        println(_numToStr(find_min(mutableListOf(9, 9, 9, 9, 9))))
+        println(_numToStr(find_min(mutableListOf(1, 5, 10, 3))))
+        println(_numToStr(find_min(mutableListOf(0 - 1, 0, 1))))
+        println(_numToStr(find_min(mutableListOf(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

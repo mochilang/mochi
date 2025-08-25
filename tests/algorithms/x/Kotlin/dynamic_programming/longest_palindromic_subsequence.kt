@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun _sliceStr(s: String, start: Int, end: Int): String {
     val st = if (start < 0) 0 else start
     val en = if (end > s.length) s.length else end
@@ -7,6 +9,12 @@ fun _sliceStr(s: String, start: Int, end: Int): String {
 }
 
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -74,15 +82,15 @@ fun longest_palindromic_subsequence(s: String): Int {
             var a_char: String = _sliceStr(s, i - 1, i)
             var b_char: String = _sliceStr(rev, j - 1, j)
             if (a_char == b_char) {
-                _listSet(dp[i]!!, j, 1 + (((dp[i - 1]!!) as MutableList<Int>))[j - 1]!!)
+                _listSet(dp[i]!!, j, 1 + ((dp[i - 1]!!) as MutableList<Int>)[j - 1]!!)
             } else {
-                _listSet(dp[i]!!, j, max_int((((dp[i - 1]!!) as MutableList<Int>))[j]!!, (((dp[i]!!) as MutableList<Int>))[j - 1]!!))
+                _listSet(dp[i]!!, j, max_int(((dp[i - 1]!!) as MutableList<Int>)[j]!!, ((dp[i]!!) as MutableList<Int>)[j - 1]!!))
             }
             j = j + 1
         }
         i = i + 1
     }
-    return (((dp[n]!!) as MutableList<Int>))[m]!!
+    return ((dp[n]!!) as MutableList<Int>)[m]!!
 }
 
 fun main() {
@@ -90,8 +98,8 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(longest_palindromic_subsequence("bbbab").toString())
-        println(longest_palindromic_subsequence("bbabcbcab").toString())
+        println(_numToStr(longest_palindromic_subsequence("bbbab")))
+        println(_numToStr(longest_palindromic_subsequence("bbabcbcab")))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

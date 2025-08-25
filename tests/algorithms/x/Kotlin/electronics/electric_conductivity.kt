@@ -1,4 +1,12 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -68,9 +76,9 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println((r1.kind + " ") + r1.value.toString())
-        println((r2.kind + " ") + r2.value.toString())
-        println((r3.kind + " ") + r3.value.toString())
+        println((r1.kind + " ") + _numToStr(r1.value))
+        println((r2.kind + " ") + _numToStr(r2.value))
+        println((r3.kind + " ") + _numToStr(r3.value))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

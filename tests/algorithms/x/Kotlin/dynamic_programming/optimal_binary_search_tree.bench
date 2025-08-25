@@ -13,4 +13,4 @@ The cost of optimal BST for given tree nodes is 324.
 25 is the right child of key 20.
 37 is the right child of key 25.
 42 is the right child of key 37.
-{"duration_us":23278, "memory_bytes":125640, "name":"main"}
+{"duration_us":20685, "memory_bytes":126768, "name":"main"}

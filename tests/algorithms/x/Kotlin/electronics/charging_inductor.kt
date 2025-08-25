@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 var _nowSeed = 0L
@@ -38,7 +40,7 @@ fun expApprox(x: Double): Double {
     var term: Double = 1.0
     var n: Int = (1).toInt()
     while (n < 20) {
-        term = (term * x) / ((n.toDouble()))
+        term = (term * x) / (n.toDouble())
         sum = sum + term
         n = n + 1
     }
@@ -46,11 +48,11 @@ fun expApprox(x: Double): Double {
 }
 
 fun floor(x: Double): Double {
-    var i: Int = ((x.toInt())).toInt()
-    if (((i.toDouble())) > x) {
+    var i: Int = (x.toInt()).toInt()
+    if ((i.toDouble()) > x) {
         i = i - 1
     }
-    return (i.toDouble())
+    return i.toDouble()
 }
 
 fun pow10(n: Int): Double {

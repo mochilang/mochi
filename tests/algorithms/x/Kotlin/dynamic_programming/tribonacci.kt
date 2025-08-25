@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {

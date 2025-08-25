@@ -1,3 +1,3 @@
 No. of Operation required: 15125
 ( ( A1 ( A2 A3 ) ) ( ( A4 A5 ) A6 ) )
-{"duration_us":28379, "memory_bytes":126184, "name":"main"}
+{"duration_us":21560, "memory_bytes":127312, "name":"main"}

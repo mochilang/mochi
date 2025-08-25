@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 var _nowSeed = 0L

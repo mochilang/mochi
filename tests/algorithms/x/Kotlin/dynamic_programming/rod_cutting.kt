@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
@@ -48,7 +50,7 @@ fun bottom_up_cut_rod(n: Int, prices: MutableList<Int>): Int {
         if (i == 0) {
             max_rev = run { val _tmp = max_rev.toMutableList(); _tmp.add(0); _tmp }
         } else {
-            max_rev = run { val _tmp = max_rev.toMutableList(); _tmp.add(((((0).toLong() - 2147483648L).toInt()).toInt())); _tmp }
+            max_rev = run { val _tmp = max_rev.toMutableList(); _tmp.add((((0).toLong() - 2147483648L).toInt()).toInt()); _tmp }
         }
         i = i + 1
     }

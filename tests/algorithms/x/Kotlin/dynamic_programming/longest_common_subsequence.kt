@@ -1,4 +1,12 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -55,12 +63,12 @@ fun longest_common_subsequence(x: String, y: String): LcsResult {
         var j: Int = (1).toInt()
         while (j <= n) {
             if (x[i - 1].toString() == y[j - 1].toString()) {
-                _listSet(dp[i]!!, j, (((dp[i - 1]!!) as MutableList<Int>))[j - 1]!! + 1)
+                _listSet(dp[i]!!, j, ((dp[i - 1]!!) as MutableList<Int>)[j - 1]!! + 1)
             } else {
-                if ((((dp[i - 1]!!) as MutableList<Int>))[j]!! > (((dp[i]!!) as MutableList<Int>))[j - 1]!!) {
-                    _listSet(dp[i]!!, j, (((dp[i - 1]!!) as MutableList<Int>))[j]!!)
+                if (((dp[i - 1]!!) as MutableList<Int>)[j]!! > ((dp[i]!!) as MutableList<Int>)[j - 1]!!) {
+                    _listSet(dp[i]!!, j, ((dp[i - 1]!!) as MutableList<Int>)[j]!!)
                 } else {
-                    _listSet(dp[i]!!, j, (((dp[i]!!) as MutableList<Int>))[j - 1]!!)
+                    _listSet(dp[i]!!, j, ((dp[i]!!) as MutableList<Int>)[j - 1]!!)
                 }
             }
             j = j + 1
@@ -76,14 +84,14 @@ fun longest_common_subsequence(x: String, y: String): LcsResult {
             i2 = i2 - 1
             j2 = j2 - 1
         } else {
-            if ((((dp[i2 - 1]!!) as MutableList<Int>))[j2]!! >= (((dp[i2]!!) as MutableList<Int>))[j2 - 1]!!) {
+            if (((dp[i2 - 1]!!) as MutableList<Int>)[j2]!! >= ((dp[i2]!!) as MutableList<Int>)[j2 - 1]!!) {
                 i2 = i2 - 1
             } else {
                 j2 = j2 - 1
             }
         }
     }
-    return LcsResult(length = (((dp[m]!!) as MutableList<Int>))[n]!!, sequence = seq)
+    return LcsResult(length = ((dp[m]!!) as MutableList<Int>)[n]!!, sequence = seq)
 }
 
 fun main() {
@@ -91,7 +99,7 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println((("len = " + res.length.toString()) + ", sub-sequence = ") + res.sequence)
+        println((("len = " + _numToStr(res.length)) + ", sub-sequence = ") + res.sequence)
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

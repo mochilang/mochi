@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 var _nowSeed = 0L
@@ -32,7 +34,7 @@ fun ceil_index(v: MutableList<Int>, left: Int, right: Int, key: Int): Int {
     var l: Int = (left).toInt()
     var r: Int = (right).toInt()
     while ((r - l) > 1) {
-        var middle: Int = ((l + r) / 2).toInt()
+        var middle: Int = (Math.floorDiv((l + r), 2)).toInt()
         if (v[middle]!! >= key) {
             r = middle
         } else {

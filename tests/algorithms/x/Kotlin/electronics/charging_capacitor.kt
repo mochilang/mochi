@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 var _nowSeed = 0L
@@ -37,11 +39,11 @@ fun expApprox(x: Double): Double {
     var sum: Double = 1.0
     var n: Int = (1).toInt()
     while (n < 30) {
-        term = (term * y) / ((n.toDouble()))
+        term = (term * y) / (n.toDouble())
         sum = sum + term
         n = n + 1
     }
-    if ((is_neg as Boolean)) {
+    if (is_neg as Boolean) {
         return 1.0 / sum
     }
     return sum
@@ -54,8 +56,8 @@ fun round3(x: Double): Double {
     } else {
         scaled = scaled - 0.5
     }
-    var scaled_int: Int = ((scaled.toInt())).toInt()
-    return ((scaled_int.toDouble())) / 1000.0
+    var scaled_int: Int = (scaled.toInt()).toInt()
+    return (scaled_int.toDouble()) / 1000.0
 }
 
 fun charging_capacitor(source_voltage: Double, resistance: Double, capacitance: Double, time_sec: Double): Double {

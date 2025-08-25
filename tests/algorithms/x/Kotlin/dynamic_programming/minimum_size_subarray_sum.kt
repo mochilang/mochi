@@ -1,5 +1,13 @@
 import java.math.BigInteger
 
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -67,10 +75,10 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(minimum_subarray_sum(7, mutableListOf(2, 3, 1, 2, 4, 3)).toString())
-        println(minimum_subarray_sum(7, mutableListOf(2, 3, 0 - 1, 2, 4, 0 - 3)).toString())
-        println(minimum_subarray_sum(11, mutableListOf(1, 1, 1, 1, 1, 1, 1, 1)).toString())
-        println(minimum_subarray_sum(0, mutableListOf(1, 2, 3)).toString())
+        println(_numToStr(minimum_subarray_sum(7, mutableListOf(2, 3, 1, 2, 4, 3))))
+        println(_numToStr(minimum_subarray_sum(7, mutableListOf(2, 3, 0 - 1, 2, 4, 0 - 3))))
+        println(_numToStr(minimum_subarray_sum(11, mutableListOf(1, 1, 1, 1, 1, 1, 1, 1))))
+        println(_numToStr(minimum_subarray_sum(0, mutableListOf(1, 2, 3))))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

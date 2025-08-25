@@ -1,3 +1,11 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 var _nowSeed = 0L
@@ -32,7 +40,7 @@ fun capacitor_parallel(capacitors: MutableList<Double>): Double {
     while (i < capacitors.size) {
         var c: Double = capacitors[i]!!
         if (c < 0.0) {
-            panic(("Capacitor at index " + i.toString()) + " has a negative value!")
+            panic(("Capacitor at index " + _numToStr(i)) + " has a negative value!")
             return 0.0
         }
         sum_c = sum_c + c
@@ -47,7 +55,7 @@ fun capacitor_series(capacitors: MutableList<Double>): Double {
     while (i < capacitors.size) {
         var c: Double = capacitors[i]!!
         if (c <= 0.0) {
-            panic(("Capacitor at index " + i.toString()) + " has a negative or zero value!")
+            panic(("Capacitor at index " + _numToStr(i)) + " has a negative or zero value!")
             return 0.0
         }
         first_sum = first_sum + (1.0 / c)
@@ -59,8 +67,8 @@ fun capacitor_series(capacitors: MutableList<Double>): Double {
 fun user_main(): Unit {
     var parallel: Double = capacitor_parallel(mutableListOf(5.71389, 12.0, 3.0))
     var series: Double = capacitor_series(mutableListOf(5.71389, 12.0, 3.0))
-    println(parallel.toString())
-    println(series.toString())
+    println(_numToStr(parallel))
+    println(_numToStr(series))
 }
 
 fun main() {

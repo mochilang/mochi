@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 var _nowSeed = 0L
@@ -51,9 +53,9 @@ fun longest_common_substring(text1: String, text2: String): String {
         var jj: Int = (1).toInt()
         while (jj <= n) {
             if (text1.substring(ii - 1, ii) == text2.substring(jj - 1, jj)) {
-                _listSet(dp[ii]!!, jj, 1 + (((dp[ii - 1]!!) as MutableList<Int>))[jj - 1]!!)
-                if ((((dp[ii]!!) as MutableList<Int>))[jj]!! > max_len) {
-                    max_len = (((dp[ii]!!) as MutableList<Int>))[jj]!!
+                _listSet(dp[ii]!!, jj, 1 + ((dp[ii - 1]!!) as MutableList<Int>)[jj - 1]!!)
+                if (((dp[ii]!!) as MutableList<Int>)[jj]!! > max_len) {
+                    max_len = ((dp[ii]!!) as MutableList<Int>)[jj]!!
                     end_pos = ii
                 }
             }

@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 var _nowSeed = 0L
@@ -60,16 +62,16 @@ fun is_sum_subset(arr: MutableList<Int>, required_sum: Int): Boolean {
         j = 1
         while (j <= required_sum) {
             if (arr[i - 1]!! > j) {
-                _listSet(subset[i]!!, j, (((subset[i - 1]!!) as MutableList<Boolean>))[j]!!)
+                _listSet(subset[i]!!, j, ((subset[i - 1]!!) as MutableList<Boolean>)[j]!!)
             }
             if (arr[i - 1]!! <= j) {
-                _listSet(subset[i]!!, j, (((((subset[i - 1]!!) as MutableList<Boolean>))[j]!! || (((subset[i - 1]!!) as MutableList<Boolean>))[j - arr[i - 1]!!]!!) as Boolean))
+                _listSet(subset[i]!!, j, (((subset[i - 1]!!) as MutableList<Boolean>)[j]!! || ((subset[i - 1]!!) as MutableList<Boolean>)[j - arr[i - 1]!!]!!) as Boolean)
             }
             j = j + 1
         }
         i = i + 1
     }
-    return (((subset[arr_len]!!) as MutableList<Boolean>))[required_sum]!!
+    return ((subset[arr_len]!!) as MutableList<Boolean>)[required_sum]!!
 }
 
 fun main() {

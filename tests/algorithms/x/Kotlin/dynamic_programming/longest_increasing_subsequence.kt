@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _sliceList(lst: MutableList<T>, start: Int, end: Int): MutableList<T> {
     val st = if (start < 0) 0 else start
     val en = if (end > lst.size) lst.size else end
@@ -62,7 +64,7 @@ fun longest_subsequence(xs: MutableList<Int>): MutableList<Int> {
             var temp_array: MutableList<Int> = _sliceList(xs, i, n)
             temp_array = longest_subsequence(temp_array)
             if (_len(temp_array) > longest_subseq.size) {
-                longest_subseq = (temp_array as MutableList<Int>)
+                longest_subseq = temp_array as MutableList<Int>
             }
         } else {
             i = i + 1

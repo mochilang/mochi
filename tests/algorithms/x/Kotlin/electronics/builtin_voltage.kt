@@ -1,4 +1,12 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/electronics"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
+
+fun _numToStr(v: Number): String {
+    val d = v.toDouble()
+    val i = d.toLong()
+    return if (d == i.toDouble()) i.toString() else d.toString()
+}
 
 var _nowSeed = 0L
 var _nowSeeded = false
@@ -45,7 +53,7 @@ fun ln_series(x: Double): Double {
     var sum: Double = 0.0
     var n: Int = (1).toInt()
     while (n <= 19) {
-        sum = sum + (term / ((n.toDouble())))
+        sum = sum + (term / (n.toDouble()))
         term = (term * t) * t
         n = n + 2
     }
@@ -63,7 +71,7 @@ fun ln(x: Double): Double {
         y = y * 10.0
         k = k - 1
     }
-    return ln_series(y) + (((k.toDouble())) * ln_series(10.0))
+    return ln_series(y) + ((k.toDouble()) * ln_series(10.0))
 }
 
 fun builtin_voltage(donor_conc: Double, acceptor_conc: Double, intrinsic_conc: Double): Double {
@@ -82,7 +90,7 @@ fun builtin_voltage(donor_conc: Double, acceptor_conc: Double, intrinsic_conc: D
     if (acceptor_conc <= intrinsic_conc) {
         panic("Acceptor concentration should be greater than intrinsic concentration")
     }
-    return ((BOLTZMANN * TEMPERATURE) * ln((donor_conc * acceptor_conc) / (intrinsic_conc * intrinsic_conc))) / ELECTRON_VOLT
+    return ((BOLTZMANN * TEMPERATURE) * kotlin.math.ln((donor_conc * acceptor_conc) / (intrinsic_conc * intrinsic_conc))) / ELECTRON_VOLT
 }
 
 fun main() {
@@ -90,7 +98,7 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(builtin_voltage(pow10(17), pow10(17), pow10(10)).toString())
+        println(_numToStr(builtin_voltage(pow10(17), pow10(17), pow10(10))))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

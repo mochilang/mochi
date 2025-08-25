@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
 fun _sliceStr(s: String, start: Int, end: Int): String {
@@ -60,7 +62,7 @@ fun is_match(s: String, p: String): Boolean {
     var j: Int = (1).toInt()
     while (j <= m) {
         if (_sliceStr(p, j - 1, j) == "*") {
-            _listSet(dp[0]!!, j, (((dp[0]!!) as MutableList<Boolean>))[j - 1]!!)
+            _listSet(dp[0]!!, j, ((dp[0]!!) as MutableList<Boolean>)[j - 1]!!)
         }
         j = j + 1
     }
@@ -71,10 +73,10 @@ fun is_match(s: String, p: String): Boolean {
             var pc: String = _sliceStr(p, j2 - 1, j2)
             var sc: String = _sliceStr(s, i - 1, i)
             if ((pc == sc) || (pc == "?")) {
-                _listSet(dp[i]!!, j2, (((dp[i - 1]!!) as MutableList<Boolean>))[j2 - 1]!!)
+                _listSet(dp[i]!!, j2, ((dp[i - 1]!!) as MutableList<Boolean>)[j2 - 1]!!)
             } else {
                 if (pc == "*") {
-                    if ((((dp[i - 1]!!) as MutableList<Boolean>))[j2]!! || (((dp[i]!!) as MutableList<Boolean>))[j2 - 1]!!) {
+                    if (((dp[i - 1]!!) as MutableList<Boolean>)[j2]!! || ((dp[i]!!) as MutableList<Boolean>)[j2 - 1]!!) {
                         _listSet(dp[i]!!, j2, true)
                     }
                 }
@@ -83,11 +85,11 @@ fun is_match(s: String, p: String): Boolean {
         }
         i = i + 1
     }
-    return (((dp[n]!!) as MutableList<Boolean>))[m]!!
+    return ((dp[n]!!) as MutableList<Boolean>)[m]!!
 }
 
 fun print_bool(b: Boolean): Unit {
-    if ((b as Boolean)) {
+    if (b as Boolean) {
         println(true)
     } else {
         println(false)

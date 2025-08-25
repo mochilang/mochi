@@ -1,3 +1,5 @@
+val _dataDir = "/workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming"
+
 fun panic(msg: String): Nothing { throw RuntimeException(msg) }
 
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
@@ -30,9 +32,9 @@ fun toJson(v: Any?): String = when (v) {
 
 var observations: MutableList<String> = mutableListOf("normal", "cold", "dizzy")
 var states: MutableList<String> = mutableListOf("Healthy", "Fever")
-var start_p: MutableMap<String, Double> = (mutableMapOf<String, Double>("Healthy" to (0.6), "Fever" to (0.4)) as MutableMap<String, Double>)
-var trans_p: MutableMap<String, MutableMap<String, Double>> = (mutableMapOf<String, MutableMap<String, Double>>("Healthy" to (mutableMapOf<String, Double>("Healthy" to (0.7), "Fever" to (0.3))), "Fever" to (mutableMapOf<String, Double>("Healthy" to (0.4), "Fever" to (0.6)))) as MutableMap<String, MutableMap<String, Double>>)
-var emit_p: MutableMap<String, MutableMap<String, Double>> = (mutableMapOf<String, MutableMap<String, Double>>("Healthy" to (mutableMapOf<String, Double>("normal" to (0.5), "cold" to (0.4), "dizzy" to (0.1))), "Fever" to (mutableMapOf<String, Double>("normal" to (0.1), "cold" to (0.3), "dizzy" to (0.6)))) as MutableMap<String, MutableMap<String, Double>>)
+var start_p: MutableMap<String, Double> = mutableMapOf<String, Double>("Healthy" to (0.6), "Fever" to (0.4)) as MutableMap<String, Double>
+var trans_p: MutableMap<String, MutableMap<String, Double>> = mutableMapOf<String, MutableMap<String, Double>>("Healthy" to (mutableMapOf<String, Double>("Healthy" to (0.7), "Fever" to (0.3))), "Fever" to (mutableMapOf<String, Double>("Healthy" to (0.4), "Fever" to (0.6)))) as MutableMap<String, MutableMap<String, Double>>
+var emit_p: MutableMap<String, MutableMap<String, Double>> = mutableMapOf<String, MutableMap<String, Double>>("Healthy" to (mutableMapOf<String, Double>("normal" to (0.5), "cold" to (0.4), "dizzy" to (0.1))), "Fever" to (mutableMapOf<String, Double>("normal" to (0.1), "cold" to (0.3), "dizzy" to (0.6)))) as MutableMap<String, MutableMap<String, Double>>
 var result: MutableList<String> = viterbi(observations, states, start_p, trans_p, emit_p)
 fun key(state: String, obs: String): String {
     return (state + "|") + obs
@@ -48,7 +50,7 @@ fun viterbi(observations: MutableList<String>, states: MutableList<String>, star
     var i: Int = (0).toInt()
     while (i < states.size) {
         var state: String = states[i]!!
-        (probs)[key(state, first_obs)] = (start_p)[state] as Double * ((((emit_p)[state] as MutableMap<String, Double>) as MutableMap<String, Double>))[first_obs] as Double
+        (probs)[key(state, first_obs)] = (start_p)[state] as Double * (((emit_p)[state] as MutableMap<String, Double>) as MutableMap<String, Double>)[first_obs] as Double
         (ptrs)[key(state, first_obs)] = ""
         i = i + 1
     }
@@ -65,7 +67,7 @@ fun viterbi(observations: MutableList<String>, states: MutableList<String>, star
                 var state0: String = states[k]!!
                 var obs0: String = observations[t - 1]!!
                 var prob_prev: Double = (probs)[key(state0, obs0)] as Double
-                var prob: Double = (prob_prev * ((((trans_p)[state0] as MutableMap<String, Double>) as MutableMap<String, Double>))[state] as Double) * ((((emit_p)[state] as MutableMap<String, Double>) as MutableMap<String, Double>))[obs] as Double
+                var prob: Double = (prob_prev * (((trans_p)[state0] as MutableMap<String, Double>) as MutableMap<String, Double>)[state] as Double) * (((emit_p)[state] as MutableMap<String, Double>) as MutableMap<String, Double>)[obs] as Double
                 if (prob > max_prob) {
                     max_prob = prob
                     prev_state = state0
