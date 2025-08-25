@@ -1,13 +1,6 @@
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/randomized_heap.erl:180:446: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
-%  180|             Nodes_tmp = lists:sublist(erlang:get('nodes'), R1_3) ++ [(lists:sublist(lists:nth(R1_3 + 1, erlang:get('nodes')), "left") ++ [maps:get("right", (case erlang:is_map(erlang:get('nodes')) of true -> maps:get(R1_3, erlang:get('nodes'), nil); _ -> case R1_3 < 0 of true -> mochi_nth(erlang:length(erlang:get('nodes')) + R1_3 + 1, erlang:get('nodes')); _ -> mochi_nth(R1_3 + 1, erlang:get('nodes')) end end), nil)] ++ lists:nthtail("left" + 1, lists:nth(R1_3 + 1, erlang:get('nodes'))))] ++ lists:nthtail(R1_3 + 1, erlang:get('nodes')),
-%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/randomized_heap.erl:182:174: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
-%  182|             Nodes_tmp_2 = lists:sublist(erlang:get('nodes'), R1_3) ++ [(lists:sublist(lists:nth(R1_3 + 1, erlang:get('nodes')), "right") ++ [Tmp_3] ++ lists:nthtail("right" + 1, lists:nth(R1_3 + 1, erlang:get('nodes'))))] ++ lists:nthtail(R1_3 + 1, erlang:get('nodes')),
-%     |                                                                                                                                                                              ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/randomized_heap.erl:189:456: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
-%  189|         Nodes_tmp_4 = lists:sublist(erlang:get('nodes'), R1_3) ++ [(lists:sublist(lists:nth(R1_3 + 1, erlang:get('nodes')), "left") ++ [merge(maps:get("left", (case erlang:is_map(erlang:get('nodes')) of true -> maps:get(R1_3, erlang:get('nodes'), nil); _ -> case R1_3 < 0 of true -> mochi_nth(erlang:length(erlang:get('nodes')) + R1_3 + 1, erlang:get('nodes')); _ -> mochi_nth(R1_3 + 1, erlang:get('nodes')) end end), nil), R2_3)] ++ lists:nthtail("left" + 1, lists:nth(R1_3 + 1, erlang:get('nodes'))))] ++ lists:nthtail(R1_3 + 1, erlang:get('nodes')),
-%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^
-
-function_clause
+[1 1 2 3 7]
+[-1 0 1]
+1
+3
+0
+0

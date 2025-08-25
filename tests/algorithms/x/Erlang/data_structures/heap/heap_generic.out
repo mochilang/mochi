@@ -1,6 +1,6 @@
-/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/heap_generic.erl:307:23: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
-%  307|             H_tmp_9 = element(2, H_res_9),
-%     |                       ^
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/heap/heap_generic.erl:301:20: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  301|             H_29 = element(2, H_res_9),
+%     |                    ^
 
 [7 nil]
 [7 nil]
