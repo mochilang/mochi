@@ -1,15 +1,15 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 1034/1077
-Last updated: 2025-08-25 21:42 +0700
+Last updated: 2025-08-25 22:27 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:------:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 318.0µs | 3.82MB |
-| 2 | backtracking/all_permutations | ✓ | 669.0µs | 3.78MB |
-| 3 | backtracking/all_subsequences | ✓ | 202.0µs | 3.59MB |
+| 1 | backtracking/all_combinations | ✓ | 301.0µs | 3.73MB |
+| 2 | backtracking/all_permutations | ✓ | 761.0µs | 3.77MB |
+| 3 | backtracking/all_subsequences | ✓ | 270.0µs | 3.70MB |
 | 4 | backtracking/coloring | ✓ | 249.0µs | 3.63MB |
 | 5 | backtracking/combination_sum | ✓ | 585.0µs | 3.69MB |
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 272.0µs | 3.57MB |
@@ -675,7 +675,7 @@ Checklist:
 | 666 | maths/special_numbers/carmichael_number | ✓ | 693.0µs | 3.55MB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 519.0µs | 3.60MB |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 253.0µs | 3.46MB |
-| 669 | maths/special_numbers/happy_number | ✓ | 215.0µs | 3.47MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 158.0µs | 3.45MB |
 | 670 | maths/special_numbers/harshad_numbers | ✓ | 591.0µs | 3.44MB |
 | 671 | maths/special_numbers/hexagonal_number | ✓ | 186.0µs | 3.42MB |
 | 672 | maths/special_numbers/krishnamurthy_number | ✓ | 227.0µs | 3.58MB |
