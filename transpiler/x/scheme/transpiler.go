@@ -48,6 +48,11 @@ var needSHA256 bool
 var needToi bool
 var benchMain bool
 var dataDir string
+// SetDataDir overrides the directory used to resolve relative file paths
+// for programs that need to read external data files at runtime.
+// Tests can update this to point to fixture directories before calling
+// Transpile.
+func SetDataDir(dir string) { dataDir = dir }
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
