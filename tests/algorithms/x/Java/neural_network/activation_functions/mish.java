@@ -9,69 +9,69 @@ public class Main {
         }
         double term_1 = (double)(1.0);
         double sum_1 = (double)(1.0);
-        long n_1 = 1L;
-        while ((long)(n_1) < 30L) {
+        java.math.BigInteger n_1 = java.math.BigInteger.valueOf(1);
+        while (n_1.compareTo(java.math.BigInteger.valueOf(30)) < 0) {
             term_1 = (double)((double)((double)(term_1) * (double)(y_1)) / (double)((((Number)(n_1)).doubleValue())));
             sum_1 = (double)((double)(sum_1) + (double)(term_1));
-            n_1 = (long)((long)(n_1) + 1L);
+            n_1 = new java.math.BigInteger(String.valueOf(n_1.add(java.math.BigInteger.valueOf(1))));
         }
         if (neg) {
-            return (double)(1.0) / (double)(sum_1);
+            return (double)((double)(1.0) / (double)(sum_1));
         }
-        return sum_1;
+        return (double)(sum_1);
     }
 
     static double ln_series(double x) {
         double t = (double)((double)(((double)(x) - (double)(1.0))) / (double)(((double)(x) + (double)(1.0))));
         double term_3 = (double)(t);
         double acc_1 = (double)(0.0);
-        long n_3 = 1L;
-        while ((long)(n_3) <= 19L) {
+        java.math.BigInteger n_3 = java.math.BigInteger.valueOf(1);
+        while (n_3.compareTo(java.math.BigInteger.valueOf(19)) <= 0) {
             acc_1 = (double)((double)(acc_1) + (double)((double)(term_3) / (double)((((Number)(n_3)).doubleValue()))));
             term_3 = (double)((double)((double)(term_3) * (double)(t)) * (double)(t));
-            n_3 = (long)((long)(n_3) + 2L);
+            n_3 = new java.math.BigInteger(String.valueOf(n_3.add(java.math.BigInteger.valueOf(2))));
         }
-        return (double)(2.0) * (double)(acc_1);
+        return (double)((double)(2.0) * (double)(acc_1));
     }
 
     static double ln(double x) {
         double y_2 = (double)(x);
-        long k_1 = 0L;
+        java.math.BigInteger k_1 = java.math.BigInteger.valueOf(0);
         while ((double)(y_2) >= (double)(10.0)) {
             y_2 = (double)((double)(y_2) / (double)(10.0));
-            k_1 = (long)((long)(k_1) + 1L);
+            k_1 = new java.math.BigInteger(String.valueOf(k_1.add(java.math.BigInteger.valueOf(1))));
         }
         while ((double)(y_2) < (double)(1.0)) {
             y_2 = (double)((double)(y_2) * (double)(10.0));
-            k_1 = (long)((long)(k_1) - 1L);
+            k_1 = new java.math.BigInteger(String.valueOf(k_1.subtract(java.math.BigInteger.valueOf(1))));
         }
-        return (double)(ln_series((double)(y_2))) + (double)((double)((((Number)(k_1)).doubleValue())) * (double)(ln_series((double)(10.0))));
+        return (double)((double)(ln_series((double)(y_2))) + (double)((double)((((Number)(k_1)).doubleValue())) * (double)(ln_series((double)(10.0)))));
     }
 
     static double softplus(double x) {
-        return ln((double)((double)(1.0) + (double)(exp_approx((double)(x)))));
+        return (double)(Math.log((double)(1.0) + (double)(exp_approx((double)(x)))));
     }
 
     static double tanh_approx(double x) {
-        return (double)(((double)(2.0) / (double)(((double)(1.0) + (double)(exp_approx((double)((double)(-2.0) * (double)(x)))))))) - (double)(1.0);
+        return (double)((double)(((double)(2.0) / (double)(((double)(1.0) + (double)(exp_approx((double)((double)(-2.0) * (double)(x)))))))) - (double)(1.0));
     }
 
     static double[] mish(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(vector.length)) {
-            double x_1 = (double)(vector[(int)((long)(i_1))]);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(vector.length))) < 0) {
+            double x_1 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_1)).longValue())]);
             double sp_1 = (double)(softplus((double)(x_1)));
             double y_4 = (double)((double)(x_1) * (double)(tanh_approx((double)(sp_1))));
             result = ((double[])(appendDouble(result, (double)(y_4))));
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((double[])(result));
     }
 
     static void main() {
-        double[] v1 = ((double[])(new double[]{2.3, 0.6, -2.0, -3.8}));
-        double[] v2_1 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
+        double[] v1 = ((double[])(new double[]{(double)(2.3), (double)(0.6), (double)(-2.0), (double)(-3.8)}));
+        double[] v2_1 = ((double[])(new double[]{(double)(-9.2), (double)(-0.3), (double)(0.45), (double)(-4.56)}));
         System.out.println(_p(mish(((double[])(v1)))));
         System.out.println(_p(mish(((double[])(v2_1)))));
     }
@@ -128,10 +128,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
             return String.valueOf(d);
         }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

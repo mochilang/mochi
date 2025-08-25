@@ -3,34 +3,34 @@ public class Main {
 
     static String[] slice_without_last(String[] xs) {
         String[] res = ((String[])(new String[]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)((long)(xs.length) - 1L)) {
-            res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(xs[(int)((long)(i_1))])).toArray(String[]::new)));
-            i_1 = (long)((long)(i_1) + 1L);
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(xs.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
+            res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(xs[_idx((xs).length, ((java.math.BigInteger)(i_1)).longValue())])).toArray(String[]::new)));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return res;
+        return ((String[])(res));
     }
 
     static boolean is_balanced(String s) {
         String[] stack = ((String[])(new String[]{}));
-        long i_3 = 0L;
-        while ((long)(i_3) < (long)(_runeLen(s))) {
-            String symbol_1 = _substr(s, (int)((long)(i_3)), (int)((long)((long)(i_3) + 1L)));
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(_runeLen(s)))) < 0) {
+            String symbol_1 = _substr(s, (int)(((java.math.BigInteger)(i_3)).longValue()), (int)(((java.math.BigInteger)(i_3.add(java.math.BigInteger.valueOf(1)))).longValue()));
             if (OPEN_TO_CLOSED.containsKey(symbol_1)) {
                 stack = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(symbol_1)).toArray(String[]::new)));
             } else             if ((symbol_1.equals(")")) || (symbol_1.equals("]")) || (symbol_1.equals("}"))) {
-                if ((long)(stack.length) == 0L) {
+                if (new java.math.BigInteger(String.valueOf(stack.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
                     return false;
                 }
-                String top_1 = stack[(int)((long)((long)(stack.length) - 1L))];
+                String top_1 = stack[_idx((stack).length, ((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(stack.length)).subtract(java.math.BigInteger.valueOf(1)))).longValue())];
                 if (!(((String)(OPEN_TO_CLOSED).get(top_1)).equals(symbol_1))) {
                     return false;
                 }
                 stack = ((String[])(slice_without_last(((String[])(stack)))));
             }
-            i_3 = (long)((long)(i_3) + 1L);
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return (long)(stack.length) == 0L;
+        return new java.math.BigInteger(String.valueOf(stack.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0;
     }
 
     static void main() {
@@ -52,8 +52,38 @@ public class Main {
         System.out.println(is_balanced("Life is a bowl of che}{ies."));
     }
     public static void main(String[] args) {
-        OPEN_TO_CLOSED = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("(", ")"), java.util.Map.entry("[", "]"), java.util.Map.entry("{", "}")))));
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            OPEN_TO_CLOSED = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>() {{ put("(", ")"); put("[", "]"); put("{", "}"); }}));
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {
@@ -68,5 +98,9 @@ public class Main {
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

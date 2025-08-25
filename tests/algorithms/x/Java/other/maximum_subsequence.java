@@ -1,29 +1,63 @@
 public class Main {
 
-    static long max_int(long a, long b) {
-        if ((long)(a) >= (long)(b)) {
-            return a;
+    static java.math.BigInteger max_int(java.math.BigInteger a, java.math.BigInteger b) {
+        if (a.compareTo(b) >= 0) {
+            return new java.math.BigInteger(String.valueOf(a));
         } else {
-            return b;
+            return new java.math.BigInteger(String.valueOf(b));
         }
     }
 
-    static long max_subsequence_sum(long[] nums) {
-        if ((long)(nums.length) == 0L) {
+    static java.math.BigInteger max_subsequence_sum(java.math.BigInteger[] nums) {
+        if (new java.math.BigInteger(String.valueOf(nums.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
             throw new RuntimeException(String.valueOf("input sequence should not be empty"));
         }
-        long ans_1 = (long)(nums[(int)(0L)]);
-        long i_1 = 1L;
-        while ((long)(i_1) < (long)(nums.length)) {
-            long num_1 = (long)(nums[(int)((long)(i_1))]);
-            long extended_1 = (long)((long)(ans_1) + (long)(num_1));
-            ans_1 = (long)(max_int((long)(max_int((long)(ans_1), (long)(extended_1))), (long)(num_1)));
-            i_1 = (long)((long)(i_1) + 1L);
+        java.math.BigInteger ans_1 = new java.math.BigInteger(String.valueOf(nums[_idx((nums).length, 0L)]));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(1);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(nums.length))) < 0) {
+            java.math.BigInteger num_1 = new java.math.BigInteger(String.valueOf(nums[_idx((nums).length, ((java.math.BigInteger)(i_1)).longValue())]));
+            java.math.BigInteger extended_1 = new java.math.BigInteger(String.valueOf(ans_1.add(num_1)));
+            ans_1 = new java.math.BigInteger(String.valueOf(max_int(new java.math.BigInteger(String.valueOf(max_int(new java.math.BigInteger(String.valueOf(ans_1)), new java.math.BigInteger(String.valueOf(extended_1))))), new java.math.BigInteger(String.valueOf(num_1)))));
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return ans_1;
+        return new java.math.BigInteger(String.valueOf(ans_1));
     }
     public static void main(String[] args) {
-        System.out.println(max_subsequence_sum(((long[])(new long[]{1, 2, 3, 4, -2}))));
-        System.out.println(max_subsequence_sum(((long[])(new long[]{-2, -3, -1, -4, -6}))));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(max_subsequence_sum(((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(1), java.math.BigInteger.valueOf(2), java.math.BigInteger.valueOf(3), java.math.BigInteger.valueOf(4), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2)).negate()))}))));
+            System.out.println(max_subsequence_sum(((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(2)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(3)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(4)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(6)).negate()))}))));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

@@ -3,40 +3,40 @@ public class Main {
     static double exp_approx(double x) {
         double sum = (double)(1.0);
         double term_1 = (double)(1.0);
-        long i_1 = 1L;
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(1);
         double absx_1 = (double)((double)(x) < (double)(0.0) ? -x : x);
-        while ((long)(i_1) <= 20L) {
+        while (i_1.compareTo(java.math.BigInteger.valueOf(20)) <= 0) {
             term_1 = (double)((double)((double)(term_1) * (double)(absx_1)) / (double)((((Number)(i_1)).doubleValue())));
             sum = (double)((double)(sum) + (double)(term_1));
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
         if ((double)(x) < (double)(0.0)) {
-            return (double)(1.0) / (double)(sum);
+            return (double)((double)(1.0) / (double)(sum));
         }
-        return sum;
+        return (double)(sum);
     }
 
     static double[] exponential_linear_unit(double[] vector, double alpha) {
         double[] result = ((double[])(new double[]{}));
-        long i_3 = 0L;
-        while ((long)(i_3) < (long)(vector.length)) {
-            double v_1 = (double)(vector[(int)((long)(i_3))]);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(vector.length))) < 0) {
+            double v_1 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_3)).longValue())]);
             if ((double)(v_1) > (double)(0.0)) {
                 result = ((double[])(appendDouble(result, (double)(v_1))));
             } else {
                 double neg_1 = (double)((double)(alpha) * (double)(((double)(exp_approx((double)(v_1))) - (double)(1.0))));
                 result = ((double[])(appendDouble(result, (double)(neg_1))));
             }
-            i_3 = (long)((long)(i_3) + 1L);
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((double[])(result));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(exponential_linear_unit(((double[])(new double[]{2.3, 0.6, -2.0, -3.8})), (double)(0.3))));
-            System.out.println(_p(exponential_linear_unit(((double[])(new double[]{-9.2, -0.3, 0.45, -4.56})), (double)(0.067))));
+            System.out.println(_p(exponential_linear_unit(((double[])(new double[]{(double)(2.3), (double)(0.6), (double)(-2.0), (double)(-3.8)})), (double)(0.3))));
+            System.out.println(_p(exponential_linear_unit(((double[])(new double[]{(double)(-9.2), (double)(-0.3), (double)(0.45), (double)(-4.56)})), (double)(0.067))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
@@ -85,10 +85,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
             return String.valueOf(d);
         }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

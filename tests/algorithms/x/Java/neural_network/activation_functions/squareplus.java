@@ -2,32 +2,32 @@ public class Main {
 
     static double sqrtApprox(double x) {
         if ((double)(x) <= (double)(0.0)) {
-            return 0.0;
+            return (double)(0.0);
         }
         double guess_1 = (double)(x);
-        long i_1 = 0L;
-        while ((long)(i_1) < 20L) {
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
             guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return guess_1;
+        return (double)(guess_1);
     }
 
     static double[] squareplus(double[] vector, double beta) {
         double[] result = ((double[])(new double[]{}));
-        long i_3 = 0L;
-        while ((long)(i_3) < (long)(vector.length)) {
-            double x_1 = (double)(vector[(int)((long)(i_3))]);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(vector.length))) < 0) {
+            double x_1 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_3)).longValue())]);
             double val_1 = (double)((double)(((double)(x_1) + (double)(sqrtApprox((double)((double)((double)(x_1) * (double)(x_1)) + (double)(beta)))))) / (double)(2.0));
             result = ((double[])(appendDouble(result, (double)(val_1))));
-            i_3 = (long)((long)(i_3) + 1L);
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((double[])(result));
     }
 
     static void main() {
-        double[] v1 = ((double[])(new double[]{2.3, 0.6, -2.0, -3.8}));
-        double[] v2_1 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
+        double[] v1 = ((double[])(new double[]{(double)(2.3), (double)(0.6), (double)(-2.0), (double)(-3.8)}));
+        double[] v2_1 = ((double[])(new double[]{(double)(-9.2), (double)(-0.3), (double)(0.45), (double)(-4.56)}));
         System.out.println(_p(squareplus(((double[])(v1)), (double)(2.0))));
         System.out.println(_p(squareplus(((double[])(v2_1)), (double)(3.0))));
     }
@@ -84,10 +84,38 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
             return String.valueOf(d);
         }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

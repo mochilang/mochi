@@ -3,30 +3,30 @@ public class Main {
     static double exp(double x) {
         double term = (double)(1.0);
         double sum_1 = (double)(1.0);
-        long n_1 = 1L;
-        while ((long)(n_1) < 20L) {
+        java.math.BigInteger n_1 = java.math.BigInteger.valueOf(1);
+        while (n_1.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
             term = (double)((double)((double)(term) * (double)(x)) / (double)(((Number)(n_1)).doubleValue()));
             sum_1 = (double)((double)(sum_1) + (double)(term));
-            n_1 = (long)((long)(n_1) + 1L);
+            n_1 = new java.math.BigInteger(String.valueOf(n_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return sum_1;
+        return (double)(sum_1);
     }
 
     static double[] soboleva_modified_hyperbolic_tangent(double[] vector, double a_value, double b_value, double c_value, double d_value) {
         double[] result = ((double[])(new double[]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(vector.length)) {
-            double x_1 = (double)(vector[(int)((long)(i_1))]);
-            double numerator_1 = (double)((double)(exp((double)((double)(a_value) * (double)(x_1)))) - (double)(exp((double)((double)(-b_value) * (double)(x_1)))));
-            double denominator_1 = (double)((double)(exp((double)((double)(c_value) * (double)(x_1)))) + (double)(exp((double)((double)(-d_value) * (double)(x_1)))));
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(vector.length))) < 0) {
+            double x_1 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_1)).longValue())]);
+            double numerator_1 = (double)((double)(Math.exp((double)(a_value) * (double)(x_1))) - (double)(Math.exp((double)(-b_value) * (double)(x_1))));
+            double denominator_1 = (double)((double)(Math.exp((double)(c_value) * (double)(x_1))) + (double)(Math.exp((double)(-d_value) * (double)(x_1))));
             result = ((double[])(appendDouble(result, (double)((double)(numerator_1) / (double)(denominator_1)))));
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((double[])(result));
     }
 
     static void main() {
-        double[] vector = ((double[])(new double[]{5.4, -2.4, 6.3, -5.23, 3.27, 0.56}));
+        double[] vector = ((double[])(new double[]{(double)(5.4), (double)(-2.4), (double)(6.3), (double)(-5.23), (double)(3.27), (double)(0.56)}));
         double[] res_1 = ((double[])(soboleva_modified_hyperbolic_tangent(((double[])(vector)), (double)(0.2), (double)(0.4), (double)(0.6), (double)(0.8))));
         json(res_1);
     }
@@ -119,5 +119,9 @@ public class Main {
         String s = String.valueOf(v);
         s = s.replace("\\", "\\\\").replace("\"", "\\\"");
         return "\"" + s + "\"";
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

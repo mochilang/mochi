@@ -10,40 +10,40 @@ public class Main {
             sum_1 = (double)((double)(sum_1) + (double)(term));
             i_1 = (double)((double)(i_1) + (double)(1.0));
         }
-        return sum_1;
+        return (double)(sum_1);
     }
 
     static double[] sigmoid(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        long i_3 = 0L;
-        while ((long)(i_3) < (long)(vector.length)) {
-            double x_1 = (double)(vector[(int)((long)(i_3))]);
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(vector.length))) < 0) {
+            double x_1 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_3)).longValue())]);
             double value_1 = (double)((double)(1.0) / (double)(((double)(1.0) + (double)(exp_taylor((double)(-x_1))))));
             result = ((double[])(appendDouble(result, (double)(value_1))));
-            i_3 = (long)((long)(i_3) + 1L);
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return result;
+        return ((double[])(result));
     }
 
     static double[] gaussian_error_linear_unit(double[] vector) {
         double[] result_1 = ((double[])(new double[]{}));
-        long i_5 = 0L;
-        while ((long)(i_5) < (long)(vector.length)) {
-            double x_3 = (double)(vector[(int)((long)(i_5))]);
+        java.math.BigInteger i_5 = java.math.BigInteger.valueOf(0);
+        while (i_5.compareTo(new java.math.BigInteger(String.valueOf(vector.length))) < 0) {
+            double x_3 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_5)).longValue())]);
             double gelu_1 = (double)((double)(x_3) * (double)(((double)(1.0) / (double)(((double)(1.0) + (double)(exp_taylor((double)((double)(-1.702) * (double)(x_3)))))))));
             result_1 = ((double[])(appendDouble(result_1, (double)(gelu_1))));
-            i_5 = (long)((long)(i_5) + 1L);
+            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
         }
-        return result_1;
+        return ((double[])(result_1));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            sample = ((double[])(new double[]{-1.0, 1.0, 2.0}));
-            System.out.println(sigmoid(((double[])(sample))));
-            System.out.println(gaussian_error_linear_unit(((double[])(sample))));
-            System.out.println(gaussian_error_linear_unit(((double[])(new double[]{-3.0}))));
+            sample = ((double[])(new double[]{(double)(-1.0), (double)(1.0), (double)(2.0)}));
+            System.out.println(java.util.Arrays.toString(sigmoid(((double[])(sample)))));
+            System.out.println(java.util.Arrays.toString(gaussian_error_linear_unit(((double[])(sample)))));
+            System.out.println(java.util.Arrays.toString(gaussian_error_linear_unit(((double[])(new double[]{(double)(-3.0)})))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
@@ -77,5 +77,9 @@ public class Main {
         double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }

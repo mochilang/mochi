@@ -1,91 +1,91 @@
 public class Main {
-    static long[][] test_graph = ((long[][])(new long[][]{new long[]{0, 16, 13, 0, 0, 0}, new long[]{0, 0, 10, 12, 0, 0}, new long[]{0, 4, 0, 0, 14, 0}, new long[]{0, 0, 9, 0, 0, 20}, new long[]{0, 0, 0, 7, 0, 4}, new long[]{0, 0, 0, 0, 0, 0}}));
-    static long[][] result;
+    static java.math.BigInteger[][] test_graph = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(16), java.math.BigInteger.valueOf(13), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(10), java.math.BigInteger.valueOf(12), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(4), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(14), java.math.BigInteger.valueOf(0)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(9), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(20)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(7), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(4)})), ((java.math.BigInteger[])(new java.math.BigInteger[]{java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0)}))}));
+    static java.math.BigInteger[][] result;
 
-    static boolean bfs(long[][] graph, long s, long t, long[] parent) {
+    static boolean bfs(java.math.BigInteger[][] graph, java.math.BigInteger s, java.math.BigInteger t, java.math.BigInteger[] parent) {
         boolean[] visited = ((boolean[])(new boolean[]{}));
-        long i_1 = 0L;
-        while ((long)(i_1) < (long)(graph.length)) {
+        java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
+        while (i_1.compareTo(new java.math.BigInteger(String.valueOf(graph.length))) < 0) {
             visited = ((boolean[])(appendBool(visited, false)));
-            i_1 = (long)((long)(i_1) + 1L);
+            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
         }
-        long[] queue_1 = ((long[])(new long[]{s}));
-        long head_1 = 0L;
-visited[(int)((long)(s))] = true;
-        while ((long)(head_1) < (long)(queue_1.length)) {
-            long u_1 = (long)(queue_1[(int)((long)(head_1))]);
-            head_1 = (long)((long)(head_1) + 1L);
-            long ind_1 = 0L;
-            while ((long)(ind_1) < (long)(graph[(int)((long)(u_1))].length)) {
-                if ((visited[(int)((long)(ind_1))] == false) && (long)(graph[(int)((long)(u_1))][(int)((long)(ind_1))]) > 0L) {
-                    queue_1 = ((long[])(appendLong(queue_1, (long)(ind_1))));
-visited[(int)((long)(ind_1))] = true;
-parent[(int)((long)(ind_1))] = (long)(u_1);
+        java.math.BigInteger[] queue_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(s))}));
+        java.math.BigInteger head_1 = java.math.BigInteger.valueOf(0);
+visited[(int)(((java.math.BigInteger)(s)).longValue())] = true;
+        while (head_1.compareTo(new java.math.BigInteger(String.valueOf(queue_1.length))) < 0) {
+            java.math.BigInteger u_1 = new java.math.BigInteger(String.valueOf(queue_1[_idx((queue_1).length, ((java.math.BigInteger)(head_1)).longValue())]));
+            head_1 = new java.math.BigInteger(String.valueOf(head_1.add(java.math.BigInteger.valueOf(1))));
+            java.math.BigInteger ind_1 = java.math.BigInteger.valueOf(0);
+            while (ind_1.compareTo(new java.math.BigInteger(String.valueOf(graph[_idx((graph).length, ((java.math.BigInteger)(u_1)).longValue())].length))) < 0) {
+                if ((visited[_idx((visited).length, ((java.math.BigInteger)(ind_1)).longValue())] == false) && graph[_idx((graph).length, ((java.math.BigInteger)(u_1)).longValue())][_idx((graph[_idx((graph).length, ((java.math.BigInteger)(u_1)).longValue())]).length, ((java.math.BigInteger)(ind_1)).longValue())].compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+                    queue_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(queue_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(ind_1)))).toArray(java.math.BigInteger[]::new)));
+visited[(int)(((java.math.BigInteger)(ind_1)).longValue())] = true;
+parent[(int)(((java.math.BigInteger)(ind_1)).longValue())] = new java.math.BigInteger(String.valueOf(u_1));
                 }
-                ind_1 = (long)((long)(ind_1) + 1L);
+                ind_1 = new java.math.BigInteger(String.valueOf(ind_1.add(java.math.BigInteger.valueOf(1))));
             }
         }
-        return visited[(int)((long)(t))];
+        return visited[_idx((visited).length, ((java.math.BigInteger)(t)).longValue())];
     }
 
-    static long[][] mincut(long[][] graph, long source, long sink) {
-        long[][] g = ((long[][])(graph));
-        long[] parent_1 = ((long[])(new long[]{}));
-        long i_3 = 0L;
-        while ((long)(i_3) < (long)(g.length)) {
-            parent_1 = ((long[])(appendLong(parent_1, (long)(-1))));
-            i_3 = (long)((long)(i_3) + 1L);
+    static java.math.BigInteger[][] mincut(java.math.BigInteger[][] graph, java.math.BigInteger source, java.math.BigInteger sink) {
+        java.math.BigInteger[][] g = ((java.math.BigInteger[][])(graph));
+        java.math.BigInteger[] parent_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+        java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(g.length))) < 0) {
+            parent_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(parent_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())))).toArray(java.math.BigInteger[]::new)));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        long[][] temp_1 = ((long[][])(new long[][]{}));
-        i_3 = 0L;
-        while ((long)(i_3) < (long)(g.length)) {
-            long[] row_1 = ((long[])(new long[]{}));
-            long j_1 = 0L;
-            while ((long)(j_1) < (long)(g[(int)((long)(i_3))].length)) {
-                row_1 = ((long[])(appendLong(row_1, (long)(g[(int)((long)(i_3))][(int)((long)(j_1))]))));
-                j_1 = (long)((long)(j_1) + 1L);
+        java.math.BigInteger[][] temp_1 = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{}));
+        i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(g.length))) < 0) {
+            java.math.BigInteger[] row_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
+            java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
+            while (j_1.compareTo(new java.math.BigInteger(String.valueOf(g[_idx((g).length, ((java.math.BigInteger)(i_3)).longValue())].length))) < 0) {
+                row_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(g[_idx((g).length, ((java.math.BigInteger)(i_3)).longValue())][_idx((g[_idx((g).length, ((java.math.BigInteger)(i_3)).longValue())]).length, ((java.math.BigInteger)(j_1)).longValue())])))).toArray(java.math.BigInteger[]::new)));
+                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
             }
-            temp_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(temp_1), java.util.stream.Stream.of(new long[][]{row_1})).toArray(long[][]::new)));
-            i_3 = (long)((long)(i_3) + 1L);
+            temp_1 = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(temp_1), java.util.stream.Stream.of(new java.math.BigInteger[][]{((java.math.BigInteger[])(row_1))})).toArray(java.math.BigInteger[][]::new)));
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        while (bfs(((long[][])(g)), (long)(source), (long)(sink), ((long[])(parent_1)))) {
-            long path_flow_1 = 1000000000L;
-            long s_1 = (long)(sink);
-            while ((long)(s_1) != (long)(source)) {
-                long p_1 = (long)(parent_1[(int)((long)(s_1))]);
-                long cap_1 = (long)(g[(int)((long)(p_1))][(int)((long)(s_1))]);
-                if ((long)(cap_1) < (long)(path_flow_1)) {
-                    path_flow_1 = (long)(cap_1);
+        while (bfs(((java.math.BigInteger[][])(g)), new java.math.BigInteger(String.valueOf(source)), new java.math.BigInteger(String.valueOf(sink)), ((java.math.BigInteger[])(parent_1)))) {
+            java.math.BigInteger path_flow_1 = java.math.BigInteger.valueOf(1000000000);
+            java.math.BigInteger s_1 = new java.math.BigInteger(String.valueOf(sink));
+            while (s_1.compareTo(source) != 0) {
+                java.math.BigInteger p_1 = new java.math.BigInteger(String.valueOf(parent_1[_idx((parent_1).length, ((java.math.BigInteger)(s_1)).longValue())]));
+                java.math.BigInteger cap_1 = new java.math.BigInteger(String.valueOf(g[_idx((g).length, ((java.math.BigInteger)(p_1)).longValue())][_idx((g[_idx((g).length, ((java.math.BigInteger)(p_1)).longValue())]).length, ((java.math.BigInteger)(s_1)).longValue())]));
+                if (cap_1.compareTo(path_flow_1) < 0) {
+                    path_flow_1 = new java.math.BigInteger(String.valueOf(cap_1));
                 }
-                s_1 = (long)(p_1);
+                s_1 = new java.math.BigInteger(String.valueOf(p_1));
             }
-            long v_1 = (long)(sink);
-            while ((long)(v_1) != (long)(source)) {
-                long u_3 = (long)(parent_1[(int)((long)(v_1))]);
-g[(int)((long)(u_3))][(int)((long)(v_1))] = (long)((long)(g[(int)((long)(u_3))][(int)((long)(v_1))]) - (long)(path_flow_1));
-g[(int)((long)(v_1))][(int)((long)(u_3))] = (long)((long)(g[(int)((long)(v_1))][(int)((long)(u_3))]) + (long)(path_flow_1));
-                v_1 = (long)(u_3);
+            java.math.BigInteger v_1 = new java.math.BigInteger(String.valueOf(sink));
+            while (v_1.compareTo(source) != 0) {
+                java.math.BigInteger u_3 = new java.math.BigInteger(String.valueOf(parent_1[_idx((parent_1).length, ((java.math.BigInteger)(v_1)).longValue())]));
+g[_idx((g).length, ((java.math.BigInteger)(u_3)).longValue())][(int)(((java.math.BigInteger)(v_1)).longValue())] = new java.math.BigInteger(String.valueOf(g[_idx((g).length, ((java.math.BigInteger)(u_3)).longValue())][_idx((g[_idx((g).length, ((java.math.BigInteger)(u_3)).longValue())]).length, ((java.math.BigInteger)(v_1)).longValue())].subtract(path_flow_1)));
+g[_idx((g).length, ((java.math.BigInteger)(v_1)).longValue())][(int)(((java.math.BigInteger)(u_3)).longValue())] = new java.math.BigInteger(String.valueOf(g[_idx((g).length, ((java.math.BigInteger)(v_1)).longValue())][_idx((g[_idx((g).length, ((java.math.BigInteger)(v_1)).longValue())]).length, ((java.math.BigInteger)(u_3)).longValue())].add(path_flow_1)));
+                v_1 = new java.math.BigInteger(String.valueOf(u_3));
             }
         }
-        long[][] res_1 = ((long[][])(new long[][]{}));
-        i_3 = 0L;
-        while ((long)(i_3) < (long)(g.length)) {
-            long j_3 = 0L;
-            while ((long)(j_3) < (long)(g[(int)(0L)].length)) {
-                if ((long)(g[(int)((long)(i_3))][(int)((long)(j_3))]) == 0L && (long)(temp_1[(int)((long)(i_3))][(int)((long)(j_3))]) > 0L) {
-                    res_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new long[][]{new long[]{i_3, j_3}})).toArray(long[][]::new)));
+        java.math.BigInteger[][] res_1 = ((java.math.BigInteger[][])(new java.math.BigInteger[][]{}));
+        i_3 = java.math.BigInteger.valueOf(0);
+        while (i_3.compareTo(new java.math.BigInteger(String.valueOf(g.length))) < 0) {
+            java.math.BigInteger j_3 = java.math.BigInteger.valueOf(0);
+            while (j_3.compareTo(new java.math.BigInteger(String.valueOf(g[_idx((g).length, 0L)].length))) < 0) {
+                if (g[_idx((g).length, ((java.math.BigInteger)(i_3)).longValue())][_idx((g[_idx((g).length, ((java.math.BigInteger)(i_3)).longValue())]).length, ((java.math.BigInteger)(j_3)).longValue())].compareTo(java.math.BigInteger.valueOf(0)) == 0 && temp_1[_idx((temp_1).length, ((java.math.BigInteger)(i_3)).longValue())][_idx((temp_1[_idx((temp_1).length, ((java.math.BigInteger)(i_3)).longValue())]).length, ((java.math.BigInteger)(j_3)).longValue())].compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+                    res_1 = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new java.math.BigInteger[][]{((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(i_3)), new java.math.BigInteger(String.valueOf(j_3))}))})).toArray(java.math.BigInteger[][]::new)));
                 }
-                j_3 = (long)((long)(j_3) + 1L);
+                j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
             }
-            i_3 = (long)((long)(i_3) + 1L);
+            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
         }
-        return res_1;
+        return ((java.math.BigInteger[][])(res_1));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            result = ((long[][])(mincut(((long[][])(test_graph)), 0L, 5L)));
+            result = ((java.math.BigInteger[][])(mincut(((java.math.BigInteger[][])(test_graph)), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(5))));
             System.out.println(_p(result));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -122,12 +122,6 @@ g[(int)((long)(v_1))][(int)((long)(u_3))] = (long)((long)(g[(int)((long)(v_1))][
         return out;
     }
 
-    static long[] appendLong(long[] arr, long v) {
-        long[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -141,10 +135,38 @@ g[(int)((long)(v_1))][(int)((long)(u_3))] = (long)((long)(g[(int)((long)(v_1))][
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();
             return String.valueOf(d);
         }
         return String.valueOf(v);
+    }
+
+    static int _idx(int len, long i) {
+        return (int)(i < 0 ? len + i : i);
     }
 }
