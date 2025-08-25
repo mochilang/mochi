@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
 Completed programs: 1070/1077
-Last updated: 2025-08-24 23:57 +0700
+Last updated: 2025-08-25 08:35 +0700
 
 Checklist:
 
@@ -323,7 +323,7 @@ Checklist:
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 155µs | 14.4 KB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 812µs | 19.3 KB |
 | 316 | dynamic_programming/knapsack | ✓ | 267µs | 26.1 KB |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 181µs | 13.7 KB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 83µs | 12.8 KB |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 264µs | 23.3 KB |
 | 319 | dynamic_programming/longest_common_substring | ✓ | 324µs | 48.3 KB |
 | 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 234µs | 23.1 KB |
