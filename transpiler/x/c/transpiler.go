@@ -3210,13 +3210,21 @@ func (f *FieldExpr) emitExpr(w io.Writer) {
 		}
 	}
 	base := strings.TrimPrefix(typ, "struct ")
-	f.Target.emitExpr(w)
-	if strings.HasSuffix(base, "*") {
-		if _, ok := structTypes[strings.TrimSuffix(base, "*")]; ok {
-			io.WriteString(w, "->")
-		} else {
-			io.WriteString(w, ".")
+	isPtr := strings.HasSuffix(base, "*")
+	if vr, ok := f.Target.(*VarRef); ok {
+		if !isPtr {
+			if vt := varTypes[vr.Name]; strings.HasSuffix(vt, "*") {
+				isPtr = true
+			} else if funcParamPtrs != nil && funcParamPtrs[currentFuncName] != nil && funcParamPtrs[currentFuncName][vr.Name] {
+				isPtr = true
+			} else if mutatedParams != nil && mutatedParams[vr.Name] {
+				isPtr = true
+			}
 		}
+	}
+	f.Target.emitExpr(w)
+	if isPtr {
+		io.WriteString(w, "->")
 	} else {
 		io.WriteString(w, ".")
 	}
@@ -8053,36 +8061,15 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			valT := mapValTypes[s.Assign.Name]
 			if keyT == "const char*" && valT == "int" {
 				needMapSetSI = true
-				var buf bytes.Buffer
-				buf.WriteString("map_set_si(&")
-				buf.WriteString(s.Assign.Name)
-				buf.WriteString(", ")
-				if fe, ok := idxs[0].(*FieldExpr); ok {
-					if vr, ok2 := fe.Target.(*VarRef); ok2 {
-						name := aliasName(vr.Name)
-						t := varTypes[name]
-						if t == "" && funcParamPtrs != nil && funcParamPtrs[currentFuncName] != nil && funcParamPtrs[currentFuncName][name] {
-							t = "*"
-						}
-						if strings.HasSuffix(t, "*") || mutatedParams[name] {
-							fmt.Fprintf(&buf, "%s->%s", name, fe.Name)
-						} else {
-							fmt.Fprintf(&buf, "%s.%s", name, fe.Name)
-						}
-					} else {
-						fe.emitExpr(&buf)
-					}
-				} else {
-					idxs[0].emitExpr(&buf)
+				args := []Expr{
+					&UnaryExpr{Op: "&", Expr: &VarRef{Name: s.Assign.Name}},
+					idxs[0],
+					valExpr,
 				}
-				buf.WriteString(", ")
 				if valT == "const char*" {
-					emitMapStringValue(&buf, valExpr)
-				} else {
-					valExpr.emitExpr(&buf)
+					args[2] = &CallExpr{Func: "str", Args: []Expr{valExpr}}
 				}
-				buf.WriteString(");\n")
-				return &RawStmt{Code: buf.String()}, nil
+				return &CallStmt{Func: "map_set_si", Args: args}, nil
 			}
 			if keyT == "const char*" && valT == "MapSI" {
 				needMapSetSMI = true
