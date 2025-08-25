@@ -2218,6 +2218,18 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "tmp;});\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_lens_len = %d;\n", a.Name, len(lst.Elems))
+			if strings.HasSuffix(vt, "[][][]") {
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s_lens_lens = ({size_t **tmp = malloc(%d * sizeof(size_t*)); ", a.Name, len(lst.Elems))
+				for i, e := range lst.Elems {
+					fmt.Fprintf(w, "tmp[%d] = ", i)
+					emitLensExpr(w, e)
+					io.WriteString(w, "; ")
+				}
+				io.WriteString(w, "tmp;});\n")
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s_lens_lens_len = %d;\n", a.Name, len(lst.Elems))
+			}
 		}
 		return
 	}

@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (923/1077) - Last updated 2025-08-25 21:42 +0700:
+Checklist of programs that currently transpile and run (951/1077) - Last updated 2025-08-25 22:27 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -673,38 +673,38 @@ Checklist of programs that currently transpile and run (923/1077) - Last updated
 | 666 | maths/special_numbers/carmichael_number | ✓ | 989us | 1.5 MB |
 | 667 | maths/special_numbers/catalan_number | ✓ | 718us | 1.6 MB |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 501us | 1.5 MB |
-| 669 | maths/special_numbers/happy_number |  |  |  |
-| 670 | maths/special_numbers/harshad_numbers |  |  |  |
-| 671 | maths/special_numbers/hexagonal_number |  |  |  |
-| 672 | maths/special_numbers/krishnamurthy_number |  |  |  |
-| 673 | maths/special_numbers/perfect_number |  |  |  |
-| 674 | maths/special_numbers/polygonal_numbers |  |  |  |
-| 675 | maths/special_numbers/pronic_number |  |  |  |
-| 676 | maths/special_numbers/proth_number |  |  |  |
-| 677 | maths/special_numbers/triangular_numbers |  |  |  |
-| 678 | maths/special_numbers/ugly_numbers |  |  |  |
-| 679 | maths/special_numbers/weird_number | ✓ | 250us | 1.6 MB |
-| 680 | maths/sum_of_arithmetic_series |  |  |  |
-| 681 | maths/sum_of_digits | ✓ | 430us | 1.4 MB |
-| 682 | maths/sum_of_geometric_progression |  |  |  |
-| 683 | maths/sum_of_harmonic_series |  |  |  |
-| 684 | maths/sumset |  |  |  |
-| 685 | maths/sylvester_sequence |  |  |  |
-| 686 | maths/tanh |  |  |  |
-| 687 | maths/test_factorial |  |  |  |
-| 688 | maths/test_prime_check |  |  |  |
-| 689 | maths/three_sum |  |  |  |
+| 669 | maths/special_numbers/happy_number | ✓ | 592us | 1.6 MB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 436us | 1.6 MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 441us | 1.6 MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 536us | 1.5 MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 541us | 1.5 MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 306us | 1.6 MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 451us | 1.6 MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 340us | 1.6 MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 289us | 1.6 MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 302us | 1.4 MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 437us | 1.6 MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 327us | 1.4 MB |
+| 681 | maths/sum_of_digits | ✓ | 710us | 1.5 MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 493us | 1.7 MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 1.81ms | 1.7 MB |
+| 684 | maths/sumset | ✓ | 349us | 1.5 MB |
+| 685 | maths/sylvester_sequence | ✓ | 686us | 1.5 MB |
+| 686 | maths/tanh | ✓ | 383us | 1.6 MB |
+| 687 | maths/test_factorial | ✓ | 361us | 1.5 MB |
+| 688 | maths/test_prime_check | ✓ | 625us | 1.6 MB |
+| 689 | maths/three_sum | ✓ | 434us | 1.5 MB |
 | 690 | maths/trapezoidal_rule |  |  |  |
 | 691 | maths/triplet_sum | ✓ | 489us | 1.6 MB |
-| 692 | maths/twin_prime |  |  |  |
-| 693 | maths/two_pointer |  |  |  |
-| 694 | maths/two_sum |  |  |  |
-| 695 | maths/volume |  |  |  |
+| 692 | maths/twin_prime | ✓ | 211us | 1.5 MB |
+| 693 | maths/two_pointer | ✓ | 480us | 1.5 MB |
+| 694 | maths/two_sum | ✓ | 275us | 1.5 MB |
+| 695 | maths/volume | ✓ | 389us | 1.6 MB |
 | 696 | maths/zellers_congruence | ✓ | 197us | 1.6 MB |
-| 697 | matrix/binary_search_matrix |  |  |  |
-| 698 | matrix/count_islands_in_matrix |  |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |  |  |  |
-| 700 | matrix/count_paths |  |  |  |
+| 697 | matrix/binary_search_matrix | ✓ | 575us | 1.5 MB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 404us | 1.5 MB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 138.48ms | 20.9 MB |
+| 700 | matrix/count_paths | ✓ | 391us | 1.5 MB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 362us | 1.6 MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 330us | 1.6 MB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 352us | 1.5 MB |
@@ -721,7 +721,7 @@ Checklist of programs that currently transpile and run (923/1077) - Last updated
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 372us | 1.6 MB |
 | 715 | matrix/sherman_morrison | ✓ | 653us | 1.6 MB |
 | 716 | matrix/spiral_print | ✓ | 382us | 1.5 MB |
-| 717 | matrix/tests/test_matrix_operation |  |  |  |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 685us | 1.6 MB |
 | 718 | matrix/validate_sudoku_board | ✓ | 1.04ms | 1.4 MB |
 | 719 | networking_flow/ford_fulkerson |  |  |  |
 | 720 | networking_flow/minimum_cut | ✓ | 313us | 1.6 MB |
