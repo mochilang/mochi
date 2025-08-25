@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (906/1077) - Last updated 2025-08-25 16:46 +0700:
+Checklist of programs that currently transpile and run (922/1077) - Last updated 2025-08-25 17:21 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -277,57 +277,57 @@ Checklist of programs that currently transpile and run (906/1077) - Last updated
 | 270 | digital_image_processing/dithering/burkes | ✓ | 217us | 1.6 MB |
 | 271 | digital_image_processing/edge_detection/canny |  |  |  |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 847us | 1.6 MB |
-| 273 | digital_image_processing/filters/convolve | ✓ | 513us | 1.6 MB |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 386us | 1.6 MB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 226us | 1.6 MB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 220us | 1.4 MB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 534us | 1.4 MB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 231us | 1.5 MB |
-| 279 | digital_image_processing/filters/sobel_filter |  |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 572us | 1.6 MB |
-| 281 | digital_image_processing/index_calculation | ✓ | 359us | 1.6 MB |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 311us | 1.6 MB |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |  |  |  |
-| 284 | digital_image_processing/resize/resize |  |  |  |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 340us | 1.5 MB |
-| 286 | digital_image_processing/sepia | ✓ | 422us | 1.4 MB |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 427us | 1.5 MB |
-| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 806us | 1.6 MB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 1.39ms | 1.6 MB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 602us | 1.5 MB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 452us | 1.5 MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 398us | 1.5 MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 372us | 1.4 MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 956us | 1.4 MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 625us | 1.5 MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 474us | 1.6 MB |
+| 281 | digital_image_processing/index_calculation | ✓ | 470us | 1.7 MB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 569us | 1.6 MB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 530us | 1.7 MB |
+| 284 | digital_image_processing/resize/resize | ✓ | 243us | 1.6 MB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 403us | 1.5 MB |
+| 286 | digital_image_processing/sepia | ✓ | 577us | 1.4 MB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 732us | 1.6 MB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 500us | 1.6 MB |
 | 289 | divide_and_conquer/convex_hull | ✓ |  |  |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 439us | 1.6 MB |
-| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 336us | 1.4 MB |
-| 292 | divide_and_conquer/inversions | ✓ | 366us | 1.5 MB |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 307us | 1.5 MB |
-| 294 | divide_and_conquer/max_difference_pair |  |  |  |
-| 295 | divide_and_conquer/max_subarray |  |  |  |
-| 296 | divide_and_conquer/mergesort |  |  |  |
-| 297 | divide_and_conquer/peak |  |  |  |
-| 298 | divide_and_conquer/power |  |  |  |
+| 290 | divide_and_conquer/heaps_algorithm |  | 439us | 1.6 MB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 386us | 1.6 MB |
+| 292 | divide_and_conquer/inversions | ✓ | 361us | 1.6 MB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 439us | 1.5 MB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 783us | 1.5 MB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 615us | 1.6 MB |
+| 296 | divide_and_conquer/mergesort | ✓ | 502us | 1.6 MB |
+| 297 | divide_and_conquer/peak | ✓ | 926us | 1.5 MB |
+| 298 | divide_and_conquer/power | ✓ | 594us | 1.6 MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication |  |  |  |
-| 300 | docs/conf | ✓ | 125us | 1.4 MB |
-| 301 | dynamic_programming/abbreviation |  |  |  |
-| 302 | dynamic_programming/all_construct |  |  |  |
-| 303 | dynamic_programming/bitmask |  |  |  |
-| 304 | dynamic_programming/catalan_numbers |  |  |  |
-| 305 | dynamic_programming/climbing_stairs |  |  |  |
-| 306 | dynamic_programming/combination_sum_iv |  |  |  |
-| 307 | dynamic_programming/edit_distance |  |  |  |
-| 308 | dynamic_programming/factorial |  |  |  |
-| 309 | dynamic_programming/fast_fibonacci |  |  |  |
-| 310 | dynamic_programming/fibonacci | ✓ | 386us | 1.6 MB |
-| 311 | dynamic_programming/fizz_buzz | ✓ | 706us | 1.5 MB |
-| 312 | dynamic_programming/floyd_warshall | ✓ | 377us | 1.6 MB |
-| 313 | dynamic_programming/integer_partition | ✓ | 1.13ms | 1.5 MB |
-| 314 | dynamic_programming/iterating_through_submasks | ✓ | 557us | 1.4 MB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 438us | 1.6 MB |
-| 316 | dynamic_programming/knapsack | ✓ | 366us | 1.6 MB |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 320us | 1.6 MB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 248us | 1.4 MB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 663us | 1.6 MB |
+| 300 | docs/conf | ✓ | 469us | 1.5 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 393us | 1.4 MB |
+| 302 | dynamic_programming/all_construct | ✓ | 590us | 1.4 MB |
+| 303 | dynamic_programming/bitmask | ✓ | 392us | 1.5 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 296us | 1.6 MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 331us | 1.6 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 664us | 1.6 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 543us | 1.6 MB |
+| 308 | dynamic_programming/factorial | ✓ | 552us | 1.5 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 369us | 1.5 MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 697us | 1.5 MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 672us | 1.5 MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 486us | 1.5 MB |
+| 313 | dynamic_programming/integer_partition | ✓ | 1.21ms | 1.8 MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 998us | 1.6 MB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 1.05ms | 1.6 MB |
+| 316 | dynamic_programming/knapsack | ✓ | 635us | 1.5 MB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 612us | 1.6 MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 528us | 1.5 MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 337us | 1.5 MB |
 | 320 | dynamic_programming/longest_increasing_subsequence | ✓ |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 606us | 1.6 MB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 273us | 1.6 MB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 526us | 1.6 MB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 392us | 1.5 MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 445us | 1.4 MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 510us | 1.5 MB |
 | 324 | dynamic_programming/matrix_chain_multiplication | ✓ |  |  |
 | 325 | dynamic_programming/matrix_chain_order | ✓ | 278us | 1.5 MB |
 | 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 867us | 1.5 MB |
