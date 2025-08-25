@@ -404,18 +404,24 @@ func emitStrExpr(w io.Writer, e Expr) {
 }
 
 func varBaseType(name string) string {
-	if t, ok := varTypes[name]; ok && t != "" {
-		return strings.TrimSuffix(t, "[]")
-	}
-	if ds, ok := declStmts[name]; ok && ds.Type != "" {
-		return strings.TrimSuffix(ds.Type, "[]")
-	}
-	if currentEnv != nil {
-		if tt, err := currentEnv.GetVar(name); err == nil {
-			return strings.TrimSuffix(cTypeFromMochiType(tt), "[]")
-		}
-	}
-	return ""
+        var t string
+        if tt, ok := varTypes[name]; ok && tt != "" {
+                t = tt
+        } else if ds, ok := declStmts[name]; ok && ds.Type != "" {
+                t = ds.Type
+        } else if currentEnv != nil {
+                if tt, err := currentEnv.GetVar(name); err == nil {
+                        t = cTypeFromMochiType(tt)
+                }
+        }
+        if t == "" {
+                return ""
+        }
+        t = strings.TrimSuffix(t, "[]")
+        if strings.Contains(t, "[]") {
+                t = strings.ReplaceAll(t, "[]", "*")
+        }
+        return t
 }
 
 func fieldBaseType(varName, field string) string {
@@ -2096,18 +2102,61 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
-	if m, ok := a.Value.(*MapLit); ok && len(m.Items) == 0 && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-		if typ, ok2 := varTypes[a.Name]; ok2 && strings.HasPrefix(typ, "Map") {
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s = (%s){0};\n", a.Name, typ)
-			return
-		}
-	}
-	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
-		if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-			fromAlias := declAliases[a.Name]
-			if ds, ok := declStmts[a.Name]; ok {
-				ds.Value = nil
+        if m, ok := a.Value.(*MapLit); ok && len(m.Items) == 0 && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+                if typ, ok2 := varTypes[a.Name]; ok2 && strings.HasPrefix(typ, "Map") {
+                        writeIndent(w, indent)
+                        fmt.Fprintf(w, "%s = (%s){0};\n", a.Name, typ)
+                        return
+                }
+        }
+        if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+                base := varBaseType(a.Name)
+                if base == "" {
+                        base = "long long"
+                }
+                writeIndent(w, indent)
+                fmt.Fprintf(w, "%s = malloc(%d * sizeof(%s));\n", a.Name, len(lst.Elems), base)
+                writeIndent(w, indent)
+                fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
+                for i, e := range lst.Elems {
+                        writeIndent(w, indent)
+                        fmt.Fprintf(w, "%s[%d] = ", a.Name, i)
+                        if base == "const char*" {
+                                if inferExprType(currentEnv, e) == "const char*" {
+                                        e.emitExpr(w)
+                                } else if lit, ok2 := e.(*IntLit); ok2 {
+                                        fmt.Fprintf(w, "\"%d\"", lit.Value)
+                                } else {
+                                        e.emitExpr(w)
+                                }
+                        } else {
+                                e.emitExpr(w)
+                        }
+                        io.WriteString(w, ";\n")
+                }
+                if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
+                        writeIndent(w, indent)
+                        fmt.Fprintf(w, "%s_lens = ({size_t *tmp = malloc(%d * sizeof(size_t)); ", a.Name, len(lst.Elems))
+                        for i, e := range lst.Elems {
+                                fmt.Fprintf(w, "tmp[%d] = ", i)
+                                if sl, ok2 := e.(*ListLit); ok2 {
+                                        fmt.Fprintf(w, "%d", len(sl.Elems))
+                                } else {
+                                        emitLenExpr(w, e)
+                                }
+                                io.WriteString(w, "; ")
+                        }
+                        io.WriteString(w, "tmp;});\n")
+                        writeIndent(w, indent)
+                        fmt.Fprintf(w, "%s_lens_len = %d;\n", a.Name, len(lst.Elems))
+                }
+                return
+        }
+        if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
+                if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+                        fromAlias := declAliases[a.Name]
+                        if ds, ok := declStmts[a.Name]; ok {
+                                ds.Value = nil
 			}
 			if fromAlias {
 				declAliases[a.Name] = false
@@ -2186,32 +2235,53 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				call.Args[1].emitExpr(w)
 				io.WriteString(w, ");\n")
 				return
-			default:
-				if strings.HasSuffix(base, "*") || (base != "" && !strings.HasSuffix(base, "[]")) {
-					typ := strings.TrimSuffix(base, "*")
-					if typ == "" {
-						typ = base
-					}
-					if needListAppendStruct == nil {
-						needListAppendStruct = make(map[string]bool)
-					}
-					needListAppendStruct[typ] = true
-					fmt.Fprintf(w, "%s = list_append_%s(%s, &%s_len, ", a.Name, sanitizeTypeName(typ), a.Name, a.Name)
-					call.Args[1].emitExpr(w)
-					io.WriteString(w, ");\n")
-					return
-				}
-				if base == "" {
-					needListAppendInt = true
-					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
-					call.Args[1].emitExpr(w)
-					io.WriteString(w, ");\n")
-					return
-				}
-				if strings.HasSuffix(base, "[]") {
-					elemBase := strings.TrimSuffix(base, "[]")
-					if strings.HasSuffix(elemBase, "[]") {
-						// support appending list pointers (e.g. list<list<int>>)
+                        default:
+                                if strings.HasSuffix(base, "*") {
+                                        typ := strings.TrimSuffix(base, "*")
+                                        switch typ {
+                                        case "int", "long long":
+                                                needListAppendPtr = true
+                                                fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+                                        case "double":
+                                                needListAppendDoublePtr = true
+                                                fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+                                        default:
+                                                if strings.Contains(typ, "char*") {
+                                                        needListAppendStrPtr = true
+                                                        fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+                                                } else {
+                                                        if needListAppendStructPtr == nil {
+                                                                needListAppendStructPtr = make(map[string]bool)
+                                                        }
+                                                        needListAppendStructPtr[typ] = true
+                                                        fmt.Fprintf(w, "%s = list_append_%sptr(%s, &%s_len, ", a.Name, sanitizeTypeName(typ), a.Name, a.Name)
+                                                }
+                                        }
+                                        call.Args[1].emitExpr(w)
+                                        io.WriteString(w, ");\n")
+                                        return
+                                }
+                                if base != "" && !strings.HasSuffix(base, "[]") {
+                                        if needListAppendStruct == nil {
+                                                needListAppendStruct = make(map[string]bool)
+                                        }
+                                        needListAppendStruct[base] = true
+                                        fmt.Fprintf(w, "%s = list_append_%s(%s, &%s_len, ", a.Name, sanitizeTypeName(base), a.Name, a.Name)
+                                        call.Args[1].emitExpr(w)
+                                        io.WriteString(w, ");\n")
+                                        return
+                                }
+                                if base == "" {
+                                        needListAppendInt = true
+                                        fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
+                                        call.Args[1].emitExpr(w)
+                                        io.WriteString(w, ");\n")
+                                        return
+                                }
+                                if strings.HasSuffix(base, "[]") {
+                                        elemBase := strings.TrimSuffix(base, "[]")
+                                        if strings.HasSuffix(elemBase, "[]") {
+                                                // support appending list pointers (e.g. list<list<int>>)
 						elemElemBase := strings.TrimSuffix(elemBase, "[]")
 						switch elemElemBase {
 						case "int", "long long":
@@ -2452,49 +2522,6 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		}
 	}
 
-	if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-		base := varBaseType(a.Name)
-		if base == "" {
-			base = "long long"
-		}
-		writeIndent(w, indent)
-		fmt.Fprintf(w, "%s = malloc(%d * sizeof(%s));\n", a.Name, len(lst.Elems), base)
-		writeIndent(w, indent)
-		fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
-		for i, e := range lst.Elems {
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s[%d] = ", a.Name, i)
-			if base == "const char*" {
-				if inferExprType(currentEnv, e) == "const char*" {
-					e.emitExpr(w)
-				} else if lit, ok2 := e.(*IntLit); ok2 {
-					fmt.Fprintf(w, "\"%d\"", lit.Value)
-				} else {
-					e.emitExpr(w)
-				}
-			} else {
-				e.emitExpr(w)
-			}
-			io.WriteString(w, ";\n")
-		}
-		if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s_lens = ({size_t *tmp = malloc(%d * sizeof(size_t)); ", a.Name, len(lst.Elems))
-			for i, e := range lst.Elems {
-				fmt.Fprintf(w, "tmp[%d] = ", i)
-				if sl, ok2 := e.(*ListLit); ok2 {
-					fmt.Fprintf(w, "%d", len(sl.Elems))
-				} else {
-					emitLenExpr(w, e)
-				}
-				io.WriteString(w, "; ")
-			}
-			io.WriteString(w, "tmp;});\n")
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "%s_lens_len = %d;\n", a.Name, len(lst.Elems))
-		}
-		return
-	}
 
 	if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
 		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
