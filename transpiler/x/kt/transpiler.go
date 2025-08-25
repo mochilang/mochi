@@ -1604,6 +1604,45 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if numOp && b.Op == "/" && !bigOp && !ratOp && (guessType(b) == "Int" || guessType(b) == "Long") {
+		io.WriteString(w, "Math.floorDiv(")
+		if _, ok := b.Left.(*BinaryExpr); ok {
+			io.WriteString(w, "(")
+			if useLong && leftType != "Long" {
+				cast(b.Left, "Long")
+			} else {
+				emitOperand(b.Left, b.Right)
+			}
+			io.WriteString(w, ")")
+		} else {
+			if useLong && leftType != "Long" {
+				cast(b.Left, "Long")
+			} else {
+				emitOperand(b.Left, b.Right)
+			}
+		}
+		io.WriteString(w, ", ")
+		if _, ok := b.Right.(*BinaryExpr); ok {
+			io.WriteString(w, "(")
+			if useLong && rightType != "Long" {
+				cast(b.Right, "Long")
+			} else {
+				emitOperand(b.Right, b.Left)
+			}
+			io.WriteString(w, ")")
+		} else {
+			if useLong && rightType != "Long" {
+				cast(b.Right, "Long")
+			} else {
+				emitOperand(b.Right, b.Left)
+			}
+		}
+		io.WriteString(w, ")")
+		if useLong && guessType(b) == "Int" {
+			io.WriteString(w, ".toInt()")
+		}
+		return
+	}
 	if b.Op == "in" {
 		rType := guessType(b.Right)
 		if strings.Contains(rType, "Map<") {
