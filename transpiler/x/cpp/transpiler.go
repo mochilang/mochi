@@ -4141,34 +4141,34 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLookupHost = false
 	usesSHA256 = false
 	usesIndexOf = false
-        usesParseIntStr = false
-        usesPanic = false
-        usesSubprocess = false
-        useFetch = false
-        fetchStructs = nil
-        useMD5 = false
-        useJSON = false
-        useBigInt = false
-        useBigRat = false
-        useRepeat = false
-        useConcat = false
-        useSplit = false
-        useSlice = false
-        useExists = false
-        useAnyVec = false
-       useIndex = false
-       // also reset auxiliary state to avoid leaking between runs
-       inFunction = false
-       inLambda = 0
-       currentVarDecls = map[string]*LetStmt{}
-       localTypes = map[string]string{}
-       currentReturnType = ""
-       inReturn = false
-       mutatedParams = map[string]bool{}
-       paramNames = map[string]bool{}
-       currentReceiver = ""
-       currentReceiverFields = nil
-       inStr = false
+	usesParseIntStr = false
+	usesPanic = false
+	usesSubprocess = false
+	useFetch = false
+	fetchStructs = nil
+	useMD5 = false
+	useJSON = false
+	useBigInt = false
+	useBigRat = false
+	useRepeat = false
+	useConcat = false
+	useSplit = false
+	useSlice = false
+	useExists = false
+	useAnyVec = false
+	useIndex = false
+	// also reset auxiliary state to avoid leaking between runs
+	inFunction = false
+	inLambda = 0
+	currentVarDecls = map[string]*LetStmt{}
+	localTypes = map[string]string{}
+	currentReturnType = ""
+	inReturn = false
+	mutatedParams = map[string]bool{}
+	paramNames = map[string]bool{}
+	currentReceiver = ""
+	currentReceiverFields = nil
+	inStr = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -6668,7 +6668,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			// function exists, we should respect that definition instead of replacing
 			// it with the math library's log, otherwise the results diverge from the
 			// reference implementation.
-			if findFunc("ln") == nil {
+			if findFunc("ln") == nil && findFunc("_ln") == nil {
 				if currentProgram != nil {
 					currentProgram.addInclude("<cmath>")
 				}
