@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,6 +66,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 var
   bench_start_0: integer;
@@ -70,8 +80,8 @@ var
   r90: IntArrayArray;
   r180: IntArrayArray;
   r270: IntArrayArray;
-function abs_int(abs_int_n: integer): integer; forward;
-function make_matrix(make_matrix_row_size: integer): IntArrayArray; forward;
+function abs_int(abs_int_n: int64): int64; forward;
+function make_matrix(make_matrix_row_size: int64): IntArrayArray; forward;
 function transpose(transpose_mat: IntArrayArray): IntArrayArray; forward;
 function reverse_row(reverse_row_mat: IntArrayArray): IntArrayArray; forward;
 function reverse_column(reverse_column_mat: IntArrayArray): IntArrayArray; forward;
@@ -80,20 +90,20 @@ function rotate_180(rotate_180_mat: IntArrayArray): IntArrayArray; forward;
 function rotate_270(rotate_270_mat: IntArrayArray): IntArrayArray; forward;
 function row_to_string(row_to_string_row: IntArray): string; forward;
 procedure print_matrix(print_matrix_mat: IntArrayArray); forward;
-function abs_int(abs_int_n: integer): integer;
+function abs_int(abs_int_n: int64): int64;
 begin
   if abs_int_n < 0 then begin
   exit(-abs_int_n);
 end;
   exit(abs_int_n);
 end;
-function make_matrix(make_matrix_row_size: integer): IntArrayArray;
+function make_matrix(make_matrix_row_size: int64): IntArrayArray;
 var
-  make_matrix_size: integer;
+  make_matrix_size: int64;
   make_matrix_mat: array of IntArray;
-  make_matrix_y: integer;
-  make_matrix_row: array of integer;
-  make_matrix_x: integer;
+  make_matrix_y: int64;
+  make_matrix_row: array of int64;
+  make_matrix_x: int64;
 begin
   make_matrix_size := abs_int(make_matrix_row_size);
   if make_matrix_size = 0 then begin
@@ -117,9 +127,9 @@ function transpose(transpose_mat: IntArrayArray): IntArrayArray;
 var
   transpose_n: integer;
   transpose_result_: array of IntArray;
-  transpose_i: integer;
-  transpose_row: array of integer;
-  transpose_j: integer;
+  transpose_i: int64;
+  transpose_row: array of int64;
+  transpose_j: int64;
 begin
   transpose_n := Length(transpose_mat);
   transpose_result_ := [];
@@ -152,8 +162,8 @@ end;
 function reverse_column(reverse_column_mat: IntArrayArray): IntArrayArray;
 var
   reverse_column_result_: array of IntArray;
-  reverse_column_i: integer;
-  reverse_column_row: array of integer;
+  reverse_column_i: int64;
+  reverse_column_row: array of int64;
   reverse_column_j: integer;
 begin
   reverse_column_result_ := [];
@@ -200,7 +210,7 @@ end;
 function row_to_string(row_to_string_row: IntArray): string;
 var
   row_to_string_line: string;
-  row_to_string_i: integer;
+  row_to_string_i: int64;
 begin
   row_to_string_line := '';
   row_to_string_i := 0;
@@ -216,7 +226,7 @@ end;
 end;
 procedure print_matrix(print_matrix_mat: IntArrayArray);
 var
-  print_matrix_i: integer;
+  print_matrix_i: int64;
 begin
   print_matrix_i := 0;
   while print_matrix_i < Length(print_matrix_mat) do begin
@@ -229,21 +239,21 @@ begin
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
   mat := make_matrix(4);
-  writeln('' + #10 + 'origin:' + #10 + '');
+  writeln(#10 + 'origin:' + #10);
   print_matrix(mat);
-  writeln('' + #10 + 'rotate 90 counterclockwise:' + #10 + '');
+  writeln(#10 + 'rotate 90 counterclockwise:' + #10);
   r90 := rotate_90(mat);
   print_matrix(r90);
   mat := make_matrix(4);
-  writeln('' + #10 + 'origin:' + #10 + '');
+  writeln(#10 + 'origin:' + #10);
   print_matrix(mat);
-  writeln('' + #10 + 'rotate 180:' + #10 + '');
+  writeln(#10 + 'rotate 180:' + #10);
   r180 := rotate_180(mat);
   print_matrix(r180);
   mat := make_matrix(4);
-  writeln('' + #10 + 'origin:' + #10 + '');
+  writeln(#10 + 'origin:' + #10);
   print_matrix(mat);
-  writeln('' + #10 + 'rotate 270 counterclockwise:' + #10 + '');
+  writeln(#10 + 'rotate 270 counterclockwise:' + #10);
   r270 := rotate_270(mat);
   print_matrix(r270);
   bench_memdiff_0 := _mem() - bench_mem_0;
@@ -253,4 +263,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

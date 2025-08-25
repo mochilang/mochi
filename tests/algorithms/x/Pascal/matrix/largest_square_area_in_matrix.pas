@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function min(xs: array of integer): integer;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function min(xs: array of int64): integer;
 var i, m: integer;
 begin
   if Length(xs) = 0 then begin min := 0; exit; end;
@@ -75,18 +85,18 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   sample: array of IntArray;
-function update_area_of_max_square(update_area_of_max_square_row: integer; update_area_of_max_square_col: integer; update_area_of_max_square_rows: integer; update_area_of_max_square_cols: integer; update_area_of_max_square_mat: IntArrayArray; update_area_of_max_square_largest_square_area: IntArray): integer; forward;
-function largest_square_area_in_matrix_top_down(largest_square_area_in_matrix_top_down_rows: integer; largest_square_area_in_matrix_top_down_cols: integer; largest_square_area_in_matrix_top_down_mat: IntArrayArray): integer; forward;
-function update_area_of_max_square_with_dp(update_area_of_max_square_with_dp_row: integer; update_area_of_max_square_with_dp_col: integer; update_area_of_max_square_with_dp_rows: integer; update_area_of_max_square_with_dp_cols: integer; update_area_of_max_square_with_dp_mat: IntArrayArray; update_area_of_max_square_with_dp_dp_array: IntArrayArray; update_area_of_max_square_with_dp_largest_square_area: IntArray): integer; forward;
-function largest_square_area_in_matrix_top_down_with_dp(largest_square_area_in_matrix_top_down_with_dp_rows: integer; largest_square_area_in_matrix_top_down_with_dp_cols: integer; largest_square_area_in_matrix_top_down_with_dp_mat: IntArrayArray): integer; forward;
-function largest_square_area_in_matrix_bottom_up(largest_square_area_in_matrix_bottom_up_rows: integer; largest_square_area_in_matrix_bottom_up_cols: integer; largest_square_area_in_matrix_bottom_up_mat: IntArrayArray): integer; forward;
-function largest_square_area_in_matrix_bottom_up_space_optimization(largest_square_area_in_matrix_bottom_up_space_optimization_rows: integer; largest_square_area_in_matrix_bottom_up_space_optimization_cols: integer; largest_square_area_in_matrix_bottom_up_space_optimization_mat: IntArrayArray): integer; forward;
-function update_area_of_max_square(update_area_of_max_square_row: integer; update_area_of_max_square_col: integer; update_area_of_max_square_rows: integer; update_area_of_max_square_cols: integer; update_area_of_max_square_mat: IntArrayArray; update_area_of_max_square_largest_square_area: IntArray): integer;
+function update_area_of_max_square(update_area_of_max_square_row: int64; update_area_of_max_square_col: int64; update_area_of_max_square_rows: int64; update_area_of_max_square_cols: int64; update_area_of_max_square_mat: IntArrayArray; update_area_of_max_square_largest_square_area: IntArray): int64; forward;
+function largest_square_area_in_matrix_top_down(largest_square_area_in_matrix_top_down_rows: int64; largest_square_area_in_matrix_top_down_cols: int64; largest_square_area_in_matrix_top_down_mat: IntArrayArray): int64; forward;
+function update_area_of_max_square_with_dp(update_area_of_max_square_with_dp_row: int64; update_area_of_max_square_with_dp_col: int64; update_area_of_max_square_with_dp_rows: int64; update_area_of_max_square_with_dp_cols: int64; update_area_of_max_square_with_dp_mat: IntArrayArray; update_area_of_max_square_with_dp_dp_array: IntArrayArray; update_area_of_max_square_with_dp_largest_square_area: IntArray): int64; forward;
+function largest_square_area_in_matrix_top_down_with_dp(largest_square_area_in_matrix_top_down_with_dp_rows: int64; largest_square_area_in_matrix_top_down_with_dp_cols: int64; largest_square_area_in_matrix_top_down_with_dp_mat: IntArrayArray): int64; forward;
+function largest_square_area_in_matrix_bottom_up(largest_square_area_in_matrix_bottom_up_rows: int64; largest_square_area_in_matrix_bottom_up_cols: int64; largest_square_area_in_matrix_bottom_up_mat: IntArrayArray): int64; forward;
+function largest_square_area_in_matrix_bottom_up_space_optimization(largest_square_area_in_matrix_bottom_up_space_optimization_rows: int64; largest_square_area_in_matrix_bottom_up_space_optimization_cols: int64; largest_square_area_in_matrix_bottom_up_space_optimization_mat: IntArrayArray): int64; forward;
+function update_area_of_max_square(update_area_of_max_square_row: int64; update_area_of_max_square_col: int64; update_area_of_max_square_rows: int64; update_area_of_max_square_cols: int64; update_area_of_max_square_mat: IntArrayArray; update_area_of_max_square_largest_square_area: IntArray): int64;
 var
-  update_area_of_max_square_right: integer;
-  update_area_of_max_square_diagonal: integer;
-  update_area_of_max_square_down: integer;
-  update_area_of_max_square_sub: integer;
+  update_area_of_max_square_right: int64;
+  update_area_of_max_square_diagonal: int64;
+  update_area_of_max_square_down: int64;
+  update_area_of_max_square_sub: int64;
 begin
   if (update_area_of_max_square_row >= update_area_of_max_square_rows) or (update_area_of_max_square_col >= update_area_of_max_square_cols) then begin
   exit(0);
@@ -104,20 +114,20 @@ end else begin
   exit(0);
 end;
 end;
-function largest_square_area_in_matrix_top_down(largest_square_area_in_matrix_top_down_rows: integer; largest_square_area_in_matrix_top_down_cols: integer; largest_square_area_in_matrix_top_down_mat: IntArrayArray): integer;
+function largest_square_area_in_matrix_top_down(largest_square_area_in_matrix_top_down_rows: int64; largest_square_area_in_matrix_top_down_cols: int64; largest_square_area_in_matrix_top_down_mat: IntArrayArray): int64;
 var
-  largest_square_area_in_matrix_top_down_largest: array of integer;
+  largest_square_area_in_matrix_top_down_largest: array of int64;
 begin
   largest_square_area_in_matrix_top_down_largest := [0];
   update_area_of_max_square(0, 0, largest_square_area_in_matrix_top_down_rows, largest_square_area_in_matrix_top_down_cols, largest_square_area_in_matrix_top_down_mat, largest_square_area_in_matrix_top_down_largest);
   exit(largest_square_area_in_matrix_top_down_largest[0]);
 end;
-function update_area_of_max_square_with_dp(update_area_of_max_square_with_dp_row: integer; update_area_of_max_square_with_dp_col: integer; update_area_of_max_square_with_dp_rows: integer; update_area_of_max_square_with_dp_cols: integer; update_area_of_max_square_with_dp_mat: IntArrayArray; update_area_of_max_square_with_dp_dp_array: IntArrayArray; update_area_of_max_square_with_dp_largest_square_area: IntArray): integer;
+function update_area_of_max_square_with_dp(update_area_of_max_square_with_dp_row: int64; update_area_of_max_square_with_dp_col: int64; update_area_of_max_square_with_dp_rows: int64; update_area_of_max_square_with_dp_cols: int64; update_area_of_max_square_with_dp_mat: IntArrayArray; update_area_of_max_square_with_dp_dp_array: IntArrayArray; update_area_of_max_square_with_dp_largest_square_area: IntArray): int64;
 var
-  update_area_of_max_square_with_dp_right: integer;
-  update_area_of_max_square_with_dp_diagonal: integer;
-  update_area_of_max_square_with_dp_down: integer;
-  update_area_of_max_square_with_dp_sub: integer;
+  update_area_of_max_square_with_dp_right: int64;
+  update_area_of_max_square_with_dp_diagonal: int64;
+  update_area_of_max_square_with_dp_down: int64;
+  update_area_of_max_square_with_dp_sub: int64;
 begin
   if (update_area_of_max_square_with_dp_row >= update_area_of_max_square_with_dp_rows) or (update_area_of_max_square_with_dp_col >= update_area_of_max_square_with_dp_cols) then begin
   exit(0);
@@ -140,13 +150,13 @@ end else begin
   exit(0);
 end;
 end;
-function largest_square_area_in_matrix_top_down_with_dp(largest_square_area_in_matrix_top_down_with_dp_rows: integer; largest_square_area_in_matrix_top_down_with_dp_cols: integer; largest_square_area_in_matrix_top_down_with_dp_mat: IntArrayArray): integer;
+function largest_square_area_in_matrix_top_down_with_dp(largest_square_area_in_matrix_top_down_with_dp_rows: int64; largest_square_area_in_matrix_top_down_with_dp_cols: int64; largest_square_area_in_matrix_top_down_with_dp_mat: IntArrayArray): int64;
 var
-  largest_square_area_in_matrix_top_down_with_dp_largest: array of integer;
+  largest_square_area_in_matrix_top_down_with_dp_largest: array of int64;
   largest_square_area_in_matrix_top_down_with_dp_dp_array: array of IntArray;
-  largest_square_area_in_matrix_top_down_with_dp_r: integer;
-  largest_square_area_in_matrix_top_down_with_dp_row_list: array of integer;
-  largest_square_area_in_matrix_top_down_with_dp_c: integer;
+  largest_square_area_in_matrix_top_down_with_dp_r: int64;
+  largest_square_area_in_matrix_top_down_with_dp_row_list: array of int64;
+  largest_square_area_in_matrix_top_down_with_dp_c: int64;
 begin
   largest_square_area_in_matrix_top_down_with_dp_largest := [0];
   largest_square_area_in_matrix_top_down_with_dp_dp_array := [];
@@ -164,19 +174,19 @@ end;
   update_area_of_max_square_with_dp(0, 0, largest_square_area_in_matrix_top_down_with_dp_rows, largest_square_area_in_matrix_top_down_with_dp_cols, largest_square_area_in_matrix_top_down_with_dp_mat, largest_square_area_in_matrix_top_down_with_dp_dp_array, largest_square_area_in_matrix_top_down_with_dp_largest);
   exit(largest_square_area_in_matrix_top_down_with_dp_largest[0]);
 end;
-function largest_square_area_in_matrix_bottom_up(largest_square_area_in_matrix_bottom_up_rows: integer; largest_square_area_in_matrix_bottom_up_cols: integer; largest_square_area_in_matrix_bottom_up_mat: IntArrayArray): integer;
+function largest_square_area_in_matrix_bottom_up(largest_square_area_in_matrix_bottom_up_rows: int64; largest_square_area_in_matrix_bottom_up_cols: int64; largest_square_area_in_matrix_bottom_up_mat: IntArrayArray): int64;
 var
   largest_square_area_in_matrix_bottom_up_dp_array: array of IntArray;
-  largest_square_area_in_matrix_bottom_up_r: integer;
-  largest_square_area_in_matrix_bottom_up_row_list: array of integer;
-  largest_square_area_in_matrix_bottom_up_c: integer;
-  largest_square_area_in_matrix_bottom_up_largest: integer;
-  largest_square_area_in_matrix_bottom_up_row: integer;
-  largest_square_area_in_matrix_bottom_up_col: integer;
-  largest_square_area_in_matrix_bottom_up_right: integer;
-  largest_square_area_in_matrix_bottom_up_diagonal: integer;
-  largest_square_area_in_matrix_bottom_up_bottom: integer;
-  largest_square_area_in_matrix_bottom_up_value: integer;
+  largest_square_area_in_matrix_bottom_up_r: int64;
+  largest_square_area_in_matrix_bottom_up_row_list: array of int64;
+  largest_square_area_in_matrix_bottom_up_c: int64;
+  largest_square_area_in_matrix_bottom_up_largest: int64;
+  largest_square_area_in_matrix_bottom_up_row: int64;
+  largest_square_area_in_matrix_bottom_up_col: int64;
+  largest_square_area_in_matrix_bottom_up_right: int64;
+  largest_square_area_in_matrix_bottom_up_diagonal: int64;
+  largest_square_area_in_matrix_bottom_up_bottom: int64;
+  largest_square_area_in_matrix_bottom_up_value: int64;
 begin
   largest_square_area_in_matrix_bottom_up_dp_array := [];
   largest_square_area_in_matrix_bottom_up_r := 0;
@@ -213,20 +223,20 @@ end;
 end;
   exit(largest_square_area_in_matrix_bottom_up_largest);
 end;
-function largest_square_area_in_matrix_bottom_up_space_optimization(largest_square_area_in_matrix_bottom_up_space_optimization_rows: integer; largest_square_area_in_matrix_bottom_up_space_optimization_cols: integer; largest_square_area_in_matrix_bottom_up_space_optimization_mat: IntArrayArray): integer;
+function largest_square_area_in_matrix_bottom_up_space_optimization(largest_square_area_in_matrix_bottom_up_space_optimization_rows: int64; largest_square_area_in_matrix_bottom_up_space_optimization_cols: int64; largest_square_area_in_matrix_bottom_up_space_optimization_mat: IntArrayArray): int64;
 var
-  largest_square_area_in_matrix_bottom_up_space_optimization_current_row: array of integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_i: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_next_row: array of integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_j: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_largest: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_row: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_col: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_right: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_diagonal: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_bottom: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_value: integer;
-  largest_square_area_in_matrix_bottom_up_space_optimization_t: integer;
+  largest_square_area_in_matrix_bottom_up_space_optimization_current_row: array of int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_i: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_next_row: array of int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_j: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_largest: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_row: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_col: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_right: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_diagonal: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_bottom: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_value: int64;
+  largest_square_area_in_matrix_bottom_up_space_optimization_t: int64;
 begin
   largest_square_area_in_matrix_bottom_up_space_optimization_current_row := [];
   largest_square_area_in_matrix_bottom_up_space_optimization_i := 0;
@@ -286,4 +296,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,6 +66,10 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -67,19 +77,19 @@ var
   bench_memdiff_0: int64;
 function bubble_sort(bubble_sort_nums: IntArray): IntArray; forward;
 function sort3(sort3_xs: IntArray): IntArray; forward;
-function triplet_sum1(triplet_sum1_arr: IntArray; triplet_sum1_target: integer): IntArray; forward;
-function triplet_sum2(triplet_sum2_arr: IntArray; triplet_sum2_target: integer): IntArray; forward;
+function triplet_sum1(triplet_sum1_arr: IntArray; triplet_sum1_target: int64): IntArray; forward;
+function triplet_sum2(triplet_sum2_arr: IntArray; triplet_sum2_target: int64): IntArray; forward;
 function list_equal(list_equal_a: IntArray; list_equal_b: IntArray): boolean; forward;
 procedure test_triplet_sum(); forward;
 procedure main(); forward;
 function bubble_sort(bubble_sort_nums: IntArray): IntArray;
 var
-  bubble_sort_arr: array of integer;
-  bubble_sort_i: integer;
+  bubble_sort_arr: array of int64;
+  bubble_sort_i: int64;
   bubble_sort_n: integer;
-  bubble_sort_a: integer;
-  bubble_sort_b: integer;
-  bubble_sort_tmp: integer;
+  bubble_sort_a: int64;
+  bubble_sort_b: int64;
+  bubble_sort_tmp: int64;
 begin
   bubble_sort_arr := [];
   bubble_sort_i := 0;
@@ -105,12 +115,12 @@ end;
 end;
 function sort3(sort3_xs: IntArray): IntArray;
 var
-  sort3_arr: array of integer;
-  sort3_i: integer;
+  sort3_arr: array of int64;
+  sort3_i: int64;
   sort3_n: integer;
-  sort3_a: integer;
-  sort3_b: integer;
-  sort3_tmp: integer;
+  sort3_a: int64;
+  sort3_b: int64;
+  sort3_tmp: int64;
 begin
   sort3_arr := [];
   sort3_i := 0;
@@ -134,11 +144,11 @@ end;
 end;
   exit(sort3_arr);
 end;
-function triplet_sum1(triplet_sum1_arr: IntArray; triplet_sum1_target: integer): IntArray;
+function triplet_sum1(triplet_sum1_arr: IntArray; triplet_sum1_target: int64): IntArray;
 var
-  triplet_sum1_i: integer;
-  triplet_sum1_j: integer;
-  triplet_sum1_k: integer;
+  triplet_sum1_i: int64;
+  triplet_sum1_j: int64;
+  triplet_sum1_k: int64;
 begin
   triplet_sum1_i := 0;
   while triplet_sum1_i < (Length(triplet_sum1_arr) - 2) do begin
@@ -157,14 +167,14 @@ end;
 end;
   exit([0, 0, 0]);
 end;
-function triplet_sum2(triplet_sum2_arr: IntArray; triplet_sum2_target: integer): IntArray;
+function triplet_sum2(triplet_sum2_arr: IntArray; triplet_sum2_target: int64): IntArray;
 var
   triplet_sum2_sorted: IntArray;
   triplet_sum2_n: integer;
-  triplet_sum2_i: integer;
-  triplet_sum2_left: integer;
+  triplet_sum2_i: int64;
+  triplet_sum2_left: int64;
   triplet_sum2_right: integer;
-  triplet_sum2_s: integer;
+  triplet_sum2_s: int64;
 begin
   triplet_sum2_sorted := bubble_sort(triplet_sum2_arr);
   triplet_sum2_n := Length(triplet_sum2_sorted);
@@ -189,7 +199,7 @@ end;
 end;
 function list_equal(list_equal_a: IntArray; list_equal_b: IntArray): boolean;
 var
-  list_equal_i: integer;
+  list_equal_i: int64;
 begin
   if Length(list_equal_a) <> Length(list_equal_b) then begin
   exit(false);
@@ -205,9 +215,9 @@ end;
 end;
 procedure test_triplet_sum();
 var
-  test_triplet_sum_arr1: array of integer;
-  test_triplet_sum_arr2: array of integer;
-  test_triplet_sum_arr3: array of integer;
+  test_triplet_sum_arr1: array of int64;
+  test_triplet_sum_arr2: array of int64;
+  test_triplet_sum_arr3: array of int64;
 begin
   test_triplet_sum_arr1 := [13, 29, 7, 23, 5];
   if not list_equal(triplet_sum1(test_triplet_sum_arr1, 35), [5, 7, 23]) then begin
@@ -233,7 +243,7 @@ end;
 end;
 procedure main();
 var
-  main_sample: array of integer;
+  main_sample: array of int64;
   main_res: IntArray;
 begin
   test_triplet_sum();
@@ -253,4 +263,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

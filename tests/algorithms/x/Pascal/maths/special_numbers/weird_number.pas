@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type BoolArray = array of boolean;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
@@ -44,6 +44,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -52,7 +58,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -62,7 +68,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -87,27 +97,23 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-  num: integer;
-  number: integer;
-  xs: IntArray;
-function bubble_sort(xs: IntArray): IntArray; forward;
-function factors(num: integer): IntArray; forward;
-function sum_list(xs: IntArray): integer; forward;
-function abundant(n: integer): boolean; forward;
-function semi_perfect(number: integer): boolean; forward;
-function weird(number: integer): boolean; forward;
+function bubble_sort(bubble_sort_xs: IntArray): IntArray; forward;
+function factors(factors_num: int64): IntArray; forward;
+function sum_list(sum_list_xs: IntArray): int64; forward;
+function abundant(abundant_n: int64): boolean; forward;
+function semi_perfect(semi_perfect_number: int64): boolean; forward;
+function weird(weird_number: int64): boolean; forward;
 procedure run_tests(); forward;
 procedure main(); forward;
-function bubble_sort(xs: IntArray): IntArray;
+function bubble_sort(bubble_sort_xs: IntArray): IntArray;
 var
-  bubble_sort_arr: array of integer;
+  bubble_sort_arr: array of int64;
   bubble_sort_n: integer;
-  bubble_sort_i: integer;
-  bubble_sort_j: integer;
-  bubble_sort_tmp: integer;
+  bubble_sort_i: int64;
+  bubble_sort_j: int64;
+  bubble_sort_tmp: int64;
 begin
-  bubble_sort_arr := xs;
+  bubble_sort_arr := bubble_sort_xs;
   bubble_sort_n := Length(bubble_sort_arr);
   bubble_sort_i := 0;
   while bubble_sort_i < bubble_sort_n do begin
@@ -124,18 +130,18 @@ end;
 end;
   exit(bubble_sort_arr);
 end;
-function factors(num: integer): IntArray;
+function factors(factors_num: int64): IntArray;
 var
-  factors_values: array of integer;
-  factors_i: integer;
-  factors_d: integer;
+  factors_values: array of int64;
+  factors_i: int64;
+  factors_d: int64;
 begin
   factors_values := [1];
   factors_i := 2;
-  while (factors_i * factors_i) <= num do begin
-  if (num mod factors_i) = 0 then begin
+  while (factors_i * factors_i) <= factors_num do begin
+  if (factors_num mod factors_i) = 0 then begin
   factors_values := concat(factors_values, IntArray([factors_i]));
-  factors_d := num div factors_i;
+  factors_d := _floordiv(factors_num, factors_i);
   if factors_d <> factors_i then begin
   factors_values := concat(factors_values, IntArray([factors_d]));
 end;
@@ -144,46 +150,46 @@ end;
 end;
   exit(bubble_sort(factors_values));
 end;
-function sum_list(xs: IntArray): integer;
+function sum_list(sum_list_xs: IntArray): int64;
 var
-  sum_list_total: integer;
-  sum_list_i: integer;
+  sum_list_total: int64;
+  sum_list_i: int64;
 begin
   sum_list_total := 0;
   sum_list_i := 0;
-  while sum_list_i < Length(xs) do begin
-  sum_list_total := sum_list_total + xs[sum_list_i];
+  while sum_list_i < Length(sum_list_xs) do begin
+  sum_list_total := sum_list_total + sum_list_xs[sum_list_i];
   sum_list_i := sum_list_i + 1;
 end;
   exit(sum_list_total);
 end;
-function abundant(n: integer): boolean;
+function abundant(abundant_n: int64): boolean;
 begin
-  exit(sum_list(factors(n)) > n);
+  exit(sum_list(factors(abundant_n)) > abundant_n);
 end;
-function semi_perfect(number: integer): boolean;
+function semi_perfect(semi_perfect_number: int64): boolean;
 var
   semi_perfect_values: IntArray;
   semi_perfect_possible: array of boolean;
-  semi_perfect_j: integer;
-  semi_perfect_idx: integer;
-  semi_perfect_v: integer;
-  semi_perfect_s: integer;
+  semi_perfect_j: int64;
+  semi_perfect_idx: int64;
+  semi_perfect_v: int64;
+  semi_perfect_s: int64;
 begin
-  if number <= 0 then begin
+  if semi_perfect_number <= 0 then begin
   exit(true);
 end;
-  semi_perfect_values := factors(number);
+  semi_perfect_values := factors(semi_perfect_number);
   semi_perfect_possible := [];
   semi_perfect_j := 0;
-  while semi_perfect_j <= number do begin
+  while semi_perfect_j <= semi_perfect_number do begin
   semi_perfect_possible := concat(semi_perfect_possible, [semi_perfect_j = 0]);
   semi_perfect_j := semi_perfect_j + 1;
 end;
   semi_perfect_idx := 0;
   while semi_perfect_idx < Length(semi_perfect_values) do begin
   semi_perfect_v := semi_perfect_values[semi_perfect_idx];
-  semi_perfect_s := number;
+  semi_perfect_s := semi_perfect_number;
   while semi_perfect_s >= semi_perfect_v do begin
   if semi_perfect_possible[semi_perfect_s - semi_perfect_v] then begin
   semi_perfect_possible[semi_perfect_s] := true;
@@ -192,11 +198,11 @@ end;
 end;
   semi_perfect_idx := semi_perfect_idx + 1;
 end;
-  exit(semi_perfect_possible[number]);
+  exit(semi_perfect_possible[semi_perfect_number]);
 end;
-function weird(number: integer): boolean;
+function weird(weird_number: int64): boolean;
 begin
-  exit(abundant(number) and (semi_perfect(number) = false));
+  exit(abundant(weird_number) and (semi_perfect(weird_number) = false));
 end;
 procedure run_tests();
 begin
@@ -248,9 +254,9 @@ end;
 end;
 procedure main();
 var
-  main_nums: array of integer;
-  main_i: integer;
-  main_n: integer;
+  main_nums: array of int64;
+  main_i: int64;
+  main_n: int64;
 begin
   run_tests();
   main_nums := [69, 70, 71];
@@ -277,4 +283,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

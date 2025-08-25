@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,51 +66,53 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  exp_: integer;
-  number: integer;
-function pow2(pow2_exp_: integer): integer; forward;
-function proth(number: integer): integer; forward;
+function pow2(pow2_exp_: int64): int64; forward;
+function proth(proth_number: int64): int64; forward;
 procedure main(); forward;
-function pow2(pow2_exp_: integer): integer;
+function pow2(pow2_exp_: int64): int64;
 var
-  pow2_result_: integer;
-  pow2_i: integer;
+  pow2_result_: int64;
+  pow2_i: int64;
 begin
   pow2_result_ := 1;
   pow2_i := 0;
-  while pow2_i < exp_ do begin
+  while pow2_i < pow2_exp_ do begin
   pow2_result_ := pow2_result_ * 2;
   pow2_i := pow2_i + 1;
 end;
   exit(pow2_result_);
 end;
-function proth(number: integer): integer;
+function proth(proth_number: int64): int64;
 var
   proth_temp: integer;
-  proth_pow: integer;
-  proth_block_index: integer;
-  proth_proth_list: array of integer;
-  proth_proth_index: integer;
-  proth_increment: integer;
-  proth_block: integer;
-  proth_i: integer;
-  proth_next_val: integer;
+  proth_pow: int64;
+  proth_block_index: int64;
+  proth_proth_list: array of int64;
+  proth_proth_index: int64;
+  proth_increment: int64;
+  proth_block: int64;
+  proth_i: int64;
+  proth_next_val: int64;
 begin
-  if number < 1 then begin
+  if proth_number < 1 then begin
   panic('Input value must be > 0');
 end;
-  if number = 1 then begin
+  if proth_number = 1 then begin
   exit(3);
 end;
-  if number = 2 then begin
+  if proth_number = 2 then begin
   exit(5);
 end;
-  proth_temp := Trunc(number div 3);
+  proth_temp := Trunc(_floordiv(proth_number, 3));
   proth_pow := 1;
   proth_block_index := 1;
   while proth_pow <= proth_temp do begin
@@ -126,12 +134,12 @@ end;
   proth_increment := proth_increment * 2;
   proth_block := proth_block + 1;
 end;
-  exit(proth_proth_list[number - 1]);
+  exit(proth_proth_list[proth_number - 1]);
 end;
 procedure main();
 var
-  main_n: integer;
-  main_value: integer;
+  main_n: int64;
+  main_value: int64;
 begin
   main_n := 1;
   while main_n <= 10 do begin
@@ -152,4 +160,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

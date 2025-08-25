@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,20 +66,24 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
 function unique(unique_nums: IntArray): IntArray; forward;
-function array_equalization(array_equalization_vector: IntArray; array_equalization_step_size: integer): integer; forward;
+function array_equalization(array_equalization_vector: IntArray; array_equalization_step_size: int64): int64; forward;
 function unique(unique_nums: IntArray): IntArray;
 var
-  unique_res: array of integer;
-  unique_i: integer;
-  unique_v: integer;
+  unique_res: array of int64;
+  unique_i: int64;
+  unique_v: int64;
   unique_found: boolean;
-  unique_j: integer;
+  unique_j: int64;
 begin
   unique_res := [];
   unique_i := 0;
@@ -95,14 +105,14 @@ end;
 end;
   exit(unique_res);
 end;
-function array_equalization(array_equalization_vector: IntArray; array_equalization_step_size: integer): integer;
+function array_equalization(array_equalization_vector: IntArray; array_equalization_step_size: int64): int64;
 var
   array_equalization_elems: IntArray;
   array_equalization_min_updates: integer;
-  array_equalization_i: integer;
-  array_equalization_target: integer;
-  array_equalization_idx: integer;
-  array_equalization_updates: integer;
+  array_equalization_i: int64;
+  array_equalization_target: int64;
+  array_equalization_idx: int64;
+  array_equalization_updates: int64;
 begin
   if array_equalization_step_size <= 0 then begin
   error('Step size must be positive and non-zero.');
@@ -145,4 +155,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-procedure show_list(xs: array of integer);
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+procedure show_list(xs: array of int64);
 var i: integer;
 begin
   write('[');
@@ -80,6 +90,26 @@ begin
   end;
   writeln('');
 end;
+function list_int_to_str(xs: array of int64): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + IntToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+function list_list_int_to_str(xs: array of IntArray): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + list_int_to_str(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -91,12 +121,12 @@ var
   matrix_unordered: array of IntArray;
 function is_square(is_square_matrix: IntArrayArray): boolean; forward;
 function matrix_multiply(matrix_multiply_a: IntArrayArray; matrix_multiply_b: IntArrayArray): IntArrayArray; forward;
-procedure multiply(multiply_i: integer; multiply_j: integer; multiply_k: integer; multiply_a: IntArrayArray; multiply_b: IntArrayArray; multiply_result_: IntArrayArray; multiply_n: integer; multiply_m: integer); forward;
+procedure multiply(multiply_i: int64; multiply_j: int64; multiply_k: int64; multiply_a: IntArrayArray; multiply_b: IntArrayArray; multiply_result_: IntArrayArray; multiply_n: int64; multiply_m: int64); forward;
 function matrix_multiply_recursive(matrix_multiply_recursive_a: IntArrayArray; matrix_multiply_recursive_b: IntArrayArray): IntArrayArray; forward;
 function is_square(is_square_matrix: IntArrayArray): boolean;
 var
   is_square_n: integer;
-  is_square_i: integer;
+  is_square_i: int64;
 begin
   is_square_n := Length(is_square_matrix);
   is_square_i := 0;
@@ -114,11 +144,11 @@ var
   matrix_multiply_cols: integer;
   matrix_multiply_inner: integer;
   matrix_multiply_result_: array of IntArray;
-  matrix_multiply_i: integer;
-  matrix_multiply_row: array of integer;
-  matrix_multiply_j: integer;
-  matrix_multiply_sum: integer;
-  matrix_multiply_k: integer;
+  matrix_multiply_i: int64;
+  matrix_multiply_row: array of int64;
+  matrix_multiply_j: int64;
+  matrix_multiply_sum: int64;
+  matrix_multiply_k: int64;
 begin
   matrix_multiply_rows := Length(matrix_multiply_a);
   matrix_multiply_cols := Length(matrix_multiply_b[0]);
@@ -143,7 +173,7 @@ end;
 end;
   exit(matrix_multiply_result_);
 end;
-procedure multiply(multiply_i: integer; multiply_j: integer; multiply_k: integer; multiply_a: IntArrayArray; multiply_b: IntArrayArray; multiply_result_: IntArrayArray; multiply_n: integer; multiply_m: integer);
+procedure multiply(multiply_i: int64; multiply_j: int64; multiply_k: int64; multiply_a: IntArrayArray; multiply_b: IntArrayArray; multiply_result_: IntArrayArray; multiply_n: int64; multiply_m: int64);
 begin
   if multiply_i >= multiply_n then begin
   exit();
@@ -164,9 +194,9 @@ var
   matrix_multiply_recursive_n: integer;
   matrix_multiply_recursive_m: integer;
   matrix_multiply_recursive_result_: array of IntArray;
-  matrix_multiply_recursive_i: integer;
-  matrix_multiply_recursive_row: array of integer;
-  matrix_multiply_recursive_j: integer;
+  matrix_multiply_recursive_i: int64;
+  matrix_multiply_recursive_row: array of int64;
+  matrix_multiply_recursive_j: int64;
 begin
   if (Length(matrix_multiply_recursive_a) = 0) or (Length(matrix_multiply_recursive_b) = 0) then begin
   exit([]);
@@ -208,4 +238,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

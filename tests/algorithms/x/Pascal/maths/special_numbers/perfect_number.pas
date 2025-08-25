@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,39 +65,42 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-function perfect(n: integer): boolean; forward;
+function perfect(perfect_n: int64): boolean; forward;
 procedure main(); forward;
-function perfect(n: integer): boolean;
+function perfect(perfect_n: int64): boolean;
 var
-  perfect_limit: integer;
-  perfect_sum: integer;
-  perfect_i: integer;
+  perfect_limit: int64;
+  perfect_sum: int64;
+  perfect_i: int64;
 begin
-  if n <= 0 then begin
+  if perfect_n <= 0 then begin
   exit(false);
 end;
-  perfect_limit := n div 2;
+  perfect_limit := _floordiv(perfect_n, 2);
   perfect_sum := 0;
   perfect_i := 1;
   while perfect_i <= perfect_limit do begin
-  if (n mod perfect_i) = 0 then begin
+  if (perfect_n mod perfect_i) = 0 then begin
   perfect_sum := perfect_sum + perfect_i;
 end;
   perfect_i := perfect_i + 1;
 end;
-  exit(perfect_sum = n);
+  exit(perfect_sum = perfect_n);
 end;
 procedure main();
 var
-  main_numbers: array of integer;
-  main_idx: integer;
-  main_num: integer;
+  main_numbers: array of int64;
+  main_idx: int64;
+  main_num: int64;
 begin
   main_numbers := [6, 28, 29, 12, 496, 8128, 0, -1];
   main_idx := 0;
@@ -117,4 +126,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

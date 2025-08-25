@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,15 +65,19 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function is_prime(is_prime_number: integer): boolean; forward;
-function is_prime(is_prime_number: integer): boolean;
+function is_prime(is_prime_number: int64): boolean; forward;
+function is_prime(is_prime_number: int64): boolean;
 var
-  is_prime_i: integer;
+  is_prime_i: int64;
 begin
   if is_prime_number < 0 then begin
   panic('is_prime() only accepts positive integers');
@@ -118,4 +128,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

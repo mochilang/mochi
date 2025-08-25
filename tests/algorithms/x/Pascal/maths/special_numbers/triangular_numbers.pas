@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,21 +65,24 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  position: integer;
-function triangular_number(position: integer): integer; forward;
+function triangular_number(triangular_number_position: int64): int64; forward;
 procedure test_triangular_number(); forward;
 procedure main(); forward;
-function triangular_number(position: integer): integer;
+function triangular_number(triangular_number_position: int64): int64;
 begin
-  if position < 0 then begin
+  if triangular_number_position < 0 then begin
   panic('position must be non-negative');
 end;
-  exit((position * (position + 1)) div 2);
+  exit(_floordiv(triangular_number_position * (triangular_number_position + 1), 2));
 end;
 procedure test_triangular_number();
 begin
@@ -101,4 +110,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

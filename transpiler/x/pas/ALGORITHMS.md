@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-25 16:57 GMT+7
+Last updated: 2025-08-25 22:35 GMT+7
 
-## Algorithms Golden Test Checklist (669/1077)
+## Algorithms Golden Test Checklist (670/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -679,15 +679,15 @@ Last updated: 2025-08-25 16:57 GMT+7
 | 670 | maths/special_numbers/harshad_numbers | ✓ | 1.0µs | 0B |
 | 671 | maths/special_numbers/hexagonal_number | ✓ | 0ns | 64B |
 | 672 | maths/special_numbers/krishnamurthy_number | ✓ | 0ns | 128B |
-| 673 | maths/special_numbers/perfect_number | ✓ | 0ns | 0B |
+| 673 | maths/special_numbers/perfect_number | ✓ | 1.0µs | 0B |
 | 674 | maths/special_numbers/polygonal_numbers | ✓ | 0ns | 0B |
-| 675 | maths/special_numbers/pronic_number | ✓ | 1.0µs | 0B |
+| 675 | maths/special_numbers/pronic_number | ✓ | 0ns | 0B |
 | 676 | maths/special_numbers/proth_number | ✓ | 0ns | 0B |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 1.0µs | 0B |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 1.0µs | 64B |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 0ns | 0B |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 2.0µs | 64B |
 | 679 | maths/special_numbers/weird_number | ✓ | 0ns | 0B |
 | 680 | maths/sum_of_arithmetic_series | ✓ | 0ns | 0B |
-| 681 | maths/sum_of_digits | ✓ | 1.0µs | 0B |
+| 681 | maths/sum_of_digits | ✓ | 0ns | 0B |
 | 682 | maths/sum_of_geometric_progression | ✓ | 0ns | 0B |
 | 683 | maths/sum_of_harmonic_series | ✓ | 0ns | 0B |
 | 684 | maths/sumset | ✓ | 0ns | 0B |
@@ -699,32 +699,32 @@ Last updated: 2025-08-25 16:57 GMT+7
 | 690 | maths/trapezoidal_rule | ✓ | 0ns | 192B |
 | 691 | maths/triplet_sum | ✓ | 0ns | 0B |
 | 692 | maths/twin_prime | ✓ | 0ns | 0B |
-| 693 | maths/two_pointer | ✓ | 0ns | 0B |
-| 694 | maths/two_sum | ✓ | 0ns | 288B |
+| 693 | maths/two_pointer | ✓ | 1.0µs | 0B |
+| 694 | maths/two_sum | ✓ | 0ns | 352B |
 | 695 | maths/volume | ✓ | 0ns | 0B |
-| 696 | maths/zellers_congruence | ✓ | 0ns | 17.34KB |
+| 696 | maths/zellers_congruence | ✓ | 0ns | 17.50KB |
 | 697 | matrix/binary_search_matrix | ✓ | 0ns | 0B |
 | 698 | matrix/count_islands_in_matrix | ✓ | 0ns | 384B |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 1.0ms | 7.70MB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 2.0ms | 15.33MB |
 | 700 | matrix/count_paths | ✓ | 0ns | 0B |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 0ns | 0B |
 | 702 | matrix/inverse_of_matrix | ✓ | 0ns | 896B |
-| 703 | matrix/largest_square_area_in_matrix | ✓ | 0ns | 128B |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 0ns | 192B |
 | 704 | matrix/matrix_based_game | ✓ | 1.0µs | 0B |
-| 705 | matrix/matrix_class | ✓ | 1.0µs | 64B |
-| 706 | matrix/matrix_equalization | error |  |  |
-| 707 | matrix/matrix_multiplication_recursion | ✓ | 0ns | 1.31KB |
+| 705 | matrix/matrix_class | ✓ | 0ns | 64B |
+| 706 | matrix/matrix_equalization | ✓ | 1.0µs | 128B |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 0ns | 1.50KB |
 | 708 | matrix/matrix_operation | ✓ | 0ns | 0B |
-| 709 | matrix/max_area_of_island | ✓ | 0ns | 8.28KB |
+| 709 | matrix/max_area_of_island | ✓ | 1.0µs | 8.53KB |
 | 710 | matrix/median_matrix | ✓ | 0ns | 512B |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 0ns | 0B |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 1.0µs | 0B |
 | 712 | matrix/pascal_triangle | ✓ | 0ns | 0B |
 | 713 | matrix/rotate_matrix | ✓ | 0ns | 1.25KB |
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 0ns | 0B |
 | 715 | matrix/sherman_morrison | ✓ | 1.0µs | 0B |
-| 716 | matrix/spiral_print | ✓ | 0ns | 0B |
+| 716 | matrix/spiral_print | ✓ | 1.0µs | 0B |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 0ns | 0B |
-| 718 | matrix/validate_sudoku_board | ✓ | 0ns | 41.81KB |
+| 718 | matrix/validate_sudoku_board | ✓ | 1.0µs | 41.81KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 1.0µs | 544B |
 | 720 | networking_flow/minimum_cut | ✓ | 0ns | 640B |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 0ns | 0B |

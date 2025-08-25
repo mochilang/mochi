@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function contains(xs: array of integer; v: integer): boolean;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function contains(xs: array of int64; v: int64): boolean;
 var i: integer;
 begin
   for i := 0 to High(xs) do begin
@@ -86,21 +96,21 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  NUM_SQUARES: integer;
+  NUM_SQUARES: int64;
   EMPTY_CELL: string;
   valid_board: array of StrArray;
   invalid_board: array of StrArray;
 function is_valid_sudoku_board(is_valid_sudoku_board_board: StrArrayArray): boolean; forward;
 function is_valid_sudoku_board(is_valid_sudoku_board_board: StrArrayArray): boolean;
 var
-  is_valid_sudoku_board_i: integer;
+  is_valid_sudoku_board_i: int64;
   is_valid_sudoku_board_rows: array of StrArray;
   is_valid_sudoku_board_cols: array of StrArray;
   is_valid_sudoku_board_boxes: array of StrArray;
   is_valid_sudoku_board_r: int64;
   is_valid_sudoku_board_c: int64;
   is_valid_sudoku_board_value: string;
-  is_valid_sudoku_board_box: integer;
+  is_valid_sudoku_board_box: int64;
 begin
   if Length(is_valid_sudoku_board_board) <> NUM_SQUARES then begin
   exit(false);
@@ -128,7 +138,7 @@ end;
   if is_valid_sudoku_board_value = EMPTY_CELL then begin
   continue;
 end;
-  is_valid_sudoku_board_box := (Trunc(is_valid_sudoku_board_r div 3) * 3) + Trunc(is_valid_sudoku_board_c div 3);
+  is_valid_sudoku_board_box := (Trunc(_floordiv(is_valid_sudoku_board_r, 3)) * 3) + Trunc(_floordiv(is_valid_sudoku_board_c, 3));
   if (contains(is_valid_sudoku_board_rows[is_valid_sudoku_board_r], is_valid_sudoku_board_value) or contains(is_valid_sudoku_board_cols[is_valid_sudoku_board_c], is_valid_sudoku_board_value)) or contains(is_valid_sudoku_board_boxes[is_valid_sudoku_board_box], is_valid_sudoku_board_value) then begin
   exit(false);
 end;
@@ -156,4 +166,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

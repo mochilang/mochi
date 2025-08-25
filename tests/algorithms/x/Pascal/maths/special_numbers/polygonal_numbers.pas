@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,32 +65,34 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-  sides: integer;
-function polygonal_num(n: integer; sides: integer): integer; forward;
+function polygonal_num(polygonal_num_n: int64; polygonal_num_sides: int64): int64; forward;
 procedure main(); forward;
-function polygonal_num(n: integer; sides: integer): integer;
+function polygonal_num(polygonal_num_n: int64; polygonal_num_sides: int64): int64;
 var
-  polygonal_num_term1: integer;
-  polygonal_num_term2: integer;
+  polygonal_num_term1: int64;
+  polygonal_num_term2: int64;
 begin
-  if (n < 0) or (sides < 3) then begin
+  if (polygonal_num_n < 0) or (polygonal_num_sides < 3) then begin
   panic('Invalid input: num must be >= 0 and sides must be >= 3.');
 end;
-  polygonal_num_term1 := ((sides - 2) * n) * n;
-  polygonal_num_term2 := (sides - 4) * n;
-  exit((polygonal_num_term1 - polygonal_num_term2) div 2);
+  polygonal_num_term1 := ((polygonal_num_sides - 2) * polygonal_num_n) * polygonal_num_n;
+  polygonal_num_term2 := (polygonal_num_sides - 4) * polygonal_num_n;
+  exit(_floordiv(polygonal_num_term1 - polygonal_num_term2, 2));
 end;
 procedure main();
 var
-  main_n: integer;
-  main_sides: integer;
-  main_result_: integer;
+  main_n: int64;
+  main_sides: int64;
+  main_result_: int64;
 begin
   main_n := 5;
   main_sides := 4;
@@ -103,4 +111,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -90,11 +100,11 @@ function bubble_sort(bubble_sort_nums: IntArray): IntArray; forward;
 function three_sum(three_sum_nums: IntArray): IntArrayArray; forward;
 function bubble_sort(bubble_sort_nums: IntArray): IntArray;
 var
-  bubble_sort_arr: array of integer;
+  bubble_sort_arr: array of int64;
   bubble_sort_n: integer;
-  bubble_sort_i: integer;
-  bubble_sort_j: integer;
-  bubble_sort_temp: integer;
+  bubble_sort_i: int64;
+  bubble_sort_j: int64;
+  bubble_sort_temp: int64;
 begin
   bubble_sort_arr := bubble_sort_nums;
   bubble_sort_n := Length(bubble_sort_arr);
@@ -118,12 +128,12 @@ var
   three_sum_sorted: IntArray;
   three_sum_res: array of IntArray;
   three_sum_n: integer;
-  three_sum_i: integer;
-  three_sum_low: integer;
+  three_sum_i: int64;
+  three_sum_low: int64;
   three_sum_high: integer;
-  three_sum_c: integer;
-  three_sum_s: integer;
-  three_sum_triple: array of integer;
+  three_sum_c: int64;
+  three_sum_s: int64;
+  three_sum_triple: array of int64;
 begin
   three_sum_sorted := bubble_sort(three_sum_nums);
   three_sum_res := [];
@@ -173,4 +183,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

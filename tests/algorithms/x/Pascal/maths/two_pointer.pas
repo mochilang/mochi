@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-procedure show_list(xs: array of integer);
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+procedure show_list_int64(xs: array of int64);
 var i: integer;
 begin
   write('[');
@@ -71,7 +81,7 @@ begin
   end;
   write(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -96,14 +106,14 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function two_pointer(two_pointer_nums: IntArray; two_pointer_target: integer): IntArray; forward;
+function two_pointer(two_pointer_nums: IntArray; two_pointer_target: int64): IntArray; forward;
 procedure test_two_pointer(); forward;
 procedure main(); forward;
-function two_pointer(two_pointer_nums: IntArray; two_pointer_target: integer): IntArray;
+function two_pointer(two_pointer_nums: IntArray; two_pointer_target: int64): IntArray;
 var
-  two_pointer_i: integer;
+  two_pointer_i: int64;
   two_pointer_j: integer;
-  two_pointer_s: integer;
+  two_pointer_s: int64;
 begin
   two_pointer_i := 0;
   two_pointer_j := Length(two_pointer_nums) - 1;
@@ -150,7 +160,7 @@ end;
 procedure main();
 begin
   test_two_pointer();
-  show_list(two_pointer([2, 7, 11, 15], 9));
+  show_list_int64(two_pointer([2, 7, 11, 15], 9));
 end;
 begin
   init_now();
@@ -164,4 +174,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

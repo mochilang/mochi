@@ -44,6 +44,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -52,7 +58,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,6 +67,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
@@ -91,9 +101,9 @@ function add(add_matrices: RealArrayArrayArray): RealArrayArray; forward;
 function subtract(subtract_a: RealArrayArray; subtract_b: RealArrayArray): RealArrayArray; forward;
 function scalar_multiply(scalar_multiply_matrix: RealArrayArray; scalar_multiply_n: real): RealArrayArray; forward;
 function multiply(multiply_a: RealArrayArray; multiply_b: RealArrayArray): RealArrayArray; forward;
-function identity(identity_n: integer): RealArrayArray; forward;
+function identity(identity_n: int64): RealArrayArray; forward;
 function transpose(transpose_matrix: RealArrayArray): RealArrayArray; forward;
-function minor(minor_matrix: RealArrayArray; minor_row: integer; minor_column: integer): RealArrayArray; forward;
+function minor(minor_matrix: RealArrayArray; minor_row: int64; minor_column: int64): RealArrayArray; forward;
 function determinant(determinant_matrix: RealArrayArray): real; forward;
 function inverse(inverse_matrix: RealArrayArray): RealArrayArray; forward;
 procedure main(); forward;
@@ -101,12 +111,12 @@ function add(add_matrices: RealArrayArrayArray): RealArrayArray;
 var
   add_rows: integer;
   add_cols: integer;
-  add_r: integer;
+  add_r: int64;
   add_result_: array of RealArray;
   add_row: array of real;
-  add_c: integer;
+  add_c: int64;
   add_sum: real;
-  add_m: integer;
+  add_m: int64;
 begin
   add_rows := Length(add_matrices[0]);
   add_cols := Length(add_matrices[0][0]);
@@ -134,10 +144,10 @@ function subtract(subtract_a: RealArrayArray; subtract_b: RealArrayArray): RealA
 var
   subtract_rows: integer;
   subtract_cols: integer;
-  subtract_r: integer;
+  subtract_r: int64;
   subtract_result_: array of RealArray;
   subtract_row: array of real;
-  subtract_c: integer;
+  subtract_c: int64;
 begin
   subtract_rows := Length(subtract_a);
   subtract_cols := Length(subtract_a[0]);
@@ -158,9 +168,9 @@ end;
 function scalar_multiply(scalar_multiply_matrix: RealArrayArray; scalar_multiply_n: real): RealArrayArray;
 var
   scalar_multiply_result_: array of RealArray;
-  scalar_multiply_i: integer;
+  scalar_multiply_i: int64;
   scalar_multiply_row: array of real;
-  scalar_multiply_j: integer;
+  scalar_multiply_j: int64;
 begin
   scalar_multiply_result_ := [];
   scalar_multiply_i := 0;
@@ -183,11 +193,11 @@ var
   multiply_rowsB: integer;
   multiply_colsB: integer;
   multiply_result_: array of RealArray;
-  multiply_i: integer;
+  multiply_i: int64;
   multiply_row: array of real;
-  multiply_j: integer;
+  multiply_j: int64;
   multiply_sum: real;
-  multiply_k: integer;
+  multiply_k: int64;
 begin
   multiply_rowsA := Length(multiply_a);
   multiply_colsA := Length(multiply_a[0]);
@@ -213,12 +223,12 @@ end;
 end;
   exit(multiply_result_);
 end;
-function identity(identity_n: integer): RealArrayArray;
+function identity(identity_n: int64): RealArrayArray;
 var
   identity_result_: array of RealArray;
-  identity_i: integer;
+  identity_i: int64;
   identity_row: array of real;
-  identity_j: integer;
+  identity_j: int64;
 begin
   identity_result_ := [];
   identity_i := 0;
@@ -243,9 +253,9 @@ var
   transpose_rows: integer;
   transpose_cols: integer;
   transpose_result_: array of RealArray;
-  transpose_c: integer;
+  transpose_c: int64;
   transpose_row: array of real;
-  transpose_r: integer;
+  transpose_r: int64;
 begin
   transpose_rows := Length(transpose_matrix);
   transpose_cols := Length(transpose_matrix[0]);
@@ -263,12 +273,12 @@ end;
 end;
   exit(transpose_result_);
 end;
-function minor(minor_matrix: RealArrayArray; minor_row: integer; minor_column: integer): RealArrayArray;
+function minor(minor_matrix: RealArrayArray; minor_row: int64; minor_column: int64): RealArrayArray;
 var
   minor_result_: array of RealArray;
-  minor_i: integer;
+  minor_i: int64;
   minor_new_row: array of real;
-  minor_j: integer;
+  minor_j: int64;
 begin
   minor_result_ := [];
   minor_i := 0;
@@ -291,7 +301,7 @@ end;
 function determinant(determinant_matrix: RealArrayArray): real;
 var
   determinant_det: real;
-  determinant_c: integer;
+  determinant_c: int64;
   determinant_sub: RealArrayArray;
   determinant_sign: real;
 begin
@@ -317,9 +327,9 @@ var
   inverse_det: real;
   inverse_size: integer;
   inverse_matrix_minor: array of RealArray;
-  inverse_i: integer;
+  inverse_i: int64;
   inverse_row: array of real;
-  inverse_j: integer;
+  inverse_j: int64;
   inverse_m: RealArrayArray;
   inverse_cofactors: array of RealArray;
   inverse_sign: real;
@@ -374,12 +384,12 @@ begin
   main_matrix_b := [[3, 4], [7, 4]];
   main_matrix_c := [[11, 12, 13, 14], [21, 22, 23, 24], [31, 32, 33, 34], [41, 42, 43, 44]];
   main_matrix_d := [[3, 0, 2], [2, 0, -2], [0, 1, 1]];
-  writeln(('Add Operation, add(matrix_a, matrix_b) = ' + list_list_real_to_str(add([main_matrix_a, main_matrix_b]))) + ' ' + #10 + '');
-  writeln(('Multiply Operation, multiply(matrix_a, matrix_b) = ' + list_list_real_to_str(multiply(main_matrix_a, main_matrix_b))) + ' ' + #10 + '');
-  writeln(('Identity: ' + list_list_real_to_str(identity(5))) + '' + #10 + '');
-  writeln(((('Minor of ' + list_list_real_to_str(main_matrix_c)) + ' = ') + list_list_real_to_str(minor(main_matrix_c, 1, 2))) + ' ' + #10 + '');
-  writeln(((('Determinant of ' + list_list_real_to_str(main_matrix_b)) + ' = ') + FloatToStr(determinant(main_matrix_b))) + ' ' + #10 + '');
-  writeln(((('Inverse of ' + list_list_real_to_str(main_matrix_d)) + ' = ') + list_list_real_to_str(inverse(main_matrix_d))) + '' + #10 + '');
+  writeln(('Add Operation, add(matrix_a, matrix_b) = ' + list_list_real_to_str(add([main_matrix_a, main_matrix_b]))) + ' ' + #10);
+  writeln(('Multiply Operation, multiply(matrix_a, matrix_b) = ' + list_list_real_to_str(multiply(main_matrix_a, main_matrix_b))) + ' ' + #10);
+  writeln(('Identity: ' + list_list_real_to_str(identity(5))) + #10);
+  writeln(((('Minor of ' + list_list_real_to_str(main_matrix_c)) + ' = ') + list_list_real_to_str(minor(main_matrix_c, 1, 2))) + ' ' + #10);
+  writeln(((('Determinant of ' + list_list_real_to_str(main_matrix_b)) + ' = ') + FloatToStr(determinant(main_matrix_b))) + ' ' + #10);
+  writeln(((('Inverse of ' + list_list_real_to_str(main_matrix_d)) + ' = ') + list_list_real_to_str(inverse(main_matrix_d))) + #10);
 end;
 begin
   init_now();
@@ -393,4 +403,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

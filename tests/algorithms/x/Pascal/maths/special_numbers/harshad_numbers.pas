@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,6 +65,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_to_str(xs: array of string): string;
 var i: integer;
@@ -74,91 +84,84 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  base: integer;
-  c: string;
-  limit: integer;
-  msg: string;
-  num: integer;
-  num_str: string;
-  number: integer;
-procedure panic_(msg: string); forward;
-function char_to_value(c: string): integer; forward;
-function int_to_base(number: integer; base: integer): string; forward;
-function base_to_int(num_str: string; base: integer): integer; forward;
-function sum_of_digits(num: integer; base: integer): string; forward;
-function harshad_numbers_in_base(limit: integer; base: integer): StrArray; forward;
-function is_harshad_number_in_base(num: integer; base: integer): boolean; forward;
+procedure panic_(panic__msg: string); forward;
+function char_to_value(char_to_value_c: string): int64; forward;
+function int_to_base(int_to_base_number: int64; int_to_base_base: int64): string; forward;
+function base_to_int(base_to_int_num_str: string; base_to_int_base: int64): int64; forward;
+function sum_of_digits(sum_of_digits_num: int64; sum_of_digits_base: int64): string; forward;
+function harshad_numbers_in_base(harshad_numbers_in_base_limit: int64; harshad_numbers_in_base_base: int64): StrArray; forward;
+function is_harshad_number_in_base(is_harshad_number_in_base_num: int64; is_harshad_number_in_base_base: int64): boolean; forward;
 procedure main(); forward;
-procedure panic_(msg: string);
+procedure panic_(panic__msg: string);
 begin
 end;
-function char_to_value(c: string): integer;
+function char_to_value(char_to_value_c: string): int64;
 var
   char_to_value_digits: string;
-  char_to_value_i: integer;
+  char_to_value_i: int64;
 begin
   char_to_value_digits := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   char_to_value_i := 0;
   while char_to_value_i < Length(char_to_value_digits) do begin
-  if char_to_value_digits[char_to_value_i+1] = c then begin
+  if char_to_value_digits[char_to_value_i+1] = char_to_value_c then begin
   exit(char_to_value_i);
 end;
   char_to_value_i := char_to_value_i + 1;
 end;
   panic_('invalid digit');
 end;
-function int_to_base(number: integer; base: integer): string;
+function int_to_base(int_to_base_number: int64; int_to_base_base: int64): string;
 var
   int_to_base_digits: string;
-  int_to_base_n: integer;
+  int_to_base_n: int64;
   int_to_base_result_: string;
-  int_to_base_remainder: integer;
+  int_to_base_remainder: int64;
 begin
-  if (base < 2) or (base > 36) then begin
+  if (int_to_base_base < 2) or (int_to_base_base > 36) then begin
   panic_('''base'' must be between 2 and 36 inclusive');
 end;
-  if number < 0 then begin
+  if int_to_base_number < 0 then begin
   panic_('number must be a positive integer');
 end;
   int_to_base_digits := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  int_to_base_n := number;
+  int_to_base_n := int_to_base_number;
   int_to_base_result_ := '';
   while int_to_base_n > 0 do begin
-  int_to_base_remainder := int_to_base_n mod base;
+  int_to_base_remainder := int_to_base_n mod int_to_base_base;
   int_to_base_result_ := int_to_base_digits[int_to_base_remainder+1] + int_to_base_result_;
-  int_to_base_n := int_to_base_n div base;
+  int_to_base_n := _floordiv(int_to_base_n, int_to_base_base);
 end;
   if int_to_base_result_ = '' then begin
   int_to_base_result_ := '0';
 end;
   exit(int_to_base_result_);
 end;
-function base_to_int(num_str: string; base: integer): integer;
+function base_to_int(base_to_int_num_str: string; base_to_int_base: int64): int64;
 var
-  base_to_int_value: integer;
-  base_to_int_i: integer;
+  base_to_int_value: int64;
+  base_to_int_i: int64;
   base_to_int_c: string;
 begin
   base_to_int_value := 0;
   base_to_int_i := 0;
-  while base_to_int_i < Length(num_str) do begin
-  base_to_int_c := num_str[base_to_int_i+1];
-  base_to_int_value := (base_to_int_value * base) + char_to_value(base_to_int_c);
+  while base_to_int_i < Length(base_to_int_num_str) do begin
+  base_to_int_c := base_to_int_num_str[base_to_int_i+1];
+  base_to_int_value := (base_to_int_value * base_to_int_base) + char_to_value(base_to_int_c);
   base_to_int_i := base_to_int_i + 1;
 end;
   exit(base_to_int_value);
 end;
-function sum_of_digits(num: integer; base: integer): string;
+function sum_of_digits(sum_of_digits_num: int64; sum_of_digits_base: int64): string;
 var
   sum_of_digits_num_str: string;
-  sum_of_digits_total: integer;
-  sum_of_digits_i: integer;
+  sum_of_digits_total: int64;
+  sum_of_digits_i: int64;
   sum_of_digits_c: string;
 begin
-  if (base < 2) or (base > 36) then begin
+  if (sum_of_digits_base < 2) or (sum_of_digits_base > 36) then begin
   panic_('''base'' must be between 2 and 36 inclusive');
 end;
-  sum_of_digits_num_str := int_to_base(num, base);
+  sum_of_digits_num_str := int_to_base(sum_of_digits_num, sum_of_digits_base);
   sum_of_digits_total := 0;
   sum_of_digits_i := 0;
   while sum_of_digits_i < Length(sum_of_digits_num_str) do begin
@@ -166,50 +169,50 @@ end;
   sum_of_digits_total := sum_of_digits_total + char_to_value(sum_of_digits_c);
   sum_of_digits_i := sum_of_digits_i + 1;
 end;
-  exit(int_to_base(sum_of_digits_total, base));
+  exit(int_to_base(sum_of_digits_total, sum_of_digits_base));
 end;
-function harshad_numbers_in_base(limit: integer; base: integer): StrArray;
+function harshad_numbers_in_base(harshad_numbers_in_base_limit: int64; harshad_numbers_in_base_base: int64): StrArray;
 var
   harshad_numbers_in_base_numbers: array of string;
-  harshad_numbers_in_base_i: integer;
+  harshad_numbers_in_base_i: int64;
   harshad_numbers_in_base_s: string;
-  harshad_numbers_in_base_divisor: integer;
+  harshad_numbers_in_base_divisor: int64;
 begin
-  if (base < 2) or (base > 36) then begin
+  if (harshad_numbers_in_base_base < 2) or (harshad_numbers_in_base_base > 36) then begin
   panic_('''base'' must be between 2 and 36 inclusive');
 end;
-  if limit < 0 then begin
+  if harshad_numbers_in_base_limit < 0 then begin
   exit([]);
 end;
   harshad_numbers_in_base_numbers := [];
   harshad_numbers_in_base_i := 1;
-  while harshad_numbers_in_base_i < limit do begin
-  harshad_numbers_in_base_s := sum_of_digits(harshad_numbers_in_base_i, base);
-  harshad_numbers_in_base_divisor := base_to_int(harshad_numbers_in_base_s, base);
+  while harshad_numbers_in_base_i < harshad_numbers_in_base_limit do begin
+  harshad_numbers_in_base_s := sum_of_digits(harshad_numbers_in_base_i, harshad_numbers_in_base_base);
+  harshad_numbers_in_base_divisor := base_to_int(harshad_numbers_in_base_s, harshad_numbers_in_base_base);
   if (harshad_numbers_in_base_i mod harshad_numbers_in_base_divisor) = 0 then begin
-  harshad_numbers_in_base_numbers := concat(harshad_numbers_in_base_numbers, StrArray([int_to_base(harshad_numbers_in_base_i, base)]));
+  harshad_numbers_in_base_numbers := concat(harshad_numbers_in_base_numbers, StrArray([int_to_base(harshad_numbers_in_base_i, harshad_numbers_in_base_base)]));
 end;
   harshad_numbers_in_base_i := harshad_numbers_in_base_i + 1;
 end;
   exit(harshad_numbers_in_base_numbers);
 end;
-function is_harshad_number_in_base(num: integer; base: integer): boolean;
+function is_harshad_number_in_base(is_harshad_number_in_base_num: int64; is_harshad_number_in_base_base: int64): boolean;
 var
   is_harshad_number_in_base_n: string;
   is_harshad_number_in_base_d: string;
-  is_harshad_number_in_base_n_val: integer;
-  is_harshad_number_in_base_d_val: integer;
+  is_harshad_number_in_base_n_val: int64;
+  is_harshad_number_in_base_d_val: int64;
 begin
-  if (base < 2) or (base > 36) then begin
+  if (is_harshad_number_in_base_base < 2) or (is_harshad_number_in_base_base > 36) then begin
   panic_('''base'' must be between 2 and 36 inclusive');
 end;
-  if num < 0 then begin
+  if is_harshad_number_in_base_num < 0 then begin
   exit(false);
 end;
-  is_harshad_number_in_base_n := int_to_base(num, base);
-  is_harshad_number_in_base_d := sum_of_digits(num, base);
-  is_harshad_number_in_base_n_val := base_to_int(is_harshad_number_in_base_n, base);
-  is_harshad_number_in_base_d_val := base_to_int(is_harshad_number_in_base_d, base);
+  is_harshad_number_in_base_n := int_to_base(is_harshad_number_in_base_num, is_harshad_number_in_base_base);
+  is_harshad_number_in_base_d := sum_of_digits(is_harshad_number_in_base_num, is_harshad_number_in_base_base);
+  is_harshad_number_in_base_n_val := base_to_int(is_harshad_number_in_base_n, is_harshad_number_in_base_base);
+  is_harshad_number_in_base_d_val := base_to_int(is_harshad_number_in_base_d, is_harshad_number_in_base_base);
   exit((is_harshad_number_in_base_n_val mod is_harshad_number_in_base_d_val) = 0);
 end;
 procedure main();
@@ -240,4 +243,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

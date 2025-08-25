@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -88,21 +98,21 @@ var
   bench_memdiff_0: int64;
   grid: IntArrayArray;
   test_grids: array of IntArrayArray;
-  results_bin: array of integer;
-  i: integer;
-  results_brute: array of integer;
-  results_break: array of integer;
+  results_bin: array of int64;
+  i: int64;
+  results_brute: array of int64;
+  results_break: array of int64;
 function generate_large_matrix(): IntArrayArray; forward;
-function find_negative_index(find_negative_index_arr: IntArray): integer; forward;
-function count_negatives_binary_search(count_negatives_binary_search_grid: IntArrayArray): integer; forward;
-function count_negatives_brute_force(count_negatives_brute_force_grid: IntArrayArray): integer; forward;
-function count_negatives_brute_force_with_break(count_negatives_brute_force_with_break_grid: IntArrayArray): integer; forward;
+function find_negative_index(find_negative_index_arr: IntArray): int64; forward;
+function count_negatives_binary_search(count_negatives_binary_search_grid: IntArrayArray): int64; forward;
+function count_negatives_brute_force(count_negatives_brute_force_grid: IntArrayArray): int64; forward;
+function count_negatives_brute_force_with_break(count_negatives_brute_force_with_break_grid: IntArrayArray): int64; forward;
 function generate_large_matrix(): IntArrayArray;
 var
   generate_large_matrix_result_: array of IntArray;
-  generate_large_matrix_i: integer;
-  generate_large_matrix_row: array of integer;
-  generate_large_matrix_j: integer;
+  generate_large_matrix_i: int64;
+  generate_large_matrix_row: array of int64;
+  generate_large_matrix_j: int64;
 begin
   generate_large_matrix_result_ := [];
   generate_large_matrix_i := 0;
@@ -118,12 +128,12 @@ end;
 end;
   exit(generate_large_matrix_result_);
 end;
-function find_negative_index(find_negative_index_arr: IntArray): integer;
+function find_negative_index(find_negative_index_arr: IntArray): int64;
 var
-  find_negative_index_left: integer;
+  find_negative_index_left: int64;
   find_negative_index_right: integer;
-  find_negative_index_mid: integer;
-  find_negative_index_num: integer;
+  find_negative_index_mid: int64;
+  find_negative_index_num: int64;
 begin
   find_negative_index_left := 0;
   find_negative_index_right := Length(find_negative_index_arr) - 1;
@@ -134,7 +144,7 @@ end;
   exit(0);
 end;
   while find_negative_index_left <= find_negative_index_right do begin
-  find_negative_index_mid := (find_negative_index_left + find_negative_index_right) div 2;
+  find_negative_index_mid := _floordiv(find_negative_index_left + find_negative_index_right, 2);
   find_negative_index_num := find_negative_index_arr[find_negative_index_mid];
   if find_negative_index_num < 0 then begin
   if find_negative_index_mid = 0 then begin
@@ -150,13 +160,13 @@ end;
 end;
   exit(Length(find_negative_index_arr));
 end;
-function count_negatives_binary_search(count_negatives_binary_search_grid: IntArrayArray): integer;
+function count_negatives_binary_search(count_negatives_binary_search_grid: IntArrayArray): int64;
 var
-  count_negatives_binary_search_total: integer;
+  count_negatives_binary_search_total: int64;
   count_negatives_binary_search_bound: integer;
-  count_negatives_binary_search_i: integer;
-  count_negatives_binary_search_row: array of integer;
-  count_negatives_binary_search_idx: integer;
+  count_negatives_binary_search_i: int64;
+  count_negatives_binary_search_row: array of int64;
+  count_negatives_binary_search_idx: int64;
 begin
   count_negatives_binary_search_total := 0;
   count_negatives_binary_search_bound := Length(count_negatives_binary_search_grid[0]);
@@ -170,12 +180,12 @@ begin
 end;
   exit((Length(count_negatives_binary_search_grid) * Length(count_negatives_binary_search_grid[0])) - count_negatives_binary_search_total);
 end;
-function count_negatives_brute_force(count_negatives_brute_force_grid: IntArrayArray): integer;
+function count_negatives_brute_force(count_negatives_brute_force_grid: IntArrayArray): int64;
 var
-  count_negatives_brute_force_count: integer;
-  count_negatives_brute_force_i: integer;
-  count_negatives_brute_force_row: array of integer;
-  count_negatives_brute_force_j: integer;
+  count_negatives_brute_force_count: int64;
+  count_negatives_brute_force_i: int64;
+  count_negatives_brute_force_row: array of int64;
+  count_negatives_brute_force_j: int64;
 begin
   count_negatives_brute_force_count := 0;
   count_negatives_brute_force_i := 0;
@@ -192,13 +202,13 @@ end;
 end;
   exit(count_negatives_brute_force_count);
 end;
-function count_negatives_brute_force_with_break(count_negatives_brute_force_with_break_grid: IntArrayArray): integer;
+function count_negatives_brute_force_with_break(count_negatives_brute_force_with_break_grid: IntArrayArray): int64;
 var
-  count_negatives_brute_force_with_break_total: integer;
-  count_negatives_brute_force_with_break_i: integer;
-  count_negatives_brute_force_with_break_row: array of integer;
-  count_negatives_brute_force_with_break_j: integer;
-  count_negatives_brute_force_with_break_number: integer;
+  count_negatives_brute_force_with_break_total: int64;
+  count_negatives_brute_force_with_break_i: int64;
+  count_negatives_brute_force_with_break_row: array of int64;
+  count_negatives_brute_force_with_break_j: int64;
+  count_negatives_brute_force_with_break_number: int64;
 begin
   count_negatives_brute_force_with_break_total := 0;
   count_negatives_brute_force_with_break_i := 0;
@@ -251,4 +261,5 @@ end;
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

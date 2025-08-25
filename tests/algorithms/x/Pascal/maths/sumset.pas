@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -86,39 +96,35 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  set_a: IntArray;
-  set_b: IntArray;
-  value: integer;
-  xs: IntArray;
-function contains(xs: IntArray; value: integer): boolean; forward;
-function sumset(set_a: IntArray; set_b: IntArray): IntArray; forward;
+function contains(contains_xs: IntArray; contains_value: int64): boolean; forward;
+function sumset(sumset_set_a: IntArray; sumset_set_b: IntArray): IntArray; forward;
 procedure main(); forward;
-function contains(xs: IntArray; value: integer): boolean;
+function contains(contains_xs: IntArray; contains_value: int64): boolean;
 var
-  contains_i: integer;
+  contains_i: int64;
 begin
   contains_i := 0;
-  while contains_i < Length(xs) do begin
-  if xs[contains_i] = value then begin
+  while contains_i < Length(contains_xs) do begin
+  if contains_xs[contains_i] = contains_value then begin
   exit(true);
 end;
   contains_i := contains_i + 1;
 end;
   exit(false);
 end;
-function sumset(set_a: IntArray; set_b: IntArray): IntArray;
+function sumset(sumset_set_a: IntArray; sumset_set_b: IntArray): IntArray;
 var
-  sumset_result_: array of integer;
-  sumset_i: integer;
-  sumset_j: integer;
-  sumset_s: integer;
+  sumset_result_: array of int64;
+  sumset_i: int64;
+  sumset_j: int64;
+  sumset_s: int64;
 begin
   sumset_result_ := [];
   sumset_i := 0;
-  while sumset_i < Length(set_a) do begin
+  while sumset_i < Length(sumset_set_a) do begin
   sumset_j := 0;
-  while sumset_j < Length(set_b) do begin
-  sumset_s := set_a[sumset_i] + set_b[sumset_j];
+  while sumset_j < Length(sumset_set_b) do begin
+  sumset_s := sumset_set_a[sumset_i] + sumset_set_b[sumset_j];
   if not contains(sumset_result_, sumset_s) then begin
   sumset_result_ := concat(sumset_result_, IntArray([sumset_s]));
 end;
@@ -130,9 +136,9 @@ end;
 end;
 procedure main();
 var
-  main_set_a: array of integer;
-  main_set_b: array of integer;
-  main_set_c: array of integer;
+  main_set_a: array of int64;
+  main_set_b: array of int64;
+  main_set_c: array of int64;
 begin
   main_set_a := [1, 2, 3];
   main_set_b := [4, 5, 6];
@@ -152,4 +158,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

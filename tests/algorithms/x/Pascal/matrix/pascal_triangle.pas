@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -86,17 +96,17 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function populate_current_row(populate_current_row_triangle: IntArrayArray; populate_current_row_current_row_idx: integer): IntArray; forward;
-function generate_pascal_triangle(generate_pascal_triangle_num_rows: integer): IntArrayArray; forward;
-function row_to_string(row_to_string_row: IntArray; row_to_string_total_rows: integer; row_to_string_row_idx: integer): string; forward;
-procedure print_pascal_triangle(print_pascal_triangle_num_rows: integer); forward;
+function populate_current_row(populate_current_row_triangle: IntArrayArray; populate_current_row_current_row_idx: int64): IntArray; forward;
+function generate_pascal_triangle(generate_pascal_triangle_num_rows: int64): IntArrayArray; forward;
+function row_to_string(row_to_string_row: IntArray; row_to_string_total_rows: int64; row_to_string_row_idx: int64): string; forward;
+procedure print_pascal_triangle(print_pascal_triangle_num_rows: int64); forward;
 procedure main(); forward;
-function populate_current_row(populate_current_row_triangle: IntArrayArray; populate_current_row_current_row_idx: integer): IntArray;
+function populate_current_row(populate_current_row_triangle: IntArrayArray; populate_current_row_current_row_idx: int64): IntArray;
 var
-  populate_current_row_row: array of integer;
-  populate_current_row_i: integer;
-  populate_current_row_left: integer;
-  populate_current_row_right: integer;
+  populate_current_row_row: array of int64;
+  populate_current_row_i: int64;
+  populate_current_row_left: int64;
+  populate_current_row_right: int64;
 begin
   populate_current_row_row := [];
   populate_current_row_i := 0;
@@ -112,10 +122,10 @@ end;
 end;
   exit(populate_current_row_row);
 end;
-function generate_pascal_triangle(generate_pascal_triangle_num_rows: integer): IntArrayArray;
+function generate_pascal_triangle(generate_pascal_triangle_num_rows: int64): IntArrayArray;
 var
   generate_pascal_triangle_triangle: array of IntArray;
-  generate_pascal_triangle_row_idx: integer;
+  generate_pascal_triangle_row_idx: int64;
   generate_pascal_triangle_row: IntArray;
 begin
   if generate_pascal_triangle_num_rows <= 0 then begin
@@ -130,12 +140,12 @@ end;
 end;
   exit(generate_pascal_triangle_triangle);
 end;
-function row_to_string(row_to_string_row: IntArray; row_to_string_total_rows: integer; row_to_string_row_idx: integer): string;
+function row_to_string(row_to_string_row: IntArray; row_to_string_total_rows: int64; row_to_string_row_idx: int64): string;
 var
   row_to_string_line: string;
-  row_to_string_spaces: integer;
-  row_to_string_s: integer;
-  row_to_string_c: integer;
+  row_to_string_spaces: int64;
+  row_to_string_s: int64;
+  row_to_string_c: int64;
 begin
   row_to_string_line := '';
   row_to_string_spaces := (row_to_string_total_rows - row_to_string_row_idx) - 1;
@@ -154,10 +164,10 @@ end;
 end;
   exit(row_to_string_line);
 end;
-procedure print_pascal_triangle(print_pascal_triangle_num_rows: integer);
+procedure print_pascal_triangle(print_pascal_triangle_num_rows: int64);
 var
   print_pascal_triangle_triangle: IntArrayArray;
-  print_pascal_triangle_r: integer;
+  print_pascal_triangle_r: int64;
   print_pascal_triangle_line: string;
 begin
   print_pascal_triangle_triangle := generate_pascal_triangle(print_pascal_triangle_num_rows);
@@ -185,4 +195,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

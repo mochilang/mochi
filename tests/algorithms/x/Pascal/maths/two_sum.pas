@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils, fgl;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -86,15 +96,15 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function two_sum(two_sum_nums: IntArray; two_sum_target: integer): IntArray; forward;
-function two_sum(two_sum_nums: IntArray; two_sum_target: integer): IntArray;
+function two_sum(two_sum_nums: IntArray; two_sum_target: int64): IntArray; forward;
+function two_sum(two_sum_nums: IntArray; two_sum_target: int64): IntArray;
 var
-  two_sum_chk_map: specialize TFPGMap<integer, integer>;
-  two_sum_idx: integer;
-  two_sum_val: integer;
-  two_sum_compl: integer;
+  two_sum_chk_map: specialize TFPGMap<int64, int64>;
+  two_sum_idx: int64;
+  two_sum_val: int64;
+  two_sum_compl: int64;
 begin
-  two_sum_chk_map := specialize TFPGMap<integer, integer>.Create();
+  two_sum_chk_map := specialize TFPGMap<int64, int64>.Create();
   two_sum_idx := 0;
   while two_sum_idx < Length(two_sum_nums) do begin
   two_sum_val := two_sum_nums[two_sum_idx];
@@ -119,4 +129,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
