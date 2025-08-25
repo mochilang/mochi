@@ -142,6 +142,8 @@ var reserved = map[string]bool{
 	"ulong": true, "unchecked": true, "unsafe": true, "ushort": true,
 	"using": true, "virtual": true, "void": true, "volatile": true,
 	"while": true,
+	// contextual keywords that should also be avoided
+	"record": true, "var": true,
 }
 
 func safeName(n string) string {
@@ -338,6 +340,13 @@ func (s *AssignStmt) emit(w io.Writer) {
 	rtype := typeOfExpr(s.Value)
 	if ltype != "" && rtype == "object" && ltype != "object" {
 		fmt.Fprintf(w, "(%s)(", ltype)
+		s.Value.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
+	// handle BigInteger to long assignments with explicit cast
+	if ltype == "long" && rtype == "BigInteger" {
+		fmt.Fprint(w, "(long)(")
 		s.Value.emit(w)
 		fmt.Fprint(w, ")")
 		return
