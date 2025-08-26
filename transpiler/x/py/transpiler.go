@@ -2084,20 +2084,15 @@ func isLikelyIntExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *IntLit:
 		return true
-	case *Name:
-		if currentEnv != nil {
-			if t, err := currentEnv.GetVar(ex.Name); err == nil {
-				if isIntLike(t) || looksLikeIndexName(ex.Name) {
-					return true
-				}
-				return false
-			}
-			if looksLikeIndexName(ex.Name) {
-				return true
-			}
-			return false
-		}
-		return true
+        case *Name:
+                if currentEnv != nil {
+                        if t, err := currentEnv.GetVar(ex.Name); err == nil {
+                                if isFloatLike(t) {
+                                        return false
+                                }
+                        }
+                }
+                return true
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
 			return true
