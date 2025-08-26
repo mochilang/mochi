@@ -5139,6 +5139,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 }
 
 func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
+	if len(args) == 0 {
+		return &CallExpr{Func: "puts"}, nil
+	}
 	if len(args) == 1 {
 		ex := args[0]
 		t := types.ExprType(orig[0], currentEnv)
