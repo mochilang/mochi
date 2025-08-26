@@ -37,34 +37,62 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: int64): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: int64): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  x: real;
-  mass: real;
-  radius: real;
-  n: real;
-function pow10(n: integer): real; forward;
-function sqrt_newton(n: real): real; forward;
-function round3(x: real): real; forward;
-function escape_velocity(mass: real; radius: real): real; forward;
-function pow10(n: integer): real;
+function pow10(pow10_n: int64): real; forward;
+function sqrt_newton(sqrt_newton_n: real): real; forward;
+function round3(round3_x: real): real; forward;
+function escape_velocity(escape_velocity_mass: real; escape_velocity_radius: real): real; forward;
+function pow10(pow10_n: int64): real;
 var
   pow10_p: real;
-  pow10_k: integer;
-  pow10_m: integer;
+  pow10_k: int64;
+  pow10_m: int64;
 begin
   pow10_p := 1;
   pow10_k := 0;
-  if n >= 0 then begin
-  while pow10_k < n do begin
+  if pow10_n >= 0 then begin
+  while pow10_k < pow10_n do begin
   pow10_p := pow10_p * 10;
   pow10_k := pow10_k + 1;
 end;
 end else begin
-  pow10_m := -n;
+  pow10_m := -pow10_n;
   while pow10_k < pow10_m do begin
   pow10_p := pow10_p / 10;
   pow10_k := pow10_k + 1;
@@ -72,44 +100,44 @@ end;
 end;
   exit(pow10_p);
 end;
-function sqrt_newton(n: real): real;
+function sqrt_newton(sqrt_newton_n: real): real;
 var
   sqrt_newton_x: real;
-  sqrt_newton_j: integer;
+  sqrt_newton_j: int64;
 begin
-  if n = 0 then begin
+  if sqrt_newton_n = 0 then begin
   exit(0);
 end;
-  sqrt_newton_x := n;
+  sqrt_newton_x := sqrt_newton_n;
   sqrt_newton_j := 0;
   while sqrt_newton_j < 20 do begin
-  sqrt_newton_x := (sqrt_newton_x + (n / sqrt_newton_x)) / 2;
+  sqrt_newton_x := (sqrt_newton_x + (sqrt_newton_n / sqrt_newton_x)) / 2;
   sqrt_newton_j := sqrt_newton_j + 1;
 end;
   exit(sqrt_newton_x);
 end;
-function round3(x: real): real;
+function round3(round3_x: real): real;
 var
   round3_y: real;
   round3_yi: integer;
 begin
-  round3_y := (x * 1000) + 0.5;
+  round3_y := (round3_x * 1000) + 0.5;
   round3_yi := Trunc(round3_y);
   if Double(round3_yi) > round3_y then begin
   round3_yi := round3_yi - 1;
 end;
   exit(Double(round3_yi) / 1000);
 end;
-function escape_velocity(mass: real; radius: real): real;
+function escape_velocity(escape_velocity_mass: real; escape_velocity_radius: real): real;
 var
   escape_velocity_G: real;
   escape_velocity_velocity: real;
 begin
-  if radius = 0 then begin
+  if escape_velocity_radius = 0 then begin
   panic('Radius cannot be zero.');
 end;
   escape_velocity_G := 6.6743 * pow10(-11);
-  escape_velocity_velocity := sqrt_newton(((2 * escape_velocity_G) * mass) / radius);
+  escape_velocity_velocity := sqrt_newton(((2 * escape_velocity_G) * escape_velocity_mass) / escape_velocity_radius);
   exit(round3(escape_velocity_velocity));
 end;
 begin
@@ -126,4 +154,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

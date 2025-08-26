@@ -37,62 +37,86 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: int64): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: int64): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  matter_density: real;
-  dark_energy: real;
-  radiation_density: real;
-  x: real;
-  redshift: real;
-  hubble_constant: real;
-  exp: integer;
-  base: real;
-function pow(base: real; exp: integer): real; forward;
-function sqrt_approx(x: real): real; forward;
-function hubble_parameter(hubble_constant: real; radiation_density: real; matter_density: real; dark_energy: real; redshift: real): real; forward;
+function pow(pow_base: real; pow_exp_: int64): real; forward;
+function sqrt_approx(sqrt_approx_x: real): real; forward;
+function hubble_parameter(hubble_parameter_hubble_constant: real; hubble_parameter_radiation_density: real; hubble_parameter_matter_density: real; hubble_parameter_dark_energy: real; hubble_parameter_redshift: real): real; forward;
 procedure test_hubble_parameter(); forward;
 procedure main(); forward;
-function pow(base: real; exp: integer): real;
+function pow(pow_base: real; pow_exp_: int64): real;
 var
   pow_result_: real;
-  pow_i: integer;
+  pow_i: int64;
 begin
   pow_result_ := 1;
   pow_i := 0;
-  while pow_i < exp do begin
-  pow_result_ := pow_result_ * base;
+  while pow_i < pow_exp_ do begin
+  pow_result_ := pow_result_ * pow_base;
   pow_i := pow_i + 1;
 end;
   exit(pow_result_);
 end;
-function sqrt_approx(x: real): real;
+function sqrt_approx(sqrt_approx_x: real): real;
 var
   sqrt_approx_guess: real;
-  sqrt_approx_i: integer;
+  sqrt_approx_i: int64;
 begin
-  if x = 0 then begin
+  if sqrt_approx_x = 0 then begin
   exit(0);
 end;
-  sqrt_approx_guess := x / 2;
+  sqrt_approx_guess := sqrt_approx_x / 2;
   sqrt_approx_i := 0;
   while sqrt_approx_i < 20 do begin
-  sqrt_approx_guess := (sqrt_approx_guess + (x / sqrt_approx_guess)) / 2;
+  sqrt_approx_guess := (sqrt_approx_guess + (sqrt_approx_x / sqrt_approx_guess)) / 2;
   sqrt_approx_i := sqrt_approx_i + 1;
 end;
   exit(sqrt_approx_guess);
 end;
-function hubble_parameter(hubble_constant: real; radiation_density: real; matter_density: real; dark_energy: real; redshift: real): real;
+function hubble_parameter(hubble_parameter_hubble_constant: real; hubble_parameter_radiation_density: real; hubble_parameter_matter_density: real; hubble_parameter_dark_energy: real; hubble_parameter_redshift: real): real;
 var
   hubble_parameter_parameters: array of real;
-  hubble_parameter_i: integer;
+  hubble_parameter_i: int64;
   hubble_parameter_curvature: real;
   hubble_parameter_zp1: real;
   hubble_parameter_e2: real;
 begin
-  hubble_parameter_parameters := [redshift, radiation_density, matter_density, dark_energy];
+  hubble_parameter_parameters := [hubble_parameter_redshift, hubble_parameter_radiation_density, hubble_parameter_matter_density, hubble_parameter_dark_energy];
   hubble_parameter_i := 0;
   while hubble_parameter_i < Length(hubble_parameter_parameters) do begin
   if hubble_parameter_parameters[hubble_parameter_i] < 0 then begin
@@ -107,10 +131,10 @@ end;
 end;
   hubble_parameter_i := hubble_parameter_i + 1;
 end;
-  hubble_parameter_curvature := 1 - ((matter_density + radiation_density) + dark_energy);
-  hubble_parameter_zp1 := redshift + 1;
-  hubble_parameter_e2 := (((radiation_density * pow(hubble_parameter_zp1, 4)) + (matter_density * pow(hubble_parameter_zp1, 3))) + (hubble_parameter_curvature * pow(hubble_parameter_zp1, 2))) + dark_energy;
-  exit(hubble_constant * sqrt_approx(hubble_parameter_e2));
+  hubble_parameter_curvature := 1 - ((hubble_parameter_matter_density + hubble_parameter_radiation_density) + hubble_parameter_dark_energy);
+  hubble_parameter_zp1 := hubble_parameter_redshift + 1;
+  hubble_parameter_e2 := (((hubble_parameter_radiation_density * pow(hubble_parameter_zp1, 4)) + (hubble_parameter_matter_density * pow(hubble_parameter_zp1, 3))) + (hubble_parameter_curvature * pow(hubble_parameter_zp1, 2))) + hubble_parameter_dark_energy;
+  exit(hubble_parameter_hubble_constant * sqrt_approx(hubble_parameter_e2));
 end;
 procedure test_hubble_parameter();
 var
@@ -138,4 +162,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
