@@ -1401,7 +1401,17 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		return err
 	case *FuncDef:
 		prevRenamed := renamedVars
-		renamedVars = st.Renamed
+		if st.Renamed != nil {
+			renamedVars = make(map[string]string, len(prevRenamed)+len(st.Renamed))
+			for k, v := range prevRenamed {
+				renamedVars[k] = v
+			}
+			for k, v := range st.Renamed {
+				renamedVars[k] = v
+			}
+		} else {
+			renamedVars = prevRenamed
+		}
 		if _, err := io.WriteString(w, indent+"def "+safeVarName(st.Name)+"("); err != nil {
 			renamedVars = prevRenamed
 			return err
@@ -1441,6 +1451,11 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 				return err
 			}
 			funcDepth--
+			for k, v := range renamedVars {
+				if _, ok := prevRenamed[k]; !ok {
+					prevRenamed[k] = v
+				}
+			}
 			renamedVars = prevRenamed
 			return nil
 		}
@@ -1452,6 +1467,11 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 			}
 		}
 		funcDepth--
+		for k, v := range renamedVars {
+			if _, ok := prevRenamed[k]; !ok {
+				prevRenamed[k] = v
+			}
+		}
 		renamedVars = prevRenamed
 		return nil
 	case *SaveStmt:
