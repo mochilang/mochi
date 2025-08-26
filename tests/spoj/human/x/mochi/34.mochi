@@ -1,0 +1,127 @@
+// Solution for SPOJ RUNAWAY - Run Away
+// https://www.spoj.com/problems/RUNAWAY/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun minDistSq(x: float, y: float, hx: list<float>, hy: list<float>): float {
+  var best = 1e100
+  var i = 0
+  while i < len(hx) {
+    let dx = x - hx[i]
+    let dy = y - hy[i]
+    let d = dx * dx + dy * dy
+    if d < best { best = d }
+    i = i + 1
+  }
+  return best
+}
+
+fun climb(sx: float, sy: float, X: float, Y: float, hx: list<float>, hy: list<float>): list<float> {
+  var cx = sx
+  var cy = sy
+  var step = 0.0
+  if X > Y { step = X } else { step = Y }
+  var best = minDistSq(cx, cy, hx, hy)
+  while step > 0.01 {
+    var improved = false
+    var dx = -1
+    while dx <= 1 {
+      var dy = -1
+      while dy <= 1 {
+        if dx != 0 || dy != 0 {
+          var nx = cx + (dx as float) * step
+          var ny = cy + (dy as float) * step
+          if nx < 0.0 { nx = 0.0 } else if nx > X { nx = X }
+          if ny < 0.0 { ny = 0.0 } else if ny > Y { ny = Y }
+          let d = minDistSq(nx, ny, hx, hy)
+          if d > best {
+            best = d
+            cx = nx
+            cy = ny
+            improved = true
+          }
+        }
+        dy = dy + 1
+      }
+      dx = dx + 1
+    }
+    if !improved { step = step / 2.0 }
+  }
+  var res: list<float> = []
+  res = append(res, cx)
+  res = append(res, cy)
+  res = append(res, best)
+  return res
+}
+
+fun format1(x: float): string {
+  var scaled = x * 10.0 + 0.5
+  var n = scaled as int
+  var whole = n / 10
+  var frac = n % 10
+  return str(whole) + "." + str(frac)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let line = input()
+    let parts = split(line, " ")
+    let xf = int(parts[0]) as float
+    let yf = int(parts[1]) as float
+    let m = int(parts[2])
+    var hx: list<float> = []
+    var hy: list<float> = []
+    var i = 0
+    while i < m {
+      let l = input()
+      let p = split(l, " ")
+      hx = append(hx, int(p[0]) as float)
+      hy = append(hy, int(p[1]) as float)
+      i = i + 1
+    }
+    var bestx = 0.0
+    var besty = 0.0
+    var bestd = -1.0
+    var gx = 0
+    while gx < 10 {
+      var gy = 0
+      while gy < 10 {
+        let sx = xf * (gx as float) / 9.0
+        let sy = yf * (gy as float) / 9.0
+        let res = climb(sx, sy, xf, yf, hx, hy)
+        let d = res[2]
+        if d > bestd {
+          bestd = d
+          bestx = res[0]
+          besty = res[1]
+        }
+        gy = gy + 1
+      }
+      gx = gx + 1
+    }
+    print("The safest point is (" + format1(bestx) + ", " + format1(besty) + ").")
+    case = case + 1
+  }
+}
+
+main()
