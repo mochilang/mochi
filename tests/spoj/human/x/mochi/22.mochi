@@ -1,0 +1,123 @@
+// Solution for SPOJ TRICENTR - Triangle From Centroid
+// https://www.spoj.com/problems/TRICENTR/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun parseFloatStr(str: string): float {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var intPart = 0
+  while i < len(str) && str[i:i+1] != "." {
+    intPart = intPart * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  var frac = 0.0
+  var scale = 0.1
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    while i < len(str) {
+      frac = frac + (digits[str[i:i+1]] as float) * scale
+      scale = scale / 10.0
+      i = i + 1
+    }
+  }
+  var res = (intPart as float) + frac
+  if neg { res = -res }
+  return res
+}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-12 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+fun format3(x: float): string {
+  var scaled = x * 1000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  var fracStr = str(frac)
+  while len(fracStr) < 3 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var i = 0
+  while i < t {
+    let line = input()
+    let parts = split(line, " ")
+    let a = parseFloatStr(parts[0])
+    let ga = parseFloatStr(parts[1])
+    let gb = parseFloatStr(parts[2])
+    let gc = parseFloatStr(parts[3])
+    let ha = ga * 3.0
+    let hb = gb * 3.0
+    let hc = gc * 3.0
+    let area = 0.5 * a * ha
+    let b = 2.0 * area / hb
+    let c = 2.0 * area / hc
+    let R = (a * b * c) / (4.0 * area)
+    let sum = a * a + b * b + c * c
+    var tmp = R * R - sum / 9.0
+    if tmp < 0.0 { tmp = 0.0 }
+    let gh = 2.0 * sqrt(tmp)
+    print(format3(area) + " " + format3(gh))
+    i = i + 1
+  }
+}
+
+main()
