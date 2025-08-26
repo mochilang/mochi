@@ -1,15 +1,5 @@
 {
-  "duration_us": 5,
-  "memory_bytes": 13791232,
+  "duration_us": 29,
+  "memory_bytes": 0,
   "name": "main"
 }
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/doppler_frequency.py", line 81, in <module>
-    main()
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/doppler_frequency.py", line 72, in main
-    test_doppler_effect()
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/doppler_frequency.py", line 54, in test_doppler_effect
-    panic("test 1 failed")
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/doppler_frequency.py", line 19, in panic
-    raise RuntimeError(msg)
-RuntimeError: test 1 failed

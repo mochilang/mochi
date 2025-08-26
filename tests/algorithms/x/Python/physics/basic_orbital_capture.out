@@ -1,10 +1,10 @@
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 73, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 76, in <module>
     main()
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 69, in main
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 72, in main
     run_tests()
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 64, in run_tests
-    panic("capture_radii failed")
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 12, in panic
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 70, in run_tests
+    panic("capture_area failed")
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 14, in panic
     raise RuntimeError(msg)
-RuntimeError: capture_radii failed
+RuntimeError: capture_area failed
