@@ -1,0 +1,80 @@
+// Solution for SPOJ ONP - Transform the Expression
+// https://www.spoj.com/problems/ONP/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun precedence(op: string): int {
+  if op == "+" { return 1 }
+  if op == "-" { return 1 }
+  if op == "*" { return 2 }
+  if op == "/" { return 2 }
+  if op == "^" { return 3 }
+  return 0
+}
+
+fun toRPN(expr: string): string {
+  var stack: list<string> = []
+  var res = ""
+  var i = 0
+  while i < len(expr) {
+    let ch = substring(expr, i, i+1)
+    if ch >= "a" && ch <= "z" {
+      res = res + ch
+    } else if ch == "(" {
+      stack = append(stack, ch)
+    } else if ch == ")" {
+      while len(stack) > 0 && stack[len(stack)-1] != "(" {
+        res = res + stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+      }
+      // pop "("
+      if len(stack) > 0 {
+        stack = stack[0:len(stack)-1]
+      }
+    } else {
+      var p = precedence(ch)
+      while len(stack) > 0 {
+        let top = stack[len(stack)-1]
+        if top == "(" { break }
+        let pt = precedence(top)
+        if pt > p || (pt == p && ch != "^") {
+          res = res + top
+          stack = stack[0:len(stack)-1]
+        } else {
+          break
+        }
+      }
+      stack = append(stack, ch)
+    }
+    i = i + 1
+  }
+  while len(stack) > 0 {
+    res = res + stack[len(stack)-1]
+    stack = stack[0:len(stack)-1]
+  }
+  return res
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    let expr = input()
+    print(toRPN(expr))
+  }
+}
+
+main()
