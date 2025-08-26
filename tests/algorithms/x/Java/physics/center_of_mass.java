@@ -52,7 +52,7 @@ public class Main {
                 throw new RuntimeException(String.valueOf("Mass of all particles must be greater than 0"));
             }
             total_mass_1 = (double)((double)(total_mass_1) + (double)(p_1.mass));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         double sum_x_1 = (double)(0.0);
         double sum_y_1 = (double)(0.0);
@@ -63,7 +63,7 @@ public class Main {
             sum_x_1 = (double)((double)(sum_x_1) + (double)((double)(p_3.x) * (double)(p_3.mass)));
             sum_y_1 = (double)((double)(sum_y_1) + (double)((double)(p_3.y) * (double)(p_3.mass)));
             sum_z_1 = (double)((double)(sum_z_1) + (double)((double)(p_3.z) * (double)(p_3.mass)));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         double cm_x_1 = (double)(round2((double)((double)(sum_x_1) / (double)(total_mass_1))));
         double cm_y_1 = (double)(round2((double)((double)(sum_y_1) / (double)(total_mass_1))));

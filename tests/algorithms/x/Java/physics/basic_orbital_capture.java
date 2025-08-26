@@ -8,7 +8,7 @@ public class Main {
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(n) < 0) {
             result = (double)((double)(result) * (double)(10.0));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return (double)(result);
     }
@@ -21,7 +21,7 @@ public class Main {
         java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
         while (i_3.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
             guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         return (double)(guess_1);
     }

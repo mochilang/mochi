@@ -17,7 +17,7 @@ public class Main {
             double denom_1 = (double)(((Number)(java.math.BigInteger.valueOf(2).multiply(k_1).add(java.math.BigInteger.valueOf(1)))).doubleValue());
             sum_1 = (double)((double)(sum_1) + (double)((double)(term_1) / (double)(denom_1)));
             term_1 = (double)((double)(term_1) * (double)(y2_1));
-            k_1 = new java.math.BigInteger(String.valueOf(k_1.add(java.math.BigInteger.valueOf(1))));
+            k_1 = k_1.add(java.math.BigInteger.valueOf(1));
         }
         return (double)((double)(2.0) * (double)(sum_1));
     }
@@ -29,7 +29,7 @@ public class Main {
         while (n_1.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
             term_2 = (double)((double)((double)(term_2) * (double)(x)) / (double)(((Number)(n_1)).doubleValue()));
             sum_3 = (double)((double)(sum_3) + (double)(term_2));
-            n_1 = new java.math.BigInteger(String.valueOf(n_1.add(java.math.BigInteger.valueOf(1))));
+            n_1 = n_1.add(java.math.BigInteger.valueOf(1));
         }
         return (double)(sum_3);
     }

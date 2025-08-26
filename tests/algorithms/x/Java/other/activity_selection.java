@@ -11,9 +11,9 @@ public class Main {
         while (j_1.compareTo(n) < 0) {
             if (start[_idx((start).length, ((java.math.BigInteger)(j_1)).longValue())].compareTo(finish[_idx((finish).length, ((java.math.BigInteger)(i_1)).longValue())]) >= 0) {
                 result_1 = result_1 + _p(j_1) + ",";
-                i_1 = new java.math.BigInteger(String.valueOf(j_1));
+                i_1 = j_1;
             }
-            j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
+            j_1 = j_1.add(java.math.BigInteger.valueOf(1));
         }
         System.out.println(result_1);
     }

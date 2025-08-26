@@ -61,10 +61,10 @@ public class Main {
                 } else {
                     row_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of(java.math.BigInteger.valueOf(0))).toArray(java.math.BigInteger[]::new)));
                 }
-                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
+                j_1 = j_1.add(java.math.BigInteger.valueOf(1));
             }
             result = ((java.math.BigInteger[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new java.math.BigInteger[][]{((java.math.BigInteger[])(row_1))})).toArray(java.math.BigInteger[][]::new)));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((java.math.BigInteger[][])(result));
     }
@@ -74,30 +74,30 @@ public class Main {
     }
 
     static BatchResult next_batch(DataSet ds, java.math.BigInteger batch_size) {
-        java.math.BigInteger start = new java.math.BigInteger(String.valueOf(ds.index_in_epoch));
+        java.math.BigInteger start = ds.index_in_epoch;
         if (start.add(batch_size).compareTo(ds.num_examples) > 0) {
-            java.math.BigInteger rest_1 = new java.math.BigInteger(String.valueOf(ds.num_examples.subtract(start)));
+            java.math.BigInteger rest_1 = ds.num_examples.subtract(start);
             java.math.BigInteger[][] images_rest_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.images, (int)(((java.math.BigInteger)(start)).longValue()), (int)(((java.math.BigInteger)(ds.num_examples)).longValue()))));
             java.math.BigInteger[][] labels_rest_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.labels, (int)(((java.math.BigInteger)(start)).longValue()), (int)(((java.math.BigInteger)(ds.num_examples)).longValue()))));
-            java.math.BigInteger new_index_1 = new java.math.BigInteger(String.valueOf(batch_size.subtract(rest_1)));
+            java.math.BigInteger new_index_1 = batch_size.subtract(rest_1);
             java.math.BigInteger[][] images_new_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.images, (int)(0L), (int)(((java.math.BigInteger)(new_index_1)).longValue()))));
             java.math.BigInteger[][] labels_new_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.labels, (int)(0L), (int)(((java.math.BigInteger)(new_index_1)).longValue()))));
             java.math.BigInteger[][] batch_images_2 = ((java.math.BigInteger[][])(concat(images_rest_1, images_new_1)));
             java.math.BigInteger[][] batch_labels_2 = ((java.math.BigInteger[][])(concat(labels_rest_1, labels_new_1)));
-            DataSet new_ds_2 = new DataSet(((java.math.BigInteger[][])(ds.images)), ((java.math.BigInteger[][])(ds.labels)), new java.math.BigInteger(String.valueOf(ds.num_examples)), new java.math.BigInteger(String.valueOf(new_index_1)), new java.math.BigInteger(String.valueOf(ds.epochs_completed.add(java.math.BigInteger.valueOf(1)))));
+            DataSet new_ds_2 = new DataSet(((java.math.BigInteger[][])(ds.images)), ((java.math.BigInteger[][])(ds.labels)), ds.num_examples, new_index_1, ds.epochs_completed.add(java.math.BigInteger.valueOf(1)));
             return new BatchResult(new_ds_2, ((java.math.BigInteger[][])(batch_images_2)), ((java.math.BigInteger[][])(batch_labels_2)));
         } else {
-            java.math.BigInteger end_1 = new java.math.BigInteger(String.valueOf(start.add(batch_size)));
+            java.math.BigInteger end_1 = start.add(batch_size);
             java.math.BigInteger[][] batch_images_3 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.images, (int)(((java.math.BigInteger)(start)).longValue()), (int)(((java.math.BigInteger)(end_1)).longValue()))));
             java.math.BigInteger[][] batch_labels_3 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(ds.labels, (int)(((java.math.BigInteger)(start)).longValue()), (int)(((java.math.BigInteger)(end_1)).longValue()))));
-            DataSet new_ds_3 = new DataSet(((java.math.BigInteger[][])(ds.images)), ((java.math.BigInteger[][])(ds.labels)), new java.math.BigInteger(String.valueOf(ds.num_examples)), new java.math.BigInteger(String.valueOf(end_1)), new java.math.BigInteger(String.valueOf(ds.epochs_completed)));
+            DataSet new_ds_3 = new DataSet(((java.math.BigInteger[][])(ds.images)), ((java.math.BigInteger[][])(ds.labels)), ds.num_examples, end_1, ds.epochs_completed);
             return new BatchResult(new_ds_3, ((java.math.BigInteger[][])(batch_images_3)), ((java.math.BigInteger[][])(batch_labels_3)));
         }
     }
 
     static Datasets read_data_sets(java.math.BigInteger[][] train_images, java.math.BigInteger[] train_labels_raw, java.math.BigInteger[][] test_images, java.math.BigInteger[] test_labels_raw, java.math.BigInteger validation_size, java.math.BigInteger num_classes) {
-        java.math.BigInteger[][] train_labels = ((java.math.BigInteger[][])(dense_to_one_hot(((java.math.BigInteger[])(train_labels_raw)), new java.math.BigInteger(String.valueOf(num_classes)))));
-        java.math.BigInteger[][] test_labels_1 = ((java.math.BigInteger[][])(dense_to_one_hot(((java.math.BigInteger[])(test_labels_raw)), new java.math.BigInteger(String.valueOf(num_classes)))));
+        java.math.BigInteger[][] train_labels = ((java.math.BigInteger[][])(dense_to_one_hot(((java.math.BigInteger[])(train_labels_raw)), num_classes)));
+        java.math.BigInteger[][] test_labels_1 = ((java.math.BigInteger[][])(dense_to_one_hot(((java.math.BigInteger[])(test_labels_raw)), num_classes)));
         java.math.BigInteger[][] validation_images_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(train_images, (int)(0L), (int)(((java.math.BigInteger)(validation_size)).longValue()))));
         java.math.BigInteger[][] validation_labels_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(train_labels, (int)(0L), (int)(((java.math.BigInteger)(validation_size)).longValue()))));
         java.math.BigInteger[][] train_images_rest_1 = ((java.math.BigInteger[][])(java.util.Arrays.copyOfRange(train_images, (int)(((java.math.BigInteger)(validation_size)).longValue()), (int)((long)(train_images.length)))));

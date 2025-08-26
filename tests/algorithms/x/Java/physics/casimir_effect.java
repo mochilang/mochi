@@ -11,7 +11,7 @@ public class Main {
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(java.math.BigInteger.valueOf(100)) < 0) {
             guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return (double)(guess_1);
     }
@@ -19,13 +19,13 @@ public class Main {
     static java.util.Map<String,Double> casimir_force(double force, double area, double distance) {
         java.math.BigInteger zero_count = java.math.BigInteger.valueOf(0);
         if ((double)(force) == (double)(0.0)) {
-            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
+            zero_count = zero_count.add(java.math.BigInteger.valueOf(1));
         }
         if ((double)(area) == (double)(0.0)) {
-            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
+            zero_count = zero_count.add(java.math.BigInteger.valueOf(1));
         }
         if ((double)(distance) == (double)(0.0)) {
-            zero_count = new java.math.BigInteger(String.valueOf(zero_count.add(java.math.BigInteger.valueOf(1))));
+            zero_count = zero_count.add(java.math.BigInteger.valueOf(1));
         }
         if (zero_count.compareTo(java.math.BigInteger.valueOf(1)) != 0) {
             throw new RuntimeException(String.valueOf("One and only one argument must be 0"));

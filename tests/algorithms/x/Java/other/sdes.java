@@ -21,12 +21,12 @@ public class Main {
         String res = "";
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(new java.math.BigInteger(String.valueOf(table.length))) < 0) {
-            java.math.BigInteger idx_1 = new java.math.BigInteger(String.valueOf(table[_idx((table).length, ((java.math.BigInteger)(i_1)).longValue())].subtract(java.math.BigInteger.valueOf(1))));
+            java.math.BigInteger idx_1 = table[_idx((table).length, ((java.math.BigInteger)(i_1)).longValue())].subtract(java.math.BigInteger.valueOf(1));
             if (idx_1.compareTo(java.math.BigInteger.valueOf(0)) < 0) {
-                idx_1 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(_runeLen(inp))).subtract(java.math.BigInteger.valueOf(1))));
+                idx_1 = new java.math.BigInteger(String.valueOf(_runeLen(inp))).subtract(java.math.BigInteger.valueOf(1));
             }
             res = res + _substr(inp, (int)(((java.math.BigInteger)(idx_1)).longValue()), (int)(((java.math.BigInteger)(idx_1.add(java.math.BigInteger.valueOf(1)))).longValue()));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return res;
     }
@@ -44,7 +44,7 @@ public class Main {
             } else {
                 res_1 = res_1 + "1";
             }
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         return res_1;
     }
@@ -54,10 +54,10 @@ public class Main {
             return "0";
         }
         String res_3 = "";
-        java.math.BigInteger num_1 = new java.math.BigInteger(String.valueOf(n));
+        java.math.BigInteger num_1 = n;
         while (num_1.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
             res_3 = _p(num_1.remainder(java.math.BigInteger.valueOf(2))) + res_3;
-            num_1 = new java.math.BigInteger(String.valueOf(num_1.divide(java.math.BigInteger.valueOf(2))));
+            num_1 = num_1.divide(java.math.BigInteger.valueOf(2));
         }
         return res_3;
     }
@@ -75,19 +75,19 @@ public class Main {
         java.math.BigInteger i_5 = java.math.BigInteger.valueOf(0);
         while (i_5.compareTo(new java.math.BigInteger(String.valueOf(_runeLen(s)))) < 0) {
             java.math.BigInteger digit_1 = new java.math.BigInteger(String.valueOf(Integer.parseInt(_substr(s, (int)(((java.math.BigInteger)(i_5)).longValue()), (int)(((java.math.BigInteger)(i_5.add(java.math.BigInteger.valueOf(1)))).longValue())))));
-            result = new java.math.BigInteger(String.valueOf(result.multiply(java.math.BigInteger.valueOf(2)).add(digit_1)));
-            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
+            result = result.multiply(java.math.BigInteger.valueOf(2)).add(digit_1);
+            i_5 = i_5.add(java.math.BigInteger.valueOf(1));
         }
-        return new java.math.BigInteger(String.valueOf(result));
+        return result;
     }
 
     static String apply_sbox(java.math.BigInteger[][] s, String data) {
         String row_bits = _substr(data, (int)(0L), (int)(1L)) + _substr(data, (int)(((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(_runeLen(data))).subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)((long)(_runeLen(data))));
         String col_bits_1 = _substr(data, (int)(1L), (int)(3L));
-        java.math.BigInteger row_1 = new java.math.BigInteger(String.valueOf(bin_to_int(row_bits)));
-        java.math.BigInteger col_1 = new java.math.BigInteger(String.valueOf(bin_to_int(col_bits_1)));
-        java.math.BigInteger val_1 = new java.math.BigInteger(String.valueOf(s[_idx((s).length, ((java.math.BigInteger)(row_1)).longValue())][_idx((s[_idx((s).length, ((java.math.BigInteger)(row_1)).longValue())]).length, ((java.math.BigInteger)(col_1)).longValue())]));
-        String out_1 = String.valueOf(int_to_binary(new java.math.BigInteger(String.valueOf(val_1))));
+        java.math.BigInteger row_1 = bin_to_int(row_bits);
+        java.math.BigInteger col_1 = bin_to_int(col_bits_1);
+        java.math.BigInteger val_1 = s[_idx((s).length, ((java.math.BigInteger)(row_1)).longValue())][_idx((s[_idx((s).length, ((java.math.BigInteger)(row_1)).longValue())]).length, ((java.math.BigInteger)(col_1)).longValue())];
+        String out_1 = String.valueOf(int_to_binary(val_1));
         return out_1;
     }
 

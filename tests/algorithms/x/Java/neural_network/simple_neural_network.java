@@ -4,12 +4,12 @@ public class Main {
     static double result;
 
     static java.math.BigInteger rand() {
-        seed = new java.math.BigInteger(String.valueOf((seed.multiply(java.math.BigInteger.valueOf(1103515245)).add(java.math.BigInteger.valueOf(12345))).remainder(java.math.BigInteger.valueOf(2147483648L))));
-        return new java.math.BigInteger(String.valueOf(seed));
+        seed = (seed.multiply(java.math.BigInteger.valueOf(1103515245)).add(java.math.BigInteger.valueOf(12345))).remainder(java.math.BigInteger.valueOf(2147483648L));
+        return seed;
     }
 
     static java.math.BigInteger randint(java.math.BigInteger low, java.math.BigInteger high) {
-        return new java.math.BigInteger(String.valueOf((rand().remainder((high.subtract(low).add(java.math.BigInteger.valueOf(1))))).add(low)));
+        return (rand().remainder((high.subtract(low).add(java.math.BigInteger.valueOf(1))))).add(low);
     }
 
     static double expApprox(double x) {
@@ -25,7 +25,7 @@ public class Main {
         while (n_1.compareTo(java.math.BigInteger.valueOf(30)) < 0) {
             term_1 = (double)((double)((double)(term_1) * (double)(y)) / (double)((((Number)(n_1)).doubleValue())));
             sum_1 = (double)((double)(sum_1) + (double)(term_1));
-            n_1 = new java.math.BigInteger(String.valueOf(n_1.add(java.math.BigInteger.valueOf(1))));
+            n_1 = n_1.add(java.math.BigInteger.valueOf(1));
         }
         if (is_neg_1) {
             return (double)((double)(1.0) / (double)(sum_1));
@@ -50,7 +50,7 @@ public class Main {
             double layer_1_error_1 = (double)((double)(((double)(((Number)(expected)).doubleValue()) / (double)(100.0))) - (double)(layer_1_1));
             double layer_1_delta_1 = (double)((double)(layer_1_error_1) * (double)(sigmoid_derivative((double)(layer_1_1))));
             weight = (double)((double)(weight) + (double)((double)(INITIAL_VALUE) * (double)(layer_1_delta_1)));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return (double)((double)(layer_1_1) * (double)(100.0));
     }

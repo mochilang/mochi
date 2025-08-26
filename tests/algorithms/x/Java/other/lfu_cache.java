@@ -52,7 +52,7 @@ public class Main {
 
 
     static LFUCache lfu_new(java.math.BigInteger cap) {
-        return new LFUCache(((Entry[])(new Entry[]{})), new java.math.BigInteger(String.valueOf(cap)), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0));
+        return new LFUCache(((Entry[])(new Entry[]{})), cap, java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0));
     }
 
     static java.math.BigInteger find_entry(Entry[] entries, java.math.BigInteger key) {
@@ -60,27 +60,27 @@ public class Main {
         while (i.compareTo(new java.math.BigInteger(String.valueOf(entries.length))) < 0) {
             Entry e_1 = entries[_idx((entries).length, ((java.math.BigInteger)(i)).longValue())];
             if (e_1.key.compareTo(key) == 0) {
-                return new java.math.BigInteger(String.valueOf(i));
+                return i;
             }
-            i = new java.math.BigInteger(String.valueOf(i.add(java.math.BigInteger.valueOf(1))));
+            i = i.add(java.math.BigInteger.valueOf(1));
         }
-        return new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
+        return (java.math.BigInteger.valueOf(1)).negate();
     }
 
     static GetResult lfu_get(LFUCache cache, java.math.BigInteger key) {
-        java.math.BigInteger idx = new java.math.BigInteger(String.valueOf(find_entry(((Entry[])(cache.entries)), new java.math.BigInteger(String.valueOf(key)))));
+        java.math.BigInteger idx = find_entry(((Entry[])(cache.entries)), key);
         if (idx.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
-            LFUCache new_cache_1 = new LFUCache(((Entry[])(cache.entries)), new java.math.BigInteger(String.valueOf(cache.capacity)), new java.math.BigInteger(String.valueOf(cache.hits)), new java.math.BigInteger(String.valueOf(cache.miss.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(cache.tick)));
+            LFUCache new_cache_1 = new LFUCache(((Entry[])(cache.entries)), cache.capacity, cache.hits, cache.miss.add(java.math.BigInteger.valueOf(1)), cache.tick);
             return new GetResult(new_cache_1, java.math.BigInteger.valueOf(0), false);
         }
         Entry[] entries_1 = ((Entry[])(cache.entries));
         Entry e_3 = entries_1[_idx((entries_1).length, ((java.math.BigInteger)(idx)).longValue())];
 e_3.freq = e_3.freq.add(java.math.BigInteger.valueOf(1));
-        java.math.BigInteger new_tick_1 = new java.math.BigInteger(String.valueOf(cache.tick.add(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger new_tick_1 = cache.tick.add(java.math.BigInteger.valueOf(1));
 e_3.order = new_tick_1;
 entries_1[(int)(((java.math.BigInteger)(idx)).longValue())] = e_3;
-        LFUCache new_cache_3 = new LFUCache(((Entry[])(entries_1)), new java.math.BigInteger(String.valueOf(cache.capacity)), new java.math.BigInteger(String.valueOf(cache.hits.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(cache.miss)), new java.math.BigInteger(String.valueOf(new_tick_1)));
-        return new GetResult(new_cache_3, new java.math.BigInteger(String.valueOf(e_3.val)), true);
+        LFUCache new_cache_3 = new LFUCache(((Entry[])(entries_1)), cache.capacity, cache.hits.add(java.math.BigInteger.valueOf(1)), cache.miss, new_tick_1);
+        return new GetResult(new_cache_3, e_3.val, true);
     }
 
     static Entry[] remove_lfu(Entry[] entries) {
@@ -93,9 +93,9 @@ entries_1[(int)(((java.math.BigInteger)(idx)).longValue())] = e_3;
             Entry e_5 = entries[_idx((entries).length, ((java.math.BigInteger)(i_2)).longValue())];
             Entry m_1 = entries[_idx((entries).length, ((java.math.BigInteger)(min_idx_1)).longValue())];
             if (e_5.freq.compareTo(m_1.freq) < 0 || (e_5.freq.compareTo(m_1.freq) == 0 && e_5.order.compareTo(m_1.order) < 0)) {
-                min_idx_1 = new java.math.BigInteger(String.valueOf(i_2));
+                min_idx_1 = i_2;
             }
-            i_2 = new java.math.BigInteger(String.valueOf(i_2.add(java.math.BigInteger.valueOf(1))));
+            i_2 = i_2.add(java.math.BigInteger.valueOf(1));
         }
         Entry[] res_1 = ((Entry[])(new Entry[]{}));
         java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
@@ -103,30 +103,30 @@ entries_1[(int)(((java.math.BigInteger)(idx)).longValue())] = e_3;
             if (j_1.compareTo(min_idx_1) != 0) {
                 res_1 = ((Entry[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(entries[_idx((entries).length, ((java.math.BigInteger)(j_1)).longValue())])).toArray(Entry[]::new)));
             }
-            j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
+            j_1 = j_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((Entry[])(res_1));
     }
 
     static LFUCache lfu_put(LFUCache cache, java.math.BigInteger key, java.math.BigInteger value) {
         Entry[] entries_2 = ((Entry[])(cache.entries));
-        java.math.BigInteger idx_2 = new java.math.BigInteger(String.valueOf(find_entry(((Entry[])(entries_2)), new java.math.BigInteger(String.valueOf(key)))));
+        java.math.BigInteger idx_2 = find_entry(((Entry[])(entries_2)), key);
         if (idx_2.compareTo((java.math.BigInteger.valueOf(1)).negate()) != 0) {
             Entry e_7 = entries_2[_idx((entries_2).length, ((java.math.BigInteger)(idx_2)).longValue())];
 e_7.val = value;
 e_7.freq = e_7.freq.add(java.math.BigInteger.valueOf(1));
-            java.math.BigInteger new_tick_3 = new java.math.BigInteger(String.valueOf(cache.tick.add(java.math.BigInteger.valueOf(1))));
+            java.math.BigInteger new_tick_3 = cache.tick.add(java.math.BigInteger.valueOf(1));
 e_7.order = new_tick_3;
 entries_2[(int)(((java.math.BigInteger)(idx_2)).longValue())] = e_7;
-            return new LFUCache(((Entry[])(entries_2)), new java.math.BigInteger(String.valueOf(cache.capacity)), new java.math.BigInteger(String.valueOf(cache.hits)), new java.math.BigInteger(String.valueOf(cache.miss)), new java.math.BigInteger(String.valueOf(new_tick_3)));
+            return new LFUCache(((Entry[])(entries_2)), cache.capacity, cache.hits, cache.miss, new_tick_3);
         }
         if (new java.math.BigInteger(String.valueOf(entries_2.length)).compareTo(cache.capacity) >= 0) {
             entries_2 = ((Entry[])(remove_lfu(((Entry[])(entries_2)))));
         }
-        java.math.BigInteger new_tick_5 = new java.math.BigInteger(String.valueOf(cache.tick.add(java.math.BigInteger.valueOf(1))));
-        Entry new_entry_1 = new Entry(new java.math.BigInteger(String.valueOf(key)), new java.math.BigInteger(String.valueOf(value)), java.math.BigInteger.valueOf(1), new java.math.BigInteger(String.valueOf(new_tick_5)));
+        java.math.BigInteger new_tick_5 = cache.tick.add(java.math.BigInteger.valueOf(1));
+        Entry new_entry_1 = new Entry(key, value, java.math.BigInteger.valueOf(1), new_tick_5);
         entries_2 = ((Entry[])(java.util.stream.Stream.concat(java.util.Arrays.stream(entries_2), java.util.stream.Stream.of(new_entry_1)).toArray(Entry[]::new)));
-        return new LFUCache(((Entry[])(entries_2)), new java.math.BigInteger(String.valueOf(cache.capacity)), new java.math.BigInteger(String.valueOf(cache.hits)), new java.math.BigInteger(String.valueOf(cache.miss)), new java.math.BigInteger(String.valueOf(new_tick_5)));
+        return new LFUCache(((Entry[])(entries_2)), cache.capacity, cache.hits, cache.miss, new_tick_5);
     }
 
     static String cache_info(LFUCache cache) {

@@ -3,7 +3,7 @@ public class Main {
     static double TWO_PI = (double)(6.283185307179586);
 
     static double _mod(double x, double m) {
-        return (double)(x) - (double)(Math.floor((double)(x) / (double)(m)) * (double)(m));
+        return (double)((double)(x) - (double)(Math.floor((double)(x) / (double)(m)) * (double)(m)));
     }
 
     static double cos(double x) {
@@ -11,18 +11,18 @@ public class Main {
         double y2_1 = (double)((double)(y) * (double)(y));
         double y4_1 = (double)((double)(y2_1) * (double)(y2_1));
         double y6_1 = (double)((double)(y4_1) * (double)(y2_1));
-        return (double)((double)((double)(1.0) - (double)((double)(y2_1) / (double)(2.0))) + (double)((double)(y4_1) / (double)(24.0))) - (double)((double)(y6_1) / (double)(720.0));
+        return (double)((double)((double)((double)(1.0) - (double)((double)(y2_1) / (double)(2.0))) + (double)((double)(y4_1) / (double)(24.0))) - (double)((double)(y6_1) / (double)(720.0)));
     }
 
     static double radians(double deg) {
-        return (double)((double)(deg) * (double)(PI)) / (double)(180.0);
+        return (double)((double)((double)(deg) * (double)(PI)) / (double)(180.0));
     }
 
     static double abs_val(double x) {
         if ((double)(x) < (double)(0.0)) {
-            return -x;
+            return (double)(-x);
         }
-        return x;
+        return (double)(x);
     }
 
     static double malus_law(double initial_intensity, double angle) {
@@ -34,14 +34,44 @@ public class Main {
         }
         double theta_1 = (double)(radians((double)(angle)));
         double c_1 = (double)(cos((double)(theta_1)));
-        return (double)(initial_intensity) * (double)(((double)(c_1) * (double)(c_1)));
+        return (double)((double)(initial_intensity) * (double)(((double)(c_1) * (double)(c_1))));
     }
 
     static void main() {
         System.out.println(_p(malus_law((double)(100.0), (double)(60.0))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -56,6 +86,30 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof java.util.Map<?, ?>) {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) v).entrySet()) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e.getKey()));
+                sb.append("=");
+                sb.append(_p(e.getValue()));
+                first = false;
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object e : (java.util.List<?>) v) {
+                if (!first) sb.append(", ");
+                sb.append(_p(e));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
         }
         if (v instanceof Double || v instanceof Float) {
             double d = ((Number) v).doubleValue();

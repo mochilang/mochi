@@ -1,7 +1,7 @@
 public class Main {
 
     static java.math.BigInteger get_avg(java.math.BigInteger number_1, java.math.BigInteger number_2) {
-        return new java.math.BigInteger(String.valueOf((number_1.add(number_2)).divide(java.math.BigInteger.valueOf(2))));
+        return (number_1.add(number_2)).divide(java.math.BigInteger.valueOf(2));
     }
 
     static java.math.BigInteger[] guess_the_number(java.math.BigInteger lower, java.math.BigInteger higher, java.math.BigInteger to_guess) {
@@ -22,17 +22,17 @@ public class Main {
         }
 };
         System.out.println("started...");
-        java.math.BigInteger last_lowest_1 = new java.math.BigInteger(String.valueOf(lower));
-        java.math.BigInteger last_highest_1 = new java.math.BigInteger(String.valueOf(higher));
+        java.math.BigInteger last_lowest_1 = lower;
+        java.math.BigInteger last_highest_1 = higher;
         java.math.BigInteger[] last_numbers_1 = ((java.math.BigInteger[])(new java.math.BigInteger[]{}));
         while (true) {
-            java.math.BigInteger number_1 = new java.math.BigInteger(String.valueOf(get_avg(new java.math.BigInteger(String.valueOf(last_lowest_1)), new java.math.BigInteger(String.valueOf(last_highest_1)))));
-            last_numbers_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(last_numbers_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(number_1)))).toArray(java.math.BigInteger[]::new)));
-            String resp_1 = String.valueOf(answer[0].apply(new java.math.BigInteger(String.valueOf(number_1))));
+            java.math.BigInteger number_1 = get_avg(last_lowest_1, last_highest_1);
+            last_numbers_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(last_numbers_1), java.util.stream.Stream.of(number_1)).toArray(java.math.BigInteger[]::new)));
+            String resp_1 = String.valueOf(answer[0].apply(number_1));
             if ((resp_1.equals("low"))) {
-                last_lowest_1 = new java.math.BigInteger(String.valueOf(number_1));
+                last_lowest_1 = number_1;
             } else             if ((resp_1.equals("high"))) {
-                last_highest_1 = new java.math.BigInteger(String.valueOf(number_1));
+                last_highest_1 = number_1;
             } else {
                 break;
             }
@@ -46,7 +46,7 @@ public class Main {
             long _benchStart = _now();
             long _benchMem = _mem();
             guess_the_number(java.math.BigInteger.valueOf(10), java.math.BigInteger.valueOf(1000), java.math.BigInteger.valueOf(17));
-            guess_the_number(new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(10000)).negate())), java.math.BigInteger.valueOf(10000), java.math.BigInteger.valueOf(7));
+            guess_the_number((java.math.BigInteger.valueOf(10000)).negate(), java.math.BigInteger.valueOf(10000), java.math.BigInteger.valueOf(7));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");

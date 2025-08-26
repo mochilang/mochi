@@ -7,35 +7,35 @@ public class Main {
             java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
             while (j_1.compareTo(n.subtract(i_1).subtract(java.math.BigInteger.valueOf(1))) < 0) {
                 result = result + " ";
-                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
+                j_1 = j_1.add(java.math.BigInteger.valueOf(1));
             }
             java.math.BigInteger k_1 = java.math.BigInteger.valueOf(0);
             while (k_1.compareTo(i_1.add(java.math.BigInteger.valueOf(1))) < 0) {
                 result = result + "* ";
-                k_1 = new java.math.BigInteger(String.valueOf(k_1.add(java.math.BigInteger.valueOf(1))));
+                k_1 = k_1.add(java.math.BigInteger.valueOf(1));
             }
             result = result + "\n";
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return result;
     }
 
     static String reverse_floyd(java.math.BigInteger n) {
         String result_1 = "";
-        java.math.BigInteger i_3 = new java.math.BigInteger(String.valueOf(n));
+        java.math.BigInteger i_3 = n;
         while (i_3.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
-            java.math.BigInteger j_3 = new java.math.BigInteger(String.valueOf(i_3));
+            java.math.BigInteger j_3 = i_3;
             while (j_3.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
                 result_1 = result_1 + "* ";
-                j_3 = new java.math.BigInteger(String.valueOf(j_3.subtract(java.math.BigInteger.valueOf(1))));
+                j_3 = j_3.subtract(java.math.BigInteger.valueOf(1));
             }
             result_1 = result_1 + "\n";
-            java.math.BigInteger k_3 = new java.math.BigInteger(String.valueOf(n.subtract(i_3).add(java.math.BigInteger.valueOf(1))));
+            java.math.BigInteger k_3 = n.subtract(i_3).add(java.math.BigInteger.valueOf(1));
             while (k_3.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
                 result_1 = result_1 + " ";
-                k_3 = new java.math.BigInteger(String.valueOf(k_3.subtract(java.math.BigInteger.valueOf(1))));
+                k_3 = k_3.subtract(java.math.BigInteger.valueOf(1));
             }
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.subtract(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.subtract(java.math.BigInteger.valueOf(1));
         }
         return result_1;
     }
@@ -44,8 +44,8 @@ public class Main {
         if (n.compareTo(java.math.BigInteger.valueOf(0)) <= 0) {
             return "       ...       ....        nothing printing :(";
         }
-        String upper_half_1 = String.valueOf(floyd(new java.math.BigInteger(String.valueOf(n))));
-        String lower_half_1 = String.valueOf(reverse_floyd(new java.math.BigInteger(String.valueOf(n))));
+        String upper_half_1 = String.valueOf(floyd(n));
+        String lower_half_1 = String.valueOf(reverse_floyd(n));
         return upper_half_1 + lower_half_1;
     }
 
