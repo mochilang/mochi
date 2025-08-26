@@ -61,7 +61,7 @@ const maxSafeMul = 94906265 // sqrt(2^53 - 1)
 
 const helperEqual = `function _equal(a: unknown, b: unknown): boolean {
   if (typeof a === 'number' && typeof b === 'number') {
-    return Math.abs(a - b) < 1e-6;
+    return Math.abs(a - b) <= 1e-6 * Math.max(Math.abs(a), Math.abs(b));
   }
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
