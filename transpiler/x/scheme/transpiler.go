@@ -48,11 +48,13 @@ var needSHA256 bool
 var needToi bool
 var benchMain bool
 var dataDir string
+
 // SetDataDir overrides the directory used to resolve relative file paths
 // for programs that need to read external data files at runtime.
 // Tests can update this to point to fixture directories before calling
 // Transpile.
 func SetDataDir(dir string) { dataDir = dir }
+
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
@@ -526,7 +528,10 @@ func header() []byte {
 	prelude += "\n(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))"
 	prelude += "\n(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))"
 	prelude += "\n(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))"
-	prelude += "\n(define (_eq a b) (cond ((and (number? a) (number? b)) (if (or (inexact? a) (inexact? b)) (< (abs (- a b)) 1e-6) (= a b))) ((and (string? a) (string? b)) (string=? a b)) (else (equal? a b))))"
+	// Use a tighter epsilon for numeric comparison to avoid falsely treating
+	// small non-zero values as equal to zero, which can trip validations in
+	// physics formulas and similar domains.
+	prelude += "\n(define (_eq a b) (cond ((and (number? a) (number? b)) (if (or (inexact? a) (inexact? b)) (if (<= (max (abs a) (abs b)) 1e-9) (= a b) (< (abs (- a b)) (* 1e-9 (max (abs a) (abs b))))) (= a b))) ((and (string? a) (string? b)) (string=? a b)) (else (equal? a b))))"
 	prelude += `
 (define (_add a b)
   (cond ((and (number? a) (number? b)) (+ a b))
@@ -606,8 +611,11 @@ func header() []byte {
 	// arithmetic.  It now yields 0 as a numeric sentinel and accepts any
 	// numeric index, coercing floats like `0.0` to integers, allowing
 	// algorithms to continue even when indices are computed inexactly.
-	prelude += "\n(define (list-ref-safe lst idx) (if (and (number? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) 0))"
-	prelude += "\n(define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst (inexact->exact idx) val)))"
+	// Guard against non-list inputs before calling length.  Some algorithms
+	// index into potentially missing lists and rely on a numeric sentinel
+	// instead of triggering a runtime type error.
+	prelude += "\n(define (list-ref-safe lst idx) (if (and (list? lst) (number? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) 0))"
+	prelude += "\n(define (list-set-safe! lst idx val) (when (and (list? lst) (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst (inexact->exact idx) val)))"
 	if usesOrd {
 		prelude += "\n(define (_ord s) (cond ((char? s) (char->integer s)) ((and (string? s) (> (string-length s) 0)) (char->integer (string-ref s 0))) (else 0)))"
 	}
