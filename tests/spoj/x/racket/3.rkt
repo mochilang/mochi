@@ -113,24 +113,59 @@
 (define __name__ "__main__")
 (define (input) (let ([ln (read-line)]) (if (eof-object? ln) "" ln)))
 
-(define (main)
+(define (is_substring a b)
   (let/ec _return (begin
+(define la (cond [(not a) 0] [(string? a) (string-length a)] [(vector? a) (vector-length a)] [(hash? a) (hash-count a)] [(list? a) (length a)] [else 0]))
+(define lb (cond [(not b) 0] [(string? b) (string-length b)] [(vector? b) (vector-length b)] [(hash? b) (hash-count b)] [(list? b) (length b)] [else 0]))
+(define i 0)
 (let/ec _break (let loop ()
-  (if #t (begin
+  (if (let ([__l (let ([__l i] [__r lb]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))] [__r la]) (cond [(and (number? __l) (number? __r)) (<= __l __r)] [else (<= (int __l) (int __r))])) (begin
     (let/ec _cont
-      (define line (input))
-      (define n (int line))
-      (if (equal? n 42) (let ()
-(_break)
+      (if (string=? (slice a i (let ([__l i] [__r lb]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))) b) (let ()
+(_return 1)
 ) (void))
-      (displayln (to-string line))
+      (set! i (let ([__l i] [__r 1]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r))))
     )
     (loop)) (void))))
+(_return 0)
 ))
 )
+(define (solve lines)
+  (let/ec _return (begin
+(define res (vector))
+(let ([__seq lines]) (let/ec _break (for ([line (if (hash? __seq) (in-hash-keys __seq) __seq)])
+  (let/ec _cont
+(define parts (vector))
+(define cur "")
+(define i 0)
+(let/ec _break (let loop ()
+  (if (let ([__l i] [__r (cond [(not line) 0] [(string? line) (string-length line)] [(vector? line) (vector-length line)] [(hash? line) (hash-count line)] [(list? line) (length line)] [else 0])]) (cond [(and (number? __l) (number? __r)) (< __l __r)] [else (< (int __l) (int __r))])) (begin
+    (let/ec _cont
+      (define ch (if line (if (hash? line) (hash-ref line i #f) (safe-index line (int i))) #f))
+      (if (string=? ch " ") (let ()
+(set! parts (appendv (or parts (vector)) (vector cur)))
+(set! cur "")
+) (let ()
+(set! cur (string-append cur ch))
+))
+      (set! i (let ([__l i] [__r 1]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r))))
+    )
+    (loop)) (void))))
+(set! parts (appendv (or parts (vector)) (vector cur)))
+(define a (if parts (if (hash? parts) (hash-ref parts 0 #f) (safe-index parts (int 0))) #f))
+(define b (if parts (if (hash? parts) (hash-ref parts 1 #f) (safe-index parts (int 1))) #f))
+(set! res (appendv (or res (vector)) (vector (is_substring a b))))
+  ))))
+(_return res)
+))
+)
+(define sample_input (vector "1010110010 10110" "1110111011 10011"))
 (let* ([_start_mem (current-memory-use)] [_start (current-inexact-monotonic-milliseconds)])
   (let/ec _return (begin
-(main)
+(let ([__seq (solve sample_input)]) (let/ec _break (for ([r (if (hash? __seq) (in-hash-keys __seq) __seq)])
+  (let/ec _cont
+(displayln (to-string r))
+  ))))
     (void)
   ))
   (let* ([_end (current-inexact-monotonic-milliseconds)] [_end_mem (current-memory-use)]
