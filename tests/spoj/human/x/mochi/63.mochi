@@ -1,0 +1,111 @@
+// Solution for SPOJ SQRBR - Square Brackets
+// https://www.spoj.com/problems/SQRBR/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  var nums: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        nums = append(nums, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { nums = append(nums, num) }
+  return nums
+}
+
+fun make_int_list(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, 0)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_bool_list(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun main() {
+  let dLine = input()
+  if dLine == "" { return }
+  let d = parseIntStr(dLine)
+  var case = 0
+  while case < d {
+    let first = parseInts(input())
+    let n = first[0]
+    let k = first[1]
+    let posNums = parseInts(input())
+    var forced = make_bool_list(2 * n)
+    var idx = 0
+    while idx < len(posNums) {
+      let p = posNums[idx]
+      forced[p] = true
+      idx = idx + 1
+    }
+    var dp = make_int_list(n)
+    dp[0] = 1
+    var i = 1
+    while i <= 2 * n {
+      var next = make_int_list(n)
+      var open = 0
+      while open <= n {
+        let val = dp[open]
+        if val > 0 {
+          if forced[i] {
+            if open + 1 <= n {
+              next[open + 1] = next[open + 1] + val
+            }
+          } else {
+            if open + 1 <= n {
+              next[open + 1] = next[open + 1] + val
+            }
+            if open > 0 {
+              next[open - 1] = next[open - 1] + val
+            }
+          }
+        }
+        open = open + 1
+      }
+      dp = next
+      i = i + 1
+    }
+    print(dp[0])
+    case = case + 1
+  }
+}
+
+main()
