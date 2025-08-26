@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-24 23:27 GMT+7
+Last updated: 2025-08-26 08:46 GMT+7
 
 ## Algorithms Golden Test Checklist (1005/1077)
 | Index | Name | Status | Duration | Memory |
@@ -736,7 +736,7 @@ Last updated: 2025-08-24 23:27 GMT+7
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 16.717ms | 10.5 MB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 12.776ms | 1.7 MB |
 | 729 | neural_network/activation_functions/softplus | ✓ | 14.247ms | 2.4 MB |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 22.426ms | 10.3 MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 15.974ms | 3.1 MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 10.788ms | 4.1 MB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 262.235ms | 51.2 MB |
 | 733 | neural_network/convolution_neural_network | ✓ | 21.785ms | 7.6 MB |
