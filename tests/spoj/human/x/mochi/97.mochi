@@ -1,0 +1,78 @@
+// Solution for SPOJ PARTY - Party Schedule
+// https://www.spoj.com/problems/PARTY/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { return }
+    let parts = split(line)
+    let budget = parseIntStr(parts[0])
+    let n = parseIntStr(parts[1])
+    if budget == 0 && n == 0 { break }
+    var dp: list<int> = []
+    var b = 0
+    while b <= budget {
+      dp = append(dp, 0)
+      b = b + 1
+    }
+    var idx = 0
+    while idx < n {
+      var pline = input()
+      if pline == "" { continue }
+      let ps = split(pline)
+      let cost = parseIntStr(ps[0])
+      let fv = parseIntStr(ps[1])
+      var c = budget
+      while c >= cost {
+        let nf = dp[c - cost] + fv
+        if nf > dp[c] { dp[c] = nf }
+        c = c - 1
+      }
+      idx = idx + 1
+    }
+    var maxFun = 0
+    var minCost = 0
+    var c2 = 0
+    while c2 <= budget {
+      if dp[c2] > maxFun {
+        maxFun = dp[c2]
+        minCost = c2
+      }
+      c2 = c2 + 1
+    }
+    print(str(minCost) + " " + str(maxFun))
+  }
+}
+
+main()
