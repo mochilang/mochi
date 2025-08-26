@@ -1,0 +1,74 @@
+// Solution for SPOJ POUR1 - Pouring water
+// https://www.spoj.com/problems/POUR1/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun pour(fromCap: int, toCap: int, target: int): int {
+  var from = fromCap
+  var to = 0
+  var step = 1
+  while from != target && to != target {
+    let temp = if from < toCap - to { from } else { toCap - to }
+    to = to + temp
+    from = from - temp
+    step = step + 1
+    if from == target || to == target {
+      break
+    }
+    if from == 0 {
+      from = fromCap
+      step = step + 1
+    }
+    if to == toCap {
+      to = 0
+      step = step + 1
+    }
+  }
+  return step
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    let a = parseIntStr(input())
+    let b = parseIntStr(input())
+    let c = parseIntStr(input())
+    let g = gcd(a, b)
+    let maxab = if a > b { a } else { b }
+    if c > maxab || c % g != 0 {
+      print(-1)
+    } else {
+      let steps1 = pour(a, b, c)
+      let steps2 = pour(b, a, c)
+      let ans = if steps1 < steps2 { steps1 } else { steps2 }
+      print(ans)
+    }
+  }
+}
+
+main()
