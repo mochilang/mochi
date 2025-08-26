@@ -1,0 +1,89 @@
+/*
+SPOJ: The Bytelandian Cryptographer (Act I)
+https://www.spoj.com/problems/CRYPTO1
+*/
+
+let MOD = 4000000007
+
+fun mod_pow(a: int, e: int, m: int): int {
+  var result: int = 1 % m
+  var base: int = a % m
+  var exp: int = e
+  while exp > 0 {
+    if exp % 2 == 1 {
+      result = (result * base) % m
+    }
+    base = (base * base) % m
+    exp = exp / 2
+  }
+  return result
+}
+
+fun mod_sqrt(n: int, p: int): int {
+  let r = mod_pow(n, (p + 1) / 4, p)
+  if r > p / 2 { return p - r } else { return r }
+}
+
+fun is_leap(y: int): bool {
+  if y % 400 == 0 { return true }
+  if y % 100 == 0 { return false }
+  if y % 4 == 0 { return true }
+  return false
+}
+
+fun pad2zero(n: int): string {
+  if n < 10 { return "0" + str(n) } else { return str(n) }
+}
+
+fun pad2space(n: int): string {
+  if n < 10 { return " " + str(n) } else { return str(n) }
+}
+
+fun format_time(t: int): string {
+  let wdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+  let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+  let day_seconds = 86400
+  let total_days = t / day_seconds
+  let sec_day = t % day_seconds
+  var hour = sec_day / 3600
+  var minute = (sec_day % 3600) / 60
+  var second = sec_day % 60
+  var days = total_days
+  var year = 1970
+  while true {
+    let dyear = 365 + (if is_leap(year) {1} else {0})
+    if days >= dyear {
+      days = days - dyear
+      year = year + 1
+    } else {
+      break
+    }
+  }
+  let monthDays = [31,28,31,30,31,30,31,31,30,31,30,31]
+  var month = 0
+  while true {
+    var dim = monthDays[month]
+    if month == 1 && is_leap(year) {
+      dim = 29
+    }
+    if days >= dim {
+      days = days - dim
+      month = month + 1
+    } else {
+      break
+    }
+  }
+  let day = days + 1
+  let wday = (4 + total_days) % 7
+  return wdays[wday] + " " + months[month] + " " + pad2space(day) + " " + pad2zero(hour) + ":" + pad2zero(minute) + ":" + pad2zero(second) + " " + str(year)
+}
+
+fun main() {
+  let line = input()
+  if line == "" { return }
+  let r = int(line)
+  let t = mod_sqrt(r, MOD)
+  print(format_time(t))
+}
+
+main()
