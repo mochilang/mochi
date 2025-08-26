@@ -60,9 +60,13 @@ require (
 )
 
 require (
+	github.com/JohannesKaufmann/html-to-markdown v1.6.0
+	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/tree-sitter/tree-sitter-elixir v0.3.4
 	github.com/tree-sitter/tree-sitter-erlang v0.0.0-20250613112728-07dad1469ecb
 )
+
+require github.com/andybalholm/cascadia v1.3.3 // indirect
 
 require (
 	github.com/alexflint/go-scalar v1.2.0 // indirect
