@@ -112,7 +112,7 @@ def _str(x)
   if x.is_a?(Array)
     "[" + x.map { |e| _str(e) }.join(' ') + "]"
   elsif x.is_a?(Float)
-    x.to_s
+    x % 1 == 0 ? x.to_i.to_s : x.to_s
   else
     x.to_s
   end
