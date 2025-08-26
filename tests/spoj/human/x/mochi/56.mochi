@@ -1,0 +1,58 @@
+// Solution for SPOJ DYZIO - Dyzio
+// https://www.spoj.com/problems/DYZIO/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun solve(seq: string): int {
+  var stack: list<int> = []
+  stack = append(stack, 0)
+  var i = 0
+  var cuts = 0
+  var maxDepth = -1
+  var bestCuts = 0
+  while len(stack) > 0 {
+    let d = stack[len(stack)-1]
+    stack = stack[0:len(stack)-1]
+    let ch = seq[i:i+1]
+    if ch == "0" {
+      if d > maxDepth {
+        maxDepth = d
+        bestCuts = cuts
+      }
+    } else {
+      cuts = cuts + 1
+      stack = append(stack, d+1)
+      stack = append(stack, d+1)
+    }
+    i = i + 1
+  }
+  return bestCuts
+}
+
+fun main() {
+  var caseIndex = 0
+  while caseIndex < 10 {
+    let nStr = input()
+    if nStr == "" { break }
+    let _ = parseIntStr(nStr)
+    var seq = input()
+    while seq == "" { seq = input() }
+    let ans = solve(seq)
+    print(ans)
+    caseIndex = caseIndex + 1
+  }
+}
+
+main()
