@@ -6147,6 +6147,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			t := inferType(v)
+			if t == "String" || isMaybeString(v) {
+				return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "double"}, Field: "parse"}, Args: []Expr{v}}, nil
+			}
 			return &CastExpr{Value: v, Type: "num"}, nil
 		}
 		if p.Call.Func == "to_float" && len(p.Call.Args) == 1 {
