@@ -1,0 +1,57 @@
+// Solution for SPOJ JASIEK - Jasiek
+// https://www.spoj.com/problems/JASIEK/
+
+fun solve(moves: list<string>): int {
+  var x = 0
+  var y = 0
+  var area = 0
+  var i = 0
+  while i < len(moves) {
+    let dir = moves[i]
+    let px = x
+    let py = y
+    if dir == "N" {
+      y = y + 1
+    } else if dir == "S" {
+      y = y - 1
+    } else if dir == "E" {
+      x = x + 1
+    } else {
+      x = x - 1
+    }
+    area = area + px * y - x * py
+    i = i + 1
+  }
+  if area < 0 {
+    area = -area
+  }
+  let b = len(moves)
+  return area / 2 + b / 2 + 1
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" {
+      break
+    }
+    if line != "P" {
+      continue
+    }
+    var moves: list<string> = []
+    while true {
+      let step = input()
+      if step == "" {
+        return
+      }
+      if step == "K" {
+        break
+      }
+      moves = append(moves, step)
+    }
+    let ans = solve(moves)
+    print(ans)
+  }
+}
+
+main()
