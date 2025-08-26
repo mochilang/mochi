@@ -1,0 +1,89 @@
+/*
+SPOJ Problem 5: The Next Palindrome
+https://www.spoj.com/problems/PALIN/
+*/
+
+fun next_pal(num: string): string {
+  let n = len(num)
+  var digits = []
+  for i in 0..n {
+    digits = append(digits, substring(num, i, i + 1) as int)
+  }
+  var all9 = true
+  for d in digits {
+    if d != 9 {
+      all9 = false
+      break
+    }
+  }
+  if all9 {
+    var res = "1"
+    var zeros = n - 1
+    for _ in 0..zeros {
+      res = res + "0"
+    }
+    res = res + "1"
+    return res
+  }
+  var mid = n / 2
+  var i = mid - 1
+  var j = 0
+  if (n % 2 == 0) {
+    j = mid
+  } else {
+    j = mid + 1
+  }
+  while (i >= 0 && digits[i] == digits[j]) {
+    i = i - 1
+    j = j + 1
+  }
+  var leftSmaller = false
+  if (i < 0 || digits[i] < digits[j]) {
+    leftSmaller = true
+  }
+  while (i >= 0) {
+    digits[j] = digits[i]
+    j = j + 1
+    i = i - 1
+  }
+  if leftSmaller {
+    var carry = 1
+    i = mid - 1
+    if (n % 2 == 1) {
+      digits[mid] = digits[mid] + 1
+      carry = digits[mid] / 10
+      digits[mid] = digits[mid] % 10
+      j = mid + 1
+    } else {
+      j = mid
+    }
+    while (i >= 0) {
+      digits[i] = digits[i] + carry
+      carry = digits[i] / 10
+      digits[i] = digits[i] % 10
+      digits[j] = digits[i]
+      j = j + 1
+      i = i - 1
+    }
+  }
+  var res = ""
+  for d in digits {
+    res = res + str(d)
+  }
+  return res
+}
+
+fun main() {
+  let cases = [
+    "808",
+    "2133",
+    "9",
+    "99",
+    "123456789",
+  ]
+  for c in cases {
+    print(next_pal(c))
+  }
+}
+
+main()
