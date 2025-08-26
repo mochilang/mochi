@@ -2478,8 +2478,14 @@ func valueToExpr(v interface{}) Expr {
 		return &BoolLit{Value: val}
 	case int, int64:
 		return &IntLit{Value: fmt.Sprintf("%v", val)}
-	case float32, float64:
-		f := fmt.Sprintf("%v", val)
+	case float32:
+		f := strconv.FormatFloat(float64(val), 'g', -1, 64)
+		if !strings.ContainsAny(f, ".eE") {
+			f += ".0"
+		}
+		return &FloatLit{Value: f}
+	case float64:
+		f := strconv.FormatFloat(val, 'g', -1, 64)
 		if !strings.ContainsAny(f, ".eE") {
 			f += ".0"
 		}
@@ -5900,7 +5906,7 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	case l.Int != nil:
 		return &IntLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
 	case l.Float != nil:
-		s := fmt.Sprintf("%g", *l.Float)
+		s := strconv.FormatFloat(*l.Float, 'g', -1, 64)
 		if !strings.ContainsAny(s, ".eE") {
 			s += ".0"
 		}

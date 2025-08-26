@@ -1,10 +1,1 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/doppler_frequency.py", line 43, in <module>
-    main()
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/doppler_frequency.py", line 41, in main
-    test_doppler_effect()
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/doppler_frequency.py", line 29, in test_doppler_effect
-    panic("test 1 failed")
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/doppler_frequency.py", line 12, in panic
-    raise RuntimeError(msg)
-RuntimeError: test 1 failed
+103.03030303030303
