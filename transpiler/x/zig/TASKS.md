@@ -1,3 +1,13 @@
+## Progress (2025-08-26 08:36 +0700)
+- Commit 37b073dc44: Add C transpiler output for squareplus algorithm
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-26 08:36 +0700)
+- Commit 37b073dc44: Add C transpiler output for squareplus algorithm
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-25 16:46 +0700)
 - Commit d690280cd1: zig: handle constant lists and simple sum types
 - Generated Zig for 98/105 programs

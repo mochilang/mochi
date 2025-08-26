@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-25 16:46 +0700
+Last updated: 2025-08-26 08:36 +0700
 
-## Program Checklist (597/1077)
+## Program Checklist (599/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -736,8 +736,8 @@ Last updated: 2025-08-25 16:46 +0700
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 660µs | 384.0 KB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 418µs | 512.0 KB |
 | 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 798µs | 384.0 KB |
+| 731 | neural_network/activation_functions/swish | ✓ | 1.641ms | 384.0 KB |
 | 732 | neural_network/back_propagation_neural_network |   |  |  |
 | 733 | neural_network/convolution_neural_network |   |  |  |
 | 734 | neural_network/input_data |   |  |  |
