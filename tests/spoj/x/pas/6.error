@@ -1,0 +1,39 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/spoj/x/pas/6.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Int64>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Variant>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+6.pas(65,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+6.pas(65,54) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+6.pas(68,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+6.pas(68,55) Note: Call to subroutine "operator :=(const source:QWord):Variant;" marked as inline is not inlined
+6.pas(73,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+6.pas(73,51) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+6.pas(74,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+6.pas(74,54) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+6.pas(79,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(80,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(81,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(82,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(83,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(84,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(85,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(86,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(87,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(88,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Int64>.AddOrSetData(const AKey:ShortString;const AData:Int64);" marked as inline is not inlined
+6.pas(118,92) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Int64>.GetKeyData(const AKey:ShortString):Int64;" marked as inline is not inlined
+6.pas(122,92) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Int64>.GetKeyData(const AKey:ShortString):Int64;" marked as inline is not inlined
+6.pas(148,92) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Int64>.GetKeyData(const AKey:ShortString):Int64;" marked as inline is not inlined
+6.pas(151,92) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Int64>.GetKeyData(const AKey:ShortString):Int64;" marked as inline is not inlined
+6.pas(188,105) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Int64>.GetKeyData(const AKey:ShortString):Int64;" marked as inline is not inlined
+6.pas(221,91) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Int64>.GetKeyData(const AKey:ShortString):Int64;" marked as inline is not inlined
+6.pas(223,94) Note: Call to subroutine "operator :=(const source:QWord):Variant;" marked as inline is not inlined
+6.pas(327,6) Error: Type mismatch
+6.pas(328,17) Error: Type mismatch
+6.pas(347,46) Error: Type mismatch
+6.pas(352,32) Error: Operator is not overloaded: "ShortString" + "LongInt"
+6.pas(365) Fatal: There were 4 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
