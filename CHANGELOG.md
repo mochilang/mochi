@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.10.74] – 2025-08-26T11:00:15+07:00
+
+### Added
+
+- SPOJ `TEST` solutions in C, C++, C#, COBOL, Dart, Elixir, Erlang, Fortran, Go, Haskell, Java, Kotlin, Lua, OCaml, Pascal, PHP, Prolog, Python, Racket, Ruby, Rust, Scala, Scheme, Smalltalk, Swift, TypeScript, Zig and more.
+- Additional SPOJ solutions including `BULK`, `CMEXPR`, `CMPLS`, `PALIN`, `ONP`, `SBSTR1`, `ARITH`, `PRIME1` and `Direct Visibility`.
+- SPOJ scraper and downloader utility.
+
+### Changed
+
+- Transpilers handle nested list returns, string/float map literals, dynamic indexes and CSV/list string marshaling.
+- Enhanced float precision, big-integer casts, char literal handling and algorithm fixture regeneration across languages.
+
+### Fixed
+
+- Corrected big-integer casts in C# and Java.
+- Addressed nested list and map handling in the C transpiler and string representations in Erlang and PHP.
+
 ## [0.10.73] – 2025-08-25T08:22:15+07:00
 
 ### Added
